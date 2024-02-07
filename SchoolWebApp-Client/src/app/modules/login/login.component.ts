@@ -14,6 +14,7 @@ import {AppService} from '@services/app.service';
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss']
 })
+    
 export class LoginComponent implements OnInit, OnDestroy {
     @HostBinding('class') class = 'login-box';
     public loginForm: UntypedFormGroup;

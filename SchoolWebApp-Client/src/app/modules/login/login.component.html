@@ -1,6 +1,6 @@
 <div class="card card-outline card-primary">
     <div class="card-header text-center">
-        <a [routerLink]="['/']" class="h1"><b>School</b>WEBAPP</a>
+        <a [routerLink]="['/']" class="h1"><b>School </b>WEBAPP</a>
     </div>
     <div class="card-body">
         <p class="login-box-msg">Sign in to start your session</p>
@@ -11,8 +11,7 @@
                     formControlName="email"
                     type="email"
                     class="form-control"
-                    placeholder="Email"
-                />
+                    placeholder="Enter your email" />
                 <div class="input-group-append">
                     <div class="input-group-text">
                         <span class="fas fa-envelope"></span>
@@ -24,8 +23,7 @@
                     formControlName="password"
                     type="password"
                     class="form-control"
-                    placeholder="Password"
-                />
+                    placeholder="Enter your password" />
                 <div class="input-group-append">
                     <div class="input-group-text">
                         <span class="fas fa-lock"></span>
@@ -45,23 +43,21 @@
                         [variant]="'primary'"
                         [loading]="isAuthLoading"
                         [disabled]="isFacebookLoading || isGoogleLoading"
-                        (click)="loginByAuth()"
-                    >
+                        (click)="loginByAuth()">
                         Sign In
                     </pf-button>
                 </div>
                 <!-- /.col -->
             </div>
         </form>
-
-        <div class="social-auth-links text-center mb-3">
+        
+        <!-- <div class="social-auth-links text-center mb-3">
             <pf-button
                 class="mb-2"
                 [variant]="'primary'"
                 [loading]="isFacebookLoading"
                 [disabled]="isAuthLoading || isGoogleLoading"
-                (click)="loginByFacebook()"
-            >
+                (click)="loginByFacebook()">
                 <i class="fab fa-facebook mr-2"></i>
                 Sign in using Facebook
             </pf-button>
@@ -69,21 +65,20 @@
                 [variant]="'danger'"
                 [loading]="isGoogleLoading"
                 [disabled]="isAuthLoading || isFacebookLoading"
-                (click)="loginByGoogle()"
-            >
+                (click)="loginByGoogle()">
                 <i class="fab fa-google mr-2"></i>
                 Sign in using Google+
             </pf-button>
-        </div>
-
-        <p class="mb-1">
+        </div> -->
+        
+        <p class="mb-1 mt-3 text-right">
             <a [routerLink]="['/forgot-password']">I forgot my password</a>
         </p>
-        <p class="mb-0">
+        <!-- <p class="mb-0">
             <a [routerLink]="['/register']" class="text-center">
                 Register a new membership
             </a>
-        </p>
+        </p> -->
     </div>
     <!-- /.login-card-body -->
 </div>

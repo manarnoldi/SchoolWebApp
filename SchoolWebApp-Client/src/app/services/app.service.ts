@@ -96,12 +96,12 @@ export class AppService {
 export const authLogin = (email: string, password: string) => {
   return new Promise(async (res, rej) => {
     await sleep(500);
-    if (email === 'admin@example.com' && password === 'admin') {
+    if (email === 'arnold@kodetek.co.ke' && password === 'admin') {
       localStorage.setItem(
         'authentication',
-        JSON.stringify({ profile: { email: 'admin@example.com' } })
+        JSON.stringify({ profile: { email: 'arnold@kodetek.co.ke' } })
       );
-      return res({ profile: { email: 'admin@example.com' } });
+      return res({ profile: { email: 'arnold@kodetek.co.ke' } });
     }
     return rej({ message: 'Credentials are wrong!' });
   });
