@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SchoolWebApp.Core.Entities.Shared;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Project.Core.Entities.General
 {
     [Table("OrderDetails")]
-    public class OrderDetails : Base<int>
+    public class OrderDetails : Base
     {
         [Required]
         public int OrderId { get; set; }

@@ -65,7 +65,7 @@ namespace Project.Core.Services
         {
             //Mapping through AutoMapper
             var entity = _customerMapper.MapModel(model);
-            entity.EntryDate = DateTime.Now;
+            entity.Created = DateTime.Now;
 
             return _customerViewModelMapper.MapModel(await _customerRepository.Create(entity));
         }
@@ -77,7 +77,7 @@ namespace Project.Core.Services
             //Manual mapping
             existingData.FullName = model.FullName;
             existingData.Email = model.Email;
-            existingData.UpdateDate = DateTime.Now;
+            existingData.Modified = DateTime.Now;
 
             await _customerRepository.Update(existingData);
         }

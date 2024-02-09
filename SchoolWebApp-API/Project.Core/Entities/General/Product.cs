@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SchoolWebApp.Core.Entities.Shared;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Project.Core.Entities.General
 {
     [Table("Products")]
-    public class Product : Base<int>
+    public class Product : Base
     {
         [Required, StringLength(maximumLength: 8, MinimumLength = 2)]
         public string? Code { get; set; }

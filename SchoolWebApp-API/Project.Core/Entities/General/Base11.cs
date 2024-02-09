@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Project.Core.Entities.General
 {
     //Base class for entities common properties
-    public class Base<T>
+    public class Base11<T>
     {
         [Key]
         public T Id { get; set; }

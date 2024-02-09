@@ -65,7 +65,7 @@ namespace Project.Core.Services
         {
             //Mapping through AutoMapper
             var entity = _productMapper.MapModel(model);
-            entity.EntryDate = DateTime.Now;
+            entity.Created = DateTime.Now;
             return _productViewModelMapper.MapModel(await _productRepository.Create(entity));
         }
 
@@ -79,7 +79,7 @@ namespace Project.Core.Services
             existingData.Price = model.Price;
             existingData.Description = model.Description;
             existingData.IsActive = model.IsActive;
-            existingData.UpdateDate = DateTime.Now;
+            existingData.Modified = DateTime.Now;
 
             await _productRepository.Update(existingData);
         }

@@ -119,7 +119,7 @@ namespace Project.Core.Services
                 TotalQuantity = model.TotalQuantity,
                 ProcessingData = model.ProcessingData,
                 Description = model.Description,
-                EntryDate = DateTime.Now
+                Created = DateTime.Now
             };
             var orderData = await _orderRepository.Create(order);
             var orderDetails = new List<OrderDetails>();
@@ -133,7 +133,7 @@ namespace Project.Core.Services
                     SellingPrice = item.SellingPrice,
                     Quantity = item.Quantity,
                     Description = item.Description,
-                    EntryDate = DateTime.Now
+                    Created = DateTime.Now
                 });
             }
             await _orderDetailsRepository.CreateRange(orderDetails);
@@ -148,7 +148,7 @@ namespace Project.Core.Services
             //Manual mapping
             //existingData.FullName = model.FullName;
             //existingData.Email = model.Email;
-            existingData.UpdateDate = DateTime.Now;
+            existingData.Modified = DateTime.Now;
 
             await _orderRepository.Update(existingData);
         }

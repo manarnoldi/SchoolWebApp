@@ -1,0 +1,19 @@
+﻿using SchoolWebApp.Core.Entities.School;
+using SchoolWebApp.Core.Entities.Shared;
+using System.ComponentModel.DataAnnotations;
+
+namespace SchoolWebApp.Core.Entities.Academics
+{
+    public class SubjectGroup : Base
+    {
+        [Required(ErrorMessage = "Enter the subject group")]
+        [Display(Name = "Subject group name")]
+        [StringLength(255)]
+        public string Name { get; set; }
+
+        public int DepartmentId { get; set; }
+        public Department Department { get; set; }
+
+        public List<Subject> Subjects { get; set; }
+    }
+}
