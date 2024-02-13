@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Project.Core.Entities.Business;
 using Project.Core.Exceptions;
 using Project.Core.Interfaces.IRepositories;
 using Project.Infrastructure.Data;
+using SchoolWebApp.Core.DTOs;
 using System.Linq.Expressions;
 
 namespace Project.Infrastructure.Repositories
@@ -27,7 +27,7 @@ namespace Project.Infrastructure.Repositories
             return data;
         }
 
-        public virtual async Task<PaginatedDataViewModel<T>> GetPaginatedData(int pageNumber, int pageSize)
+        public virtual async Task<PaginatedDto<T>> GetPaginatedData(int pageNumber, int pageSize)
         {
             var query = _dbContext.Set<T>()
                 .Skip((pageNumber - 1) * pageSize)
@@ -37,7 +37,7 @@ namespace Project.Infrastructure.Repositories
             var data = await query.ToListAsync();
             var totalCount = await _dbContext.Set<T>().CountAsync();
 
-            return new PaginatedDataViewModel<T>(data, totalCount);
+            return new PaginatedDto<T>(data, totalCount);
         }
 
         public async Task<T> GetById<Tid>(Tid id)
@@ -77,35 +77,30 @@ namespace Project.Infrastructure.Repositories
         }
 
 
-        public async Task<T> Create(T model)
+        public void Create(T model)
         {
-            await _dbContext.Set<T>().AddAsync(model);
-            await _dbContext.SaveChangesAsync();
-            return model;
+            _dbContext.Set<T>().AddAsync(model);
         }
 
-        public async Task CreateRange(List<T> model)
+        public void CreateRange(List<T> model)
         {
-            await _dbContext.Set<T>().AddRangeAsync(model);
-            await _dbContext.SaveChangesAsync();
+            _dbContext.Set<T>().AddRangeAsync(model);
         }
 
-        public async Task Update(T model)
+        public void Update(T model)
         {
             _dbContext.Set<T>().Update(model);
-            await _dbContext.SaveChangesAsync();
         }
 
-        public async Task Delete(T model)
+        public void Delete(T model)
         {
             _dbContext.Set<T>().Remove(model);
-            await _dbContext.SaveChangesAsync();
         }
 
-        public async Task SaveChangeAsync()
-        {
-            await _dbContext.SaveChangesAsync();
-        }
+        //public async Task SaveChangeAsync()
+        //{
+        //    await _dbContext.SaveChangesAsync();
+        //}
 
     }
 }

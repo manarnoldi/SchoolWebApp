@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.Entities.Identity;
 
-namespace SchoolSoftWebApi.Controllers
+namespace SchoolWebApp.API.Controllers
 {
     /// <summary>
     /// A class that manages roles. It requires a user with an authorization policy AdminRole

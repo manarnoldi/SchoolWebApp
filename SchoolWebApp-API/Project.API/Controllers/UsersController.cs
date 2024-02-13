@@ -7,7 +7,7 @@ using SchoolSoftWebApi.Models.Identity;
 using SchoolWebApp.Core.Entities.Identity;
 using SchoolWebApp.Core.Services;
 
-namespace SchoolSoftWebApi.Controllers
+namespace SchoolWebApp.API.Controllers
 {
     [Authorize(Policy = "AdminRole")]
     [ApiController]

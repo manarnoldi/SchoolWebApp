@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Project.Core.Entities.General;
 using SchoolWebApp.Core.Entities.Academics;
 using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Entities.Identity;
@@ -16,19 +13,11 @@ namespace Project.Infrastructure.Data
 {
     public class ApplicationDbContext :  IdentityDbContext<AppUser>
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IHttpContextAccessor httpContextAccessor) : base(options)
+        //private readonly IHttpContextAccessor _httpContextAccessor;
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options/*, IHttpContextAccessor httpContextAccessor*/) : base(options)
         {
-            _httpContextAccessor = httpContextAccessor;
+            //_httpContextAccessor = httpContextAccessor;
         }
-
-        #region DbSet Section
-        public DbSet<Product> Products { get; set; }
-        public DbSet<Customer> Customers { get; set; }
-        public DbSet<Order> Orders { get; set; }
-        public DbSet<OrderDetails> OrderDetails { get; set; }
-
-        #endregion
 
         #region Academics
         public DbSet<AcademicYear> AcademicYears { get; set; }
@@ -96,7 +85,8 @@ namespace Project.Infrastructure.Data
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var currentUserId = _httpContextAccessor.HttpContext.User.FindFirst("username").Value;
+            //var currentUserId = _httpContextAccessor.HttpContext.User.FindFirst("username").Value;
+            var currentUserId = "admin";
             var AddedEntities = ChangeTracker.Entries()
                     .Where(E => E.State == EntityState.Added)
                     .ToList();

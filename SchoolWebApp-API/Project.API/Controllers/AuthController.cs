@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.Entities.Identity;
 using SchoolWebApp.Core.Services;
 
-namespace SchoolSoftWebApi.Controllers
+namespace SchoolWebApp.API.Controllers
 {
     /// <summary>
     /// This is a class for authenticating users. It generates a bearer token and sends it back to the requestor.

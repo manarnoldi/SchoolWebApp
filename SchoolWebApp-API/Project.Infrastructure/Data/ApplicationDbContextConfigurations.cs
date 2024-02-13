@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SchoolWebApp.Core.Constants;
 using SchoolWebApp.Core.Entities.Identity;
+using SchoolWebApp.Core.Entities.Settings;
 
 namespace Project.Infrastructure.Data
 {
@@ -92,6 +93,32 @@ namespace Project.Infrastructure.Data
 
             modelBuilder.Entity<IdentityUserRole<string>>().HasKey(r => new { r.RoleId, r.UserId });
             modelBuilder.Entity<IdentityUserRole<string>>().HasData(userRole);
+
+            //Seed school levels
+            SchoolLevel schoolLevel1 = new SchoolLevel()
+            {
+                Id = 1,
+                Name = "Primary",
+                Description = "A level for primary schools",
+                Created = new DateTime(),
+                CreatedBy = "admin",
+                Modified = new DateTime(),
+                ModifiedBy = "admin"
+            };
+            SchoolLevel schoolLevel2 = new SchoolLevel()
+            {
+                Id = 2,
+                Name = "Secondary",
+                Description = "A level for secondary schools",
+                Created = new DateTime(),
+                CreatedBy = "admin",
+                Modified = new DateTime(),
+                ModifiedBy = "admin"
+            };
+
+            modelBuilder.Entity<SchoolLevel>().HasData(schoolLevel1);
+            modelBuilder.Entity<SchoolLevel>().HasData(schoolLevel2);
+
         }
 
     }

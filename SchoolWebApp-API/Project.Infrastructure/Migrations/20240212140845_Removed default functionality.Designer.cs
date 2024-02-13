@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Infrastructure.Data;
 
@@ -10,9 +11,11 @@ using Project.Infrastructure.Data;
 namespace SchoolWebApp.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240212140845_Removed default functionality")]
+    partial class Removeddefaultfunctionality
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -774,7 +777,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = "7e67d486-af3e-49f1-a109-a2b864b8e0ec",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b3ccaf77-3108-49bf-81b1-8c8fe4b35169",
+                            ConcurrencyStamp = "bfb21048-bbee-46e9-ad0e-06b314299de2",
                             Email = "admin@kodetek.co.ke",
                             EmailConfirmed = true,
                             FirstName = "SchoolSoft",
@@ -782,10 +785,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@KODETEK.CO.KE",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHSx3/wNWJwdHHbkhDA4Y+cLZy66BSkYSJC0TPEA0KbPjmlEOuGVIx9ZiV7cio0S/Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBk0KHlhtcTJp2KbdppfRd9BSRKnu3NWpFASNliZq/yyt5LZZ9X/KPwngr4BQz16JA==",
                             PhoneNumber = "+254724920000",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "0081108c-0114-4d2a-a3e1-9c9312965024",
+                            SecurityStamp = "190d776d-8d47-4494-928c-0997a491895a",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -1374,28 +1377,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SchoolLevels");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedBy = "admin",
-                            Description = "A level for primary schools",
-                            Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedBy = "admin",
-                            Name = "Primary"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedBy = "admin",
-                            Description = "A level for secondary schools",
-                            Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedBy = "admin",
-                            Name = "Secondary"
-                        });
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Settings.SessionType", b =>

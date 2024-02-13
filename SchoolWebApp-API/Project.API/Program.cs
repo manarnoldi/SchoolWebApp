@@ -65,6 +65,7 @@ builder.Services.AddSwaggerGen(setupAction =>
             });
 });
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.ConfigureCors();
 builder.Services.AddScoped<JwtService>();
 
