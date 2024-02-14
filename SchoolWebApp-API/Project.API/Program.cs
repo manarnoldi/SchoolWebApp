@@ -80,7 +80,7 @@ builder.Services
         options.Password.RequireUppercase = false;
         options.Password.RequireLowercase = false;
     })
-    .AddRoles<IdentityRole>()
+    .AddRoles<AppRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services

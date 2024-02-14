@@ -19,76 +19,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex");
-
-                    b.ToTable("Roles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "717d9b15-a428-440c-b26b-08d3bbb68b02",
-                            Name = "Administrator",
-                            NormalizedName = "ADMINISTRATOR"
-                        },
-                        new
-                        {
-                            Id = "95ed2407-3e58-4af2-88a4-1c4e96473f68",
-                            Name = "HeadTeacher",
-                            NormalizedName = "HEADTEACHER"
-                        },
-                        new
-                        {
-                            Id = "48c50c3a-9958-453b-b649-4e21af131322",
-                            Name = "Teacher",
-                            NormalizedName = "TEACHER"
-                        },
-                        new
-                        {
-                            Id = "448df289-142c-4959-a912-60733515e1b4",
-                            Name = "Student",
-                            NormalizedName = "STUDENT"
-                        },
-                        new
-                        {
-                            Id = "269f0cf3-405e-4163-83f3-1b63ebebd62e",
-                            Name = "Parent",
-                            NormalizedName = "PARENT"
-                        },
-                        new
-                        {
-                            Id = "cd12b44b-103b-48df-8887-a2bf42e0651e",
-                            Name = "Accounts",
-                            NormalizedName = "ACCOUNTS"
-                        },
-                        new
-                        {
-                            Id = "97942bee-ef12-4425-8225-4f293d0f36dd",
-                            Name = "Visitor",
-                            NormalizedName = "VISITOR"
-                        });
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -698,6 +628,118 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.ToTable("Sessions");
                 });
 
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Identity.AppRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex");
+
+                    b.ToTable("Roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "717d9b15-a428-440c-b26b-08d3bbb68b02",
+                            Created = new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8462),
+                            CreatedBy = "admin",
+                            Modified = new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8497),
+                            ModifiedBy = "admin",
+                            Name = "Administrator",
+                            NormalizedName = "ADMINISTRATOR"
+                        },
+                        new
+                        {
+                            Id = "95ed2407-3e58-4af2-88a4-1c4e96473f68",
+                            Created = new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8588),
+                            CreatedBy = "admin",
+                            Modified = new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8590),
+                            ModifiedBy = "admin",
+                            Name = "HeadTeacher",
+                            NormalizedName = "HEADTEACHER"
+                        },
+                        new
+                        {
+                            Id = "48c50c3a-9958-453b-b649-4e21af131322",
+                            Created = new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8634),
+                            CreatedBy = "admin",
+                            Modified = new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8636),
+                            ModifiedBy = "admin",
+                            Name = "Teacher",
+                            NormalizedName = "TEACHER"
+                        },
+                        new
+                        {
+                            Id = "448df289-142c-4959-a912-60733515e1b4",
+                            Created = new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8677),
+                            CreatedBy = "admin",
+                            Modified = new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8696),
+                            ModifiedBy = "admin",
+                            Name = "Student",
+                            NormalizedName = "STUDENT"
+                        },
+                        new
+                        {
+                            Id = "269f0cf3-405e-4163-83f3-1b63ebebd62e",
+                            Created = new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8755),
+                            CreatedBy = "admin",
+                            Modified = new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8757),
+                            ModifiedBy = "admin",
+                            Name = "Parent",
+                            NormalizedName = "PARENT"
+                        },
+                        new
+                        {
+                            Id = "cd12b44b-103b-48df-8887-a2bf42e0651e",
+                            Created = new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8812),
+                            CreatedBy = "admin",
+                            Modified = new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8813),
+                            ModifiedBy = "admin",
+                            Name = "Accounts",
+                            NormalizedName = "ACCOUNTS"
+                        },
+                        new
+                        {
+                            Id = "97942bee-ef12-4425-8225-4f293d0f36dd",
+                            Created = new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8856),
+                            CreatedBy = "admin",
+                            Modified = new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8858),
+                            ModifiedBy = "admin",
+                            Name = "Visitor",
+                            NormalizedName = "VISITOR"
+                        });
+                });
+
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Identity.AppUser", b =>
                 {
                     b.Property<string>("Id")
@@ -709,6 +751,13 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -730,6 +779,13 @@ namespace SchoolWebApp.Infrastructure.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -774,18 +830,22 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = "7e67d486-af3e-49f1-a109-a2b864b8e0ec",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b3ccaf77-3108-49bf-81b1-8c8fe4b35169",
+                            ConcurrencyStamp = "35318fd9-f20f-47f2-a57f-ee3a59e58894",
+                            Created = new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(9014),
+                            CreatedBy = "admin",
                             Email = "admin@kodetek.co.ke",
                             EmailConfirmed = true,
                             FirstName = "SchoolSoft",
                             LastName = "Administrator",
                             LockoutEnabled = false,
+                            Modified = new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(9023),
+                            ModifiedBy = "admin",
                             NormalizedEmail = "ADMIN@KODETEK.CO.KE",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHSx3/wNWJwdHHbkhDA4Y+cLZy66BSkYSJC0TPEA0KbPjmlEOuGVIx9ZiV7cio0S/Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECcS/ve4mxeUn5f+s2p6IuhvYbRIqM6W71OCSeFJThdWYmYlTDVzauIFkEk1R39KNg==",
                             PhoneNumber = "+254724920000",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "0081108c-0114-4d2a-a3e1-9c9312965024",
+                            SecurityStamp = "a7eb62ef-9643-4479-81a4-c110eb3ad4ea",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -1379,20 +1439,20 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Created = new DateTime(2024, 2, 14, 19, 4, 5, 423, DateTimeKind.Local).AddTicks(4853),
                             CreatedBy = "admin",
                             Description = "A level for primary schools",
-                            Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Modified = new DateTime(2024, 2, 14, 19, 4, 5, 423, DateTimeKind.Local).AddTicks(4882),
                             ModifiedBy = "admin",
                             Name = "Primary"
                         },
                         new
                         {
                             Id = 2,
-                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Created = new DateTime(2024, 2, 14, 19, 4, 5, 423, DateTimeKind.Local).AddTicks(4884),
                             CreatedBy = "admin",
                             Description = "A level for secondary schools",
-                            Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Modified = new DateTime(2024, 2, 14, 19, 4, 5, 423, DateTimeKind.Local).AddTicks(4885),
                             ModifiedBy = "admin",
                             Name = "Secondary"
                         });
@@ -2063,7 +2123,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("SchoolWebApp.Core.Entities.Identity.AppRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2090,7 +2150,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("SchoolWebApp.Core.Entities.Identity.AppRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)

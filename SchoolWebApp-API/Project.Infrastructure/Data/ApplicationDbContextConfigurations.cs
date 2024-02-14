@@ -8,17 +8,13 @@ namespace Project.Infrastructure.Data
 {
     public class ApplicationDbContextConfigurations
     {
-        private readonly UserManager<AppUser> userManager;
-        private readonly RoleManager<IdentityRole> roleManager;
-        public ApplicationDbContextConfigurations(UserManager<AppUser> _userManager, RoleManager<IdentityRole> _roleManager)
+        public ApplicationDbContextConfigurations()
         {
-            userManager = _userManager;
-            roleManager = _roleManager;
         }
         public static void Configure(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AppUser>().ToTable("Users");
-            modelBuilder.Entity<IdentityRole>().ToTable("Roles");
+            modelBuilder.Entity<AppRole>().ToTable("Roles");
 
             // Add any additional entity configurations here
         }
@@ -26,47 +22,75 @@ namespace Project.Infrastructure.Data
         public static void SeedData(ModelBuilder modelBuilder)
         {
             //Seed Roles
-            modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole
+            modelBuilder.Entity<AppRole>().HasData(new AppRole
             {
                 Id = "717d9b15-a428-440c-b26b-08d3bbb68b02",
                 Name = Authorization.Roles.Administrator.ToString(),
-                NormalizedName = Authorization.Roles.Administrator.ToString().ToUpper()
+                NormalizedName = Authorization.Roles.Administrator.ToString().ToUpper(),
+                Created = DateTime.Now,
+                CreatedBy = "admin",
+                Modified = DateTime.Now,
+                ModifiedBy = "admin"
             });
-            modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole
+            modelBuilder.Entity<AppRole>().HasData(new AppRole
             {
                 Id = "95ed2407-3e58-4af2-88a4-1c4e96473f68",
                 Name = Authorization.Roles.HeadTeacher.ToString(),
-                NormalizedName = Authorization.Roles.HeadTeacher.ToString().ToUpper()
+                NormalizedName = Authorization.Roles.HeadTeacher.ToString().ToUpper(),
+                Created = DateTime.Now,
+                CreatedBy = "admin",
+                Modified = DateTime.Now,
+                ModifiedBy = "admin"
             });
-            modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole
+            modelBuilder.Entity<AppRole>().HasData(new AppRole
             {
                 Id = "48c50c3a-9958-453b-b649-4e21af131322",
                 Name = Authorization.Roles.Teacher.ToString(),
-                NormalizedName = Authorization.Roles.Teacher.ToString().ToUpper()
+                NormalizedName = Authorization.Roles.Teacher.ToString().ToUpper(),
+                Created = DateTime.Now,
+                CreatedBy = "admin",
+                Modified = DateTime.Now,
+                ModifiedBy = "admin"
             });
-            modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole
+            modelBuilder.Entity<AppRole>().HasData(new AppRole
             {
                 Id = "448df289-142c-4959-a912-60733515e1b4",
                 Name = Authorization.Roles.Student.ToString(),
-                NormalizedName = Authorization.Roles.Student.ToString().ToUpper()
+                NormalizedName = Authorization.Roles.Student.ToString().ToUpper(),
+                Created = DateTime.Now,
+                CreatedBy = "admin",
+                Modified = DateTime.Now,
+                ModifiedBy = "admin"
             });
-            modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole
+            modelBuilder.Entity<AppRole>().HasData(new AppRole
             {
                 Id = "269f0cf3-405e-4163-83f3-1b63ebebd62e",
                 Name = Authorization.Roles.Parent.ToString(),
-                NormalizedName = Authorization.Roles.Parent.ToString().ToUpper()
+                NormalizedName = Authorization.Roles.Parent.ToString().ToUpper(),
+                Created = DateTime.Now,
+                CreatedBy = "admin",
+                Modified = DateTime.Now,
+                ModifiedBy = "admin"
             });
-            modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole
+            modelBuilder.Entity<AppRole>().HasData(new AppRole
             {
                 Id = "cd12b44b-103b-48df-8887-a2bf42e0651e",
                 Name = Authorization.Roles.Accounts.ToString(),
-                NormalizedName = Authorization.Roles.Accounts.ToString().ToUpper()
+                NormalizedName = Authorization.Roles.Accounts.ToString().ToUpper(),
+                Created = DateTime.Now,
+                CreatedBy = "admin",
+                Modified = DateTime.Now,
+                ModifiedBy = "admin"
             });
-            modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole
+            modelBuilder.Entity<AppRole>().HasData(new AppRole
             {
                 Id = "97942bee-ef12-4425-8225-4f293d0f36dd",
                 Name = Authorization.Roles.Visitor.ToString(),
-                NormalizedName = Authorization.Roles.Visitor.ToString().ToUpper()
+                NormalizedName = Authorization.Roles.Visitor.ToString().ToUpper(),
+                Created = DateTime.Now,
+                CreatedBy = "admin",
+                Modified = DateTime.Now,
+                ModifiedBy = "admin"
             });
 
             var hasher = new PasswordHasher<AppUser>();
@@ -83,7 +107,11 @@ namespace Project.Infrastructure.Data
                 LastName = "Administrator",
                 PhoneNumber = "+254724920000",
                 NormalizedUserName = Authorization.default_username.ToUpper(),
-                NormalizedEmail = Authorization.default_email.ToUpper()
+                NormalizedEmail = Authorization.default_email.ToUpper(),
+                Created = DateTime.Now,
+                CreatedBy = "admin",
+                Modified = DateTime.Now,
+                ModifiedBy = "admin"
             };
             defaultUser.PasswordHash = hasher.HashPassword(defaultUser, Authorization.default_password);
             modelBuilder.Entity<AppUser>().HasData(defaultUser);
@@ -100,9 +128,9 @@ namespace Project.Infrastructure.Data
                 Id = 1,
                 Name = "Primary",
                 Description = "A level for primary schools",
-                Created = new DateTime(),
+                Created = DateTime.Now,
                 CreatedBy = "admin",
-                Modified = new DateTime(),
+                Modified = DateTime.Now,
                 ModifiedBy = "admin"
             };
             SchoolLevel schoolLevel2 = new SchoolLevel()
@@ -110,9 +138,9 @@ namespace Project.Infrastructure.Data
                 Id = 2,
                 Name = "Secondary",
                 Description = "A level for secondary schools",
-                Created = new DateTime(),
+                Created = DateTime.Now,
                 CreatedBy = "admin",
-                Modified = new DateTime(),
+                Modified = DateTime.Now,
                 ModifiedBy = "admin"
             };
 

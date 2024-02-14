@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SchoolWebApp.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -67,30 +67,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Curricula", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Customers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    FullName = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Email = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Balance = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
-                    Created = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Modified = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    ModifiedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Customers", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -305,34 +281,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Products",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Code = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Price = table.Column<double>(type: "double", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "varchar(350)", maxLength: 350, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Modified = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    ModifiedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Products", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "RelationShips",
                 columns: table => new
                 {
@@ -383,6 +331,12 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Created = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Modified = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Name = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -476,6 +430,12 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     LastName = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    Created = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Modified = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
@@ -537,37 +497,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_Grades_Curricula_CurriculumId",
                         column: x => x.CurriculumId,
                         principalTable: "Curricula",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Orders",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    CustomerId = table.Column<int>(type: "int", nullable: false),
-                    TotalBill = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    TotalQuantity = table.Column<int>(type: "int", nullable: false),
-                    ProcessingData = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Description = table.Column<string>(type: "varchar(350)", maxLength: 350, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Created = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Modified = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    ModifiedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Orders", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Orders_Customers_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "Customers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -884,43 +813,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_AspNetUserTokens_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "OrderDetails",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    OrderId = table.Column<int>(type: "int", nullable: false),
-                    ProductId = table.Column<int>(type: "int", nullable: false),
-                    SellingPrice = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "varchar(350)", maxLength: 350, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Created = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Modified = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    ModifiedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OrderDetails", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_OrderDetails_Orders_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Orders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_OrderDetails_Products_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -1541,22 +1433,31 @@ namespace SchoolWebApp.Infrastructure.Migrations
 
             migrationBuilder.InsertData(
                 table: "Roles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                columns: new[] { "Id", "ConcurrencyStamp", "Created", "CreatedBy", "Modified", "ModifiedBy", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "269f0cf3-405e-4163-83f3-1b63ebebd62e", null, "Parent", "PARENT" },
-                    { "448df289-142c-4959-a912-60733515e1b4", null, "Student", "STUDENT" },
-                    { "48c50c3a-9958-453b-b649-4e21af131322", null, "Teacher", "TEACHER" },
-                    { "717d9b15-a428-440c-b26b-08d3bbb68b02", null, "Administrator", "ADMINISTRATOR" },
-                    { "95ed2407-3e58-4af2-88a4-1c4e96473f68", null, "HeadTeacher", "HEADTEACHER" },
-                    { "97942bee-ef12-4425-8225-4f293d0f36dd", null, "Visitor", "VISITOR" },
-                    { "cd12b44b-103b-48df-8887-a2bf42e0651e", null, "Accounts", "ACCOUNTS" }
+                    { "269f0cf3-405e-4163-83f3-1b63ebebd62e", null, new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8755), "admin", new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8757), "admin", "Parent", "PARENT" },
+                    { "448df289-142c-4959-a912-60733515e1b4", null, new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8677), "admin", new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8696), "admin", "Student", "STUDENT" },
+                    { "48c50c3a-9958-453b-b649-4e21af131322", null, new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8634), "admin", new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8636), "admin", "Teacher", "TEACHER" },
+                    { "717d9b15-a428-440c-b26b-08d3bbb68b02", null, new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8462), "admin", new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8497), "admin", "Administrator", "ADMINISTRATOR" },
+                    { "95ed2407-3e58-4af2-88a4-1c4e96473f68", null, new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8588), "admin", new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8590), "admin", "HeadTeacher", "HEADTEACHER" },
+                    { "97942bee-ef12-4425-8225-4f293d0f36dd", null, new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8856), "admin", new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8858), "admin", "Visitor", "VISITOR" },
+                    { "cd12b44b-103b-48df-8887-a2bf42e0651e", null, new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8812), "admin", new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8813), "admin", "Accounts", "ACCOUNTS" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "SchoolLevels",
+                columns: new[] { "Id", "Created", "CreatedBy", "Description", "Modified", "ModifiedBy", "Name" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2024, 2, 14, 19, 4, 5, 423, DateTimeKind.Local).AddTicks(4853), "admin", "A level for primary schools", new DateTime(2024, 2, 14, 19, 4, 5, 423, DateTimeKind.Local).AddTicks(4882), "admin", "Primary" },
+                    { 2, new DateTime(2024, 2, 14, 19, 4, 5, 423, DateTimeKind.Local).AddTicks(4884), "admin", "A level for secondary schools", new DateTime(2024, 2, 14, 19, 4, 5, 423, DateTimeKind.Local).AddTicks(4885), "admin", "Secondary" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "7e67d486-af3e-49f1-a109-a2b864b8e0ec", 0, "266b3096-49ed-4901-aed7-9cfafeb80098", "admin@kodetek.co.ke", true, "SchoolSoft", "Administrator", false, null, "ADMIN@KODETEK.CO.KE", "ADMIN", "AQAAAAIAAYagAAAAENcayFMECirffvxYM0N8uQ2Y4OVcOn29U89fcSUVf7c4VrAYz2lCxXb5x0AdR5fXSg==", "+254724920000", true, "2c501d65-6d71-4114-b55b-ea147da6b7cd", false, "admin" });
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Created", "CreatedBy", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "Modified", "ModifiedBy", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "7e67d486-af3e-49f1-a109-a2b864b8e0ec", 0, "35318fd9-f20f-47f2-a57f-ee3a59e58894", new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(9014), "admin", "admin@kodetek.co.ke", true, "SchoolSoft", "Administrator", false, null, new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(9023), "admin", "ADMIN@KODETEK.CO.KE", "ADMIN", "AQAAAAIAAYagAAAAECcS/ve4mxeUn5f+s2p6IuhvYbRIqM6W71OCSeFJThdWYmYlTDVzauIFkEk1R39KNg==", "+254724920000", true, "a7eb62ef-9643-4479-81a4-c110eb3ad4ea", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
@@ -1657,21 +1558,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 name: "IX_Grades_CurriculumId",
                 table: "Grades",
                 column: "CurriculumId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OrderDetails_OrderId",
-                table: "OrderDetails",
-                column: "OrderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OrderDetails_ProductId",
-                table: "OrderDetails",
-                column: "ProductId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Orders_CustomerId",
-                table: "Orders",
-                column: "CustomerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Person_DesignationId",
@@ -1895,9 +1781,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 name: "Grades");
 
             migrationBuilder.DropTable(
-                name: "OrderDetails");
-
-            migrationBuilder.DropTable(
                 name: "SchoolDetails");
 
             migrationBuilder.DropTable(
@@ -1934,12 +1817,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 name: "Exams");
 
             migrationBuilder.DropTable(
-                name: "Orders");
-
-            migrationBuilder.DropTable(
-                name: "Products");
-
-            migrationBuilder.DropTable(
                 name: "SchoolLevels");
 
             migrationBuilder.DropTable(
@@ -1956,9 +1833,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Subjects");
-
-            migrationBuilder.DropTable(
-                name: "Customers");
 
             migrationBuilder.DropTable(
                 name: "SchoolClasses");

@@ -6,12 +6,13 @@ using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Entities.Identity;
 using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Entities.Settings;
+using SchoolWebApp.Core.Entities.Shared;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Entities.Students;
 
 namespace Project.Infrastructure.Data
 {
-    public class ApplicationDbContext :  IdentityDbContext<AppUser>
+    public class ApplicationDbContext :  IdentityDbContext<AppUser,AppRole,string>
     {
         //private readonly IHttpContextAccessor _httpContextAccessor;
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options/*, IHttpContextAccessor httpContextAccessor*/) : base(options)
@@ -88,7 +89,7 @@ namespace Project.Infrastructure.Data
             //var currentUserId = _httpContextAccessor.HttpContext.User.FindFirst("username").Value;
             var currentUserId = "admin";
             var AddedEntities = ChangeTracker.Entries()
-                    .Where(E => E.State == EntityState.Added)
+                    .Where(E => E.State == EntityState.Added && E.Entity is Base)
                     .ToList();
 
             AddedEntities.ForEach(E =>
@@ -100,7 +101,7 @@ namespace Project.Infrastructure.Data
             });
 
             var EditedEntities = ChangeTracker.Entries()
-                .Where(E => E.State == EntityState.Modified)
+                .Where(E => E.State == EntityState.Modified && E.Entity is Base)
                 .ToList();
 
             EditedEntities.ForEach(E =>

@@ -1,14 +1,15 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SchoolWebApp.Core.Entities.Identity
 {
-    public class AppUser : IdentityUser
+    public class AppRole : IdentityRole
     {
-        [Required]
-        public required string FirstName { get; set; }
-        [Required]
-        public required string LastName { get; set; }
         public DateTime? Created { get; set; }
 
         [StringLength(255)]

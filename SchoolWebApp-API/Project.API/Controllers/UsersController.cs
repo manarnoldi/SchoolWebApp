@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SchoolSoftWebApi.Models.Identity;
+using SchoolWebApp.API.Controllers.School;
 using SchoolWebApp.Core.Entities.Identity;
 using SchoolWebApp.Core.Services;
 
@@ -15,11 +16,14 @@ namespace SchoolWebApp.API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly UserManager<AppUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<AppRole> _roleManager;
         private readonly IMapper _mapper;
-        public UsersController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper, JwtService jwtService)
+        private readonly ILogger<UsersController> _logger;
+
+        public UsersController(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager, IMapper mapper, ILogger<UsersController> logger)
         {
             _mapper = mapper;
+            _logger = logger;
             _userManager = userManager;
             _roleManager = roleManager;
         }
@@ -74,15 +78,24 @@ namespace SchoolWebApp.API.Controllers
         [Route("userRole")]
         public async Task<IActionResult> AddUserToRole(UserRoleDTO userRole)
         {
-            var user = await _userManager.FindByEmailAsync(userRole.Email);
-            if (user == null) return BadRequest(new { error = "User details not found." });
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(userRole.Email);
+                if (user == null) return BadRequest(new { error = "User details not found." });
 
-            var roleExist = await _roleManager.RoleExistsAsync(userRole.Role);
-            if (!roleExist) return BadRequest(new { error = "Role not found in the system." });
+                var roleExist = await _roleManager.RoleExistsAsync(userRole.Role);
+                if (!roleExist) return BadRequest(new { error = "Role not found in the system." });
 
-            IdentityResult result = await _userManager.AddToRoleAsync(user, userRole.Role);
-            if (result.Succeeded) return Ok(new { result = $"User {user.Email} added to the {userRole.Role} role." });
-            else return BadRequest(result);
+                IdentityResult result = await _userManager.AddToRoleAsync(user, userRole.Role);
+                if (result.Succeeded) return Ok(new { result = $"User {user.Email} added to the {userRole.Role} role." });
+                else return BadRequest(result);
+            }
+            catch (Exception ex)
+            {
+                var errMessage = $"An error occurred while adding the user to the role.";
+                _logger.LogError(ex, errMessage);
+                return StatusCode(StatusCodes.Status500InternalServerError, errMessage);
+            }
         }
 
         //POST: api/users/removefromrole

@@ -14,21 +14,18 @@ namespace SchoolWebApp.API.Controllers
     [Route("api/roles")]
     public class RolesController : ControllerBase
     {
-        private readonly UserManager<AppUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<AppRole> _roleManager;
         private readonly IMapper _mapper;
 
         /// <summary>
         /// The class constructor that injects the dependent services used in the class
         /// </summary>
-        /// <param name="userManager">The user manager service</param>
         /// <param name="mapper">The automapper service</param>
         /// <param name="roleManager">The role manager service</param>
-        public RolesController(UserManager<AppUser> userManager, IMapper mapper, RoleManager<IdentityRole> roleManager)
+        public RolesController(IMapper mapper, RoleManager<AppRole> roleManager)
         {
             _mapper = mapper;
             _roleManager = roleManager;
-            _userManager = userManager;
         }
 
         /// <summary>
@@ -40,21 +37,23 @@ namespace SchoolWebApp.API.Controllers
         public IActionResult GetAllRoles()
         {
             var roles = _roleManager.Roles.ToList();
-            return Ok(roles);
+            return Ok(_mapper.Map<IEnumerable<RoleToReturn>>(roles));
         }
+        // public async Task<ActionResult<UserToReturn>> PostUser(UserDTO user)
 
-        //POST: api/roles/post
-        [Route("post")]
+        //POST: api/roles/
         [HttpPost]
-        public async Task<IActionResult> CreateRole(RoleDTO role)
+        public async Task<IActionResult> PostRole(RoleDTO role)
         {
-            var roleExist = await _roleManager.RoleExistsAsync(role.RoleName);
+            var roleExist = await _roleManager.RoleExistsAsync(role.Name);
 
             if (roleExist) return BadRequest(new { error = "Role already registered." });
 
-            var roleResult = await _roleManager.CreateAsync(new IdentityRole(role.RoleName));
+            var roleToSave = new AppRole { Name = role.Name, NormalizedName = role.Name.ToUpper() };
 
-            if (roleResult.Succeeded) return Ok(new { result = $"Role added successfully" });
+            var roleResult = await _roleManager.CreateAsync(roleToSave);
+
+            if (roleResult.Succeeded) return Ok(new { result = $"Role added {role.Name} successfully" });
             else return BadRequest(new { error = $"An error occured while adding the role." });
         }
     }
