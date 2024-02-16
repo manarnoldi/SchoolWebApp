@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SchoolWebApp.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -42,6 +42,76 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AcademicYears", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "AspNetRoles",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Created = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Modified = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Name = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    NormalizedName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ConcurrencyStamp = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    FirstName = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    LastName = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Created = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Modified = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Email = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    NormalizedEmail = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    EmailConfirmed = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    PasswordHash = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    SecurityStamp = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ConcurrencyStamp = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    PhoneNumber = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -162,6 +232,19 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Genders", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "IdentityUserRole<int>",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    RoleId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IdentityUserRole<int>", x => new { x.UserId, x.RoleId });
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -327,31 +410,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Roles",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Created = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    CreatedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Modified = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Name = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    NormalizedName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ConcurrencyStamp = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Roles", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "SchoolLevels",
                 columns: table => new
                 {
@@ -421,47 +479,129 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "AspNetRoleClaims",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    RoleId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    FirstName = table.Column<string>(type: "longtext", nullable: false)
+                    ClaimType = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    LastName = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Created = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    CreatedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Modified = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Email = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    NormalizedEmail = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    EmailConfirmed = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    PasswordHash = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    SecurityStamp = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ConcurrencyStamp = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    PhoneNumber = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                    ClaimValue = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ClaimType = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ClaimValue = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserLogins",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProviderKey = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProviderDisplayName = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserRoles",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    RoleId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserTokens",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    LoginProvider = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Name = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Value = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserTokens_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -497,31 +637,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_Grades_Curricula_CurriculumId",
                         column: x => x.CurriculumId,
                         principalTable: "Curricula",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "AspNetRoleClaims",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    RoleId = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ClaimType = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ClaimValue = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetRoleClaims_Roles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -711,108 +826,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_Person_StaffCategories_StaffCategoryId",
                         column: x => x.StaffCategoryId,
                         principalTable: "StaffCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserClaims",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ClaimType = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ClaimValue = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserClaims_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserLogins",
-                columns: table => new
-                {
-                    LoginProvider = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ProviderKey = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ProviderDisplayName = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserLogins_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserRoles",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    RoleId = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.RoleId, x.UserId });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_Roles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "Roles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserTokens",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    LoginProvider = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Name = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Value = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserTokens_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -1432,32 +1445,32 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.InsertData(
-                table: "Roles",
+                table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Created", "CreatedBy", "Modified", "ModifiedBy", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "269f0cf3-405e-4163-83f3-1b63ebebd62e", null, new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8755), "admin", new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8757), "admin", "Parent", "PARENT" },
-                    { "448df289-142c-4959-a912-60733515e1b4", null, new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8677), "admin", new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8696), "admin", "Student", "STUDENT" },
-                    { "48c50c3a-9958-453b-b649-4e21af131322", null, new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8634), "admin", new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8636), "admin", "Teacher", "TEACHER" },
-                    { "717d9b15-a428-440c-b26b-08d3bbb68b02", null, new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8462), "admin", new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8497), "admin", "Administrator", "ADMINISTRATOR" },
-                    { "95ed2407-3e58-4af2-88a4-1c4e96473f68", null, new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8588), "admin", new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8590), "admin", "HeadTeacher", "HEADTEACHER" },
-                    { "97942bee-ef12-4425-8225-4f293d0f36dd", null, new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8856), "admin", new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8858), "admin", "Visitor", "VISITOR" },
-                    { "cd12b44b-103b-48df-8887-a2bf42e0651e", null, new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8812), "admin", new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(8813), "admin", "Accounts", "ACCOUNTS" }
+                    { "269f0cf3-405e-4163-83f3-1b63ebebd62e", null, new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9324), "admin", new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9325), "admin", "Parent", "PARENT" },
+                    { "448df289-142c-4959-a912-60733515e1b4", null, new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9266), "admin", new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9285), "admin", "Student", "STUDENT" },
+                    { "48c50c3a-9958-453b-b649-4e21af131322", null, new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9237), "admin", new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9238), "admin", "Teacher", "TEACHER" },
+                    { "717d9b15-a428-440c-b26b-08d3bbb68b02", null, new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9120), "admin", new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9142), "admin", "Administrator", "ADMINISTRATOR" },
+                    { "95ed2407-3e58-4af2-88a4-1c4e96473f68", null, new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9203), "admin", new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9205), "admin", "HeadTeacher", "HEADTEACHER" },
+                    { "97942bee-ef12-4425-8225-4f293d0f36dd", null, new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9386), "admin", new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9387), "admin", "Visitor", "VISITOR" },
+                    { "cd12b44b-103b-48df-8887-a2bf42e0651e", null, new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9356), "admin", new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9357), "admin", "Accounts", "ACCOUNTS" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Created", "CreatedBy", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "Modified", "ModifiedBy", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "7e67d486-af3e-49f1-a109-a2b864b8e0ec", 0, "10b72d51-fd81-4d21-98b8-e1ad28942ce2", new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9485), "admin", "admin@kodetek.co.ke", true, "SchoolSoft", "Administrator", false, null, new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9487), "admin", "ADMIN@KODETEK.CO.KE", "ADMIN", "AQAAAAIAAYagAAAAEHco3a/cPZXNLang8dliIgLaojlqLoMtzAJZbkpaMYw9E8i/aQjF1VU2GCd8X0qYSg==", "+254724920000", true, "676bd051-face-4ace-bf58-65ba588e92e9", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "SchoolLevels",
                 columns: new[] { "Id", "Created", "CreatedBy", "Description", "Modified", "ModifiedBy", "Name" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 2, 14, 19, 4, 5, 423, DateTimeKind.Local).AddTicks(4853), "admin", "A level for primary schools", new DateTime(2024, 2, 14, 19, 4, 5, 423, DateTimeKind.Local).AddTicks(4882), "admin", "Primary" },
-                    { 2, new DateTime(2024, 2, 14, 19, 4, 5, 423, DateTimeKind.Local).AddTicks(4884), "admin", "A level for secondary schools", new DateTime(2024, 2, 14, 19, 4, 5, 423, DateTimeKind.Local).AddTicks(4885), "admin", "Secondary" }
+                    { 1, new DateTime(2024, 2, 16, 8, 47, 14, 318, DateTimeKind.Local).AddTicks(3090), "admin", "A level for primary schools", new DateTime(2024, 2, 16, 8, 47, 14, 318, DateTimeKind.Local).AddTicks(3110), "admin", "Primary" },
+                    { 2, new DateTime(2024, 2, 16, 8, 47, 14, 318, DateTimeKind.Local).AddTicks(3112), "admin", "A level for secondary schools", new DateTime(2024, 2, 16, 8, 47, 14, 318, DateTimeKind.Local).AddTicks(3113), "admin", "Secondary" }
                 });
-
-            migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Created", "CreatedBy", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "Modified", "ModifiedBy", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "7e67d486-af3e-49f1-a109-a2b864b8e0ec", 0, "35318fd9-f20f-47f2-a57f-ee3a59e58894", new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(9014), "admin", "admin@kodetek.co.ke", true, "SchoolSoft", "Administrator", false, null, new DateTime(2024, 2, 14, 19, 4, 5, 318, DateTimeKind.Local).AddTicks(9023), "admin", "ADMIN@KODETEK.CO.KE", "ADMIN", "AQAAAAIAAYagAAAAECcS/ve4mxeUn5f+s2p6IuhvYbRIqM6W71OCSeFJThdWYmYlTDVzauIFkEk1R39KNg==", "+254724920000", true, "a7eb62ef-9643-4479-81a4-c110eb3ad4ea", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
@@ -1470,6 +1483,12 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
+                name: "RoleNameIndex",
+                table: "AspNetRoles",
+                column: "NormalizedName",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
                 table: "AspNetUserClaims",
                 column: "UserId");
@@ -1480,9 +1499,20 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserRoles_UserId",
+                name: "IX_AspNetUserRoles_RoleId",
                 table: "AspNetUserRoles",
-                column: "UserId");
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "EmailIndex",
+                table: "AspNetUsers",
+                column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "UserNameIndex",
+                table: "AspNetUsers",
+                column: "NormalizedUserName",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Departments_StaffDetailsId",
@@ -1598,12 +1628,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 name: "IX_Person_StaffCategoryId",
                 table: "Person",
                 column: "StaffCategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "RoleNameIndex",
-                table: "Roles",
-                column: "NormalizedName",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_SchoolClasses_AcademicYearId",
@@ -1734,17 +1758,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 name: "IX_Subjects_SubjectGroupId",
                 table: "Subjects",
                 column: "SubjectGroupId");
-
-            migrationBuilder.CreateIndex(
-                name: "EmailIndex",
-                table: "Users",
-                column: "NormalizedEmail");
-
-            migrationBuilder.CreateIndex(
-                name: "UserNameIndex",
-                table: "Users",
-                column: "NormalizedUserName",
-                unique: true);
         }
 
         /// <inheritdoc />
@@ -1781,6 +1794,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 name: "Grades");
 
             migrationBuilder.DropTable(
+                name: "IdentityUserRole<int>");
+
+            migrationBuilder.DropTable(
                 name: "SchoolDetails");
 
             migrationBuilder.DropTable(
@@ -1802,10 +1818,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 name: "StudentSubjects");
 
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "OccurenceTypes");

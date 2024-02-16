@@ -13,8 +13,9 @@ namespace Project.Infrastructure.Data
         }
         public static void Configure(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<AppUser>().ToTable("Users");
-            modelBuilder.Entity<AppRole>().ToTable("Roles");
+            //modelBuilder.Entity<AppUser>().ToTable("Users");
+            //modelBuilder.Entity<AppRole>().ToTable("Roles");
+            modelBuilder.Entity<IdentityUserRole<int>>().HasKey(k => new { k.UserId, k.RoleId });
 
             // Add any additional entity configurations here
         }
@@ -119,7 +120,7 @@ namespace Project.Infrastructure.Data
             //Seed admin user to admin role
             var userRole = new IdentityUserRole<string> { RoleId = "717d9b15-a428-440c-b26b-08d3bbb68b02", UserId = "7e67d486-af3e-49f1-a109-a2b864b8e0ec" };
 
-            modelBuilder.Entity<IdentityUserRole<string>>().HasKey(r => new { r.RoleId, r.UserId });
+            //modelBuilder.Entity<IdentityUserRole<string>>().HasKey(r => new { r.RoleId, r.UserId });
             modelBuilder.Entity<IdentityUserRole<string>>().HasData(userRole);
 
             //Seed school levels

@@ -12,7 +12,7 @@ using SchoolWebApp.Core.Entities.Students;
 
 namespace Project.Infrastructure.Data
 {
-    public class ApplicationDbContext :  IdentityDbContext<AppUser,AppRole,string>
+    public class ApplicationDbContext :  IdentityDbContext<AppUser, AppRole, string>
     {
         //private readonly IHttpContextAccessor _httpContextAccessor;
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options/*, IHttpContextAccessor httpContextAccessor*/) : base(options)
