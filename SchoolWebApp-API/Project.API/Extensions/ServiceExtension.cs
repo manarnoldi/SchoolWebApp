@@ -1,7 +1,5 @@
 ﻿using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.Interfaces.IRepositories.School;
-using SchoolWebApp.Core.Interfaces.IServices.School;
-using SchoolWebApp.Core.Services.School;
 using SchoolWebApp.Infrastructure.Repositories;
 using SchoolWebApp.Infrastructure.Repositories.School;
 
@@ -13,9 +11,6 @@ namespace Project.API.Extensions
         {
             #region IUnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            #endregion
-            #region Services
-            services.AddScoped<ISchoolDetailsService, SchoolDetailsService>();
             #endregion
 
             #region Repositories
