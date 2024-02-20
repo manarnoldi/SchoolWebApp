@@ -1,13 +1,9 @@
-﻿using SchoolWebApp.Core.Entities.Academics;
-using SchoolWebApp.Core.Entities.Shared;
-using SchoolWebApp.Core.Entities.Staff;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace SchoolWebApp.Core.Entities.School
+namespace SchoolWebApp.Core.DTOs.School.Department
 {
-    public class Department : Base
+    public class CreateDepartmentDto
     {
-
         [Required(ErrorMessage = "Enter the department name.")]
         [StringLength(500)]
         [Display(Name = "Department name")]
@@ -20,8 +16,5 @@ namespace SchoolWebApp.Core.Entities.School
         public string Description { get; set; }
 
         public int StaffDetailsId { get; set; }
-        public StaffDetails StaffDetails { get; set; }
-
-        public List<SubjectGroup> SubjectGroups { get; set; }
     }
 }

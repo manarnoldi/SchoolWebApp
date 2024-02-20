@@ -23,6 +23,29 @@ namespace SchoolWebApp.API.Controllers.School
             _mapper = mapper;
         }
 
+        // GET: api/schooldetails
+        /// <summary>
+        /// A method for retrieving a list of school details
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<SchoolDetailsDto>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Get()
+        {
+            try
+            {
+                var schoolDetailsList = await _unitOfWork.SchoolDetails.GetAll();
+                var returnSchoolDetailsList = _mapper.Map<List<SchoolDetailsDto>>(schoolDetailsList);
+                return Ok(returnSchoolDetailsList);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving school details.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         // GET: api/schooldetails/paginated
         /// <summary>
         /// A method for retrieving a list of paginated school details
@@ -49,31 +72,7 @@ namespace SchoolWebApp.API.Controllers.School
                 _logger.LogError(ex, "An error occurred while retrieving school details.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
-        }
-
-        // GET: api/schooldetails
-        /// <summary>
-        /// A method for retrieving a list of school details
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<SchoolDetailsDto>))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Get()
-        {
-            try
-            {
-                var schoolDetailsList = await _unitOfWork.SchoolDetails.GetAll();
-                var returnSchoolDetailsList = _mapper.Map<List<SchoolDetailsDto>>(schoolDetailsList);
-                return Ok(returnSchoolDetailsList);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while retrieving school details.");
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
+        }      
 
         // GET api/schooldetails/5
         /// <summary>

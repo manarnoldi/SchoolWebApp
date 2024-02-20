@@ -5,6 +5,7 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
     public interface IUnitOfWork
     {
         ISchoolDetailsRepository SchoolDetails { get; }
+        IDepartmentsRepository Departments { get; }
 
         Task<int> SaveChangesAsync();
     }

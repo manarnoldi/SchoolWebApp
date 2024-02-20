@@ -15,6 +15,7 @@ namespace Project.API.Extensions
 
             #region Repositories
             services.AddTransient<ISchoolDetailsRepository, SchoolDetailsRepository>();
+            services.AddTransient<IDepartmentsRepository, DepartmentsRepository>();
             #endregion
 
             return services;
