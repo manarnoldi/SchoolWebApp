@@ -4,6 +4,7 @@ using SchoolWebApp.Core.DTOs.School.SchoolDetails;
 using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.Interfaces.IServices.School;
+using System.Linq.Expressions;
 
 namespace SchoolWebApp.Core.Services.School
 {
@@ -42,6 +43,11 @@ namespace SchoolWebApp.Core.Services.School
         public async Task<bool> IsExists(string key, string value)
         {
             return await _unitOfWork.SchoolDetails.IsExists(key, value);
+        }
+
+        public async Task<bool> ItemExistsAsync(SchoolDetailsDto model)
+        {
+            return await _unitOfWork.SchoolDetails.ItemExistsAsync(m => m.Id == model.Id);
         }
 
         public async Task<bool> IsExistsForUpdate(int id, string key, string value)
@@ -85,10 +91,5 @@ namespace SchoolWebApp.Core.Services.School
             await _unitOfWork.SaveChangesAsync();
         }
 
-
-        Task ISchoolDetailsService.Update(SchoolDetailsDto model)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

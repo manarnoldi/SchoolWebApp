@@ -9,6 +9,7 @@ namespace SchoolWebApp.Core.Interfaces.IServices.School
         Task<PaginatedDto<SchoolDetailsDto>> GetPaginatedSchoolDetails(int pageNumber, int pageSize);
         Task<SchoolDetailsDto> GetSchoolDetail(int id);
         Task<bool> IsExists(string key, string value);
+        Task<bool> ItemExistsAsync(SchoolDetailsDto model);
         Task<bool> IsExistsForUpdate(int id, string key, string value);
         Task<SchoolDetailsDto> Create(CreateSchoolDetailsDto model);
         Task Update(SchoolDetailsDto model);

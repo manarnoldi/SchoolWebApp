@@ -110,9 +110,9 @@ namespace SchoolWebApp.API.Controllers.School
             if (ModelState.IsValid)
             {
                 if (await _schoolDetailsService.IsExists("Name", model.Name))
-                    return Conflict(new { message = $"The school detail name- '{model.Name}' already exists" });
+                    return Conflict(new { message = $"The school detail name - '{model.Name}' already exists" });
                 if (await _schoolDetailsService.IsExists("Email", model.Email))
-                    return Conflict(new { message = $"The school detail email- '{model.Email}' already exists" });
+                    return Conflict(new { message = $"The school detail email - '{model.Email}' already exists" });
                 try
                 {
                     var data = await _schoolDetailsService.Create(model);
@@ -141,8 +141,8 @@ namespace SchoolWebApp.API.Controllers.School
         {
             if (ModelState.IsValid)
             {
-                var schoolDetailsExist = await _schoolDetailsService.IsExists("Id", model.Id.ToString());
-                if (!schoolDetailsExist) 
+                var schoolDetailsExist = await _schoolDetailsService.ItemExistsAsync(model);
+                if (!schoolDetailsExist)
                     return BadRequest($"The school detail of Id- '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
@@ -172,6 +172,10 @@ namespace SchoolWebApp.API.Controllers.School
         {
             try
             {
+                var schoolDetailsExist = await _schoolDetailsService.GetSchoolDetail(id);
+                if (schoolDetailsExist == null)
+                    return BadRequest($"The school detail of Id- '{id}' does not exist hence cannot be deleted.");
+
                 await _schoolDetailsService.Delete(id);
                 return Ok();
             }

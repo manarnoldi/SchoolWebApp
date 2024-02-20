@@ -43,9 +43,12 @@ namespace Project.Infrastructure.Repositories
         public async Task<T> GetById<Tid>(Tid id)
         {
             var data = await _dbContext.Set<T>().FindAsync(id);
-            if (data == null)
-                throw new NotFoundException("No data found");
             return data;
+        }
+
+        public async Task<bool> ItemExistsAsync(Expression<Func<T, bool>> expression)
+        {
+            return await _dbContext.Set<T>().AnyAsync(expression);
         }
 
         public async Task<bool> IsExists<Tvalue>(string key, Tvalue value)
