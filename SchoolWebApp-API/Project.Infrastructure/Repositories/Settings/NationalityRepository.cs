@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SchoolWebApp.Infrastructure.Repositories.Settings
 {
-    internal class NationalityRepository : BaseRepository<Nationality>, INationalityRepository
+    public class NationalityRepository : BaseRepository<Nationality>, INationalityRepository
     {
         public NationalityRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
