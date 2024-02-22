@@ -8,6 +8,7 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
         #region School
         ISchoolDetailsRepository SchoolDetails { get; }
         IDepartmentsRepository Departments { get; }
+        ILearningModesRepository LearningModes { get; }
         #endregion
 
         #region Settings

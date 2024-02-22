@@ -13,6 +13,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
         #region School
         public ISchoolDetailsRepository SchoolDetails { get; }
         public IDepartmentsRepository Departments { get; }
+        public ILearningModesRepository LearningModes { get; }
         #endregion
 
         #region Settings
@@ -30,8 +31,12 @@ namespace SchoolWebApp.Infrastructure.Repositories
         public IStaffCategoryRepository StaffCategories { get; }
         #endregion
         public UnitOfWork(ApplicationDbContext context,
+                //School
                 ISchoolDetailsRepository schoolDetailsRepository,
                 IDepartmentsRepository departmentsRepository,
+                ILearningModesRepository learningModesRepository,
+                
+                //Settings
                 IDesignationsRepository designationsRepository,
                 IEmploymentTypesRepository employmentTypesRepository,
                 IGenderRepository genderRepository,
@@ -44,13 +49,14 @@ namespace SchoolWebApp.Infrastructure.Repositories
                 ISchoolLevelsRepository schoolLevelsRepository,
                 ISessionTypesRepository sessionTypesRepository,
                 IStaffCategoryRepository staffCategoryRepository
-            )
+         )
         {
             _context = context;
 
             #region School
             SchoolDetails = schoolDetailsRepository;
             Departments = departmentsRepository;
+            LearningModes = learningModesRepository;
             #endregion
 
             #region Settings

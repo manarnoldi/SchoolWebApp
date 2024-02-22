@@ -18,6 +18,7 @@ namespace Project.API.Extensions
             #region School Repositories
             services.AddTransient<ISchoolDetailsRepository, SchoolDetailsRepository>();
             services.AddTransient<IDepartmentsRepository, DepartmentsRepository>();
+            services.AddTransient<ILearningModesRepository, LearningModesRepository>();
             #endregion
 
             #region Settings Repositories
