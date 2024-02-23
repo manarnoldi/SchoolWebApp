@@ -22,6 +22,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
         public ISchoolDetailsRepository SchoolDetails { get; }
         public IDepartmentsRepository Departments { get; }
         public ILearningModesRepository LearningModes { get; }
+        public IEventRepository Events { get; }
         #endregion
 
         #region Class
@@ -52,6 +53,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
                 ISchoolDetailsRepository schoolDetailsRepository,
                 IDepartmentsRepository departmentsRepository,
                 ILearningModesRepository learningModesRepository,
+                IEventRepository eventRepository,
 
                 //Class
                 ISessionRepository sessionRepository,
@@ -82,6 +84,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
             SchoolDetails = schoolDetailsRepository;
             Departments = departmentsRepository;
             LearningModes = learningModesRepository;
+            Events = eventRepository;
             #endregion
 
             #region Class

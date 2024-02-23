@@ -11,6 +11,7 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
         ISchoolDetailsRepository SchoolDetails { get; }
         IDepartmentsRepository Departments { get; }
         ILearningModesRepository LearningModes { get; }
+        IEventRepository Events { get; }
         #endregion
 
         #region Academics
