@@ -104,7 +104,6 @@ namespace SchoolWebApp.API.Controllers.School
         /// </summary>
         /// <param name="model">The department record to be created</param>
         /// <returns></returns>
-        [Authorize(Policy = "AdminRole")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DepartmentDto))]
@@ -139,7 +138,6 @@ namespace SchoolWebApp.API.Controllers.School
         /// </summary>
         /// <param name="model">The department record to be updated</param>
         /// <returns></returns>
-        [Authorize(Policy = "AdminRole")]
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -178,7 +176,6 @@ namespace SchoolWebApp.API.Controllers.School
         /// </summary>
         /// <param name="id">The department Id to be retrieved</param>
         /// <returns></returns>
-        [Authorize(Policy = "AdminRole")]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

@@ -23,6 +23,6 @@ namespace SchoolWebApp.Core.DTOs.Academics.AcademicYear
 
         [StringLength(500)]
         public string Description { get; set; }
-        public Status Status { get; set; }
+        public bool Status { get; set; }
     }
 }

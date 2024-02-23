@@ -8,6 +8,7 @@ using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.Academics
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ExamTypesController : ControllerBase

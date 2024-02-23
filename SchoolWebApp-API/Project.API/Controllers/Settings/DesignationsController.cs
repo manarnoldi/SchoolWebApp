@@ -98,7 +98,7 @@ namespace SchoolWebApp.API.Controllers.Settings
             }
         }
 
-        // POST api/designation
+        // POST api/designations
         /// <summary>
         /// A method for creating a designation record.
         /// </summary>

@@ -28,7 +28,7 @@ namespace SchoolWebApp.Core.Entities.Academics
 
         [StringLength(500)]
         public string Description { get; set; }
-        public Status Status { get; set; }
+        public bool Status { get; set; }
 
         public List<SchoolClass> SchoolClasses { get; set; }
         public List<StaffSubject> StaffSubjects { get; set; }
