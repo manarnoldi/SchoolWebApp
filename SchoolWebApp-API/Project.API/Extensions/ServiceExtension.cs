@@ -1,7 +1,9 @@
 ﻿using SchoolWebApp.Core.Interfaces.IRepositories;
+using SchoolWebApp.Core.Interfaces.IRepositories.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories.School;
 using SchoolWebApp.Core.Interfaces.IRepositories.Settings;
 using SchoolWebApp.Infrastructure.Repositories;
+using SchoolWebApp.Infrastructure.Repositories.Academics;
 using SchoolWebApp.Infrastructure.Repositories.School;
 using SchoolWebApp.Infrastructure.Repositories.Settings;
 
@@ -13,6 +15,12 @@ namespace Project.API.Extensions
         {
             #region IUnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            #endregion
+
+            #region Academics Repositories
+            services.AddTransient<IAcademicYearRepository,AcademicYearRepository>();
+            services.AddTransient<ICurriculumRepository, CurriculumRepository>();
+            services.AddTransient<IExamTypeRepository, ExamTypeRepository>();
             #endregion
 
             #region School Repositories

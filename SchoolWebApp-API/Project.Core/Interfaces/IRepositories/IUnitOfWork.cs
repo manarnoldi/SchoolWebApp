@@ -1,4 +1,5 @@
-﻿using SchoolWebApp.Core.Interfaces.IRepositories.School;
+﻿using SchoolWebApp.Core.Interfaces.IRepositories.Academics;
+using SchoolWebApp.Core.Interfaces.IRepositories.School;
 using SchoolWebApp.Core.Interfaces.IRepositories.Settings;
 
 namespace SchoolWebApp.Core.Interfaces.IRepositories
@@ -9,6 +10,12 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
         ISchoolDetailsRepository SchoolDetails { get; }
         IDepartmentsRepository Departments { get; }
         ILearningModesRepository LearningModes { get; }
+        #endregion
+
+        #region
+        IAcademicYearRepository AcademicYears { get; }
+        ICurriculumRepository Curricula { get; }
+        IExamTypeRepository ExamTypes { get; }
         #endregion
 
         #region Settings

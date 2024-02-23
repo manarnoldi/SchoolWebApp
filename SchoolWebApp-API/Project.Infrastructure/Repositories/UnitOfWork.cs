@@ -1,5 +1,6 @@
 ﻿using Project.Infrastructure.Data;
 using SchoolWebApp.Core.Interfaces.IRepositories;
+using SchoolWebApp.Core.Interfaces.IRepositories.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories.School;
 using SchoolWebApp.Core.Interfaces.IRepositories.Settings;
 using SchoolWebApp.Infrastructure.Repositories.School;
@@ -9,6 +10,12 @@ namespace SchoolWebApp.Infrastructure.Repositories
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _context;
+
+        #region Academics
+        public IAcademicYearRepository AcademicYears {  get; }
+        public ICurriculumRepository Curricula { get; }
+        public IExamTypeRepository ExamTypes { get; }
+        #endregion
 
         #region School
         public ISchoolDetailsRepository SchoolDetails { get; }
@@ -31,6 +38,11 @@ namespace SchoolWebApp.Infrastructure.Repositories
         public IStaffCategoryRepository StaffCategories { get; }
         #endregion
         public UnitOfWork(ApplicationDbContext context,
+                //Acamedics
+                IAcademicYearRepository academicYearRepository,
+                ICurriculumRepository curriculumRepository,
+                IExamTypeRepository examTypeRepository,
+
                 //School
                 ISchoolDetailsRepository schoolDetailsRepository,
                 IDepartmentsRepository departmentsRepository,
@@ -52,6 +64,11 @@ namespace SchoolWebApp.Infrastructure.Repositories
          )
         {
             _context = context;
+            #region Academics
+            AcademicYears = academicYearRepository;
+            Curricula = curriculumRepository;
+            ExamTypes = examTypeRepository;
+            #endregion
 
             #region School
             SchoolDetails = schoolDetailsRepository;
