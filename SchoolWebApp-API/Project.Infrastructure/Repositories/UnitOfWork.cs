@@ -16,6 +16,8 @@ namespace SchoolWebApp.Infrastructure.Repositories
         public IAcademicYearRepository AcademicYears { get; }
         public ICurriculumRepository Curricula { get; }
         public IExamTypeRepository ExamTypes { get; }
+        public IGradeRepository Grades { get; }
+        public ISubjectGroupRepository SubjectGroups { get; }
         #endregion
 
         #region School
@@ -48,6 +50,8 @@ namespace SchoolWebApp.Infrastructure.Repositories
                 IAcademicYearRepository academicYearRepository,
                 ICurriculumRepository curriculumRepository,
                 IExamTypeRepository examTypeRepository,
+                IGradeRepository gradeRepository,
+                ISubjectGroupRepository subjectGroupRepository,
 
                 //School
                 ISchoolDetailsRepository schoolDetailsRepository,
@@ -78,6 +82,8 @@ namespace SchoolWebApp.Infrastructure.Repositories
             AcademicYears = academicYearRepository;
             Curricula = curriculumRepository;
             ExamTypes = examTypeRepository;
+            Grades = gradeRepository;
+            SubjectGroups = subjectGroupRepository;
             #endregion
 
             #region School
