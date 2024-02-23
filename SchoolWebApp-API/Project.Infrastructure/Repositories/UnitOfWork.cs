@@ -4,6 +4,7 @@ using SchoolWebApp.Core.Interfaces.IRepositories.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories.Class;
 using SchoolWebApp.Core.Interfaces.IRepositories.School;
 using SchoolWebApp.Core.Interfaces.IRepositories.Settings;
+using SchoolWebApp.Core.Interfaces.IRepositories.Staff;
 using SchoolWebApp.Infrastructure.Repositories.School;
 
 namespace SchoolWebApp.Infrastructure.Repositories
@@ -25,6 +26,10 @@ namespace SchoolWebApp.Infrastructure.Repositories
         public IDepartmentsRepository Departments { get; }
         public ILearningModesRepository LearningModes { get; }
         public IEventRepository Events { get; }
+        #endregion
+
+        #region Staff
+        public IStaffDetailsRepository StaffDetails { get; }
         #endregion
 
         #region Class
@@ -59,6 +64,9 @@ namespace SchoolWebApp.Infrastructure.Repositories
                 ILearningModesRepository learningModesRepository,
                 IEventRepository eventRepository,
 
+                //Staff
+                IStaffDetailsRepository staffDetailsRepository,
+
                 //Class
                 ISessionRepository sessionRepository,
 
@@ -91,6 +99,10 @@ namespace SchoolWebApp.Infrastructure.Repositories
             Departments = departmentsRepository;
             LearningModes = learningModesRepository;
             Events = eventRepository;
+            #endregion
+
+            #region Staff
+            StaffDetails = staffDetailsRepository;
             #endregion
 
             #region Class

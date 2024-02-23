@@ -3,11 +3,13 @@ using SchoolWebApp.Core.Interfaces.IRepositories.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories.Class;
 using SchoolWebApp.Core.Interfaces.IRepositories.School;
 using SchoolWebApp.Core.Interfaces.IRepositories.Settings;
+using SchoolWebApp.Core.Interfaces.IRepositories.Staff;
 using SchoolWebApp.Infrastructure.Repositories;
 using SchoolWebApp.Infrastructure.Repositories.Academics;
 using SchoolWebApp.Infrastructure.Repositories.Class;
 using SchoolWebApp.Infrastructure.Repositories.School;
 using SchoolWebApp.Infrastructure.Repositories.Settings;
+using SchoolWebApp.Infrastructure.Repositories.Staff;
 
 namespace Project.API.Extensions
 {
@@ -34,7 +36,11 @@ namespace Project.API.Extensions
             services.AddTransient<IEventRepository, EventRepository>();
             #endregion
 
-            #region Class
+            #region Staff Repositories
+            services.AddTransient<IStaffDetailsRepository, StaffDetailsRepository>();
+            #endregion
+
+            #region Class Repositories
             services.AddTransient<ISessionRepository, SessionRepository>();
             #endregion
 

@@ -30,4 +30,8 @@
     <ProjectReference Include="..\Project.Infrastructure\SchoolWebApp.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\Student\" />
+  </ItemGroup>
+
 </Project>
