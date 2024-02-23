@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Academics.Grade;
-using SchoolWebApp.Core.DTOs.Student.Student;
+using SchoolWebApp.Core.DTOs.Students.Student;
 using SchoolWebApp.Core.DTOs.Students.Parent;
 using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories;
+using SchoolWebApp.Core.DTOs.Students.StudentParent;
 
 namespace SchoolWebApp.API.Controllers.Students
 {
@@ -79,7 +80,7 @@ namespace SchoolWebApp.API.Controllers.Students
         /// <returns></returns>
         [HttpGet("studentParents/{studentId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ParentDto>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentParentDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetParentStudents(int studentId)
@@ -87,9 +88,9 @@ namespace SchoolWebApp.API.Controllers.Students
             try
             {
                 if (studentId <= 0) return BadRequest(studentId);
-                var _item = await _unitOfWork.Students.GetStudentParents(studentId);
+                var _item = await _unitOfWork.StudentParent.GetParentsByStudentId(studentId);
                 if (_item == null) return NotFound();
-                var _itemDto = _mapper.Map<List<Student>>(_item);
+                var _itemDto = _mapper.Map<List<StudentParentDto>>(_item);
                 return Ok(_itemDto);
             }
             catch (Exception ex)

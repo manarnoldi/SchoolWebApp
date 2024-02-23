@@ -18,9 +18,5 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
             return students;
         }
 
-        public async Task<List<Parent>> GetStudentParents(int studentId)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

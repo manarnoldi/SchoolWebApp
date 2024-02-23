@@ -10,12 +10,5 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
         public ParentsRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
         }
-
-        public Task<List<Core.Entities.Students.Student>> GetParentStudents(int parentId)
-        {
-            //var students = await _dbContext.Student.Where(e => e.EmploymentTypeId == employmentTypeId && e.Status == 0).ToListAsync();
-            //return staff;
-            throw new NotImplementedException();
-        }
     }
 }

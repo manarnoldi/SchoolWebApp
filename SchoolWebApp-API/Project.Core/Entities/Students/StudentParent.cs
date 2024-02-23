@@ -11,5 +11,6 @@ namespace SchoolWebApp.Core.Entities.Students
         public Student Student { get; set; }
         public int ParentId { get; set; }
         public Parent Parent { get; set; }
+        public string OtherDetails { get; set; }
     }
 }

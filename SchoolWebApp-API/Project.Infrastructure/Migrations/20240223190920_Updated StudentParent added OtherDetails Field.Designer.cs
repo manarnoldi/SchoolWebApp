@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Infrastructure.Data;
 
@@ -10,9 +11,11 @@ using Project.Infrastructure.Data;
 namespace SchoolWebApp.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240223190920_Updated StudentParent added OtherDetails Field")]
+    partial class UpdatedStudentParentaddedOtherDetailsField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -684,9 +687,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "717d9b15-a428-440c-b26b-08d3bbb68b02",
-                            Created = new DateTime(2024, 2, 23, 22, 30, 48, 580, DateTimeKind.Local).AddTicks(2491),
+                            Created = new DateTime(2024, 2, 23, 22, 9, 18, 789, DateTimeKind.Local).AddTicks(9030),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2024, 2, 23, 22, 30, 48, 580, DateTimeKind.Local).AddTicks(2530),
+                            Modified = new DateTime(2024, 2, 23, 22, 9, 18, 789, DateTimeKind.Local).AddTicks(9059),
                             ModifiedBy = "admin",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
@@ -694,9 +697,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "95ed2407-3e58-4af2-88a4-1c4e96473f68",
-                            Created = new DateTime(2024, 2, 23, 22, 30, 48, 580, DateTimeKind.Local).AddTicks(2673),
+                            Created = new DateTime(2024, 2, 23, 22, 9, 18, 789, DateTimeKind.Local).AddTicks(9115),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2024, 2, 23, 22, 30, 48, 580, DateTimeKind.Local).AddTicks(2676),
+                            Modified = new DateTime(2024, 2, 23, 22, 9, 18, 789, DateTimeKind.Local).AddTicks(9117),
                             ModifiedBy = "admin",
                             Name = "HeadTeacher",
                             NormalizedName = "HEADTEACHER"
@@ -704,9 +707,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "48c50c3a-9958-453b-b649-4e21af131322",
-                            Created = new DateTime(2024, 2, 23, 22, 30, 48, 580, DateTimeKind.Local).AddTicks(2734),
+                            Created = new DateTime(2024, 2, 23, 22, 9, 18, 789, DateTimeKind.Local).AddTicks(9145),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2024, 2, 23, 22, 30, 48, 580, DateTimeKind.Local).AddTicks(2752),
+                            Modified = new DateTime(2024, 2, 23, 22, 9, 18, 789, DateTimeKind.Local).AddTicks(9155),
                             ModifiedBy = "admin",
                             Name = "Teacher",
                             NormalizedName = "TEACHER"
@@ -714,9 +717,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "448df289-142c-4959-a912-60733515e1b4",
-                            Created = new DateTime(2024, 2, 23, 22, 30, 48, 580, DateTimeKind.Local).AddTicks(2824),
+                            Created = new DateTime(2024, 2, 23, 22, 9, 18, 789, DateTimeKind.Local).AddTicks(9188),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2024, 2, 23, 22, 30, 48, 580, DateTimeKind.Local).AddTicks(2827),
+                            Modified = new DateTime(2024, 2, 23, 22, 9, 18, 789, DateTimeKind.Local).AddTicks(9189),
                             ModifiedBy = "admin",
                             Name = "Student",
                             NormalizedName = "STUDENT"
@@ -724,9 +727,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "269f0cf3-405e-4163-83f3-1b63ebebd62e",
-                            Created = new DateTime(2024, 2, 23, 22, 30, 48, 580, DateTimeKind.Local).AddTicks(2886),
+                            Created = new DateTime(2024, 2, 23, 22, 9, 18, 789, DateTimeKind.Local).AddTicks(9213),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2024, 2, 23, 22, 30, 48, 580, DateTimeKind.Local).AddTicks(2888),
+                            Modified = new DateTime(2024, 2, 23, 22, 9, 18, 789, DateTimeKind.Local).AddTicks(9214),
                             ModifiedBy = "admin",
                             Name = "Parent",
                             NormalizedName = "PARENT"
@@ -734,9 +737,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "cd12b44b-103b-48df-8887-a2bf42e0651e",
-                            Created = new DateTime(2024, 2, 23, 22, 30, 48, 580, DateTimeKind.Local).AddTicks(2952),
+                            Created = new DateTime(2024, 2, 23, 22, 9, 18, 789, DateTimeKind.Local).AddTicks(9241),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2024, 2, 23, 22, 30, 48, 580, DateTimeKind.Local).AddTicks(2955),
+                            Modified = new DateTime(2024, 2, 23, 22, 9, 18, 789, DateTimeKind.Local).AddTicks(9242),
                             ModifiedBy = "admin",
                             Name = "Accounts",
                             NormalizedName = "ACCOUNTS"
@@ -744,9 +747,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "97942bee-ef12-4425-8225-4f293d0f36dd",
-                            Created = new DateTime(2024, 2, 23, 22, 30, 48, 580, DateTimeKind.Local).AddTicks(3009),
+                            Created = new DateTime(2024, 2, 23, 22, 9, 18, 789, DateTimeKind.Local).AddTicks(9266),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2024, 2, 23, 22, 30, 48, 580, DateTimeKind.Local).AddTicks(3012),
+                            Modified = new DateTime(2024, 2, 23, 22, 9, 18, 789, DateTimeKind.Local).AddTicks(9267),
                             ModifiedBy = "admin",
                             Name = "Visitor",
                             NormalizedName = "VISITOR"
@@ -843,22 +846,22 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = "7e67d486-af3e-49f1-a109-a2b864b8e0ec",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "736139c4-4c0a-4b56-ad3a-3f80058de608",
-                            Created = new DateTime(2024, 2, 23, 22, 30, 48, 580, DateTimeKind.Local).AddTicks(3158),
+                            ConcurrencyStamp = "334e69f8-25a2-495c-8e77-74fce61a2f76",
+                            Created = new DateTime(2024, 2, 23, 22, 9, 18, 789, DateTimeKind.Local).AddTicks(9368),
                             CreatedBy = "admin",
                             Email = "admin@kodetek.co.ke",
                             EmailConfirmed = true,
                             FirstName = "SchoolSoft",
                             LastName = "Administrator",
                             LockoutEnabled = false,
-                            Modified = new DateTime(2024, 2, 23, 22, 30, 48, 580, DateTimeKind.Local).AddTicks(3161),
+                            Modified = new DateTime(2024, 2, 23, 22, 9, 18, 789, DateTimeKind.Local).AddTicks(9369),
                             ModifiedBy = "admin",
                             NormalizedEmail = "ADMIN@KODETEK.CO.KE",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEA9E0eXZIp9DcYywHQNyKs6UEnplktU7/i1mtfW3xB2Hga3clAYHK5pi396ZaJFRQQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMXea0b5cmuc2EHvQ0U5RRsJMUU9p5kJ/fhZyt2juR5hGzBWLNI1qmdqOaBbnot/Xg==",
                             PhoneNumber = "+254724920000",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "cc2a00ec-f186-4e2d-97e2-7cddb5fa73fc",
+                            SecurityStamp = "eeb22d51-3a30-4a06-9c8f-5ec0b10ed9f7",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -1456,20 +1459,20 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2024, 2, 23, 22, 30, 48, 685, DateTimeKind.Local).AddTicks(573),
+                            Created = new DateTime(2024, 2, 23, 22, 9, 18, 881, DateTimeKind.Local).AddTicks(8787),
                             CreatedBy = "admin",
                             Description = "A level for primary schools",
-                            Modified = new DateTime(2024, 2, 23, 22, 30, 48, 685, DateTimeKind.Local).AddTicks(599),
+                            Modified = new DateTime(2024, 2, 23, 22, 9, 18, 881, DateTimeKind.Local).AddTicks(8812),
                             ModifiedBy = "admin",
                             Name = "Primary"
                         },
                         new
                         {
                             Id = 2,
-                            Created = new DateTime(2024, 2, 23, 22, 30, 48, 685, DateTimeKind.Local).AddTicks(602),
+                            Created = new DateTime(2024, 2, 23, 22, 9, 18, 881, DateTimeKind.Local).AddTicks(8815),
                             CreatedBy = "admin",
                             Description = "A level for secondary schools",
-                            Modified = new DateTime(2024, 2, 23, 22, 30, 48, 685, DateTimeKind.Local).AddTicks(603),
+                            Modified = new DateTime(2024, 2, 23, 22, 9, 18, 881, DateTimeKind.Local).AddTicks(8816),
                             ModifiedBy = "admin",
                             Name = "Secondary"
                         });
@@ -2147,6 +2150,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Identity.AppRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -2155,6 +2159,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Identity.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -2163,6 +2168,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Identity.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -2171,11 +2177,13 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Identity.AppRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Identity.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -2184,6 +2192,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Identity.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -2192,21 +2201,25 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Academics.ExamType", "ExamType")
                         .WithMany("Exams")
                         .HasForeignKey("ExamTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Class.SchoolClass", "SchoolClass")
                         .WithMany("Exams")
                         .HasForeignKey("SchoolClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Class.Session", "Session")
                         .WithMany("Exams")
                         .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Academics.Subject", "Subject")
                         .WithMany("Exams")
                         .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ExamType");
@@ -2223,11 +2236,13 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Academics.Exam", "Exam")
                         .WithMany("ExamResults")
                         .HasForeignKey("ExamId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "Student")
                         .WithMany("ExamResults")
                         .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Exam");
@@ -2240,6 +2255,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Academics.Curriculum", "Curriculum")
                         .WithMany("Grades")
                         .HasForeignKey("CurriculumId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Curriculum");
@@ -2250,16 +2266,19 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Academics.Curriculum", "Curriculum")
                         .WithMany("Subjects")
                         .HasForeignKey("CurriculumId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Staff.StaffDetails", "StaffDetails")
                         .WithMany("Subjects")
                         .HasForeignKey("StaffDetailsId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Academics.SubjectGroup", "SubjectGroup")
                         .WithMany("Subjects")
                         .HasForeignKey("SubjectGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Curriculum");
@@ -2274,6 +2293,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.School.Department", "Department")
                         .WithMany("SubjectGroups")
                         .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Department");
@@ -2284,16 +2304,19 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Academics.AcademicYear", "AcademicYear")
                         .WithMany("SchoolClasses")
                         .HasForeignKey("AcademicYearId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Academics.Curriculum", "Curriculum")
                         .WithMany("SchoolClasses")
                         .HasForeignKey("CurriculumId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "Student")
                         .WithMany("SchoolClasses")
                         .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("AcademicYear");
@@ -2308,16 +2331,19 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Academics.AcademicYear", "AcademicYear")
                         .WithMany("Sessions")
                         .HasForeignKey("AcademicYearId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Academics.Curriculum", "Curriculum")
                         .WithMany("Sessions")
                         .HasForeignKey("CurriculumId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Settings.SessionType", "SessionType")
                         .WithMany("Sessions")
                         .HasForeignKey("SessionTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("AcademicYear");
@@ -2332,6 +2358,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Staff.StaffDetails", "StaffDetails")
                         .WithMany("Departments")
                         .HasForeignKey("StaffDetailsId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("StaffDetails");
@@ -2342,6 +2369,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Class.Session", "Session")
                         .WithMany("Events")
                         .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Session");
@@ -2352,6 +2380,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Settings.SchoolLevel", "SchoolLevel")
                         .WithMany("SchoolDetails")
                         .HasForeignKey("SchoolLevelId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("SchoolLevel");
@@ -2362,11 +2391,13 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Settings.OccurenceType", "OccurenceType")
                         .WithMany("Disciplines")
                         .HasForeignKey("OccurenceTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Settings.Outcome", "Outcome")
                         .WithMany("Disciplines")
                         .HasForeignKey("OutcomeId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("OccurenceType");
@@ -2379,16 +2410,19 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Settings.Gender", "Gender")
                         .WithMany("People")
                         .HasForeignKey("GenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Settings.Nationality", "Nationality")
                         .WithMany("People")
                         .HasForeignKey("NationalityId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Settings.Religion", "Religion")
                         .WithMany("People")
                         .HasForeignKey("ReligionId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Gender");
@@ -2403,6 +2437,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Staff.StaffDetails", "StaffDetails")
                         .WithMany("StaffAttendances")
                         .HasForeignKey("StaffDetailsId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("StaffDetails");
@@ -2413,11 +2448,13 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Class.SchoolClass", "SchoolClass")
                         .WithMany("StaffClasses")
                         .HasForeignKey("SchoolClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Staff.StaffDetails", "StaffDetails")
                         .WithMany("StaffClasses")
                         .HasForeignKey("StaffDetailsId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("SchoolClass");
@@ -2430,16 +2467,19 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Academics.AcademicYear", "AcademicYear")
                         .WithMany("StaffSubjects")
                         .HasForeignKey("AcademicYearId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Staff.StaffDetails", "StaffDetails")
                         .WithMany("StaffSubjects")
                         .HasForeignKey("StaffDetailsId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Academics.Subject", "Subject")
                         .WithMany("StaffSubjects")
                         .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("AcademicYear");
@@ -2454,11 +2494,13 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Settings.SchoolLevel", "SchoolLevel")
                         .WithMany("FormerSchools")
                         .HasForeignKey("SchoolLevelId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "Student")
                         .WithMany("FormerSchools")
                         .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("SchoolLevel");
@@ -2471,6 +2513,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Students.StudentClass", "StudentClass")
                         .WithMany("StudentAttendances")
                         .HasForeignKey("StudentClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("StudentClass");
@@ -2481,11 +2524,13 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Class.SchoolClass", "SchoolClass")
                         .WithMany("StudentClasses")
                         .HasForeignKey("SchoolClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "Student")
                         .WithMany("StudentClasses")
                         .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("SchoolClass");
@@ -2498,16 +2543,19 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Students.Parent", "Parent")
                         .WithMany("Students")
                         .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Settings.RelationShip", "RelationShip")
                         .WithMany("StudentParents")
                         .HasForeignKey("RelationShipId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "Student")
                         .WithMany("Parents")
                         .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Parent");
@@ -2522,16 +2570,19 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Academics.AcademicYear", "AcademicYear")
                         .WithMany("StudentSubjects")
                         .HasForeignKey("AcademicYearId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "Student")
                         .WithMany("StudentSubjects")
                         .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Academics.Subject", "Subject")
                         .WithMany("StudentSubjects")
                         .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("AcademicYear");
@@ -2546,6 +2597,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Staff.StaffDetails", "StaffDetails")
                         .WithMany("StaffDisciplines")
                         .HasForeignKey("StaffDetailsId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("StaffDetails");
@@ -2556,6 +2608,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "Student")
                         .WithMany("StudentDisciplines")
                         .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Student");
@@ -2566,16 +2619,19 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Settings.Designation", "Designation")
                         .WithMany("StaffDetails")
                         .HasForeignKey("DesignationId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Settings.EmploymentType", "EmploymentType")
                         .WithMany("StaffDetails")
                         .HasForeignKey("EmploymentTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SchoolWebApp.Core.Entities.Settings.StaffCategory", "StaffCategory")
                         .WithMany("StaffDetails")
                         .HasForeignKey("StaffCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Designation");
@@ -2590,6 +2646,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.Settings.Occupation", "Occupation")
                         .WithMany("Parents")
                         .HasForeignKey("OccupationId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Occupation");
@@ -2600,6 +2657,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasOne("SchoolWebApp.Core.Entities.School.LearningMode", "LearningMode")
                         .WithMany("Students")
                         .HasForeignKey("LearningModeId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("LearningMode");

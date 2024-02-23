@@ -35,6 +35,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
         #region Student
         public IParentsRepository Parents { get; }
         public IStudentsRepository Students { get; }
+        public IStudentParentRepository StudentParent { get; }
         #endregion
 
         #region Class
@@ -75,6 +76,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
                 //Student
                 IParentsRepository parentsRepository,
                 IStudentsRepository studentsRepository,
+                IStudentParentRepository studentParentRepository,
 
                 //Class
                 ISessionRepository sessionRepository,
@@ -117,6 +119,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
             #region Student
             Parents = parentsRepository;
             Students = studentsRepository;
+            StudentParent = studentParentRepository;
             #endregion
 
             #region Class

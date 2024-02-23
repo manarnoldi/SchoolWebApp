@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using SchoolWebApp.Core.DTOs.Student.Student;
+using SchoolWebApp.Core.DTOs.Students.Student;
 
 namespace SchoolWebApp.Core.Profiles.Students
 {

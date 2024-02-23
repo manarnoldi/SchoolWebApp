@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SchoolWebApp.Core.DTOs.Student.Student
+namespace SchoolWebApp.Core.DTOs.Students.Student
 {
     public class CreateStudentDto: PersonDto
     {

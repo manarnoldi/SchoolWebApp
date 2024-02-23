@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using SchoolWebApp.Core.Entities.Academics;
 using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Entities.Identity;
@@ -81,6 +82,12 @@ namespace Project.Infrastructure.Data
             base.OnModelCreating(builder);
             ApplicationDbContextConfigurations.Configure(builder);
             ApplicationDbContextConfigurations.SeedData(builder);
+        }
+
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+        {
+            configurationBuilder.Conventions.Remove(typeof(CascadeDeleteConvention));
+            base.ConfigureConventions(configurationBuilder);
         }
 
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,

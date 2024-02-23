@@ -1,4 +1,4 @@
-﻿namespace SchoolWebApp.Core.DTOs.Student.Student
+﻿namespace SchoolWebApp.Core.DTOs.Students.Student
 {
     public class StudentDto: CreateStudentDto
     {
