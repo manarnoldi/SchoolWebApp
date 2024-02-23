@@ -2,7 +2,7 @@
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Entities.Students;
 
-namespace SchoolWebApp.Core.Interfaces.IRepositories.Student
+namespace SchoolWebApp.Core.Interfaces.IRepositories.Students
 {
     public interface IParentsRepository : IBaseRepository<Parent>
     {

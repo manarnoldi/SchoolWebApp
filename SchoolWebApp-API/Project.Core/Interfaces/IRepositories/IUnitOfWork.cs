@@ -3,7 +3,7 @@ using SchoolWebApp.Core.Interfaces.IRepositories.Class;
 using SchoolWebApp.Core.Interfaces.IRepositories.School;
 using SchoolWebApp.Core.Interfaces.IRepositories.Settings;
 using SchoolWebApp.Core.Interfaces.IRepositories.Staff;
-using SchoolWebApp.Core.Interfaces.IRepositories.Student;
+using SchoolWebApp.Core.Interfaces.IRepositories.Students;
 
 namespace SchoolWebApp.Core.Interfaces.IRepositories
 {
@@ -22,6 +22,7 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
 
         #region Student
         IParentsRepository Parents { get; }
+        IStudentsRepository Students { get; }
         #endregion
 
         #region Academics

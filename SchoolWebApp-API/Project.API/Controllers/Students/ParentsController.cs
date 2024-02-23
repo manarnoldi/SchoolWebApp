@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SchoolWebApp.API.Controllers.Staff;
 using SchoolWebApp.Core.DTOs;
-using SchoolWebApp.Core.DTOs.Staff.StaffDetails;
-using SchoolWebApp.Core.DTOs.Student.Parent;
-using SchoolWebApp.Core.Entities.Staff;
+using SchoolWebApp.Core.DTOs.Student.Student;
+using SchoolWebApp.Core.DTOs.Students.Parent;
 using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
@@ -81,7 +78,7 @@ namespace SchoolWebApp.API.Controllers.Students
         /// <returns></returns>
         [HttpGet("parentStudents/{parentId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Student))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetParentStudents(int parentId)
@@ -96,7 +93,7 @@ namespace SchoolWebApp.API.Controllers.Students
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"An error occurred while retrieving theparent's students by parent id.");
+                _logger.LogError(ex, $"An error occurred while retrieving the parent's students by parent id.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SchoolWebApp.Core.DTOs.Student.Parent
+namespace SchoolWebApp.Core.DTOs.Students.Parent
 {
     public class CreateParentDto: PersonDto
     {

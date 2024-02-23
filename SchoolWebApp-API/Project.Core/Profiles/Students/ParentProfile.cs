@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using SchoolWebApp.Core.DTOs.Student.Parent;
+using SchoolWebApp.Core.DTOs.Students.Parent;
 using SchoolWebApp.Core.Entities.Students;
 
 namespace SchoolWebApp.Core.Profiles.Student

@@ -4,14 +4,14 @@ using SchoolWebApp.Core.Interfaces.IRepositories.Class;
 using SchoolWebApp.Core.Interfaces.IRepositories.School;
 using SchoolWebApp.Core.Interfaces.IRepositories.Settings;
 using SchoolWebApp.Core.Interfaces.IRepositories.Staff;
-using SchoolWebApp.Core.Interfaces.IRepositories.Student;
+using SchoolWebApp.Core.Interfaces.IRepositories.Students;
 using SchoolWebApp.Infrastructure.Repositories;
 using SchoolWebApp.Infrastructure.Repositories.Academics;
 using SchoolWebApp.Infrastructure.Repositories.Class;
 using SchoolWebApp.Infrastructure.Repositories.School;
 using SchoolWebApp.Infrastructure.Repositories.Settings;
 using SchoolWebApp.Infrastructure.Repositories.Staff;
-using SchoolWebApp.Infrastructure.Repositories.Student;
+using SchoolWebApp.Infrastructure.Repositories.Students;
 
 namespace Project.API.Extensions
 {
@@ -44,6 +44,7 @@ namespace Project.API.Extensions
 
             #region Students
             services.AddTransient<IParentsRepository,ParentsRepository>();
+            services.AddTransient<IStudentsRepository,StudentsRepository>();
             #endregion
 
             #region Class Repositories
