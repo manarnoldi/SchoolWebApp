@@ -3,6 +3,7 @@ using SchoolWebApp.Core.Interfaces.IRepositories.Class;
 using SchoolWebApp.Core.Interfaces.IRepositories.School;
 using SchoolWebApp.Core.Interfaces.IRepositories.Settings;
 using SchoolWebApp.Core.Interfaces.IRepositories.Staff;
+using SchoolWebApp.Core.Interfaces.IRepositories.Student;
 
 namespace SchoolWebApp.Core.Interfaces.IRepositories
 {
@@ -17,6 +18,10 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
 
         #region Staff
         IStaffDetailsRepository StaffDetails { get; }
+        #endregion
+
+        #region Student
+        IParentsRepository Parents { get; }
         #endregion
 
         #region Academics

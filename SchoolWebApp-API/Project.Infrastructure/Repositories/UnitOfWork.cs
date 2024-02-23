@@ -5,6 +5,7 @@ using SchoolWebApp.Core.Interfaces.IRepositories.Class;
 using SchoolWebApp.Core.Interfaces.IRepositories.School;
 using SchoolWebApp.Core.Interfaces.IRepositories.Settings;
 using SchoolWebApp.Core.Interfaces.IRepositories.Staff;
+using SchoolWebApp.Core.Interfaces.IRepositories.Student;
 using SchoolWebApp.Infrastructure.Repositories.School;
 
 namespace SchoolWebApp.Infrastructure.Repositories
@@ -30,6 +31,10 @@ namespace SchoolWebApp.Infrastructure.Repositories
 
         #region Staff
         public IStaffDetailsRepository StaffDetails { get; }
+        #endregion
+
+        #region Student
+        public IParentsRepository Parents { get; }
         #endregion
 
         #region Class
@@ -67,6 +72,9 @@ namespace SchoolWebApp.Infrastructure.Repositories
                 //Staff
                 IStaffDetailsRepository staffDetailsRepository,
 
+                //Student
+                IParentsRepository parentsRepository,
+
                 //Class
                 ISessionRepository sessionRepository,
 
@@ -103,6 +111,10 @@ namespace SchoolWebApp.Infrastructure.Repositories
 
             #region Staff
             StaffDetails = staffDetailsRepository;
+            #endregion
+
+            #region Student
+            Parents = parentsRepository;
             #endregion
 
             #region Class

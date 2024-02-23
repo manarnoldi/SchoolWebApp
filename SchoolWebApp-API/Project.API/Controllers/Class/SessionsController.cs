@@ -179,7 +179,7 @@ namespace SchoolWebApp.API.Controllers.Class
         /// <summary>
         /// A method for deleting the session record by Id.
         /// </summary>
-        /// <param name="id">The session Id to be retrieved</param>
+        /// <param name="id">The session Id to be deleted</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]

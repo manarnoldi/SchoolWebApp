@@ -240,7 +240,7 @@ namespace SchoolWebApp.API.Controllers.Staff
         /// <summary>
         /// A method for deleting the staff details record by Id.
         /// </summary>
-        /// <param name="id">The staff details Id to be retrieved</param>
+        /// <param name="id">The staff details Id to be deleted</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
