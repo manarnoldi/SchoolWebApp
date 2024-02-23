@@ -1,9 +1,11 @@
 ﻿using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.Interfaces.IRepositories.Academics;
+using SchoolWebApp.Core.Interfaces.IRepositories.Class;
 using SchoolWebApp.Core.Interfaces.IRepositories.School;
 using SchoolWebApp.Core.Interfaces.IRepositories.Settings;
 using SchoolWebApp.Infrastructure.Repositories;
 using SchoolWebApp.Infrastructure.Repositories.Academics;
+using SchoolWebApp.Infrastructure.Repositories.Class;
 using SchoolWebApp.Infrastructure.Repositories.School;
 using SchoolWebApp.Infrastructure.Repositories.Settings;
 
@@ -18,7 +20,7 @@ namespace Project.API.Extensions
             #endregion
 
             #region Academics Repositories
-            services.AddTransient<IAcademicYearRepository,AcademicYearRepository>();
+            services.AddTransient<IAcademicYearRepository, AcademicYearRepository>();
             services.AddTransient<ICurriculumRepository, CurriculumRepository>();
             services.AddTransient<IExamTypeRepository, ExamTypeRepository>();
             #endregion
@@ -27,6 +29,10 @@ namespace Project.API.Extensions
             services.AddTransient<ISchoolDetailsRepository, SchoolDetailsRepository>();
             services.AddTransient<IDepartmentsRepository, DepartmentsRepository>();
             services.AddTransient<ILearningModesRepository, LearningModesRepository>();
+            #endregion
+
+            #region Class
+            services.AddTransient<ISessionRepository, SessionRepository>();
             #endregion
 
             #region Settings Repositories

@@ -1,6 +1,7 @@
 ﻿using Project.Infrastructure.Data;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.Interfaces.IRepositories.Academics;
+using SchoolWebApp.Core.Interfaces.IRepositories.Class;
 using SchoolWebApp.Core.Interfaces.IRepositories.School;
 using SchoolWebApp.Core.Interfaces.IRepositories.Settings;
 using SchoolWebApp.Infrastructure.Repositories.School;
@@ -12,7 +13,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
         private readonly ApplicationDbContext _context;
 
         #region Academics
-        public IAcademicYearRepository AcademicYears {  get; }
+        public IAcademicYearRepository AcademicYears { get; }
         public ICurriculumRepository Curricula { get; }
         public IExamTypeRepository ExamTypes { get; }
         #endregion
@@ -21,6 +22,10 @@ namespace SchoolWebApp.Infrastructure.Repositories
         public ISchoolDetailsRepository SchoolDetails { get; }
         public IDepartmentsRepository Departments { get; }
         public ILearningModesRepository LearningModes { get; }
+        #endregion
+
+        #region Class
+        public ISessionRepository Sessions { get; }
         #endregion
 
         #region Settings
@@ -38,7 +43,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
         public IStaffCategoryRepository StaffCategories { get; }
         #endregion
         public UnitOfWork(ApplicationDbContext context,
-                //Acamedics
+                //Academics
                 IAcademicYearRepository academicYearRepository,
                 ICurriculumRepository curriculumRepository,
                 IExamTypeRepository examTypeRepository,
@@ -47,7 +52,10 @@ namespace SchoolWebApp.Infrastructure.Repositories
                 ISchoolDetailsRepository schoolDetailsRepository,
                 IDepartmentsRepository departmentsRepository,
                 ILearningModesRepository learningModesRepository,
-                
+
+                //Class
+                ISessionRepository sessionRepository,
+
                 //Settings
                 IDesignationsRepository designationsRepository,
                 IEmploymentTypesRepository employmentTypesRepository,
@@ -74,6 +82,10 @@ namespace SchoolWebApp.Infrastructure.Repositories
             SchoolDetails = schoolDetailsRepository;
             Departments = departmentsRepository;
             LearningModes = learningModesRepository;
+            #endregion
+
+            #region Class
+            Sessions = sessionRepository;
             #endregion
 
             #region Settings

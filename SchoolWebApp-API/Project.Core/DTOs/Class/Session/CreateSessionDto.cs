@@ -1,14 +1,9 @@
-﻿using SchoolWebApp.Core.Entities.Academics;
-using SchoolWebApp.Core.Entities.School;
-using SchoolWebApp.Core.Entities.Settings;
-using SchoolWebApp.Core.Entities.Shared;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace SchoolWebApp.Core.Entities.Class
+namespace SchoolWebApp.Core.DTOs.Class.Session
 {
-    public class Session : Base
+    public class CreateSessionDto
     {
-
         [Required(ErrorMessage = "Enter the session name.")]
         [Display(Name = "Session name")]
         [StringLength(255)]
@@ -29,13 +24,7 @@ namespace SchoolWebApp.Core.Entities.Class
         public bool Status { get; set; }
 
         public int AcademicYearId { get; set; }
-        public AcademicYear AcademicYear { get; set; }
         public int CurriculumId { get; set; }
-        public Curriculum Curriculum { get; set; }
         public int SessionTypeId { get; set; }
-        public SessionType SessionType { get; set; }
-
-        public List<Exam> Exams { get; set; }
-        public List<Event> Events { get; set; }
     }
 }
