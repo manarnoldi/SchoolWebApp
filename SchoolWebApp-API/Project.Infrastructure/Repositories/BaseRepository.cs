@@ -100,6 +100,10 @@ namespace Project.Infrastructure.Repositories
             _dbContext.Set<T>().Remove(model);
         }
 
+        
+
+
+
         //public async Task SaveChangeAsync()
         //{
         //    await _dbContext.SaveChangesAsync();

@@ -18,6 +18,8 @@ namespace SchoolWebApp.Core.Entities.Students
         public int OccupationId { get; set; }
         public Occupation Occupation { get; set; }
 
-        public List<StudentParent> Students { get; set; }
+        public List<Student> Students { get; set; }
+        public List<StudentParent> StudentParents { get; set; }
+
     }
 }

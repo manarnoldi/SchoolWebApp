@@ -79,7 +79,7 @@ namespace SchoolWebApp.API.Controllers.Students
         /// <returns></returns>
         [HttpGet("parentStudents/{parentId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentParentDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetParentStudents(int parentId)
@@ -87,9 +87,9 @@ namespace SchoolWebApp.API.Controllers.Students
             try
             {
                 if (parentId <= 0) return BadRequest(parentId);
-                var _item = await _unitOfWork.StudentParent.GetStudentsByParentId(parentId);
+                var _item = await _unitOfWork.Parents.GetStudentsByParentId(parentId);
                 if (_item == null) return NotFound();
-                var _itemDto = _mapper.Map<List<StudentParentDto>>(_item);
+                var _itemDto = _mapper.Map<List<StudentDto>>(_item);
                 return Ok(_itemDto);
             }
             catch (Exception ex)

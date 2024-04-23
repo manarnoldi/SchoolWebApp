@@ -6,170 +6,154 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SchoolWebApp.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdatedAcademicYearStatustoBoolfromEnum : Migration
+    public partial class UpdatedbaseforStudentParentModel : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<bool>(
-                name: "Status",
-                table: "AcademicYears",
-                type: "tinyint(1)",
-                nullable: false,
-                oldClrType: typeof(int),
-                oldType: "int");
-
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: "269f0cf3-405e-4163-83f3-1b63ebebd62e",
                 columns: new[] { "Created", "Modified" },
-                values: new object[] { new DateTime(2024, 2, 23, 10, 53, 23, 325, DateTimeKind.Local).AddTicks(9636), new DateTime(2024, 2, 23, 10, 53, 23, 325, DateTimeKind.Local).AddTicks(9637) });
+                values: new object[] { new DateTime(2024, 4, 4, 13, 4, 5, 187, DateTimeKind.Local).AddTicks(9935), new DateTime(2024, 4, 4, 13, 4, 5, 187, DateTimeKind.Local).AddTicks(9936) });
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: "448df289-142c-4959-a912-60733515e1b4",
                 columns: new[] { "Created", "Modified" },
-                values: new object[] { new DateTime(2024, 2, 23, 10, 53, 23, 325, DateTimeKind.Local).AddTicks(9571), new DateTime(2024, 2, 23, 10, 53, 23, 325, DateTimeKind.Local).AddTicks(9574) });
+                values: new object[] { new DateTime(2024, 4, 4, 13, 4, 5, 187, DateTimeKind.Local).AddTicks(9906), new DateTime(2024, 4, 4, 13, 4, 5, 187, DateTimeKind.Local).AddTicks(9907) });
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: "48c50c3a-9958-453b-b649-4e21af131322",
                 columns: new[] { "Created", "Modified" },
-                values: new object[] { new DateTime(2024, 2, 23, 10, 53, 23, 325, DateTimeKind.Local).AddTicks(9472), new DateTime(2024, 2, 23, 10, 53, 23, 325, DateTimeKind.Local).AddTicks(9499) });
+                values: new object[] { new DateTime(2024, 4, 4, 13, 4, 5, 187, DateTimeKind.Local).AddTicks(9851), new DateTime(2024, 4, 4, 13, 4, 5, 187, DateTimeKind.Local).AddTicks(9868) });
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: "717d9b15-a428-440c-b26b-08d3bbb68b02",
                 columns: new[] { "Created", "Modified" },
-                values: new object[] { new DateTime(2024, 2, 23, 10, 53, 23, 325, DateTimeKind.Local).AddTicks(9248), new DateTime(2024, 2, 23, 10, 53, 23, 325, DateTimeKind.Local).AddTicks(9289) });
+                values: new object[] { new DateTime(2024, 4, 4, 13, 4, 5, 187, DateTimeKind.Local).AddTicks(9723), new DateTime(2024, 4, 4, 13, 4, 5, 187, DateTimeKind.Local).AddTicks(9752) });
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: "95ed2407-3e58-4af2-88a4-1c4e96473f68",
                 columns: new[] { "Created", "Modified" },
-                values: new object[] { new DateTime(2024, 2, 23, 10, 53, 23, 325, DateTimeKind.Local).AddTicks(9408), new DateTime(2024, 2, 23, 10, 53, 23, 325, DateTimeKind.Local).AddTicks(9411) });
+                values: new object[] { new DateTime(2024, 4, 4, 13, 4, 5, 187, DateTimeKind.Local).AddTicks(9819), new DateTime(2024, 4, 4, 13, 4, 5, 187, DateTimeKind.Local).AddTicks(9820) });
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: "97942bee-ef12-4425-8225-4f293d0f36dd",
                 columns: new[] { "Created", "Modified" },
-                values: new object[] { new DateTime(2024, 2, 23, 10, 53, 23, 325, DateTimeKind.Local).AddTicks(9845), new DateTime(2024, 2, 23, 10, 53, 23, 325, DateTimeKind.Local).AddTicks(9848) });
+                values: new object[] { new DateTime(2024, 4, 4, 13, 4, 5, 187, DateTimeKind.Local).AddTicks(9994), new DateTime(2024, 4, 4, 13, 4, 5, 187, DateTimeKind.Local).AddTicks(9995) });
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: "cd12b44b-103b-48df-8887-a2bf42e0651e",
                 columns: new[] { "Created", "Modified" },
-                values: new object[] { new DateTime(2024, 2, 23, 10, 53, 23, 325, DateTimeKind.Local).AddTicks(9703), new DateTime(2024, 2, 23, 10, 53, 23, 325, DateTimeKind.Local).AddTicks(9705) });
+                values: new object[] { new DateTime(2024, 4, 4, 13, 4, 5, 187, DateTimeKind.Local).AddTicks(9963), new DateTime(2024, 4, 4, 13, 4, 5, 187, DateTimeKind.Local).AddTicks(9964) });
 
             migrationBuilder.UpdateData(
                 table: "AspNetUsers",
                 keyColumn: "Id",
                 keyValue: "7e67d486-af3e-49f1-a109-a2b864b8e0ec",
                 columns: new[] { "ConcurrencyStamp", "Created", "Modified", "PasswordHash", "SecurityStamp" },
-                values: new object[] { "bb69ae8e-94a4-4948-b954-f8b2d014ea44", new DateTime(2024, 2, 23, 10, 53, 23, 326, DateTimeKind.Local).AddTicks(9), new DateTime(2024, 2, 23, 10, 53, 23, 326, DateTimeKind.Local).AddTicks(11), "AQAAAAIAAYagAAAAEC14/7AZut7J7L+DQWRhCJklmcePD2fm6liciMu+LUT+3NEh+JABXPdplfsDar/Q5g==", "e88c4a0b-473c-488b-9b81-f4b868edb730" });
+                values: new object[] { "483db0dd-d9b2-4c27-84e7-7b69f5c60a32", new DateTime(2024, 4, 4, 13, 4, 5, 188, DateTimeKind.Local).AddTicks(121), new DateTime(2024, 4, 4, 13, 4, 5, 188, DateTimeKind.Local).AddTicks(122), "AQAAAAIAAYagAAAAEGtcxKiMn5cj/4VPXFxq0GJLXpDFyRT5jUdVKCqefQzEv1L+VljrOOQfoE7uITaP1g==", "b056fcce-e242-4777-9b6b-21344f2d6ee1" });
 
             migrationBuilder.UpdateData(
                 table: "SchoolLevels",
                 keyColumn: "Id",
                 keyValue: 1,
                 columns: new[] { "Created", "Modified" },
-                values: new object[] { new DateTime(2024, 2, 23, 10, 53, 23, 463, DateTimeKind.Local).AddTicks(9227), new DateTime(2024, 2, 23, 10, 53, 23, 463, DateTimeKind.Local).AddTicks(9251) });
+                values: new object[] { new DateTime(2024, 4, 4, 13, 4, 5, 272, DateTimeKind.Local).AddTicks(3150), new DateTime(2024, 4, 4, 13, 4, 5, 272, DateTimeKind.Local).AddTicks(3176) });
 
             migrationBuilder.UpdateData(
                 table: "SchoolLevels",
                 keyColumn: "Id",
                 keyValue: 2,
                 columns: new[] { "Created", "Modified" },
-                values: new object[] { new DateTime(2024, 2, 23, 10, 53, 23, 463, DateTimeKind.Local).AddTicks(9254), new DateTime(2024, 2, 23, 10, 53, 23, 463, DateTimeKind.Local).AddTicks(9255) });
+                values: new object[] { new DateTime(2024, 4, 4, 13, 4, 5, 272, DateTimeKind.Local).AddTicks(3178), new DateTime(2024, 4, 4, 13, 4, 5, 272, DateTimeKind.Local).AddTicks(3179) });
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<int>(
-                name: "Status",
-                table: "AcademicYears",
-                type: "int",
-                nullable: false,
-                oldClrType: typeof(bool),
-                oldType: "tinyint(1)");
-
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: "269f0cf3-405e-4163-83f3-1b63ebebd62e",
                 columns: new[] { "Created", "Modified" },
-                values: new object[] { new DateTime(2024, 2, 20, 16, 51, 23, 29, DateTimeKind.Local).AddTicks(1765), new DateTime(2024, 2, 20, 16, 51, 23, 29, DateTimeKind.Local).AddTicks(1766) });
+                values: new object[] { new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2694), new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2696) });
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: "448df289-142c-4959-a912-60733515e1b4",
                 columns: new[] { "Created", "Modified" },
-                values: new object[] { new DateTime(2024, 2, 20, 16, 51, 23, 29, DateTimeKind.Local).AddTicks(1739), new DateTime(2024, 2, 20, 16, 51, 23, 29, DateTimeKind.Local).AddTicks(1741) });
+                values: new object[] { new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2630), new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2645) });
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: "48c50c3a-9958-453b-b649-4e21af131322",
                 columns: new[] { "Created", "Modified" },
-                values: new object[] { new DateTime(2024, 2, 20, 16, 51, 23, 29, DateTimeKind.Local).AddTicks(1695), new DateTime(2024, 2, 20, 16, 51, 23, 29, DateTimeKind.Local).AddTicks(1706) });
+                values: new object[] { new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2596), new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2597) });
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: "717d9b15-a428-440c-b26b-08d3bbb68b02",
                 columns: new[] { "Created", "Modified" },
-                values: new object[] { new DateTime(2024, 2, 20, 16, 51, 23, 29, DateTimeKind.Local).AddTicks(1571), new DateTime(2024, 2, 20, 16, 51, 23, 29, DateTimeKind.Local).AddTicks(1594) });
+                values: new object[] { new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2354), new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2464) });
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: "95ed2407-3e58-4af2-88a4-1c4e96473f68",
                 columns: new[] { "Created", "Modified" },
-                values: new object[] { new DateTime(2024, 2, 20, 16, 51, 23, 29, DateTimeKind.Local).AddTicks(1656), new DateTime(2024, 2, 20, 16, 51, 23, 29, DateTimeKind.Local).AddTicks(1658) });
+                values: new object[] { new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2548), new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2549) });
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: "97942bee-ef12-4425-8225-4f293d0f36dd",
                 columns: new[] { "Created", "Modified" },
-                values: new object[] { new DateTime(2024, 2, 20, 16, 51, 23, 29, DateTimeKind.Local).AddTicks(1818), new DateTime(2024, 2, 20, 16, 51, 23, 29, DateTimeKind.Local).AddTicks(1819) });
+                values: new object[] { new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2785), new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2787) });
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: "cd12b44b-103b-48df-8887-a2bf42e0651e",
                 columns: new[] { "Created", "Modified" },
-                values: new object[] { new DateTime(2024, 2, 20, 16, 51, 23, 29, DateTimeKind.Local).AddTicks(1793), new DateTime(2024, 2, 20, 16, 51, 23, 29, DateTimeKind.Local).AddTicks(1794) });
+                values: new object[] { new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2751), new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2752) });
 
             migrationBuilder.UpdateData(
                 table: "AspNetUsers",
                 keyColumn: "Id",
                 keyValue: "7e67d486-af3e-49f1-a109-a2b864b8e0ec",
                 columns: new[] { "ConcurrencyStamp", "Created", "Modified", "PasswordHash", "SecurityStamp" },
-                values: new object[] { "dcc3c192-d4a4-44a9-9d05-21df04a61bee", new DateTime(2024, 2, 20, 16, 51, 23, 29, DateTimeKind.Local).AddTicks(1907), new DateTime(2024, 2, 20, 16, 51, 23, 29, DateTimeKind.Local).AddTicks(1909), "AQAAAAIAAYagAAAAEALrsRoH2PqDXpNdus1s1Qgn6DimRUhLfvN/SrRszv+Q+AXytMeovTUrjgpsbKgNKQ==", "9dacce61-a580-4d8b-acd3-c3edda0d4783" });
+                values: new object[] { "299c5483-0713-434f-a887-4250f2c72dc5", new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2895), new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2897), "AQAAAAIAAYagAAAAEDSD/T5BB+kaE0etksxMJrMkg43NE+JnM9HRqVqBPERirPAFdR5NTygwl6AGcUBo/w==", "11e2229c-53d6-49dc-95dc-ff098face453" });
 
             migrationBuilder.UpdateData(
                 table: "SchoolLevels",
                 keyColumn: "Id",
                 keyValue: 1,
                 columns: new[] { "Created", "Modified" },
-                values: new object[] { new DateTime(2024, 2, 20, 16, 51, 23, 131, DateTimeKind.Local).AddTicks(5939), new DateTime(2024, 2, 20, 16, 51, 23, 131, DateTimeKind.Local).AddTicks(5968) });
+                values: new object[] { new DateTime(2024, 3, 1, 10, 54, 47, 138, DateTimeKind.Local).AddTicks(1604), new DateTime(2024, 3, 1, 10, 54, 47, 138, DateTimeKind.Local).AddTicks(1643) });
 
             migrationBuilder.UpdateData(
                 table: "SchoolLevels",
                 keyColumn: "Id",
                 keyValue: 2,
                 columns: new[] { "Created", "Modified" },
-                values: new object[] { new DateTime(2024, 2, 20, 16, 51, 23, 131, DateTimeKind.Local).AddTicks(5972), new DateTime(2024, 2, 20, 16, 51, 23, 131, DateTimeKind.Local).AddTicks(5973) });
+                values: new object[] { new DateTime(2024, 3, 1, 10, 54, 47, 138, DateTimeKind.Local).AddTicks(1648), new DateTime(2024, 3, 1, 10, 54, 47, 138, DateTimeKind.Local).AddTicks(1649) });
         }
     }
 }

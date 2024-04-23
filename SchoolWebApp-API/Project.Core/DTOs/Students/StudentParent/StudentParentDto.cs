@@ -2,6 +2,5 @@
 {
     public class StudentParentDto: CreateStudentParentDto
     {
-        public int Id { get; set; }
     }
 }

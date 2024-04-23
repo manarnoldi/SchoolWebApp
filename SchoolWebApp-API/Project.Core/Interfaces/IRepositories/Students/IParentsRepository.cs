@@ -5,5 +5,6 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.Students
 {
     public interface IParentsRepository : IBaseRepository<Parent>
     {
+        Task<List<Student>> GetStudentsByParentId(int parentId);
     }
 }

@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
+using SchoolWebApp.Core.DTOs.Students.Parent;
 using SchoolWebApp.Core.DTOs.Students.StudentParent;
 using SchoolWebApp.Core.Entities.Students;
 
 namespace SchoolWebApp.Core.Profiles.Students
 {
-    public class StudentParentProfile: Profile
+    public class StudentParentProfile : Profile
     {
         public StudentParentProfile()
         {
@@ -12,6 +13,8 @@ namespace SchoolWebApp.Core.Profiles.Students
             CreateMap<StudentParentDto, StudentParent>();
             CreateMap<CreateStudentParentDto, StudentParent>();
             CreateMap<CreateStudentParentDto, StudentParentDto>();
+            CreateMap<Parent, StudentParentDetailsDto>();
+            CreateMap<StudentParentDetailsDto, Parent>();
         }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using SchoolWebApp.Core.Entities.Settings;
 using SchoolWebApp.Core.Entities.Shared;
+using System.ComponentModel.DataAnnotations;
 
 namespace SchoolWebApp.Core.Entities.Students
 {
-    public class StudentParent : Base
+    public class StudentParent: BaseManyToMany
     {
         public int RelationShipId { get; set; }
         public RelationShip RelationShip { get; set; }

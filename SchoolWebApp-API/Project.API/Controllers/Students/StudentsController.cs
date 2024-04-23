@@ -74,24 +74,24 @@ namespace SchoolWebApp.API.Controllers.Students
 
         // GET api/students/studentParents/5
         /// <summary>
-        /// A method for retrieving parents for student Id.
+        /// A method for retrieving parents for a student Id.
         /// </summary>
         /// <param name="id">The student Id whose records to be retrieved</param>
         /// <returns></returns>
         [HttpGet("studentParents/{studentId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentParentDto>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentParentDetailsDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetParentStudents(int studentId)
+        public async Task<IActionResult> GetParentsByStudentId(int studentId)
         {
             try
             {
                 if (studentId <= 0) return BadRequest(studentId);
-                var _item = await _unitOfWork.StudentParent.GetParentsByStudentId(studentId);
+                var _item = await _unitOfWork.Students.GetParentsByStudentId(studentId);
                 if (_item == null) return NotFound();
-                var _itemDto = _mapper.Map<List<StudentParentDto>>(_item);
-                return Ok(_itemDto);
+                //var _itemDto = _mapper.Map<List<StudentParentDetailsDto>>(_item);
+                return Ok(_item);
             }
             catch (Exception ex)
             {
@@ -266,5 +266,120 @@ namespace SchoolWebApp.API.Controllers.Students
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the student record - " + ex.Message);
             }
         }
+
+        // POST api/students/studentParent
+        /// <summary>
+        /// A method for creating a student-parent record.
+        /// </summary>
+        /// <param name="model">The student-parent record to be created</param>
+        /// <returns></returns>
+        [HttpPost("studentParent")]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentParentDto))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> AddStudentParent(CreateStudentParentDto model)
+        {
+            if (ModelState.IsValid)
+            {
+                if (!await _unitOfWork.Relationships.ItemExistsAsync(r => r.Id == model.RelationShipId))
+                    return BadRequest("An error occurred while adding the student-parent. The relationship does not exist in the database or has been deleted.");
+                if (!await _unitOfWork.Students.ItemExistsAsync(s => s.Id == model.StudentId))
+                    return BadRequest("An error occurred while adding the student-parent. The student does not exist in the database or has been deleted.");
+                if (!await _unitOfWork.Parents.ItemExistsAsync(s => s.Id == model.ParentId))
+                    return BadRequest("An error occurred while adding the student-parent. The parent does not exist in the database or has been deleted.");
+                if (await _unitOfWork.StudentParent.ItemExistsAsync(s => s.StudentId == model.StudentId && s.ParentId == model.ParentId
+                && s.RelationShipId == model.RelationShipId))
+                    return Conflict(new { message = $"The student-parent details submitted already exists" });
+                try
+                {
+                    var _item = _mapper.Map<StudentParent>(model);
+                    _unitOfWork.StudentParent.Create(_item);
+                    await _unitOfWork.SaveChangesAsync();
+                    var returnItem = _mapper.Map<StudentParentDto>(_item);
+                    return Ok(returnItem);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"An error occurred while adding the student-parent.");
+                    return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred while adding the student-parent - {ex.Message}");
+                }
+            }
+            return BadRequest(ModelState);
+        }
+
+        // PUT api/studentParent/5
+        /// <summary>
+        /// A method for updating a student-parent record.
+        /// </summary>
+        /// <param name="model">The student-parent record to be updated</param>
+        /// <returns></returns>
+        [HttpPut("studentParent")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> EditStudentParent(StudentParentDto model)
+        {
+            if (ModelState.IsValid)
+            {
+                if (!await _unitOfWork.Relationships.ItemExistsAsync(r => r.Id == model.RelationShipId))
+                    return BadRequest("An error occurred while adding the student-parent. The relationship does not exist in the database or has been deleted.");
+                if (!await _unitOfWork.Students.ItemExistsAsync(s => s.Id == model.StudentId))
+                    return BadRequest("An error occurred while adding the student-parent. The student does not exist in the database or has been deleted.");
+                if (!await _unitOfWork.Parents.ItemExistsAsync(s => s.Id == model.ParentId))
+                    return BadRequest("An error occurred while adding the student-parent. The parent does not exist in the database or has been deleted.");
+                var itemExist = await _unitOfWork.StudentParent.ItemExistsAsync(m => m.ParentId == model.ParentId && m.StudentId == model.StudentId);
+                if (!itemExist)
+                    return BadRequest($"The student-parent of student Id - '{model.StudentId}' and parent Id - '{model.ParentId}' does not exist hence cannot be updated.");
+                try
+                {
+                    var existingItem = await _unitOfWork.StudentParent.GetStudentParentByParentIdStudentId(model.ParentId, model.StudentId);
+                    //Manual mapping
+                    //existingItem.ParentId = model.ParentId;
+                    //existingItem.StudentId = model.StudentId;
+                    existingItem.RelationShipId = model.RelationShipId;
+                    existingItem.OtherDetails = model.OtherDetails;
+                    _unitOfWork.StudentParent.Update(existingItem);
+                    await _unitOfWork.SaveChangesAsync();
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"An error occurred while updating the student-parent.");
+                    return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred while updating the student-parent.");
+                }
+            }
+            return BadRequest(ModelState);
+        }
+
+        // DELETE api/students/studentParent/5/5
+        /// <summary>
+        /// A method for deleting the student-parent record by Id.
+        /// </summary>
+        /// <param name="id">The student-parent Id to be deleted</param>
+        /// <returns></returns>
+        [HttpDelete("studentParent/{parentId}/{studentId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteStudentParent(int parentId, int studentId)
+        {
+            try
+            {
+                var itemExists = await _unitOfWork.StudentParent.GetStudentParentByParentIdStudentId(parentId, studentId);
+                if (itemExists == null)
+                    return BadRequest($"The student-parent of parent Id - '{parentId}' and student Id '{studentId}' does not exist hence cannot be deleted.");
+                var entity = await _unitOfWork.StudentParent.GetStudentParentByParentIdStudentId(parentId, studentId);
+                _unitOfWork.StudentParent.Delete(entity);
+                await _unitOfWork.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while deleting the student-parent.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the student-parent - " + ex.Message);
+            }
+        }
+
+
     }
 }

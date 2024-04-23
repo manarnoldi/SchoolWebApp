@@ -1,23 +1,30 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Azure;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using SchoolWebApp.Core.Constants;
 using SchoolWebApp.Core.Entities.Identity;
 using SchoolWebApp.Core.Entities.Settings;
+using SchoolWebApp.Core.Entities.Students;
 
 namespace Project.Infrastructure.Data
 {
     public class ApplicationDbContextConfigurations
     {
         public ApplicationDbContextConfigurations()
-        {
-        }
+        { }
         public static void Configure(ModelBuilder modelBuilder)
         {
             //modelBuilder.Entity<AppUser>().ToTable("Users");
             //modelBuilder.Entity<AppRole>().ToTable("Roles");
-            modelBuilder.Entity<IdentityUserRole<int>>().HasKey(k => new { k.UserId, k.RoleId });
+            //modelBuilder.Entity<IdentityUserRole<int>>().HasKey(k => new { k.UserId, k.RoleId });
 
             // Add any additional entity configurations here
+
+            modelBuilder.Entity<Student>()
+                .HasMany(e => e.Parents)
+                .WithMany(e => e.Students)
+                .UsingEntity<StudentParent>();
         }
 
         public static void SeedData(ModelBuilder modelBuilder)

@@ -31,7 +31,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     EndDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Description = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Status = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -232,19 +232,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Genders", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "IdentityUserRole<int>",
-                columns: table => new
-                {
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_IdentityUserRole<int>", x => new { x.UserId, x.RoleId });
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -498,8 +485,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -523,8 +509,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_AspNetUserClaims_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -548,8 +533,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_AspNetUserLogins_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -569,14 +553,12 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -600,8 +582,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -637,8 +618,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_Grades_Curricula_CurriculumId",
                         column: x => x.CurriculumId,
                         principalTable: "Curricula",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -681,8 +661,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_SchoolDetails_SchoolLevels_SchoolLevelId",
                         column: x => x.SchoolLevelId,
                         principalTable: "SchoolLevels",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -698,7 +677,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     StartDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     AcademicYearId = table.Column<int>(type: "int", nullable: false),
                     CurriculumId = table.Column<int>(type: "int", nullable: false),
                     SessionTypeId = table.Column<int>(type: "int", nullable: false),
@@ -716,20 +695,17 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_Sessions_AcademicYears_AcademicYearId",
                         column: x => x.AcademicYearId,
                         principalTable: "AcademicYears",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Sessions_Curricula_CurriculumId",
                         column: x => x.CurriculumId,
                         principalTable: "Curricula",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Sessions_SessionTypes_SessionTypeId",
                         column: x => x.SessionTypeId,
                         principalTable: "SessionTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -784,50 +760,42 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_Person_Designations_DesignationId",
                         column: x => x.DesignationId,
                         principalTable: "Designations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Person_EmploymentTypes_EmploymentTypeId",
                         column: x => x.EmploymentTypeId,
                         principalTable: "EmploymentTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Person_Genders_GenderId",
                         column: x => x.GenderId,
                         principalTable: "Genders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Person_LearningModes_LearningModeId",
                         column: x => x.LearningModeId,
                         principalTable: "LearningModes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Person_Nationalities_NationalityId",
                         column: x => x.NationalityId,
                         principalTable: "Nationalities",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Person_Occupations_OccupationId",
                         column: x => x.OccupationId,
                         principalTable: "Occupations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Person_Religions_ReligionId",
                         column: x => x.ReligionId,
                         principalTable: "Religions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Person_StaffCategories_StaffCategoryId",
                         column: x => x.StaffCategoryId,
                         principalTable: "StaffCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -846,7 +814,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     EventYear = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Status = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     SessionId = table.Column<int>(type: "int", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
@@ -862,8 +830,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_Events_Sessions_SessionId",
                         column: x => x.SessionId,
                         principalTable: "Sessions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -876,6 +843,8 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     Name = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Code = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Description = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     StaffDetailsId = table.Column<int>(type: "int", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -892,8 +861,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_Departments_Person_StaffDetailsId",
                         column: x => x.StaffDetailsId,
                         principalTable: "Person",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -930,26 +898,22 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_Discipline_OccurenceTypes_OccurenceTypeId",
                         column: x => x.OccurenceTypeId,
                         principalTable: "OccurenceTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Discipline_Outcomes_OutcomeId",
                         column: x => x.OutcomeId,
                         principalTable: "Outcomes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Discipline_Person_StaffDetailsId",
                         column: x => x.StaffDetailsId,
                         principalTable: "Person",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Discipline_Person_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Person",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -983,14 +947,12 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_FormerSchools_Person_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Person",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_FormerSchools_SchoolLevels_SchoolLevelId",
                         column: x => x.SchoolLevelId,
                         principalTable: "SchoolLevels",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -1021,20 +983,17 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_SchoolClasses_AcademicYears_AcademicYearId",
                         column: x => x.AcademicYearId,
                         principalTable: "AcademicYears",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_SchoolClasses_Curricula_CurriculumId",
                         column: x => x.CurriculumId,
                         principalTable: "Curricula",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_SchoolClasses_Person_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Person",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -1063,8 +1022,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_StaffAttendances_Person_StaffDetailsId",
                         column: x => x.StaffDetailsId,
                         principalTable: "Person",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -1072,11 +1030,11 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 name: "StudentParents",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    RelationShipId = table.Column<int>(type: "int", nullable: false),
                     StudentId = table.Column<int>(type: "int", nullable: false),
                     ParentId = table.Column<int>(type: "int", nullable: false),
+                    RelationShipId = table.Column<int>(type: "int", nullable: false),
+                    OtherDetails = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Created = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -1086,25 +1044,22 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StudentParents", x => x.Id);
+                    table.PrimaryKey("PK_StudentParents", x => new { x.ParentId, x.StudentId });
                     table.ForeignKey(
                         name: "FK_StudentParents_Person_ParentId",
                         column: x => x.ParentId,
                         principalTable: "Person",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_StudentParents_Person_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Person",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_StudentParents_RelationShips_RelationShipId",
                         column: x => x.RelationShipId,
                         principalTable: "RelationShips",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -1131,8 +1086,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_SubjectGroups_Departments_DepartmentId",
                         column: x => x.DepartmentId,
                         principalTable: "Departments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -1160,14 +1114,12 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_StaffClasses_Person_StaffDetailsId",
                         column: x => x.StaffDetailsId,
                         principalTable: "Person",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_StaffClasses_SchoolClasses_SchoolClassId",
                         column: x => x.SchoolClassId,
                         principalTable: "SchoolClasses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -1193,14 +1145,12 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_StudentClasses_Person_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Person",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_StudentClasses_SchoolClasses_SchoolClassId",
                         column: x => x.SchoolClassId,
                         principalTable: "SchoolClasses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -1233,20 +1183,17 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_Subjects_Curricula_CurriculumId",
                         column: x => x.CurriculumId,
                         principalTable: "Curricula",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Subjects_Person_StaffDetailsId",
                         column: x => x.StaffDetailsId,
                         principalTable: "Person",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Subjects_SubjectGroups_SubjectGroupId",
                         column: x => x.SubjectGroupId,
                         principalTable: "SubjectGroups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -1275,8 +1222,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_StudentAttendances_StudentClasses_StudentClassId",
                         column: x => x.StudentClassId,
                         principalTable: "StudentClasses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -1307,26 +1253,22 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_Exams_ExamTypes_ExamTypeId",
                         column: x => x.ExamTypeId,
                         principalTable: "ExamTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Exams_SchoolClasses_SchoolClassId",
                         column: x => x.SchoolClassId,
                         principalTable: "SchoolClasses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Exams_Sessions_SessionId",
                         column: x => x.SessionId,
                         principalTable: "Sessions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Exams_Subjects_SubjectId",
                         column: x => x.SubjectId,
                         principalTable: "Subjects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -1353,20 +1295,17 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_StaffSubjects_AcademicYears_AcademicYearId",
                         column: x => x.AcademicYearId,
                         principalTable: "AcademicYears",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_StaffSubjects_Person_StaffDetailsId",
                         column: x => x.StaffDetailsId,
                         principalTable: "Person",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_StaffSubjects_Subjects_SubjectId",
                         column: x => x.SubjectId,
                         principalTable: "Subjects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -1393,20 +1332,17 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_StudentSubjects_AcademicYears_AcademicYearId",
                         column: x => x.AcademicYearId,
                         principalTable: "AcademicYears",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_StudentSubjects_Person_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Person",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_StudentSubjects_Subjects_SubjectId",
                         column: x => x.SubjectId,
                         principalTable: "Subjects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -1433,14 +1369,12 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         name: "FK_ExamResults_Exams_ExamId",
                         column: x => x.ExamId,
                         principalTable: "Exams",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ExamResults_Person_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Person",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -1449,27 +1383,27 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Created", "CreatedBy", "Modified", "ModifiedBy", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "269f0cf3-405e-4163-83f3-1b63ebebd62e", null, new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9324), "admin", new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9325), "admin", "Parent", "PARENT" },
-                    { "448df289-142c-4959-a912-60733515e1b4", null, new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9266), "admin", new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9285), "admin", "Student", "STUDENT" },
-                    { "48c50c3a-9958-453b-b649-4e21af131322", null, new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9237), "admin", new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9238), "admin", "Teacher", "TEACHER" },
-                    { "717d9b15-a428-440c-b26b-08d3bbb68b02", null, new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9120), "admin", new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9142), "admin", "Administrator", "ADMINISTRATOR" },
-                    { "95ed2407-3e58-4af2-88a4-1c4e96473f68", null, new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9203), "admin", new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9205), "admin", "HeadTeacher", "HEADTEACHER" },
-                    { "97942bee-ef12-4425-8225-4f293d0f36dd", null, new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9386), "admin", new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9387), "admin", "Visitor", "VISITOR" },
-                    { "cd12b44b-103b-48df-8887-a2bf42e0651e", null, new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9356), "admin", new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9357), "admin", "Accounts", "ACCOUNTS" }
+                    { "269f0cf3-405e-4163-83f3-1b63ebebd62e", null, new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2694), "admin", new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2696), "admin", "Parent", "PARENT" },
+                    { "448df289-142c-4959-a912-60733515e1b4", null, new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2630), "admin", new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2645), "admin", "Student", "STUDENT" },
+                    { "48c50c3a-9958-453b-b649-4e21af131322", null, new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2596), "admin", new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2597), "admin", "Teacher", "TEACHER" },
+                    { "717d9b15-a428-440c-b26b-08d3bbb68b02", null, new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2354), "admin", new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2464), "admin", "Administrator", "ADMINISTRATOR" },
+                    { "95ed2407-3e58-4af2-88a4-1c4e96473f68", null, new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2548), "admin", new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2549), "admin", "HeadTeacher", "HEADTEACHER" },
+                    { "97942bee-ef12-4425-8225-4f293d0f36dd", null, new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2785), "admin", new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2787), "admin", "Visitor", "VISITOR" },
+                    { "cd12b44b-103b-48df-8887-a2bf42e0651e", null, new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2751), "admin", new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2752), "admin", "Accounts", "ACCOUNTS" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Created", "CreatedBy", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "Modified", "ModifiedBy", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "7e67d486-af3e-49f1-a109-a2b864b8e0ec", 0, "10b72d51-fd81-4d21-98b8-e1ad28942ce2", new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9485), "admin", "admin@kodetek.co.ke", true, "SchoolSoft", "Administrator", false, null, new DateTime(2024, 2, 16, 8, 47, 14, 235, DateTimeKind.Local).AddTicks(9487), "admin", "ADMIN@KODETEK.CO.KE", "ADMIN", "AQAAAAIAAYagAAAAEHco3a/cPZXNLang8dliIgLaojlqLoMtzAJZbkpaMYw9E8i/aQjF1VU2GCd8X0qYSg==", "+254724920000", true, "676bd051-face-4ace-bf58-65ba588e92e9", false, "admin" });
+                values: new object[] { "7e67d486-af3e-49f1-a109-a2b864b8e0ec", 0, "299c5483-0713-434f-a887-4250f2c72dc5", new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2895), "admin", "admin@kodetek.co.ke", true, "SchoolSoft", "Administrator", false, null, new DateTime(2024, 3, 1, 10, 54, 46, 975, DateTimeKind.Local).AddTicks(2897), "admin", "ADMIN@KODETEK.CO.KE", "ADMIN", "AQAAAAIAAYagAAAAEDSD/T5BB+kaE0etksxMJrMkg43NE+JnM9HRqVqBPERirPAFdR5NTygwl6AGcUBo/w==", "+254724920000", true, "11e2229c-53d6-49dc-95dc-ff098face453", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "SchoolLevels",
                 columns: new[] { "Id", "Created", "CreatedBy", "Description", "Modified", "ModifiedBy", "Name" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 2, 16, 8, 47, 14, 318, DateTimeKind.Local).AddTicks(3090), "admin", "A level for primary schools", new DateTime(2024, 2, 16, 8, 47, 14, 318, DateTimeKind.Local).AddTicks(3110), "admin", "Primary" },
-                    { 2, new DateTime(2024, 2, 16, 8, 47, 14, 318, DateTimeKind.Local).AddTicks(3112), "admin", "A level for secondary schools", new DateTime(2024, 2, 16, 8, 47, 14, 318, DateTimeKind.Local).AddTicks(3113), "admin", "Secondary" }
+                    { 1, new DateTime(2024, 3, 1, 10, 54, 47, 138, DateTimeKind.Local).AddTicks(1604), "admin", "A level for primary schools", new DateTime(2024, 3, 1, 10, 54, 47, 138, DateTimeKind.Local).AddTicks(1643), "admin", "Primary" },
+                    { 2, new DateTime(2024, 3, 1, 10, 54, 47, 138, DateTimeKind.Local).AddTicks(1648), "admin", "A level for secondary schools", new DateTime(2024, 3, 1, 10, 54, 47, 138, DateTimeKind.Local).AddTicks(1649), "admin", "Secondary" }
                 });
 
             migrationBuilder.InsertData(
@@ -1710,11 +1644,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StudentParents_ParentId",
-                table: "StudentParents",
-                column: "ParentId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_StudentParents_RelationShipId",
                 table: "StudentParents",
                 column: "RelationShipId");
@@ -1792,9 +1721,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Grades");
-
-            migrationBuilder.DropTable(
-                name: "IdentityUserRole<int>");
 
             migrationBuilder.DropTable(
                 name: "SchoolDetails");

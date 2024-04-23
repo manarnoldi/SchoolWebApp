@@ -7,6 +7,7 @@ using SchoolWebApp.Core.Interfaces.IRepositories.Students;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,16 +19,10 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
         {
         }
 
-        public async Task<List<StudentParent>> GetParentsByStudentId(int studentId)
+        public async Task<StudentParent> GetStudentParentByParentIdStudentId(int parentId, int studentId)
         {
-            var parents = await _dbContext.StudentParents.Where(e => e.StudentId == studentId).Include(P => P.Parent).ToListAsync();
-            return parents;
-        }
-
-        public async Task<List<StudentParent>> GetStudentsByParentId(int parentId)
-        {
-            var students = await _dbContext.StudentParents.Where(e => e.ParentId == parentId).Include(P => P.Student).ToListAsync();
-            return students;
+            var studentParent = await _dbContext.StudentParents.Where(s => s.ParentId == parentId && s.StudentId == studentId).FirstOrDefaultAsync();
+            return studentParent;
         }
     }
 }

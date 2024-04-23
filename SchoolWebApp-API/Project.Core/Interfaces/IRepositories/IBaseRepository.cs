@@ -6,7 +6,7 @@ namespace Project.Core.Interfaces.IRepositories
     //Unit of Work Pattern
     public interface IBaseRepository<T> where T : class
     {
-        Task<IEnumerable<T>> GetAll();
+        Task<IEnumerable<T>> GetAll();        
         Task<PaginatedDto<T>> GetPaginatedData(int pageNumber, int pageSize);
         Task<T> GetById<Tid>(Tid id);
         Task<bool> ItemExistsAsync(Expression<Func<T, bool>> expression);
