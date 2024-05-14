@@ -1,4 +1,4 @@
-﻿using SchoolWebApp.Core.Entities.Settings;
+﻿using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Entities.Shared;
 using System.ComponentModel.DataAnnotations;
 
@@ -26,7 +26,7 @@ namespace SchoolWebApp.Core.Entities.Students
 
         public int StudentId { get; set; }
         public Student Student { get; set; }
-        public int SchoolLevelId { get; set; }
-        public SchoolLevel SchoolLevel { get; set; }
+        public int EducationLevelId { get; set; }
+        public EducationLevel EducationLevel { get; set; }
     }
 }

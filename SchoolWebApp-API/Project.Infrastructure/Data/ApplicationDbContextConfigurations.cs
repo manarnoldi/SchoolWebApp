@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using SchoolWebApp.Core.Constants;
 using SchoolWebApp.Core.Entities.Identity;
+using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Entities.Settings;
 using SchoolWebApp.Core.Entities.Students;
 
@@ -130,30 +131,30 @@ namespace Project.Infrastructure.Data
             //modelBuilder.Entity<IdentityUserRole<string>>().HasKey(r => new { r.RoleId, r.UserId });
             modelBuilder.Entity<IdentityUserRole<string>>().HasData(userRole);
 
-            //Seed school levels
-            SchoolLevel schoolLevel1 = new SchoolLevel()
-            {
-                Id = 1,
-                Name = "Primary",
-                Description = "A level for primary schools",
-                Created = DateTime.Now,
-                CreatedBy = "admin",
-                Modified = DateTime.Now,
-                ModifiedBy = "admin"
-            };
-            SchoolLevel schoolLevel2 = new SchoolLevel()
-            {
-                Id = 2,
-                Name = "Secondary",
-                Description = "A level for secondary schools",
-                Created = DateTime.Now,
-                CreatedBy = "admin",
-                Modified = DateTime.Now,
-                ModifiedBy = "admin"
-            };
+            ////Seed school levels
+            //EducationLevel schoolLevel1 = new EducationLevel()
+            //{
+            //    Id = 1,
+            //    Name = "Primary",
+            //    Description = "A level for primary schools",
+            //    Created = DateTime.Now,
+            //    CreatedBy = "admin",
+            //    Modified = DateTime.Now,
+            //    ModifiedBy = "admin"
+            //};
+            //EducationLevel schoolLevel2 = new EducationLevel()
+            //{
+            //    Id = 2,
+            //    Name = "Secondary",
+            //    Description = "A level for secondary schools",
+            //    Created = DateTime.Now,
+            //    CreatedBy = "admin",
+            //    Modified = DateTime.Now,
+            //    ModifiedBy = "admin"
+            //};
 
-            modelBuilder.Entity<SchoolLevel>().HasData(schoolLevel1);
-            modelBuilder.Entity<SchoolLevel>().HasData(schoolLevel2);
+            //modelBuilder.Entity<EducationLevel>().HasData(schoolLevel1);
+            //modelBuilder.Entity<EducationLevel>().HasData(schoolLevel2);
 
         }
 

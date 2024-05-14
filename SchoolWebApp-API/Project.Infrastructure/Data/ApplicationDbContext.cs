@@ -13,7 +13,7 @@ using SchoolWebApp.Core.Entities.Students;
 
 namespace Project.Infrastructure.Data
 {
-    public class ApplicationDbContext :  IdentityDbContext<AppUser, AppRole, string>
+    public class ApplicationDbContext : IdentityDbContext<AppUser, AppRole, string>
     {
         //private readonly IHttpContextAccessor _httpContextAccessor;
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options/*, IHttpContextAccessor httpContextAccessor*/) : base(options)
@@ -33,6 +33,7 @@ namespace Project.Infrastructure.Data
         #endregion
 
         #region Class
+        public DbSet<LearningLevel> LearningLevels { get; set; }
         public DbSet<SchoolClass> SchoolClasses { get; set; }
         public DbSet<Session> Sessions { get; set; }
         #endregion
@@ -42,6 +43,10 @@ namespace Project.Infrastructure.Data
         public DbSet<Event> Events { get; set; }
         public DbSet<LearningMode> LearningModes { get; set; }
         public DbSet<SchoolDetails> SchoolDetails { get; set; }
+        public DbSet<SchoolStream> SchoolStreams { get; set; }
+        public DbSet<EducationLevelType> EducationLevelTypes { get; set; }
+        public DbSet<EducationLevel> EducationLevels { get; set; }
+
         #endregion
 
         #region Settings
@@ -54,14 +59,12 @@ namespace Project.Infrastructure.Data
         public DbSet<Outcome> Outcomes { get; set; }
         public DbSet<RelationShip> RelationShips { get; set; }
         public DbSet<Religion> Religions { get; set; }
-        public DbSet<SchoolLevel> SchoolLevels { get; set; }
         public DbSet<SessionType> SessionTypes { get; set; }
         public DbSet<StaffCategory> StaffCategories { get; set; }
         #endregion
 
         #region Staff
         public DbSet<StaffAttendance> StaffAttendances { get; set; }
-        public DbSet<StaffClass> StaffClasses { get; set; }
         public DbSet<StaffDetails> StaffDetails { get; set; }
         public DbSet<StaffDiscipline> StaffDisciplines { get; set; }
         public DbSet<StaffSubject> StaffSubjects { get; set; }
@@ -96,7 +99,7 @@ namespace Project.Infrastructure.Data
             //var currentUserId = _httpContextAccessor.HttpContext.User.FindFirst("username").Value;
             var currentUserId = "admin";
             var AddedEntities = ChangeTracker.Entries()
-                    .Where(E => E.State == EntityState.Added && (E.Entity is Base || E.Entity is BaseManyToMany ))
+                    .Where(E => E.State == EntityState.Added && (E.Entity is Base || E.Entity is BaseManyToMany))
                     .ToList();
 
             AddedEntities.ForEach(E =>

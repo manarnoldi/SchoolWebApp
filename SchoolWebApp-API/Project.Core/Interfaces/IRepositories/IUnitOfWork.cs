@@ -32,6 +32,7 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
         IExamTypeRepository ExamTypes { get; }
         IGradeRepository Grades { get; }
         ISubjectGroupRepository SubjectGroups { get; }
+        ISubjectRepository Subjects { get; }
         #endregion
 
         #region Class
@@ -48,7 +49,6 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
         IOutcomesRepository Outcomes { get; }
         IRelationshipsRepository Relationships { get; }
         IReligionsRepository Religions { get; }
-        ISchoolLevelsRepository SchoolLevels { get; }
         ISessionTypesRepository SessionTypes { get; }
         IStaffCategoryRepository StaffCategories { get; }
         #endregion

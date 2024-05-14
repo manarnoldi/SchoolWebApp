@@ -1,11 +1,8 @@
-﻿using SchoolWebApp.Core.Entities.Shared;
-using SchoolWebApp.Core.Entities.Staff;
-using SchoolWebApp.Core.Entities.Students;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace SchoolWebApp.Core.Entities.Academics
+namespace SchoolWebApp.Core.DTOs.Academics.Subject
 {
-    public class Subject : Base
+    public class CreateSubjectDto
     {
         [Required(ErrorMessage = "Enter the subject code")]
         [Display(Name = "Subject code")]
@@ -23,13 +20,7 @@ namespace SchoolWebApp.Core.Entities.Academics
         public string Abbr { get; set; }
 
         public int SubjectGroupId { get; set; }
-        public SubjectGroup SubjectGroup { get; set; }
-
+        public int CurriculumId { get; set; }
         public int StaffDetailsId { get; set; }
-        public StaffDetails StaffDetails { get; set; }
-
-        public List<StudentSubject> StudentSubjects { get; set; }
-        public List<StaffSubject> StaffSubjects { get; set; }
-        public List<Exam> Exams { get; set; }
     }
 }

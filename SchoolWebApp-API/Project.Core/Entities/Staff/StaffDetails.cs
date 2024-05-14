@@ -1,4 +1,5 @@
 ﻿using SchoolWebApp.Core.Entities.Academics;
+using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Entities.Settings;
 using SchoolWebApp.Core.Entities.Shared;
@@ -20,7 +21,7 @@ namespace SchoolWebApp.Core.Entities.Staff
         public EmploymentType EmploymentType { get; set; }
 
         public List<StaffSubject> StaffSubjects { get; set; }
-        public List<StaffClass> StaffClasses { get; set; }
+        public List<SchoolClass> SchoolClasses { get; set; }
         public List<StaffAttendance> StaffAttendances { get; set; }
         public List<StaffDiscipline> StaffDisciplines { get; set; }
         public List<Department> Departments { get; set; }

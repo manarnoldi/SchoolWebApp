@@ -1,4 +1,5 @@
 ﻿using SchoolWebApp.Core.Entities.Class;
+using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Entities.Shared;
 using System.ComponentModel.DataAnnotations;
 
@@ -19,9 +20,9 @@ namespace SchoolWebApp.Core.Entities.Academics
         [StringLength(500)]
         public string Description { get; set; }
 
-        public List<Subject> Subjects { get; set; }
+        public List<EducationLevel> EducationLevels { get; set; }
+        public List<SubjectGroup> SubjectGroups { get; set; }
         public List<Grade> Grades { get; set; }
         public List<Session> Sessions { get; set; }
-        public List<SchoolClass> SchoolClasses { get; set; }        
     }
 }

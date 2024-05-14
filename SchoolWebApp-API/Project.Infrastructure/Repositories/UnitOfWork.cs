@@ -19,6 +19,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
         public IExamTypeRepository ExamTypes { get; }
         public IGradeRepository Grades { get; }
         public ISubjectGroupRepository SubjectGroups { get; }
+        public ISubjectRepository Subjects { get; }
         #endregion
 
         #region School
@@ -52,7 +53,6 @@ namespace SchoolWebApp.Infrastructure.Repositories
         public IOutcomesRepository Outcomes { get; }
         public IRelationshipsRepository Relationships { get; }
         public IReligionsRepository Religions { get; }
-        public ISchoolLevelsRepository SchoolLevels { get; }
         public ISessionTypesRepository SessionTypes { get; }
         public IStaffCategoryRepository StaffCategories { get; }
         #endregion
@@ -63,6 +63,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
                 IExamTypeRepository examTypeRepository,
                 IGradeRepository gradeRepository,
                 ISubjectGroupRepository subjectGroupRepository,
+                ISubjectRepository subjectRepository,
 
                 //School
                 ISchoolDetailsRepository schoolDetailsRepository,
@@ -91,7 +92,6 @@ namespace SchoolWebApp.Infrastructure.Repositories
                 IOutcomesRepository outcomesRepository,
                 IRelationshipsRepository relationshipsRepository,
                 IReligionsRepository religionsRepository,
-                ISchoolLevelsRepository schoolLevelsRepository,
                 ISessionTypesRepository sessionTypesRepository,
                 IStaffCategoryRepository staffCategoryRepository
          )
@@ -103,6 +103,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
             ExamTypes = examTypeRepository;
             Grades = gradeRepository;
             SubjectGroups = subjectGroupRepository;
+            Subjects = subjectRepository;
             #endregion
 
             #region School
@@ -136,7 +137,6 @@ namespace SchoolWebApp.Infrastructure.Repositories
             Outcomes = outcomesRepository;
             Relationships = relationshipsRepository;
             Religions = religionsRepository;
-            SchoolLevels = schoolLevelsRepository;
             SessionTypes = sessionTypesRepository;
             StaffCategories = staffCategoryRepository;
             #endregion

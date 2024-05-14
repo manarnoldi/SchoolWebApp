@@ -51,7 +51,8 @@ namespace SchoolWebApp.Core.Entities.School
         [StringLength(255)]
         public string LogoUrl { get; set; }
 
-        public int SchoolLevelId { get; set; }
-        public SchoolLevel SchoolLevel { get; set; }
+        [Display(Name = "Enter school levels available")]
+        [StringLength(255)]
+        public string? SchoolLevelsAvailable { get; set; }
     }
 }

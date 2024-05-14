@@ -49,6 +49,6 @@ namespace SchoolWebApp.Core.DTOs.School.SchoolDetails
         [StringLength(255)]
         public string LogoUrl { get; set; }
 
-        public int SchoolLevelId { get; set; }
+        public string SchoolLevelsAvailable { get; set; }
     }
 }

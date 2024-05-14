@@ -72,7 +72,7 @@ namespace SchoolWebApp.API.Controllers.School
                 _logger.LogError(ex, "An error occurred while retrieving school details.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
-        }      
+        }
 
         // GET api/schooldetails/5
         /// <summary>
@@ -91,7 +91,7 @@ namespace SchoolWebApp.API.Controllers.School
             {
                 if (id <= 0) return BadRequest(id);
                 var _schoolDetail = await _unitOfWork.SchoolDetails.GetById(id);
-                
+
                 if (_schoolDetail == null) return NotFound();
                 var _schoolDetailDto = _mapper.Map<SchoolDetailsDto>(_schoolDetail);
                 return Ok(_schoolDetailDto);
@@ -163,7 +163,7 @@ namespace SchoolWebApp.API.Controllers.School
                     //Manual mapping
                     existingData.Name = model.Name;
                     existingData.Address = model.Address;
-                    existingData.SchoolLevelId = model.SchoolLevelId;
+                    existingData.SchoolLevelsAvailable = model.SchoolLevelsAvailable;
                     existingData.Telephone = model.Telephone;
                     existingData.Email = model.Email;
                     existingData.Initials = model.Initials;

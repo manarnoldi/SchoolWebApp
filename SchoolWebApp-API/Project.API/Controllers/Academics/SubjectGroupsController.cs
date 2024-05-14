@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SchoolWebApp.Core.DTOs.Academics.Grade;
 using SchoolWebApp.Core.DTOs;
+using SchoolWebApp.Core.DTOs.Academics.SubjectGroup;
 using SchoolWebApp.Core.Entities.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories;
-using SchoolWebApp.Core.DTOs.Academics.SubjectGroup;
 
 namespace SchoolWebApp.API.Controllers.Academics
 {
