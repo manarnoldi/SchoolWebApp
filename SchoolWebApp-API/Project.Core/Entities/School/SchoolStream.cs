@@ -7,6 +7,7 @@ namespace SchoolWebApp.Core.Entities.School
     {
         public string Name { get; set; }
         public string Description { get; set; }
+        public string Abbreviation { get; set; }
 
         public List<SchoolClass> SchoolClasses { get; set; }
     }
