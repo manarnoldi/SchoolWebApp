@@ -157,6 +157,8 @@ namespace SchoolWebApp.API.Controllers.Settings
                     //Manual mapping
                     existingItem.Name = model.Name;
                     existingItem.Description = model.Description;
+                    existingItem.Abbreviation = model.Abbreviation;
+
                     _unitOfWork.OccurenceTypes.Update(existingItem);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();

@@ -98,7 +98,7 @@ namespace SchoolWebApp.API.Controllers.School
             }
         }
 
-        // POST api/department
+        // POST api/departments
         /// <summary>
         /// A method for creating school a department record.
         /// </summary>

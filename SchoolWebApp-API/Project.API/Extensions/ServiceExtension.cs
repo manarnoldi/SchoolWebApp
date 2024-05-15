@@ -37,6 +37,7 @@ namespace Project.API.Extensions
             services.AddTransient<IDepartmentsRepository, DepartmentsRepository>();
             services.AddTransient<ILearningModesRepository, LearningModesRepository>();
             services.AddTransient<IEventRepository, EventRepository>();
+            services.AddTransient<IEducationLevelTypesRepository, EducationLevelTypesRepository>();
             #endregion
 
             #region Staff Repositories

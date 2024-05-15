@@ -1,4 +1,5 @@
-﻿using SchoolWebApp.Core.Entities.Shared;
+﻿using SchoolWebApp.Core.Entities.School;
+using SchoolWebApp.Core.Entities.Shared;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Entities.Students;
 using System.ComponentModel.DataAnnotations;
@@ -24,6 +25,9 @@ namespace SchoolWebApp.Core.Entities.Academics
 
         public int SubjectGroupId { get; set; }
         public SubjectGroup SubjectGroup { get; set; }
+
+        public int DepartmentId { get; set; }
+        public Department Department { get; set; }
 
         public int StaffDetailsId { get; set; }
         public StaffDetails StaffDetails { get; set; }

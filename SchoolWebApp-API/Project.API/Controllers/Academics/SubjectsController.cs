@@ -170,7 +170,7 @@ namespace SchoolWebApp.API.Controllers.Academics
         {
             if (ModelState.IsValid)
             {
-                if (await _unitOfWork.Subjects.ItemExistsAsync(s => s.Name == model.Name && s.SubjectGroupId == model.SubjectGroupId))
+                if (await _unitOfWork.Subjects.ItemExistsAsync(s => s.Name == model.Name && s.SubjectGroupId == model.SubjectGroupId && s.DepartmentId == model.DepartmentId))
                     return Conflict(new { message = $"The subject details submitted already exist" });
                 try
                 {
@@ -214,6 +214,7 @@ namespace SchoolWebApp.API.Controllers.Academics
                     existingItem.Code = model.Code;
                     existingItem.Abbr = model.Abbr;
                     existingItem.SubjectGroupId = model.SubjectGroupId;
+                    existingItem.DepartmentId = model.DepartmentId;
                     existingItem.StaffDetailsId = model.StaffDetailsId;
                     _unitOfWork.Subjects.Update(existingItem);
                     await _unitOfWork.SaveChangesAsync();

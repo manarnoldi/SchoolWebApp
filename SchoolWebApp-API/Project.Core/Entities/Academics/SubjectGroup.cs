@@ -11,9 +11,6 @@ namespace SchoolWebApp.Core.Entities.Academics
         [StringLength(255)]
         public string Name { get; set; }
 
-        public int DepartmentId { get; set; }
-        public Department Department { get; set; }
-
         public int CurriculumId { get; set; }
         public Curriculum Curriculum { get; set; }
 

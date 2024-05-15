@@ -2,5 +2,6 @@
 {
     public class CreateOccurenceTypeDto: BaseSettinsDto
     {
+        public string? Abbreviation { get; set; }        
     }
 }

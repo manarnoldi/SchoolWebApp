@@ -14,6 +14,6 @@ namespace SchoolWebApp.Core.DTOs.Academics.SubjectGroup
         [StringLength(255)]
         public string Name { get; set; }
 
-        public int DepartmentId { get; set; }
+        
     }
 }

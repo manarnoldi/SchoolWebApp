@@ -22,6 +22,6 @@ namespace SchoolWebApp.Core.Entities.School
         public int StaffDetailsId { get; set; }
         public StaffDetails StaffDetails { get; set; }
 
-        public List<SubjectGroup> SubjectGroups { get; set; }
+        public List<Subject> Subjects { get; set; }
     }
 }
