@@ -79,7 +79,7 @@ namespace SchoolWebApp.API.Controllers.Academics
         /// <returns></returns>
         [HttpGet("byCurriculumId/{curriculumId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CurriculumDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GradeDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetGradesByCurriculumId(int curriculumId)

@@ -69,6 +69,34 @@ namespace SchoolWebApp.API.Controllers.Academics
             }
         }
 
+        // GET api/subjectGroups/byCurriculumId/5
+        /// <summary>
+        /// A method for retrieving subject groups by curriculum Id.
+        /// </summary>
+        /// <param name="id">The curriculum Id to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byCurriculumId/{curriculumId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SubjectGroupDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetSubjectGroupsByCurriculumId(int curriculumId)
+        {
+            try
+            {
+                if (curriculumId <= 0) return BadRequest(curriculumId);
+                var _item = await _unitOfWork.SubjectGroups.GetByCurriculumId(curriculumId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<SubjectGroupDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the subject groups by curriculum id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         // GET api/subjectGroups/5
         /// <summary>
         /// A method for retrieving a subject group record by Id.
@@ -154,6 +182,8 @@ namespace SchoolWebApp.API.Controllers.Academics
                     var existingItem = await _unitOfWork.SubjectGroups.GetById(model.Id);
                     //Manual mapping
                     existingItem.Name = model.Name;
+                    existingItem.Abbreviation = model.Abbreviation;
+                    existingItem.Description = model.Description;
                     _unitOfWork.SubjectGroups.Update(existingItem);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
