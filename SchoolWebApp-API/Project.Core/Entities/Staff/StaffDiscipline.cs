@@ -4,7 +4,7 @@ namespace SchoolWebApp.Core.Entities.Staff
 {
     public class StaffDiscipline : Discipline
     {
-        public int StaffId { get; set; }
+        public int StaffDetailsId { get; set; }
         public StaffDetails StaffDetails { get; set; }        
     }
 }

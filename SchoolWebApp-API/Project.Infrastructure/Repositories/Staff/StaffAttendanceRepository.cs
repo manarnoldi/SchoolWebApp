@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Project.Infrastructure.Data;
 using Project.Infrastructure.Repositories;
-using SchoolWebApp.Core.Entities.Academics;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories.Staff;
 

@@ -3,8 +3,8 @@ using SchoolWebApp.Core.Entities.Staff;
 
 namespace SchoolWebApp.Core.Interfaces.IRepositories.Staff
 {
-    public interface IStaffAttendanceRepository : IBaseRepository<StaffAttendance>
+    public interface IStaffDisciplineRepository : IBaseRepository<StaffDiscipline>
     {
-        Task<List<StaffAttendance>> GetByStaffDetailsId(int staffDetailsId);
+        Task<List<StaffDiscipline>> GetByStaffDetailsId(int staffDetailsId);
     }
 }

@@ -92,7 +92,7 @@ namespace SchoolWebApp.API.Controllers.Staff
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"An error occurred while retrieving the staff attendances by curriculum id.");
+                _logger.LogError(ex, $"An error occurred while retrieving the staff attendances by staff details id.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
