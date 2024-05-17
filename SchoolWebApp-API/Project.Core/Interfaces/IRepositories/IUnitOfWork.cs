@@ -40,6 +40,7 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
 
         #region Class
         ISessionRepository Sessions { get; }
+        ILearningLevelRepository LearningLevels { get; }
         #endregion
 
         #region Settings

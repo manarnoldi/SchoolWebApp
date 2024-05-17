@@ -169,6 +169,8 @@ namespace SchoolWebApp.API.Controllers.Staff
         {
             if (ModelState.IsValid)
             {
+                if (await _unitOfWork.Students.ItemExistsAsync(s => s.UPI == model.UPI))
+                    return Conflict(new { message = $"The provided UPI (Unique Personal Identifier) provided already exists in the system." });
                 if (await _unitOfWork.StaffDetails.ItemExistsAsync(s => s.FullName == model.FullName && s.UPI == model.UPI && s.Status == model.Status))
                     return Conflict(new { message = $"The staff details submitted already exist." });
                 try

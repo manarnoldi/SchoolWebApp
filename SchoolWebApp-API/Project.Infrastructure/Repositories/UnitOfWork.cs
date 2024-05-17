@@ -44,6 +44,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
 
         #region Class
         public ISessionRepository Sessions { get; }
+        public ILearningLevelRepository LearningLevels { get; }
         #endregion
 
         #region Settings
@@ -87,6 +88,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
 
                 //Class
                 ISessionRepository sessionRepository,
+                ILearningLevelRepository learningLevelRepository,
 
                 //Settings
                 IDesignationsRepository designationsRepository,
@@ -134,6 +136,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
 
             #region Class
             Sessions = sessionRepository;
+            LearningLevels = learningLevelRepository;
             #endregion
 
             #region Settings
