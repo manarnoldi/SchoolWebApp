@@ -15,6 +15,7 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
         ILearningModesRepository LearningModes { get; }
         IEventRepository Events { get; }
         IEducationLevelTypesRepository EducationLevelTypes { get; }
+        IEducationLevelRepository EducationLevels { get; }
         ISchoolStreamsRepository SchoolStreams { get; }
         #endregion
 

@@ -5,5 +5,6 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.Class
 {
     public interface ISessionRepository : IBaseRepository<Session>
     {
+        Task<List<Session>> GetByCurriculumId(int curriculumId);
     }
 }

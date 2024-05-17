@@ -14,8 +14,8 @@ namespace SchoolWebApp.Infrastructure.Repositories.Academics
 
         public async Task<List<SubjectGroup>> GetByCurriculumId(int curriculumId)
         {
-            var grades = await _dbContext.SubjectGroups.Where(e => e.CurriculumId == curriculumId).ToListAsync();
-            return grades;
+            var subjectGroups = await _dbContext.SubjectGroups.Where(e => e.CurriculumId == curriculumId).ToListAsync();
+            return subjectGroups;
         }
     }
 }

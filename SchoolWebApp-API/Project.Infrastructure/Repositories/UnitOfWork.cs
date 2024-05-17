@@ -28,6 +28,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
         public ILearningModesRepository LearningModes { get; }
         public IEventRepository Events { get; }
         public IEducationLevelTypesRepository EducationLevelTypes { get; }
+        public IEducationLevelRepository EducationLevels { get; }
         public ISchoolStreamsRepository SchoolStreams { get; }
         #endregion
 
@@ -73,6 +74,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
                 ILearningModesRepository learningModesRepository,
                 IEventRepository eventRepository,
                 IEducationLevelTypesRepository educationLevelTypesRepository,
+                IEducationLevelRepository educationLevelsRepository,
                 ISchoolStreamsRepository schoolStreamsRepository,
 
                 //Staff
@@ -116,6 +118,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
             LearningModes = learningModesRepository;
             Events = eventRepository;
             EducationLevelTypes = educationLevelTypesRepository;
+            EducationLevels = educationLevelsRepository;
             SchoolStreams = schoolStreamsRepository;
             #endregion
 

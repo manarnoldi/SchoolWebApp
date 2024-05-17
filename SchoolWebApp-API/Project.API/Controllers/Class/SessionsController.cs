@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
+using SchoolWebApp.Core.DTOs.Academics.SubjectGroup;
 using SchoolWebApp.Core.DTOs.Class.Session;
 using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Interfaces.IRepositories;
@@ -65,6 +66,34 @@ namespace SchoolWebApp.API.Controllers.Class
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while retrieving paginated sessions.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/sessions/byCurriculumId/5
+        /// <summary>
+        /// A method for retrieving sessions by curriculum Id.
+        /// </summary>
+        /// <param name="id">The curriculum Id to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byCurriculumId/{curriculumId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SessionDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetSessionsByCurriculumId(int curriculumId)
+        {
+            try
+            {
+                if (curriculumId <= 0) return BadRequest(curriculumId);
+                var _item = await _unitOfWork.Sessions.GetByCurriculumId(curriculumId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<SessionDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the sessions by curriculum id.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
