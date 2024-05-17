@@ -21,6 +21,7 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
 
         #region Staff
         IStaffDetailsRepository StaffDetails { get; }
+        IStaffAttendanceRepository StaffAttendances { get; }
         #endregion
 
         #region Student

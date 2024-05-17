@@ -34,6 +34,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
 
         #region Staff
         public IStaffDetailsRepository StaffDetails { get; }
+        public IStaffAttendanceRepository StaffAttendances { get; }
         #endregion
 
         #region Student
@@ -80,6 +81,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
 
                 //Staff
                 IStaffDetailsRepository staffDetailsRepository,
+                IStaffAttendanceRepository staffAttendancesRepository,
 
                 //Student
                 IParentsRepository parentsRepository,
@@ -126,6 +128,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
 
             #region Staff
             StaffDetails = staffDetailsRepository;
+            StaffAttendances = staffAttendancesRepository;
             #endregion
 
             #region Student
