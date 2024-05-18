@@ -127,33 +127,33 @@ namespace SchoolWebApp.API.Controllers.Academics
             }
         }
 
-        //// GET api/subjects/byCurriculumId/5
-        ///// <summary>
-        ///// A method for retrieving subjects by curriculum Id.
-        ///// </summary>
-        ///// <param name="id">The curriculum Id whose subjects are to be retrieved</param>
-        ///// <returns></returns>
-        //[HttpGet("byCurriculumId/{curriculumId}")]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SubjectDto))]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        //public async Task<IActionResult> GetSubjectsByCurriculumId(int curriculumId)
-        //{
-        //    try
-        //    {
-        //        if (curriculumId <= 0) return BadRequest(curriculumId);
-        //        var _item = await _unitOfWork.Subjects.GetByCurriculumId(curriculumId);
-        //        if (_item == null) return NotFound();
-        //        var _itemDto = _mapper.Map<List<SubjectDto>>(_item);
-        //        return Ok(_itemDto);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, $"An error occurred while retrieving the subjects by curriculum id.");
-        //        return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-        //    }
-        //}
+        // GET api/subjects/byDepartmentId/5
+        /// <summary>
+        /// A method for retrieving subjects by department Id.
+        /// </summary>
+        /// <param name="id">The department Id whose subjects are to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byDepartmentId/{departmentId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SubjectDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetSubjectsByDepartmentId(int departmentId)
+        {
+            try
+            {
+                if (departmentId <= 0) return BadRequest(departmentId);
+                var _item = await _unitOfWork.Subjects.GetByDepartmentId(departmentId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<SubjectDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the subjects by departmentId id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
 
         // POST api/subjects
         /// <summary>
@@ -216,6 +216,9 @@ namespace SchoolWebApp.API.Controllers.Academics
                     existingItem.SubjectGroupId = model.SubjectGroupId;
                     existingItem.DepartmentId = model.DepartmentId;
                     existingItem.StaffDetailsId = model.StaffDetailsId;
+                    existingItem.NumOfLessons = model.NumOfLessons;
+                    existingItem.Description = model.Description;
+                    existingItem.Optional = model.Optional;
                     _unitOfWork.Subjects.Update(existingItem);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();

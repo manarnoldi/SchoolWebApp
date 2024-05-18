@@ -23,6 +23,10 @@ namespace SchoolWebApp.Core.Entities.Academics
         [StringLength(255)]
         public string Abbr { get; set; }
 
+        public int NumOfLessons { get; set; }
+        public string Description { get; set; }
+        public bool Optional { get; set; }
+
         public int SubjectGroupId { get; set; }
         public SubjectGroup SubjectGroup { get; set; }
 

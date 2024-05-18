@@ -12,11 +12,11 @@ namespace SchoolWebApp.Infrastructure.Repositories.Academics
         {
         }
 
-        //public async Task<List<Subject>> GetByCurriculumId(int curriculumId)
-        //{
-        //    var subjects = await _dbContext.Subjects.Where(e => e.CurriculumId == curriculumId).ToListAsync();
-        //    return subjects;
-        //}
+        public async Task<List<Subject>> GetByDepartmentId(int departmentId)
+        {
+            var subjects = await _dbContext.Subjects.Where(e => e.DepartmentId == departmentId).ToListAsync();
+            return subjects;
+        }
 
         public async Task<List<Subject>> GetBySubjectGroupId(int subjectGroupId)
         {

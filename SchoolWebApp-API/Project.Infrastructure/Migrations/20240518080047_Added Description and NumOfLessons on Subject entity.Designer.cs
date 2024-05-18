@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Infrastructure.Data;
 
@@ -10,9 +11,11 @@ using Project.Infrastructure.Data;
 namespace SchoolWebApp.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240518080047_Added Description and NumOfLessons on Subject entity")]
+    partial class AddedDescriptionandNumOfLessonsonSubjectentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -468,9 +471,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Property<int>("NumOfLessons")
                         .HasColumnType("int");
 
-                    b.Property<bool>("Optional")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<int>("StaffDetailsId")
                         .HasColumnType("int");
 
@@ -737,9 +737,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "717d9b15-a428-440c-b26b-08d3bbb68b02",
-                            Created = new DateTime(2024, 5, 18, 11, 14, 22, 949, DateTimeKind.Local).AddTicks(9317),
+                            Created = new DateTime(2024, 5, 18, 11, 0, 46, 251, DateTimeKind.Local).AddTicks(3633),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2024, 5, 18, 11, 14, 22, 949, DateTimeKind.Local).AddTicks(9343),
+                            Modified = new DateTime(2024, 5, 18, 11, 0, 46, 251, DateTimeKind.Local).AddTicks(3667),
                             ModifiedBy = "admin",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
@@ -747,9 +747,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "95ed2407-3e58-4af2-88a4-1c4e96473f68",
-                            Created = new DateTime(2024, 5, 18, 11, 14, 22, 949, DateTimeKind.Local).AddTicks(9408),
+                            Created = new DateTime(2024, 5, 18, 11, 0, 46, 251, DateTimeKind.Local).AddTicks(3720),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2024, 5, 18, 11, 14, 22, 949, DateTimeKind.Local).AddTicks(9415),
+                            Modified = new DateTime(2024, 5, 18, 11, 0, 46, 251, DateTimeKind.Local).AddTicks(3721),
                             ModifiedBy = "admin",
                             Name = "HeadTeacher",
                             NormalizedName = "HEADTEACHER"
@@ -757,9 +757,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "48c50c3a-9958-453b-b649-4e21af131322",
-                            Created = new DateTime(2024, 5, 18, 11, 14, 22, 949, DateTimeKind.Local).AddTicks(9443),
+                            Created = new DateTime(2024, 5, 18, 11, 0, 46, 251, DateTimeKind.Local).AddTicks(3746),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2024, 5, 18, 11, 14, 22, 949, DateTimeKind.Local).AddTicks(9444),
+                            Modified = new DateTime(2024, 5, 18, 11, 0, 46, 251, DateTimeKind.Local).AddTicks(3747),
                             ModifiedBy = "admin",
                             Name = "Teacher",
                             NormalizedName = "TEACHER"
@@ -767,9 +767,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "448df289-142c-4959-a912-60733515e1b4",
-                            Created = new DateTime(2024, 5, 18, 11, 14, 22, 949, DateTimeKind.Local).AddTicks(9472),
+                            Created = new DateTime(2024, 5, 18, 11, 0, 46, 251, DateTimeKind.Local).AddTicks(3796),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2024, 5, 18, 11, 14, 22, 949, DateTimeKind.Local).AddTicks(9473),
+                            Modified = new DateTime(2024, 5, 18, 11, 0, 46, 251, DateTimeKind.Local).AddTicks(3797),
                             ModifiedBy = "admin",
                             Name = "Student",
                             NormalizedName = "STUDENT"
@@ -777,9 +777,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "269f0cf3-405e-4163-83f3-1b63ebebd62e",
-                            Created = new DateTime(2024, 5, 18, 11, 14, 22, 949, DateTimeKind.Local).AddTicks(9518),
+                            Created = new DateTime(2024, 5, 18, 11, 0, 46, 251, DateTimeKind.Local).AddTicks(3821),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2024, 5, 18, 11, 14, 22, 949, DateTimeKind.Local).AddTicks(9520),
+                            Modified = new DateTime(2024, 5, 18, 11, 0, 46, 251, DateTimeKind.Local).AddTicks(3838),
                             ModifiedBy = "admin",
                             Name = "Parent",
                             NormalizedName = "PARENT"
@@ -787,9 +787,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "cd12b44b-103b-48df-8887-a2bf42e0651e",
-                            Created = new DateTime(2024, 5, 18, 11, 14, 22, 949, DateTimeKind.Local).AddTicks(9551),
+                            Created = new DateTime(2024, 5, 18, 11, 0, 46, 251, DateTimeKind.Local).AddTicks(3873),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2024, 5, 18, 11, 14, 22, 949, DateTimeKind.Local).AddTicks(9566),
+                            Modified = new DateTime(2024, 5, 18, 11, 0, 46, 251, DateTimeKind.Local).AddTicks(3875),
                             ModifiedBy = "admin",
                             Name = "Accounts",
                             NormalizedName = "ACCOUNTS"
@@ -797,9 +797,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "97942bee-ef12-4425-8225-4f293d0f36dd",
-                            Created = new DateTime(2024, 5, 18, 11, 14, 22, 949, DateTimeKind.Local).AddTicks(9599),
+                            Created = new DateTime(2024, 5, 18, 11, 0, 46, 251, DateTimeKind.Local).AddTicks(3898),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2024, 5, 18, 11, 14, 22, 949, DateTimeKind.Local).AddTicks(9600),
+                            Modified = new DateTime(2024, 5, 18, 11, 0, 46, 251, DateTimeKind.Local).AddTicks(3899),
                             ModifiedBy = "admin",
                             Name = "Visitor",
                             NormalizedName = "VISITOR"
@@ -896,22 +896,22 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = "7e67d486-af3e-49f1-a109-a2b864b8e0ec",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1bdd77dc-f601-4c1e-9079-a9b6f515dfff",
-                            Created = new DateTime(2024, 5, 18, 11, 14, 22, 949, DateTimeKind.Local).AddTicks(9688),
+                            ConcurrencyStamp = "e9c1aa1a-bfea-408b-ba72-b99c20aa5fab",
+                            Created = new DateTime(2024, 5, 18, 11, 0, 46, 251, DateTimeKind.Local).AddTicks(4044),
                             CreatedBy = "admin",
                             Email = "admin@kodetek.co.ke",
                             EmailConfirmed = true,
                             FirstName = "SchoolSoft",
                             LastName = "Administrator",
                             LockoutEnabled = false,
-                            Modified = new DateTime(2024, 5, 18, 11, 14, 22, 949, DateTimeKind.Local).AddTicks(9691),
+                            Modified = new DateTime(2024, 5, 18, 11, 0, 46, 251, DateTimeKind.Local).AddTicks(4045),
                             ModifiedBy = "admin",
                             NormalizedEmail = "ADMIN@KODETEK.CO.KE",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMFtRLhwL6G2G7eoOCbYXnVQJdug/mnn6iXoFeDOBj0VyGZJgv5GuL0jlMZIEnCJ8Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEL7RFaeYp2aUeM1xI0glimf86T375cosoOkh0FL8VaVaIKdLlVyA6H3cvmrU8OakEw==",
                             PhoneNumber = "+254724920000",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "d750ade6-45e1-46f2-a801-25cc542083aa",
+                            SecurityStamp = "adce4e29-c4ce-4d14-a8a0-9cdd7897796d",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
