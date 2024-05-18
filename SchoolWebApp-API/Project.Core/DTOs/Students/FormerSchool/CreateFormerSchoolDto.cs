@@ -1,17 +1,14 @@
-﻿using SchoolWebApp.Core.Entities.Academics;
-using SchoolWebApp.Core.Entities.School;
-using SchoolWebApp.Core.Entities.Shared;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace SchoolWebApp.Core.Entities.Students
+namespace SchoolWebApp.Core.DTOs.Students.FormerSchool
 {
-    public class FormerSchool : Base
+    public class CreateFormerSchoolDto
     {
+        public string? Description { get; set; }
         [Required(ErrorMessage = "Enter former school name")]
         [Display(Name = "School name")]
         [StringLength(255)]
         public string SchoolName { get; set; }
-        public string? Description { get; set; }
 
         [Required(ErrorMessage = "Enter student former class details")]
         [Display(Name = "Class details")]
@@ -27,10 +24,7 @@ namespace SchoolWebApp.Core.Entities.Students
         public string Position { get; set; }
 
         public int StudentId { get; set; }
-        public Student Student { get; set; }
         public int CurriculumId { get; set; }
-        public Curriculum Curriculum { get; set; }
         public int EducationLevelId { get; set; }
-        public EducationLevel EducationLevel { get; set; }
     }
 }

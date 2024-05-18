@@ -26,6 +26,7 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
         #endregion
 
         #region Student
+        IFormerSchoolsRepository FormerSchools { get; }
         IParentsRepository Parents { get; }
         IStudentsRepository Students { get; }
         IStudentParentRepository StudentParent { get; }

@@ -50,6 +50,7 @@ namespace Project.API.Extensions
 
             #region Students repositories
             services.AddTransient<IParentsRepository,ParentsRepository>();
+            services.AddTransient<IFormerSchoolsRepository, FormerSchoolsRepository>();
             services.AddTransient<IStudentsRepository,StudentsRepository>();
             services.AddTransient<IStudentParentRepository,StudentParentRepository>();
             services.AddTransient<IStudentDisciplineRepository, StudentDisciplineRepository>();
