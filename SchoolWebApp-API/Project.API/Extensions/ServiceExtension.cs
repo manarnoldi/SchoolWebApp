@@ -27,6 +27,7 @@ namespace Project.API.Extensions
             services.AddTransient<IAcademicYearRepository, AcademicYearRepository>();
             services.AddTransient<ICurriculumRepository, CurriculumRepository>();
             services.AddTransient<IExamTypeRepository, ExamTypeRepository>();
+            services.AddTransient<IExamRepository, ExamRepository>();
             services.AddTransient<IGradeRepository, GradeRepository>();
             services.AddTransient<ISubjectGroupRepository, SubjectGroupRepository>();
             services.AddTransient<ISubjectRepository, SubjectRepository>();
@@ -49,17 +50,19 @@ namespace Project.API.Extensions
             #endregion
 
             #region Students repositories
-            services.AddTransient<IParentsRepository,ParentsRepository>();
+            services.AddTransient<IParentsRepository, ParentsRepository>();
             services.AddTransient<IFormerSchoolsRepository, FormerSchoolsRepository>();
-            services.AddTransient<IStudentsRepository,StudentsRepository>();
-            services.AddTransient<IStudentParentRepository,StudentParentRepository>();
+            services.AddTransient<IStudentsRepository, StudentsRepository>();
+            services.AddTransient<IStudentParentRepository, StudentParentRepository>();
             services.AddTransient<IStudentDisciplineRepository, StudentDisciplineRepository>();
+            services.AddTransient<IStudentAttendanceRepository, StudentAttendanceRepository>();
 
             #endregion
 
             #region Class Repositories
             services.AddTransient<ISessionRepository, SessionRepository>();
             services.AddTransient<ILearningLevelRepository, LearningLevelRepository>();
+            services.AddTransient<ISchoolClassRepository, SchoolClassRepository>();
             #endregion
 
             #region Settings Repositories

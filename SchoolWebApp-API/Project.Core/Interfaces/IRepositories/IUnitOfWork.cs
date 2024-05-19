@@ -31,6 +31,7 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
         IStudentsRepository Students { get; }
         IStudentParentRepository StudentParent { get; }
         IStudentDisciplineRepository StudentDisciplines { get; }
+        IStudentAttendanceRepository StudentAttendances { get; }
 
         #endregion
 
@@ -38,6 +39,7 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
         IAcademicYearRepository AcademicYears { get; }
         ICurriculumRepository Curricula { get; }
         IExamTypeRepository ExamTypes { get; }
+        IExamRepository Exams { get; }
         IGradeRepository Grades { get; }
         ISubjectGroupRepository SubjectGroups { get; }
         ISubjectRepository Subjects { get; }
@@ -46,6 +48,7 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
         #region Class
         ISessionRepository Sessions { get; }
         ILearningLevelRepository LearningLevels { get; }
+        ISchoolClassRepository SchoolClasses { get; }
         #endregion
 
         #region Settings

@@ -1,13 +1,11 @@
-﻿using SchoolWebApp.Core.Entities.Class;
-using SchoolWebApp.Core.Entities.Shared;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace SchoolWebApp.Core.Entities.Academics
+namespace SchoolWebApp.Core.DTOs.Academics.Exam
 {
-    public class Exam : Base
+    public class CreateExamDto
     {
         public string Name { get; set; }
-        [Required(ErrorMessage = "Enter the exam total mark")]
+       [Required(ErrorMessage = "Enter the exam total mark")]
         [Display(Name = "Examination total mark")]
         public float ExamMark { get; set; }
 
@@ -20,14 +18,8 @@ namespace SchoolWebApp.Core.Entities.Academics
         public float ExamHours { get; set; }
 
         public int ExamTypeId { get; set; }
-        public ExamType ExamType { get; set; }
         public int SchoolClassId { get; set; }
-        public SchoolClass SchoolClass { get; set; }
         public int SessionId { get; set; }
-        public Session Session { get; set; }
         public int SubjectId { get; set; }
-        public Subject Subject { get; set; }
-
-        public List<ExamResult> ExamResults { get; set; }
     }
 }

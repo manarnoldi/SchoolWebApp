@@ -17,6 +17,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
         public IAcademicYearRepository AcademicYears { get; }
         public ICurriculumRepository Curricula { get; }
         public IExamTypeRepository ExamTypes { get; }
+        public IExamRepository Exams { get; }
         public IGradeRepository Grades { get; }
         public ISubjectGroupRepository SubjectGroups { get; }
         public ISubjectRepository Subjects { get; }
@@ -44,11 +45,13 @@ namespace SchoolWebApp.Infrastructure.Repositories
         public IStudentsRepository Students { get; }
         public IStudentDisciplineRepository StudentDisciplines { get; }
         public IStudentParentRepository StudentParent { get; }
+        public IStudentAttendanceRepository StudentAttendances { get; }
         #endregion
 
         #region Class
         public ISessionRepository Sessions { get; }
         public ILearningLevelRepository LearningLevels { get; }
+        public ISchoolClassRepository SchoolClasses { get; }
         #endregion
 
         #region Settings
@@ -69,6 +72,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
                 IAcademicYearRepository academicYearRepository,
                 ICurriculumRepository curriculumRepository,
                 IExamTypeRepository examTypeRepository,
+                IExamRepository examRepository,
                 IGradeRepository gradeRepository,
                 ISubjectGroupRepository subjectGroupRepository,
                 ISubjectRepository subjectRepository,
@@ -93,10 +97,12 @@ namespace SchoolWebApp.Infrastructure.Repositories
                 IStudentsRepository studentsRepository,
                 IStudentParentRepository studentParentRepository,
                 IStudentDisciplineRepository studentDisciplineRepository,
+                IStudentAttendanceRepository studentAttendanceRepository,
 
                 //Class
                 ISessionRepository sessionRepository,
                 ILearningLevelRepository learningLevelRepository,
+                ISchoolClassRepository schoolClassRepository,
 
                 //Settings
                 IDesignationsRepository designationsRepository,
@@ -117,6 +123,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
             AcademicYears = academicYearRepository;
             Curricula = curriculumRepository;
             ExamTypes = examTypeRepository;
+            Exams = examRepository;
             Grades = gradeRepository;
             SubjectGroups = subjectGroupRepository;
             Subjects = subjectRepository;
@@ -144,11 +151,13 @@ namespace SchoolWebApp.Infrastructure.Repositories
             Students = studentsRepository;
             StudentParent = studentParentRepository;
             StudentDisciplines = studentDisciplineRepository;
+            StudentAttendances = studentAttendanceRepository;
             #endregion
 
             #region Class
             Sessions = sessionRepository;
             LearningLevels = learningLevelRepository;
+            SchoolClasses = schoolClassRepository;
             #endregion
 
             #region Settings
