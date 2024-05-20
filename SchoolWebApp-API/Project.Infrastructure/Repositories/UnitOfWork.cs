@@ -46,6 +46,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
         public IStudentDisciplineRepository StudentDisciplines { get; }
         public IStudentParentRepository StudentParent { get; }
         public IStudentAttendanceRepository StudentAttendances { get; }
+        public IStudentClassRepository StudentClasses { get; }
         #endregion
 
         #region Class
@@ -98,6 +99,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
                 IStudentParentRepository studentParentRepository,
                 IStudentDisciplineRepository studentDisciplineRepository,
                 IStudentAttendanceRepository studentAttendanceRepository,
+                IStudentClassRepository studentClassRepository,
 
                 //Class
                 ISessionRepository sessionRepository,
@@ -152,6 +154,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
             StudentParent = studentParentRepository;
             StudentDisciplines = studentDisciplineRepository;
             StudentAttendances = studentAttendanceRepository;
+            StudentClasses = studentClassRepository;
             #endregion
 
             #region Class

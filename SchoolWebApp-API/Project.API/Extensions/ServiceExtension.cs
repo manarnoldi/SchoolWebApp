@@ -56,6 +56,7 @@ namespace Project.API.Extensions
             services.AddTransient<IStudentParentRepository, StudentParentRepository>();
             services.AddTransient<IStudentDisciplineRepository, StudentDisciplineRepository>();
             services.AddTransient<IStudentAttendanceRepository, StudentAttendanceRepository>();
+            services.AddTransient<IStudentClassRepository, StudentClassRepository>();
 
             #endregion
 

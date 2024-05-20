@@ -32,6 +32,7 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
         IStudentParentRepository StudentParent { get; }
         IStudentDisciplineRepository StudentDisciplines { get; }
         IStudentAttendanceRepository StudentAttendances { get; }
+        IStudentClassRepository StudentClasses { get; }
 
         #endregion
 

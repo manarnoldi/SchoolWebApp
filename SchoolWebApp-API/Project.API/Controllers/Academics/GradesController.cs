@@ -2,9 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
-using SchoolWebApp.Core.DTOs.Academics.Curriculum;
 using SchoolWebApp.Core.DTOs.Academics.Grade;
-using SchoolWebApp.Core.DTOs.School.Event;
 using SchoolWebApp.Core.Entities.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 

@@ -28,5 +28,6 @@ namespace SchoolWebApp.Core.Entities.Class
 
         public List<Exam> Exams { get; set; }
         public List<StudentClass> StudentClasses { get; set; }
+        public List<StaffSubject> StaffSubjects { get; set; }
     }
 }
