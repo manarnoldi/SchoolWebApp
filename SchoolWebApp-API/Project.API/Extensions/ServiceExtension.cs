@@ -47,6 +47,7 @@ namespace Project.API.Extensions
             services.AddTransient<IStaffDetailsRepository, StaffDetailsRepository>();
             services.AddTransient<IStaffAttendanceRepository, StaffAttendanceRepository>();
             services.AddTransient<IStaffDisciplineRepository, StaffDisciplineRepository>();
+            services.AddTransient<IStaffSubjectRepository, StaffSubjectRepository>();
             #endregion
 
             #region Students repositories
