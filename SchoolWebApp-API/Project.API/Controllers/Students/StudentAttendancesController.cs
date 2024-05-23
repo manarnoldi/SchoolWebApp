@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SchoolWebApp.API.Controllers.Staff;
-using SchoolWebApp.Core.DTOs.Staff.StaffAttendance;
 using SchoolWebApp.Core.DTOs;
-using SchoolWebApp.Core.Entities.Staff;
-using SchoolWebApp.Core.Interfaces.IRepositories;
+using SchoolWebApp.Core.DTOs.Staff.StaffAttendance;
+using SchoolWebApp.Core.DTOs.Students.Student;
 using SchoolWebApp.Core.DTOs.Students.StudentAttendance;
 using SchoolWebApp.Core.Entities.Students;
+using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.Students
 {
@@ -72,35 +71,30 @@ namespace SchoolWebApp.API.Controllers.Students
             }
         }
 
-        // GET api/studentAttendances/byStudentId/5
+        // GET api/studentAttendances/byStudentClassId/5
         /// <summary>
-        /// A method for retrieving student attendances by student Id.
+        /// A method for retrieving student attendances by student class Id.
         /// </summary>
-        /// <param name="id">The student attendance details Id to be retrieved</param>
+        /// <param name="id">The student class Id to be retrieved</param>
         /// <returns></returns>
-        [HttpGet("byStudentClassId/{studentId}/{classId}")]
+        [HttpGet("byStudentClassId/{studentClassId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StaffAttendanceDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentAttendanceDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetStudentAttendancesByStudentId(int studentId, int classId)
+        public async Task<IActionResult> GetStudentAttendancesByStudentClassId(int studentClassId)
         {
             try
             {
-                if (studentId <= 0) return BadRequest(studentId);
-                if (classId <= 0) return BadRequest(classId);
-                if(!await _unitOfWork.Students.ItemExistsAsync(s => s.Id == studentId))
-                    return Conflict(new { message = $"The student details submitted do not exist." });
-                if(!await _unitOfWork.SchoolClasses.ItemExistsAsync(s => s.Id ==classId))
-                    return Conflict(new { message = $"The class details submitted do not exist." });
-                var _item = await _unitOfWork.StudentAttendances.GetByStudentId(studentId,classId);
+                if (studentClassId <= 0) return BadRequest(studentClassId);
+                var _item = await _unitOfWork.StudentAttendances.GetByStudentClassId(studentClassId);
                 if (_item == null) return NotFound();
-                var _itemDto = _mapper.Map<List<StaffAttendanceDto>>(_item);
+                var _itemDto = _mapper.Map<List<StudentAttendanceDto>>(_item);
                 return Ok(_itemDto);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"An error occurred while retrieving the student attendances by student id.");
+                _logger.LogError(ex, $"An error occurred while retrieving the student attendances by student class id.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
@@ -150,7 +144,7 @@ namespace SchoolWebApp.API.Controllers.Students
         {
             if (ModelState.IsValid)
             {
-                if (!await _unitOfWork.Students.ItemExistsAsync(s => s.Id == model.StudentClassId))
+                if (!await _unitOfWork.StudentClasses.ItemExistsAsync(s => s.Id == model.StudentClassId))
                     return Conflict(new { message = $"The student class details submitted do not exist." });
                 if (await _unitOfWork.StudentAttendances.ItemExistsAsync(s => s.StudentClassId == model.StudentClassId && s.Date == model.Date))
                     return Conflict(new { message = $"The student attendance record already exists" });

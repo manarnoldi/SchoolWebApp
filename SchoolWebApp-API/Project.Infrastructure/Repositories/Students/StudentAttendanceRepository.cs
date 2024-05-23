@@ -13,10 +13,9 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
         {
         }
 
-        public async Task<List<StudentAttendance>> GetByStudentId(int studentId, int classId)
+        public async Task<List<StudentAttendance>> GetByStudentClassId(int studentClassId)
         {
-            var studentClass = await _dbContext.StudentClasses.Where(s => s.StudentId == studentId && s.SchoolClassId == classId).FirstOrDefaultAsync();
-            var staffAttendances = await _dbContext.StudentAttendances.Where(e => e.StudentClassId == studentClass.SchoolClassId).ToListAsync();
+            var staffAttendances = await _dbContext.StudentAttendances.Where(e => e.StudentClassId == studentClassId).ToListAsync();
             return staffAttendances;
         }
     }
