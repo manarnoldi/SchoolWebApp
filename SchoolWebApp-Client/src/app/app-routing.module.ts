@@ -1,16 +1,16 @@
 import {NgModule} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
-import {MainComponent} from '@modules/main/main.component';
-import {BlankComponent} from '@pages/blank/blank.component';
-import {LoginComponent} from '@modules/login/login.component';
-import {ProfileComponent} from '@pages/profile/profile.component';
-import {RegisterComponent} from '@modules/register/register.component';
-import {DashboardComponent} from '@pages/dashboard/dashboard.component';
-import {AuthGuard} from '@guards/auth.guard';
-import {NonAuthGuard} from '@guards/non-auth.guard';
-import {ForgotPasswordComponent} from '@modules/forgot-password/forgot-password.component';
-import {RecoverPasswordComponent} from '@modules/recover-password/recover-password.component';
-import {SubMenuComponent} from '@pages/main-menu/sub-menu/sub-menu.component';
+import { MainComponent } from './core/modules/main/main.component';
+import { AuthGuard } from './core/guards/auth.guard';
+import { ProfileComponent } from './core/pages/profile/profile.component';
+import { BlankComponent } from './core/pages/blank/blank.component';
+import { SubMenuComponent } from './core/pages/main-menu/sub-menu/sub-menu.component';
+import { DashboardComponent } from './core/pages/dashboard/dashboard.component';
+import { LoginComponent } from './core/auth/login/login.component';
+import { NonAuthGuard } from './core/guards/non-auth.guard';
+import { RegisterComponent } from './core/auth/register/register.component';
+import { ForgotPasswordComponent } from './core/auth/forgot-password/forgot-password.component';
+import { RecoverPasswordComponent } from './core/auth/recover-password/recover-password.component';
 
 const routes: Routes = [
     {

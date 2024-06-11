@@ -43,3 +43,6 @@ body {
 .nav-sidebar .menu-open > .nav-link svg.right {
     transform: none;
 }
+
+/* Importing Bootstrap SCSS file. */
+@import 'bootstrap/scss/bootstrap';
