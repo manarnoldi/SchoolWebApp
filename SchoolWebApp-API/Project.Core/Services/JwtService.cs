@@ -34,7 +34,9 @@ namespace SchoolWebApp.Core.Services
             return new AuthenticationResponse
             {
                 Token = tokenHandler.WriteToken(token),
-                Expiration = expiration
+                Expiration = expiration,
+                Id = user.Id,
+                Roles = userRoles
             };
         }
 

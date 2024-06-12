@@ -1,5 +1,5 @@
 <!-- Brand Logo -->
-<a [routerLink]="['/']" class="brand-link">
+<a [routerLink]="['/']" class="brand-link nounderline">
     <pf-image
         src="assets/img/logo.png"
         alt="School Web APP"
@@ -29,8 +29,8 @@
             rounded="true"
         />
         <div class="info">
-            <a [routerLink]="['/profile']" class="d-block">
-                {{ user.profile.email }}
+            <a [routerLink]="['/profile']" class="d-block nounderline">
+                {{ user.email }}
             </a>
         </div>
     </div>

@@ -37,7 +37,7 @@ export class AuthService {
   // Sign-in
   signIn(user: User) {
       return this.http
-          .post<any>('/user/signin', user)
+          .post<any>('/auth/login', user)
           .pipe(catchError(this.handleError));
   }
 
@@ -70,7 +70,7 @@ export class AuthService {
 
   // User profile
   getUserProfile(id): Observable<any> {
-      let api = `/user/${id}`;
+      let api = `/users/${id}`;
       return this.http.get(api, {headers: this.headers}).pipe(
           map((res: Response) => {
               return res || {};

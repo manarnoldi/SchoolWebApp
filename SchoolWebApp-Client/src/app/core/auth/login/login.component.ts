@@ -5,20 +5,19 @@ import {
     Renderer2,
     HostBinding
 } from '@angular/core';
-import DateTime from 'Luxon';
+import {DateTime} from 'Luxon';
 
 import {UntypedFormGroup, UntypedFormControl, Validators} from '@angular/forms';
 import {ToastrService} from 'ngx-toastr';
-import { AuthService } from '@/core/services/auth.service';
-import { User } from '@/core/models/User';
-import { Router } from '@angular/router';
+import {AuthService} from '@/core/services/auth.service';
+import {User} from '@/core/models/User';
+import {Router} from '@angular/router';
 
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss']
 })
-    
 export class LoginComponent implements OnInit, OnDestroy {
     @HostBinding('class') class = 'login-box';
     public loginForm: UntypedFormGroup;
@@ -42,8 +41,11 @@ export class LoginComponent implements OnInit, OnDestroy {
             'login-page'
         );
         this.loginForm = new UntypedFormGroup({
-            email: new UntypedFormControl("arnold@kodetek.co.ke", Validators.required),
-            password: new UntypedFormControl("admin", Validators.required)
+            username: new UntypedFormControl(
+                'admin',
+                Validators.required
+            ),
+            password: new UntypedFormControl('Admin@123', Validators.required)
         });
     }
 
@@ -59,12 +61,20 @@ export class LoginComponent implements OnInit, OnDestroy {
                             cuUser.roles = result.roles;
 
                             cuUser.roles.forEach((r) => {
+                                if (r.toString() == 'Parent')
+                                    cuUser.currentUserParent = true;
+                                if (r.toString() == 'Student')
+                                    cuUser.currentUserStudent = true;
+                                if (r.toString() == 'Teacher')
+                                    cuUser.currentUserTeacher = true;
                                 if (r.toString() == 'Administrator')
-                                    cuUser.currentUserAdmin = true;
-                                if (r.toString() == 'Doctor')
-                                    cuUser.currentUserDoctor = true;
-                                if (r.toString() == 'Secretary')
-                                    cuUser.currentUserSecretary = true;
+                                    cuUser.currentUserAdministrator = true;
+                                if (r.toString() == 'HeadTeacher')
+                                    cuUser.currentUserHeadTeacher = true;
+                                if (r.toString() == 'Visitor')
+                                    cuUser.currentUserVisitor = true;
+                                if (r.toString() == 'Accounts')
+                                    cuUser.currentUserAccounts = true;
                             });
 
                             this.authService.setCurrentUser(cuUser);

@@ -120,6 +120,7 @@ namespace Project.Infrastructure.Data
                 Created = DateTime.Now,
                 CreatedBy = "admin",
                 Modified = DateTime.Now,
+                PersonId =5,
                 ModifiedBy = "admin"
             };
             defaultUser.PasswordHash = hasher.HashPassword(defaultUser, Authorization.default_password);

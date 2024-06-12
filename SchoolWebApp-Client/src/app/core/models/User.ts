@@ -1,5 +1,5 @@
-import { Roles } from "../enums/roles";
-import { ResourceModel } from "./ResourceModel";
+import {Roles} from '../enums/roles';
+import {ResourceModel} from './ResourceModel';
 
 export class User extends ResourceModel<User> {
     id: string;
@@ -24,9 +24,13 @@ export class User extends ResourceModel<User> {
     staffId: number;
     status: boolean;
 
-    currentUserAdmin: boolean;
-    currentUserDoctor: boolean;
-    currentUserSecretary: boolean;
+    currentUserParent: boolean;
+    currentUserStudent: boolean;
+    currentUserTeacher: boolean;
+    currentUserAdministrator: boolean;
+    currentUserHeadTeacher: boolean;
+    currentUserVisitor: boolean;
+    currentUserAccounts: boolean;
 
     constructor(model?: Partial<User>) {
         super(model);

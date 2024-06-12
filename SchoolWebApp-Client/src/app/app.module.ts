@@ -21,9 +21,13 @@ registerLocaleData(localeEn, 'en-EN');
     imports: [               
         CoreModule,                
         ToastrModule.forRoot({
-            timeOut: 3000,
-            positionClass: 'toast-top-right',
-            preventDuplicates: true
+            timeOut: 10000,
+            positionClass: 'toast-top-full-width',
+            preventDuplicates: true,
+            closeButton: true,
+            easing: 'ease-in',
+            easeTime: 1000,
+            progressBar: true
         }), NgbModule        
     ],
     providers: [

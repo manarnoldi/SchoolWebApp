@@ -6,7 +6,7 @@ import {
     HostBinding
 } from '@angular/core';
 import {UntypedFormGroup, UntypedFormControl, Validators} from '@angular/forms';
-import {AppService} from '@/Core/services/app.service';
+import { AuthService } from '@/core/services/auth.service';
 import {ToastrService} from 'ngx-toastr';
 
 @Component({
@@ -25,7 +25,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     constructor(
         private renderer: Renderer2,
         private toastr: ToastrService,
-        private appService: AppService
+        private authService: AuthService
     ) {}
 
     ngOnInit() {
@@ -43,24 +43,24 @@ export class RegisterComponent implements OnInit, OnDestroy {
     async registerByAuth() {
         if (this.registerForm.valid) {
             this.isAuthLoading = true;
-            await this.appService.registerByAuth(this.registerForm.value);
+            await this.authService.signUp(this.registerForm.value);
             this.isAuthLoading = false;
         } else {
             this.toastr.error('Form is not valid!');
         }
     }
 
-    async registerByGoogle() {
-        this.isGoogleLoading = true;
-        await this.appService.registerByGoogle();
-        this.isGoogleLoading = false;
-    }
+    // async registerByGoogle() {
+    //     this.isGoogleLoading = true;
+    //     await this.authService.registerByGoogle();
+    //     this.isGoogleLoading = false;
+    // }
 
-    async registerByFacebook() {
-        this.isFacebookLoading = true;
-        await this.appService.registerByFacebook();
-        this.isFacebookLoading = false;
-    }
+    // async registerByFacebook() {
+    //     this.isFacebookLoading = true;
+    //     await this.authService.registerByFacebook();
+    //     this.isFacebookLoading = false;
+    // }
 
     ngOnDestroy() {
         this.renderer.removeClass(

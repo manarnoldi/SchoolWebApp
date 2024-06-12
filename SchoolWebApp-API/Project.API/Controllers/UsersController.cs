@@ -45,6 +45,15 @@ namespace SchoolWebApp.API.Controllers
             return Ok(_mapper.Map<UserToReturn>(user));
         }
 
+        //GET: api/users/Id
+        [HttpGet("{Id}")]
+        public async Task<ActionResult<UserToReturn>> GetUserById(string Id)
+        {
+            var user = await _userManager.FindByIdAsync(Id);
+            if (user == null) return NotFound();
+            return Ok(_mapper.Map<UserToReturn>(user));
+        }
+
         //GET: api/users/userRoles
         [HttpGet]
         [Route("userRoles")]
