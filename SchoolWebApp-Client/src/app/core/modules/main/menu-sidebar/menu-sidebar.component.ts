@@ -182,89 +182,90 @@ export const MENU = [
         iconClasses: 'fas fa-wrench',
         children: [
             {
-                name: 'Education Level Types',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/settings']
-            },
-            {
-                name: 'Education Levels',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/settings']
-            },
-            {
-                name: 'Learning Modes',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/settings']
-            },
-            {
-                name: 'Learning Levels',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/settings']
-            },
-            {
-                name: 'Streams',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/settings']
-            },
-            {
-                name: 'Curricula',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/settings']
-            },
-            {
                 name: 'Designations',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/settings']
-            },
-            {
-                name: 'Employment types',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/settings']
-            },
-            {
-                name: 'Gender',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/settings']
-            },
-            {
-                name: 'Nationality',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/settings']
+                path: ['/settings/designations']
             },
             {
                 name: 'Occupations',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/settings']
+                path: ['/settings/occupations']
             },
+            {
+                name: 'Education Level Types',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/settings/educationLevelTypes']
+            },
+            {
+                name: 'Education Levels',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/settings/educationLevels']
+            },
+            {
+                name: 'Learning Modes',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/settings/learningModes']
+            },
+            {
+                name: 'Learning Levels',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/settings/learningLevels']
+            },
+            {
+                name: 'Streams',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/settings/streams']
+            },
+            {
+                name: 'Curricula',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/settings/curricula']
+            },
+            {
+                name: 'Employment types',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/settings/environmentTypes']
+            },
+            {
+                name: 'Gender',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/settings/gender']
+            },
+            {
+                name: 'Nationality',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/settings/nationalities']
+            },
+
             {
                 name: 'Occurence types',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/settings']
+                path: ['/settings/occurenceTypes']
             },
             {
                 name: 'Outcomes',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/settings']
+                path: ['/settings/outcomes']
             },
             {
                 name: 'Relationships',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/settings']
+                path: ['/settings/relationships']
             },
             {
                 name: 'Religions',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/settings']
+                path: ['/settings/religions']
             },
             {
                 name: 'Session types',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/settings']
+                path: ['/settings/sessionTypes']
             },
             {
                 name: 'Staff categories',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/settings']
+                path: ['/settings/staffCategories']
             }
         ]
     }

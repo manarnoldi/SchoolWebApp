@@ -23,7 +23,7 @@ import {StoreModule} from '@ngrx/store';
 import {ForgotPasswordComponent} from './auth/forgot-password/forgot-password.component';
 import {RecoverPasswordComponent} from './auth/recover-password/recover-password.component';
 import {RegisterComponent} from './auth/register/register.component';
-import {ReactiveFormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -61,7 +61,8 @@ import { AppRoutingModule } from '@/app-routing.module';
         HttpClientModule,
         BrowserAnimationsModule,
         StoreModule.forRoot({auth: authReducer, ui: uiReducer}),
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        FormsModule
     ],
     exports: [
         MainComponent,
@@ -84,7 +85,9 @@ import { AppRoutingModule } from '@/app-routing.module';
         RegisterComponent,
         ForgotPasswordComponent,
         RecoverPasswordComponent,
-        AppRoutingModule
+        AppRoutingModule,
+        ReactiveFormsModule,
+        FormsModule
     ]
 })
 export class CoreModule {}

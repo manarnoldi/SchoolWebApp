@@ -58,7 +58,7 @@ export abstract class ResourceService<T extends ResourceModel<T>> {
       resource: Partial<T> & {toJson: () => T}
   ): Observable<T> {
       return this.httpClient
-          .put<T>(`${url}/${resource.id}`, resource.toJson())
+          .put<T>(`${url}`, resource.toJson())
           .pipe(map((result) => new this.tConstructor(result)));
   }
 

@@ -1,0 +1,16 @@
+<button
+    [type]="type"
+    class="btn btn-{{ color }}"
+    [ngClass]="{'btn-block': block}"
+    [disabled]="disabled || loading"
+    #buttonLogin
+>
+    <i *ngIf="!!icon" class="mr-2" [ngClass]="icons[icon]"></i>
+    <ng-content></ng-content>
+    <span
+        *ngIf="loading"
+        class="spinner-border spinner-border-sm ml-2"
+        role="status"
+        aria-hidden="true"
+    ></span>
+</button>

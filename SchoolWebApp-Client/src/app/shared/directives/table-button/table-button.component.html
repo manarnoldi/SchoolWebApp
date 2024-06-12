@@ -1,0 +1,9 @@
+<button
+    type="button"
+    class="{{btnClasses}}"
+    data-bs-toggle="modal"
+    attr.data-bs-target="#{{modelName}}FormModal"
+    (click)="clickEvent()"
+    #modalOpenButton>
+    <i class="fas {{btnIcon}}"></i> {{buttonTitle}}
+</button>

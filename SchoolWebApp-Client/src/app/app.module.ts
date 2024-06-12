@@ -11,6 +11,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { environment } from 'environments/environment';
 import { AuthInterceptor } from './core/interceptors/authconfig.interceptor';
 import { LoaderInterceptor } from './core/interceptors/loader.interceptor';
+import { SettingsModule } from './settings/settings.module';
 
 registerLocaleData(localeEn, 'en-EN');
 
@@ -19,7 +20,8 @@ registerLocaleData(localeEn, 'en-EN');
         AppComponent        
     ],
     imports: [               
-        CoreModule,                
+        CoreModule,
+        SettingsModule,
         ToastrModule.forRoot({
             timeOut: 10000,
             positionClass: 'toast-top-full-width',
