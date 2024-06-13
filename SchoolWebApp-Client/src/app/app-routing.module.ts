@@ -21,6 +21,8 @@ import {OccurenceTypesComponent} from './settings/components/occurence-types/occ
 import {OutcomesComponent} from './settings/components/outcomes/outcomes.component';
 import { RelationshipsComponent } from './settings/components/relationships/relationships.component';
 import { ReligionsComponent } from './settings/components/religions/religions.component';
+import { SessionTypesComponent } from './settings/components/session-types/session-types.component';
+import { StaffCategoriesComponent } from './settings/components/staff-categories/staff-categories.component';
 
 const routes: Routes = [
     {
@@ -50,7 +52,9 @@ const routes: Routes = [
             {path: 'occurenceTypes', component: OccurenceTypesComponent},
             {path: 'outcomes', component: OutcomesComponent},
             {path: 'relationships', component: RelationshipsComponent},
-            {path: 'religions', component: ReligionsComponent}
+            { path: 'religions', component: ReligionsComponent },
+            {path: 'sessionTypes', component: SessionTypesComponent},
+            {path: 'staffCategories', component: StaffCategoriesComponent}
         ]
     },
     {

@@ -12,6 +12,8 @@ import { OccurenceTypesComponent } from './components/occurence-types/occurence-
 import { OutcomesComponent } from './components/outcomes/outcomes.component';
 import { RelationshipsComponent } from './components/relationships/relationships.component';
 import { ReligionsComponent } from './components/religions/religions.component';
+import { SessionTypesComponent } from './components/session-types/session-types.component';
+import { StaffCategoriesComponent } from './components/staff-categories/staff-categories.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,9 @@ import { ReligionsComponent } from './components/religions/religions.component';
     OccurenceTypesComponent,
     OutcomesComponent,
     RelationshipsComponent,
-    ReligionsComponent
+    ReligionsComponent,
+    SessionTypesComponent,
+    StaffCategoriesComponent
   ],
   imports: [
     CommonModule,

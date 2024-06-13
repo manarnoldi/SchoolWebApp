@@ -1,0 +1,66 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr />
+<div class="modal fade" id="{{tableModel}}FormModal" tabindex="-1"
+    attr.aria-labelledby="{{tableModel}}ModalLabel" aria-hidden="true" data-bs-backdrop="static"
+    data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success opacity-50">
+                <h5 class="modal-title" id="{{tableModel}}FormModalLabel">
+                    {{tableModel | titlecase }} Details - {{ editMode ? 'Edit' : 'Add' }}
+                </h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"
+                    #closebutton>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="sessionTypeForm" (ngSubmit)="onSubmit()" novalidate>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="name">Name: <span class="requiredField">*</span></label>
+                        <input placeholder="Enter session type name" id="name" type="text"
+                            class="form-control" formControlName="name"
+                            [ngClass]="{ 'is-invalid': (f.name.dirty ||
+                            f.name.touched) && f.name.invalid }"
+                            />
+                        <div class="invalid-feedback"> Session type name is required</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description:</label>
+                        <textarea placeholder="Enter session type description" id="description"
+                            class="form-control" rows="3" formControlName="description"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" [disabled]="sessionTypeForm.invalid" class="btn
+                        btn-success"> <i class="fas fa-save"></i>
+                        {{ editMode ? 'Update' : 'Save' }}
+                    </button>
+                    <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
+                        (click)="resetForm()">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <app-settings-table
+            [buttonTitle]="buttonTitle"
+            [tblModel]="tableModel"
+            [tblName]="tableTitle"
+            [tblHeaders]="tableHeaders"
+            [tblItems]="sessionTypes"
+            [tblShowView]="tblShowViewButton"
+            [collectionSize]="collectionSize"
+            (editItemEvent)="editItem($event)"
+            (deleteItemEvent)="deleteItem($event)"
+            (onInitEvent)="refreshItems()"
+            #settingsTable></app-settings-table>
+    </div>
+</section>
