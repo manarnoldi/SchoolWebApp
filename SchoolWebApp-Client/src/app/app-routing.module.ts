@@ -11,14 +11,16 @@ import {NonAuthGuard} from './core/guards/non-auth.guard';
 import {RegisterComponent} from './core/auth/register/register.component';
 import {ForgotPasswordComponent} from './core/auth/forgot-password/forgot-password.component';
 import {RecoverPasswordComponent} from './core/auth/recover-password/recover-password.component';
-import { DesignationsComponent } from './settings/components/designations/designations.component';
-import { OccupationsComponent } from './settings/components/occupations/occupations.component';
-import { SettingsComponent } from './settings/settings.component';
-import { EmploymentTypesComponent } from './settings/components/employment-types/employment-types.component';
-import { GenderComponent } from './settings/components/gender/gender.component';
-import { NationalitiesComponent } from './settings/components/nationalities/nationalities.component';
-import { OccurenceTypesComponent } from './settings/components/occurence-types/occurence-types.component';
-import { OutcomesComponent } from './settings/components/outcomes/outcomes.component';
+import {DesignationsComponent} from './settings/components/designations/designations.component';
+import {OccupationsComponent} from './settings/components/occupations/occupations.component';
+import {SettingsComponent} from './settings/settings.component';
+import {EmploymentTypesComponent} from './settings/components/employment-types/employment-types.component';
+import {GenderComponent} from './settings/components/gender/gender.component';
+import {NationalitiesComponent} from './settings/components/nationalities/nationalities.component';
+import {OccurenceTypesComponent} from './settings/components/occurence-types/occurence-types.component';
+import {OutcomesComponent} from './settings/components/outcomes/outcomes.component';
+import { RelationshipsComponent } from './settings/components/relationships/relationships.component';
+import { ReligionsComponent } from './settings/components/religions/religions.component';
 
 const routes: Routes = [
     {
@@ -47,6 +49,8 @@ const routes: Routes = [
             {path: 'nationalities', component: NationalitiesComponent},
             {path: 'occurenceTypes', component: OccurenceTypesComponent},
             {path: 'outcomes', component: OutcomesComponent},
+            {path: 'relationships', component: RelationshipsComponent},
+            {path: 'religions', component: ReligionsComponent}
         ]
     },
     {

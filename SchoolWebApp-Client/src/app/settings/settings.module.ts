@@ -10,6 +10,8 @@ import { GenderComponent } from './components/gender/gender.component';
 import { NationalitiesComponent } from './components/nationalities/nationalities.component';
 import { OccurenceTypesComponent } from './components/occurence-types/occurence-types.component';
 import { OutcomesComponent } from './components/outcomes/outcomes.component';
+import { RelationshipsComponent } from './components/relationships/relationships.component';
+import { ReligionsComponent } from './components/religions/religions.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +22,9 @@ import { OutcomesComponent } from './components/outcomes/outcomes.component';
     NationalitiesComponent,
     SettingsComponent,
     OccurenceTypesComponent,
-    OutcomesComponent
+    OutcomesComponent,
+    RelationshipsComponent,
+    ReligionsComponent
   ],
   imports: [
     CommonModule,
