@@ -16,6 +16,8 @@ import { OccupationsComponent } from './settings/components/occupations/occupati
 import { SettingsComponent } from './settings/settings.component';
 import { EmploymentTypesComponent } from './settings/components/employment-types/employment-types.component';
 import { GenderComponent } from './settings/components/gender/gender.component';
+import { NationalitiesComponent } from './settings/components/nationalities/nationalities.component';
+import { OccurenceTypesComponent } from './settings/components/occurence-types/occurence-types.component';
 
 const routes: Routes = [
     {
@@ -41,6 +43,8 @@ const routes: Routes = [
             {path: 'designations', component: DesignationsComponent},
             {path: 'employmentTypes', component: EmploymentTypesComponent},
             {path: 'genders', component: GenderComponent},
+            {path: 'nationalities', component: NationalitiesComponent},
+            {path: 'occurenceTypes', component: OccurenceTypesComponent},
         ]
     },
     {

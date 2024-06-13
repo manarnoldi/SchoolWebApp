@@ -7,6 +7,8 @@ import { SettingsComponent } from './settings.component';
 import { OccupationsComponent } from './components/occupations/occupations.component';
 import { EmploymentTypesComponent } from './components/employment-types/employment-types.component';
 import { GenderComponent } from './components/gender/gender.component';
+import { NationalitiesComponent } from './components/nationalities/nationalities.component';
+import { OccurenceTypesComponent } from './components/occurence-types/occurence-types.component';
 
 @NgModule({
   declarations: [
@@ -14,7 +16,9 @@ import { GenderComponent } from './components/gender/gender.component';
     OccupationsComponent,
     EmploymentTypesComponent,
     GenderComponent,
-    SettingsComponent
+    NationalitiesComponent,
+    SettingsComponent,
+    OccurenceTypesComponent
   ],
   imports: [
     CommonModule,
