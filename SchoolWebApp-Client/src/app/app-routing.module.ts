@@ -15,6 +15,7 @@ import { DesignationsComponent } from './settings/components/designations/design
 import { OccupationsComponent } from './settings/components/occupations/occupations.component';
 import { SettingsComponent } from './settings/settings.component';
 import { EmploymentTypesComponent } from './settings/components/employment-types/employment-types.component';
+import { GenderComponent } from './settings/components/gender/gender.component';
 
 const routes: Routes = [
     {
@@ -38,7 +39,8 @@ const routes: Routes = [
         children: [
             {path: 'occupations', component: OccupationsComponent},
             {path: 'designations', component: DesignationsComponent},
-            {path: 'employmentTypes', component: EmploymentTypesComponent}
+            {path: 'employmentTypes', component: EmploymentTypesComponent},
+            {path: 'genders', component: GenderComponent},
         ]
     },
     {

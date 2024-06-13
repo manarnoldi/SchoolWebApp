@@ -6,12 +6,14 @@ import { DesignationsComponent } from './components/designations/designations.co
 import { SettingsComponent } from './settings.component';
 import { OccupationsComponent } from './components/occupations/occupations.component';
 import { EmploymentTypesComponent } from './components/employment-types/employment-types.component';
+import { GenderComponent } from './components/gender/gender.component';
 
 @NgModule({
   declarations: [
     DesignationsComponent,
     OccupationsComponent,
     EmploymentTypesComponent,
+    GenderComponent,
     SettingsComponent
   ],
   imports: [

@@ -229,7 +229,7 @@ export const MENU = [
             {
                 name: 'Gender',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/settings/gender']
+                path: ['/settings/genders']
             },
             {
                 name: 'Nationality',
