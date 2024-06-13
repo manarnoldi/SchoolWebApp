@@ -14,6 +14,7 @@ import {RecoverPasswordComponent} from './core/auth/recover-password/recover-pas
 import { DesignationsComponent } from './settings/components/designations/designations.component';
 import { OccupationsComponent } from './settings/components/occupations/occupations.component';
 import { SettingsComponent } from './settings/settings.component';
+import { EmploymentTypesComponent } from './settings/components/employment-types/employment-types.component';
 
 const routes: Routes = [
     {
@@ -36,7 +37,8 @@ const routes: Routes = [
         canActivateChild: [AuthGuard],
         children: [
             {path: 'occupations', component: OccupationsComponent},
-            {path: 'designations', component: DesignationsComponent}
+            {path: 'designations', component: DesignationsComponent},
+            {path: 'employmentTypes', component: EmploymentTypesComponent}
         ]
     },
     {

@@ -5,11 +5,13 @@ import { SharedModule } from '@/shared/shared.module';
 import { DesignationsComponent } from './components/designations/designations.component';
 import { SettingsComponent } from './settings.component';
 import { OccupationsComponent } from './components/occupations/occupations.component';
+import { EmploymentTypesComponent } from './components/employment-types/employment-types.component';
 
 @NgModule({
   declarations: [
     DesignationsComponent,
     OccupationsComponent,
+    EmploymentTypesComponent,
     SettingsComponent
   ],
   imports: [

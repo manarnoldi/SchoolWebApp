@@ -1,20 +1,20 @@
 import { BreadCrumb } from '@/core/models/bread-crumb';
-import { Occupation } from '@/settings/models/occupation';
-import { OccupationsService } from '@/settings/services/occupations.service';
+import { EmploymentType } from '@/settings/models/employment-type';
+import { EmploymentTypeService } from '@/settings/services/employment-type.service';
 import { SettingsTableComponent } from '@/shared/directives/settings-table/settings-table.component';
 import { TableSettingsService } from '@/shared/services/table-settings.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription, forkJoin } from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-occupations',
-  templateUrl: './occupations.component.html',
-  styleUrl: './occupations.component.scss'
+  selector: 'app-employment-types',
+  templateUrl: './employment-types.component.html',
+  styleUrl: './employment-types.component.scss'
 })
-export class OccupationsComponent implements OnInit{
+export class EmploymentTypesComponent implements OnInit{
   @ViewChild('closebutton') closeButton;
   @ViewChild(SettingsTableComponent) settingsTblBtn: SettingsTableComponent;
   page = 1;
@@ -22,32 +22,32 @@ export class OccupationsComponent implements OnInit{
   pageSubscription: Subscription;
   pageSizeSubscription: Subscription;
 
-  occupationForm: FormGroup;
+  employmentTypeForm: FormGroup;
 
-  buttonTitle: string = 'Add occupation';
-  tableModel: string = 'occupation';
-  tableTitle: string = 'Occupations list';
+  buttonTitle: string = 'Add employment type';
+  tableModel: string = 'employmentType';
+  tableTitle: string = 'Employment Types list';
   tableHeaders: string[] = ['Name', 'Description', 'Action'];
 
   editMode = false;
-  occupation: Occupation;
+  employmentType: EmploymentType;
   isAuthLoading: boolean;
-  occupations: Occupation[] = [];
+  employmentTypes: EmploymentType[] = [];
   tblShowViewButton: false;
 
   collectionSize = 0;
 
   constructor(
-      private occupationsSvc: OccupationsService,
+      private employmentTypeSvc: EmploymentTypeService,
       private toastr: ToastrService,
       private formBuilder: FormBuilder,
       private tableSettingsSvc: TableSettingsService
   ) {}
   closeResult = '';
-  dashboardTitle = 'Occupations list';
+  dashboardTitle = 'Employment types list';
   breadcrumbs: BreadCrumb[] = [
       {link: ['/'], title: 'Home'},
-      {link: ['/settings/occupations'], title: 'Settings:Occupations'}
+      {link: ['/settings/employmentTypes'], title: 'Settings:Employment types'}
   ];
 
   deleteItem(id) {
@@ -63,7 +63,7 @@ export class OccupationsComponent implements OnInit{
           cancelButtonText: 'Cancel'
       }).then((result) => {
           if (result.value) {
-              this.occupationsSvc.delete('/occupations', id).subscribe(
+              this.employmentTypeSvc.delete('/employmentTypes', id).subscribe(
                   (res) => {
                       this.refreshItems();
                       this.toastr.success('Record deleted successfully!');
@@ -78,12 +78,12 @@ export class OccupationsComponent implements OnInit{
   }
 
   editItem(id) {
-      this.occupationsSvc.getById(id, '/occupations').subscribe(
+      this.employmentTypeSvc.getById(id, '/employmentTypes').subscribe(
           (res) => {
-              this.occupation = new Occupation(res);
-              this.occupationForm.setValue({
-                  name: this.occupation.name,
-                  description: this.occupation.description
+              this.employmentType = new EmploymentType(res);
+              this.employmentTypeForm.setValue({
+                  name: this.employmentType.name,
+                  description: this.employmentType.description
               });
               this.editMode = true;
               this.settingsTblBtn.onButtonClick();
@@ -95,7 +95,7 @@ export class OccupationsComponent implements OnInit{
   }
 
   onSubmit() {
-      if (this.occupationForm.invalid) {
+      if (this.employmentTypeForm.invalid) {
           return;
       }
 
@@ -114,23 +114,23 @@ export class OccupationsComponent implements OnInit{
       }).then((result) => {
           if (result.value) {
               if (this.editMode) {
-                  this.occupation.name =
-                      this.occupationForm.get('name').value;
-                  this.occupation.description =
-                      this.occupationForm.get('description').value;
+                  this.employmentType.name =
+                      this.employmentTypeForm.get('name').value;
+                  this.employmentType.description =
+                      this.employmentTypeForm.get('description').value;
               }
 
               let reqToProcess = this.editMode
-                  ? this.occupationsSvc.update(
-                        '/occupations',
-                        this.occupation
+                  ? this.employmentTypeSvc.update(
+                        '/employmentTypes',
+                        this.employmentType
                     )
-                  : this.occupationsSvc.create(
-                        '/occupations',
-                        new Occupation(this.occupationForm.value)
+                  : this.employmentTypeSvc.create(
+                        '/employmentTypes',
+                        new EmploymentType(this.employmentTypeForm.value)
                     );
 
-              let replyMsg = `Occupation ${
+              let replyMsg = `EmploymentType ${
                   this.editMode ? 'updated' : 'created'
               } successfully!`;
               forkJoin([reqToProcess]).subscribe(
@@ -138,7 +138,7 @@ export class OccupationsComponent implements OnInit{
                       this.editMode = false;
                       this.toastr.success(replyMsg);
                       this.refreshItems();
-                      this.occupationForm.reset();
+                      this.employmentTypeForm.reset();
                       this.closeButton.nativeElement.click();
                   },
                   (err) => {
@@ -151,19 +151,19 @@ export class OccupationsComponent implements OnInit{
   }
 
   get f() {
-      return this.occupationForm.controls;
+      return this.employmentTypeForm.controls;
   }
 
   refreshItems() {
-      this.occupationForm = this.formBuilder.group({
+      this.employmentTypeForm = this.formBuilder.group({
           name: ['', [Validators.required]],
           description: ['']
       });
 
-      this.occupationsSvc.get('/occupations').subscribe(
+      this.employmentTypeSvc.get('/employmentTypes').subscribe(
           (res) => {
               this.collectionSize = res.length;
-              this.occupations = res.slice(
+              this.employmentTypes = res.slice(
                   (this.page - 1) * this.pageSize,
                   (this.page - 1) * this.pageSize + this.pageSize
               );
@@ -172,7 +172,7 @@ export class OccupationsComponent implements OnInit{
           },
           (err) => {
               this.toastr.error(
-                  'An error occured while fetching the occupations. Contact system administrator.'
+                  'An error occured while fetching the employment types. Contact system administrator.'
               );
               this.isAuthLoading = false;
           }
@@ -190,7 +190,7 @@ export class OccupationsComponent implements OnInit{
   }
 
   resetForm() {
-      this.occupationForm.reset();
+      this.employmentTypeForm.reset();
       this.editMode = false;
   }
 }

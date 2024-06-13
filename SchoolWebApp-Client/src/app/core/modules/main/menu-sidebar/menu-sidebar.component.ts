@@ -68,9 +68,34 @@ export const MENU = [
                 path: ['/school']
             },
             {
+                name: 'Education Level Types',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/settings/educationLevelTypes']
+            },
+            {
+                name: 'Education Levels',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/settings/educationLevels']
+            },
+            {
                 name: 'Academis years',
                 iconClasses: 'fas fa-bullseye',
                 path: ['/school']
+            },
+            {
+                name: 'Learning Modes',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/settings/learningModes']
+            },
+            {
+                name: 'Learning Levels',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/settings/learningLevels']
+            },
+            {
+                name: 'Streams',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/settings/streams']
             }
         ]
     },
@@ -156,6 +181,11 @@ export const MENU = [
                 path: ['/academics']
             },
             {
+                name: 'Curricula',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/settings/curricula']
+            },
+            {
                 name: 'Grading System',
                 iconClasses: 'fas fa-bullseye',
                 path: ['/academics']
@@ -190,41 +220,11 @@ export const MENU = [
                 name: 'Occupations',
                 iconClasses: 'fas fa-bullseye',
                 path: ['/settings/occupations']
-            },
-            {
-                name: 'Education Level Types',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/settings/educationLevelTypes']
-            },
-            {
-                name: 'Education Levels',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/settings/educationLevels']
-            },
-            {
-                name: 'Learning Modes',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/settings/learningModes']
-            },
-            {
-                name: 'Learning Levels',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/settings/learningLevels']
-            },
-            {
-                name: 'Streams',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/settings/streams']
-            },
-            {
-                name: 'Curricula',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/settings/curricula']
-            },
+            },            
             {
                 name: 'Employment types',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/settings/environmentTypes']
+                path: ['/settings/employmentTypes']
             },
             {
                 name: 'Gender',

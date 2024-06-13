@@ -142,7 +142,7 @@ export class DesignationsComponent implements OnInit {
                         this.closeButton.nativeElement.click();
                     },
                     (err) => {
-                        this.toastr.error(err.error);
+                        this.toastr.error(err.error?.message);
                     }
                 );
             } else if (result.dismiss === Swal.DismissReason.cancel) {
