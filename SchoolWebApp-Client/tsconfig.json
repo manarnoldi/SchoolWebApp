@@ -14,6 +14,7 @@
         "lib": ["es2018", "dom"],
         "resolveJsonModule": true,
         "esModuleInterop": true,
+        "skipLibCheck": true,
         "paths": {
             "path": ["../node_modules/path-browserify"],
             "os": ["../node_modules/os-browserify/browser"],

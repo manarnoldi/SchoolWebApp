@@ -87,7 +87,8 @@ import { AppRoutingModule } from '@/app-routing.module';
         RecoverPasswordComponent,
         AppRoutingModule,
         ReactiveFormsModule,
-        FormsModule
+        FormsModule,
+        CommonModule
     ]
 })
 export class CoreModule {}

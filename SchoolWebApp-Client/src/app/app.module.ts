@@ -12,6 +12,8 @@ import { environment } from 'environments/environment';
 import { AuthInterceptor } from './core/interceptors/authconfig.interceptor';
 import { LoaderInterceptor } from './core/interceptors/loader.interceptor';
 import { SettingsModule } from './settings/settings.module';
+import { NgxSpinnerModule } from 'ngx-spinner';
+import { NgIdleModule } from '@ng-idle/core';
 
 registerLocaleData(localeEn, 'en-EN');
 
@@ -19,7 +21,8 @@ registerLocaleData(localeEn, 'en-EN');
     declarations: [
         AppComponent        
     ],
-    imports: [               
+    imports: [   
+        NgxSpinnerModule,
         CoreModule,
         SettingsModule,
         ToastrModule.forRoot({
@@ -30,7 +33,9 @@ registerLocaleData(localeEn, 'en-EN');
             easing: 'ease-in',
             easeTime: 1000,
             progressBar: true
-        }), NgbModule        
+        }),
+        NgbModule,
+        NgIdleModule.forRoot()
     ],
     providers: [
         NgbActiveModal,

@@ -12,6 +12,7 @@ import {ToastrService} from 'ngx-toastr';
 import {AuthService} from '@/core/services/auth.service';
 import {User} from '@/core/models/User';
 import {Router} from '@angular/router';
+import { AppService } from '@/core/services/app.service';
 
 @Component({
     selector: 'app-login',
@@ -32,6 +33,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         private renderer: Renderer2,
         private toastr: ToastrService,
         private authService: AuthService,
+        private appService: AppService,
         public router: Router
     ) {}
 
@@ -78,6 +80,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                             });
 
                             this.authService.setCurrentUser(cuUser);
+                            this.appService.setUserLoggedIn(true);
                             this.router.navigate(['/']);
                             // this.spinner.hide();
                         },

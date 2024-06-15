@@ -8,7 +8,7 @@ import {
 } from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
 import {catchError, finalize} from 'rxjs/operators';
-import {NgxSpinnerService} from 'ngx-spinner';
+import { NgxSpinnerService } from 'ngx-spinner';
 @Injectable()
 export class LoaderInterceptor implements HttpInterceptor {
     constructor(private spinner: NgxSpinnerService) {}

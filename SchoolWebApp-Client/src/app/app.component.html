@@ -1,1 +1,101 @@
+<!-- <div>IDLE_STATE: {{idleState}}, COUNTDOWN: {{countdown}}, LAST_PING: {{lastPing | date}}</div> -->
 <router-outlet></router-outlet>
+<ngx-spinner
+    bdColor="rgba(0, 0, 0, 0.8)"
+    size="large"
+    color="#ff4081"
+    type="ball-clip-rotate-pulse"
+    [fullScreen]="true"><p style="color: white">Loading...</p></ngx-spinner>
+
+<ng-template #childModal let-modal>
+    <div class="modal-header bg-success opacity-50">
+        <h4 class="modal-title" id="modal-basic-title">{{'Idle mode detected' | titlecase }}</h4>
+        <button type="button" class="btn-close" aria-label="Close"
+            (click)="modal.close('resume')"></button>
+    </div>
+    <div class="modal-body">
+        <div class="card-details-box border-success">
+            {{idleState}}
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" (click)="modal.close('logout')" class="btn btn-danger"><i
+                class="fas fa-sign-out-alt"></i> Log out</button>
+        <button type="button" (click)="modal.close('resume')" class="btn btn-success"><i
+                class="fas fa-check"></i> Resume</button>
+    </div>
+</ng-template>
+
+<!-- <div class="modal fade" #childModal tabindex="-1" attr.aria-labelledby="childModalModalLabel"
+    data-bs-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header bg-success opacity-50">
+                <h5 class="modal-title" id="childModalFormModalLabel">
+                    {{'Idle mode detected' | titlecase }}
+                </h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"
+                    #closebutton>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="card-details-box border-success">
+                    {{idleState}}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" (click)="logout()" class="btn btn-danger"><i
+                        class="fas fa-sign-out-alt"></i> Logout</button>
+                <button type="button" (click)="stay()" class="btn btn-success"><i
+                        class="fas fa-check"></i> Stay</button>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+<!-- <div bsModal #childModal="bs-modal" class="modal fade" tabindex="-1" #staticModal="bs-modal"
+    [config]="{backdrop: 'static'}" aria-labelledby="bs-modal-label">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="dialog-child-name" class="modal-title pull-left">You have been Idle!</h4>
+                <button type="button" class="close pull-right" aria-label="Close"
+                    (click)="hideChildModal()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card-details-box border-success">
+                    {{idleState}}
+                </div>
+                <div class="row mrgbtm">
+                    <div class="col-md-6">
+                        <button type="button" (click)="logout()"
+                            class="btn btn-danger">Logout</button>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="button" (click)="stay()" class="btn btn-success">Stay</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+<!-- <div *ngIf="isIdleState">
+    <div class="modal-dialog modal-sm" style="display:block;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>Session Timeout warning</h4>
+            </div>
+            <div class="modal-body">
+                you will be timed out in {{countdown}}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" (click)="reset()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div> -->

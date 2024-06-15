@@ -25,8 +25,9 @@
                         "assets": ["src/favicon.ico", "src/assets"],
                         "styles": [
                             "node_modules/ngx-toastr/toastr.css",
-                            "src/styles.scss",
-                            "node_modules/bootstrap/dist/css/bootstrap.min.css"
+                            "node_modules/bootstrap/dist/css/bootstrap.min.css",
+                            "node_modules/ngx-spinner/animations/ball-clip-rotate-pulse.css",
+                            "src/styles.scss"
                         ],
                         "scripts": [
                             "node_modules/jquery/dist/jquery.min.js",
@@ -99,8 +100,9 @@
 
                         "styles": [
                             "node_modules/ngx-toastr/toastr.css",
-                            "src/styles.scss",
-                            "node_modules/bootstrap/dist/css/bootstrap.min.css"
+                            "node_modules/ngx-spinner/animations/ball-clip-rotate-pulse.css",
+                            "node_modules/bootstrap/dist/css/bootstrap.min.css",
+                            "src/styles.scss"
                         ],
                         "scripts": [
                             "node_modules/jquery/dist/jquery.min.js",

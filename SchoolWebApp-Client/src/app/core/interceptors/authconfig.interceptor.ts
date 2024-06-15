@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@angular/core";
 import { HttpInterceptor, HttpRequest, HttpHandler } from "@angular/common/http";
 import { AuthService } from "../services/auth.service";
+import { catchError,  throwError } from "rxjs";
 
 @Injectable()
 
@@ -15,6 +16,12 @@ export class AuthInterceptor implements HttpInterceptor {
             },
             url: `${this.baseUrl}${req.url}`
         });
-        return next.handle(req);
+        return next.handle(req).pipe(
+            catchError((error) => {
+            if (error.status === 401) {
+                this.authService.doLogout();
+            }
+            return throwError(error);
+          }));
     }
 }
