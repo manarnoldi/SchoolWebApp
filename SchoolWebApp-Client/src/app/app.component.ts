@@ -1,8 +1,4 @@
-import {
-    Component,
-    ViewChild,
-    inject
-} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, ViewChild, inject} from '@angular/core';
 import {DEFAULT_INTERRUPTSOURCES, Idle} from '@ng-idle/core';
 import {AuthService} from './core/services/auth.service';
 import {AppService} from './core/services/app.service';
@@ -14,7 +10,7 @@ import {Router} from '@angular/router';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
-export class AppComponent{
+export class AppComponent implements OnInit{
     @ViewChild('childModal', {static: false}) private childModal;
     private modalService = inject(NgbModal);
     modalReference: any;
@@ -28,20 +24,23 @@ export class AppComponent{
     // add parameters for Idle and Keepalive (if using) so Angular will inject them from the module
     constructor(
         private idle: Idle,
+        cd: ChangeDetectorRef,
         private authService: AuthService,
         private appService: AppService,
         public router: Router
     ) {
         // sets an idle timeout of 5 seconds, for testing purposes.
-        idle.setIdle(5);
+        idle.setIdle(300);
         // sets a timeout period of 5 seconds. after 10 seconds of inactivity, the user will be considered timed out.
-        idle.setTimeout(5);
+        idle.setTimeout(60);
         // sets the default interrupts, in this case, things like clicks, scrolls, touches to the document
         idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
 
         idle.onIdleEnd.subscribe(() => {
             this.idleState = 'No longer idle.';
-            this.reset();
+            // idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
+            // idle.watch();
+            this.timedOut = false;
         });
 
         idle.onTimeout.subscribe(() => {
@@ -55,7 +54,7 @@ export class AppComponent{
         idle.onIdleStart.subscribe(() => {
             this.idleState = "You've gone idle!";
             this.isIdleState = true;
-            this.idle.clearInterrupts();
+            idle.clearInterrupts();
             this.modalReference = this.modalService.open(this.childModal, {
                 backdrop: 'static',
                 backdropClass: 'light-blue-backdrop'
@@ -67,7 +66,10 @@ export class AppComponent{
                     this.appService.setUserLoggedIn(false);
                     this.authService.doLogout();
                 } else if (result == 'resume') {
-                    this.reset();
+                    idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
+                    idle.watch();
+                    this.timedOut = false;
+                    this.idleState = 'Resumed.';
                 }
             });
         });
@@ -77,24 +79,21 @@ export class AppComponent{
                 'You will be logged out in ' + countdown + ' seconds!';
         });
 
-        this.appService.getUserLoggedIn().subscribe((userLoggedIn) => {
-            if (userLoggedIn) {
-                idle.watch();
-                this.timedOut = false;
-                this.idleState = 'Not started.';
-            } else {
-                idle.stop();
-                this.router.navigate(['/login']);
-            }
-        });
+        
 
         // this.reset();
     }
-
-    reset() {
-        this.idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
-        this.idle.watch();
-        // this.idleState = 'Started.';
-        this.timedOut = false;
+    ngOnInit(): void {
+        this.appService.getUserLoggedIn().subscribe((userLoggedIn) => {
+            if (userLoggedIn) {
+                this.idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
+                this.idle.watch();
+                this.timedOut = false;
+                this.idleState = 'Watching.';
+            } else {
+                this.idle.stop();
+                this.router.navigate(['/login']);
+            }
+        });
     }
 }

@@ -31,7 +31,6 @@ import { StaffCategoriesComponent } from './components/staff-categories/staff-ca
     StaffCategoriesComponent
   ],
   imports: [
-    CommonModule,
     CoreModule,
     SharedModule
   ]

@@ -45,57 +45,57 @@ export const MENU = [
             {
                 name: 'Details',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/school']
+                path: ['/school/details']
             },
             {
                 name: 'Departments',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/school']
+                path: ['/school/departments']
             },
             {
                 name: 'Events',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/school']
+                path: ['/school/events']
             },
             {
                 name: 'Classes',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/school']
-            },
-            {
-                name: 'Sessions',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/school']
-            },
-            {
-                name: 'Education Level Types',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/settings/educationLevelTypes']
-            },
-            {
-                name: 'Education Levels',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/settings/educationLevels']
-            },
-            {
-                name: 'Academis years',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/school']
-            },
-            {
-                name: 'Learning Modes',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/settings/learningModes']
-            },
-            {
-                name: 'Learning Levels',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/settings/learningLevels']
+                path: ['/school/classes']
             },
             {
                 name: 'Streams',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/settings/streams']
+                path: ['/school/streams']
+            },
+            {
+                name: 'Sessions',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/school/sessions']
+            },
+            {
+                name: 'Education level types',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/school/educationLevelTypes']
+            },
+            {
+                name: 'Education levels',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/school/educationLevels']
+            },
+            {
+                name: 'Academis years',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/school/academicYears']
+            },
+            {
+                name: 'Learning modes',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/school/learningModes']
+            },
+            {
+                name: 'Learning levels',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/school/learningLevels']
             }
         ]
     },

@@ -14,6 +14,7 @@ import { LoaderInterceptor } from './core/interceptors/loader.interceptor';
 import { SettingsModule } from './settings/settings.module';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { NgIdleModule } from '@ng-idle/core';
+import { SchoolModule } from './school/school.module';
 
 registerLocaleData(localeEn, 'en-EN');
 
@@ -25,6 +26,7 @@ registerLocaleData(localeEn, 'en-EN');
         NgxSpinnerModule,
         CoreModule,
         SettingsModule,
+        SchoolModule,
         ToastrModule.forRoot({
             timeOut: 10000,
             positionClass: 'toast-top-full-width',

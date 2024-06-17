@@ -19,10 +19,12 @@ import {GenderComponent} from './settings/components/gender/gender.component';
 import {NationalitiesComponent} from './settings/components/nationalities/nationalities.component';
 import {OccurenceTypesComponent} from './settings/components/occurence-types/occurence-types.component';
 import {OutcomesComponent} from './settings/components/outcomes/outcomes.component';
-import { RelationshipsComponent } from './settings/components/relationships/relationships.component';
-import { ReligionsComponent } from './settings/components/religions/religions.component';
-import { SessionTypesComponent } from './settings/components/session-types/session-types.component';
-import { StaffCategoriesComponent } from './settings/components/staff-categories/staff-categories.component';
+import {RelationshipsComponent} from './settings/components/relationships/relationships.component';
+import {ReligionsComponent} from './settings/components/religions/religions.component';
+import {SessionTypesComponent} from './settings/components/session-types/session-types.component';
+import {StaffCategoriesComponent} from './settings/components/staff-categories/staff-categories.component';
+import { LearningModesComponent } from './school/components/learning-modes/learning-modes.component';
+import { SchoolComponent } from './school/school.component';
 
 const routes: Routes = [
     {
@@ -39,6 +41,25 @@ const routes: Routes = [
         ]
     },
     {
+        path: 'school',
+        component: SchoolComponent,
+        canActivate: [AuthGuard],
+        canActivateChild: [AuthGuard],
+        children: [
+            {path: 'learningModes', component: LearningModesComponent},
+            // {path: 'designations', component: DesignationsComponent},
+            // {path: 'employmentTypes', component: EmploymentTypesComponent},
+            // {path: 'genders', component: GenderComponent},
+            // {path: 'nationalities', component: NationalitiesComponent},
+            // {path: 'occurenceTypes', component: OccurenceTypesComponent},
+            // {path: 'outcomes', component: OutcomesComponent},
+            // {path: 'relationships', component: RelationshipsComponent},
+            // {path: 'religions', component: ReligionsComponent},
+            // {path: 'sessionTypes', component: SessionTypesComponent},
+            // {path: 'staffCategories', component: StaffCategoriesComponent}
+        ]
+    },
+    {
         path: 'settings',
         component: SettingsComponent,
         canActivate: [AuthGuard],
@@ -52,7 +73,7 @@ const routes: Routes = [
             {path: 'occurenceTypes', component: OccurenceTypesComponent},
             {path: 'outcomes', component: OutcomesComponent},
             {path: 'relationships', component: RelationshipsComponent},
-            { path: 'religions', component: ReligionsComponent },
+            {path: 'religions', component: ReligionsComponent},
             {path: 'sessionTypes', component: SessionTypesComponent},
             {path: 'staffCategories', component: StaffCategoriesComponent}
         ]
