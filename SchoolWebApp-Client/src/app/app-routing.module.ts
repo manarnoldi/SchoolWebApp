@@ -26,6 +26,7 @@ import {StaffCategoriesComponent} from './settings/components/staff-categories/s
 import { LearningModesComponent } from './school/components/learning-modes/learning-modes.component';
 import { SchoolComponent } from './school/school.component';
 import { SchoolDetailsComponent } from './school/components/school-details/school-details.component';
+import { SchoolStreamsComponent } from './school/components/school-streams/school-streams.component';
 
 const routes: Routes = [
     {
@@ -49,6 +50,7 @@ const routes: Routes = [
         children: [
             {path: 'learningModes', component: LearningModesComponent},
             {path: 'details', component: SchoolDetailsComponent},
+            {path: 'streams', component: SchoolStreamsComponent},
             // {path: 'employmentTypes', component: EmploymentTypesComponent},
             // {path: 'genders', component: GenderComponent},
             // {path: 'nationalities', component: NationalitiesComponent},
