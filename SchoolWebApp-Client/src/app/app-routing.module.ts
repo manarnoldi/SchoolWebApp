@@ -23,10 +23,11 @@ import {RelationshipsComponent} from './settings/components/relationships/relati
 import {ReligionsComponent} from './settings/components/religions/religions.component';
 import {SessionTypesComponent} from './settings/components/session-types/session-types.component';
 import {StaffCategoriesComponent} from './settings/components/staff-categories/staff-categories.component';
-import { LearningModesComponent } from './school/components/learning-modes/learning-modes.component';
-import { SchoolComponent } from './school/school.component';
-import { SchoolDetailsComponent } from './school/components/school-details/school-details.component';
-import { SchoolStreamsComponent } from './school/components/school-streams/school-streams.component';
+import {LearningModesComponent} from './school/components/learning-modes/learning-modes.component';
+import {SchoolComponent} from './school/school.component';
+import {SchoolDetailsComponent} from './school/components/school-details/school-details.component';
+import {SchoolStreamsComponent} from './school/components/school-streams/school-streams.component';
+import { EducationLevelTypesComponent } from './school/components/education-level-types/education-level-types.component';
 
 const routes: Routes = [
     {
@@ -51,7 +52,7 @@ const routes: Routes = [
             {path: 'learningModes', component: LearningModesComponent},
             {path: 'details', component: SchoolDetailsComponent},
             {path: 'streams', component: SchoolStreamsComponent},
-            // {path: 'employmentTypes', component: EmploymentTypesComponent},
+            {path: 'educationLevelTypes', component: EducationLevelTypesComponent}
             // {path: 'genders', component: GenderComponent},
             // {path: 'nationalities', component: NationalitiesComponent},
             // {path: 'occurenceTypes', component: OccurenceTypesComponent},

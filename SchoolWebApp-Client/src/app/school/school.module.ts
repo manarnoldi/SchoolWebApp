@@ -6,6 +6,7 @@ import { LearningModesComponent } from './components/learning-modes/learning-mod
 import { ExamTypesComponent } from './components/exam-types/exam-types.component';
 import { SchoolDetailsComponent } from './components/school-details/school-details.component';
 import { SchoolStreamsComponent } from './components/school-streams/school-streams.component';
+import { EducationLevelTypesComponent } from './components/education-level-types/education-level-types.component';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import { SchoolStreamsComponent } from './components/school-streams/school-strea
     LearningModesComponent,
     ExamTypesComponent,
     SchoolDetailsComponent,
-    SchoolStreamsComponent
+    SchoolStreamsComponent,
+    EducationLevelTypesComponent
   ],
   imports: [
     CoreModule,
