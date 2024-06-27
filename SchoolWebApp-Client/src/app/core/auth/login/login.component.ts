@@ -5,7 +5,7 @@ import {
     Renderer2,
     HostBinding
 } from '@angular/core';
-import {DateTime} from 'Luxon';
+import {DateTime} from 'luxon';
 
 import {UntypedFormGroup, UntypedFormControl, Validators} from '@angular/forms';
 import {ToastrService} from 'ngx-toastr';

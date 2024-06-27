@@ -1,0 +1,195 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr />
+
+<section class="content">
+    <div class="container-fluid">
+        <form [formGroup]="schoolDetailsForm" (ngSubmit)="onSubmit()">
+            <div class="row p-1" align="right" *ngIf="canAddEdit">
+                <div class="col-md-12">
+                    <a (click)="editSchoolDetails()" class="edit" title data-toggle="tooltip"
+                        role="button"
+                        data-original-title="Edit school details"> <i class="fas fa-edit"></i> {{
+                        readonly ? 'Edit' : 'Stop editing ' }} school details</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="card card-success card-outline">
+                        <div class="card-body box-profile">
+                            <div class="text-center">
+                                <img class="profile-user-img img-fluid img-circle"
+                                    [src]="schoolLogoUrl" alt="School logo" />
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group" *ngIf="!readonly">
+                                    <label for="logoUrl" class="form-label">Select logo:</label>
+                                    <input class="form-control-file" type="file" id="logoUrl"
+                                        (change)="onFileChange($event)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="name" class="form-label">School name:</label>
+                                    <input type="text" class="form-control" id="name"
+                                        formControlName="name" placeholder="Enter school name"
+                                        [ngClass]="{ 'is-invalid': (f.name.dirty || f.name.touched)
+                                        && f.name.invalid }" />
+                                    <div class="invalid-feedback"> School name is required </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email" class="form-label">School email:</label>
+                                    <input type="email" class="form-control" id="email"
+                                        formControlName="email" placeholder="Enter school email"
+                                        [ngClass]="{ 'is-invalid': (f.email.dirty ||
+                                        f.email.touched) && f.email.invalid }" />
+                                    <div class="invalid-feedback"> School email is invalid </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="telephone" class="form-label">Phone number:</label>
+                                    <input placeholder="Enter school phone number" type="text"
+                                        class="form-control" id="telephone"
+                                        formControlName="telephone" [ngClass]="{ 'is-invalid': (f.telephone.dirty ||
+                                        f.telephone.touched) && f.telephone.invalid }" />
+                                    <div class="invalid-feedback"> School telephone number is invalid </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="initials" class="form-label">Initials:</label>
+                                    <input placeholder="Enter school initials" type="text"
+                                        class="form-control" id="initials"
+                                        formControlName="initials" [ngClass]="{ 'is-invalid': (f.initials.dirty ||
+                                        f.initials.touched) && f.initials.invalid }" />
+                                    <div class="invalid-feedback"> School initials is invalid </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="reportHeader" class="form-label">Report
+                                        header:</label>
+                                    <input placeholder="Enter school report header" type="text"
+                                        class="form-control" id="reportHeader"
+                                        formControlName="reportHeader" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="reportTitle" class="form-label">Report
+                                        title:</label>
+                                    <input placeholder="Enter school report title" type="text"
+                                        class="form-control" id="reportTitle"
+                                        formControlName="reportTitle" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="reportSubTitle" class="form-label">Report
+                                        subtitle:</label>
+                                    <input placeholder="Enter school report sub title" type="text"
+                                        class="form-control" id="reportSubTitle"
+                                        formControlName="reportSubTitle" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="reportTitleDetails" class="form-label">Report title
+                                        details:</label>
+                                    <input placeholder="Enter school report title details"
+                                        type="text"
+                                        class="form-control" id="reportTitleDetails"
+                                        formControlName="reportTitleDetails" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="card card-success card-outline">
+                        <div class="card-body">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="motto" class="form-label">Motto:</label>
+                                    <textarea placeholder="Enter school motto"
+                                        class="form-control" id="motto" rows="2"
+                                        formControlName="motto"  [ngClass]="{ 'is-invalid': (f.motto.dirty || f.motto.touched)
+                                        && f.motto.invalid }"></textarea>
+                                    <div class="invalid-feedback"> School motto is required </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="vision" class="form-label">Vision:</label>
+                                    <textarea placeholder="Enter school vision"
+                                        class="form-control" id="vision" rows="2"
+                                        formControlName="vision"  [ngClass]="{ 'is-invalid': (f.vision.dirty || f.vision.touched)
+                                        && f.vision.invalid }"></textarea>
+                                    <div class="invalid-feedback"> School vision is required </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="mission" class="form-label">Mission:</label>
+                                    <textarea placeholder="Enter school mission"
+                                        class="form-control" id="mission" rows="2"
+                                        formControlName="mission"  [ngClass]="{ 'is-invalid': (f.mission.dirty || f.mission.touched)
+                                        && f.mission.invalid }"></textarea>
+                                    <div class="invalid-feedback"> School mission is required </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="website" class="form-label">Website:</label>
+                                    <input placeholder="Enter school website" type="text"
+                                        class="form-control" id="website"
+                                        formControlName="website" [ngClass]="{ 'is-invalid': (f.website.dirty ||
+                                        f.website.touched) && f.website.invalid }" />
+                                    <div class="invalid-feedback"> School website is invalid </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="address" class="form-label">Address:</label>
+                                    <textarea placeholder="Enter school address"
+                                        class="form-control" id="address" rows="2"
+                                        formControlName="address"
+                                        [ngClass]="{ 'is-invalid': (f.address.dirty || f.address.touched)
+                                        && f.address.invalid }"></textarea>
+                                    <div class="invalid-feedback"> School address is required </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="otherDetails" class="form-label">Other
+                                        details:</label>
+                                    <textarea placeholder="Enter school details"
+                                        class="form-control" id="otherDetails" rows="2"
+                                        formControlName="otherDetails"></textarea>
+                                </div>
+                                <div>
+                                    <label>School levels available:</label><br>
+                                    <div class="form-group clearfix">
+                                        <div class="icheck-success d-inline">
+                                            <input class="form-check-input" type="checkbox"
+                                                formControlName="prePrimary" id="prePrimary">
+                                            <label class="form-check-label"
+                                                for="prePrimary">Pre-Primary </label>
+                                        </div>&nbsp;
+                                        <div class="icheck-success d-inline">
+                                            <input class="form-check-input" type="checkbox"
+                                                formControlName="lowerPrimary" id="lowerPrimary">
+                                            <label class="form-check-label" for="lowerPrimary">
+                                                Lower Primary </label>
+                                        </div>&nbsp;
+                                        <div class="icheck-success d-inline">
+                                            <input class="form-check-input" type="checkbox"
+                                                formControlName="upperPrimary" id="upperPrimary">
+                                            <label class="form-check-label" for="upperPrimary">
+                                                Upper Primary </label>
+                                        </div>&nbsp;
+                                        <div class="icheck-success d-inline">
+                                            <input class="form-check-input" type="checkbox"
+                                                formControlName="juniorSchool" id="juniorSchool">
+                                            <label class="form-check-label" for="juniorSchool">
+                                                Junior school </label>
+                                        </div>&nbsp;
+                                        <div class="icheck-success d-inline">
+                                            <input class="form-check-input" type="checkbox"
+                                                formControlName="seniorSchool" id="seniorSchool">
+                                            <label class="form-check-label" for="seniorSchool">
+                                                Senior school </label>
+                                        </div>&nbsp;
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer" align="right" *ngIf="!readonly">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Update Records
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>

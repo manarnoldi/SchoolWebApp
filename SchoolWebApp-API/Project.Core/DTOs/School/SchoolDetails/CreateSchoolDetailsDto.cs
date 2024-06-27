@@ -35,6 +35,11 @@ namespace SchoolWebApp.Core.DTOs.School.SchoolDetails
         [StringLength(255)]
         public string Vision { get; set; }
 
+        [Required(ErrorMessage = "Enter the shool mission")]
+        [Display(Name = "School mission")]
+        [StringLength(255)]
+        public string Mission { get; set; }
+
         [Required(ErrorMessage = "Enter the shool initials")]
         [Display(Name = "School initials")]
         [StringLength(255)]
@@ -49,6 +54,36 @@ namespace SchoolWebApp.Core.DTOs.School.SchoolDetails
         [StringLength(255)]
         public string LogoUrl { get; set; }
 
-        public string SchoolLevelsAvailable { get; set; }
+        [Display(Name = "Enter if pre-primary level is available")]
+        public bool PrePrimary { get; set; }
+        [Display(Name = "Enter if lower primary level is available")]
+        public bool LowerPrimary { get; set; }
+        [Display(Name = "Enter if upper primary level is available")]
+        public bool UpperPrimary { get; set; }
+        [Display(Name = "Enter if junior school level is available")]
+        public bool JuniorSchool { get; set; }
+        [Display(Name = "Enter if senior school level is available")]
+        public bool SeniorSchool { get; set; }
+
+        [Display(Name = "Other details")]
+        [StringLength(255)]
+        public string OtherDetails { get; set; }
+
+        [Display(Name = "Report headers")]
+        [StringLength(255)]
+        public string ReportHeader { get; set; }
+
+        [Display(Name = "Report title")]
+        [StringLength(255)]
+        public string ReportTitle { get; set; }
+
+        [Display(Name = "Report sub title")]
+        [StringLength(255)]
+        public string ReportSubTitle { get; set; }
+
+        [Display(Name = "Report title details")]
+        [StringLength(255)]
+        public string ReportTitleDetails { get; set; }
+        public string LogoAsBase64 { get; set; }
     }
 }

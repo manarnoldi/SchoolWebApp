@@ -163,14 +163,29 @@ namespace SchoolWebApp.API.Controllers.School
                     //Manual mapping
                     existingData.Name = model.Name;
                     existingData.Address = model.Address;
-                    existingData.SchoolLevelsAvailable = model.SchoolLevelsAvailable;
+
+                    existingData.PrePrimary = model.PrePrimary;
+                    existingData.LowerPrimary = model.LowerPrimary;
+                    existingData.UpperPrimary = model.UpperPrimary;
+                    existingData.JuniorSchool = model.JuniorSchool;
+                    existingData.SeniorSchool = model.SeniorSchool;
+
                     existingData.Telephone = model.Telephone;
                     existingData.Email = model.Email;
                     existingData.Initials = model.Initials;
                     existingData.LogoUrl = model.LogoUrl;
                     existingData.Motto = model.Motto;
                     existingData.Vision = model.Vision;
+                    existingData.Mission = model.Mission;
                     existingData.Website = model.Website;
+
+                    existingData.OtherDetails = model.OtherDetails;
+                    existingData.ReportHeader = model.ReportHeader;
+                    existingData.ReportTitle = model.ReportTitle;
+                    existingData.ReportSubTitle = model.ReportSubTitle;
+                    existingData.ReportTitleDetails = model.ReportTitleDetails;
+
+                    existingData.LogoAsBase64 = model.LogoAsBase64;
 
                     _unitOfWork.SchoolDetails.Update(existingData);
                     await _unitOfWork.SaveChangesAsync();

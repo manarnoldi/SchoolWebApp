@@ -25,6 +25,7 @@ import {SessionTypesComponent} from './settings/components/session-types/session
 import {StaffCategoriesComponent} from './settings/components/staff-categories/staff-categories.component';
 import { LearningModesComponent } from './school/components/learning-modes/learning-modes.component';
 import { SchoolComponent } from './school/school.component';
+import { SchoolDetailsComponent } from './school/components/school-details/school-details.component';
 
 const routes: Routes = [
     {
@@ -47,7 +48,7 @@ const routes: Routes = [
         canActivateChild: [AuthGuard],
         children: [
             {path: 'learningModes', component: LearningModesComponent},
-            // {path: 'designations', component: DesignationsComponent},
+            {path: 'details', component: SchoolDetailsComponent},
             // {path: 'employmentTypes', component: EmploymentTypesComponent},
             // {path: 'genders', component: GenderComponent},
             // {path: 'nationalities', component: NationalitiesComponent},

@@ -40,7 +40,7 @@
                         "sourceMap": true,
                         "optimization": false,
                         "namedChunks": true,
-                        "allowedCommonJsDependencies": ["path", "os", "fs"]
+                        "allowedCommonJsDependencies": ["sweetalert2","path", "os", "fs"]
                     },
                     "configurations": {
                         "production": {
