@@ -83,7 +83,7 @@ export const MENU = [
                 path: ['/school/educationLevels']
             },
             {
-                name: 'Academis years',
+                name: 'Academic years',
                 iconClasses: 'fas fa-bullseye',
                 path: ['/school/academicYears']
             },

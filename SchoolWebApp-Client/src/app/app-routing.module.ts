@@ -28,6 +28,7 @@ import {SchoolComponent} from './school/school.component';
 import {SchoolDetailsComponent} from './school/components/school-details/school-details.component';
 import {SchoolStreamsComponent} from './school/components/school-streams/school-streams.component';
 import { EducationLevelTypesComponent } from './school/components/education-level-types/education-level-types.component';
+import { AcademicYearsComponent } from './school/components/academic-years/academic-years.component';
 
 const routes: Routes = [
     {
@@ -52,8 +53,8 @@ const routes: Routes = [
             {path: 'learningModes', component: LearningModesComponent},
             {path: 'details', component: SchoolDetailsComponent},
             {path: 'streams', component: SchoolStreamsComponent},
-            {path: 'educationLevelTypes', component: EducationLevelTypesComponent}
-            // {path: 'genders', component: GenderComponent},
+            {path: 'educationLevelTypes', component: EducationLevelTypesComponent},
+            {path: 'academicYears', component: AcademicYearsComponent},
             // {path: 'nationalities', component: NationalitiesComponent},
             // {path: 'occurenceTypes', component: OccurenceTypesComponent},
             // {path: 'outcomes', component: OutcomesComponent},
