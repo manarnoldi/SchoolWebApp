@@ -8,6 +8,10 @@ import { SchoolDetailsComponent } from './components/school-details/school-detai
 import { SchoolStreamsComponent } from './components/school-streams/school-streams.component';
 import { EducationLevelTypesComponent } from './components/education-level-types/education-level-types.component';
 import { AcademicYearsComponent } from './components/academic-years/academic-years.component';
+import { TodolistsComponent } from './components/todolists/todolists.component';
+import { TodolistFormComponent } from './components/todolists/todolist-form/todolist-form.component';
+import { DashboardSummaryComponent } from './components/dashboard-summary/dashboard-summary.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +21,11 @@ import { AcademicYearsComponent } from './components/academic-years/academic-yea
     SchoolDetailsComponent,
     SchoolStreamsComponent,
     EducationLevelTypesComponent,
-    AcademicYearsComponent
+    AcademicYearsComponent,
+    TodolistsComponent,
+    TodolistFormComponent,
+    DashboardComponent,
+    DashboardSummaryComponent
   ],
   imports: [
     CoreModule,

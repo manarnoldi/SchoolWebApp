@@ -46,6 +46,7 @@ namespace Project.Infrastructure.Data
         public DbSet<SchoolStream> SchoolStreams { get; set; }
         public DbSet<EducationLevelType> EducationLevelTypes { get; set; }
         public DbSet<EducationLevel> EducationLevels { get; set; }
+        public DbSet<ToDoList> ToDoLists { get; set; }
 
         #endregion
 

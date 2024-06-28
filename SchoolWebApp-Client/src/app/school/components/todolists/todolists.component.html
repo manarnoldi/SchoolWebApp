@@ -1,0 +1,47 @@
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="ion ion-clipboard mr-1"></i>
+            My To Do List
+        </h3>
+        <div class="card-tools">
+            <ngb-pagination [collectionSize]="todoLists.length" [(page)]="page" [pageSize]="6"
+                size="sm"></ngb-pagination>
+        </div>
+    </div>
+    <div class="card-body">
+        <ul class="todo-list" data-widget="todo-list">
+            <li *ngFor="let todoList of todoLists | slice: (page - 1) * 6: page * 6;let i= index">
+                <i [id]="i" class="fas fa-check-circle text-primary" [ngClass]="completeBtnColor"
+                    (mouseover)="completeBtnColor='text-success'"
+                    (mouseout)="completeBtnColor='text-primary'"
+                    role="button" (click)="markCompleted(todoList)"></i>
+                <span class="text" *ngIf="todoList.completed === true">
+                    <del>{{ todoList.itemName }}</del>
+                </span>
+                <span class="text" *ngIf="todoList.completed === false">
+                    {{ todoList.itemName }}
+                </span>
+                <span>
+                    <small class="badge" [ngClass]="todoList.timeToDeadline <0 ? 'badge-danger':
+                        todoList.timeToDeadline> 0 && todoList.timeToDeadline <60
+                            ? 'badge-warning':todoList.timeToDeadline>= 60 &&
+                            todoList.timeToDeadline <1440 ? 'badge-info': 'badge-success'">
+                                <i class="far fa-clock"></i> {{ todoList.completeBy | displayTimeTo
+                                }}
+                            </small>
+                            <span class="float-right">
+                                <i class="fas fa-edit text-warning" role="button"
+                                    (click)="editRecord(todoList.id)"></i>
+                                <span> | </span>
+                                <i class="fas fa-trash text-danger" role="button"
+                                    (click)="deleteRecord(todoList.id)"></i>
+                            </span>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-footer clearfix">
+                <app-todolist-form [editmode]="false" (addToDoListItemEvent)="addItem($event)"></app-todolist-form>
+            </div>
+        </div>

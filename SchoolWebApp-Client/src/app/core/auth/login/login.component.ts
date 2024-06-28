@@ -78,7 +78,6 @@ export class LoginComponent implements OnInit, OnDestroy {
                                 if (r.toString() == 'Accounts')
                                     cuUser.currentUserAccounts = true;
                             });
-
                             this.authService.setCurrentUser(cuUser);
                             this.appService.setUserLoggedIn(true);
                             this.router.navigate(['/']);

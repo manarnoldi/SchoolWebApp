@@ -1,0 +1,29 @@
+<form [formGroup]="todoListItemAddForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="row">
+        <div class="col-7">
+            <div class="form-group">
+                <textarea placeholder="Enter todolist item name"
+                    class="form-control" id="itemName" rows="2"
+                    formControlName="itemName" [ngClass]="{ 'is-invalid': (f.itemName.dirty ||
+                    f.itemName.touched) && f.itemName.invalid }"></textarea>
+                <div class="invalid-feedback"> Todolist item name is required</div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="form-group">
+                <input placeholder="Completed by" id="completeBy"
+                    type="datetime-local" class="form-control"
+                    formControlName="completeBy" [ngClass]="{ 'is-invalid': (f.completeBy.dirty ||
+                    f.completeBy.touched) && f.completeBy.invalid }"/>
+                <div class="invalid-feedback"> Completed by date is required</div>
+            </div>
+        </div>
+        <div class="col-1">
+            <button
+                type="submit" [disabled]="todoListItemAddForm.invalid"
+                class="btn btn-primary btn-flat float-right">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+    </div>
+</form>

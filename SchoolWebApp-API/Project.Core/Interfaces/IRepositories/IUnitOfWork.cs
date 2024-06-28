@@ -17,6 +17,7 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
         IEducationLevelTypesRepository EducationLevelTypes { get; }
         IEducationLevelRepository EducationLevels { get; }
         ISchoolStreamsRepository SchoolStreams { get; }
+        IToDoListRepository ToDoLists { get; }
         #endregion
 
         #region Staff

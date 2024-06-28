@@ -5,7 +5,7 @@ import {AuthGuard} from './core/guards/auth.guard';
 import {ProfileComponent} from './core/pages/profile/profile.component';
 import {BlankComponent} from './core/pages/blank/blank.component';
 import {SubMenuComponent} from './core/pages/main-menu/sub-menu/sub-menu.component';
-import {DashboardComponent} from './core/pages/dashboard/dashboard.component';
+import {DashboardComponent} from './school/components/dashboard/dashboard.component';
 import {LoginComponent} from './core/auth/login/login.component';
 import {NonAuthGuard} from './core/guards/non-auth.guard';
 import {RegisterComponent} from './core/auth/register/register.component';

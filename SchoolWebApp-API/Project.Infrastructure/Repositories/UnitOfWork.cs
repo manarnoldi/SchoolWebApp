@@ -32,6 +32,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
         public IEducationLevelTypesRepository EducationLevelTypes { get; }
         public IEducationLevelRepository EducationLevels { get; }
         public ISchoolStreamsRepository SchoolStreams { get; }
+        public IToDoListRepository ToDoLists { get; }
         #endregion
 
         #region Staff
@@ -90,6 +91,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
                 IEducationLevelTypesRepository educationLevelTypesRepository,
                 IEducationLevelRepository educationLevelsRepository,
                 ISchoolStreamsRepository schoolStreamsRepository,
+                IToDoListRepository toDoListRepository,
 
                 //Staff
                 IStaffDetailsRepository staffDetailsRepository,
@@ -146,6 +148,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
             EducationLevelTypes = educationLevelTypesRepository;
             EducationLevels = educationLevelsRepository;
             SchoolStreams = schoolStreamsRepository;
+            ToDoLists = toDoListRepository;
             #endregion
 
             #region Staff

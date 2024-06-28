@@ -14,7 +14,6 @@ import {LanguageComponent} from './modules/main/header/language/language.compone
 import {MessagesComponent} from './modules/main/header/messages/messages.component';
 import {NotificationsComponent} from './modules/main/header/notifications/notifications.component';
 import {UserComponent} from './modules/main/header/user/user.component';
-import {DashboardComponent} from './pages/dashboard/dashboard.component';
 import {MainMenuComponent} from './pages/main-menu/main-menu.component';
 import {SubMenuComponent} from './pages/main-menu/sub-menu/sub-menu.component';
 import {authReducer} from './store/auth/reducer';
@@ -29,6 +28,9 @@ import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { ProfabricComponentsModule } from '@profabric/angular-components';
 import { AppRoutingModule } from '@/app-routing.module';
+import { DisplayTimeToPipe } from './pipes/display-time-to.pipe';
+import { DaysToWeeksYearsPipe } from './pipes/days-to-weeks-years.pipe';
+import { AgeFromDateOfBirthPipe } from './pipes/age-from-date-of-birth.pipe';
 
 @NgModule({
     declarations: [
@@ -39,7 +41,6 @@ import { AppRoutingModule } from '@/app-routing.module';
         MenuSidebarComponent,
         BlankComponent,
         ProfileComponent,
-        DashboardComponent,
         MessagesComponent,
         NotificationsComponent,
         UserComponent,
@@ -51,7 +52,10 @@ import { AppRoutingModule } from '@/app-routing.module';
         SidebarSearchComponent,
         RegisterComponent,
         ForgotPasswordComponent,
-        RecoverPasswordComponent
+        RecoverPasswordComponent,
+        DisplayTimeToPipe,
+        DaysToWeeksYearsPipe,
+        AgeFromDateOfBirthPipe
     ],
     imports: [
         ProfabricComponentsModule,
@@ -72,7 +76,6 @@ import { AppRoutingModule } from '@/app-routing.module';
         MenuSidebarComponent,
         BlankComponent,
         ProfileComponent,
-        DashboardComponent,
         MessagesComponent,
         NotificationsComponent,
         UserComponent,
@@ -85,6 +88,9 @@ import { AppRoutingModule } from '@/app-routing.module';
         RegisterComponent,
         ForgotPasswordComponent,
         RecoverPasswordComponent,
+        DisplayTimeToPipe,
+        DaysToWeeksYearsPipe,
+        AgeFromDateOfBirthPipe,
         AppRoutingModule,
         ReactiveFormsModule,
         FormsModule,

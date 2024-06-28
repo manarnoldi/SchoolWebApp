@@ -42,6 +42,7 @@ namespace Project.API.Extensions
             services.AddTransient<IEducationLevelTypesRepository, EducationLevelTypesRepository>();
             services.AddTransient<IEducationLevelRepository, EducationLevelRepository>();
             services.AddTransient<ISchoolStreamsRepository, SchoolStreamsRepository>();
+            services.AddTransient<IToDoListRepository, ToDoListRepository>();
             #endregion
 
             #region Staff Repositories

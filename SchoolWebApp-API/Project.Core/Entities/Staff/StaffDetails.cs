@@ -26,5 +26,6 @@ namespace SchoolWebApp.Core.Entities.Staff
         public List<StaffDiscipline> StaffDisciplines { get; set; }
         public List<Department> Departments { get; set; }
         public List<Subject> Subjects { get; set; }
+        public List<ToDoList> ToDoLists { get; set; }
     }
 }
