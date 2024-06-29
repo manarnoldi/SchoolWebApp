@@ -3,7 +3,6 @@ import { SchoolComponent } from './school.component';
 import { SharedModule } from '@/shared/shared.module';
 import { CoreModule } from '@/core/core.module';
 import { LearningModesComponent } from './components/learning-modes/learning-modes.component';
-import { ExamTypesComponent } from './components/exam-types/exam-types.component';
 import { SchoolDetailsComponent } from './components/school-details/school-details.component';
 import { SchoolStreamsComponent } from './components/school-streams/school-streams.component';
 import { EducationLevelTypesComponent } from './components/education-level-types/education-level-types.component';
@@ -18,7 +17,6 @@ import { CurriculumComponent } from '../academics/components/curriculum/curricul
   declarations: [
     SchoolComponent,
     LearningModesComponent,
-    ExamTypesComponent,
     SchoolDetailsComponent,
     SchoolStreamsComponent,
     EducationLevelTypesComponent,

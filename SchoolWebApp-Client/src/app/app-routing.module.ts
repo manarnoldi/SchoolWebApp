@@ -30,7 +30,8 @@ import {SchoolStreamsComponent} from './school/components/school-streams/school-
 import {EducationLevelTypesComponent} from './school/components/education-level-types/education-level-types.component';
 import {AcademicYearsComponent} from './school/components/academic-years/academic-years.component';
 import {AcademicsComponent} from './academics/academics.component';
-import { CurriculumComponent } from './academics/components/curriculum/curriculum.component';
+import {CurriculumComponent} from './academics/components/curriculum/curriculum.component';
+import {ExamTypesComponent} from './academics/components/exam-types/exam-types.component';
 
 const routes: Routes = [
     {
@@ -75,7 +76,8 @@ const routes: Routes = [
         canActivate: [AuthGuard],
         canActivateChild: [AuthGuard],
         children: [
-            {path: 'curricula', component: CurriculumComponent}
+            {path: 'curricula', component: CurriculumComponent},
+            {path: 'examTypes', component: ExamTypesComponent}
             // {path: 'occurenceTypes', component: OccurenceTypesComponent},
             // {path: 'outcomes', component: OutcomesComponent},
             // {path: 'relationships', component: RelationshipsComponent},
