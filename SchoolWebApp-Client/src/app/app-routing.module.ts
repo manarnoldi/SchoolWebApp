@@ -27,8 +27,10 @@ import {LearningModesComponent} from './school/components/learning-modes/learnin
 import {SchoolComponent} from './school/school.component';
 import {SchoolDetailsComponent} from './school/components/school-details/school-details.component';
 import {SchoolStreamsComponent} from './school/components/school-streams/school-streams.component';
-import { EducationLevelTypesComponent } from './school/components/education-level-types/education-level-types.component';
-import { AcademicYearsComponent } from './school/components/academic-years/academic-years.component';
+import {EducationLevelTypesComponent} from './school/components/education-level-types/education-level-types.component';
+import {AcademicYearsComponent} from './school/components/academic-years/academic-years.component';
+import {AcademicsComponent} from './academics/academics.component';
+import { CurriculumComponent } from './academics/components/curriculum/curriculum.component';
 
 const routes: Routes = [
     {
@@ -53,9 +55,27 @@ const routes: Routes = [
             {path: 'learningModes', component: LearningModesComponent},
             {path: 'details', component: SchoolDetailsComponent},
             {path: 'streams', component: SchoolStreamsComponent},
-            {path: 'educationLevelTypes', component: EducationLevelTypesComponent},
-            {path: 'academicYears', component: AcademicYearsComponent},
+            {
+                path: 'educationLevelTypes',
+                component: EducationLevelTypesComponent
+            },
+            {path: 'academicYears', component: AcademicYearsComponent}
             // {path: 'nationalities', component: NationalitiesComponent},
+            // {path: 'occurenceTypes', component: OccurenceTypesComponent},
+            // {path: 'outcomes', component: OutcomesComponent},
+            // {path: 'relationships', component: RelationshipsComponent},
+            // {path: 'religions', component: ReligionsComponent},
+            // {path: 'sessionTypes', component: SessionTypesComponent},
+            // {path: 'staffCategories', component: StaffCategoriesComponent}
+        ]
+    },
+    {
+        path: 'academics',
+        component: AcademicsComponent,
+        canActivate: [AuthGuard],
+        canActivateChild: [AuthGuard],
+        children: [
+            {path: 'curricula', component: CurriculumComponent}
             // {path: 'occurenceTypes', component: OccurenceTypesComponent},
             // {path: 'outcomes', component: OutcomesComponent},
             // {path: 'relationships', component: RelationshipsComponent},

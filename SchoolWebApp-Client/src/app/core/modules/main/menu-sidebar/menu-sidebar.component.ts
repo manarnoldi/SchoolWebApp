@@ -173,37 +173,37 @@ export const MENU = [
             {
                 name: 'Subject Groups',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/academics']
+                path: ['/academics/subjectGroups']
             },
             {
                 name: 'Subjects',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/academics']
+                path: ['/academics/subjects']
             },
             {
                 name: 'Curricula',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/settings/curricula']
+                path: ['/academics/curricula']
             },
             {
                 name: 'Grading System',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/academics']
+                path: ['/academics/gradingSystem']
             },
             {
                 name: 'Exam Types',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/academics']
+                path: ['/academics/examTypes']
             },
             {
                 name: 'Exams',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/academics']
+                path: ['/academics/exams']
             },
             {
-                name: 'Exams Results',
+                name: 'Exam Results',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/academics']
+                path: ['/academics/examResults']
             }
         ]
     },

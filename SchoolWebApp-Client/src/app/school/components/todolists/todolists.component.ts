@@ -41,7 +41,7 @@ export class TodolistsComponent implements OnInit {
         this.curUserId = curUser.personId;
         this.todoListSvc.get('/ToDoLists/byStaffId/' + this.curUserId).subscribe(
             (res) => {
-                this.todoLists = res;
+                this.todoLists = res.sort((a,b) => new Date(a.completeBy).getTime() - new Date(b.completeBy).getTime());
             },
             (err) => {
                 this.toastr.error(err);

@@ -1,12 +1,21 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ExamTypesComponent } from './components/exam-types/exam-types.component';
+import { CurriculumComponent } from './components/curriculum/curriculum.component';
+import { SharedModule } from '@/shared/shared.module';
+import { CoreModule } from '@/core/core.module';
+import { AcademicsComponent } from './academics.component';
 
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    CurriculumComponent,
+    ExamTypesComponent,
+    AcademicsComponent
+  ],
   imports: [
-    CommonModule
+    CoreModule,
+    SharedModule
   ]
 })
 export class AcademicsModule { }

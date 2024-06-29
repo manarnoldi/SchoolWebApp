@@ -12,6 +12,7 @@ import { TodolistsComponent } from './components/todolists/todolists.component';
 import { TodolistFormComponent } from './components/todolists/todolist-form/todolist-form.component';
 import { DashboardSummaryComponent } from './components/dashboard-summary/dashboard-summary.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { CurriculumComponent } from '../academics/components/curriculum/curriculum.component';
 
 @NgModule({
   declarations: [
