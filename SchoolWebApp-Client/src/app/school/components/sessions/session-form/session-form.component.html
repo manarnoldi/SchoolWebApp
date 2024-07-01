@@ -1,0 +1,125 @@
+<form [formGroup]="sessionForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="modal-body">
+        <div class="card-details-box border-info mt-3 mx-1">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="sessionName">Session name: <span
+                                class="requiredField">*</span></label>
+                        <input id="sessionName" placeholder="Session name" type="text"
+                            class="form-control" formControlName="sessionName" [ngClass]="{
+                            'is-invalid': (f.sessionName.dirty || f.sessionName.touched) && f.sessionName.invalid
+                            }" />
+                        <div class="invalid-feedback"> Session name is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <div class="custom-control custom-switch
+                            custom-switch-off-danger custom-switch-on-success">
+                            <input type="checkbox" class="custom-control-input"
+                                id="status" formControlName="status">
+                            <label class="custom-control-label"
+                                for="status">Is the session active?</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="abbreviation">Abbreviation: <span
+                                class="requiredField">*</span></label>
+                        <input id="abbreviation" placeholder="Enter abbreviation" type="text"
+                            class="form-control" formControlName="abbreviation" [ngClass]="{
+                            'is-invalid': (f.abbreviation.dirty || f.abbreviation.touched) && f.abbreviation.invalid
+                            }" />
+                        <div class="invalid-feedback"> Abbreviation is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="academicYearId" class="form-label">Academic year: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-control" aria-label="Select academic year"
+                            formControlName="academicYearId" id="academicYearId" [ngClass]="{
+                                'is-invalid': (f.academicYearId.dirty || f.academicYearId.touched) && f.academicYearId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select academic year</option>
+                            <option [ngValue]="acadYear.id" *ngFor="let acadYear of
+                                academicYears">{{acadYear.name}}</option>
+                        </select>
+                        <div class="invalid-feedback"> Academic year is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="curriculumId" class="form-label">Curriculum: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-control" aria-label="Select curriculum"
+                            formControlName="curriculumId" id="curriculumId" [ngClass]="{
+                                'is-invalid': (f.curriculumId.dirty || f.curriculumId.touched) && f.curriculumId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select curriculum</option>
+                            <option [ngValue]="curriculum.id" *ngFor="let curriculum of
+                                curricula">{{curriculum.name}}</option>
+                        </select>
+                        <div class="invalid-feedback"> Curriculum is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="sessionTypeId" class="form-label">Session type: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-control" aria-label="Select session type"
+                            formControlName="sessionTypeId" id="sessionTypeId" [ngClass]="{
+                                'is-invalid': (f.sessionTypeId.dirty || f.sessionTypeId.touched) && f.sessionTypeId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select session type</option>
+                            <option [ngValue]="sessionType.id" *ngFor="let sessionType of
+                                sessionTypes">{{sessionType.name}}</option>
+                        </select>
+                        <div class="invalid-feedback"> Session type is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="startDate">Start date: <span
+                                class="requiredField">*</span></label>
+                        <input placeholder="Enter start date of session"
+                            id="startDate" type="date" class="form-control"
+                            formControlName="startDate" [ngClass]="{
+                                'is-invalid': (f.startDate.dirty || f.startDate.touched) && f.startDate.invalid
+                                }" />
+                        <div class="invalid-feedback"> Start date is greater than end date</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="endDate">End date: <span
+                                class="requiredField">*</span></label>
+                        <input placeholder="Enter end date of session" id="endDate"
+                            type="date" class="form-control" formControlName="endDate" [ngClass]="{
+                                'is-invalid': (f.endDate.dirty || f.endDate.touched) && f.endDate.invalid
+                                }" />
+                        <div class="invalid-feedback"> End date is less than start date</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" [disabled]="sessionForm.invalid" class="btn
+                btn-success"> <i class="fas fa-save"></i>
+                {{ editMode ? 'Update' : 'Save' }}
+            </button>
+            <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
+                #closeButton (click)="closeSessionForm()">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+    </div>
+</form>

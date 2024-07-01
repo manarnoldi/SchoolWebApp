@@ -36,7 +36,8 @@ namespace SchoolWebApp.API.Controllers.Class
         {
             try
             {
-                return Ok(_mapper.Map<List<SessionDto>>(await _unitOfWork.Sessions.GetAll()));
+                var sessions = await _unitOfWork.Sessions.Find(includeProperties: "AcademicYear,Curriculum,SessionType");
+                return Ok(_mapper.Map<List<SessionDto>>(sessions));
             }
             catch (Exception ex)
             {

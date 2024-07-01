@@ -5,12 +5,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
 using Project.API.Extensions;
 using Project.Infrastructure.Data;
 using SchoolWebApp.Core.Entities.Identity;
 using SchoolWebApp.Core.Services;
 using Serilog;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +41,14 @@ builder.Services.AddControllers(
                options.SuppressAsyncSuffixInActionNames = false;
                options.Filters.Add(new ProducesAttribute("application/json"));
                // options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
-           }).AddNewtonsoftJson();
+           }).AddNewtonsoftJson(options =>
+           {
+               // Use the default property (Pascal) casing
+               //options.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.All;
+               ////options.SerializerSettings.MaxDepth = 1;
+               //options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+               options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+           });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(setupAction =>

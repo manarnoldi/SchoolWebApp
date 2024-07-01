@@ -100,7 +100,7 @@ namespace Project.Infrastructure.Data
             //var currentUserId = _httpContextAccessor.HttpContext.User.FindFirst("username").Value;
             var currentUserId = "admin";
             var AddedEntities = ChangeTracker.Entries()
-                    .Where(E => E.State == EntityState.Added && (E.Entity is Base || E.Entity is BaseManyToMany))
+                    .Where(E => E.State == EntityState.Added && (E.Entity is Base))
                     .ToList();
 
             AddedEntities.ForEach(E =>

@@ -31,6 +31,7 @@ import { AppRoutingModule } from '@/app-routing.module';
 import { DisplayTimeToPipe } from './pipes/display-time-to.pipe';
 import { DaysToWeeksYearsPipe } from './pipes/days-to-weeks-years.pipe';
 import { AgeFromDateOfBirthPipe } from './pipes/age-from-date-of-birth.pipe';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
     declarations: [
@@ -66,7 +67,8 @@ import { AgeFromDateOfBirthPipe } from './pipes/age-from-date-of-birth.pipe';
         BrowserAnimationsModule,
         StoreModule.forRoot({auth: authReducer, ui: uiReducer}),
         ReactiveFormsModule,
-        FormsModule
+        FormsModule,
+        NgSelectModule
     ],
     exports: [
         MainComponent,
@@ -94,7 +96,8 @@ import { AgeFromDateOfBirthPipe } from './pipes/age-from-date-of-birth.pipe';
         AppRoutingModule,
         ReactiveFormsModule,
         FormsModule,
-        CommonModule
+        CommonModule,
+        NgSelectModule
     ]
 })
 export class CoreModule {}

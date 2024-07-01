@@ -38,6 +38,7 @@
     "@angular/router": "18.0.2",
     "@ng-bootstrap/ng-bootstrap": "^16.0.0",
     "@ng-idle/core": "^14.0.0",
+    "@ng-select/ng-select": "^13.4.1",
     "@ngrx/store": "17.1.0",
     "@popperjs/core": "^2.11.8",
     "@profabric/angular-components": "^0.2.3",

@@ -13,7 +13,8 @@
 @import '~admin-lte/dist/css/adminlte.min.css';
 
 @import 'ngx-toastr/toastr';
-// @import '~@ng-select/ng-select/themes/default.theme.css';
+@import '~@ng-select/ng-select/themes/default.theme.css';
+
 // @import "~ngx-spinner/animations/ball-circus.css";
 
 body {
@@ -24,6 +25,10 @@ body {
 ::-webkit-scrollbar {
     width: 0px;
     background: transparent;
+}
+
+.user-menu > .nav-link {
+    cursor: pointer;
 }
 
 .content {

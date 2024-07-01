@@ -3,12 +3,13 @@ using Project.Core.Exceptions;
 using Project.Core.Interfaces.IRepositories;
 using Project.Infrastructure.Data;
 using SchoolWebApp.Core.DTOs;
+using SchoolWebApp.Core.Entities.Shared;
 using System.Linq.Expressions;
 
 namespace Project.Infrastructure.Repositories
 {
     //Unit of Work Pattern
-    public class BaseRepository<T> : IBaseRepository<T> where T : class
+    public class BaseRepository<T> : IBaseRepository<T> where T : Base
     {
         protected readonly ApplicationDbContext _dbContext;
         protected DbSet<T> DbSet => _dbContext.Set<T>();
@@ -16,6 +17,44 @@ namespace Project.Infrastructure.Repositories
         public BaseRepository(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
+        }
+
+        public async Task<int> RecordCount(Expression<Func<T, bool>> filter = null)
+        {
+            IQueryable<T> query = _dbContext.Set<T>();
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+            return await query.CountAsync();
+        }
+
+        public async Task<IEnumerable<T>> Find(
+            Expression<Func<T, bool>> filter = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
+            string includeProperties = "")
+        {
+            IQueryable<T> query = _dbContext.Set<T>();
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            foreach (var includeProperty in includeProperties.Split
+                (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                query = query.Include(includeProperty);
+            }
+
+            if (orderBy != null)
+            {
+                return await orderBy(query).ToListAsync();
+            }
+            else
+            {
+                return await query.ToListAsync();
+            }
         }
 
         public async Task<IEnumerable<T>> GetAll()
@@ -40,10 +79,20 @@ namespace Project.Infrastructure.Repositories
             return new PaginatedDto<T>(data, totalCount);
         }
 
-        public async Task<T> GetById<Tid>(Tid id)
+        //public async Task<T> GetById<Tid>(Tid id)
+        //{
+        //    var data = await _dbContext.Set<T>().FindAsync(id);
+        //    return data;
+        //}
+        public async Task<T> GetById(int? id, string includeProperties = "")
         {
-            var data = await _dbContext.Set<T>().FindAsync(id);
-            return data;
+            IQueryable<T> query = _dbContext.Set<T>();
+            foreach (var includeProperty in includeProperties.Split
+                (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                query = query.Include(includeProperty);
+            }
+            return await query.FirstOrDefaultAsync(i => i.Id == id);
         }
 
         public async Task<bool> ItemExistsAsync(Expression<Func<T, bool>> expression)
@@ -100,7 +149,7 @@ namespace Project.Infrastructure.Repositories
             _dbContext.Set<T>().Remove(model);
         }
 
-        
+
 
 
 

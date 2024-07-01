@@ -12,6 +12,8 @@ import { TodolistFormComponent } from './components/todolists/todolist-form/todo
 import { DashboardSummaryComponent } from './components/dashboard-summary/dashboard-summary.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { CurriculumComponent } from '../academics/components/curriculum/curriculum.component';
+import { SessionsComponent } from './components/sessions/sessions.component';
+import { SessionFormComponent } from './components/sessions/session-form/session-form.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,9 @@ import { CurriculumComponent } from '../academics/components/curriculum/curricul
     TodolistsComponent,
     TodolistFormComponent,
     DashboardComponent,
-    DashboardSummaryComponent
+    DashboardSummaryComponent,
+    SessionsComponent,
+    SessionFormComponent
   ],
   imports: [
     CoreModule,

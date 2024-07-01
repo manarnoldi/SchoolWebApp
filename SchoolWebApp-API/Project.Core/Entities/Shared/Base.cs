@@ -7,7 +7,7 @@ namespace SchoolWebApp.Core.Entities.Shared
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public virtual int Id { get; set; }
 
         [ScaffoldColumn(false)]
         public DateTime Created { get; set; }

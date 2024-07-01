@@ -1,11 +1,14 @@
 ﻿using SchoolWebApp.Core.Entities.Settings;
 using SchoolWebApp.Core.Entities.Shared;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SchoolWebApp.Core.Entities.Students
 {
-    public class StudentParent: BaseManyToMany
+    public class StudentParent: Base
     {
+        [NotMapped]
+        public override int Id { get; set; }
         public int RelationShipId { get; set; }
         public RelationShip RelationShip { get; set; }
         public int StudentId { get; set; }
