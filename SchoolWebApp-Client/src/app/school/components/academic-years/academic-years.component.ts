@@ -1,5 +1,5 @@
 import {BreadCrumb} from '@/core/models/bread-crumb';
-import {AcademicYear} from '@/school/models/academic-years';
+import {AcademicYear} from '@/school/models/academic-year';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
 import {TableSettingsService} from '@/shared/services/table-settings.service';

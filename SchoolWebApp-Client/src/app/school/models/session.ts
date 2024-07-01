@@ -1,7 +1,7 @@
 import { Curriculum } from "@/academics/models/curriculum";
 import { ResourceModel } from "@/core/models/ResourceModel";
 import { SessionType } from "@/settings/models/session-type";
-import { AcademicYear } from "./academic-years";
+import { AcademicYear } from "./academic-year";
 
 export class Session extends ResourceModel<Session> {
     public sessionName?: string;

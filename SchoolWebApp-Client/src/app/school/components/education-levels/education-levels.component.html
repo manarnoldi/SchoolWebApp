@@ -4,27 +4,27 @@
 <hr>
 <div
     class="modal fade"
-    id="sessionFormModal"
+    id="educationLevelFormModal"
     tabindex="-1"
-    attr.aria-labelledby="SessionModalLabel"
+    attr.aria-labelledby="EducationLevelModalLabel"
     aria-hidden="true"
     data-bs-backdrop="static"
     data-bs-keyboard="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-success opacity-50">
-                <h5 class="modal-title" id="SessionFormModalLabel">
-                    Session details
+                <h5 class="modal-title" id="EducationLevelFormModalLabel">
+                    Education level details
                 </h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"
                     #closebutton (click)="resetForm()">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <app-session-form (addItemEvent)="addSession($event)" [academicYears]="academicYears"
-                [sessionTypes]="sessionTypes" [curricula]="curricula"
-                (errorEvent)="errorEvent($event)"
-                [editMode]="false"></app-session-form>
+            <app-education-level-form (addItemEvent)="addEducationLevel($event)"
+                [educationLevelTypes]="educationLevelTypes"
+                [curricula]="curricula" (errorEvent)="errorEvent($event)"
+                [editMode]="false"></app-education-level-form>
         </div>
     </div>
 </div>
@@ -32,8 +32,8 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <app-table-button modelName="session"
-                    buttonTitle="Add session"></app-table-button>
+                <app-table-button modelName="educationLevel"
+                    buttonTitle="Add education level"></app-table-button>
             </div>
         </div>
         <div class="row">
@@ -50,16 +50,13 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let item of sessions;index as i">
-                                    <td>{{ item.academicYear?.name }}</td>
-                                    <td>{{ item.sessionName }}</td>
-                                    <td>{{ item.abbreviation }}</td>
+                                <tr *ngFor="let item of educationLevels;index as i">
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.abbr }}</td>
+                                    <td>{{ item.numOfYears }}</td>
+                                    <td>{{ item.educationLevelType?.name }}</td>
                                     <td>{{ item.curriculum?.name }}</td>
-                                    <td>{{item.sessionType?.name }}</td>
-                                    <td>{{ item.startDate | date: 'dd/MM/yyyy'}}</td>
-                                    <td>{{ item.endDate| date: 'dd/MM/yyyy' }}</td>
-                                    <td><span i18n>{ item.status , select, true {Open} false
-                                            {Closed}}</span></td>
+                                    <td>{{ item.description }}</td>
                                     <app-table-action
                                         (editItemEvent)="editItem(item.id)"
                                         (deleteItemEvent)="deleteItem(item.id)"></app-table-action>

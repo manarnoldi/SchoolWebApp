@@ -1,6 +1,6 @@
 import {Curriculum} from '@/academics/models/curriculum';
 import {DateLessThanOrEqualsValidator} from '@/core/validators.ts/DateValidators';
-import {AcademicYear} from '@/school/models/academic-years';
+import {AcademicYear} from '@/school/models/academic-year';
 import {Session} from '@/school/models/session';
 import {SessionType} from '@/settings/models/session-type';
 import {formatDate} from '@angular/common';
@@ -60,14 +60,6 @@ export class SessionFormComponent implements OnInit {
             sessionTypeId: [null, [Validators.required]]
         });
     };
-
-    // compareStartAndEndDate = () => {
-    //     let startDate = new Date(this.sessionForm.value.startDate).getTime();
-    //     let endDate = new Date(this.sessionForm.value.endDate).getTime();
-    //     if (startDate > endDate) {
-    //         this.errorEvent.emit('Start date cannot be greater than the end date');
-    //     }
-    // };
 
     setFormControls = (session: Session) => {
         this.sessionForm.setValue({

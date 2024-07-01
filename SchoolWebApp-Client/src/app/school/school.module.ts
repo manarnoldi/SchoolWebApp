@@ -14,6 +14,8 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { CurriculumComponent } from '../academics/components/curriculum/curriculum.component';
 import { SessionsComponent } from './components/sessions/sessions.component';
 import { SessionFormComponent } from './components/sessions/session-form/session-form.component';
+import { EducationLevelsComponent } from './components/education-levels/education-levels.component';
+import { EducationLevelFormComponent } from './components/education-levels/education-level-form/education-level-form.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +30,9 @@ import { SessionFormComponent } from './components/sessions/session-form/session
     DashboardComponent,
     DashboardSummaryComponent,
     SessionsComponent,
-    SessionFormComponent
+    SessionFormComponent,
+    EducationLevelsComponent,
+    EducationLevelFormComponent
   ],
   imports: [
     CoreModule,

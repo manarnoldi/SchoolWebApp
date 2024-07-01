@@ -33,7 +33,7 @@ namespace SchoolWebApp.API.Controllers.School
         {
             try
             {
-                return Ok(_mapper.Map<List<EducationLevelDto>>(await _unitOfWork.EducationLevels.GetAll()));
+                return Ok(_mapper.Map<List<EducationLevelDto>>(await _unitOfWork.EducationLevels.Find(includeProperties: "Curriculum,EducationLevelType")));
             }
             catch (Exception ex)
             {

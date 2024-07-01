@@ -16,8 +16,6 @@ namespace SchoolWebApp.Core.Entities.School
         public int NumOfYears { get; set; }
         public string? Description { get; set; }
 
-
-
         public int EducationLevelTypeId { get; set; }
         public EducationLevelType EducationLevelType { get; set; }
         public int CurriculumId { get; set; }

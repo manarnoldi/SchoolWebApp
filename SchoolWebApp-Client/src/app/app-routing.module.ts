@@ -33,6 +33,7 @@ import {AcademicsComponent} from './academics/academics.component';
 import {CurriculumComponent} from './academics/components/curriculum/curriculum.component';
 import {ExamTypesComponent} from './academics/components/exam-types/exam-types.component';
 import {SessionsComponent} from './school/components/sessions/sessions.component';
+import { EducationLevelsComponent } from './school/components/education-levels/education-levels.component';
 
 const routes: Routes = [
     {
@@ -62,8 +63,8 @@ const routes: Routes = [
                 component: EducationLevelTypesComponent
             },
             {path: 'academicYears', component: AcademicYearsComponent},
-            {path: 'sessions', component: SessionsComponent}
-            // {path: 'occurenceTypes', component: OccurenceTypesComponent},
+            {path: 'sessions', component: SessionsComponent},
+            {path: 'educationLevels', component: EducationLevelsComponent}
             // {path: 'outcomes', component: OutcomesComponent},
             // {path: 'relationships', component: RelationshipsComponent},
             // {path: 'religions', component: ReligionsComponent},
