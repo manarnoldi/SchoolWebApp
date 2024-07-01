@@ -98,12 +98,7 @@ export class AcademicYearsComponent implements OnInit {
         forkJoin([academicYearsRequest]).subscribe(
             (res) => {
                 this.collectionSize = res[0].length;
-                this.academicYears = res[0].slice(
-                    (this.page - 1) * this.pageSize,
-                    (this.page - 1) * this.pageSize + this.pageSize
-                );
-
-                this.academicYears.sort((a, b) => b.name.localeCompare(a.name));
+                this.academicYears= res[0].sort((a, b) => b.name.localeCompare(a.name));
                 this.isAuthLoading = false;
                 this.editMode = false;
             },

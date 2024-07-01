@@ -89,10 +89,6 @@ export class EducationLevelsComponent implements OnInit {
                 this.educationLevels = educationLevels.sort(
                     (a, b) => parseInt(a.id) - parseInt(b.id)
                 );
-                this.educationLevels = educationLevels.slice(
-                    (this.page - 1) * this.pageSize,
-                    (this.page - 1) * this.pageSize + this.pageSize
-                );
                 this.educationLevelTypes = educationLevelTypes;
                 this.curricula = curricular;
                 this.isAuthLoading = false;

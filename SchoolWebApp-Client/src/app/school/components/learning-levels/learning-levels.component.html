@@ -4,27 +4,26 @@
 <hr>
 <div
     class="modal fade"
-    id="sessionFormModal"
+    id="learningLevelFormModal"
     tabindex="-1"
-    attr.aria-labelledby="SessionModalLabel"
+    attr.aria-labelledby="LearningLevelModalLabel"
     aria-hidden="true"
     data-bs-backdrop="static"
     data-bs-keyboard="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-success opacity-50">
-                <h5 class="modal-title" id="SessionFormModalLabel">
-                    Session details
+                <h5 class="modal-title" id="LearningLevelFormModalLabel">
+                    Learning level details
                 </h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"
                     #closebutton (click)="resetForm()">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <app-session-form (addItemEvent)="addSession($event)" [academicYears]="academicYears"
-                [sessionTypes]="sessionTypes" [curricula]="curricula"
-                (errorEvent)="errorEvent($event)"
-                [editMode]="false"></app-session-form>
+            <app-learning-levels-form (addItemEvent)="addLearningLevel($event)"
+                [educationLevels]="educationLevels" (errorEvent)="errorEvent($event)"
+                [editMode]="false"></app-learning-levels-form>
         </div>
     </div>
 </div>
@@ -32,14 +31,14 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <app-table-button modelName="session"
-                    buttonTitle="Add session"></app-table-button>
+                <app-table-button modelName="learningLevel"
+                    buttonTitle="Add learning level"></app-table-button>
             </div>
         </div>
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <app-table-heading tableTitle="{{tableTitle}}"></app-table-heading>
+                    <app-table-heading tableTitle="{{tableTitle}} - {{collectionSize}} items"></app-table-heading>
                     <div class="card-body table-responsive p-0">
                         <table class="table table-striped table-hover text-nowrap">
                             <thead>
@@ -50,16 +49,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let item of sessions | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
-                                    <td>{{ item.academicYear?.name }}</td>
-                                    <td>{{ item.sessionName }}</td>
-                                    <td>{{ item.abbreviation }}</td>
-                                    <td>{{ item.curriculum?.name }}</td>
-                                    <td>{{item.sessionType?.name }}</td>
-                                    <td>{{ item.startDate | date: 'dd/MM/yyyy'}}</td>
-                                    <td>{{ item.endDate| date: 'dd/MM/yyyy' }}</td>
-                                    <td><span i18n>{ item.status , select, true {Open} false
-                                            {Closed}}</span></td>
+                                <tr
+                                    *ngFor="let item of learningLevels| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.educationLevel?.name }}</td>
+                                    <td>{{ item.description }}</td>
                                     <app-table-action
                                         (editItemEvent)="editItem(item.id)"
                                         (deleteItemEvent)="deleteItem(item.id)"></app-table-action>

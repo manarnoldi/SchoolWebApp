@@ -75,10 +75,7 @@ export class SchoolStreamsComponent implements OnInit {
         forkJoin([schoolStreamsRequest]).subscribe(
             (res) => {
                 this.collectionSize = res[0].length;
-                this.schoolStreams = res[0].slice(
-                    (this.page - 1) * this.pageSize,
-                    (this.page - 1) * this.pageSize + this.pageSize
-                );
+                this.schoolStreams = res[0];
                 this.isAuthLoading = false;
                 this.editMode = false;
             },

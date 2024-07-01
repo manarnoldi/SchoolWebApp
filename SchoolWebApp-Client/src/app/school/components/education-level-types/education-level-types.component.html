@@ -93,7 +93,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let item of educationLevelTypes;index as i">
+                                <tr *ngFor="let item of educationLevelTypes| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
                                     <td>{{ item.name }}</td>
                                     <td>{{ item.abbr }}</td>
                                     <td>{{ item.description }}</td>

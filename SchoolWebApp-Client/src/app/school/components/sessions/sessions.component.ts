@@ -94,10 +94,6 @@ export class SessionsComponent implements OnInit {
                 this.sessions = sessions.sort((a, b) =>
                     b.academicYear.name.localeCompare(a.academicYear.name)
                 );
-                this.sessions = sessions.slice(
-                    (this.page - 1) * this.pageSize,
-                    (this.page - 1) * this.pageSize + this.pageSize
-                );
                 this.academicYears = academicYears;
                 this.curricula = curricular;
                 this.sessionTypes = sessionTypes;

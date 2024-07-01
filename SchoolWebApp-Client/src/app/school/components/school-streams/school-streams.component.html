@@ -93,7 +93,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let item of schoolStreams;index as i">
+                                <tr *ngFor="let item of schoolStreams | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
                                     <td>{{ item.name }}</td>
                                     <td>{{ item.abbreviation }}</td>
                                     <td>{{ item.description }}</td>
