@@ -185,15 +185,8 @@ namespace SchoolWebApp.API.Controllers.Staff
                     return BadRequest($"The staff discipline of Id- '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.StaffDisciplines.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.StaffDetailsId = model.StaffDetailsId;
-                    existingItem.OccurenceTypeId = model.OccurenceTypeId;
-                    existingItem.OccurenceDetails = model.OccurenceDetails;
-                    existingItem.OccurenceStartDate = model.OccurenceStartDate;
-                    existingItem.OccurenceEndDate = model.OccurenceEndDate;
-                    existingItem.OutcomeId = model.OutcomeId;
-                    _unitOfWork.StaffDisciplines.Update(existingItem);
+                    var _item = _mapper.Map<StaffDiscipline>(model);
+                    _unitOfWork.StaffDisciplines.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

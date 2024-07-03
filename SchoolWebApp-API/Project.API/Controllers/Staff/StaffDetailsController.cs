@@ -35,7 +35,7 @@ namespace SchoolWebApp.API.Controllers.Staff
         {
             try
             {
-                return Ok(_mapper.Map<List<StaffDetailDto>>(await _unitOfWork.StaffDetails.GetAll()));
+                return Ok(_mapper.Map<List<StaffDetailDto>>(await _unitOfWork.StaffDetails.Find(includeProperties: "StaffCategory,Designation,Nationality,Religion,Gender,EmploymentType")));
             }
             catch (Exception ex)
             {
@@ -152,7 +152,7 @@ namespace SchoolWebApp.API.Controllers.Staff
                 _logger.LogError(ex, $"An error occurred while retrieving the staff details by id.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
-        }        
+        }
 
         // POST api/staffDetails
         /// <summary>
@@ -209,23 +209,8 @@ namespace SchoolWebApp.API.Controllers.Staff
                     return BadRequest($"The staff details record of Id - '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.StaffDetails.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.IdNumber = model.IdNumber;
-                    existingItem.StaffCategoryId = model.StaffCategoryId;
-                    existingItem.DesignationId = model.DesignationId;
-                    existingItem.EmploymentTypeId = model.EmploymentTypeId;
-                    existingItem.Status = model.Status;
-                    existingItem.FullName = model.FullName;
-                    existingItem.UPI = model.UPI;
-                    existingItem.DateOfBirth = model.DateOfBirth;
-                    existingItem.Address = model.Address;
-                    existingItem.PhoneNumber = model.PhoneNumber;
-                    existingItem.Email = model.Email;
-                    existingItem.NationalityId = model.NationalityId;
-                    existingItem.ReligionId = model.ReligionId;
-                    existingItem.GenderId = model.GenderId;
-                    _unitOfWork.StaffDetails.Update(existingItem);
+                    var _item = _mapper.Map<StaffDetails>(model);
+                    _unitOfWork.StaffDetails.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

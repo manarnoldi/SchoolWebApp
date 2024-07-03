@@ -5,6 +5,7 @@ using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Academics.SubjectGroup;
 using SchoolWebApp.Core.DTOs.Class.Session;
 using SchoolWebApp.Core.Entities.Class;
+using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.Class
@@ -182,17 +183,8 @@ namespace SchoolWebApp.API.Controllers.Class
                     return BadRequest($"The session of Id - '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.Sessions.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.SessionName = model.SessionName;
-                    existingItem.Abbreviation = model.Abbreviation;
-                    existingItem.StartDate = model.StartDate;
-                    existingItem.EndDate = model.EndDate;
-                    existingItem.Status = model.Status;
-                    existingItem.AcademicYearId = model.AcademicYearId;
-                    existingItem.CurriculumId = model.CurriculumId;
-                    existingItem.SessionTypeId = model.SessionTypeId;
-                    _unitOfWork.Sessions.Update(existingItem);
+                    var _item = _mapper.Map<Session>(model);
+                    _unitOfWork.Sessions.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

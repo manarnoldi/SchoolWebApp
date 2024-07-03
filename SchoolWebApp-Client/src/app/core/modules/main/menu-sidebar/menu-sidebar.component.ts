@@ -106,22 +106,22 @@ export const MENU = [
             {
                 name: 'Details',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/staff']
+                path: ['/staff/details']
             },
             {
                 name: 'Attendance',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/staff']
+                path: ['/staff/attendance']
             },
             {
                 name: 'Discipline',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/staff']
+                path: ['/staff/discipline']
             },
             {
                 name: 'Subjects',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/staff']
+                path: ['/staff/subjects']
             }
         ]
     },

@@ -83,7 +83,7 @@ namespace Project.API.Extensions
             services.AddTransient<ISessionTypesRepository, SessionTypesRepository>();
             services.AddTransient<IStaffCategoryRepository, StaffCategoryRepository>();
             #endregion
-
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             return services;
         }
 

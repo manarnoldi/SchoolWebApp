@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SchoolWebApp.Core.DTOs.School.LearningMode;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SchoolWebApp.Core.DTOs.Students.Student
 {
@@ -17,7 +13,8 @@ namespace SchoolWebApp.Core.DTOs.Students.Student
 
         [Display(Name = "Health concerns")]
         [StringLength(500)]
-        public string HealthConcerns { get; set; }
+        public string? HealthConcerns { get; set; }
         public int LearningModeId { get; set; }
+        public LearningModeDto? LearningMode { get; set; }
     }
 }

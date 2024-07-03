@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.School.SchoolDetails;
 using SchoolWebApp.Core.Entities.School;
+using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.School
@@ -159,35 +160,8 @@ namespace SchoolWebApp.API.Controllers.School
                     return BadRequest($"The school detail of Id- '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingData = await _unitOfWork.SchoolDetails.GetById(model.Id);
-                    //Manual mapping
-                    existingData.Name = model.Name;
-                    existingData.Address = model.Address;
-
-                    existingData.PrePrimary = model.PrePrimary;
-                    existingData.LowerPrimary = model.LowerPrimary;
-                    existingData.UpperPrimary = model.UpperPrimary;
-                    existingData.JuniorSchool = model.JuniorSchool;
-                    existingData.SeniorSchool = model.SeniorSchool;
-
-                    existingData.Telephone = model.Telephone;
-                    existingData.Email = model.Email;
-                    existingData.Initials = model.Initials;
-                    existingData.LogoUrl = model.LogoUrl;
-                    existingData.Motto = model.Motto;
-                    existingData.Vision = model.Vision;
-                    existingData.Mission = model.Mission;
-                    existingData.Website = model.Website;
-
-                    existingData.OtherDetails = model.OtherDetails;
-                    existingData.ReportHeader = model.ReportHeader;
-                    existingData.ReportTitle = model.ReportTitle;
-                    existingData.ReportSubTitle = model.ReportSubTitle;
-                    existingData.ReportTitleDetails = model.ReportTitleDetails;
-
-                    existingData.LogoAsBase64 = model.LogoAsBase64;
-
-                    _unitOfWork.SchoolDetails.Update(existingData);
+                    var _item = _mapper.Map<SchoolDetails>(model);
+                    _unitOfWork.SchoolDetails.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

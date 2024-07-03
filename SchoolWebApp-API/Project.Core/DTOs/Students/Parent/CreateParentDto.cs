@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SchoolWebApp.Core.DTOs.Settings.Occupation;
+using System.ComponentModel.DataAnnotations;
 
 namespace SchoolWebApp.Core.DTOs.Students.Parent
 {
@@ -14,5 +15,6 @@ namespace SchoolWebApp.Core.DTOs.Students.Parent
         public bool Pickup { get; set; }
 
         public int OccupationId { get; set; }
+        public OccupationDto? Occupation { get; set; }
     }
 }

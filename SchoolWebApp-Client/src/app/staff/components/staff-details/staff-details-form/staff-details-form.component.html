@@ -1,0 +1,326 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+
+<section class="content">
+    <hr />
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 pt-2 pb-2">
+                <a [routerLink]="['/staff/details']"
+                    class="btn btn-sm btn-flat btn-warning float-left">
+                    <i class="fas fa-angle-double-left"></i> Back to staff list
+                </a>
+                <div class="col-md-12" *ngIf="readonly || editMode">
+                    <a (click)="toggleEditStaff()" class="edit float-right" title data-toggle="tooltip"
+                        role="button"
+                        data-original-title="Edit school details"> <i class="fas fa-edit"></i> {{
+                        readonly ? 'Edit' : 'Stop editing ' }} staff details</a>
+                </div>
+            </div>
+        </div>
+        <form [formGroup]="staffForm" (ngSubmit)="onSubmit()" novalidate>
+            <div class="row">
+                <div class="col-md-5 pl-2 pr-1">
+                    <div class="card card-primary card-outline">
+                        <div class="card-body box-profile ">
+                            <div class="border border-info rounded p-2">
+                                <div class="text-center">
+                                    <img class="profile-user-img img-fluid img-circle"
+                                        [src]="staffImageUrl"
+                                        alt="User profile picture">
+                                </div>
+                                <div class="form-group" *ngIf="!readonly">
+                                    <label for="staffImage" class="form-label">Select staff
+                                        image:</label>
+                                    <input class="form-control-file" type="file" id="staffImage"
+                                        formControlName="staffImage"
+                                        (change)="onFileChange($event)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fullName">Full name: <span
+                                            class="requiredField">*</span></label>
+                                    <input placeholder="Enter full name" id="fullName" type="text"
+                                        class="form-control" formControlName="fullName"
+                                        [readonly]="readonly" [ngClass]="{ 'is-invalid':
+                                            (f.fullName.dirty || f.fullName.touched) &&
+                                            f.fullName.invalid }" />
+                                    <div class="invalid-feedback"> Full name is required</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="nationalityId" class="form-label">Nationality: <span
+                                            class="requiredField">*</span></label>
+                                    <select class="form-control" aria-label="Select nationality"
+                                        formControlName="nationalityId" id="nationalityId"
+                                        [attr.disabled]="readonly ? 'disabled' : null" [ngClass]="{
+                                            'is-invalid': (f.nationalityId.dirty ||
+                                            f.nationalityId.touched) && f.nationalityId.invalid }">
+                                        <option [ngValue]="null">Select staff nationality</option>
+                                        <option [ngValue]="nationality.id"
+                                            *ngFor="let nationality of
+                                                nationalities">{{nationality.name}}</option>
+                                    </select>
+                                    <div class="invalid-feedback"> Staff nationality is
+                                        required</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="religionId" class="form-label">Religion: <span
+                                            class="requiredField">*</span></label>
+                                    <select class="form-control" aria-label="Select religion"
+                                        formControlName="religionId" id="religionId"
+                                        [attr.disabled]="readonly ? 'disabled' : null" [ngClass]="{
+                                            'is-invalid': (f.religionId.dirty ||
+                                            f.religionId.touched) && f.religionId.invalid }">
+                                        <option [ngValue]="null">Select staff religion</option>
+                                        <option [ngValue]="religion.id" *ngFor="let religion of
+                                                religions">{{religion.name}}</option>
+                                    </select>
+                                    <div class="invalid-feedback"> Staff religion is required</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="genderId" class="form-label">Gender: <span
+                                            class="requiredField">*</span></label>
+                                    <select class="form-control" aria-label="Select gender"
+                                        formControlName="genderId" id="genderId"
+                                        [attr.disabled]="readonly ? 'disabled' : null" [ngClass]="{
+                                            'is-invalid': (f.genderId.dirty ||
+                                            f.genderId.touched) && f.genderId.invalid }">
+                                        <option [ngValue]="null">Select staff gender</option>
+                                        <option [ngValue]="gender.id" *ngFor="let gender of
+                                                genders">{{gender.name}}</option>
+                                    </select>
+                                    <div class="invalid-feedback"> Staff gender is required</div>
+                                </div>
+                                <div class="form-group clearfix">
+                                    <label class="form-label">Staff status: &nbsp;</label>
+                                    <div class="icheck-success d-inline"
+                                        *ngFor="let status of statusValues">
+                                        <input  type="radio" formControlName="status" id="{{status}}" value="{{status}}" [attr.disabled]="readonly ? 'disabled' : null" >
+                                        <label class="form-check-label"
+                                            for="{{status}}"> {{status}}</label>&nbsp;
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7 pr-2 pl-1">
+                    <div class="card card-success card-outline">
+                        <div class="card-header p-2">
+                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="personal-tab"
+                                        data-bs-toggle="pill" data-bs-target="#personal"
+                                        type="button" role="tab" aria-controls="personal"
+                                        aria-selected="true">Personal details</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="employment-tab"
+                                        data-bs-toggle="pill" data-bs-target="#employment"
+                                        type="button" role="tab" aria-controls="employment"
+                                        aria-selected="false">Employment details</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="contact-tab" data-bs-toggle="pill"
+                                        data-bs-target="#contact" type="button" role="tab"
+                                        aria-controls="contact" aria-selected="false">Contact
+                                        details</button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content" id="pills-tabContent">
+                                <div class="tab-pane fade show active" id="personal" role="tabpanel"
+                                    aria-labelledby="personal-tab">
+                                    <div class="border border-info rounded p-2">
+                                        <div class="form-group">
+                                            <label for="upi">Employment/TSC number: <span
+                                                class="requiredField">*</span></label>
+                                            <input placeholder="Enter TSC number" id="upi"
+                                                type="text" class="form-control"
+                                                formControlName="upi" [readonly]="readonly" [ngClass]="{
+                                                    'is-invalid': (f.upi.dirty ||
+                                                    f.upi.touched) && f.upi.invalid }"/>
+                                                    <div class="invalid-feedback"> Employment/TSC number is required</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="idNumber">ID number:</label>
+                                            <input placeholder="Enter ID number" id="idNumber"
+                                                type="text" class="form-control"
+                                                formControlName="idNumber" [readonly]="readonly" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="dateOfBirth">Date of birth:</label>
+                                            <input placeholder="Enter date of birth date"
+                                                id="dateOfBirth" type="date"
+                                                max="{{currentDate | date:'yyyy-MM-dd'}}"
+                                                class="form-control" formControlName="dateOfBirth"
+                                                [readonly]="readonly" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="nhifNo">NHIF number:</label>
+                                            <input placeholder="Enter NHIF number" id="nhifNo"
+                                                type="text" class="form-control"
+                                                formControlName="nhifNo" [readonly]="readonly" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="nssfNo">NSSF number:</label>
+                                            <input placeholder="Enter NSSF number" id="nssfNo"
+                                                type="text" class="form-control"
+                                                formControlName="nssfNo" [readonly]="readonly" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="kraPinNo">KRA pin number:</label>
+                                            <input placeholder="Enter KRA pin number" id="kraPinNo"
+                                                type="text" class="form-control"
+                                                formControlName="kraPinNo" [readonly]="readonly" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="employment" role="tabpanel"
+                                    aria-labelledby="employment-tab">
+                                    <div class="border border-info rounded p-2">
+                                        <div class="form-group">
+                                            <label for="employmentDate">Employment date:</label>
+                                            <input placeholder="Enter employment date" type="date"
+                                                id="employmentDate" class="form-control"
+                                                [readonly]="readonly"
+                                                formControlName="employmentDate" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="endofEmploymentDate">End of employment
+                                                date:</label>
+                                            <input placeholder="Enter end of employment date"
+                                                id="endofEmploymentDate" type="date"
+                                                [readonly]="readonly" class="form-control"
+                                                formControlName="endofEmploymentDate" />
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="custom-control custom-switch
+                                                    custom-switch-off-danger custom-switch-on-success">
+                                                <input type="checkbox" class="custom-control-input"
+                                                    id="currentlyEmployed" [readonly]="readonly"
+                                                    formControlName="currentlyEmployed">
+                                                <label class="custom-control-label"
+                                                    for="currentlyEmployed">Currently
+                                                    employed?</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="designationId"
+                                                class="form-label">Designation: <span
+                                                    class="requiredField">*</span></label>
+                                            <select class="form-control" aria-label="Select
+                                                    designation"
+                                                formControlName="designationId" id="designationId"
+                                                [ngClass]="{ 'is-invalid': (f.designationId.dirty ||
+                                                    f.designationId.touched) && f.designationId.invalid
+                                                    }"
+                                                [attr.disabled]="readonly ? 'disabled' : null">
+                                                <option [ngValue]="null">Select staff
+                                                    designation</option>
+                                                <option [ngValue]="designation.id" *ngFor="let
+                                                        designation of designations">{{designation.name}}</option>
+                                            </select>
+                                            <div class="invalid-feedback"> Staff designation is
+                                                required</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="staffCategoryId"
+                                                class="form-label">Staff category: <span
+                                                    class="requiredField">*</span></label>
+                                            <select class="form-control"
+                                                aria-label="Select staff category"
+                                                formControlName="staffCategoryId"
+                                                id="staffCategoryId"
+                                                [ngClass]="{ 'is-invalid': (f.staffCategoryId.dirty ||
+                                                    f.staffCategoryId.touched) && f.staffCategoryId.invalid
+                                                    }"
+                                                [attr.disabled]="readonly ? 'disabled' : null">
+                                                <option [ngValue]="null">Select staff
+                                                    category</option>
+                                                <option [ngValue]="staffCategory.id" *ngFor="let
+                                                        staffCategory of staffCategories">{{staffCategory.name}}</option>
+                                            </select>
+                                            <div class="invalid-feedback"> Staff category is
+                                                required</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="employmentTypeId"
+                                                class="form-label">Employment type: <span
+                                                    class="requiredField">*</span></label>
+                                            <select class="form-control" aria-label="Select
+                                                    employment type"
+                                                formControlName="employmentTypeId"
+                                                id="employmentTypeId"
+                                                [ngClass]="{ 'is-invalid': (f.employmentTypeId.dirty ||
+                                                    f.employmentTypeId.touched) && f.employmentTypeId.invalid
+                                                    }"
+                                                [attr.disabled]="readonly ? 'disabled' : null">
+                                                <option [ngValue]="null">Select employment
+                                                    type</option>
+                                                <option [ngValue]="employmentType.id" *ngFor="let
+                                                        employmentType of employmentTypes">{{employmentType.name}}</option>
+                                            </select>
+                                            <div class="invalid-feedback"> Staff employment type is
+                                                required</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="contact" role="tabpanel"
+                                    aria-labelledby="contact-tab">
+                                    <div class="border border-info rounded p-2">
+                                        <div class="form-group">
+                                            <label for="address" class="form-label">Staff
+                                                address:</label>
+                                            <textarea placeholder="Enter staff address"
+                                                [readonly]="readonly" class="form-control"
+                                                id="address"
+                                                rows="3" formControlName="address"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="phoneNumber">Staff phone number:</label>
+                                            <input placeholder="Enter staff phone number"
+                                                id="phoneNumber" [readonly]="readonly"
+                                                type="text" class="form-control"
+                                                formControlName="phoneNumber" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="email" class="form-label">Email
+                                                address:</label>
+                                            <input placeholder="Enter school email" type="email"
+                                                class="form-control" id="email"
+                                                formControlName="email"
+                                                [readonly]="readonly"
+                                                [ngClass]="{ 'is-invalid': (f.email.dirty ||
+                                                    f.email.touched) && f.email.invalid }" />
+                                            <div class="invalid-feedback"> Staff email is
+                                                invalid</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="otherDetails" class="form-label">Other
+                                                details:</label>
+                                            <textarea placeholder="Enter staff other details"
+                                                [readonly]="readonly"
+                                                class="form-control" id="otherDetails" rows="3"
+                                                formControlName="otherDetails"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="form-group" *ngIf="!readonly">
+                                <button type="submit" [disabled]="staffForm.invalid"
+                                    class="btn btn-success float-right"> <i class="fas
+                                            fa-save"></i>
+                                    {{ editMode ? 'Update' : 'Save' }} record
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>

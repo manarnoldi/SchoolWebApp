@@ -1,10 +1,15 @@
-﻿using SchoolWebApp.Core.Entities.Enums;
+﻿using SchoolWebApp.Core.DTOs.Settings.Gender;
+using SchoolWebApp.Core.DTOs.Settings.Nationality;
+using SchoolWebApp.Core.DTOs.Settings.Religion;
+using SchoolWebApp.Core.Entities.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace SchoolWebApp.Core.DTOs
 {
     public class PersonDto
     {
+        public string? StaffImageAsBase64 { get; set; }
+
         [Required(ErrorMessage = "Enter the full name")]
         [Display(Name = "Full name")]
         [StringLength(255)]
@@ -16,7 +21,7 @@ namespace SchoolWebApp.Core.DTOs
         public string UPI { get; set; }
 
         [Display(Name = "Date of birth")]
-        public DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
 
         [StringLength(255)]
         public string Address { get; set; }
@@ -33,8 +38,13 @@ namespace SchoolWebApp.Core.DTOs
 
         public Status Status { get; set; }
 
+        public string? OtherDetails { get; set; }
+
         public int NationalityId { get; set; }
+        public NationalityDto? Nationality { get; set; }
         public int ReligionId { get; set; }
+        public ReligionDto? Religion { get; set; }
         public int GenderId { get; set; }
+        public GenderDto? Gender { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.School.Event;
 using SchoolWebApp.Core.Entities.School;
+using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.School
@@ -181,16 +182,8 @@ namespace SchoolWebApp.API.Controllers.School
                     return BadRequest($"The event of Id - '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.Events.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.EventName = model.EventName;
-                    existingItem.EventLocation = model.EventLocation;
-                    existingItem.StartDate = model.StartDate;
-                    existingItem.EndDate = model.EndDate;
-                    existingItem.Status = model.Status;
-                    existingItem.EventYear = model.EventYear;
-                    existingItem.SessionId = model.SessionId;
-                    _unitOfWork.Events.Update(existingItem);
+                    var _item = _mapper.Map<Event>(model);
+                    _unitOfWork.Events.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

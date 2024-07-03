@@ -5,6 +5,7 @@ using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Staff.StaffAttendance;
 using SchoolWebApp.Core.DTOs.Students.Student;
 using SchoolWebApp.Core.DTOs.Students.StudentAttendance;
+using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
@@ -185,13 +186,8 @@ namespace SchoolWebApp.API.Controllers.Students
                     return BadRequest($"The student attendance of Id- '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.StudentAttendances.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.StudentClassId = model.StudentClassId;
-                    existingItem.Date = model.Date;
-                    existingItem.Present = model.Present;
-                    existingItem.Remarks = model.Remarks;
-                    _unitOfWork.StudentAttendances.Update(existingItem);
+                    var _item = _mapper.Map<StudentAttendance>(model);
+                    _unitOfWork.StudentAttendances.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

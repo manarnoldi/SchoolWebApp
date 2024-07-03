@@ -8,6 +8,7 @@ using SchoolWebApp.Core.DTOs.Students.Parent;
 using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.DTOs.Students.StudentParent;
+using SchoolWebApp.Core.Entities.Staff;
 
 namespace SchoolWebApp.API.Controllers.Students
 {
@@ -212,23 +213,8 @@ namespace SchoolWebApp.API.Controllers.Students
                     return BadRequest($"The student record of Id - '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.Students.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.AdmissionDate = model.AdmissionDate;
-                    existingItem.ApplicationDate = model.ApplicationDate;
-                    existingItem.HealthConcerns = model.HealthConcerns;
-                    existingItem.LearningModeId = model.LearningModeId;
-                    existingItem.Status = model.Status;
-                    existingItem.FullName = model.FullName;
-                    existingItem.UPI = model.UPI;
-                    existingItem.DateOfBirth = model.DateOfBirth;
-                    existingItem.Address = model.Address;
-                    existingItem.PhoneNumber = model.PhoneNumber;
-                    existingItem.Email = model.Email;
-                    existingItem.NationalityId = model.NationalityId;
-                    existingItem.ReligionId = model.ReligionId;
-                    existingItem.GenderId = model.GenderId;
-                    _unitOfWork.Students.Update(existingItem);
+                    var _item = _mapper.Map<Student>(model);
+                    _unitOfWork.Students.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }
@@ -335,13 +321,8 @@ namespace SchoolWebApp.API.Controllers.Students
                     return BadRequest($"The student-parent of student Id - '{model.StudentId}' and parent Id - '{model.ParentId}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.StudentParent.GetStudentParentByParentIdStudentId(model.ParentId, model.StudentId);
-                    //Manual mapping
-                    //existingItem.ParentId = model.ParentId;
-                    //existingItem.StudentId = model.StudentId;
-                    existingItem.RelationShipId = model.RelationShipId;
-                    existingItem.OtherDetails = model.OtherDetails;
-                    _unitOfWork.StudentParent.Update(existingItem);
+                    var _item = _mapper.Map<StudentParent>(model);
+                    _unitOfWork.StudentParent.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

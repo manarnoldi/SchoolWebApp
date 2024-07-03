@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.School.Department;
 using SchoolWebApp.Core.Entities.School;
+using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.School
@@ -151,13 +152,8 @@ namespace SchoolWebApp.API.Controllers.School
                     return BadRequest($"The department of Id- '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.Departments.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.Name = model.Name;
-                    existingItem.Code = model.Code;
-                    existingItem.StaffDetailsId = model.StaffDetailsId;
-                    existingItem.Description = model.Description;
-                    _unitOfWork.Departments.Update(existingItem);
+                    var _item = _mapper.Map<Department>(model);
+                    _unitOfWork.Departments.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

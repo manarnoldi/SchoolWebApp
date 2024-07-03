@@ -156,12 +156,8 @@ namespace SchoolWebApp.API.Controllers.Students
                     return BadRequest($"The student class of Id - '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.StudentClasses.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.StudentId = model.StudentId;
-                    existingItem.SchoolClassId = model.SchoolClassId;
-                    existingItem.Description = model.Description;
-                    _unitOfWork.StudentClasses.Update(existingItem);
+                    var _item = _mapper.Map<StudentClass>(model);
+                    _unitOfWork.StudentClasses.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

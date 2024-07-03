@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Settings.Relationship;
 using SchoolWebApp.Core.Entities.Settings;
+using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.Settings
@@ -153,11 +154,8 @@ namespace SchoolWebApp.API.Controllers.Settings
                     return BadRequest($"The relationship of Id- '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.Relationships.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.Name = model.Name;
-                    existingItem.Description = model.Description;
-                    _unitOfWork.Relationships.Update(existingItem);
+                    var _item = _mapper.Map<RelationShip>(model);
+                    _unitOfWork.Relationships.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

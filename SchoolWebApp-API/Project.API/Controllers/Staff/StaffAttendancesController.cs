@@ -184,13 +184,8 @@ namespace SchoolWebApp.API.Controllers.Staff
                     return BadRequest($"The staff attendance of Id- '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.StaffAttendances.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.StaffDetailsId = model.StaffDetailsId;
-                    existingItem.Date = model.Date;
-                    existingItem.Present = model.Present;
-                    existingItem.Remarks = model.Remarks;
-                    _unitOfWork.StaffAttendances.Update(existingItem);
+                    var _item = _mapper.Map<StaffAttendance>(model);
+                    _unitOfWork.StaffAttendances.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

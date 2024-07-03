@@ -153,11 +153,8 @@ namespace SchoolWebApp.API.Controllers.Settings
                     return BadRequest($"The occupation of Id- '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.Occupations.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.Name = model.Name;
-                    existingItem.Description = model.Description;
-                    _unitOfWork.Occupations.Update(existingItem);
+                    var _item = _mapper.Map<Occupation>(model);
+                    _unitOfWork.Occupations.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

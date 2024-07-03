@@ -16,6 +16,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { NgIdleModule } from '@ng-idle/core';
 import { SchoolModule } from './school/school.module';
 import { AcademicsModule } from './academics/academics.module';
+import { StaffModule } from './staff/staff.module';
 
 registerLocaleData(localeEn, 'en-EN');
 
@@ -29,6 +30,7 @@ registerLocaleData(localeEn, 'en-EN');
         SettingsModule,
         SchoolModule,
         AcademicsModule,
+        StaffModule,
         ToastrModule.forRoot({
             timeOut: 10000,
             positionClass: 'toast-top-full-width',

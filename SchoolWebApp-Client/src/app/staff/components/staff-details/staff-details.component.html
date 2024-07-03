@@ -1,0 +1,21 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <a
+                    [routerLink]="['/staff/add']"
+                    [routerLinkActive]="'active'"
+                    class="btn btn-sm btn-flat btn-success float-right"
+                    style="margin: 10px 0px">
+                    <i class="fas fa-plus-circle"></i> Add staff
+                </a>
+            </div>
+        </div>
+        <app-staff-details-table [staffs]="staffs" [searchedStaffs]="searchedStaffs" tableTitle="School
+            staff list" (deleteItemEvent)="deleteItem($event)"></app-staff-details-table>
+    </div>
+</section>

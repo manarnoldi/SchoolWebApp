@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.School.EducationLevel;
 using SchoolWebApp.Core.Entities.School;
+using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.School
@@ -178,15 +179,8 @@ namespace SchoolWebApp.API.Controllers.School
                     return BadRequest($"The education level of Id - '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.EducationLevels.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.Name = model.Name;
-                    existingItem.Abbr = model.Abbr;
-                    existingItem.NumOfYears = model.NumOfYears;
-                    existingItem.Description = model.Description;
-                    existingItem.CurriculumId = model.CurriculumId;
-                    existingItem.EducationLevelTypeId = model.EducationLevelTypeId;
-                    _unitOfWork.EducationLevels.Update(existingItem);
+                    var _item = _mapper.Map<EducationLevel>(model);
+                    _unitOfWork.EducationLevels.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

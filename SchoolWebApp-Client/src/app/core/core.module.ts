@@ -66,7 +66,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
         HttpClientModule,
         BrowserAnimationsModule,
         StoreModule.forRoot({auth: authReducer, ui: uiReducer}),
-        ReactiveFormsModule,
+        ReactiveFormsModule.withConfig({callSetDisabledState: 'whenDisabledForLegacyCode'}),
         FormsModule,
         NgSelectModule
     ],

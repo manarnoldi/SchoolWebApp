@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Students.StudentDiscipline;
+using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
@@ -185,15 +186,8 @@ namespace SchoolWebApp.API.Controllers.Students
                     return BadRequest($"The student discipline of Id- '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.StudentDisciplines.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.StudentId = model.StudentId;
-                    existingItem.OccurenceTypeId = model.OccurenceTypeId;
-                    existingItem.OccurenceDetails = model.OccurenceDetails;
-                    existingItem.OccurenceStartDate = model.OccurenceStartDate;
-                    existingItem.OccurenceEndDate = model.OccurenceEndDate;
-                    existingItem.OutcomeId = model.OutcomeId;
-                    _unitOfWork.StudentDisciplines.Update(existingItem);
+                    var _item = _mapper.Map<StudentDiscipline>(model);
+                    _unitOfWork.StudentDisciplines.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.School.LearningMode;
 using SchoolWebApp.Core.Entities.School;
+using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.School
@@ -151,11 +152,8 @@ namespace SchoolWebApp.API.Controllers.School
                     return BadRequest($"The learning mode of Id- '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.LearningModes.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.Name = model.Name;
-                    existingItem.Description = model.Description;
-                    _unitOfWork.LearningModes.Update(existingItem);
+                    var _item = _mapper.Map<LearningMode>(model);
+                    _unitOfWork.LearningModes.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

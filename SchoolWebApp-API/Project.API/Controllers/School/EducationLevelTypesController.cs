@@ -6,6 +6,7 @@ using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.DTOs.School.EducationLevelType;
 using SchoolWebApp.Core.Entities.School;
+using SchoolWebApp.Core.Entities.Staff;
 
 namespace SchoolWebApp.API.Controllers.School
 {
@@ -152,12 +153,8 @@ namespace SchoolWebApp.API.Controllers.School
                     return BadRequest($"The education level type of Id- '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.EducationLevelTypes.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.Name = model.Name;
-                    existingItem.Abbr = model.Abbr;
-                    existingItem.Description = model.Description;
-                    _unitOfWork.EducationLevelTypes.Update(existingItem);
+                    var _item = _mapper.Map<EducationLevelType>(model);
+                    _unitOfWork.EducationLevelTypes.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

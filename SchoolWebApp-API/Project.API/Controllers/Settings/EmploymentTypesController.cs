@@ -8,6 +8,7 @@ using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.DTOs.Settings.EmploymentType;
 using SchoolWebApp.Core.Entities.Settings;
+using SchoolWebApp.Core.Entities.Staff;
 
 namespace SchoolWebApp.API.Controllers.Settings
 {
@@ -156,11 +157,8 @@ namespace SchoolWebApp.API.Controllers.Settings
                     return BadRequest($"The employment type of Id- '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.EmploymentTypes.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.Name = model.Name;
-                    existingItem.Description = model.Description;
-                    _unitOfWork.EmploymentTypes.Update(existingItem);
+                    var _item = _mapper.Map<EmploymentType>(model);
+                    _unitOfWork.EmploymentTypes.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

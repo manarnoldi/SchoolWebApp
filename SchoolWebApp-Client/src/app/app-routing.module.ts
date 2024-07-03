@@ -34,7 +34,10 @@ import {CurriculumComponent} from './academics/components/curriculum/curriculum.
 import {ExamTypesComponent} from './academics/components/exam-types/exam-types.component';
 import {SessionsComponent} from './school/components/sessions/sessions.component';
 import {EducationLevelsComponent} from './school/components/education-levels/education-levels.component';
-import { LearningLevelsComponent } from './school/components/learning-levels/learning-levels.component';
+import {LearningLevelsComponent} from './school/components/learning-levels/learning-levels.component';
+import {StaffComponent} from './staff/staff.component';
+import {StaffDetailsComponent} from './staff/components/staff-details/staff-details.component';
+import { StaffDetailsFormComponent } from './staff/components/staff-details/staff-details-form/staff-details-form.component';
 
 const routes: Routes = [
     {
@@ -67,6 +70,22 @@ const routes: Routes = [
             {path: 'sessions', component: SessionsComponent},
             {path: 'educationLevels', component: EducationLevelsComponent},
             {path: 'learningLevels', component: LearningLevelsComponent}
+            // {path: 'relationships', component: RelationshipsComponent},
+            // {path: 'religions', component: ReligionsComponent},
+            // {path: 'sessionTypes', component: SessionTypesComponent},
+            // {path: 'staffCategories', component: StaffCategoriesComponent}
+        ]
+    },
+    {
+        path: 'staff',
+        component: StaffComponent,
+        canActivate: [AuthGuard],
+        canActivateChild: [AuthGuard],
+        children: [
+            {path: 'details', component: StaffDetailsComponent},
+            {path: 'add', component: StaffDetailsFormComponent}
+            // {path: 'occurenceTypes', component: OccurenceTypesComponent},
+            // {path: 'outcomes', component: OutcomesComponent},
             // {path: 'relationships', component: RelationshipsComponent},
             // {path: 'religions', component: ReligionsComponent},
             // {path: 'sessionTypes', component: SessionTypesComponent},

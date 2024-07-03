@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.School.SchoolStream;
 using SchoolWebApp.Core.Entities.School;
+using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.School
@@ -149,12 +150,8 @@ namespace SchoolWebApp.API.Controllers.School
                     return BadRequest($"The school stream of Id- '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.SchoolStreams.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.Name = model.Name;
-                    existingItem.Abbreviation = model.Abbreviation;
-                    existingItem.Description = model.Description;
-                    _unitOfWork.SchoolStreams.Update(existingItem);
+                    var _item = _mapper.Map<SchoolStream>(model);
+                    _unitOfWork.SchoolStreams.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

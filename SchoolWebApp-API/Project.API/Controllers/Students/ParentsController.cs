@@ -7,6 +7,7 @@ using SchoolWebApp.Core.DTOs.Students.Parent;
 using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.DTOs.Students.StudentParent;
+using SchoolWebApp.Core.Entities.Staff;
 
 namespace SchoolWebApp.API.Controllers.Students
 {
@@ -183,23 +184,8 @@ namespace SchoolWebApp.API.Controllers.Students
                     return BadRequest($"The parent record of Id - '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.Parents.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.Notifiable = model.Notifiable;
-                    existingItem.Payer = model.Payer;
-                    existingItem.Pickup = model.Pickup;
-                    existingItem.OccupationId = model.OccupationId;
-                    existingItem.Status = model.Status;
-                    existingItem.FullName = model.FullName;
-                    existingItem.UPI = model.UPI;
-                    existingItem.DateOfBirth = model.DateOfBirth;
-                    existingItem.Address = model.Address;
-                    existingItem.PhoneNumber = model.PhoneNumber;
-                    existingItem.Email = model.Email;
-                    existingItem.NationalityId = model.NationalityId;
-                    existingItem.ReligionId = model.ReligionId;
-                    existingItem.GenderId = model.GenderId;
-                    _unitOfWork.Parents.Update(existingItem);
+                    var _item = _mapper.Map<Parent>(model);
+                    _unitOfWork.Parents.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Class.SchoolClass;
 using SchoolWebApp.Core.Entities.Class;
+using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.Class
@@ -180,16 +181,8 @@ namespace SchoolWebApp.API.Controllers.Class
                     return BadRequest($"The school class of Id - '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.SchoolClasses.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.Name = model.Name;
-                    existingItem.Description = model.Description;
-                    existingItem.AcademicYearId = model.AcademicYearId;
-                    existingItem.LearningLevelId = model.LearningLevelId;
-                    existingItem.SchoolStreamId = model.SchoolStreamId;
-                    existingItem.StaffDetailsId = model.StaffDetailsId;                    
-                    existingItem.StudentId = model.StudentId;
-                    _unitOfWork.SchoolClasses.Update(existingItem);
+                    var _item = _mapper.Map<SchoolClass>(model);
+                    _unitOfWork.SchoolClasses.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

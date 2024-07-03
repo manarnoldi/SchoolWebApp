@@ -10,14 +10,16 @@ using SchoolWebApp.Core.Entities.Settings;
 using SchoolWebApp.Core.Entities.Shared;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Entities.Students;
+using System.Security.Claims;
 
 namespace Project.Infrastructure.Data
 {
     public class ApplicationDbContext : IdentityDbContext<AppUser, AppRole, string>
     {
-        //private readonly IHttpContextAccessor _httpContextAccessor;
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options/*, IHttpContextAccessor httpContextAccessor*/) : base(options)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options/*, IHttpContextAccessor httpContextAccessor*/, IHttpContextAccessor httpContextAccessor) : base(options)
         {
+            _httpContextAccessor = httpContextAccessor;
             //_httpContextAccessor = httpContextAccessor;
         }
 
@@ -94,32 +96,54 @@ namespace Project.Infrastructure.Data
             base.ConfigureConventions(configurationBuilder);
         }
 
-        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
-            CancellationToken cancellationToken = default(CancellationToken))
+        //public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
+        //    CancellationToken cancellationToken = default(CancellationToken))
+        //{
+        //    //var currentUserId = _httpContextAccessor.HttpContext.User.FindFirst("username").Value;
+        //    var currentUserId = "admin";
+        //    var AddedEntities = ChangeTracker.Entries()
+        //            .Where(E => E.State == EntityState.Added && (E.Entity is Base))
+        //            .ToList();
+
+        //    AddedEntities.ForEach(E =>
+        //    {
+        //        E.Property("Created").CurrentValue = DateTime.Now;
+        //        E.Property("CreatedBy").CurrentValue = currentUserId;
+        //        E.Property("Modified").CurrentValue = DateTime.Now;
+        //        E.Property("ModifiedBy").CurrentValue = currentUserId;
+        //    });
+
+        //    var EditedEntities = ChangeTracker.Entries()
+        //        .Where(E => E.State == EntityState.Modified && E.Entity is Base)
+        //        .ToList();
+
+        //    EditedEntities.ForEach(E =>
+        //    {
+        //        E.Property("Modified").CurrentValue = DateTime.Now;
+        //        E.Property("ModifiedBy").CurrentValue = currentUserId;
+        //    });
+        //    return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        //}
+
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
-            //var currentUserId = _httpContextAccessor.HttpContext.User.FindFirst("username").Value;
-            var currentUserId = "admin";
-            var AddedEntities = ChangeTracker.Entries()
-                    .Where(E => E.State == EntityState.Added && (E.Entity is Base))
-                    .ToList();
-
-            AddedEntities.ForEach(E =>
+            var entries = ChangeTracker.Entries().Where(e => e.Entity is Base && (e.State == EntityState.Added || e.State == EntityState.Modified));
+            var user = _httpContextAccessor.HttpContext?.User?.FindFirstValue("username");
+            foreach (var entityEntry in entries)
             {
-                E.Property("Created").CurrentValue = DateTime.Now;
-                E.Property("CreatedBy").CurrentValue = currentUserId;
-                E.Property("Modified").CurrentValue = DateTime.Now;
-                E.Property("ModifiedBy").CurrentValue = currentUserId;
-            });
+                ((Base)entityEntry.Entity).Modified = DateTime.Now;
+                ((Base)entityEntry.Entity).ModifiedBy = user;
 
-            var EditedEntities = ChangeTracker.Entries()
-                .Where(E => E.State == EntityState.Modified && E.Entity is Base)
-                .ToList();
-
-            EditedEntities.ForEach(E =>
-            {
-                E.Property("Modified").CurrentValue = DateTime.Now;
-                E.Property("ModifiedBy").CurrentValue = currentUserId;
-            });
+                if (entityEntry.State == EntityState.Added)
+                {
+                    ((Base)entityEntry.Entity).Created = DateTime.Now;
+                    ((Base)entityEntry.Entity).CreatedBy = user;
+                } else
+                {
+                    entityEntry.Property("Created").IsModified = false;
+                    entityEntry.Property("CreatedBy").IsModified = false;
+                }
+            }
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
 

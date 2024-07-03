@@ -153,13 +153,8 @@ namespace SchoolWebApp.API.Controllers.Settings
                     return BadRequest($"The occurence type of Id- '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.OccurenceTypes.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.Name = model.Name;
-                    existingItem.Description = model.Description;
-                    existingItem.Abbreviation = model.Abbreviation;
-
-                    _unitOfWork.OccurenceTypes.Update(existingItem);
+                    var _item = _mapper.Map<OccurenceType>(model);
+                    _unitOfWork.OccurenceTypes.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

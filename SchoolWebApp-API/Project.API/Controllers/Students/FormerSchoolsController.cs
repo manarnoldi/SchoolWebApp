@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Students.FormerSchool;
+using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
@@ -186,18 +187,8 @@ namespace SchoolWebApp.API.Controllers.Students
                     return BadRequest($"The former school of Id- '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.FormerSchools.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.StudentId = model.StudentId;
-                    existingItem.EducationLevelId = model.EducationLevelId;
-                    existingItem.CurriculumId = model.CurriculumId;
-                    existingItem.StudentId = model.StudentId;
-                    existingItem.SchoolName = model.SchoolName;
-                    existingItem.ClassDetails = model.ClassDetails;
-                    existingItem.Score = model.Score;
-                    existingItem.Position = model.Position;
-                    existingItem.Description = model.Description;
-                    _unitOfWork.FormerSchools.Update(existingItem);
+                    var _item = _mapper.Map<FormerSchool>(model);
+                    _unitOfWork.FormerSchools.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

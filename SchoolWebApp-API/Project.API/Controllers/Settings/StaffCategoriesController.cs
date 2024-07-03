@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Settings.StaffCategory;
 using SchoolWebApp.Core.Entities.Settings;
+using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.Settings
@@ -153,11 +154,8 @@ namespace SchoolWebApp.API.Controllers.Settings
                     return BadRequest($"The staff category of Id- '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.StaffCategories.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.Name = model.Name;
-                    existingItem.Description = model.Description;
-                    _unitOfWork.StaffCategories.Update(existingItem);
+                    var _item = _mapper.Map<StaffCategory>(model);
+                    _unitOfWork.StaffCategories.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

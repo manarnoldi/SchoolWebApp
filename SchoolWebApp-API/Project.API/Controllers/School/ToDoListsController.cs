@@ -7,6 +7,7 @@ using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using Microsoft.AspNetCore.Authorization;
 using SchoolWebApp.Core.DTOs.School.ToDoList;
+using SchoolWebApp.Core.Entities.Staff;
 
 namespace SchoolWebApp.API.Controllers.School
 {
@@ -182,13 +183,8 @@ namespace SchoolWebApp.API.Controllers.School
                     return BadRequest($"The to do list item of Id - '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.ToDoLists.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.ItemName = model.ItemName;
-                    existingItem.CompleteBy = model.CompleteBy;
-                    existingItem.Completed = model.Completed;
-                    existingItem.StaffDetailsId = model.StaffDetailsId;
-                    _unitOfWork.ToDoLists.Update(existingItem);
+                    var _item = _mapper.Map<ToDoList>(model);
+                    _unitOfWork.ToDoLists.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

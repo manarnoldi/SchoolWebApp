@@ -30,8 +30,8 @@ builder.Host.UseSerilog();
 
 builder.Services.AddDbContext<ApplicationDbContext>(
                 options => options.UseMySql(mySqlConnectionStr, ServerVersion.AutoDetect(mySqlConnectionStr)));
-builder.Services.AddHttpContextAccessor();
 builder.Services.RegisterService();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddControllers(
            options =>

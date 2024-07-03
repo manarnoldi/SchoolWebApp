@@ -7,6 +7,8 @@ namespace SchoolWebApp.Core.Entities.Shared
 {
     public class Person : Base
     {
+        public string? StaffImageAsBase64 { get; set; }
+
         [Required(ErrorMessage = "Enter the full name")]
         [Display(Name = "Full name")]
         [StringLength(255)]
@@ -18,7 +20,7 @@ namespace SchoolWebApp.Core.Entities.Shared
         public string UPI { get; set; }
 
         [Display(Name = "Date of birth")]
-        public DateTime DateOfBirth { get; set; }        
+        public DateTime? DateOfBirth { get; set; }
 
         [StringLength(255)]
         public string Address { get; set; }
@@ -34,6 +36,7 @@ namespace SchoolWebApp.Core.Entities.Shared
         public string Email { get; set; }
 
         public Status Status { get; set; }
+        public string? OtherDetails { get; set; }
 
         public int NationalityId { get; set; }
         public Nationality Nationality { get; set; }
