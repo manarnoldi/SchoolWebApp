@@ -1,10 +1,8 @@
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {StaffDetailsService} from '@/staff/services/staff-details.service';
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import Swal from 'sweetalert2';
-import {DataTableDirective} from 'angular-datatables';
-import {StaffDetailsTableComponent} from './staff-details-table/staff-details-table.component';
 import {Router} from '@angular/router';
 
 @Component({

@@ -216,12 +216,8 @@ namespace SchoolWebApp.API.Controllers.Academics
                     return BadRequest($"The exam result of Id - '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.ExamResults.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.StudentId = model.StudentId;
-                    existingItem.ExamId = model.ExamId;
-                    existingItem.Score = model.Score;
-                    _unitOfWork.ExamResults.Update(existingItem);
+                    var _item = _mapper.Map<ExamResult>(model);
+                    _unitOfWork.ExamResults.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

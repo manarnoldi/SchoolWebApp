@@ -179,17 +179,8 @@ namespace SchoolWebApp.API.Controllers.Academics
                     return BadRequest($"The grade of Id - '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.Grades.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.Name = model.Name;
-                    existingItem.Abbr = model.Abbr;
-                    existingItem.MinScore = model.MinScore;
-                    existingItem.MaxScore = model.MaxScore;
-                    existingItem.Points = model.Points;
-                    existingItem.RemarksSwa = model.RemarksSwa;                    
-                    existingItem.RemarksEng = model.RemarksEng;
-                    existingItem.CurriculumId = model.CurriculumId;
-                    _unitOfWork.Grades.Update(existingItem);
+                    var _item = _mapper.Map<Grade>(model);
+                    _unitOfWork.Grades.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

@@ -37,11 +37,11 @@ import {EducationLevelsComponent} from './school/components/education-levels/edu
 import {LearningLevelsComponent} from './school/components/learning-levels/learning-levels.component';
 import {StaffComponent} from './staff/staff.component';
 import {StaffDetailsComponent} from './staff/components/staff-details/staff-details.component';
-import { StaffDetailsFormComponent } from './staff/components/staff-details/staff-details-form/staff-details-form.component';
-import { StudentsComponent } from './students/students.component';
-import { StudentDetailsComponent } from './students/components/student-details/student-details.component';
-import { StudentsViewComponent } from './students/components/students-view/students-view.component';
-import { StudentsAddFormComponent } from './students/components/students-add-form/students-add-form.component';
+import {StaffDetailsFormComponent} from './staff/components/staff-details/staff-details-form/staff-details-form.component';
+import {StudentsComponent} from './students/students.component';
+import {StudentsViewComponent} from './students/components/students-view/students-view.component';
+import {StudentsAddFormComponent} from './students/components/students-add-form/students-add-form.component';
+import { SubjectGroupsComponent } from './academics/components/subject-groups/subject-groups.component';
 
 const routes: Routes = [
     {
@@ -119,8 +119,8 @@ const routes: Routes = [
         canActivateChild: [AuthGuard],
         children: [
             {path: 'curricula', component: CurriculumComponent},
-            {path: 'examTypes', component: ExamTypesComponent}
-            // {path: 'occurenceTypes', component: OccurenceTypesComponent},
+            {path: 'examTypes', component: ExamTypesComponent},
+            {path: 'subjectGroups', component: SubjectGroupsComponent}
             // {path: 'outcomes', component: OutcomesComponent},
             // {path: 'relationships', component: RelationshipsComponent},
             // {path: 'religions', component: ReligionsComponent},

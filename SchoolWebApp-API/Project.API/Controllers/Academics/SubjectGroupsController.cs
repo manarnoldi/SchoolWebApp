@@ -35,7 +35,7 @@ namespace SchoolWebApp.API.Controllers.Academics
         {
             try
             {
-                return Ok(_mapper.Map<List<SubjectGroupDto>>(await _unitOfWork.SubjectGroups.GetAll()));
+                return Ok(_mapper.Map<List<SubjectGroupDto>>(await _unitOfWork.SubjectGroups.Find(includeProperties: "Curriculum")));
             }
             catch (Exception ex)
             {
@@ -179,12 +179,8 @@ namespace SchoolWebApp.API.Controllers.Academics
                     return BadRequest($"The subject group of Id - '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.SubjectGroups.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.Name = model.Name;
-                    existingItem.Abbreviation = model.Abbreviation;
-                    existingItem.Description = model.Description;
-                    _unitOfWork.SubjectGroups.Update(existingItem);
+                    var _item = _mapper.Map<SubjectGroup>(model);
+                    _unitOfWork.SubjectGroups.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Academics.Curriculum;
 using SchoolWebApp.Core.Entities.Academics;
+using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.Academics
@@ -151,12 +152,8 @@ namespace SchoolWebApp.API.Controllers.Academics
                     return BadRequest($"The curriculum of Id- '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.Curricula.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.Name = model.Name;
-                    existingItem.Code = model.Code;
-                    existingItem.Description = model.Description;
-                    _unitOfWork.Curricula.Update(existingItem);
+                    var _item = _mapper.Map<Curriculum>(model);
+                    _unitOfWork.Curricula.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

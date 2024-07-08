@@ -151,13 +151,8 @@ namespace SchoolWebApp.API.Controllers.Academics
                     return BadRequest($"The exam type of Id- '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.ExamTypes.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.Name = model.Name;
-                    existingItem.Description = model.Description;
-                    existingItem.Abbreviation = model.Abbreviation;
-                    existingItem.Featured = model.Featured;
-                    _unitOfWork.ExamTypes.Update(existingItem);
+                    var _item = _mapper.Map<ExamType>(model);
+                    _unitOfWork.ExamTypes.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

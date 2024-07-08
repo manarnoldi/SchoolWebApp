@@ -4,6 +4,8 @@ import { CurriculumComponent } from './components/curriculum/curriculum.componen
 import { SharedModule } from '@/shared/shared.module';
 import { CoreModule } from '@/core/core.module';
 import { AcademicsComponent } from './academics.component';
+import { SubjectGroupsComponent } from './components/subject-groups/subject-groups.component';
+import { SubjectGroupsAddFormComponent } from './components/subject-groups/subject-groups-add-form/subject-groups-add-form.component';
 
 
 
@@ -11,7 +13,9 @@ import { AcademicsComponent } from './academics.component';
   declarations: [
     CurriculumComponent,
     ExamTypesComponent,
-    AcademicsComponent
+    AcademicsComponent,
+    SubjectGroupsComponent,
+    SubjectGroupsAddFormComponent
   ],
   imports: [
     CoreModule,

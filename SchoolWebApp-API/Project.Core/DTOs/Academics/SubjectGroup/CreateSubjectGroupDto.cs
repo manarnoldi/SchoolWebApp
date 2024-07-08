@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SchoolWebApp.Core.DTOs.Academics.Curriculum;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SchoolWebApp.Core.DTOs.Academics.SubjectGroup
 {
@@ -12,9 +8,10 @@ namespace SchoolWebApp.Core.DTOs.Academics.SubjectGroup
         [Required(ErrorMessage = "Enter the subject group")]
         [Display(Name = "Subject group name")]
         [StringLength(255)]
-        public string Name { get; set; }
-        public string Abbreviation { get; set; }
-        public string Description { get; set; }
+        public required string Name { get; set; }
+        public string? Abbreviation { get; set; }
+        public string? Description { get; set; }
         public int CurriculumId { get; set; }
+        public CurriculumDto? Curriculum { get; set; }
     }
 }

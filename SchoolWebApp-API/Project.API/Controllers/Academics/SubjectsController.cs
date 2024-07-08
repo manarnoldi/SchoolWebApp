@@ -208,18 +208,8 @@ namespace SchoolWebApp.API.Controllers.Academics
                     return BadRequest($"The subject of Id - '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var existingItem = await _unitOfWork.Subjects.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.Name = model.Name;
-                    existingItem.Code = model.Code;
-                    existingItem.Abbr = model.Abbr;
-                    existingItem.SubjectGroupId = model.SubjectGroupId;
-                    existingItem.DepartmentId = model.DepartmentId;
-                    existingItem.StaffDetailsId = model.StaffDetailsId;
-                    existingItem.NumOfLessons = model.NumOfLessons;
-                    existingItem.Description = model.Description;
-                    existingItem.Optional = model.Optional;
-                    _unitOfWork.Subjects.Update(existingItem);
+                    var _item = _mapper.Map<Subject>(model);
+                    _unitOfWork.Subjects.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }
