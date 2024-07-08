@@ -39,7 +39,7 @@ namespace SchoolWebApp.API.Controllers.Students
         {
             try
             {
-                return Ok(_mapper.Map<List<StudentDto>>(await _unitOfWork.Students.GetAll()));
+                return Ok(_mapper.Map<List<StudentDto>>(await _unitOfWork.Students.Find(includeProperties:"LearningMode,Nationality,Religion,Gender")));
             }
             catch (Exception ex)
             {

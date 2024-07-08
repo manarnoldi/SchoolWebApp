@@ -32,6 +32,7 @@ import { DisplayTimeToPipe } from './pipes/display-time-to.pipe';
 import { DaysToWeeksYearsPipe } from './pipes/days-to-weeks-years.pipe';
 import { AgeFromDateOfBirthPipe } from './pipes/age-from-date-of-birth.pipe';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { DataTablesModule } from 'angular-datatables';
 
 @NgModule({
     declarations: [

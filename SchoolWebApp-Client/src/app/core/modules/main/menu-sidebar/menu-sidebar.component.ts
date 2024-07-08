@@ -132,37 +132,37 @@ export const MENU = [
             {
                 name: 'Details',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/student']
+                path: ['/students/details']
             },
             {
                 name: 'Former School',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/student']
+                path: ['/students/formerSchool']
             },
             {
                 name: 'Class',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/student']
+                path: ['/students/class']
             },
             {
                 name: 'Parents',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/student']
+                path: ['/students/parents']
             },
             {
                 name: 'Discipline',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/student']
+                path: ['/students/discipline']
             },
             {
                 name: 'Subjects',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/student']
+                path: ['/students/subjects']
             },
             {
                 name: 'Attendance',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/student']
+                path: ['/students/attendance']
             }
         ]
     },

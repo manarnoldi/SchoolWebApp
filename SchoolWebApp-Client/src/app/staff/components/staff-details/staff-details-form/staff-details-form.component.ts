@@ -17,9 +17,7 @@ import {StaffDetailsService} from '@/staff/services/staff-details.service';
 import {DatePipe} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {
-    FormArray,
     FormBuilder,
-    FormControl,
     FormGroup,
     Validators
 } from '@angular/forms';
@@ -48,7 +46,7 @@ export class StaffDetailsFormComponent implements OnInit {
     staff: StaffDetails;
     staffId: number = 0;
     staffs: StaffDetails[] = [];
-    staffImageUrl: string;
+    staffImageUrl: string= "../../../../../../assets/img/user_image.png";
 
     staffCategories: StaffCategory[] = [];
     designations: Designation[] = [];
@@ -151,7 +149,7 @@ export class StaffDetailsFormComponent implements OnInit {
         this.staffForm = this.formBuilder.group({
             staffImageAsBase64: [''],
             fullName: ['', [Validators.required]],
-            status: [null],
+            status: [this.statusValues[0], [Validators.required]],
             nationalityId: [null, [Validators.required]],
             religionId: [null, [Validators.required]],
             genderId: [null, [Validators.required]],
@@ -165,7 +163,7 @@ export class StaffDetailsFormComponent implements OnInit {
 
             employmentDate: [null],
             endofEmploymentDate: [null],
-            currentlyEmployed: [false],
+            currentlyEmployed: [true],
             staffCategoryId: [null, [Validators.required]],
             designationId: [null, [Validators.required]],
             employmentTypeId: [null, [Validators.required]],

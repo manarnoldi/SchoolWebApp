@@ -27,10 +27,13 @@
                             "node_modules/ngx-toastr/toastr.css",
                             "node_modules/bootstrap/dist/css/bootstrap.min.css",
                             "node_modules/ngx-spinner/animations/ball-clip-rotate-pulse.css",
+                            "node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css",
                             "src/styles.scss"
                         ],
                         "scripts": [
-                            "node_modules/jquery/dist/jquery.min.js",
+                            "node_modules/jquery/dist/jquery.js",
+                            "node_modules/datatables.net/js/dataTables.min.js",
+                            "node_modules/datatables.net-bs5/js/dataTables.bootstrap5.min.js",
                             "node_modules/bootstrap/dist/js/bootstrap.min.js"
                         ],
                         "vendorChunk": true,
@@ -40,7 +43,12 @@
                         "sourceMap": true,
                         "optimization": false,
                         "namedChunks": true,
-                        "allowedCommonJsDependencies": ["sweetalert2","path", "os", "fs"]
+                        "allowedCommonJsDependencies": [
+                            "sweetalert2",
+                            "path",
+                            "os",
+                            "fs"
+                        ]
                     },
                     "configurations": {
                         "production": {
@@ -97,15 +105,17 @@
                         "tsConfig": "tsconfig.spec.json",
                         "karmaConfig": "karma.conf.js",
                         "assets": ["src/favicon.ico", "src/assets"],
-
                         "styles": [
                             "node_modules/ngx-toastr/toastr.css",
-                            "node_modules/ngx-spinner/animations/ball-clip-rotate-pulse.css",
                             "node_modules/bootstrap/dist/css/bootstrap.min.css",
+                            "node_modules/ngx-spinner/animations/ball-clip-rotate-pulse.css",
+                            "node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css",
                             "src/styles.scss"
                         ],
                         "scripts": [
-                            "node_modules/jquery/dist/jquery.min.js",
+                            "node_modules/jquery/dist/jquery.js",
+                            "node_modules/datatables.net/js/dataTables.min.js",
+                            "node_modules/datatables.net-bs5/js/dataTables.bootstrap5.min.js",
                             "node_modules/bootstrap/dist/js/bootstrap.min.js"
                         ]
                     }

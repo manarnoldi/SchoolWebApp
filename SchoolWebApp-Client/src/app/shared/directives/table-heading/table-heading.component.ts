@@ -7,7 +7,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 })
 export class TableHeadingComponent implements OnInit {
     @Input() tableTitle: string = '';
-    @Input() editControls: boolean = true;
+    @Input() editControls: boolean = false;
 
     @Output() searchItemEvent = new EventEmitter<string>();
 
