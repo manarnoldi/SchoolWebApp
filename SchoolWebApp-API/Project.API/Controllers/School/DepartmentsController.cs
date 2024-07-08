@@ -36,7 +36,7 @@ namespace SchoolWebApp.API.Controllers.School
         {
             try
             {
-                return Ok(_mapper.Map<List<DepartmentDto>>(await _unitOfWork.Departments.GetAll()));
+                return Ok(_mapper.Map<List<DepartmentDto>>(await _unitOfWork.Departments.Find(includeProperties:"StaffDetails")));
             }
             catch (Exception ex)
             {

@@ -18,6 +18,8 @@ import { EducationLevelsComponent } from './components/education-levels/educatio
 import { EducationLevelFormComponent } from './components/education-levels/education-level-form/education-level-form.component';
 import { LearningLevelsComponent } from './components/learning-levels/learning-levels.component';
 import { LearningLevelsFormComponent } from './components/learning-levels/learning-levels-form/learning-levels-form.component';
+import { DepartmentsComponent } from './components/departments/departments.component';
+import { DepartmentsAddFormComponent } from './components/departments/departments-add-form/departments-add-form.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,9 @@ import { LearningLevelsFormComponent } from './components/learning-levels/learni
     EducationLevelsComponent,
     EducationLevelFormComponent,
     LearningLevelsComponent,
-    LearningLevelsFormComponent
+    LearningLevelsFormComponent,
+    DepartmentsComponent,
+    DepartmentsAddFormComponent
   ],
   imports: [
     CoreModule,

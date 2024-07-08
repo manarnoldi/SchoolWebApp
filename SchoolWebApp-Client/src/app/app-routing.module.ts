@@ -43,6 +43,7 @@ import {StudentsViewComponent} from './students/components/students-view/student
 import {StudentsAddFormComponent} from './students/components/students-add-form/students-add-form.component';
 import {SubjectGroupsComponent} from './academics/components/subject-groups/subject-groups.component';
 import { GradesComponent } from './academics/components/grades/grades.component';
+import { DepartmentsComponent } from './school/components/departments/departments.component';
 
 const routes: Routes = [
     {
@@ -74,8 +75,8 @@ const routes: Routes = [
             {path: 'academicYears', component: AcademicYearsComponent},
             {path: 'sessions', component: SessionsComponent},
             {path: 'educationLevels', component: EducationLevelsComponent},
-            {path: 'learningLevels', component: LearningLevelsComponent}
-            // {path: 'relationships', component: RelationshipsComponent},
+            {path: 'learningLevels', component: LearningLevelsComponent},
+            {path: 'departments', component: DepartmentsComponent}
             // {path: 'religions', component: ReligionsComponent},
             // {path: 'sessionTypes', component: SessionTypesComponent},
             // {path: 'staffCategories', component: StaffCategoriesComponent}
