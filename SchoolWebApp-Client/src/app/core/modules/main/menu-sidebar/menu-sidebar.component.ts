@@ -188,7 +188,7 @@ export const MENU = [
             {
                 name: 'Grading System',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/academics/gradingSystem']
+                path: ['/academics/grades']
             },
             {
                 name: 'Exam Types',

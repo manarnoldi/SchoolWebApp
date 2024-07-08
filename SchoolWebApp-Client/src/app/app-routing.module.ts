@@ -41,7 +41,8 @@ import {StaffDetailsFormComponent} from './staff/components/staff-details/staff-
 import {StudentsComponent} from './students/students.component';
 import {StudentsViewComponent} from './students/components/students-view/students-view.component';
 import {StudentsAddFormComponent} from './students/components/students-add-form/students-add-form.component';
-import { SubjectGroupsComponent } from './academics/components/subject-groups/subject-groups.component';
+import {SubjectGroupsComponent} from './academics/components/subject-groups/subject-groups.component';
+import { GradesComponent } from './academics/components/grades/grades.component';
 
 const routes: Routes = [
     {
@@ -120,8 +121,8 @@ const routes: Routes = [
         children: [
             {path: 'curricula', component: CurriculumComponent},
             {path: 'examTypes', component: ExamTypesComponent},
-            {path: 'subjectGroups', component: SubjectGroupsComponent}
-            // {path: 'outcomes', component: OutcomesComponent},
+            {path: 'subjectGroups', component: SubjectGroupsComponent},
+            {path: 'grades', component: GradesComponent}
             // {path: 'relationships', component: RelationshipsComponent},
             // {path: 'religions', component: ReligionsComponent},
             // {path: 'sessionTypes', component: SessionTypesComponent},

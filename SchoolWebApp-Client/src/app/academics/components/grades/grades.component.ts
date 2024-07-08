@@ -1,26 +1,26 @@
-import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
+import { TableButtonComponent } from '@/shared/directives/table-button/table-button.component';
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {SubjectGroupsAddFormComponent} from './subject-groups-add-form/subject-groups-add-form.component';
-import {forkJoin, Subscription} from 'rxjs';
-import {BreadCrumb} from '@/core/models/bread-crumb';
-import {SubjectGroup} from '@/academics/models/subject-group';
-import {Curriculum} from '@/academics/models/curriculum';
-import {ToastrService} from 'ngx-toastr';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
-import {SubjectGroupsService} from '@/academics/services/subject-groups.service';
-import {CurriculumService} from '@/academics/services/curriculum.service';
+import { GradesAddFormComponent } from './grades-add-form/grades-add-form.component';
+import { forkJoin, Subscription } from 'rxjs';
+import { BreadCrumb } from '@/core/models/bread-crumb';
+import { Grade } from '@/academics/models/grade';
+import { Curriculum } from '@/academics/models/curriculum';
+import { ToastrService } from 'ngx-toastr';
+import { TableSettingsService } from '@/shared/services/table-settings.service';
+import { GradesService } from '@/academics/services/grades.service';
+import { CurriculumService } from '@/academics/services/curriculum.service';
 import Swal from 'sweetalert2';
 
 @Component({
-    selector: 'app-subject-groups',
-    templateUrl: './subject-groups.component.html',
-    styleUrl: './subject-groups.component.scss'
+    selector: 'app-grades',
+    templateUrl: './grades.component.html',
+    styleUrl: './grades.component.scss'
 })
-export class SubjectGroupsComponent implements OnInit {
+export class GradesComponent implements OnInit {
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
-    @ViewChild(SubjectGroupsAddFormComponent)
-    subjectGroupForm: SubjectGroupsAddFormComponent;
+    @ViewChild(GradesAddFormComponent)
+    gradeForm: GradesAddFormComponent;
     tblShowViewButton: true;
     isAuthLoading: boolean;
 
@@ -30,29 +30,33 @@ export class SubjectGroupsComponent implements OnInit {
     pageSubscription: Subscription;
     pageSizeSubscription: Subscription;
 
-    tableModel: string = 'subjectGroup';
+    tableModel: string = 'grade';
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Home'},
-        {link: ['/academics/subjectGroups'], title: 'Academics: Subject groups'}
+        {link: ['/academics/grades'], title: 'Academics: Grades'}
     ];
-    dashboardTitle = 'Academics: Subject groups';
-    tableTitle: string = ' Subject groups list';
+    dashboardTitle = 'Academics: Grades';
+    tableTitle: string = ' Grades list';
     tableHeaders: string[] = [
         'Name',
         'Abbreviation',
+        'Minimum Score',
+        'Maximum Score',
+        'Points',
+        'Remarks (Swahili)',
+        'Remarks (English)',
         'Curriculum',
-        'Description',
         'Action'
     ];
 
-    subjectGroup: SubjectGroup;
-    subjectGroups: SubjectGroup[] = [];
+    grade: Grade;
+    grades: Grade[] = [];
     curricula: Curriculum[] = [];
 
     constructor(
         private toastr: ToastrService,
         private tableSettingsSvc: TableSettingsService,
-        private subjectGroupsSvc: SubjectGroupsService,
+        private gradesSvc: GradesService,
         private curriculumSvc: CurriculumService
     ) {}
 
@@ -67,18 +71,18 @@ export class SubjectGroupsComponent implements OnInit {
     }
 
     refreshItems() {
-        let subjectGroupsReq = this.subjectGroupsSvc.get('/subjectGroups');
+        let gradesReq = this.gradesSvc.get('/grades');
         let curriculaReq = this.curriculumSvc.get('/curricula');
 
-        forkJoin([subjectGroupsReq, curriculaReq]).subscribe(
-            ([subjectGroups, curricular]) => {
-                this.collectionSize = subjectGroups.length;
-                this.subjectGroups = subjectGroups.sort(
+        forkJoin([gradesReq, curriculaReq]).subscribe(
+            ([grades, curricular]) => {
+                this.collectionSize = grades.length;
+                this.grades = grades.sort(
                     (a, b) => parseInt(a.id) - parseInt(b.id)
                 );
                 this.curricula = curricular;
                 this.isAuthLoading = false;
-                this.subjectGroupForm.editMode = false;
+                this.gradeForm.editMode = false;
             },
             (err) => {
                 this.toastr.error(err.error);
@@ -87,14 +91,14 @@ export class SubjectGroupsComponent implements OnInit {
     }
 
     editItem(id: number) {
-        this.subjectGroupsSvc.getById(id, '/subjectGroups').subscribe(
+        this.gradesSvc.getById(id, '/grades').subscribe(
             (res) => {
-                let subjectGroupId = res.id;
-                this.subjectGroup = new SubjectGroup(res);
-                this.subjectGroup.id = subjectGroupId;
-                this.subjectGroupForm.setFormControls(this.subjectGroup);
-                this.subjectGroupForm.editMode = true;
-                this.subjectGroupForm.subjectGroup = this.subjectGroup;
+                let gradeId = res.id;
+                this.grade = new Grade(res);
+                this.grade.id = gradeId;
+                this.gradeForm.setFormControls(this.grade);
+                this.gradeForm.editMode = true;
+                this.gradeForm.grade = this.grade;
                 this.tableButton.onClick();
             },
             (err) => {
@@ -116,7 +120,7 @@ export class SubjectGroupsComponent implements OnInit {
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.value) {
-                this.subjectGroupsSvc.delete('/subjectGroups', id).subscribe(
+                this.gradesSvc.delete('/grades', id).subscribe(
                     (res) => {
                         this.refreshItems();
                         this.toastr.success('Record deleted successfully!');
@@ -131,43 +135,40 @@ export class SubjectGroupsComponent implements OnInit {
     }
 
     resetForm = () => {
-        this.subjectGroupForm.editMode = false;
-        this.subjectGroupForm.refreshItems();
+        this.gradeForm.editMode = false;
+        this.gradeForm.refreshItems();
     };
 
     errorEvent = (errorName: string) => {
         this.toastr.error(errorName);
     };
 
-    addSubjectGroup = (subjectGroup: SubjectGroup) => {
+    addGrade = (grade: Grade) => {
         Swal.fire({
-            title: `${this.subjectGroupForm.editMode ? 'Update' : 'Add'} subject group?`,
+            title: `${this.gradeForm.editMode ? 'Update' : 'Add'} grade?`,
             text: `Confirm if you want to ${
-                this.subjectGroupForm.editMode ? 'update' : 'add'
-            } subject group.`,
+                this.gradeForm.editMode ? 'update' : 'add'
+            } grade.`,
             width: 400,
             position: 'top',
             padding: '1em',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: `${this.subjectGroupForm.editMode ? 'Update' : 'Add'}`,
+            confirmButtonText: `${this.gradeForm.editMode ? 'Update' : 'Add'}`,
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.value) {
-                let app = new SubjectGroup(subjectGroup);
-                if (this.subjectGroupForm.editMode)
-                    app.id = subjectGroup.id;
-                let reqToProcess = this.subjectGroupForm.editMode
-                    ? this.subjectGroupsSvc.update('/subjectGroups', app)
-                    : this.subjectGroupsSvc.create('/subjectGroups', app);
+                let app = new Grade(grade);
+                if (this.gradeForm.editMode) app.id = grade.id;
+                let reqToProcess = this.gradeForm.editMode
+                    ? this.gradesSvc.update('/grades', app)
+                    : this.gradesSvc.create('/grades', app);
 
                 forkJoin([reqToProcess]).subscribe(
                     (res) => {
-                        this.subjectGroupForm.editMode = false;
-                        this.subjectGroupForm.refreshItems();
-                        this.toastr.success(
-                            'Subject group saved successfully'
-                        );
+                        this.gradeForm.editMode = false;
+                        this.gradeForm.refreshItems();
+                        this.toastr.success('Grade saved successfully');
                         this.refreshItems();
                         this.closeButton.nativeElement.click();
                     },

@@ -35,7 +35,7 @@ namespace SchoolWebApp.API.Controllers.Academics
         {
             try
             {
-                return Ok(_mapper.Map<List<GradeDto>>(await _unitOfWork.Grades.GetAll()));
+                return Ok(_mapper.Map<List<GradeDto>>(await _unitOfWork.Grades.Find(includeProperties: "Curriculum")));
             }
             catch (Exception ex)
             {

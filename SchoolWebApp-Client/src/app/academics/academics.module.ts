@@ -6,6 +6,8 @@ import { CoreModule } from '@/core/core.module';
 import { AcademicsComponent } from './academics.component';
 import { SubjectGroupsComponent } from './components/subject-groups/subject-groups.component';
 import { SubjectGroupsAddFormComponent } from './components/subject-groups/subject-groups-add-form/subject-groups-add-form.component';
+import { GradesComponent } from './components/grades/grades.component';
+import { GradesAddFormComponent } from './components/grades/grades-add-form/grades-add-form.component';
 
 
 
@@ -15,7 +17,9 @@ import { SubjectGroupsAddFormComponent } from './components/subject-groups/subje
     ExamTypesComponent,
     AcademicsComponent,
     SubjectGroupsComponent,
-    SubjectGroupsAddFormComponent
+    SubjectGroupsAddFormComponent,
+    GradesComponent,
+    GradesAddFormComponent
   ],
   imports: [
     CoreModule,

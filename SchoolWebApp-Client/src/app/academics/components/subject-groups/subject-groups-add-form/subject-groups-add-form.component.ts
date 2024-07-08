@@ -36,9 +36,9 @@ export class SubjectGroupsAddFormComponent implements OnInit {
 
     setFormControls = (subjectGroup: SubjectGroup) => {
         this.subjectGroupForm.setValue({
-            name: subjectGroup.name,
-            abbreviation: subjectGroup.abbreviation,
-            description: subjectGroup.description,
+            name: subjectGroup?.name,
+            abbreviation: subjectGroup?.abbreviation,
+            description: subjectGroup?.description,
             curriculumId: subjectGroup?.curriculumId
         });
     };

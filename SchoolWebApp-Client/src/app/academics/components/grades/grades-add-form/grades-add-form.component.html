@@ -1,0 +1,109 @@
+<form [formGroup]="gradeForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="modal-body">
+        <div class="card-details-box border-info">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="name">Grade name: <span
+                                class="requiredField">*</span></label>
+                        <input id="name" placeholder="Enter grade name" type="text"
+                            class="form-control" formControlName="name" [ngClass]="{
+                            'is-invalid': (f.name.dirty || f.name.touched) && f.name.invalid
+                            }" />
+                        <div class="invalid-feedback">Grade name is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="curriculumId" class="form-label">Curriculum: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-control" aria-label="Select curriculum"
+                            formControlName="curriculumId" id="curriculumId" [ngClass]="{
+                                'is-invalid': (f.curriculumId.dirty || f.curriculumId.touched) && f.curriculumId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select
+                                curriculum</option>
+                            <option [ngValue]="curriculum.id" *ngFor="let curriculum of
+                                curricula">{{curriculum.name}}</option>
+                        </select>
+                        <div class="invalid-feedback"> Curriculum is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="minScore">Minimum score: <span
+                                class="requiredField">*</span></label>
+                        <input id="minScore" placeholder="Enter minimum score" type="number"
+                            class="form-control" formControlName="minScore" [ngClass]="{
+                                'is-invalid': (f.minScore.dirty || f.minScore.touched) && f.minScore.invalid
+                                }" />
+                        <div class="invalid-feedback">Grade minimum score is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="maxScore">Maximum score: <span
+                                class="requiredField">*</span></label>
+                        <input id="maxScore" placeholder="Enter maximum score" type="number"
+                            class="form-control" formControlName="maxScore" [ngClass]="{
+                            'is-invalid': (f.maxScore.dirty || f.maxScore.touched) && f.maxScore.invalid
+                            }" />
+                        <div class="invalid-feedback">Grade maximum score is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="abbr">Abbreviation: <span
+                                class="requiredField">*</span></label>
+                        <input id="abbr" placeholder="Enter abbreviation" type="text"
+                            class="form-control" formControlName="abbr" [ngClass]="{
+                                'is-invalid': (f.abbr.dirty || f.abbr.touched) && f.abbr.invalid
+                                }" />
+                        <div class="invalid-feedback">Grade abbreviation is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="points">Points: <span
+                                class="requiredField">*</span></label>
+                        <input id="points" placeholder="Enter points" type="number"
+                            class="form-control" formControlName="abbr" [ngClass]="{
+                                'is-invalid': (f.points.dirty || f.points.touched) && f.points.invalid
+                                }" />
+                        <div class="invalid-feedback">Grade points is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Remarks (Swahili):</label>
+                        <textarea placeholder="Enter remarks in Swahili" id="remarksSwa"
+                            class="form-control" rows="2" formControlName="remarksSwa"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Remarks (English):</label>
+                        <textarea placeholder="Enter remarks in English" id="remarksEng"
+                            class="form-control" rows="2" formControlName="remarksEng"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" [disabled]="gradeForm.invalid" class="btn
+                btn-success"> <i class="fas fa-save"></i>
+                {{ editMode ? 'Update' : 'Save' }}
+            </button>
+            <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
+                #closeButton (click)="closeGradeForm()">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+    </div>
+</form>
