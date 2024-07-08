@@ -6,13 +6,15 @@ import {StudentDetailsComponent} from './components/student-details/student-deta
 import {StudentsViewComponent} from './components/students-view/students-view.component';
 import {StudentsTableComponent} from './components/students-table/students-table.component';
 import { DataTablesModule } from 'angular-datatables';
+import { StudentsAddFormComponent } from './components/students-add-form/students-add-form.component';
 
 @NgModule({
     declarations: [
         StudentsComponent,
         StudentDetailsComponent,
         StudentsViewComponent,
-        StudentsTableComponent
+        StudentsTableComponent,
+        StudentsAddFormComponent
     ],
     imports: [DataTablesModule, CoreModule, SharedModule]
 })

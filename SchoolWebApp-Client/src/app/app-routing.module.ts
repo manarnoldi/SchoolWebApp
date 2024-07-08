@@ -41,6 +41,7 @@ import { StaffDetailsFormComponent } from './staff/components/staff-details/staf
 import { StudentsComponent } from './students/students.component';
 import { StudentDetailsComponent } from './students/components/student-details/student-details.component';
 import { StudentsViewComponent } from './students/components/students-view/students-view.component';
+import { StudentsAddFormComponent } from './students/components/students-add-form/students-add-form.component';
 
 const routes: Routes = [
     {
@@ -102,7 +103,7 @@ const routes: Routes = [
         canActivateChild: [AuthGuard],
         children: [
             {path: 'details', component: StudentsViewComponent},
-            {path: 'add', component: StudentDetailsComponent}
+            {path: 'add', component: StudentsAddFormComponent}
             // {path: 'occurenceTypes', component: OccurenceTypesComponent},
             // {path: 'outcomes', component: OutcomesComponent},
             // {path: 'relationships', component: RelationshipsComponent},
