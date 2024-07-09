@@ -36,7 +36,7 @@ namespace SchoolWebApp.API.Controllers.School
         {
             try
             {
-                return Ok(_mapper.Map<List<EventDto>>(await _unitOfWork.Events.GetAll()));
+                return Ok(_mapper.Map<List<EventDto>>(await _unitOfWork.Events.Find(includeProperties: "Session")));
             }
             catch (Exception ex)
             {
@@ -143,8 +143,8 @@ namespace SchoolWebApp.API.Controllers.School
             if (ModelState.IsValid)
             {
                 if (await _unitOfWork.Events.ItemExistsAsync(s => s.EventName == model.EventName && s.SessionId == model.SessionId
-                && s.EventLocation == model.EventLocation && s.StartDate == model.StartDate && s.Status == model.Status && s.Description == model.Description
-                && s.EndDate == model.EndDate && s.EventYear == model.EventYear))
+                && s.EventLocation == model.EventLocation && s.StartDate == model.StartDate && s.Description == model.Description
+                && s.EndDate == model.EndDate))
                     return Conflict(new { message = $"The event details submitted already exist." });
                 try
                 {

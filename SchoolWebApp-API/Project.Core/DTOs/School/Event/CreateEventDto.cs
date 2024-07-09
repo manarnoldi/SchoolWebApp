@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SchoolWebApp.Core.DTOs.Class.Session;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -12,12 +13,12 @@ namespace SchoolWebApp.Core.DTOs.School.Event
         [Required(ErrorMessage = "Enter the event name.")]
         [Display(Name = "Event name")]
         [StringLength(500)]
-        public string EventName { get; set; }
+        public required string EventName { get; set; }
 
         [Required(ErrorMessage = "Enter the event location.")]
         [Display(Name = "Event location")]
         [StringLength(255)]
-        public string EventLocation { get; set; }
+        public required string EventLocation { get; set; }
 
         [Required(ErrorMessage = "Select the event start date.")]
         [Display(Name = "Event start date")]
@@ -27,14 +28,10 @@ namespace SchoolWebApp.Core.DTOs.School.Event
         [Required(ErrorMessage = "Select the event end date.")]
         public DateTime EndDate { get; set; }
 
-        [Display(Name = "Event year")]
-        [Required(ErrorMessage = "Select the event year.")]
-        public int EventYear { get; set; }
-
         [StringLength(500)]
-        public string Description { get; set; }
-        public bool Status { get; set; }
+        public string? Description { get; set; }
 
         public int SessionId { get; set; }
+        public SessionDto? Session { get; set; }
     }
 }

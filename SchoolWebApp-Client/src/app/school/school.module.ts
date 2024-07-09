@@ -20,6 +20,9 @@ import { LearningLevelsComponent } from './components/learning-levels/learning-l
 import { LearningLevelsFormComponent } from './components/learning-levels/learning-levels-form/learning-levels-form.component';
 import { DepartmentsComponent } from './components/departments/departments.component';
 import { DepartmentsAddFormComponent } from './components/departments/departments-add-form/departments-add-form.component';
+import { EventsComponent } from './components/events/events.component';
+import { EventsAddFormComponent } from './components/events/events-add-form/events-add-form.component';
+import { EventsTableComponent } from './components/events/events-table/events-table.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +43,10 @@ import { DepartmentsAddFormComponent } from './components/departments/department
     LearningLevelsComponent,
     LearningLevelsFormComponent,
     DepartmentsComponent,
-    DepartmentsAddFormComponent
+    DepartmentsAddFormComponent,
+    EventsComponent,
+    EventsAddFormComponent,
+    EventsTableComponent
   ],
   imports: [
     CoreModule,

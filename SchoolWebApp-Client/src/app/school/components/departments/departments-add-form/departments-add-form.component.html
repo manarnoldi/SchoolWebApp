@@ -1,6 +1,19 @@
 <form [formGroup]="departmentForm" (ngSubmit)="onSubmit()" novalidate>
     <div class="modal-body">
-        <div class="card-details-box border-info">
+        <div class="card-details-box border-info">            
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="code">Department code: <span
+                                class="requiredField">*</span></label>
+                        <input id="code" placeholder="Enter department code" type="text"
+                            class="form-control" formControlName="code" [ngClass]="{
+                                'is-invalid': (f.code.dirty || f.code.touched) && f.code.invalid
+                                }" />
+                        <div class="invalid-feedback">Department code is required</div>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
@@ -17,6 +30,26 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
+                        <label for="staffDetailsId" class="form-label">Head of department:</label>
+                        <ng-select labelForId="staffDetailsId" [items]="staffDetails"
+                            bindLabel="fullName"
+                            formControlName="staffDetailsId"
+                            placeholder="Select head of department">
+                            <ng-template ng-label-tmp let-item="item">
+                                <span>{{ item.fullName }}</span>
+                            </ng-template>
+                            <ng-template ng-option-tmp let-item="item" let-search="searchTerm"
+                                let-index="index">
+                                <span>{{ item.fullName}}</span>
+                            </ng-template>
+                        </ng-select>
+                        <div class="invalid-feedback"> Head of department is required</div>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
                         <label for="staffDetailsId" class="form-label">Head of department: <span
                                 class="requiredField">*</span></label>
                         <select class="form-control" aria-label="Select head of department"
@@ -31,20 +64,8 @@
                         <div class="invalid-feedback"> Head of department is required</div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label for="code">Department code: <span
-                                class="requiredField">*</span></label>
-                        <input id="code" placeholder="Enter department code" type="text"
-                            class="form-control" formControlName="code" [ngClass]="{
-                                'is-invalid': (f.code.dirty || f.code.touched) && f.code.invalid
-                                }" />
-                        <div class="invalid-feedback">Department code is required</div>
-                    </div>
-                </div>
-            </div>
+            </div> -->
+            
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">

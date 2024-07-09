@@ -16,7 +16,7 @@ namespace SchoolWebApp.Infrastructure.Repositories.School
 
         public async Task<List<Event>> GetBySessionId(int sessionId)
         {
-            var events = await _dbContext.Events.Where(e=>e.SessionId == sessionId && e.Status).ToListAsync();
+            var events = await _dbContext.Events.Where(e=>e.SessionId == sessionId).ToListAsync();
             return events;
         }
     }

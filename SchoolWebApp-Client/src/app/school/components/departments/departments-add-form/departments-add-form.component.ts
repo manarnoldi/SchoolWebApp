@@ -30,10 +30,10 @@ export class DepartmentsAddFormComponent implements OnInit {
     constructor(private formBuilder: FormBuilder) {}
 
     ngOnInit(): void {
-        this.refreshItems();
+        this.initializeForm();
     }
 
-    refreshItems = () => {
+    initializeForm = () => {
         this.departmentForm = this.formBuilder.group({
             name: ['', [Validators.required]],
             code: ['', [Validators.required]],
@@ -47,7 +47,13 @@ export class DepartmentsAddFormComponent implements OnInit {
             name: department?.name,
             code: department?.code,
             description: department?.description,
-            staffDetailsId: department?.staffDetailsId
+            staffDetailsId: 0
+        });
+        var staffDId = this.staffDetails.find(
+            (s) => s.id == department?.staffDetailsId.toString()
+        );
+        this.departmentForm.patchValue({
+            staffDetailsId: staffDId
         });
     };
 
@@ -76,13 +82,11 @@ export class DepartmentsAddFormComponent implements OnInit {
     }
 
     onSubmit = () => {
-        if (this.editMode) {
-            let departmentId = this.department.id;
-            this.department = new Department(this.departmentForm.value);
-            this.department.id = departmentId;
-        } else {
-            this.department = new Department(this.departmentForm.value);
-        }
+        let departmentId = this.department?.id;
+        this.department = new Department(this.departmentForm.value);
+        this.department.staffDetailsId =
+            this.departmentForm.get('staffDetailsId').value?.id;
+        if (this.editMode) this.department.id = departmentId;
         this.addItemEvent.emit(this.department);
     };
 }

@@ -1,26 +1,28 @@
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {DepartmentsAddFormComponent} from './departments-add-form/departments-add-form.component';
+import {EventsAddFormComponent} from './events-add-form/events-add-form.component';
 import {forkJoin, Subscription} from 'rxjs';
 import {BreadCrumb} from '@/core/models/bread-crumb';
-import {Department} from '@/school/models/department';
-import {StaffDetails} from '@/staff/models/staff-details';
+import {Session} from '@/school/models/session';
+import {SchoolEvent} from '@/school/models/schoolEvent';
 import {ToastrService} from 'ngx-toastr';
 import {TableSettingsService} from '@/shared/services/table-settings.service';
-import {DepartmentsService} from '@/school/services/departments.service';
-import {StaffDetailsService} from '@/staff/services/staff-details.service';
+import {EventsService} from '@/school/services/events.service';
+import {SessionsService} from '@/school/services/sessions.service';
 import Swal from 'sweetalert2';
+import {AcademicYear} from '@/school/models/academic-year';
+import {AcademicYearsService} from '@/school/services/academic-years.service';
 
 @Component({
-    selector: 'app-departments',
-    templateUrl: './departments.component.html',
-    styleUrl: './departments.component.scss'
+    selector: 'app-events',
+    templateUrl: './events.component.html',
+    styleUrl: './events.component.scss'
 })
-export class DepartmentsComponent implements OnInit {
+export class EventsComponent implements OnInit {
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
-    @ViewChild(DepartmentsAddFormComponent)
-    departmentForm: DepartmentsAddFormComponent;
+    @ViewChild(EventsAddFormComponent)
+    eventForm: EventsAddFormComponent;
     tblShowViewButton: true;
     isAuthLoading: boolean;
 
@@ -30,30 +32,35 @@ export class DepartmentsComponent implements OnInit {
     pageSubscription: Subscription;
     pageSizeSubscription: Subscription;
 
-    tableModel: string = 'department';
+    tableModel: string = 'event';
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Home'},
-        {link: ['/school/departments'], title: 'School: Departments'}
+        {link: ['/school/events'], title: 'School: Events'}
     ];
-    dashboardTitle = 'School: Departments';
-    tableTitle: string = ' Departments list';
+    dashboardTitle = 'School: Events';
+    tableTitle: string = ' Events list';
     tableHeaders: string[] = [
-        'Code',
-        'Name',
+        'Academic year',
+        'Session',
+        'Event name',
+        'Event location',
+        'Start date',
+        'End date',
         'Description',
-        'Head of department',
         'Action'
     ];
 
-    department: Department;
-    departments: Department[] = [];
-    staffDetails: StaffDetails[] = [];
+    event: SchoolEvent;
+    events: SchoolEvent[] = [];
+    sessions: Session[] = [];
+    academicYears: AcademicYear[] = [];
 
     constructor(
         private toastr: ToastrService,
         private tableSettingsSvc: TableSettingsService,
-        private departmentsSvc: DepartmentsService,
-        private staffDetailsSvc: StaffDetailsService
+        private eventsSvc: EventsService,
+        private sessionsSvc: SessionsService,
+        private academicYearsSvc: AcademicYearsService
     ) {}
 
     ngOnInit(): void {
@@ -67,18 +74,22 @@ export class DepartmentsComponent implements OnInit {
     }
 
     refreshItems() {
-        let departmentsReq = this.departmentsSvc.get('/departments');
-        let staffDetailsReq = this.staffDetailsSvc.get('/staffDetails');
+        let eventsReq = this.eventsSvc.get('/events');
+        let sessionsReq = this.sessionsSvc.get('/sessions');
+        let academicYearsReq = this.academicYearsSvc.get('/academicYears');
 
-        forkJoin([departmentsReq, staffDetailsReq]).subscribe(
-            ([departments, staffDetails]) => {
-                this.collectionSize = departments.length;
-                this.departments = departments.sort(
-                    (a, b) => parseInt(a.id) - parseInt(b.id)
+        forkJoin([eventsReq, sessionsReq, academicYearsReq]).subscribe(
+            ([events, sessions, academicYears]) => {
+                this.collectionSize = events.length;
+                this.events = events.sort(
+                    (a, b) => +new Date(b.startDate) - +new Date(a.startDate)
                 );
-                this.staffDetails = staffDetails;
+                this.sessions = sessions;
+                this.academicYears = academicYears.sort((a, b) =>
+                    b.name.localeCompare(a.name)
+                );
                 this.isAuthLoading = false;
-                this.departmentForm.editMode = false;
+                this.eventForm.editMode = false;
             },
             (err) => {
                 this.toastr.error(err.error);
@@ -87,14 +98,14 @@ export class DepartmentsComponent implements OnInit {
     }
 
     editItem(id: number) {
-        this.departmentsSvc.getById(id, '/departments').subscribe(
+        this.eventsSvc.getById(id, '/events').subscribe(
             (res) => {
-                let gradeId = res.id;
-                this.department = new Department(res);
-                this.department.id = gradeId;
-                this.departmentForm.setFormControls(this.department);
-                this.departmentForm.editMode = true;
-                this.departmentForm.department = this.department;
+                let eventId = res.id;
+                this.event = new SchoolEvent(res);
+                this.event.id = eventId;
+                this.eventForm.setFormControls(this.event);
+                this.eventForm.editMode = true;
+                this.eventForm.event = this.event;
                 this.tableButton.onClick();
             },
             (err) => {
@@ -116,7 +127,7 @@ export class DepartmentsComponent implements OnInit {
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.value) {
-                this.departmentsSvc.delete('/departments', id).subscribe(
+                this.eventsSvc.delete('/events', id).subscribe(
                     (res) => {
                         this.refreshItems();
                         this.toastr.success('Record deleted successfully!');
@@ -131,40 +142,40 @@ export class DepartmentsComponent implements OnInit {
     }
 
     resetForm = () => {
-        this.departmentForm.editMode = false;
-        this.departmentForm.resetFormControls();
+        this.eventForm.editMode = false;
+        this.eventForm.resetFormControls();
     };
 
     errorEvent = (errorName: string) => {
         this.toastr.error(errorName);
     };
 
-    addDepartment = (department: Department) => {
+    addEvent = (event: SchoolEvent) => {
         Swal.fire({
-            title: `${this.departmentForm.editMode ? 'Update' : 'Add'} department?`,
+            title: `${this.eventForm.editMode ? 'Update' : 'Add'} event?`,
             text: `Confirm if you want to ${
-                this.departmentForm.editMode ? 'update' : 'add'
-            } department.`,
+                this.eventForm.editMode ? 'update' : 'add'
+            } event.`,
             width: 400,
             position: 'top',
             padding: '1em',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: `${this.departmentForm.editMode ? 'Update' : 'Add'}`,
+            confirmButtonText: `${this.eventForm.editMode ? 'Update' : 'Add'}`,
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.value) {
-                let app = new Department(department);
-                if (this.departmentForm.editMode) app.id = department.id;
-                let reqToProcess = this.departmentForm.editMode
-                    ? this.departmentsSvc.update('/departments', app)
-                    : this.departmentsSvc.create('/departments', app);
+                let app = new SchoolEvent(event);
+                if (this.eventForm.editMode) app.id = event.id;
+                let reqToProcess = this.eventForm.editMode
+                    ? this.eventsSvc.update('/events', app)
+                    : this.eventsSvc.create('/events', app);
 
                 forkJoin([reqToProcess]).subscribe(
                     (res) => {
-                        this.departmentForm.editMode = false;
-                        this.departmentForm.resetFormControls();
-                        this.toastr.success('Department saved successfully');
+                        this.eventForm.editMode = false;
+                        this.eventForm.resetFormControls();
+                        this.toastr.success('Event saved successfully');
                         this.refreshItems();
                         this.closeButton.nativeElement.click();
                     },

@@ -1,0 +1,101 @@
+<form [formGroup]="eventForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="modal-body">
+        <div class="card-details-box border-info">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="academicYearId" class="form-label">Academic year: <span
+                                class="requiredField">*</span></label>
+                        <select (change)="loadSessions()" class="form-control"
+                            aria-label="Select academic year"
+                            formControlName="academicYearId" id="academicYearId" [ngClass]="{
+                                'is-invalid': (f.academicYearId.dirty || f.academicYearId.touched) && f.academicYearId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select academic
+                                year</option>
+                            <option [ngValue]="acadYear.id" *ngFor="let acadYear of
+                                academicYears">{{acadYear.name}}</option>
+                        </select>
+                        <div class="invalid-feedback"> Academic year is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="sessionId" class="form-label">Session name: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-control" aria-label="Select session name"
+                            formControlName="sessionId" id="sessionId"
+                            [ngClass]="{'is-invalid': (f.sessionId.dirty || f.sessionId.touched) && f.sessionId.invalid }">
+                            <option [ngValue]="null" hidden disabled selected>Select session
+                                name</option>
+                            <option [ngValue]="session.id" *ngFor="let session of
+                            sessionsForFiltering">{{session.sessionName}}</option>
+                        </select>
+                        <div class="invalid-feedback"> Session name is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="eventName">Event name: <span
+                                class="requiredField">*</span></label>
+                        <input id="eventName" placeholder="Enter event name" type="text"
+                            class="form-control" formControlName="eventName" [ngClass]="{
+                                'is-invalid': (f.eventName.dirty || f.eventName.touched) && f.eventName.invalid
+                                }" />
+                        <div class="invalid-feedback">Event name is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="eventLocation">Event location: <span
+                                class="requiredField">*</span></label>
+                        <input id="eventLocation" placeholder="Enter event location" type="text"
+                            class="form-control" formControlName="eventLocation" [ngClass]="{
+                            'is-invalid': (f.eventLocation.dirty || f.eventLocation.touched) && f.eventLocation.invalid
+                            }" />
+                        <div class="invalid-feedback">Enter event location is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="startDate">Event start date:</label>
+                        <input placeholder="Enter event start date" id="startDate" type="date"
+                            class="form-control" formControlName="startDate" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="endDate">Event end date:</label>
+                        <input placeholder="Enter event end date" id="endDate" type="date"
+                            class="form-control" formControlName="endDate" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Description:</label>
+                        <textarea placeholder="Enter description" id="description"
+                            class="form-control" rows="3" formControlName="description"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" [disabled]="eventForm.invalid" class="btn
+                btn-success"> <i class="fas fa-save"></i>
+                {{ editMode ? 'Update' : 'Save' }}
+            </button>
+            <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
+                #closeButton (click)="closeEventForm()">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+    </div>
+</form>
