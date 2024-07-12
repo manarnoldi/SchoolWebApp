@@ -1,5 +1,5 @@
+import { LearningLevel } from '@/class/models/learning-level';
 import {EducationLevel} from '@/school/models/educationLevel';
-import {LearningLevel} from '@/school/models/learning-level';
 import {
     Component,
     ElementRef,

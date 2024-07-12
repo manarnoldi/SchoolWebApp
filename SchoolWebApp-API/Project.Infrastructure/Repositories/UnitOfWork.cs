@@ -57,6 +57,8 @@ namespace SchoolWebApp.Infrastructure.Repositories
         public ISessionRepository Sessions { get; }
         public ILearningLevelRepository LearningLevels { get; }
         public ISchoolClassRepository SchoolClasses { get; }
+        public ISchoolClassLeadersRepository SchoolClassLeaders { get; }
+        public IClassLeadershipRoleRepository ClassLeadershipRoles { get; }
         #endregion
 
         #region Settings
@@ -113,6 +115,8 @@ namespace SchoolWebApp.Infrastructure.Repositories
                 ISessionRepository sessionRepository,
                 ILearningLevelRepository learningLevelRepository,
                 ISchoolClassRepository schoolClassRepository,
+                ISchoolClassLeadersRepository schoolClassLeadersRepository,
+                IClassLeadershipRoleRepository classLeadershipRoleRepository,
 
                 //Settings
                 IDesignationsRepository designationsRepository,
@@ -173,6 +177,8 @@ namespace SchoolWebApp.Infrastructure.Repositories
             Sessions = sessionRepository;
             LearningLevels = learningLevelRepository;
             SchoolClasses = schoolClassRepository;
+            SchoolClassLeaders = schoolClassLeadersRepository;
+            ClassLeadershipRoles = classLeadershipRoleRepository;
             #endregion
 
             #region Settings

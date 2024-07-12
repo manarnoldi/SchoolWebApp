@@ -1,6 +1,6 @@
 import { BreadCrumb } from '@/core/models/bread-crumb';
-import { SchoolStream } from '@/school/models/school-stream';
-import { SchoolStreamsService } from '@/school/services/school-streams.service';
+import { SchoolStream } from '@/class/models/school-stream';
+import { SchoolStreamsService } from '@/class/services/school-streams.service';
 import { TableButtonComponent } from '@/shared/directives/table-button/table-button.component';
 import { TableSettingsService } from '@/shared/services/table-settings.service';
 import {Component, OnInit, ViewChild} from '@angular/core';

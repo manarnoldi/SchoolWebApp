@@ -28,7 +28,6 @@ namespace SchoolWebApp.Core.Entities.Staff
         public EmploymentType EmploymentType { get; set; }
 
         public List<StaffSubject> StaffSubjects { get; set; }
-        public List<SchoolClass> SchoolClasses { get; set; }
         public List<StaffAttendance> StaffAttendances { get; set; }
         public List<StaffDiscipline> StaffDisciplines { get; set; }
         public List<Department> Departments { get; set; }

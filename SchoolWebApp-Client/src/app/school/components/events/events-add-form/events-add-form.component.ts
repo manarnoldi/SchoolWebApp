@@ -1,6 +1,6 @@
 import {AcademicYear} from '@/school/models/academic-year';
 import {SchoolEvent} from '@/school/models/schoolEvent';
-import {Session} from '@/school/models/session';
+import {Session} from '@/class/models/session';
 import {DatePipe, formatDate} from '@angular/common';
 import {
     Component,

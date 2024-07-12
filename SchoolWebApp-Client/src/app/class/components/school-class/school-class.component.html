@@ -1,0 +1,85 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr>
+<div
+    class="modal fade"
+    id="schoolClassFormModal"
+    tabindex="-1"
+    attr.aria-labelledby="SchoolClassModalLabel"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success opacity-50">
+                <h5 class="modal-title" id="SchoolClassFormModalLabel">
+                    School class details
+                </h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"
+                    #closebutton (click)="resetForm()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <app-school-class-add-form (addItemEvent)="addSchoolClass($event)"
+                [academicYears]="academicYears" [learningLevels]="learningLevels"
+                [schoolStreams]="schoolStreams"
+                (errorSchoolClass)="errorSchoolClass($event)"
+                [editMode]="false"
+                *ngIf="academicYears && learningLevels && schoolStreams"></app-school-class-add-form>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <app-table-button modelName="schoolClass"
+                    buttonTitle="Add school class"></app-table-button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <app-table-heading [editControls]="true"
+                        tableTitle="{{tableTitle}}"></app-table-heading>
+                    <div class="card-body table-responsive p-0">
+                        <table class="table table-striped table-hover text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th *ngFor="let header of tableHeaders">
+                                        {{ header }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    *ngFor="let item of schoolClasses| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                                    <td>{{ item.academicYear?.name }}</td>
+                                    <td>{{ item.learningLevel?.name }}</td>
+                                    <td>{{ item.schoolStream?.name }}</td>
+                                    <td>{{ item.name }}</td>
+                                    <td></td>
+                                    <td>{{ item.description }}</td>
+                                    <app-table-action
+                                        (editItemEvent)="editItem(item.id)"
+                                        (deleteItemEvent)="deleteItem(item.id)"></app-table-action>
+                                    <td>
+                                        <app-item-link [itemId]="item.id" [sourceUrl]="'/'"
+                                            [destinationUrl]="'/'"
+                                            [sourceUrlName]="'/'" [itemName]="'Manage leadership'">
+                                            <i class="fas fa-wrench"></i>
+                                        </app-item-link>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <app-table-paging
+                            [collectionSize]="collectionSize"
+                            (onInitEvent)="resetForm()"></app-table-paging>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

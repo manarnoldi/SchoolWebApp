@@ -36,7 +36,7 @@ namespace SchoolWebApp.API.Controllers.Class
         {
             try
             {
-                return Ok(_mapper.Map<List<SchoolClassDto>>(await _unitOfWork.SchoolClasses.GetAll()));
+                return Ok(_mapper.Map<List<SchoolClassDto>>(await _unitOfWork.SchoolClasses.Find(includeProperties: "LearningLevel,SchoolStream,AcademicYear")));
             }
             catch (Exception ex)
             {

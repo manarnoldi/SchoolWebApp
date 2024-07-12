@@ -68,6 +68,8 @@ namespace Project.API.Extensions
             services.AddTransient<ISessionRepository, SessionRepository>();
             services.AddTransient<ILearningLevelRepository, LearningLevelRepository>();
             services.AddTransient<ISchoolClassRepository, SchoolClassRepository>();
+            services.AddTransient<ISchoolClassLeadersRepository, SchoolClassLeadersRepository>();
+            services.AddTransient<IClassLeadershipRoleRepository, ClassLeadershipRoleRepository>();
             #endregion
 
             #region Settings Repositories

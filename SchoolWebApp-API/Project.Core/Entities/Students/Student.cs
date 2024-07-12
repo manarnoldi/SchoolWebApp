@@ -21,7 +21,7 @@ namespace SchoolWebApp.Core.Entities.Students
         public int LearningModeId { get; set; }
         public LearningMode LearningMode { get; set; }
 
-        public List<SchoolClass> SchoolClasses { get; set; }
+        public List<SchoolClassLeaders> SchoolClassLeaders { get; set; }
         public List<Parent> Parents { get; set; }
         public List<StudentParent> StudentParents { get; set; }
         public List<FormerSchool> FormerSchools { get; set; }

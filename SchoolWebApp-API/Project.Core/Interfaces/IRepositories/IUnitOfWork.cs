@@ -54,6 +54,8 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
         ISessionRepository Sessions { get; }
         ILearningLevelRepository LearningLevels { get; }
         ISchoolClassRepository SchoolClasses { get; }
+        ISchoolClassLeadersRepository SchoolClassLeaders { get; }
+        IClassLeadershipRoleRepository ClassLeadershipRoles { get; }
         #endregion
 
         #region Settings

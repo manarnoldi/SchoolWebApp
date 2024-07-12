@@ -1,5 +1,5 @@
 import { ResourceModel } from "@/core/models/ResourceModel";
-import { EducationLevel } from "./educationLevel";
+import { EducationLevel } from "@/school/models/educationLevel";
 
 export class LearningLevel extends ResourceModel<LearningLevel> {
     public name?: string;

@@ -26,15 +26,12 @@ import {StaffCategoriesComponent} from './settings/components/staff-categories/s
 import {LearningModesComponent} from './school/components/learning-modes/learning-modes.component';
 import {SchoolComponent} from './school/school.component';
 import {SchoolDetailsComponent} from './school/components/school-details/school-details.component';
-import {SchoolStreamsComponent} from './school/components/school-streams/school-streams.component';
 import {EducationLevelTypesComponent} from './school/components/education-level-types/education-level-types.component';
 import {AcademicYearsComponent} from './school/components/academic-years/academic-years.component';
 import {AcademicsComponent} from './academics/academics.component';
 import {CurriculumComponent} from './academics/components/curriculum/curriculum.component';
 import {ExamTypesComponent} from './academics/components/exam-types/exam-types.component';
-import {SessionsComponent} from './school/components/sessions/sessions.component';
 import {EducationLevelsComponent} from './school/components/education-levels/education-levels.component';
-import {LearningLevelsComponent} from './school/components/learning-levels/learning-levels.component';
 import {StaffComponent} from './staff/staff.component';
 import {StaffDetailsComponent} from './staff/components/staff-details/staff-details.component';
 import {StaffDetailsFormComponent} from './staff/components/staff-details/staff-details-form/staff-details-form.component';
@@ -42,9 +39,14 @@ import {StudentsComponent} from './students/students.component';
 import {StudentsViewComponent} from './students/components/students-view/students-view.component';
 import {StudentsAddFormComponent} from './students/components/students-add-form/students-add-form.component';
 import {SubjectGroupsComponent} from './academics/components/subject-groups/subject-groups.component';
-import { GradesComponent } from './academics/components/grades/grades.component';
-import { DepartmentsComponent } from './school/components/departments/departments.component';
-import { EventsComponent } from './school/components/events/events.component';
+import {GradesComponent} from './academics/components/grades/grades.component';
+import {DepartmentsComponent} from './school/components/departments/departments.component';
+import {EventsComponent} from './school/components/events/events.component';
+import {LearningLevelsComponent} from './class/components/learning-levels/learning-levels.component';
+import {SchoolClassComponent} from './class/components/school-class/school-class.component';
+import {SchoolStreamsComponent} from './class/components/school-streams/school-streams.component';
+import {SessionsComponent} from './class/components/sessions/sessions.component';
+import { ClassLeadershipRolesComponent } from './class/components/class-leadership-roles/class-leadership-roles.component';
 
 const routes: Routes = [
     {
@@ -68,19 +70,27 @@ const routes: Routes = [
         children: [
             {path: 'learningModes', component: LearningModesComponent},
             {path: 'details', component: SchoolDetailsComponent},
-            {path: 'streams', component: SchoolStreamsComponent},
             {
                 path: 'educationLevelTypes',
                 component: EducationLevelTypesComponent
             },
             {path: 'academicYears', component: AcademicYearsComponent},
-            {path: 'sessions', component: SessionsComponent},
             {path: 'educationLevels', component: EducationLevelsComponent},
-            {path: 'learningLevels', component: LearningLevelsComponent},
             {path: 'departments', component: DepartmentsComponent},
             {path: 'events', component: EventsComponent}
-            // {path: 'sessionTypes', component: SessionTypesComponent},
-            // {path: 'staffCategories', component: StaffCategoriesComponent}
+        ]
+    },
+    {
+        path: 'class',
+        component: SchoolComponent,
+        canActivate: [AuthGuard],
+        canActivateChild: [AuthGuard],
+        children: [
+            {path: 'classNames', component: LearningLevelsComponent},
+            {path: 'streams', component: SchoolStreamsComponent},
+            {path: 'classes', component: SchoolClassComponent},
+            {path: 'sessions', component: SessionsComponent},
+            {path: 'leadership-roles', component: ClassLeadershipRolesComponent}
         ]
     },
     {
@@ -91,12 +101,6 @@ const routes: Routes = [
         children: [
             {path: 'details', component: StaffDetailsComponent},
             {path: 'add', component: StaffDetailsFormComponent}
-            // {path: 'occurenceTypes', component: OccurenceTypesComponent},
-            // {path: 'outcomes', component: OutcomesComponent},
-            // {path: 'relationships', component: RelationshipsComponent},
-            // {path: 'religions', component: ReligionsComponent},
-            // {path: 'sessionTypes', component: SessionTypesComponent},
-            // {path: 'staffCategories', component: StaffCategoriesComponent}
         ]
     },
     {
@@ -107,12 +111,6 @@ const routes: Routes = [
         children: [
             {path: 'details', component: StudentsViewComponent},
             {path: 'add', component: StudentsAddFormComponent}
-            // {path: 'occurenceTypes', component: OccurenceTypesComponent},
-            // {path: 'outcomes', component: OutcomesComponent},
-            // {path: 'relationships', component: RelationshipsComponent},
-            // {path: 'religions', component: ReligionsComponent},
-            // {path: 'sessionTypes', component: SessionTypesComponent},
-            // {path: 'staffCategories', component: StaffCategoriesComponent}
         ]
     },
     {
@@ -125,10 +123,6 @@ const routes: Routes = [
             {path: 'examTypes', component: ExamTypesComponent},
             {path: 'subjectGroups', component: SubjectGroupsComponent},
             {path: 'grades', component: GradesComponent}
-            // {path: 'relationships', component: RelationshipsComponent},
-            // {path: 'religions', component: ReligionsComponent},
-            // {path: 'sessionTypes', component: SessionTypesComponent},
-            // {path: 'staffCategories', component: StaffCategoriesComponent}
         ]
     },
     {

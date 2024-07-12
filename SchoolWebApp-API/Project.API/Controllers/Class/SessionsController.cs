@@ -2,10 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
-using SchoolWebApp.Core.DTOs.Academics.SubjectGroup;
 using SchoolWebApp.Core.DTOs.Class.Session;
 using SchoolWebApp.Core.Entities.Class;
-using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.Class

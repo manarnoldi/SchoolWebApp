@@ -1,4 +1,5 @@
-﻿using SchoolWebApp.Core.Entities.Enums;
+﻿using SchoolWebApp.Core.Entities.Class;
+using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Identity;
 using SchoolWebApp.Core.Entities.Settings;
 using System.ComponentModel.DataAnnotations;
@@ -44,6 +45,7 @@ namespace SchoolWebApp.Core.Entities.Shared
         public Religion Religion { get; set; }
         public int GenderId { get; set; }
         public Gender Gender { get; set; }
+        public List<SchoolClassLeaders> SchoolClassLeaders { get; set; }
         public List<AppUser> AppUsers { get; set; }
     }
 }

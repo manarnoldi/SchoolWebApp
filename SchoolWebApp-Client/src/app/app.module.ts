@@ -5,31 +5,30 @@ import {ToastrModule} from 'ngx-toastr';
 import {DatePipe, registerLocaleData} from '@angular/common';
 import localeEn from '@angular/common/locales/en';
 
-import { CoreModule } from './core/core.module';
-import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { environment } from 'environments/environment';
-import { AuthInterceptor } from './core/interceptors/authconfig.interceptor';
-import { LoaderInterceptor } from './core/interceptors/loader.interceptor';
-import { SettingsModule } from './settings/settings.module';
-import { NgxSpinnerModule } from 'ngx-spinner';
-import { NgIdleModule } from '@ng-idle/core';
-import { SchoolModule } from './school/school.module';
-import { AcademicsModule } from './academics/academics.module';
-import { StaffModule } from './staff/staff.module';
-import { StudentsModule } from './students/students.module';
-import { DataTablesModule } from 'angular-datatables';
+import {CoreModule} from './core/core.module';
+import {NgbActiveModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {HTTP_INTERCEPTORS} from '@angular/common/http';
+import {environment} from 'environments/environment';
+import {AuthInterceptor} from './core/interceptors/authconfig.interceptor';
+import {LoaderInterceptor} from './core/interceptors/loader.interceptor';
+import {SettingsModule} from './settings/settings.module';
+import {NgxSpinnerModule} from 'ngx-spinner';
+import {NgIdleModule} from '@ng-idle/core';
+import {SchoolModule} from './school/school.module';
+import {AcademicsModule} from './academics/academics.module';
+import {StaffModule} from './staff/staff.module';
+import {StudentsModule} from './students/students.module';
+import {ClassModule} from './class/class.module';
 registerLocaleData(localeEn, 'en-EN');
 
 @NgModule({
-    declarations: [
-        AppComponent
-    ],
-    imports: [                   
+    declarations: [AppComponent],
+    imports: [
         NgxSpinnerModule,
         CoreModule,
         SettingsModule,
         SchoolModule,
+        ClassModule,
         AcademicsModule,
         StaffModule,
         StudentsModule,

@@ -58,21 +58,6 @@ export const MENU = [
                 path: ['/school/events']
             },
             {
-                name: 'Classes',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/school/classes']
-            },
-            {
-                name: 'Streams',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/school/streams']
-            },
-            {
-                name: 'Sessions',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/school/sessions']
-            },
-            {
                 name: 'Education level types',
                 iconClasses: 'fas fa-bullseye',
                 path: ['/school/educationLevelTypes']
@@ -91,11 +76,37 @@ export const MENU = [
                 name: 'Learning modes',
                 iconClasses: 'fas fa-bullseye',
                 path: ['/school/learningModes']
-            },
+            }
+        ]
+    },
+    {
+        name: 'Class',
+        iconClasses: 'fas fa-book-reader',
+        children: [
             {
                 name: 'Learning levels',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/school/learningLevels']
+                path: ['/class/classNames']
+            },
+            {
+                name: 'Streams',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/class/streams']
+            },
+            {
+                name: 'Classes',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/class/classes']
+            },
+            {
+                name: 'Sessions',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/class/sessions']
+            },
+            {
+                name: 'Leaderships Roles',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/class/leadership-roles']
             }
         ]
     },
@@ -220,7 +231,7 @@ export const MENU = [
                 name: 'Occupations',
                 iconClasses: 'fas fa-bullseye',
                 path: ['/settings/occupations']
-            },            
+            },
             {
                 name: 'Employment types',
                 iconClasses: 'fas fa-bullseye',

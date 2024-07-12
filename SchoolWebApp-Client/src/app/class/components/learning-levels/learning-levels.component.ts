@@ -3,13 +3,13 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {LearningLevelsFormComponent} from './learning-levels-form/learning-levels-form.component';
 import {Subscription, forkJoin} from 'rxjs';
 import {BreadCrumb} from '@/core/models/bread-crumb';
-import {LearningLevel} from '@/school/models/learning-level';
 import {EducationLevel} from '@/school/models/educationLevel';
 import {ToastrService} from 'ngx-toastr';
 import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {EducationLevelService} from '@/school/services/education-level.service';
-import {LearningLevelsService} from '@/school/services/learning-levels.service';
 import Swal from 'sweetalert2';
+import { LearningLevel } from '@/class/models/learning-level';
+import { LearningLevelsService } from '@/class/services/learning-levels.service';
 
 @Component({
     selector: 'app-learning-levels',
@@ -32,10 +32,10 @@ export class LearningLevelsComponent implements OnInit {
 
     tableModel: string = 'learningLevel';
     breadcrumbs: BreadCrumb[] = [
-        {link: ['/'], title: 'Home'},
-        {link: ['/school/learningLevels'], title: 'School: Learning Levels'}
+        {link: ['/'], title: 'Class'},
+        {link: ['/class/learningLevels'], title: 'Class: Learning Levels'}
     ];
-    dashboardTitle = 'School: Learning Levels';
+    dashboardTitle = 'Class: Learning Levels';
     tableTitle: string = ' Learning levels list';
     tableHeaders: string[] = [
         'Name',

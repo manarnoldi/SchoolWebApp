@@ -37,6 +37,8 @@ namespace Project.Infrastructure.Data
         #region Class
         public DbSet<LearningLevel> LearningLevels { get; set; }
         public DbSet<SchoolClass> SchoolClasses { get; set; }
+        public DbSet<SchoolClassLeaders> SchoolClassLeaders { get; set; }
+        public DbSet<ClassLeadershipRole> ClassLeadershipRoles { get; set; }
         public DbSet<Session> Sessions { get; set; }
         #endregion
 
@@ -138,7 +140,8 @@ namespace Project.Infrastructure.Data
                 {
                     ((Base)entityEntry.Entity).Created = DateTime.Now;
                     ((Base)entityEntry.Entity).CreatedBy = user;
-                } else
+                }
+                else
                 {
                     entityEntry.Property("Created").IsModified = false;
                     entityEntry.Property("CreatedBy").IsModified = false;

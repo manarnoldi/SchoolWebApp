@@ -1,0 +1,22 @@
+import {ResourceModel} from '@/core/models/ResourceModel';
+import { SchoolStream } from './school-stream';
+import { LearningLevel } from '@/class/models/learning-level';
+import { AcademicYear } from '@/school/models/academic-year';
+
+export class SchoolClass extends ResourceModel<SchoolClass> {
+    public name?: string;
+    public description?: string;
+
+    public learningLevelId?: string;
+    public learningLevel?: LearningLevel;
+
+    public schoolStreamId?: string;
+    public schoolStream?: SchoolStream;
+
+    public academicYearId?: string;
+    public academicYear?: AcademicYear;
+
+    constructor(model?: Partial<SchoolClass>) {
+        super(model);
+    }
+}

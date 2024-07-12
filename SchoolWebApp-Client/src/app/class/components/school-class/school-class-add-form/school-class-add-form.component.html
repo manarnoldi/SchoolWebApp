@@ -1,0 +1,123 @@
+<form [formGroup]="schoolClassForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="modal-body">
+        <div class="card-details-box border-info">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="academicYearId" class="form-label">Academic year: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-control" aria-label="Select academic year"
+                            formControlName="academicYearId" id="academicYearId"
+                            [ngClass]="{ 'is-invalid': (f.academicYearId.dirty || f.academicYearId.touched) && f.academicYearId.invalid }">
+                            <option [ngValue]="null" hidden disabled selected>Select academic year
+                            </option>
+                            <option [ngValue]="academicYear.id" *ngFor="let academicYear of
+                            academicYears">{{academicYear.name}}</option>
+                        </select>
+                        <div class="invalid-feedback"> Select academic year is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="learningLevelId" class="form-label">Class/Learning level: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-control" aria-label="Select learning level"
+                            formControlName="learningLevelId" id="learningLevelId"
+                            [ngClass]="{ 'is-invalid': (f.learningLevelId.dirty || f.learningLevelId.touched) && f.learningLevelId.invalid }">
+                            <option [ngValue]="null" hidden disabled selected>Select learning
+                                level</option>
+                            <option [ngValue]="learningLevel.id" *ngFor="let learningLevel of
+                            learningLevels">{{learningLevel.name}}</option>
+                        </select>
+                        <div class="invalid-feedback"> Learning level is required</div>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="schoolStreamId" class="form-label">Stream: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-control" aria-label="Select stream"
+                            formControlName="schoolStreamId" id="schoolStreamId"
+                            [ngClass]="{ 'is-invalid': (f.schoolStreamId.dirty || f.schoolStreamId.touched) && f.schoolStreamId.invalid }">
+                            <option [ngValue]="null" hidden disabled selected>Select stream
+                            </option>
+                            <option [ngValue]="schoolStream.id" *ngFor="let schoolStream of
+                            schoolStreams">{{schoolStream.name}}</option>
+                        </select>
+                        <div class="invalid-feedback"> School stream is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="name">Class name: <span
+                                class="requiredField">*</span></label>
+                        <input id="name" placeholder="Enter class name" type="text"
+                            class="form-control" formControlName="name"
+                            [ngClass]="{ 'is-invalid': (f.name.dirty || f.name.touched) && f.name.invalid }" />
+                        <div class="invalid-feedback">Enter class name is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Description:</label>
+                        <textarea placeholder="Enter description" id="description"
+                            class="form-control" rows="3" formControlName="description"></textarea>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="studentId" class="form-label">Class prefect/monitor:</label>
+                        <ng-select labelForId="studentId" [items]="staffDetails"
+                            bindLabel="fullName"
+                            formControlName="studentId"
+                            placeholder="Select class prefect/monitor">
+                            <ng-template ng-label-tmp let-item="item">
+                                <span>{{ item.fullName }}</span>
+                            </ng-template>
+                            <ng-template ng-option-tmp let-item="item" let-search="searchTerm"
+                                let-index="index">
+                                <span>{{ item.fullName}}</span>
+                            </ng-template>
+                        </ng-select>
+                        <div class="invalid-feedback"> Class prefect/monitor is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="staffDetailsId" class="form-label">Class teacher:</label>
+                        <ng-select labelForId="staffDetailsId" [items]="staffDetails"
+                            bindLabel="fullName"
+                            formControlName="staffDetailsId"
+                            placeholder="Select head of department">
+                            <ng-template ng-label-tmp let-item="item">
+                                <span>{{ item.fullName }}</span>
+                            </ng-template>
+                            <ng-template ng-option-tmp let-item="item" let-search="searchTerm"
+                                let-index="index">
+                                <span>{{ item.fullName}}</span>
+                            </ng-template>
+                        </ng-select>
+                        <div class="invalid-feedback"> Class teacher is required</div>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+        <div class="modal-footer">
+            <button type="submit" [disabled]="schoolClassForm.invalid" class="btn
+                btn-success"> <i class="fas fa-save"></i>
+                {{ editMode ? 'Update' : 'Save' }}
+            </button>
+            <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
+                #closeButton (click)="closeSchoolClassForm()">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+    </div>
+</form>

@@ -1,7 +1,7 @@
 import {Curriculum} from '@/academics/models/curriculum';
 import {DateLessThanOrEqualsValidator} from '@/core/validators.ts/DateValidators';
 import {AcademicYear} from '@/school/models/academic-year';
-import {Session} from '@/school/models/session';
+import {Session} from '@/class/models/session';
 import {SessionType} from '@/settings/models/session-type';
 import {formatDate} from '@angular/common';
 import {
