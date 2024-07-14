@@ -1,0 +1,39 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row py-2">
+            <div class="col-12">
+                <a [routerLink]="[backLinkUrl]"
+                    class="btn btn-sm btn-flat btn-warning float-left">
+                    <i class="fas fa-angle-double-left"></i> Back to school classes list
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <app-class-details-view
+                            [schoolClass]="schoolClass"></app-class-details-view>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <app-table-button modelName="classLeadershipRole"
+                            buttonTitle="Add Class Leader"></app-table-button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <app-class-leadership-table
+                            [classLeaderships]="classLeaderships" [personTypes]="personTypes"></app-class-leadership-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

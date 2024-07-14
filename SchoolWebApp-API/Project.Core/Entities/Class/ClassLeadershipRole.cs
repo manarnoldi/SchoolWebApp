@@ -1,14 +1,11 @@
-﻿using SchoolWebApp.Core.Entities.Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SchoolWebApp.Core.Entities.Enums;
+using SchoolWebApp.Core.Entities.Shared;
 
 namespace SchoolWebApp.Core.Entities.Class
 {
     public class ClassLeadershipRole: SettingsBase
     {
+        public PersonType PersonType { get; set; }
         public List<SchoolClassLeaders> SchoolClassLeaders { get; set; }
     }
 }

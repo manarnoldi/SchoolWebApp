@@ -59,15 +59,24 @@
                                     <td>{{ item.learningLevel?.name }}</td>
                                     <td>{{ item.schoolStream?.name }}</td>
                                     <td>{{ item.name }}</td>
-                                    <td></td>
+                                    <td>
+                                        <ng-container
+                                            *ngFor="let g of item.schoolClassLeaders; let i = index">
+                                            {{g.person?.fullName + ' - '+
+                                            g.classLeadershipRole?.name}}
+                                            <br />
+                                        </ng-container>
+                                    </td>
                                     <td>{{ item.description }}</td>
                                     <app-table-action
                                         (editItemEvent)="editItem(item.id)"
                                         (deleteItemEvent)="deleteItem(item.id)"></app-table-action>
                                     <td>
-                                        <app-item-link [itemId]="item.id" [sourceUrl]="'/'"
-                                            [destinationUrl]="'/'"
-                                            [sourceUrlName]="'/'" [itemName]="'Manage leadership'">
+                                        <app-item-link [itemId]="item.id"
+                                            [sourceUrl]="'/class/classes'"
+                                            [destinationUrl]="'/class/classDetails'"
+                                            [sourceUrlName]="'School Classes'"
+                                            [itemName]="'Manage leadership'">
                                             <i class="fas fa-wrench"></i>
                                         </app-item-link>
                                     </td>

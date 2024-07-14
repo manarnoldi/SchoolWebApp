@@ -1,0 +1,34 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <app-table-heading tableTitle="{{tableTitle}}"></app-table-heading>
+            <div class="card-body table-responsive p-0">
+                <table class="table table-striped table-hover text-nowrap">
+                    <thead>
+                        <tr>
+                            <th *ngFor="let header of tableHeaders">
+                                {{ header }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            *ngFor="let item of classLeaderships | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                            <td>{{ personTypes[item.classLeadershipRole?.personType] }}</td>
+                            <td>{{ item.classLeadershipRole?.name }}</td>                            
+                            <td>{{ item.person?.fullName }}</td>
+                            <td>{{ item.description }}</td>
+                            <app-table-action
+                                [tblShowViewButton]="true"
+                                (viewItemEvent)="viewItem(item.id)"
+                                (editItemEvent)="editItem(item.id)"
+                                (deleteItemEvent)="deleteItem(item.id)"></app-table-action>
+                        </tr>
+                    </tbody>
+                </table>
+                <app-table-paging
+                    [collectionSize]="collectionSize"></app-table-paging>
+            </div>
+        </div>
+    </div>
+</div>

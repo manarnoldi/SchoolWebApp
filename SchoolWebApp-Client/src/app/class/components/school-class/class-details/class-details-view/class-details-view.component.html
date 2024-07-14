@@ -1,0 +1,40 @@
+<div class="card-details-box border-success bg-success-subtle">
+    <div class="row">        
+        <div class="col-md-3">
+            <div class="py-1">
+                <h4>
+                    <i class="fas fa-user-o"></i>
+                    {{schoolClass?.name}}
+                </h4>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="py-1">
+                <b><i class="fas fa-paperclip"></i> Learning level</b>
+                <br>
+                {{schoolClass?.academicYear.name}}
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="py-1">
+                <b><i class="fas fa-paperclip"></i> Academic year</b>
+                <br>
+                {{schoolClass?.learningLevel.name}}
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="py-1">
+                <b><i class="fas fa-hashtag"></i> Stream</b>
+                <br>
+                {{schoolClass?.schoolStream.name}}
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="py-1">
+                <b><i class="fas fa-calendar"></i> Description</b>
+                <br>
+                {{schoolClass?.description}}
+            </div>
+        </div>
+    </div>
+</div>

@@ -47,6 +47,7 @@ import {SchoolClassComponent} from './class/components/school-class/school-class
 import {SchoolStreamsComponent} from './class/components/school-streams/school-streams.component';
 import {SessionsComponent} from './class/components/sessions/sessions.component';
 import { ClassLeadershipRolesComponent } from './class/components/class-leadership-roles/class-leadership-roles.component';
+import { ClassDetailsComponent } from './class/components/school-class/class-details/class-details.component';
 
 const routes: Routes = [
     {
@@ -88,6 +89,7 @@ const routes: Routes = [
         children: [
             {path: 'classNames', component: LearningLevelsComponent},
             {path: 'streams', component: SchoolStreamsComponent},
+            {path: 'classDetails', component: ClassDetailsComponent},
             {path: 'classes', component: SchoolClassComponent},
             {path: 'sessions', component: SessionsComponent},
             {path: 'leadership-roles', component: ClassLeadershipRolesComponent}

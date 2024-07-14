@@ -115,7 +115,7 @@ namespace SchoolWebApp.API.Controllers.Class
         {
             if (ModelState.IsValid)
             {
-                if (await _unitOfWork.ClassLeadershipRoles.ItemExistsAsync(s => s.Name == model.Name))
+                if (await _unitOfWork.ClassLeadershipRoles.ItemExistsAsync(s => s.Name == model.Name && s.PersonType == model.PersonType))
                     return Conflict(new { message = $"The class leadership role details submitted already exists" });
                 try
                 {

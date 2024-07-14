@@ -12,8 +12,9 @@ import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {SchoolClassesService} from '@/class/services/school-classes.service';
 import {SchoolStreamsService} from '@/class/services/school-streams.service';
 import Swal from 'sweetalert2';
-import { LearningLevel } from '@/class/models/learning-level';
-import { LearningLevelsService } from '@/class/services/learning-levels.service';
+import {LearningLevel} from '@/class/models/learning-level';
+import {LearningLevelsService} from '@/class/services/learning-levels.service';
+import {ClassLeadershipsService} from '@/class/services/class-leaderships.service';
 
 @Component({
     selector: 'app-school-class',
@@ -44,7 +45,7 @@ export class SchoolClassComponent implements OnInit {
     tableHeaders: string[] = [
         'Academic year',
         'Class',
-        'Stream',        
+        'Stream',
         'Class name',
         'Class Leaders',
         'Description',
@@ -65,6 +66,7 @@ export class SchoolClassComponent implements OnInit {
         private learningLevelsSvc: LearningLevelsService,
         private schoolStreamsSvc: SchoolStreamsService,
         private academicYearsSvc: AcademicYearsService,
+        private classLeadershipsService: ClassLeadershipsService
     ) {}
 
     ngOnInit(): void {
@@ -83,12 +85,15 @@ export class SchoolClassComponent implements OnInit {
         let schoolStreamsReq = this.schoolStreamsSvc.get('/schoolStreams');
         let academicYearsReq = this.academicYearsSvc.get('/academicYears');
 
-        forkJoin([schoolClassesReq, learningLevelsReq, schoolStreamsReq,academicYearsReq]).subscribe(
-            ([schoolClasses, learningLevels, schoolStreams,academicYears]) => {
+        forkJoin([
+            schoolClassesReq,
+            learningLevelsReq,
+            schoolStreamsReq,
+            academicYearsReq
+        ]).subscribe(
+            ([schoolClasses, learningLevels, schoolStreams, academicYears]) => {
                 this.collectionSize = schoolClasses.length;
-                this.schoolClasses = schoolClasses.sort(
-                    (a, b) => parseInt(b.academicYearId) - parseInt(a.academicYearId)
-                );
+                
                 this.learningLevels = learningLevels;
                 this.schoolStreams = schoolStreams;
                 this.academicYears = academicYears.sort((a, b) =>
@@ -96,6 +101,30 @@ export class SchoolClassComponent implements OnInit {
                 );
                 this.isAuthLoading = false;
                 this.schoolClassForm.editMode = false;
+
+                let schoolClassLeadersReq = [];
+                schoolClasses.forEach((sc) =>
+                    schoolClassLeadersReq.push(
+                        this.classLeadershipsService.get(
+                            '/schoolClassLeaders/bySchoolClassId/' + sc.id
+                        )
+                    )
+                );
+
+                forkJoin([...schoolClassLeadersReq]).subscribe(
+                    (resp) => {
+                        for (let i = 0; i < schoolClasses.length; i++) {
+                            schoolClasses[i].schoolClassLeaders = resp[i];                            
+                        }
+                        this.schoolClasses = schoolClasses.sort(
+                            (a, b) =>
+                                parseInt(b.academicYearId) - parseInt(a.academicYearId)
+                        );
+                    },
+                    (er) => {
+                        this.toastr.error(er.error);
+                    }
+                );
             },
             (err) => {
                 this.toastr.error(err.error);

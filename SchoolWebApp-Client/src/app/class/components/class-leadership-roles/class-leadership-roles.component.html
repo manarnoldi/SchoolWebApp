@@ -23,13 +23,23 @@
                         <input placeholder="Enter class leadership role name" id="name" type="text"
                             class="form-control" formControlName="name"
                             [ngClass]="{ 'is-invalid': (f.name.dirty ||
-                            f.name.touched) && f.name.invalid }"
-                            />
+                            f.name.touched) && f.name.invalid }" />
                         <div class="invalid-feedback"> Class leadership role name is required</div>
+                    </div>
+                    <div class="form-group clearfix">
+                        <label class="form-label">Person type: &nbsp;</label>
+                        <div class="icheck-success d-inline"
+                            *ngFor="let personType of personTypes">
+                            <input type="radio" formControlName="personType" id="{{personType}}"
+                                value="{{personType}}">
+                            <label class="form-check-label"
+                                for="{{personType}}"> {{personType}}</label>&nbsp;
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Description:</label>
-                        <textarea placeholder="Enter class leadership role description" id="description"
+                        <textarea placeholder="Enter class leadership role description"
+                            id="description"
                             class="form-control" rows="3" formControlName="description"></textarea>
                     </div>
                 </div>
@@ -50,17 +60,44 @@
 
 <section class="content">
     <div class="container-fluid">
-        <app-settings-table
-            [buttonTitle]="buttonTitle"
-            [tblModel]="tableModel"
-            [tblName]="tableTitle"
-            [tblHeaders]="tableHeaders"
-            [tblItems]="classLeadershipRoles"
-            [tblShowView]="tblShowViewButton"
-            [collectionSize]="collectionSize"
-            (editItemEvent)="editItem($event)"
-            (deleteItemEvent)="deleteItem($event)"
-            (onInitEvent)="refreshItems()"
-            #settingsTable></app-settings-table>
+        <div class="row">
+            <div class="col-12">
+                <app-table-button modelName="classLeadershipRole"
+                    buttonTitle="Add class leadership role"></app-table-button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <app-table-heading [editControls]="true"
+                        tableTitle="{{tableTitle}}"></app-table-heading>
+                    <div class="card-body table-responsive p-0">
+                        <table class="table table-striped table-hover text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th *ngFor="let header of tableHeaders">
+                                        {{ header }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    *ngFor="let item of classLeadershipRoles| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ personTypes[item.personType] }}</td>
+                                    <td>{{ item.description }}</td>                                    
+                                    <app-table-action
+                                        (editItemEvent)="editItem(item.id)"
+                                        (deleteItemEvent)="deleteItem(item.id)"></app-table-action>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <app-table-paging
+                            [collectionSize]="collectionSize"
+                            (onInitEvent)="resetForm()"></app-table-paging>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>

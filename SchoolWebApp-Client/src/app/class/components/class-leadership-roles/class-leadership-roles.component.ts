@@ -1,12 +1,13 @@
-import { ClassLeadershipRole } from '@/class/models/class-leadership-role';
-import { ClassLeadershipRolesService } from '@/class/services/class-leadership-roles.service';
-import { BreadCrumb } from '@/core/models/bread-crumb';
-import { SettingsTableComponent } from '@/shared/directives/settings-table/settings-table.component';
-import { TableSettingsService } from '@/shared/services/table-settings.service';
+import {ClassLeadershipRole} from '@/class/models/class-leadership-role';
+import {ClassLeadershipRolesService} from '@/class/services/class-leadership-roles.service';
+import {PersonType} from '@/core/enums/personTypes';
+import {BreadCrumb} from '@/core/models/bread-crumb';
+import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
+import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {Component, OnInit, ViewChild} from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
-import { forkJoin, Subscription } from 'rxjs';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ToastrService} from 'ngx-toastr';
+import {forkJoin, Subscription} from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -16,7 +17,7 @@ import Swal from 'sweetalert2';
 })
 export class ClassLeadershipRolesComponent implements OnInit {
     @ViewChild('closebutton') closeButton;
-    @ViewChild(SettingsTableComponent) settingsTblBtn: SettingsTableComponent;
+    @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
     page = 1;
     pageSize = 10;
     pageSubscription: Subscription;
@@ -27,7 +28,7 @@ export class ClassLeadershipRolesComponent implements OnInit {
     buttonTitle: string = 'Add class leadership role';
     tableModel: string = 'classLeadershipRole';
     tableTitle: string = 'Class leadership roles list';
-    tableHeaders: string[] = ['Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Name', 'Person type', 'Description', 'Action'];
 
     editMode = false;
     classLeadershipRole: ClassLeadershipRole;
@@ -37,12 +38,19 @@ export class ClassLeadershipRolesComponent implements OnInit {
 
     collectionSize = 0;
 
+    personType = PersonType;
+    personTypes;
+
     constructor(
         private classLeadershipRoleSvc: ClassLeadershipRolesService,
         private toastr: ToastrService,
         private formBuilder: FormBuilder,
         private tableSettingsSvc: TableSettingsService
-    ) {}
+    ) {
+        this.personTypes = Object.keys(this.personType).filter((k) =>
+            isNaN(Number(k))
+        );
+    }
     closeResult = '';
     dashboardTitle = 'Class leadership roles list';
     breadcrumbs: BreadCrumb[] = [
@@ -64,7 +72,7 @@ export class ClassLeadershipRolesComponent implements OnInit {
         }).then((result) => {
             if (result.value) {
                 this.classLeadershipRoleSvc
-                    .delete('/classLeadershipRoleRoles', id)
+                    .delete('/classLeadershipRoles', id)
                     .subscribe(
                         (res) => {
                             this.refreshItems();
@@ -80,20 +88,28 @@ export class ClassLeadershipRolesComponent implements OnInit {
     }
 
     editItem(id) {
-        this.classLeadershipRoleSvc.getById(id, '/classLeadershipRoles').subscribe(
-            (res) => {
-                this.classLeadershipRole = new ClassLeadershipRole(res);
-                this.classLeadershipRoleForm.setValue({
-                    name: this.classLeadershipRole.name,
-                    description: this.classLeadershipRole.description
-                });
-                this.editMode = true;
-                this.settingsTblBtn.onButtonClick();
-            },
-            (err) => {
-                this.toastr.error(err);
-            }
-        );
+        this.classLeadershipRoleSvc
+            .getById(id, '/classLeadershipRoles')
+            .subscribe(
+                (res) => {
+                    let classLeadershipRoleId = id;
+                    this.classLeadershipRole = new ClassLeadershipRole(res);
+                    this.classLeadershipRole.id = classLeadershipRoleId;
+                    this.classLeadershipRoleForm.setValue({
+                        name: this.classLeadershipRole.name,
+                        description: this.classLeadershipRole.description,
+                        personType:
+                            this.personTypes[
+                                this.classLeadershipRole.personType
+                            ]
+                    });
+                    this.editMode = true;
+                    this.tableButton.onClick();
+                },
+                (err) => {
+                    this.toastr.error(err);
+                }
+            );
     }
 
     onSubmit() {
@@ -115,21 +131,20 @@ export class ClassLeadershipRolesComponent implements OnInit {
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.value) {
-                if (this.editMode) {
-                    this.classLeadershipRole.name =
-                        this.classLeadershipRoleForm.get('name').value;
-                    this.classLeadershipRole.description =
-                        this.classLeadershipRoleForm.get('description').value;
-                }
-
+                let app = new ClassLeadershipRole(
+                    this.classLeadershipRoleForm.value
+                );
+                let personTypeNum = PersonType["Teacher"];
+                app.personType = personTypeNum;
+                if (this.editMode) app.id = this.classLeadershipRole.id;
                 let reqToProcess = this.editMode
                     ? this.classLeadershipRoleSvc.update(
                           '/classLeadershipRoles',
-                          this.classLeadershipRole
+                          app
                       )
                     : this.classLeadershipRoleSvc.create(
                           '/classLeadershipRoles',
-                          new ClassLeadershipRole(this.classLeadershipRoleForm.value)
+                          app
                       );
 
                 let replyMsg = `Class leadership roles ${
@@ -159,7 +174,8 @@ export class ClassLeadershipRolesComponent implements OnInit {
     refreshItems() {
         this.classLeadershipRoleForm = this.formBuilder.group({
             name: ['', [Validators.required]],
-            description: ['']
+            description: [''],
+            personType: [this.personTypes[0], [Validators.required]]
         });
 
         this.classLeadershipRoleSvc.get('/classLeadershipRoles').subscribe(

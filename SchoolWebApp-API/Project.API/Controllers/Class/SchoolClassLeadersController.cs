@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
+using SchoolWebApp.Core.DTOs.Class.SchoolClass;
 using SchoolWebApp.Core.DTOs.Class.SchoolClassLeaders;
 using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Interfaces.IRepositories;
@@ -66,6 +67,34 @@ namespace SchoolWebApp.API.Controllers.Class
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while retrieving paginated school class leaders.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/schoolClassLeaders/bySchoolClassId/5
+        /// <summary>
+        /// A method for retrieving school class leaders by school class Id.
+        /// </summary>
+        /// <param name="id">The school class Id to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("bySchoolClassId/{schoolClassId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SchoolClassLeadersDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetBySchoolClassId(int schoolClassId)
+        {
+            try
+            {
+                if (schoolClassId <= 0) return BadRequest(schoolClassId);
+                var _item = await _unitOfWork.SchoolClassLeaders.GetBySchoolClassId(schoolClassId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<SchoolClassLeadersDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the school class leaders by school class id.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }

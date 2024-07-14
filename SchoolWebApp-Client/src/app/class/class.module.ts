@@ -10,6 +10,10 @@ import { SchoolStreamsComponent } from './components/school-streams/school-strea
 import { SessionFormComponent } from './components/sessions/session-form/session-form.component';
 import { SessionsComponent } from './components/sessions/sessions.component';
 import { ClassLeadershipRolesComponent } from './components/class-leadership-roles/class-leadership-roles.component';
+import { ClassDetailsViewComponent } from './components/school-class/class-details/class-details-view/class-details-view.component';
+import { ClassLeadershipTableComponent } from './components/school-class/class-details/class-leadership-table/class-leadership-table.component';
+import { ClassLeadershipAddFormComponent } from './components/school-class/class-details/class-leadership-add-form/class-leadership-add-form.component';
+import { ClassDetailsComponent } from './components/school-class/class-details/class-details.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +25,11 @@ import { ClassLeadershipRolesComponent } from './components/class-leadership-rol
     SessionFormComponent,
     SchoolClassComponent,
     SchoolClassAddFormComponent,
-    ClassLeadershipRolesComponent
+    ClassLeadershipRolesComponent,
+    ClassDetailsViewComponent,
+    ClassLeadershipTableComponent,
+    ClassLeadershipAddFormComponent,
+    ClassDetailsComponent
   ],
   imports: [
     CoreModule,
