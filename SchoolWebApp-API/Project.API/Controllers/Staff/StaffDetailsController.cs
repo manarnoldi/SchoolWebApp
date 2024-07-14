@@ -141,7 +141,7 @@ namespace SchoolWebApp.API.Controllers.Staff
             try
             {
                 if (id <= 0) return BadRequest(id);
-                var _item = await _unitOfWork.StaffDetails.GetById(id);
+                var _item = await _unitOfWork.StaffDetails.GetById(id, includeProperties: "StaffCategory,Designation,Nationality,Religion,Gender,EmploymentType");
 
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<StaffDetailDto>(_item);

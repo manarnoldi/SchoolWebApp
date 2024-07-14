@@ -35,9 +35,9 @@ export class StaffDetails extends ResourceModel<StaffDetails> {
     public staffCategoryId?: number;
     public staffCategory?: StaffCategory;
     public designationId?: number;
-    public Designation?: Designation;
+    public designation?: Designation;
     public employmentTypeId?: number;
-    public EmploymentType?: EmploymentType;
+    public employmentType?: EmploymentType;
 
     //Contact details
     public address?: string;

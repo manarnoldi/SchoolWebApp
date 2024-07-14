@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <app-table-heading [editControls]="true"
+            <app-table-heading [editControls]="false"
                 tableTitle="{{tableTitle}} - {{staffs?.length}} records found!"></app-table-heading>
             <div class="card-body p-0 border border-primary m-2 p-2 rounded">
                 <div class=" table-responsive">
@@ -30,7 +30,7 @@
                                 <td>{{ item.phoneNumber }}</td>
                                 <td>{{ item.employmentDate | date: 'dd/MM/yyyy' }}</td>
                                 <td>{{ item.nationality?.name }}</td>
-                                <td *ngIf="showActionControls">
+                                <td *ngIf="showType === 'details'">
                                     <a [routerLink]="['/staff/add']"
                                         [queryParams]="{id: item.id, action: 'view'}"
                                         class="view" title data-toggle="tooltip"
@@ -47,6 +47,13 @@
                                         (click)="deleteStaff(item.id)"
                                         data-original-title="Delete">
                                         <i class="fas fa-trash-alt"></i></a>
+                                </td>
+                                <td *ngIf="showType === 'attendance'">
+                                    <a [routerLink]="['/staff/attendance/add']"
+                                        [queryParams]='{id: item.id, action: showType}'
+                                        class="view" title="Add attendance" data-toggle="tooltip"
+                                        data-original-title="Add attendance">
+                                        <i class="fas fa-calendar"></i> Attendances</a>
                                 </td>
                             </tr>
                         </tbody>

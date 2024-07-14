@@ -46,8 +46,9 @@ import {LearningLevelsComponent} from './class/components/learning-levels/learni
 import {SchoolClassComponent} from './class/components/school-class/school-class.component';
 import {SchoolStreamsComponent} from './class/components/school-streams/school-streams.component';
 import {SessionsComponent} from './class/components/sessions/sessions.component';
-import { ClassLeadershipRolesComponent } from './class/components/class-leadership-roles/class-leadership-roles.component';
-import { ClassDetailsComponent } from './class/components/school-class/class-details/class-details.component';
+import {ClassLeadershipRolesComponent} from './class/components/class-leadership-roles/class-leadership-roles.component';
+import {ClassDetailsComponent} from './class/components/school-class/class-details/class-details.component';
+import { StaffAssignmentsComponent } from './staff/components/staff-assignments/staff-assignments.component';
 
 const routes: Routes = [
     {
@@ -102,7 +103,9 @@ const routes: Routes = [
         canActivateChild: [AuthGuard],
         children: [
             {path: 'details', component: StaffDetailsComponent},
-            {path: 'add', component: StaffDetailsFormComponent}
+            {path: 'add', component: StaffDetailsFormComponent},
+            {path: 'attendance', component: StaffDetailsComponent},
+            {path: 'attendance/add', component: StaffAssignmentsComponent},
         ]
     },
     {

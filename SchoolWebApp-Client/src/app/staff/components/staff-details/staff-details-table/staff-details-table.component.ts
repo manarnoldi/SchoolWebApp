@@ -19,8 +19,8 @@ import {Subject} from 'rxjs';
 export class StaffDetailsTableComponent implements AfterViewInit, OnDestroy {
     @Input() tableTitle: string = 'Staff list';
     @Input() staffs: StaffDetails[] = [];
-    @Input() showActionControls: Boolean = true;
     @Input() showLoginControls: Boolean = false;
+    @Input() showType: string = "details";
 
     @Output() deleteItemEvent = new EventEmitter<number>();
 
@@ -42,7 +42,7 @@ export class StaffDetailsTableComponent implements AfterViewInit, OnDestroy {
         this.dtOptions = {
             scrollX: true,
             columnDefs: [
-                {width: 120, targets: 7},
+                {width: 150, targets: 7},
                 {width: 250, targets: 0}
             ]
         };

@@ -3,7 +3,7 @@ import {StaffDetailsService} from '@/staff/services/staff-details.service';
 import {Component, OnInit} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import Swal from 'sweetalert2';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
     selector: 'app-staff-details',
@@ -19,11 +19,13 @@ export class StaffDetailsComponent implements OnInit {
 
     staffs;
     itemDeleted: boolean = false;
+    sourceLink: string = 'details';
 
     constructor(
         private staffsSvc: StaffDetailsService,
         private toastr: ToastrService,
-        private router: Router
+        private router: Router,
+        private route: ActivatedRoute
     ) {}
 
     ngOnInit(): void {
@@ -60,6 +62,7 @@ export class StaffDetailsComponent implements OnInit {
     }
 
     refreshItems = () => {
+        this.sourceLink = this.router.url.split("/").pop();
         this.staffsSvc.get('/staffDetails').subscribe(
             (res) => {
                 this.staffs = res;

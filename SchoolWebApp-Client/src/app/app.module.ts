@@ -34,7 +34,7 @@ registerLocaleData(localeEn, 'en-EN');
         StudentsModule,
         ToastrModule.forRoot({
             timeOut: 10000,
-            positionClass: 'toast-top-full-width',
+            // positionClass: 'toast-top-full-width',
             preventDuplicates: true,
             closeButton: true,
             easing: 'ease-in',

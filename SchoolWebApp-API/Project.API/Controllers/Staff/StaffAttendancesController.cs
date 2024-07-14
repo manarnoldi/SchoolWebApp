@@ -35,7 +35,7 @@ namespace SchoolWebApp.API.Controllers.Staff
         {
             try
             {
-                return Ok(_mapper.Map<List<StaffAttendanceDto>>(await _unitOfWork.StaffAttendances.GetAll()));
+                return Ok(_mapper.Map<List<StaffAttendanceDto>>(await _unitOfWork.StaffAttendances.Find(includeProperties: "StaffDetails")));
             }
             catch (Exception ex)
             {

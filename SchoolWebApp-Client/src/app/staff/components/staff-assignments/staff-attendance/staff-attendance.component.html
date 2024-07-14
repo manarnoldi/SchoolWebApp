@@ -1,0 +1,35 @@
+
+<div class="modal fade" id="staffAttendanceFormModal" tabindex="-1"
+    attr.aria-labelledby="staffAttendanceItemModalLabel" aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success opacity-50">
+                <h5 class="modal-title" id="staffAttendanceFormModalLabel">
+                    Record staff attendance
+                </h5>
+            </div>
+            <app-staff-attendance-form [staffAttendance]="staffAttendance" [statuses]="statuses"
+                [staff]="staff"
+                (addItemEvent)="AddStaffAttendance($event)"
+                *ngIf="staff"></app-staff-attendance-form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right mb-2"
+            modelName="staffAttendance" buttonTitle="Add attendance"></app-table-button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <app-staff-attendance-table [tableTitle]="'Staff attendance list'"
+            [staffAttendances]="staffAttendances" [showLoginControls]="false"
+            (editItemEvent)="editItem($event)"
+            (deleteItemEvent)="deleteItem($event)"></app-staff-attendance-table>
+        <!-- <app-staff-attendance-form [staffAttendance]="" [] ></app-staff-attendance-form> -->
+    </div>
+</div>

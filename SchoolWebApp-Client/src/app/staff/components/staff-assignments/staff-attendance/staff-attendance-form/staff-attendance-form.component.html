@@ -1,0 +1,59 @@
+<form [formGroup]="staffAttendanceForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="modal-body">
+
+        <app-staff-details-view [staffDetails]="staff" [statuses]="statuses" [alignment]="'reduced'"
+            *ngIf="statuses"></app-staff-details-view>
+        <div class="border border-info mt-2 p-2 rounded">
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="date">Attendance date: <span
+                                class="requiredField">*</span></label>
+                        <input placeholder="Enter attendance date"
+                            id="date" type="date" class="form-control"
+                            formControlName="date" [ngClass]="{
+                                'is-invalid': (f.date.dirty || f.date.touched) && f.date.invalid
+                                }" />
+                        <div class="invalid-feedback"> Start date is required</div>
+                    </div>
+                    <!-- <div class="form-group">
+                        <label for="date">Attendance date: <span
+                                class="requiredField">*</span></label>
+                        <input placeholder="Enter start date of session"
+                            id="date" type="date" class="form-control" />
+                    </div> -->
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <div class="custom-control custom-switch
+                            custom-switch-off-danger custom-switch-on-success">
+                            <input type="checkbox" class="custom-control-input"
+                                id="present" formControlName="present">
+                            <label class="custom-control-label"
+                                for="present">Staff Present?</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label for="remarks">Attendance remarks</label>
+                        <textarea placeholder="Attendance remarks" id="remarks"
+                            class="form-control" rows="2" formControlName="remarks"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="submit" [disabled]="staffAttendanceForm.invalid" class="btn
+                btn-success"> <i class="fas fa-save"></i>
+            {{ editMode ? 'Update' : 'Save' }}
+        </button>
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
+            #closeButton (click)="closeStaffAttendanceForm()">
+            <i class="fas fa-times"></i> Close
+        </button>
+    </div>
+</form>
