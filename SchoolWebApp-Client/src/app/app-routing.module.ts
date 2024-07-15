@@ -105,7 +105,9 @@ const routes: Routes = [
             {path: 'details', component: StaffDetailsComponent},
             {path: 'add', component: StaffDetailsFormComponent},
             {path: 'attendance', component: StaffDetailsComponent},
-            {path: 'attendance/add', component: StaffAssignmentsComponent},
+            { path: 'attendance/add', component: StaffAssignmentsComponent },
+            {path: 'discipline', component: StaffDetailsComponent},
+            {path: 'discipline/add', component: StaffAssignmentsComponent},
         ]
     },
     {

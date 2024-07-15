@@ -35,7 +35,7 @@ namespace SchoolWebApp.API.Controllers.Staff
         {
             try
             {
-                return Ok(_mapper.Map<List<StaffDisciplineDto>>(await _unitOfWork.StaffDisciplines.GetAll()));
+                return Ok(_mapper.Map<List<StaffDisciplineDto>>(await _unitOfWork.StaffDisciplines.Find(includeProperties: "StaffDetails,Outcome,OccurenceType")));
             }
             catch (Exception ex)
             {
@@ -146,7 +146,7 @@ namespace SchoolWebApp.API.Controllers.Staff
                 if (!await _unitOfWork.StaffDetails.ItemExistsAsync(s => s.Id == model.StaffDetailsId))
                     return Conflict(new { message = $"The staff details submitted do not exist." });
                 if (await _unitOfWork.StaffDisciplines.ItemExistsAsync(s => s.StaffDetailsId == model.StaffDetailsId && s.OccurenceDetails == model.OccurenceDetails &&
-                s.OccurenceStartDate==model.OccurenceStartDate && s.OccurenceEndDate == model.OccurenceEndDate && s.OccurenceTypeId == model.OccurenceTypeId))
+                s.OccurenceStartDate == model.OccurenceStartDate && s.OccurenceEndDate == model.OccurenceEndDate && s.OccurenceTypeId == model.OccurenceTypeId))
                     return Conflict(new { message = $"The staff discipline record already exists" });
                 try
                 {

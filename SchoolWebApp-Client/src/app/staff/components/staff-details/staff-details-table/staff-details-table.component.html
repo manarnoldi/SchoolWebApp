@@ -53,7 +53,14 @@
                                         [queryParams]='{id: item.id, action: showType}'
                                         class="view" title="Add attendance" data-toggle="tooltip"
                                         data-original-title="Add attendance">
-                                        <i class="fas fa-calendar"></i> Attendances</a>
+                                        <i class="fas fa-plus"></i> Attendances</a>
+                                </td>
+                                <td *ngIf="showType === 'discipline'">
+                                    <a [routerLink]="['/staff/discipline/add']"
+                                        [queryParams]='{id: item.id, action: showType}'
+                                        class="view" title="Add discipline" data-toggle="tooltip"
+                                        data-original-title="Add discipline">
+                                        <i class="fas fa-plus"></i> Discipline</a>
                                 </td>
                             </tr>
                         </tbody>

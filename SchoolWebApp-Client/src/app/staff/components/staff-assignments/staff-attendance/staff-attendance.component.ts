@@ -102,7 +102,7 @@ export class StaffAttendanceComponent implements OnInit {
             title: `${this.staffAttendanceFormComponent.editMode ? 'Update' : 'Add'} Staff attendance record?`,
             text: `Confirm if you want to ${
                 this.staffAttendanceFormComponent.editMode ? 'update' : 'add'
-            } education Level.`,
+            } staff attendance.`,
             width: 400,
             position: 'top',
             padding: '1em',

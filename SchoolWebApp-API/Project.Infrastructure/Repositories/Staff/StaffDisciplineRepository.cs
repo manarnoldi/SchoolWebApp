@@ -19,7 +19,12 @@ namespace SchoolWebApp.Infrastructure.Repositories.Staff
 
         public async Task<List<StaffDiscipline>> GetByStaffDetailsId(int staffDetailsId)
         {
-            var staffDisciplines = await _dbContext.StaffDisciplines.Where(e => e.StaffDetailsId == staffDetailsId).ToListAsync();
+            var staffDisciplines = await _dbContext.StaffDisciplines
+                .Where(e => e.StaffDetailsId == staffDetailsId)
+                .Include(s => s.StaffDetails)
+                .Include(s => s.Outcome)
+                .Include(s => s.OccurenceType)
+                .ToListAsync();
             return staffDisciplines;
         }
     }

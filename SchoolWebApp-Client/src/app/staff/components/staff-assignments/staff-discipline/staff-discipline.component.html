@@ -1,1 +1,33 @@
-<p>staff-discipline works!</p>
+<div class="modal fade" id="staffDisciplineFormModal" tabindex="-1"
+    attr.aria-labelledby="staffDisciplineItemModalLabel" aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success opacity-50">
+                <h5 class="modal-title" id="staffDisciplineFormModalLabel">
+                    Record staff discipline
+                </h5>
+            </div>
+            <app-staff-discipline-form [staffDiscipline]="staffDiscipline" [statuses]="statuses"
+                [staff]="staff" [outcomes]="outcomes" [occurenceTypes]="occurenceTypes"
+                (addItemEvent)="AddStaffDiscipline($event)"
+                *ngIf="staff && outcomes && occurenceTypes"></app-staff-discipline-form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right mb-2"
+            modelName="staffDiscipline" buttonTitle="Add discipline"></app-table-button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <app-staff-discipline-table [tableTitle]="'Staff discipline list'"
+            [staffDisciplines]="staffDisciplines" [showLoginControls]="false"
+            (editItemEvent)="editItem($event)" (viewItemEvent)="editItem($event, 'view')"
+            (deleteItemEvent)="deleteItem($event)"></app-staff-discipline-table>
+    </div>
+</div>

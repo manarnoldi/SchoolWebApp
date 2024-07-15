@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SchoolWebApp.Core.DTOs.Settings.OccurenceType;
+using SchoolWebApp.Core.DTOs.Settings.Outcome;
+using SchoolWebApp.Core.Entities.Settings;
+using System.ComponentModel.DataAnnotations;
 
 namespace SchoolWebApp.Core.DTOs
 {
@@ -19,7 +22,9 @@ namespace SchoolWebApp.Core.DTOs
         [StringLength(255)]
         public string OutcomeDetails { get; set; }
 
-        public int OutcomeId { get; set; }
-        public int OccurenceTypeId { get; set; }
+        public int? OutcomeId { get; set; }
+        public OutcomeDto? Outcome { get; set; }
+        public int? OccurenceTypeId { get; set; }
+        public OccurenceTypeDto? OccurenceType { get; set; }
     }
 }

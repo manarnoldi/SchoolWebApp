@@ -23,9 +23,9 @@ namespace SchoolWebApp.Core.Entities.Shared
         [StringLength(255)]
         public string OutcomeDetails { get; set; }
 
-        public int OutcomeId { get; set; }
+        public int? OutcomeId { get; set; }
         public Outcome Outcome { get; set; }
-        public int OccurenceTypeId { get; set; }
+        public int? OccurenceTypeId { get; set; }
         public OccurenceType OccurenceType { get; set; }
     }
 }

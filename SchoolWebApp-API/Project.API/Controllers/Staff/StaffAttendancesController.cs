@@ -146,7 +146,7 @@ namespace SchoolWebApp.API.Controllers.Staff
                 if (!await _unitOfWork.StaffDetails.ItemExistsAsync(s => s.Id == model.StaffDetailsId))
                     return Conflict(new { message = $"The staff details submitted do not exist." });
                 if (await _unitOfWork.StaffAttendances.ItemExistsAsync(s => s.StaffDetailsId == model.StaffDetailsId && s.Date == model.Date))
-                    return Conflict(new { message = $"The staff attendance record already exists" });
+                    return Conflict(new { message = $"The staff attendance record for the date already exists" });
                 try
                 {
                     var _item = _mapper.Map<StaffAttendance>(model);
