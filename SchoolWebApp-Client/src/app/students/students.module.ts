@@ -2,19 +2,37 @@ import {NgModule} from '@angular/core';
 import {CoreModule} from '@/core/core.module';
 import {SharedModule} from '@/shared/shared.module';
 import {StudentsComponent} from './students.component';
-import {StudentDetailsComponent} from './components/student-details/student-details.component';
-import {StudentsViewComponent} from './components/students-view/students-view.component';
-import {StudentsTableComponent} from './components/students-table/students-table.component';
+import {StudentsTableComponent} from './components/students-details/students-table/students-table.component';
 import { DataTablesModule } from 'angular-datatables';
-import { StudentsAddFormComponent } from './components/students-add-form/students-add-form.component';
+import { StudentsAddFormComponent } from './components/students-details/students-add-form/students-add-form.component';
+import { StudentsDetailsComponent } from './components/students-details/students-details.component';
+import { StudentAssignmentsComponent } from './components/student-assignments/student-assignments.component';
+import { StudentClassComponent } from './components/student-assignments/student-class/student-class.component';
+import { StudentParentsComponent } from './components/student-assignments/student-parents/student-parents.component';
+import { StudentDisciplineComponent } from './components/student-assignments/student-discipline/student-discipline.component';
+import { StudentAttendanceComponent } from './components/student-assignments/student-attendance/student-attendance.component';
+import { StudentSubjectsComponent } from './components/student-assignments/student-subjects/student-subjects.component';
+import { StudentDetailsViewComponent } from './components/students-details/student-details-view/student-details-view.component';
+import { StudentFormerSchoolTableComponent } from './components/student-assignments/student-former-school/student-former-school-table/student-former-school-table.component';
+import { StudentFormerSchoolComponent } from './components/student-assignments/student-former-school/student-former-school.component';
+import { StudentFormerSchoolFormComponent } from './components/student-assignments/student-former-school/student-former-school-form/student-former-school-form.component';
 
 @NgModule({
     declarations: [
         StudentsComponent,
-        StudentDetailsComponent,
-        StudentsViewComponent,
         StudentsTableComponent,
-        StudentsAddFormComponent
+        StudentsAddFormComponent,
+        StudentsDetailsComponent,
+        StudentAssignmentsComponent,
+        StudentFormerSchoolComponent,
+        StudentClassComponent,
+        StudentParentsComponent,
+        StudentDisciplineComponent,
+        StudentAttendanceComponent,
+        StudentSubjectsComponent,
+        StudentDetailsViewComponent,
+        StudentFormerSchoolFormComponent,
+        StudentFormerSchoolTableComponent
     ],
     imports: [DataTablesModule, CoreModule, SharedModule]
 })

@@ -1,0 +1,34 @@
+<div class="modal fade" id="studentFormerSchoolFormModal" tabindex="-1"
+    attr.aria-labelledby="studentFormerSchoolItemModalLabel" aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success opacity-50">
+                <h5 class="modal-title" id="studentFormerSchoolFormModalLabel">
+                    Record staff discipline
+                </h5>
+            </div>
+            <app-student-former-school-form [studentFormerSchool]="studentFormerSchool"
+                [statuses]="statuses"
+                [student]="student" [curricula]="curricula" [educationLevels]="educationLevels"
+                (addItemEvent)="AddStudentFormerSchool($event)"
+                *ngIf="student && curricula && educationLevels"></app-student-former-school-form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right mb-2"
+            modelName="studentFormerSchool" buttonTitle="Add former school"></app-table-button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <app-student-former-school-table [tableTitle]="'Student former schools list'"
+            [studentFormerSchools]="studentFormerSchools" [showLoginControls]="false"
+            (editItemEvent)="editItem($event)" (viewItemEvent)="editItem($event, 'view')"
+            (deleteItemEvent)="deleteItem($event)"></app-student-former-school-table>
+    </div>
+</div>

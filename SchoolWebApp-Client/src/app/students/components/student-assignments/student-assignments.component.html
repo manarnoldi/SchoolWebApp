@@ -1,0 +1,154 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row py-2">
+            <div class="col-12">
+                <a [routerLink]="[backLinkUrl]"
+                    class="btn btn-sm btn-flat btn-warning float-left">
+                    <i class="fas fa-angle-double-left"></i> Back to students list
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <app-student-details-view [studentDetails]="student" [statuses]="statuses"
+                            *ngIf="statuses"></app-student-details-view>
+                    </div>
+                </div>
+                <div class="row pt-2">
+                    <div class="col-12">
+                        <div class="card card-success card-outline">
+                            <div class="card-header p-2">
+                                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button
+                                            class="nav-link {{sourceLink==='formerSchool'? 'active':''}}"
+                                            id="formerSchool-tab"
+                                            data-bs-toggle="pill" data-bs-target="#formerSchool"
+                                            type="button" role="tab" aria-controls="formerSchool"
+                                            aria-selected="true">Former school/s</button>
+                                    </li>
+                                    <li class="nav-item" role="class">
+                                        <button
+                                            class="nav-link {{sourceLink==='class'? 'active':''}}"
+                                            id="class-tab"
+                                            data-bs-toggle="pill" data-bs-target="#class"
+                                            type="button" role="tab" aria-controls="class"
+                                            aria-selected="false">Class details</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button
+                                            class="nav-link {{sourceLink==='parents'? 'active':''}}"
+                                            id="parents-tab"
+                                            data-bs-toggle="pill"
+                                            data-bs-target="#parents" type="button" role="tab"
+                                            aria-controls="parents" aria-selected="false">
+                                            Parents details
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button
+                                            class="nav-link {{sourceLink==='discipline'? 'active':''}}"
+                                            id="discipline-tab"
+                                            data-bs-toggle="pill" data-bs-target="#discipline"
+                                            type="button" role="tab" aria-controls="discipline"
+                                            aria-selected="true">Discipline records</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button
+                                            class="nav-link {{sourceLink==='subjects'? 'active':''}}"
+                                            id="subjects-tab"
+                                            data-bs-toggle="pill" data-bs-target="#subjects"
+                                            type="button" role="tab" aria-controls="subjects"
+                                            aria-selected="false">Subjects details</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button
+                                            class="nav-link {{sourceLink==='attendance'? 'active':''}}"
+                                            id="attendance-tab"
+                                            data-bs-toggle="pill"
+                                            data-bs-target="#attendance" type="button" role="tab"
+                                            aria-controls="attendance" aria-selected="false">
+                                            Attendance details
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content" id="pills-tabContent">
+                                    <div
+                                        class="tab-pane fade {{sourceLink==='formerSchool'? 'show active':''}}"
+                                        id="formerSchool"
+                                        role="tabpanel"
+                                        aria-labelledby="formerSchool-tab">
+                                        <div class="border border-info rounded p-2">
+                                            <app-student-former-school [statuses]="status"
+                                                [student]="student" [curricula]="curricula"
+                                                [educationLevels]="educationLevels"></app-student-former-school>
+                                            <!-- <app-student-former-school [statuses]="statuses"
+                                                [staff]="staff"></app-student-former-school> -->
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="tab-pane fade {{sourceLink==='class'? 'show active':''}}"
+                                        id="class" role="tabpanel"
+                                        aria-labelledby="class-tab">
+                                        <app-student-class></app-student-class>
+                                        <div class="border border-info rounded p-2">
+                                            <!-- <app-student-class [statuses]="statuses"
+                                                [staff]="staff" [outcomes]="outcomes"
+                                                [occurenceTypes]="occurenceTypes"></app-student-class> -->
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="tab-pane fade {{sourceLink==='parents'? 'show active':''}}"
+                                        id="parents" role="tabpanel"
+                                        aria-labelledby="parents-tab">
+                                        <div class="border border-info rounded p-2">
+                                            <app-student-parents></app-student-parents>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="tab-pane fade {{sourceLink==='discipline'? 'show active':''}}"
+                                        id="discipline" role="tabpanel"
+                                        aria-labelledby="discipline-tab">
+                                        <div class="border border-info rounded p-2">
+                                            <app-student-discipline></app-student-discipline>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="tab-pane fade {{sourceLink==='subjects'? 'show active':''}}"
+                                        id="subjects" role="tabpanel"
+                                        aria-labelledby="subjects-tab">
+                                        <div class="border border-info rounded p-2">
+                                            <app-student-subjects></app-student-subjects>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="tab-pane fade {{sourceLink==='attendance'? 'show active':''}}"
+                                        id="attendance" role="tabpanel"
+                                        aria-labelledby="attendance-tab">
+                                        <div class="border border-info rounded p-2">
+                                            <app-student-attendance></app-student-attendance>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>

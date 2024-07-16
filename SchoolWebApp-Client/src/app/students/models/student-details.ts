@@ -23,7 +23,7 @@ export class StudentDetails extends ResourceModel<StudentDetails> {
     public admissionDate?: Date;
     public applicationDate?: Date;
     public learningModeId?: number;
-    public LearningMode?: LearningMode;
+    public learningMode?: LearningMode;
 
     //Contact details
     public address?: string;

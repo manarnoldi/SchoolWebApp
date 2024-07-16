@@ -13,7 +13,12 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
         }
         public async Task<List<FormerSchool>> GetByStudentId(int studentId)
         {
-            var studentFormerSchools = await _dbContext.FormerSchools.Where(e => e.StudentId == studentId).ToListAsync();
+            var studentFormerSchools = await _dbContext.FormerSchools
+                .Where(e => e.StudentId == studentId)
+                .Include(f=>f.Student)
+                .Include(f=>f.Curriculum)
+                .Include(f=>f.EducationLevel)
+                .ToListAsync();
             return studentFormerSchools;
         }
     }

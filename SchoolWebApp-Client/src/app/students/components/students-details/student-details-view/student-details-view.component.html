@@ -1,0 +1,99 @@
+<div class="card-details-box border-success bg-success-subtle">
+    <div *ngIf="alignment === 'extended'">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="py-1">
+                    <h4>
+                        {{studentDetails?.fullName}}
+                    </h4>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="py-1">
+                    <b><i class="fas fa-calculator"></i> Admission #</b>
+                    <br>{{studentDetails?.upi}}
+                </div>
+            </div>            
+            <div class="col-md-2">
+                <div class="py-1">
+                    <b><i class="fas fa-genderless"></i> Gender</b>
+                    <br>{{studentDetails?.gender?.name}}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="py-1">
+                    <b><i class="fas fa-power-off"></i> Status</b>
+                    <br>{{statuses[studentDetails?.status]}}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="py-1">
+                    <b><i class="fas fa-book-open"></i> Learning mode</b>
+                    <br>{{studentDetails?.learningMode?.name}}
+                </div>
+            </div>
+        </div>
+        <hr class="mx-n3 pb-2">
+        <div class="row">
+            <div class="col-md-2">
+                <div class="py-1">
+                    <b><i class="fas fa-calendar-alt"></i> Application date</b>
+                    <br>{{studentDetails?.applicationDate  | date: 'dd/MM/yyyy'}}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="py-1">
+                    <b><i class="fas fa-calendar-alt"></i> Admission date</b>
+                    <br>{{studentDetails?.admissionDate  | date: 'dd/MM/yyyy'}}
+                </div>
+            </div>            
+            <div class="col-md-2">
+                <div class="py-1">
+                    <b><i class="fas fa-mail-bulk"></i> Email address</b>
+                    <br>{{studentDetails?.email}}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="py-1">
+                    <b><i class="fas fa-phone"></i> Phone number</b>
+                    <br>{{studentDetails?.phoneNumber}}
+                </div>
+            </div>           
+            <div class="col-md-2">
+                <div class="py-1">
+                    <b><i class="fas fa-calendar-church"></i> Religion</b>
+                    <br>{{studentDetails?.religion?.name}}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="py-1">
+                    <b><i class="fas fa-flag"></i> Nationality</b>
+                    <br>{{studentDetails?.nationality?.name}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="alignment === 'reduced'">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="py-1">
+                    <h4>
+                        {{studentDetails?.fullName}}
+                    </h4>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="py-1">
+                    <b><i class="fas fa-calculator"></i> Admission #</b>
+                    <br>{{studentDetails?.upi}}
+                </div>
+            </div>  
+            <div class="col-md-3">
+                <div class="py-1">
+                    <b><i class="fas fa-power-off"></i> Status</b>
+                    <br>{{statuses[studentDetails?.status]}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

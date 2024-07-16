@@ -88,8 +88,8 @@ export class StaffDisciplineFormComponent implements OnInit {
 
     closeStaffDisciplineForm = () => {
         this.closeButton.nativeElement.click();
-        this.refreshItems();
         this.resetFormControls();
+        this.refreshItems();        
     };
 
     resetFormControls() {

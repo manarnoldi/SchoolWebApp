@@ -36,7 +36,7 @@ namespace SchoolWebApp.API.Controllers.Students
         {
             try
             {
-                return Ok(_mapper.Map<List<FormerSchoolDto>>(await _unitOfWork.FormerSchools.GetAll()));
+                return Ok(_mapper.Map<List<FormerSchoolDto>>(await _unitOfWork.FormerSchools.Find(includeProperties:"Student,Curriculum,EducationLevel")));
             }
             catch (Exception ex)
             {

@@ -36,8 +36,7 @@ import {StaffComponent} from './staff/staff.component';
 import {StaffDetailsComponent} from './staff/components/staff-details/staff-details.component';
 import {StaffDetailsFormComponent} from './staff/components/staff-details/staff-details-form/staff-details-form.component';
 import {StudentsComponent} from './students/students.component';
-import {StudentsViewComponent} from './students/components/students-view/students-view.component';
-import {StudentsAddFormComponent} from './students/components/students-add-form/students-add-form.component';
+import {StudentsAddFormComponent} from './students/components/students-details/students-add-form/students-add-form.component';
 import {SubjectGroupsComponent} from './academics/components/subject-groups/subject-groups.component';
 import {GradesComponent} from './academics/components/grades/grades.component';
 import {DepartmentsComponent} from './school/components/departments/departments.component';
@@ -48,7 +47,11 @@ import {SchoolStreamsComponent} from './class/components/school-streams/school-s
 import {SessionsComponent} from './class/components/sessions/sessions.component';
 import {ClassLeadershipRolesComponent} from './class/components/class-leadership-roles/class-leadership-roles.component';
 import {ClassDetailsComponent} from './class/components/school-class/class-details/class-details.component';
-import { StaffAssignmentsComponent } from './staff/components/staff-assignments/staff-assignments.component';
+import {StaffAssignmentsComponent} from './staff/components/staff-assignments/staff-assignments.component';
+import {StudentsDetailsComponent} from './students/components/students-details/students-details.component';
+import { StudentFormerSchoolComponent } from './students/components/student-assignments/student-former-school/student-former-school.component';
+import { StudentClassComponent } from './students/components/student-assignments/student-class/student-class.component';
+import { StudentAssignmentsComponent } from './students/components/student-assignments/student-assignments.component';
 
 const routes: Routes = [
     {
@@ -105,9 +108,9 @@ const routes: Routes = [
             {path: 'details', component: StaffDetailsComponent},
             {path: 'add', component: StaffDetailsFormComponent},
             {path: 'attendance', component: StaffDetailsComponent},
-            { path: 'attendance/add', component: StaffAssignmentsComponent },
+            {path: 'attendance/add', component: StaffAssignmentsComponent},
             {path: 'discipline', component: StaffDetailsComponent},
-            {path: 'discipline/add', component: StaffAssignmentsComponent},
+            {path: 'discipline/add', component: StaffAssignmentsComponent}
         ]
     },
     {
@@ -116,8 +119,12 @@ const routes: Routes = [
         canActivate: [AuthGuard],
         canActivateChild: [AuthGuard],
         children: [
-            {path: 'details', component: StudentsViewComponent},
-            {path: 'add', component: StudentsAddFormComponent}
+            {path: 'details', component: StudentsDetailsComponent},
+            { path: 'add', component: StudentsAddFormComponent },
+            {path: 'formerSchool', component: StudentsDetailsComponent},
+            {path: 'formerSchool/add', component: StudentAssignmentsComponent},
+            {path: 'class', component: StudentsDetailsComponent},
+            {path: 'class/add', component: StudentClassComponent}
         ]
     },
     {

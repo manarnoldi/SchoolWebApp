@@ -141,9 +141,7 @@ export class StaffDisciplineComponent implements OnInit {
                         this.toastr.success(
                             'Staff discipline saved successfully'
                         );
-                        this.staffDisciplineFormComponent.closeButton.nativeElement.click();
-                        this.staffDisciplineFormComponent.resetFormControls();                        
-                        this.staffDisciplineFormComponent.refreshItems();                        
+                        this.staffDisciplineFormComponent.closeButton.nativeElement.click();                   
                         this.loadStaffDisciplines();
                     },
                     (err) => {

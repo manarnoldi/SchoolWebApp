@@ -15,8 +15,7 @@
                 </a>
             </div>
         </div>
-
-        <app-students-table [students]="students" *ngIf="students"
-            (deleteItemEvent)="deleteItem($event)"></app-students-table>
+        <app-students-table *ngIf="students" [students]="students" [showType]="sourceLink"
+        (deleteItemEvent)="deleteItem($event)"></app-students-table>
     </div>
 </section>

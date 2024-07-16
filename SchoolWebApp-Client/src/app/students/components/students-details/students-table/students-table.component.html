@@ -24,7 +24,8 @@
                   <td>{{ item.nationality?.name }}</td>
                   <td>{{ item.gender?.name }}</td>
                   <td>{{ statusValues[item.status] }}</td>
-                  <td *ngIf="showActionControls">
+
+                  <td *ngIf="showType === 'details'">
                     <a [routerLink]="['/students/add']"
                       [queryParams]="{id: item.id, action: 'view'}"
                       class="view" title data-toggle="tooltip"
@@ -41,6 +42,20 @@
                       (click)="deleteStudent(item.id)"
                       data-original-title="Delete">
                       <i class="fas fa-trash-alt"></i></a>
+                  </td>
+                  <td *ngIf="showType === 'formerSchool'">
+                    <a [routerLink]="['/students/formerSchool/add']"
+                      [queryParams]='{id: item.id, action: showType}'
+                      class="view" title="Former school" data-toggle="tooltip"
+                      data-original-title="Add former school">
+                      <i class="fas fa-plus"></i> Former school</a>
+                  </td>
+                  <td *ngIf="showType === 'class'">
+                    <a [routerLink]="['/students/class/add']"
+                      [queryParams]='{id: item.id, action: showType}'
+                      class="view" title="Add class" data-toggle="tooltip"
+                      data-original-title="Add class">
+                      <i class="fas fa-plus"></i> Class</a>
                   </td>
                 </tr>
               </tbody>

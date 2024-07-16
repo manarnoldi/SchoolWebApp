@@ -38,7 +38,7 @@ export class StudentsAddFormComponent implements OnInit {
     student: StudentDetails;
     studentId: number = 0;
     students: StudentDetails[] = [];
-    studentImageUrl: string = '../../../../../../assets/img/user_image.png';
+    studentImageUrl: string = '../../../../../../../assets/img/user_image.png';
 
     learningModes: LearningMode[] = [];
     nationalities: Nationality[] = [];

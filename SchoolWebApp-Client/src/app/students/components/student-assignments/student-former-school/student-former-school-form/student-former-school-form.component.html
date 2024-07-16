@@ -1,0 +1,110 @@
+<form [formGroup]="studentFormerSchoolForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="modal-body">
+
+        <app-student-details-view [studentDetails]="student" [statuses]="statuses"
+            [alignment]="'reduced'"
+            *ngIf="statuses"></app-student-details-view>
+        <div class="border border-info mt-2 p-2 rounded">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="curriculumId" class="form-label">Curriculum name: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-control" aria-label="Select education level"
+                            formControlName="curriculumId"
+                            [attr.disabled]="action==='view' ? 'disabled':null"
+                            id="curriculumId" [ngClass]="{
+                                'is-invalid': (f.curriculumId.dirty || f.curriculumId.touched) && f.curriculumId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select
+                                curriculum</option>
+                            <option [ngValue]="curriculum.id" *ngFor="let curriculum of
+                                    curricula">{{curriculum.name}}</option>
+                        </select>
+                        <div class="invalid-feedback">Curriculum name is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="educationLevelId" class="form-label">Education level: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-control" aria-label="Select education level"
+                            [attr.disabled]="action==='view' ? 'disabled':null"
+                            formControlName="educationLevelId" id="educationLevelId" [ngClass]="{
+                                'is-invalid': (f.educationLevelId.dirty || f.educationLevelId.touched) && f.educationLevelId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select education
+                                level</option>
+                            <option [ngValue]="educationLevel.id" *ngFor="let educationLevel of
+                                    educationLevels">{{educationLevel.name}}</option>
+                        </select>
+                        <div class="invalid-feedback">Education level is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="schoolName">Former school name: <span
+                                class="requiredField">*</span></label>
+                        <input id="schoolName" placeholder="Enter former school name" type="text"
+                            class="form-control" formControlName="schoolName" [ngClass]="{
+                            'is-invalid': (f.schoolName.dirty || f.schoolName.touched) && f.schoolName.invalid
+                            }" [readOnly]="action==='view'" />
+                        <div class="invalid-feedback">Former school name is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="classDetails">Class details: <span
+                                class="requiredField">*</span></label>
+                        <input id="classDetails" placeholder="Enter class details" type="text"
+                            class="form-control" formControlName="classDetails" [ngClass]="{
+                            'is-invalid': (f.classDetails.dirty || f.classDetails.touched) && f.classDetails.invalid
+                            }" [readOnly]="action==='view'" />
+                        <div class="invalid-feedback">Class details is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="score">Last exam score: </label>
+                        <input id="score" placeholder="Enter last exam score" type="text"
+                            class="form-control" formControlName="score"
+                            [readOnly]="action==='view'" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="position">Last exam position: </label>
+                        <input id="position" placeholder="Enter last exam position" type="text"
+                            class="form-control" formControlName="position"
+                            [readOnly]="action==='view'" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label for="description">Results description:</label>
+                        <textarea placeholder="Enter description" id="description"
+                            [readOnly]="action==='view'"
+                            class="form-control" rows="2" formControlName="description"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button *ngIf="action !=='view'" type="submit" [disabled]="studentFormerSchoolForm.invalid"
+            class="btn
+                btn-success"> <i class="fas fa-save"></i>
+            {{ action==='edit' ? 'Update' : 'Save' }}
+        </button>
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
+            #closeButton (click)="closeStudentFormerSchoolForm()">
+            <i class="fas fa-times"></i> Close
+        </button>
+    </div>
+</form>

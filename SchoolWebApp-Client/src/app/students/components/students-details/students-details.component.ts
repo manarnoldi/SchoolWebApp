@@ -1,29 +1,30 @@
 import {BreadCrumb} from '@/core/models/bread-crumb';
-import {StaffDetailsService} from '@/staff/services/staff-details.service';
+import {StudentDetailsService} from '@/students/services/student-details.service';
 import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import Swal from 'sweetalert2';
-import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
-    selector: 'app-staff-details',
-    templateUrl: './staff-details.component.html',
-    styleUrl: './staff-details.component.scss'
+    selector: 'app-students-details',
+    templateUrl: './students-details.component.html',
+    styleUrl: './students-details.component.scss'
 })
-export class StaffDetailsComponent implements OnInit {
-    dashboardTitle = 'Staff details list';
+export class StudentsDetailsComponent implements OnInit {
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Home'},
-        {link: ['/staff/details'], title: 'School:staff details'}
+        {link: ['/students/details'], title: 'Student: Students list'}
     ];
 
-    staffs;
+    dashboardTitle = 'Student: Students list';
+
+    students;
     itemDeleted: boolean = false;
     sourceLink: string = 'details';
 
     constructor(
-        private staffsSvc: StaffDetailsService,
-        private toastr: ToastrService,
+        private studentsSvc: StudentDetailsService,
+        private toarst: ToastrService,
         private router: Router
     ) {}
 
@@ -46,13 +47,13 @@ export class StaffDetailsComponent implements OnInit {
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.value) {
-                this.staffsSvc.delete('/staffDetails', id).subscribe(
+                this.studentsSvc.delete('/students', id).subscribe(
                     (res) => {
                         this.itemDeleted = true;
                         this.refreshItems();
                     },
                     (err) => {
-                        this.toastr.error(err);
+                        this.toarst.error(err);
                     }
                 );
             } else if (result.dismiss === Swal.DismissReason.cancel) {
@@ -62,11 +63,11 @@ export class StaffDetailsComponent implements OnInit {
 
     refreshItems = () => {
         this.sourceLink = this.router.url.split('/').pop();
-        this.staffsSvc.get('/staffDetails').subscribe(
+        this.studentsSvc.get('/students').subscribe(
             (res) => {
-                this.staffs = res;
+                this.students = res;
                 if (this.itemDeleted) {
-                    this.toastr.success('Record deleted successfully!');
+                    this.toarst.success('Record deleted successfully!');
                     this.itemDeleted = false;
                     let currentUrl = this.router.url;
                     this.router
@@ -75,7 +76,7 @@ export class StaffDetailsComponent implements OnInit {
                 }
             },
             (err) => {
-                this.toastr.error(err.error);
+                this.toarst.error(err.error);
             }
         );
     };

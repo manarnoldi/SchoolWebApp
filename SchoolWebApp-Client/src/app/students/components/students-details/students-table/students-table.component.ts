@@ -6,7 +6,6 @@ import {
     EventEmitter,
     Input,
     OnDestroy,
-    OnInit,
     Output
 } from '@angular/core';
 import {Config} from 'protractor';
@@ -18,15 +17,16 @@ import {Subject} from 'rxjs';
     templateUrl: './students-table.component.html',
     styleUrl: './students-table.component.scss'
 })
-export class StudentsTableComponent
-    implements AfterViewInit, OnDestroy, OnInit
-{
+export class StudentsTableComponent implements AfterViewInit, OnDestroy {
     @Input() tableTitle: string = 'Students list';
     @Input() students: StudentDetails[] = [];
-    @Input() showActionControls: Boolean = true;
     @Input() showLoginControls: Boolean = false;
+    @Input() showType: string = 'details';
 
     @Output() deleteItemEvent = new EventEmitter<number>();
+
+    dtOptions: Config = {};
+    dtTrigger: Subject<any> = new Subject();
 
     tableHeaders: string[] = [
         'Admission no',
@@ -42,9 +42,6 @@ export class StudentsTableComponent
     statusVals = Status;
     statusValues;
 
-    dtOptions: Config = {};
-    dtTrigger: Subject<any> = new Subject();
-
     constructor() {
         this.statusValues = Object.keys(this.statusVals).filter((k) =>
             isNaN(Number(k))
@@ -54,12 +51,10 @@ export class StudentsTableComponent
             columnDefs: [
                 {width: 250, targets: 1},
                 {width: 150, targets: 0},
-                {width: 120, targets: 7}
+                {width: 170, targets: 7}
             ]
         };
     }
-
-    ngOnInit(): void {}
 
     deleteStudent = (id: number) => {
         this.deleteItemEvent.emit(id);

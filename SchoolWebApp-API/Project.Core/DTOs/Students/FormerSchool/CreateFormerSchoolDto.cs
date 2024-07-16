@@ -1,4 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SchoolWebApp.Core.DTOs.Academics.Curriculum;
+using SchoolWebApp.Core.DTOs.School.EducationLevel;
+using SchoolWebApp.Core.DTOs.Students.Student;
+using SchoolWebApp.Core.Entities.Academics;
+using SchoolWebApp.Core.Entities.School;
+using System.ComponentModel.DataAnnotations;
 
 namespace SchoolWebApp.Core.DTOs.Students.FormerSchool
 {
@@ -17,14 +22,17 @@ namespace SchoolWebApp.Core.DTOs.Students.FormerSchool
 
         [StringLength(255)]
         [Display(Name = "Last exam marks and out of")]
-        public string Score { get; set; }
+        public string? Score { get; set; }
 
         [StringLength(255)]
         [Display(Name = "Last position and out of")]
-        public string Position { get; set; }
+        public string? Position { get; set; }
 
         public int StudentId { get; set; }
+        public StudentDto? Student { get; set; }
         public int CurriculumId { get; set; }
+        public CurriculumDto? Curriculum { get; set; }
         public int EducationLevelId { get; set; }
+        public EducationLevelDto? EducationLevel { get; set; }
     }
 }

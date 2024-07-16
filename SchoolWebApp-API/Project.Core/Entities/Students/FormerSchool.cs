@@ -20,11 +20,11 @@ namespace SchoolWebApp.Core.Entities.Students
 
         [StringLength(255)]
         [Display(Name = "Last exam marks and out of")]
-        public string Score { get; set; }
+        public string? Score { get; set; }
 
         [StringLength(255)]
         [Display(Name = "Last position and out of")]
-        public string Position { get; set; }
+        public string? Position { get; set; }
 
         public int StudentId { get; set; }
         public Student Student { get; set; }
