@@ -10,9 +10,11 @@ import {SettingsTableComponent} from './directives/settings-table/settings-table
 import {TableActionComponent} from './directives/table-action/table-action.component';
 import {TableHeadingComponent} from './directives/table-heading/table-heading.component';
 import {TablePagingComponent} from './directives/table-paging/table-paging.component';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {CoreModule} from '@/core/core.module';
 import {TableButtonComponent} from './directives/table-button/table-button.component';
+import {PersonSelectComponent} from './directives/person-select/person-select.component';
+import {YearClassStreamComponent} from './directives/year-class-stream/year-class-stream.component';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
     declarations: [
@@ -26,8 +28,11 @@ import {TableButtonComponent} from './directives/table-button/table-button.compo
         TableActionComponent,
         TableHeadingComponent,
         TablePagingComponent,
-        TableButtonComponent
+        TableButtonComponent,
+        PersonSelectComponent,
+        YearClassStreamComponent
     ],
+
     imports: [CommonModule, NgbModule, CoreModule],
     exports: [
         ButtonComponent,
@@ -41,7 +46,11 @@ import {TableButtonComponent} from './directives/table-button/table-button.compo
         TableHeadingComponent,
         TablePagingComponent,
         TableButtonComponent,
-        NgbModule
+        PersonSelectComponent,
+        YearClassStreamComponent,
+        CommonModule,
+        NgbModule,
+        CoreModule
     ]
 })
 export class SharedModule {}

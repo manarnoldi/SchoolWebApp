@@ -1,15 +1,10 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using SchoolWebApp.API.Controllers.Academics;
-using SchoolWebApp.Core.DTOs.Academics.Grade;
-using SchoolWebApp.Core.DTOs;
-using SchoolWebApp.Core.Entities.Academics;
-using SchoolWebApp.Core.Interfaces.IRepositories;
-using SchoolWebApp.Core.DTOs.Class.SchoolClass;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Students.StudentClass;
 using SchoolWebApp.Core.Entities.Students;
+using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.Students
 {
@@ -40,7 +35,7 @@ namespace SchoolWebApp.API.Controllers.Students
         {
             try
             {
-                return Ok(_mapper.Map<List<StudentClassDto>>(await _unitOfWork.StudentClasses.GetAll()));
+                return Ok(_mapper.Map<List<StudentClassDto>>(await _unitOfWork.StudentClasses.Find(includeProperties:"Student,SchoolClass")));
             }
             catch (Exception ex)
             {
@@ -90,7 +85,7 @@ namespace SchoolWebApp.API.Controllers.Students
             try
             {
                 if (id <= 0) return BadRequest(id);
-                var _item = await _unitOfWork.StudentClasses.GetById(id);
+                var _item = await _unitOfWork.StudentClasses.GetById(id,includeProperties: "Student,SchoolClass");
 
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<StudentClassDto>(_item);

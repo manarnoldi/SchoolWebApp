@@ -1,5 +1,11 @@
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    OnInit,
+    Output,
+    ViewChild
+} from '@angular/core';
 import {SchoolClassAddFormComponent} from './school-class-add-form/school-class-add-form.component';
 import {forkJoin, Subscription} from 'rxjs';
 import {BreadCrumb} from '@/core/models/bread-crumb';
@@ -26,6 +32,7 @@ export class SchoolClassComponent implements OnInit {
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
     @ViewChild(SchoolClassAddFormComponent)
     schoolClassForm: SchoolClassAddFormComponent;
+    @Output() btnAddClickEvent = new EventEmitter<void>();
     tblShowViewButton: true;
     isAuthLoading: boolean;
 
@@ -93,7 +100,7 @@ export class SchoolClassComponent implements OnInit {
         ]).subscribe(
             ([schoolClasses, learningLevels, schoolStreams, academicYears]) => {
                 this.collectionSize = schoolClasses.length;
-                
+
                 this.learningLevels = learningLevels;
                 this.schoolStreams = schoolStreams;
                 this.academicYears = academicYears.sort((a, b) =>
@@ -114,11 +121,12 @@ export class SchoolClassComponent implements OnInit {
                 forkJoin([...schoolClassLeadersReq]).subscribe(
                     (resp) => {
                         for (let i = 0; i < schoolClasses.length; i++) {
-                            schoolClasses[i].schoolClassLeaders = resp[i];                            
+                            schoolClasses[i].schoolClassLeaders = resp[i];
                         }
                         this.schoolClasses = schoolClasses.sort(
                             (a, b) =>
-                                parseInt(b.academicYearId) - parseInt(a.academicYearId)
+                                parseInt(b.academicYearId) -
+                                parseInt(a.academicYearId)
                         );
                     },
                     (er) => {
@@ -175,6 +183,11 @@ export class SchoolClassComponent implements OnInit {
             }
         });
     }
+
+    addButtonClicked = () => {
+        this.schoolClassForm.editMode = false;
+        this.schoolClassForm.resetFormControls();
+    };
 
     resetForm = () => {
         this.schoolClassForm.editMode = false;

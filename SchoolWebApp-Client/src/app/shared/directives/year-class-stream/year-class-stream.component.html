@@ -1,0 +1,47 @@
+<div  [formGroup]="f">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="academicYearId" class="form-label">Academic year: <span
+                        class="requiredField">*</span></label>
+                <select class="form-control" aria-label="Select academic year"
+                    formControlName="academicYearId" id="academicYearId"
+                    [ngClass]="{ 'is-invalid': (f.controls.academicYearId.dirty || f.controls.academicYearId.touched) && f.controls.academicYearId.invalid }">
+                    <option [ngValue]="null" hidden disabled selected>Select academic year
+                    </option>
+                    <option [ngValue]="academicYear.id" *ngFor="let academicYear of
+                    academicYears">{{academicYear.name}}</option>
+                </select>
+                <div class="invalid-feedback"> Academic year is required</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="learningLevelId" class="form-label">Class/Learning level: <span
+                        class="requiredField">*</span></label>
+                <select class="form-control" aria-label="Select learning level"
+                    formControlName="learningLevelId" id="learningLevelId">
+                    <option [ngValue]="null" hidden disabled selected>Select learning
+                        level</option>
+                    <option [ngValue]="learningLevel.id" *ngFor="let learningLevel of
+                    learningLevels">{{learningLevel.name}}</option>
+                </select>
+                <div class="invalid-feedback"> Learning level is required</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="schoolStreamId" class="form-label">Stream: <span
+                        class="requiredField">*</span></label>
+                <select class="form-control" aria-label="Select stream"
+                    formControlName="schoolStreamId" id="schoolStreamId">
+                    <option [ngValue]="null" hidden disabled selected>Select stream
+                    </option>
+                    <option [ngValue]="schoolStream.id" *ngFor="let schoolStream of
+                    schoolStreams">{{schoolStream.name}}</option>
+                </select>
+                <div class="invalid-feedback"> School stream is required</div>
+            </div>
+        </div>
+    </div>
+</div>

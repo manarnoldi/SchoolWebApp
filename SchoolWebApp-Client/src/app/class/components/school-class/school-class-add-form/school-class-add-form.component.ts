@@ -1,4 +1,4 @@
-import { LearningLevel } from '@/class/models/learning-level';
+import {LearningLevel} from '@/class/models/learning-level';
 import {AcademicYear} from '@/school/models/academic-year';
 import {SchoolClass} from '@/class/models/school-class';
 import {SchoolStream} from '@/class/models/school-stream';
@@ -12,6 +12,7 @@ import {
     ViewChild
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {YearClassStreamComponent} from '@/shared/directives/year-class-stream/year-class-stream.component';
 
 @Component({
     selector: 'app-school-class-add-form',
@@ -30,8 +31,10 @@ export class SchoolClassAddFormComponent implements OnInit {
     @Output() addItemEvent = new EventEmitter<SchoolClass>();
     @Output() errorEvent = new EventEmitter<string>();
 
-    schoolClassForm: FormGroup;
+    @ViewChild(YearClassStreamComponent)
+    yearClassStreamComponent: YearClassStreamComponent;
 
+    schoolClassForm: FormGroup;
     constructor(private formBuilder: FormBuilder) {}
 
     ngOnInit(): void {
@@ -41,21 +44,16 @@ export class SchoolClassAddFormComponent implements OnInit {
     initializeForm = () => {
         this.schoolClassForm = this.formBuilder.group({
             name: ['', [Validators.required]],
-            description: [''],
-            learningLevelId: [null, [Validators.required]],
-            schoolStreamId: [null, [Validators.required]],
-            academicYearId: [null, [Validators.required]]
+            description: ['']
         });
     };
 
     setFormControls = (schoolClass: SchoolClass) => {
-        this.schoolClassForm.setValue({
+        this.schoolClassForm.patchValue({
             name: schoolClass?.name,
-            description: schoolClass?.description,
-            learningLevelId: schoolClass?.learningLevelId ?? null,
-            schoolStreamId: schoolClass?.schoolStreamId ?? null,
-            academicYearId: schoolClass?.academicYearId ?? null
+            description: schoolClass?.description
         });
+        this.yearClassStreamComponent.setFormControls(schoolClass);
     };
 
     get f() {

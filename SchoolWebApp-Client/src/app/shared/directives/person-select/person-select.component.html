@@ -1,0 +1,16 @@
+<div class="form-group">
+    <label for="{{personId}}" class="form-label">{{selectFormLabel}}</label>
+    <ng-select labelForId="{{personId}}" [items]="persons"
+        bindLabel="{{bindLabel}}"
+        formControlName="{{personId}}"
+        placeholder="{{placeholderText}}">
+        <ng-template ng-label-tmp let-item="item">
+            <span>{{ item.fullName ? item.fullName: item.name }}</span>
+        </ng-template>
+        <ng-template ng-option-tmp let-item="item" let-search="searchTerm"
+            let-index="index">
+            <span>{{ item.fullName}}</span>
+        </ng-template>
+    </ng-select>
+    <div class="invalid-feedback"> {{requiredTitle}}</div>
+</div>
