@@ -14,7 +14,7 @@ namespace SchoolWebApp.API.Controllers.Class
     [ApiController]
     public class SchoolClassesController : ControllerBase
     {
-         private readonly ILogger<SchoolClassesController> _logger;
+        private readonly ILogger<SchoolClassesController> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         public SchoolClassesController(ILogger<SchoolClassesController> logger, IUnitOfWork unitOfWork, IMapper mapper)
@@ -98,6 +98,34 @@ namespace SchoolWebApp.API.Controllers.Class
             }
         }
 
+        // GET api/schoolClasses/byYearClassStream
+        /// <summary>
+        /// A method for retrieving school classes by year class stream combination.
+        /// </summary>
+        /// <param name="id">The academic year Id to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byYearClassStream")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SchoolClassDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetByYearClassStream(int academicYearId, int learningLevelId, int schoolStreamId)
+        {
+            try
+            {
+                if (academicYearId <= 0 || learningLevelId <= 0 || schoolStreamId <= 0) return BadRequest(academicYearId);
+                var _item = await _unitOfWork.SchoolClasses.GetByYearClassStream(academicYearId, learningLevelId, schoolStreamId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<SchoolClassDto>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the school classes by year, class, stream.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         // GET api/schoolClasses/5
         /// <summary>
         /// A method for retrieving a school class record by Id.
@@ -142,7 +170,7 @@ namespace SchoolWebApp.API.Controllers.Class
         {
             if (ModelState.IsValid)
             {
-                if (await _unitOfWork.SchoolClasses.ItemExistsAsync(s => s.Name == model.Name && s.AcademicYearId == model.AcademicYearId && 
+                if (await _unitOfWork.SchoolClasses.ItemExistsAsync(s => s.Name == model.Name && s.AcademicYearId == model.AcademicYearId &&
                 s.SchoolStreamId == model.SchoolStreamId && s.LearningLevelId == model.LearningLevelId))
                     return Conflict(new { message = $"The school class details submitted already exist." });
                 try

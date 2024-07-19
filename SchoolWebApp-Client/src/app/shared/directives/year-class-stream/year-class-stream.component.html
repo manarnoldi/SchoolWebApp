@@ -20,7 +20,8 @@
                 <label for="learningLevelId" class="form-label">Class/Learning level: <span
                         class="requiredField">*</span></label>
                 <select class="form-control" aria-label="Select learning level"
-                    formControlName="learningLevelId" id="learningLevelId">
+                    formControlName="learningLevelId" id="learningLevelId"
+                    [ngClass]="{ 'is-invalid': (f.controls.learningLevelId.dirty || f.controls.learningLevelId.touched) && f.controls.learningLevelId.invalid }">
                     <option [ngValue]="null" hidden disabled selected>Select learning
                         level</option>
                     <option [ngValue]="learningLevel.id" *ngFor="let learningLevel of
@@ -34,7 +35,8 @@
                 <label for="schoolStreamId" class="form-label">Stream: <span
                         class="requiredField">*</span></label>
                 <select class="form-control" aria-label="Select stream"
-                    formControlName="schoolStreamId" id="schoolStreamId">
+                    formControlName="schoolStreamId" id="schoolStreamId"
+                    [ngClass]="{ 'is-invalid': (f.controls.schoolStreamId.dirty || f.controls.schoolStreamId.touched) && f.controls.schoolStreamId.invalid }">
                     <option [ngValue]="null" hidden disabled selected>Select stream
                     </option>
                     <option [ngValue]="schoolStream.id" *ngFor="let schoolStream of

@@ -18,5 +18,12 @@ namespace SchoolWebApp.Infrastructure.Repositories.Class
             var schoolClasses = await _dbContext.SchoolClasses.Where(e => e.AcademicYearId == academicYearId).ToListAsync();
             return schoolClasses;
         }
+
+        public async Task<SchoolClass> GetByYearClassStream(int academicYearId, int learningLevelId, int schoolStreamId)
+        {
+            var schoolClass = await _dbContext.SchoolClasses.Where(e => e.AcademicYearId == academicYearId &&
+            e.LearningLevelId == learningLevelId && e.SchoolStreamId == schoolStreamId).FirstOrDefaultAsync();
+            return schoolClass;
+        }
     }
 }

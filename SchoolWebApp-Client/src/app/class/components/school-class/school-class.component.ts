@@ -145,10 +145,10 @@ export class SchoolClassComponent implements OnInit {
             (res) => {
                 let schoolClassId = res.id;
                 this.schoolClass = new SchoolClass(res);
-                this.schoolClass.id = schoolClassId;
-                this.schoolClassForm.setFormControls(this.schoolClass);
+                this.schoolClass.id = schoolClassId;                
                 this.schoolClassForm.editMode = true;
                 this.schoolClassForm.schoolClass = this.schoolClass;
+                this.schoolClassForm.setFormControls(this.schoolClass);
                 this.tableButton.onClick();
             },
             (err) => {
@@ -184,10 +184,10 @@ export class SchoolClassComponent implements OnInit {
         });
     }
 
-    addButtonClicked = () => {
-        this.schoolClassForm.editMode = false;
-        this.schoolClassForm.resetFormControls();
-    };
+    // addButtonClicked = () => {
+    //     this.schoolClassForm.editMode = false;
+    //     this.schoolClassForm.resetFormControls();
+    // };
 
     resetForm = () => {
         this.schoolClassForm.editMode = false;

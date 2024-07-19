@@ -24,25 +24,9 @@ export class YearClassStreamComponent implements OnInit {
     }
 
     initializeFormControl = () => {
-        this.f.addControl('learningLevelId', this.fb.control('', Validators.required));
-        this.f.addControl('schoolStreamId', this.fb.control('', Validators.required));
-        this.f.addControl('academicYearId', this.fb.control('', Validators.required));
-        // this.f.addControl(
-        //     'learningLevelId', this.f.controls('',Validators.required)
-        //     // new FormControl([null, [Validators.required]])
-        // );
-        // this.f.addControl(
-        //     'schoolStreamId',
-        //     new FormControl([null, [Validators.required]])
-        // );
-        // this.f.addControl(
-        //     'academicYearId',
-        //     new FormControl([null, [Validators.required]])
-        // );
-
-        // this.f.controls['learningLevelId'].setValidators([Validators.required]);
-        // this.f.controls['schoolStreamId'].setValidators([Validators.required]);
-        // this.f.controls['academicYearId'].setValidators([Validators.required]);
+        this.f.addControl('learningLevelId', this.fb.control(null, Validators.required));
+        this.f.addControl('schoolStreamId', this.fb.control(null, Validators.required));
+        this.f.addControl('academicYearId', this.fb.control(null, Validators.required));
     };
 
     setFormControls = (item: any) => {

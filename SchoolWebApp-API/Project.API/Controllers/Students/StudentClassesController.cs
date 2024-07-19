@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
+using SchoolWebApp.Core.DTOs.Students.FormerSchool;
 using SchoolWebApp.Core.DTOs.Students.StudentClass;
 using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories;
@@ -65,6 +66,34 @@ namespace SchoolWebApp.API.Controllers.Students
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while retrieving paginated student classes.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/studentClasses/byStudentId/5
+        /// <summary>
+        /// A method for retrieving student classes by student Id.
+        /// </summary>
+        /// <param name="id">The student Id to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byStudentId/{studentId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentClassDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GeByStudentId(int studentId)
+        {
+            try
+            {
+                if (studentId <= 0) return BadRequest(studentId);
+                var _item = await _unitOfWork.StudentClasses.GetByStudentId(studentId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<StudentClassDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the former schools by student id.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }

@@ -124,7 +124,7 @@ const routes: Routes = [
             {path: 'formerSchool', component: StudentsDetailsComponent},
             {path: 'formerSchool/add', component: StudentAssignmentsComponent},
             {path: 'class', component: StudentsDetailsComponent},
-            {path: 'class/add', component: StudentClassComponent}
+            {path: 'class/add', component: StudentAssignmentsComponent}
         ]
     },
     {

@@ -1,1 +1,38 @@
-<p>student-class works!</p>
+<div class="modal fade" id="studentClassFormModal" tabindex="-1"
+    attr.aria-labelledby="studentClassItemModalLabel" aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success opacity-50">
+                <h5 class="modal-title" id="studentClassFormModalLabel">
+                    Record staff discipline
+                </h5>
+            </div>
+            <app-student-class-form [studentClass]="studentClass"
+                [statuses]="statuses"
+                [student]="student" [schoolStreams]="schoolStreams"
+                [learningLevels]="learningLevels" [academicYears]="academicYears"
+                (addItemEvent)="AddStudentClass($event)"
+                *ngIf="student && academicYears && learningLevels && schoolStreams"></app-student-class-form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right mb-2"
+            modelName="studentClass" buttonTitle="Add class"></app-table-button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <app-student-class-table [tableTitle]="'Student classes list'"
+            [studentClasses]="studentClasses" [showLoginControls]="false"
+            [academicYears]="academicYears" [learningLevels]="learningLevels"
+            [schoolStreams]="schoolStreams"
+            *ngIf="student && academicYears && learningLevels && schoolStreams &&  studentClasses"
+            (editItemEvent)="editItem($event)" (viewItemEvent)="editItem($event, 'view')"
+            (deleteItemEvent)="deleteItem($event)"></app-student-class-table>
+    </div>
+</div>

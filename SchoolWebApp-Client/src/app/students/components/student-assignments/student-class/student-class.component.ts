@@ -8,10 +8,15 @@ import {AcademicYear} from '@/school/models/academic-year';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {StudentDetails} from '@/students/models/student-details';
 import {StudentDetailsService} from '@/students/services/student-details.service';
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
+import {StudentClassFormComponent} from './student-class-form/student-class-form.component';
+import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
+import {StudentClass} from '@/students/models/student-class';
+import {StudentClassService} from '@/students/services/student-class.service';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-student-class',
@@ -19,73 +24,129 @@ import {forkJoin} from 'rxjs';
     styleUrl: './student-class.component.scss'
 })
 export class StudentClassComponent implements OnInit {
+    @Input() statuses;
+    @Input() student: StudentDetails;
+    @Input() academicYears: AcademicYear[];
+    @Input() schoolStreams: SchoolStream[];
+    @Input() learningLevels: LearningLevel[];
+    @ViewChild(StudentClassFormComponent)
+    studentClassFormComponent: StudentClassFormComponent;
+    @ViewChild('closebutton') closeButton;
+    @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
+
     studentId: number = 0;
-    sourceLink: string = '';
-    student: StudentDetails;
-
-    years: AcademicYear[] = [];
-    learningLevels: LearningLevel[] = [];
-    streams: SchoolStream[] = [];
-
-    breadcrumbs: BreadCrumb[] = [
-        {link: ['/'], title: 'Home'},
-        {
-            link: ['/student/' + this.sourceLink],
-            title: 'Student: ' + this.sourceLink
-        }
-    ];
-
-    dashboardTitle = 'Student ' + this.sourceLink;
-    backLinkUrl: string;
-    status = Status;
-    statuses;
-
+    studentClass: StudentClass;
+    studentClasses: StudentClass[];
     constructor(
         private toastr: ToastrService,
-        private studentsSvc: StudentDetailsService,
-        private route: ActivatedRoute,
-        private yearsSvc: AcademicYearsService,
-        private learningLevelsSvc: LearningLevelsService,
-        private streamsSvc: SchoolStreamsService
-    ) {
-        this.statuses = Object.keys(this.status).filter((k) =>
-            isNaN(Number(k))
-        );
-    }
+        private studentClassSvc: StudentClassService,
+        private route: ActivatedRoute
+    ) {}
+
     ngOnInit(): void {
-        this.loadSelectedStudent();
+        this.loadStudentClasses();
     }
 
-    loadSelectedStudent = () => {
+    loadStudentClasses = () => {
         this.route.queryParams.subscribe((params) => {
             this.studentId = params['id'];
-            this.sourceLink = params['action'];
-            this.backLinkUrl = '/students/' + this.sourceLink;
-            let studentByIdReq = this.studentsSvc.getById(
-                this.studentId,
-                '/students'
+            let sClassesByStudIdReq = this.studentClassSvc.get(
+                '/studentClasses/byStudentId/' + this.studentId.toString()
             );
-            let yearsReq = this.yearsSvc.get('/academicYears');
-            let learningLevelsReq =
-                this.learningLevelsSvc.get('/learningLevels');
-            let streamsReq = this.streamsSvc.get('/schoolStreams');
-
-            forkJoin([
-                studentByIdReq,
-                yearsReq,
-                learningLevelsReq,
-                streamsReq
-            ]).subscribe(
-                ([student, years, learningLevels, streams]) => {
-                    this.student = student;
-                    this.years = years;
-                    this.learningLevels = learningLevels;
-                    this.streams = streams;
+            forkJoin([sClassesByStudIdReq]).subscribe(
+                ([studentClasses]) => {
+                    this.studentClasses = studentClasses;
                 },
                 (err) => {
                     this.toastr.error(err.error);
                 }
             );
+        });
+    };
+
+    editItem(id: number, action = 'edit') {
+        this.studentClassSvc.getById(id, '/studentClasses').subscribe(
+            (res) => {
+                let studentClassId = res.id;
+                this.studentClass = new StudentClass(res);
+                this.studentClass.id = studentClassId;
+                this.studentClassFormComponent.setFormControls(
+                    this.studentClass
+                );
+                this.studentClassFormComponent.action = action;
+                this.studentClassFormComponent.studentClass = this.studentClass;
+                this.tableButton.onClick();
+            },
+            (err) => {
+                this.toastr.error(err);
+            }
+        );
+    }
+
+    deleteItem(id: number) {
+        Swal.fire({
+            title: `Delete record?`,
+            text: `Confirm if you want to delete record.`,
+            width: 400,
+            position: 'top',
+            padding: '1em',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: `Delete`,
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.value) {
+                this.studentClassSvc.delete('/studentClasses', id).subscribe(
+                    (res) => {
+                        this.loadStudentClasses();
+                        this.toastr.success('Record deleted successfully!');
+                    },
+                    (err) => {
+                        this.toastr.error(err);
+                    }
+                );
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+            }
+        });
+    }
+
+    AddStudentClass = (studentClass: StudentClass) => {
+        Swal.fire({
+            title: `${this.studentClassFormComponent.action == 'edit' ? 'Update' : 'Add'} Student class record?`,
+            text: `Confirm if you want to ${
+                this.studentClassFormComponent.action == 'edit'
+                    ? 'update'
+                    : 'add'
+            } student class.`,
+            width: 400,
+            position: 'top',
+            padding: '1em',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: `${this.studentClassFormComponent.action == 'edit' ? 'Update' : 'Add'}`,
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.value) {
+                let app = new StudentClass(studentClass);
+                if (this.studentClassFormComponent.action == 'edit')
+                    app.id = studentClass.id;
+                let reqToProcess =
+                    this.studentClassFormComponent.action == 'edit'
+                        ? this.studentClassSvc.update('/studentClasses', app)
+                        : this.studentClassSvc.create('/studentClasses', app);
+
+                forkJoin([reqToProcess]).subscribe(
+                    (res) => {
+                        this.toastr.success('Student class saved successfully');
+                        this.studentClassFormComponent.closeButton.nativeElement.click();
+                        this.loadStudentClasses();
+                    },
+                    (err) => {
+                        this.toastr.error(err.error?.message);
+                    }
+                );
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+            }
         });
     };
 }

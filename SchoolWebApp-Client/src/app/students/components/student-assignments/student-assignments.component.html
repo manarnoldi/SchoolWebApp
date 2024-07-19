@@ -92,19 +92,16 @@
                                             <app-student-former-school [statuses]="status"
                                                 [student]="student" [curricula]="curricula"
                                                 [educationLevels]="educationLevels"></app-student-former-school>
-                                            <!-- <app-student-former-school [statuses]="statuses"
-                                                [staff]="staff"></app-student-former-school> -->
                                         </div>
                                     </div>
                                     <div
                                         class="tab-pane fade {{sourceLink==='class'? 'show active':''}}"
                                         id="class" role="tabpanel"
                                         aria-labelledby="class-tab">
-                                        <app-student-class></app-student-class>
                                         <div class="border border-info rounded p-2">
-                                            <!-- <app-student-class [statuses]="statuses"
-                                                [staff]="staff" [outcomes]="outcomes"
-                                                [occurenceTypes]="occurenceTypes"></app-student-class> -->
+                                            <app-student-class [statuses]="statuses"
+                                                [student]="student" [academicYears]="academicYears" *ngIf="student && academicYears && learningLevels && schoolStreams"
+                                                [learningLevels]="learningLevels" [schoolStreams]="schoolStreams"></app-student-class>
                                         </div>
                                     </div>
                                     <div

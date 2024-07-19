@@ -1,8 +1,13 @@
+import {LearningLevel} from '@/class/models/learning-level';
 import {SchoolClass} from '@/class/models/school-class';
-import { YearClassStreamComponent } from '@/shared/directives/year-class-stream/year-class-stream.component';
+import {SchoolStream} from '@/class/models/school-stream';
+import {SchoolClassesService} from '@/class/services/school-classes.service';
+import {AcademicYear} from '@/school/models/academic-year';
+import {YearClassStreamComponent} from '@/shared/directives/year-class-stream/year-class-stream.component';
 import {StudentClass} from '@/students/models/student-class';
 import {StudentDetails} from '@/students/models/student-details';
 import {
+    AfterViewInit,
     Component,
     ElementRef,
     EventEmitter,
@@ -12,22 +17,25 @@ import {
     ViewChild
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
     selector: 'app-student-class-form',
     templateUrl: './student-class-form.component.html',
     styleUrl: './student-class-form.component.scss'
 })
-export class StudentClassFormComponent implements OnInit {
+export class StudentClassFormComponent implements OnInit, AfterViewInit {
     @ViewChild('closeButton') closeButton: ElementRef;
     @Input() studentClass: StudentClass;
     @Input() statuses;
     @Input() student: StudentDetails;
 
-    @Input() schoolClasses: SchoolClass[] = [];
+    @Input() academicYears: AcademicYear[];
+    @Input() schoolStreams: SchoolStream[];
+    @Input() learningLevels: LearningLevel[];
     action: string = 'add';
 
-    @ViewChild(YearClassStreamComponent)
+    @ViewChild('yearClassStream')
     yearClassStreamComponent: YearClassStreamComponent;
 
     @Output() addItemEvent = new EventEmitter<StudentClass>();
@@ -35,7 +43,15 @@ export class StudentClassFormComponent implements OnInit {
 
     studentClassForm: FormGroup;
 
-    constructor(private formBuilder: FormBuilder) {}
+    constructor(
+        private formBuilder: FormBuilder,
+        private schoolClassSvc: SchoolClassesService,
+        private toastrSvc: ToastrService
+    ) {}
+
+    ngAfterViewInit(): void {
+        this.yearClassStreamComponent.initializeFormControl();
+    }
 
     ngOnInit(): void {
         this.refreshItems();
@@ -44,18 +60,29 @@ export class StudentClassFormComponent implements OnInit {
     refreshItems = () => {
         this.studentClassForm = this.formBuilder.group({
             studentId: [this.student?.id, [Validators.required]],
-            description: [''],
-            schoolClassId: [null, [Validators.required]]
+            description: ['']
         });
     };
 
     setFormControls = (studentClass: StudentClass) => {
-        this.studentClassForm.setValue({
-            description: studentClass.description,
-            studentId: studentClass.studentId ?? null,
-            curriculumId: studentClass.schoolClassId ?? null,
-        });
-        this.yearClassStreamComponent.setFormControls(studentClass);
+        this.schoolClassSvc
+            .getById(parseInt(studentClass.id), '/studentClasses')
+            .subscribe(
+                (sClass: StudentClass) => {
+                    this.studentClassForm.patchValue({
+                        description: studentClass.description,
+                        studentId: studentClass.studentId ?? null
+                    });
+                    this.yearClassStreamComponent.setFormControls({
+                        academicYearId: sClass.schoolClass?.academicYearId,
+                        learningLevelId: sClass.schoolClass?.learningLevelId,
+                        schoolStreamId: sClass.schoolClass?.schoolStreamId
+                    });
+                },
+                (err) => {
+                    this.toastrSvc.error(err.error?.message);
+                }
+            );
     };
 
     get f() {
@@ -63,7 +90,7 @@ export class StudentClassFormComponent implements OnInit {
     }
 
     closeStudentClassForm = () => {
-        this.closeButton.nativeElement.click();
+        // this.closeButton.nativeElement.click();
         this.resetFormControls();
     };
 
@@ -73,17 +100,33 @@ export class StudentClassFormComponent implements OnInit {
     }
 
     onSubmit = () => {
-        if (this.action == 'edit') {
-            let studentClassId = this.studentClass.id;
-            this.studentClass = new StudentClass(
-                this.studentClassForm.value
-            );
-            this.studentClass.id = studentClassId;
-        } else {
-            this.studentClass = new StudentClass(
-                this.studentClassForm.value
-            );
-        }
-        this.addItemEvent.emit(this.studentClass);
+        let urlToSend =
+            '/schoolClasses/byYearClassStream?academicYearId=' +
+            this.studentClassForm.value?.academicYearId +
+            '&learningLevelId=' +
+            this.studentClassForm.value?.learningLevelId +
+            '&schoolStreamId=' +
+            this.studentClassForm.value?.schoolStreamId;
+        this.schoolClassSvc.getByYearClassStream(urlToSend).subscribe(
+            (sClass: StudentClass) => {
+                if (this.action == 'edit') {
+                    let studentClassId = this.studentClass.id;
+                    this.studentClass = new StudentClass(
+                        this.studentClassForm.value
+                    );
+                    this.studentClass.schoolClassId = parseInt(sClass.id);
+                    this.studentClass.id = studentClassId;
+                } else {
+                    this.studentClass = new StudentClass(
+                        this.studentClassForm.value
+                    );
+                    this.studentClass.schoolClassId = parseInt(sClass.id);
+                }
+                this.addItemEvent.emit(this.studentClass);
+            },
+            (err) => {
+                this.toastrSvc.error(err.error?.message);
+            }
+        );
     };
 }

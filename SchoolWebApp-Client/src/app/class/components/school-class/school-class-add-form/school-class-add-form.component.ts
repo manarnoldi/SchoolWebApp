@@ -3,6 +3,7 @@ import {AcademicYear} from '@/school/models/academic-year';
 import {SchoolClass} from '@/class/models/school-class';
 import {SchoolStream} from '@/class/models/school-stream';
 import {
+    AfterViewInit,
     Component,
     ElementRef,
     EventEmitter,
@@ -19,7 +20,7 @@ import {YearClassStreamComponent} from '@/shared/directives/year-class-stream/ye
     templateUrl: './school-class-add-form.component.html',
     styleUrl: './school-class-add-form.component.scss'
 })
-export class SchoolClassAddFormComponent implements OnInit {
+export class SchoolClassAddFormComponent implements  AfterViewInit,OnInit {
     @ViewChild('closeButton') closeButton: ElementRef;
     @Input() schoolClass: SchoolClass;
     @Input() learningLevels: LearningLevel[] = [];
@@ -36,6 +37,10 @@ export class SchoolClassAddFormComponent implements OnInit {
 
     schoolClassForm: FormGroup;
     constructor(private formBuilder: FormBuilder) {}
+    
+    ngAfterViewInit(): void {
+        this.yearClassStreamComponent.initializeFormControl();
+    }
 
     ngOnInit(): void {
         this.initializeForm();
@@ -46,6 +51,7 @@ export class SchoolClassAddFormComponent implements OnInit {
             name: ['', [Validators.required]],
             description: ['']
         });
+        
     };
 
     setFormControls = (schoolClass: SchoolClass) => {
