@@ -1,12 +1,13 @@
 <form [formGroup]="studentClassForm" (ngSubmit)="onSubmit()" novalidate>
     <div class="modal-body">
-
         <app-student-details-view [studentDetails]="student" [statuses]="statuses"
             [alignment]="'reduced'"
             *ngIf="statuses"></app-student-details-view>
         <div class="border border-info mt-2 p-2 rounded">
-            <app-year-class-stream #yearClassStream [academicYears]="academicYears" [learningLevels]="learningLevels"
-                [schoolStreams]="schoolStreams" [f]="studentClassForm"></app-year-class-stream>
+            <app-year-class-stream #yearClassStream [academicYears]="academicYears"
+                [learningLevels]="learningLevels"
+                [schoolStreams]="schoolStreams" [f]="studentClassForm"
+                (controlsChanged)="yearClassStreamUpdated($event)"></app-year-class-stream>
             <div class="row">
                 <div class="col-12">
                     <div class="form-group">
@@ -17,10 +18,18 @@
                     </div>
                 </div>
             </div>
+            <div class="row p-1" align="right" *ngIf="!buttonSubmitActive">
+                <div class="col-md-12">
+                    <a (click)="goToRegisteredClasses()" class="edit" title data-toggle="tooltip"
+                        role="button"
+                        data-original-title="View registered classes"> <i class="fas fa-eye"></i> View registered classes</a>
+                </div>
+            </div>
         </div>
     </div>
     <div class="modal-footer">
-        <button *ngIf="action !=='view'" type="submit" [disabled]="studentClassForm.invalid"
+        <button *ngIf="action !=='view'" type="submit"
+            [disabled]="studentClassForm.invalid || !buttonSubmitActive"
             class="btn
                 btn-success"> <i class="fas fa-save"></i>
             {{ action==='edit' ? 'Update' : 'Save' }}

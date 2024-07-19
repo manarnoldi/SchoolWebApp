@@ -33,16 +33,9 @@ export class StudentAssignmentsComponent implements OnInit {
     academicYears: AcademicYear[];
     learningLevels: LearningLevel[];
     schoolStreams: SchoolStream[];
+    breadcrumbs: BreadCrumb[];
 
-    breadcrumbs: BreadCrumb[] = [
-        {link: ['/'], title: 'Home'},
-        {
-            link: ['/staff/' + this.sourceLink],
-            title: 'Staff: ' + this.sourceLink
-        }
-    ];
-
-    dashboardTitle = 'Staff ' + this.sourceLink;
+    dashboardTitle = 'Student details';
     backLinkUrl: string;
     status = Status;
     statuses;
@@ -69,6 +62,21 @@ export class StudentAssignmentsComponent implements OnInit {
         this.route.queryParams.subscribe((params) => {
             this.studentId = params['id'];
             this.sourceLink = params['action'];
+            this.breadcrumbs = [
+                {link: ['/'], title: 'Home'},
+                {link: ['/students/' + this.sourceLink], title: 'Students'},
+                {
+                    link: [
+                        '/students/' +
+                            this.sourceLink +
+                            '/add?id=' +
+                            this.studentId +
+                            '&action=' +
+                            this.sourceLink
+                    ],
+                    title: 'Students: ' + this.sourceLink
+                }
+            ];
             this.backLinkUrl = '/students/' + this.sourceLink;
             let studentByIdReq = this.studentsSvc.getById(
                 this.studentId,

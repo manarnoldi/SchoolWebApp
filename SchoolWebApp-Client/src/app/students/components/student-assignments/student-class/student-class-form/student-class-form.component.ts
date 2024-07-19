@@ -1,5 +1,4 @@
 import {LearningLevel} from '@/class/models/learning-level';
-import {SchoolClass} from '@/class/models/school-class';
 import {SchoolStream} from '@/class/models/school-stream';
 import {SchoolClassesService} from '@/class/services/school-classes.service';
 import {AcademicYear} from '@/school/models/academic-year';
@@ -17,6 +16,7 @@ import {
     ViewChild
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { Router } from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 
 @Component({
@@ -35,6 +35,8 @@ export class StudentClassFormComponent implements OnInit, AfterViewInit {
     @Input() learningLevels: LearningLevel[];
     action: string = 'add';
 
+    buttonSubmitActive: boolean = true;
+
     @ViewChild('yearClassStream')
     yearClassStreamComponent: YearClassStreamComponent;
 
@@ -46,7 +48,8 @@ export class StudentClassFormComponent implements OnInit, AfterViewInit {
     constructor(
         private formBuilder: FormBuilder,
         private schoolClassSvc: SchoolClassesService,
-        private toastrSvc: ToastrService
+        private toastrSvc: ToastrService,
+        private router: Router
     ) {}
 
     ngAfterViewInit(): void {
@@ -99,6 +102,50 @@ export class StudentClassFormComponent implements OnInit, AfterViewInit {
         this.studentClassForm.reset();
     }
 
+    yearClassStreamUpdated = (yearClassStream: any) => {
+        this.checkIfExists(
+            yearClassStream.academicYearId,
+            yearClassStream.learningLevelId,
+            yearClassStream.schoolStreamId
+        ).subscribe(
+            (schoolCl) => {
+                this.buttonSubmitActive = true;
+                if (!schoolCl) {
+                    this.toastrSvc.error(
+                        'The class selected is not added yet. Ask administrator to register the class!'
+                    );
+                    this.buttonSubmitActive = false;
+                }
+            },
+            (err) => {
+                this.buttonSubmitActive = false;
+                this.toastrSvc.error(
+                    'The class selected is not added yet. Ask administrator to register the class!'
+                );
+            }
+        );
+    };
+
+    checkIfExists = (
+        academicYearId: number,
+        learningLevelId: number,
+        schoolStreamId: number
+    ) => {
+        let urlToSend =
+            '/schoolClasses/byYearClassStream?academicYearId=' +
+            academicYearId +
+            '&learningLevelId=' +
+            learningLevelId +
+            '&schoolStreamId=' +
+            schoolStreamId;
+        return this.schoolClassSvc.getByYearClassStream(urlToSend);
+    };
+
+    goToRegisteredClasses = () => {
+        this.closeButton.nativeElement.click();
+        this.router.navigate(['/class/classes']);
+     };
+    
     onSubmit = () => {
         let urlToSend =
             '/schoolClasses/byYearClassStream?academicYearId=' +

@@ -15,7 +15,7 @@ export class YearClassStreamComponent implements OnInit {
     @Input() learningLevels: LearningLevel[];
     @Input() schoolStreams: SchoolStream[];
 
-    // @Output() setControlsEvent = new EventEmitter<any>();
+    @Output() controlsChanged = new EventEmitter<any>();
 
     constructor(private fb: FormBuilder) {}
 
@@ -24,9 +24,18 @@ export class YearClassStreamComponent implements OnInit {
     }
 
     initializeFormControl = () => {
-        this.f.addControl('learningLevelId', this.fb.control(null, Validators.required));
-        this.f.addControl('schoolStreamId', this.fb.control(null, Validators.required));
-        this.f.addControl('academicYearId', this.fb.control(null, Validators.required));
+        this.f.addControl(
+            'learningLevelId',
+            this.fb.control(null, Validators.required)
+        );
+        this.f.addControl(
+            'schoolStreamId',
+            this.fb.control(null, Validators.required)
+        );
+        this.f.addControl(
+            'academicYearId',
+            this.fb.control(null, Validators.required)
+        );
     };
 
     setFormControls = (item: any) => {
@@ -35,5 +44,19 @@ export class YearClassStreamComponent implements OnInit {
             schoolStreamId: item.schoolStreamId,
             academicYearId: item.academicYearId
         });
+    };
+
+    controlsUpdated = () => {
+        if (
+            this.f.value.academicYearId &&
+            this.f.value.learningLevelId &&
+            this.f.value.schoolStreamId
+        ) {
+            this.controlsChanged.emit({
+                academicYearId: this.f.controls.academicYearId.value,
+                learningLevelId: this.f.controls.learningLevelId.value,
+                schoolStreamId: this.f.controls.schoolStreamId.value
+            });
+        }
     };
 }

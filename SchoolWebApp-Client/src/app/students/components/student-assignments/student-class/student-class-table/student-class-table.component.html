@@ -14,9 +14,27 @@
                 <tr
                     *ngFor="let item of studentClasses | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
                     <td>{{ item.student?.fullName }}</td>
-                    <td>{{ academicYears[item?.schoolClass?.academicYearId].name }}</td>
-                    <td>{{ learningLevels[item?.schoolClass?.learningLevelId].name }}</td>
-                    <td>{{ schoolStreams[item?.schoolClass?.schoolStreamId].name }}</td>
+                    <td>
+                        <span *ngFor="let year of academicYears">
+                            <span *ngIf="item?.schoolClass?.academicYearId === year.id">
+                                {{year.name}}
+                            </span>
+                        </span>
+                    </td>
+                    <td>
+                        <span *ngFor="let learningLevel of learningLevels">
+                            <span *ngIf="item?.schoolClass?.learningLevelId === learningLevel.id">
+                                {{learningLevel.name}}
+                            </span>
+                        </span>
+                    </td>
+                    <td>
+                        <span *ngFor="let schoolStream of schoolStreams">
+                            <span *ngIf="item?.schoolClass?.schoolStreamId === schoolStream.id">
+                                {{schoolStream.name}}
+                            </span>
+                        </span>
+                    </td>
                     <td>{{ item.description }}</td>
                     <app-table-action
                         (editItemEvent)="editItem(item.id)"

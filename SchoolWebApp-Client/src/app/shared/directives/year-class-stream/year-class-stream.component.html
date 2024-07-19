@@ -1,10 +1,11 @@
-<div  [formGroup]="f">
+<div [formGroup]="f">
     <div class="row">
         <div class="col-md-4">
             <div class="form-group">
                 <label for="academicYearId" class="form-label">Academic year: <span
                         class="requiredField">*</span></label>
-                <select class="form-control" aria-label="Select academic year"
+                <select (change)="controlsUpdated()" class="form-control"
+                    aria-label="Select academic year"
                     formControlName="academicYearId" id="academicYearId"
                     [ngClass]="{ 'is-invalid': (f.controls.academicYearId.dirty || f.controls.academicYearId.touched) && f.controls.academicYearId.invalid }">
                     <option [ngValue]="null" hidden disabled selected>Select academic year
@@ -19,7 +20,8 @@
             <div class="form-group">
                 <label for="learningLevelId" class="form-label">Class/Learning level: <span
                         class="requiredField">*</span></label>
-                <select class="form-control" aria-label="Select learning level"
+                <select (change)="controlsUpdated()" class="form-control"
+                    aria-label="Select learning level"
                     formControlName="learningLevelId" id="learningLevelId"
                     [ngClass]="{ 'is-invalid': (f.controls.learningLevelId.dirty || f.controls.learningLevelId.touched) && f.controls.learningLevelId.invalid }">
                     <option [ngValue]="null" hidden disabled selected>Select learning
@@ -34,7 +36,7 @@
             <div class="form-group">
                 <label for="schoolStreamId" class="form-label">Stream: <span
                         class="requiredField">*</span></label>
-                <select class="form-control" aria-label="Select stream"
+                <select (change)="controlsUpdated()" class="form-control" aria-label="Select stream"
                     formControlName="schoolStreamId" id="schoolStreamId"
                     [ngClass]="{ 'is-invalid': (f.controls.schoolStreamId.dirty || f.controls.schoolStreamId.touched) && f.controls.schoolStreamId.invalid }">
                     <option [ngValue]="null" hidden disabled selected>Select stream

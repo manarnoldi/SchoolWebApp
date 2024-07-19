@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using SchoolWebApp.API.Utils;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Class.SchoolClass;
 using SchoolWebApp.Core.Entities.Class;
@@ -247,7 +249,10 @@ namespace SchoolWebApp.API.Controllers.Class
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while deleting the school class.");
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the school class - " + ex.Message);
+                
+
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the school class - " + 
+                    HandleExceptions.GetMessageForInnerExceptions(ex));
             }
         }
     }

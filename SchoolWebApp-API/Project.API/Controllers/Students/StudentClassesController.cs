@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SchoolWebApp.API.Utils;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Students.FormerSchool;
 using SchoolWebApp.Core.DTOs.Students.StudentClass;
@@ -36,7 +37,7 @@ namespace SchoolWebApp.API.Controllers.Students
         {
             try
             {
-                return Ok(_mapper.Map<List<StudentClassDto>>(await _unitOfWork.StudentClasses.Find(includeProperties:"Student,SchoolClass")));
+                return Ok(_mapper.Map<List<StudentClassDto>>(await _unitOfWork.StudentClasses.Find(includeProperties: "Student,SchoolClass")));
             }
             catch (Exception ex)
             {
@@ -114,7 +115,7 @@ namespace SchoolWebApp.API.Controllers.Students
             try
             {
                 if (id <= 0) return BadRequest(id);
-                var _item = await _unitOfWork.StudentClasses.GetById(id,includeProperties: "Student,SchoolClass");
+                var _item = await _unitOfWork.StudentClasses.GetById(id, includeProperties: "Student,SchoolClass");
 
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<StudentClassDto>(_item);
@@ -218,7 +219,8 @@ namespace SchoolWebApp.API.Controllers.Students
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while deleting the student class.");
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the student class - " + ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the student class - " +
+                    HandleExceptions.GetMessageForInnerExceptions(ex));
             }
         }
     }

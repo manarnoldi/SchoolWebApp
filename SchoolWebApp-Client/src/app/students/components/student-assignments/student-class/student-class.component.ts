@@ -102,7 +102,7 @@ export class StudentClassComponent implements OnInit {
                         this.toastr.success('Record deleted successfully!');
                     },
                     (err) => {
-                        this.toastr.error(err);
+                        this.toastr.error(err?.error);
                     }
                 );
             } else if (result.dismiss === Swal.DismissReason.cancel) {
