@@ -1,4 +1,5 @@
 import {LearningLevel} from '@/class/models/learning-level';
+import { SchoolClass } from '@/class/models/school-class';
 import {SchoolStream} from '@/class/models/school-stream';
 import {SchoolClassesService} from '@/class/services/school-classes.service';
 import {AcademicYear} from '@/school/models/academic-year';
@@ -103,7 +104,7 @@ export class StudentClassFormComponent implements OnInit, AfterViewInit {
     }
 
     yearClassStreamUpdated = (yearClassStream: any) => {
-        this.checkIfExists(
+        this.yearClassStreamComponent.checkIfExists(
             yearClassStream.academicYearId,
             yearClassStream.learningLevelId,
             yearClassStream.schoolStreamId
@@ -125,49 +126,31 @@ export class StudentClassFormComponent implements OnInit, AfterViewInit {
             }
         );
     };
-
-    checkIfExists = (
-        academicYearId: number,
-        learningLevelId: number,
-        schoolStreamId: number
-    ) => {
-        let urlToSend =
-            '/schoolClasses/byYearClassStream?academicYearId=' +
-            academicYearId +
-            '&learningLevelId=' +
-            learningLevelId +
-            '&schoolStreamId=' +
-            schoolStreamId;
-        return this.schoolClassSvc.getByYearClassStream(urlToSend);
-    };
-
+    
     goToRegisteredClasses = () => {
         this.closeButton.nativeElement.click();
         this.router.navigate(['/class/classes']);
      };
     
     onSubmit = () => {
-        let urlToSend =
-            '/schoolClasses/byYearClassStream?academicYearId=' +
-            this.studentClassForm.value?.academicYearId +
-            '&learningLevelId=' +
-            this.studentClassForm.value?.learningLevelId +
-            '&schoolStreamId=' +
-            this.studentClassForm.value?.schoolStreamId;
-        this.schoolClassSvc.getByYearClassStream(urlToSend).subscribe(
-            (sClass: StudentClass) => {
+        this.yearClassStreamComponent?.checkIfExists(
+            this.studentClassForm.value?.academicYearId,
+            this.studentClassForm.value?.learningLevelId,
+            this.studentClassForm.value?.schoolStreamId            
+        ).subscribe(
+            (schoolCl) => {
                 if (this.action == 'edit') {
                     let studentClassId = this.studentClass.id;
                     this.studentClass = new StudentClass(
                         this.studentClassForm.value
                     );
-                    this.studentClass.schoolClassId = parseInt(sClass.id);
+                    this.studentClass.schoolClassId = parseInt(schoolCl.id);
                     this.studentClass.id = studentClassId;
                 } else {
                     this.studentClass = new StudentClass(
                         this.studentClassForm.value
                     );
-                    this.studentClass.schoolClassId = parseInt(sClass.id);
+                    this.studentClass.schoolClassId = parseInt(schoolCl.id);
                 }
                 this.addItemEvent.emit(this.studentClass);
             },

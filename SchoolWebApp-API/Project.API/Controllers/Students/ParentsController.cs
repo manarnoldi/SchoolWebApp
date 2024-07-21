@@ -38,7 +38,7 @@ namespace SchoolWebApp.API.Controllers.Students
         {
             try
             {
-                return Ok(_mapper.Map<List<ParentDto>>(await _unitOfWork.Parents.GetAll()));
+                return Ok(_mapper.Map<List<ParentDto>>(await _unitOfWork.Parents.Find(includeProperties: "Occupation,Nationality,Religion,Gender")));
             }
             catch (Exception ex)
             {
@@ -116,7 +116,7 @@ namespace SchoolWebApp.API.Controllers.Students
             try
             {
                 if (id <= 0) return BadRequest(id);
-                var _item = await _unitOfWork.Parents.GetById(id);
+                var _item = await _unitOfWork.Parents.GetById(id, includeProperties: "Occupation,Nationality,Religion,Gender");
 
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<ParentDto>(_item);

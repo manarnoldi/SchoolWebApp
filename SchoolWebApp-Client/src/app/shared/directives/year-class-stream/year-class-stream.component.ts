@@ -1,5 +1,6 @@
 import {LearningLevel} from '@/class/models/learning-level';
 import {SchoolStream} from '@/class/models/school-stream';
+import { SchoolClassesService } from '@/class/services/school-classes.service';
 import {AcademicYear} from '@/school/models/academic-year';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
@@ -17,7 +18,7 @@ export class YearClassStreamComponent implements OnInit {
 
     @Output() controlsChanged = new EventEmitter<any>();
 
-    constructor(private fb: FormBuilder) {}
+    constructor(private fb: FormBuilder, private schoolClassSvc: SchoolClassesService,) {}
 
     ngOnInit(): void {
         this.initializeFormControl();
@@ -58,5 +59,20 @@ export class YearClassStreamComponent implements OnInit {
                 schoolStreamId: this.f.controls.schoolStreamId.value
             });
         }
+    };
+
+    checkIfExists = (
+        academicYearId: number,
+        learningLevelId: number,
+        schoolStreamId: number
+    ) => {
+        let urlToSend =
+            '/schoolClasses/byYearClassStream?academicYearId=' +
+            academicYearId +
+            '&learningLevelId=' +
+            learningLevelId +
+            '&schoolStreamId=' +
+            schoolStreamId;
+        return this.schoolClassSvc.getByYearClassStream(urlToSend);
     };
 }

@@ -1,6 +1,5 @@
 ﻿using SchoolWebApp.Core.Entities.Settings;
 using SchoolWebApp.Core.Entities.Shared;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SchoolWebApp.Core.Entities.Students
