@@ -136,6 +136,17 @@ export const MENU = [
         ]
     },
     {
+        name: 'Parent',
+        iconClasses: 'fas fa-users-cog',
+        children: [
+            {
+                name: 'Details',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/parents/details']
+            }
+        ]
+    },
+    {
         name: 'Students',
         iconClasses: 'fas fa-user-graduate',
         children: [

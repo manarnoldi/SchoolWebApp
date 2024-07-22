@@ -1,3 +1,10 @@
+// @use "../node_modules/icheck-bootstrap/scss/icheck-bootstrap" with (
+//     $size: 27px,
+//     $custom-colors: (
+//       'success': #FFFF00 #FF0000 #00FF00,
+//       'mycolor': #FF0000,
+//     )
+// );
 /* You can add global styles to this file, and also import other style files */
 // @import '~bootstrap/scss/bootstrap';
 
@@ -9,7 +16,8 @@
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700');
 
 @import '~admin-lte/plugins/fontawesome-free/css/all.min.css';
-@import '~admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css';
+@import '../node_modules/icheck-bootstrap/icheck-bootstrap.css';
+// @import '~icheck-bootstrap/icheck-bootstrap.min.css';
 @import '~admin-lte/dist/css/adminlte.min.css';
 
 @import 'ngx-toastr/toastr';
@@ -51,7 +59,6 @@ body {
 .nav-sidebar .menu-open > .nav-link svg.right {
     transform: none;
 }
-
 
 hr {
     margin-top: 0px !important;
@@ -160,8 +167,36 @@ td {
 .schoolweb-datatable-props {
     width: 100% !important;
     table-layout: fixed !important;
-    
 }
 
+.icheck-success[class*='icheck-'] > label {
+    padding-left: 22px !important;
+    line-height: 18px;
+}
+.icheck-success[class*='icheck-']
+    > input:first-child
+    + input[type='hidden']
+    + label::before,
+.icheck-success[class*='icheck-'] > input:first-child + label::before {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    margin-left: -22px;
+}
+
+.icheck-success[class*='icheck-']
+    > input:first-child:checked
+    + input[type='hidden']
+    + label::after,
+.icheck-success[class*='icheck-'] > input:first-child:checked + label::after {
+    top: 0px;
+    width: 4px;
+    height: 8px;
+    left: 0px;
+}
+
+.c-radius {
+    border-radius: 5px !important;
+}
 /* Importing Bootstrap SCSS file. */
 @import 'bootstrap/scss/bootstrap';
