@@ -1,1 +1,344 @@
-<p>parent-add-form works!</p>
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+
+<section class="content">
+    <hr />
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 pt-2 pb-2">
+                <a [routerLink]="['/parents/details']"
+                    class="btn btn-sm btn-flat btn-warning float-left">
+                    <i class="fas fa-angle-double-left"></i> Back to parent list
+                </a>
+                <!-- <div class="col-md-12" *ngIf="readonly || editMode">
+                    <a (click)="toggleEditParent()" class="edit float-right" title
+                        data-toggle="tooltip"
+                        role="button"
+                        data-original-title="Edit parent details"> <i class="fas fa-edit"></i> {{
+                        readonly ? 'Edit' : 'Stop editing ' }} parent details</a>
+                </div> -->
+            </div>
+        </div>
+        <form [formGroup]="parentForm" (ngSubmit)="onSubmit()" novalidate>
+            <div class="row">
+                <div class="col-md-5 pl-2 pr-1">
+                    <div class="card card-primary card-outline">
+                        <div class="card-body box-profile ">
+                            <div class="border border-info rounded p-2">
+                                <div class="text-center mb-4">
+                                    <img class="profile-user-img img-fluid img-circle"
+                                        [src]="parentImageUrl"
+                                        alt="User profile picture">
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-group" *ngIf="!readonly">
+                                            <label for="parentImage" class="form-label">Select
+                                                parent
+                                                image:</label>
+                                            <input class="form-control-file" type="file"
+                                                id="parentImage"
+                                                formControlName="parentImage"
+                                                (change)="onFileChange($event)">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label for="upi">Parent number: <span
+                                                    class="requiredField">*</span></label>
+                                            <input placeholder="Parent number" id="upi" type="text"
+                                                class="form-control" formControlName="upi"
+                                                [readonly]="readonly"
+                                                [ngClass]="{ 'is-invalid': (f.upi.dirty ||
+                                                    f.upi.touched) && f.upi.invalid }" />
+                                            <div class="invalid-feedback"> Parent number is
+                                                required</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label for="fullName">Full name: <span
+                                                    class="requiredField">*</span></label>
+                                            <input placeholder="Enter full name" id="fullName"
+                                                type="text"
+                                                class="form-control" formControlName="fullName"
+                                                [readonly]="readonly" [ngClass]="{ 'is-invalid':
+                                                    (f.fullName.dirty || f.fullName.touched) &&
+                                                    f.fullName.invalid }" />
+                                            <div class="invalid-feedback"> Full name is
+                                                required</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label for="nationalityId"
+                                                class="form-label">Nationality: <span
+                                                    class="requiredField">*</span></label>
+                                            <select class="form-control"
+                                                aria-label="Select nationality"
+                                                formControlName="nationalityId" id="nationalityId"
+                                                [attr.disabled]="readonly ? 'disabled' : null"
+                                                [ngClass]="{
+                                                    'is-invalid': (f.nationalityId.dirty ||
+                                                    f.nationalityId.touched) && f.nationalityId.invalid }">
+                                                <option [ngValue]="null">Select parent
+                                                    nationality</option>
+                                                <option [ngValue]="nationality.id"
+                                                    *ngFor="let nationality of
+                                                        nationalities">{{nationality.name}}</option>
+                                            </select>
+                                            <div class="invalid-feedback"> parent nationality is
+                                                required</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label for="religionId" class="form-label">Religion:
+                                                <span
+                                                    class="requiredField">*</span></label>
+                                            <select class="form-control"
+                                                aria-label="Select religion"
+                                                formControlName="religionId" id="religionId"
+                                                [attr.disabled]="readonly ? 'disabled' : null"
+                                                [ngClass]="{
+                                                    'is-invalid': (f.religionId.dirty ||
+                                                    f.religionId.touched) && f.religionId.invalid }">
+                                                <option [ngValue]="null">Select parent
+                                                    religion</option>
+                                                <option [ngValue]="religion.id"
+                                                    *ngFor="let religion of
+                                                        religions">{{religion.name}}</option>
+                                            </select>
+                                            <div class="invalid-feedback"> Parent religion is
+                                                required</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="genderId" class="form-label">Gender: <span
+                                                    class="requiredField">*</span></label>
+                                            <select class="form-control" aria-label="Select gender"
+                                                formControlName="genderId" id="genderId"
+                                                [attr.disabled]="readonly ? 'disabled' : null"
+                                                [ngClass]="{ 'is-invalid': (f.genderId.dirty || f.genderId.touched) && f.genderId.invalid }">
+                                                <option [ngValue]="null">Select parent
+                                                    gender</option>
+                                                <option [ngValue]="gender.id"
+                                                    *ngFor="let gender of genders">{{gender.name}}</option>
+                                            </select>
+                                            <div class="invalid-feedback"> Parent gender is
+                                                required</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="occupationId"
+                                                class="form-label">Occupation: <span
+                                                    class="requiredField">*</span></label>
+                                            <select class="form-control"
+                                                aria-label="Select occupation"
+                                                formControlName="occupationId" id="occupationId"
+                                                [ngClass]="{ 'is-invalid': (f.occupationId.dirty || f.occupationId.touched) && f.occupationId.invalid }"
+                                                [attr.disabled]="readonly ? 'disabled' : null">
+                                                <option [ngValue]="null">Select parent
+                                                    occupation</option>
+                                                <option [ngValue]="occupation.id"
+                                                    *ngFor="let occupation of occupations">{{occupation.name}}</option>
+                                            </select>
+                                            <div class="invalid-feedback"> Parent occupation is
+                                                required</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group clearfix">
+                                            <label class="form-label">Parent status: &nbsp;</label>
+                                            <div class="icheck-success d-inline"
+                                                *ngFor="let status of statusValues">
+                                                <input type="radio" formControlName="status"
+                                                    id="{{status}}"
+                                                    value="{{status}}"
+                                                    [attr.disabled]="readonly ? 'disabled' : null">
+                                                <label class="form-check-label"
+                                                    for="{{status}}"> {{status}}</label>&nbsp;
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group clearfix">
+                                            <label class="form-label">Other details: &nbsp;</label>
+                                            <div class="icheck-success d-inline">
+                                                <input type="checkbox" formControlName="notifiable"
+                                                    id="notifiable" value="notifiable"
+                                                    [attr.disabled]="readonly ? 'disabled' : null">
+                                                <label class="form-check-label"
+                                                    for="notifiable">Notifiable?</label>&nbsp;
+                                            </div>
+                                            <div class="icheck-success d-inline">
+                                                <input type="checkbox" formControlName="payer"
+                                                    id="payer" value="payer"
+                                                    [attr.disabled]="readonly ? 'disabled' : null">
+                                                <label class="form-check-label"
+                                                    for="payer">Payer?</label>&nbsp;
+                                            </div>
+                                            <div class="icheck-success d-inline">
+                                                <input type="checkbox" formControlName="pickup"
+                                                    id="pickup" value="pickup"
+                                                    [attr.disabled]="readonly ? 'disabled' : null">
+                                                <label class="form-check-label"
+                                                    for="pickup">Picker?</label>&nbsp;
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7 pr-2 pl-1">
+                    <div class="card card-success card-outline">
+                        <div class="card-header p-2">
+                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="other-tab"
+                                        data-bs-toggle="pill" data-bs-target="#other"
+                                        type="button" role="tab" aria-controls="other"
+                                        aria-selected="true">Other information</button>
+                                </li>
+                                <li class="nav-item" role="students" *ngIf="readonly">
+                                    <button class="nav-link" id="students-tab"
+                                        data-bs-toggle="pill" data-bs-target="#students"
+                                        type="button" role="tab" aria-controls="students"
+                                        aria-selected="false">Parent's students</button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content" id="pills-tabContent">
+                                <div class="tab-pane fade show active" id="other" role="tabpanel"
+                                    aria-labelledby="other-tab">
+                                    <div class="border border-info rounded p-2">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="form-group">
+                                                    <label for="phoneNumber">Parent phone
+                                                        number:</label>
+                                                    <input placeholder="Enter parent phone number"
+                                                        id="phoneNumber" [readonly]="readonly"
+                                                        type="text" class="form-control"
+                                                        formControlName="phoneNumber" />
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="form-group">
+                                                    <label for="dateOfBirth">Date of birth:</label>
+                                                    <input placeholder="Enter date of birth date"
+                                                        id="dateOfBirth" type="date"
+                                                        max="{{currentDate | date:'yyyy-MM-dd'}}"
+                                                        class="form-control"
+                                                        formControlName="dateOfBirth"
+                                                        [readonly]="readonly" />
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <label for="email" class="form-label">Email
+                                                        address:</label>
+                                                    <input placeholder="Enter school email"
+                                                        type="email"
+                                                        class="form-control" id="email"
+                                                        formControlName="email"
+                                                        [readonly]="readonly"
+                                                        [ngClass]="{ 'is-invalid': (f.email.dirty ||
+                    f.email.touched) && f.email.invalid }" />
+                                                    <div class="invalid-feedback"> Parent email is
+                                                        invalid</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <label for="address" class="form-label">Parent
+                                                        address:</label>
+                                                    <textarea placeholder="Enter parent address"
+                                                        [readonly]="readonly" class="form-control"
+                                                        id="address" rows="2"
+                                                        formControlName="address"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <label for="otherDetails"
+                                                        class="form-label">Other
+                                                        details:</label>
+                                                    <textarea
+                                                        placeholder="Enter parent other details"
+                                                        [readonly]="readonly"
+                                                        class="form-control" id="otherDetails"
+                                                        rows="2"
+                                                        formControlName="otherDetails"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="form-group" *ngIf="!readonly">
+                                                    <button type="submit"
+                                                        [disabled]="parentForm.invalid"
+                                                        class="btn btn-success float-right"> <i
+                                                            class="fas
+                                                                fa-save"></i>
+                                                        {{ editMode ? 'Update' : 'Save' }} record
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="students"
+                                    *ngIf="readonly" role="tabpanel"
+                                    aria-labelledby="students-tab">
+                                    <div class="border border-info rounded p-2">
+                                        <section class="content">
+                                            <div class="container-fluid">
+                                                <!-- <div class="row">
+                                                    <div class="col-12">
+                                                        <a
+                                                            [routerLink]="['/students/add']"
+                                                            [routerLinkActive]="'active'"
+                                                            class="btn btn-sm btn-flat btn-success float-right"
+                                                            style="margin: 10px 0px">
+                                                            <i class="fas fa-plus-circle"></i> Add
+                                                            student
+                                                        </a>
+                                                    </div>
+                                                </div> -->
+                                                <app-students-min-table *ngIf="parentStudents"
+                                                    [students]="parentStudents"></app-students-min-table>
+                                            </div>
+                                        </section>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer"></div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>

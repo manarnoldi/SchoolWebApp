@@ -55,7 +55,7 @@ export class ParentsTableComponent implements AfterViewInit, OnDestroy {
         };
     }
 
-    deleteStudent = (id: number) => {
+    deleteParent = (id: number) => {
         this.deleteItemEvent.emit(id);
     };
 

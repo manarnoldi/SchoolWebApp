@@ -26,7 +26,7 @@ export class Parent extends ResourceModel<Parent> {
     
     public notifiable?: boolean;
     public payer?: boolean;
-    public picker?: boolean;
+    public pickup?: boolean;
     public occupationId?: number;
     public occupation?: Occupation;
 

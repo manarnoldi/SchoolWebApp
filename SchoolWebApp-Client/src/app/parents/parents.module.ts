@@ -7,6 +7,7 @@ import { ParentViewComponent } from './components/parent-view/parent-view.compon
 import { ParentsListComponent } from './components/parents-list/parents-list.component';
 import { ParentsTableComponent } from './components/parents-table/parents-table.component';
 import { DataTablesModule } from 'angular-datatables';
+import { StudentsModule } from '@/students/students.module';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { DataTablesModule } from 'angular-datatables';
   imports: [
     CoreModule,
     SharedModule,
-    DataTablesModule
+    DataTablesModule,
+    StudentsModule
   ]
 })
 export class ParentsModule { }

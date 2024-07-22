@@ -45,13 +45,13 @@
                                     <td>{{ statusValues[item.status] }}</td>
 
                                     <td *ngIf="showType === 'details'">
-                                        <a [routerLink]="['/students/add']"
+                                        <a [routerLink]="['/parents/add']"
                                             [queryParams]="{id: item.id, action: 'view'}"
                                             class="view" title data-toggle="tooltip"
                                             data-original-title="View">
                                             <i class="fas fa-eye"></i></a>
                                         <span> | </span>
-                                        <a [routerLink]="['/students/add']"
+                                        <a [routerLink]="['/parents/add']"
                                             [queryParams]="{id: item.id, action: 'edit'}"
                                             class="edit"
                                             title
@@ -59,7 +59,7 @@
                                             <i class="fas fa-edit"></i></a>
                                         <span> | </span>
                                         <a class="delete" title data-toggle="tooltip"
-                                            (click)="deleteStudent(item.id)"
+                                            (click)="deleteParent(item.id)"
                                             data-original-title="Delete">
                                             <i class="fas fa-trash-alt"></i></a>
                                     </td>
