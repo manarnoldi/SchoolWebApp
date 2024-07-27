@@ -12,6 +12,7 @@ namespace SchoolWebApp.Core.Profiles.Student
             CreateMap<ParentDto, Parent>();
             CreateMap<CreateParentDto, Parent>();
             CreateMap<CreateParentDto, ParentDto>();
+           
         }
     }
 }

@@ -81,7 +81,7 @@ namespace SchoolWebApp.API.Controllers.Students
         /// <returns></returns>
         [HttpGet("studentParents/{studentId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentParentDetailsDto>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentParentDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetParentsByStudentId(int studentId)
@@ -91,8 +91,37 @@ namespace SchoolWebApp.API.Controllers.Students
                 if (studentId <= 0) return BadRequest(studentId);
                 var _item = await _unitOfWork.Students.GetParentsByStudentId(studentId);
                 if (_item == null) return NotFound();
-                //var _itemDto = _mapper.Map<List<StudentParentDetailsDto>>(_item);
-                return Ok(_item);
+                var _itemDto = _mapper.Map<List<StudentParentDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the student's parents by student id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/students/studentParent/5/5
+        /// <summary>
+        /// A method for retrieving parent for a student by Ids.
+        /// </summary>
+        /// <param name="id">The student Id and parent Id whose record needs to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("studentParents/{studentId}/{parentId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentParentDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetStudentParentByIds(int studentId, int parentId)
+        {
+            try
+            {
+                if (studentId <= 0) return BadRequest(studentId);
+                if (studentId <= 0) return BadRequest(parentId);
+                var _item = await _unitOfWork.StudentParent.GetStudentParentByIds(studentId,parentId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<StudentParentDto>(_item);
+                return Ok(_itemDto);
             }
             catch (Exception ex)
             {
@@ -348,10 +377,10 @@ namespace SchoolWebApp.API.Controllers.Students
         {
             try
             {
-                var itemExists = await _unitOfWork.StudentParent.GetStudentParentByParentIdStudentId(parentId, studentId);
+                var itemExists = await _unitOfWork.StudentParent.GetStudentParentByIds(parentId, studentId);
                 if (itemExists == null)
                     return BadRequest($"The student-parent of parent Id - '{parentId}' and student Id '{studentId}' does not exist hence cannot be deleted.");
-                var entity = await _unitOfWork.StudentParent.GetStudentParentByParentIdStudentId(parentId, studentId);
+                var entity = await _unitOfWork.StudentParent.GetStudentParentByIds(parentId, studentId);
                 _unitOfWork.StudentParent.Delete(entity);
                 await _unitOfWork.SaveChangesAsync();
                 return Ok();

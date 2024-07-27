@@ -19,10 +19,12 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
         {
         }
 
-        public async Task<StudentParent> GetStudentParentByParentIdStudentId(int parentId, int studentId)
+        public async Task<StudentParent> GetStudentParentByIds(int studentId, int parentId)
         {
-            var studentParent = await _dbContext.StudentParents.Where(s => s.ParentId == parentId && s.StudentId == studentId).FirstOrDefaultAsync();
+            var studentParent = await _dbContext.StudentParents
+                .FindAsync(studentId, parentId);
             return studentParent;
         }
+
     }
 }

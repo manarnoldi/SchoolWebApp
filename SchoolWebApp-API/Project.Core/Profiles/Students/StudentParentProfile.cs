@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using SchoolWebApp.Core.DTOs.Students.Parent;
 using SchoolWebApp.Core.DTOs.Students.StudentParent;
 using SchoolWebApp.Core.Entities.Students;
 
@@ -13,8 +12,8 @@ namespace SchoolWebApp.Core.Profiles.Students
             CreateMap<StudentParentDto, StudentParent>();
             CreateMap<CreateStudentParentDto, StudentParent>();
             CreateMap<CreateStudentParentDto, StudentParentDto>();
-            CreateMap<Parent, StudentParentDetailsDto>();
-            CreateMap<StudentParentDetailsDto, Parent>();
+            //CreateMap<RelationShip, RelationshipDto>();
+            //CreateMap<RelationshipDto, RelationShip>();
         }
     }
 }

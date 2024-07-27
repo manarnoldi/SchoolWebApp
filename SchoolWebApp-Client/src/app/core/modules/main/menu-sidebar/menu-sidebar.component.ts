@@ -136,54 +136,23 @@ export const MENU = [
         ]
     },
     {
-        name: 'Parent',
-        iconClasses: 'fas fa-users-cog',
-        children: [
-            {
-                name: 'Details',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/parents/details']
-            }
-        ]
-    },
-    {
         name: 'Students',
         iconClasses: 'fas fa-user-graduate',
         children: [
             {
-                name: 'Details',
+                name: 'Basic details',
                 iconClasses: 'fas fa-bullseye',
                 path: ['/students/details']
             },
             {
-                name: 'Former School',
+                name: 'Manage students',
                 iconClasses: 'fas fa-bullseye',
                 path: ['/students/formerSchool']
             },
             {
-                name: 'Class',
+                name: 'Manage parents',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/students/class']
-            },
-            {
-                name: 'Parents',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/students/parents']
-            },
-            {
-                name: 'Discipline',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/students/discipline']
-            },
-            {
-                name: 'Subjects',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/students/subjects']
-            },
-            {
-                name: 'Attendance',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/students/attendance']
+                path: ['/parents']
             }
         ]
     },

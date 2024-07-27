@@ -1,1 +1,32 @@
-<p>student-parents works!</p>
+<div class="modal fade" id="studentParentFormModal" tabindex="-1"
+    attr.aria-labelledby="studentParentItemModalLabel" aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success opacity-50">
+                <h5 class="modal-title" id="studentParentFormModalLabel">
+                    Record staff discipline
+                </h5>
+            </div>
+            <!-- <app-student-parents-new-form [studentParent]="studentParent"
+                [statuses]="statuses"
+                [student]="student" [curricula]="curricula" [educationLevels]="educationLevels"
+                (addItemEvent)="AddStudentParent($event)"
+                *ngIf="student && curricula && educationLevels"></app-student-parents-new-form> -->
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right mb-2"
+            modelName="studentParent" buttonTitle="Add parent"></app-table-button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <app-student-parents-table [tableTitle]="'Student parents list'" *ngIf="studentParents"
+            [studentParents]="studentParents" [showLoginControls]="false"></app-student-parents-table>
+    </div>
+</div>

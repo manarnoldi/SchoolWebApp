@@ -7,9 +7,9 @@ namespace SchoolWebApp.Core.Profiles.Students
     {
         public StudentProfile()
         {
-            CreateMap<SchoolWebApp.Core.Entities.Students.Student, StudentDto>();
-            CreateMap<StudentDto, SchoolWebApp.Core.Entities.Students.Student>();
-            CreateMap<CreateStudentDto, SchoolWebApp.Core.Entities.Students.Student>();
+            CreateMap<Entities.Students.Student, StudentDto>();
+            CreateMap<StudentDto, Entities.Students.Student>();
+            CreateMap<CreateStudentDto, Entities.Students.Student>();
             CreateMap<CreateStudentDto, StudentDto>();
         }
     }

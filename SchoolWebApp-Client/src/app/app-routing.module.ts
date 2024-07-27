@@ -49,12 +49,7 @@ import {ClassLeadershipRolesComponent} from './class/components/class-leadership
 import {ClassDetailsComponent} from './class/components/school-class/class-details/class-details.component';
 import {StaffAssignmentsComponent} from './staff/components/staff-assignments/staff-assignments.component';
 import {StudentsDetailsComponent} from './students/components/students-details/students-details.component';
-import { StudentFormerSchoolComponent } from './students/components/student-assignments/student-former-school/student-former-school.component';
-import { StudentClassComponent } from './students/components/student-assignments/student-class/student-class.component';
 import { StudentAssignmentsComponent } from './students/components/student-assignments/student-assignments.component';
-import { ParentsComponent } from './parents/parents.component';
-import { ParentsListComponent } from './parents/components/parents-list/parents-list.component';
-import { ParentAddFormComponent } from './parents/components/parent-add-form/parent-add-form.component';
 
 const routes: Routes = [
     {
@@ -116,16 +111,16 @@ const routes: Routes = [
             {path: 'discipline/add', component: StaffAssignmentsComponent}
         ]
     },
-    {
-        path: 'parents',
-        component: ParentsComponent,
-        canActivate: [AuthGuard],
-        canActivateChild: [AuthGuard],
-        children: [
-            {path: 'details', component: ParentsListComponent},
-            {path: 'add', component: ParentAddFormComponent},
-        ]
-    },
+    // {
+    //     path: 'parents',
+    //     component: ParentsComponent,
+    //     canActivate: [AuthGuard],
+    //     canActivateChild: [AuthGuard],
+    //     children: [
+    //         {path: 'details', component: ParentsListComponent},
+    //         {path: 'add', component: ParentAddFormComponent},
+    //     ]
+    // },
     {
         path: 'students',
         component: StudentsComponent,
@@ -137,7 +132,9 @@ const routes: Routes = [
             {path: 'formerSchool', component: StudentsDetailsComponent},
             {path: 'formerSchool/add', component: StudentAssignmentsComponent},
             {path: 'class', component: StudentsDetailsComponent},
-            {path: 'class/add', component: StudentAssignmentsComponent}
+            { path: 'class/add', component: StudentAssignmentsComponent },
+            {path: 'parents', component: StudentsDetailsComponent},
+            {path: 'parents/add', component: StudentAssignmentsComponent}
         ]
     },
     {
