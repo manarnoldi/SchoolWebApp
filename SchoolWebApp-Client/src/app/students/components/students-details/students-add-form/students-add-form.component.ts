@@ -212,11 +212,15 @@ export class StudentsAddFormComponent implements OnInit {
                     this.editMode ? 'updated' : 'created'
                 } successfully!`;
                 forkJoin([reqToProcess]).subscribe(
-                    (res) => {
+                    ([addedStudent]) => {
                         this.editMode = false;
                         this.toastr.success(replyMsg);
                         this.studentForm.reset();
-                        this.router.navigateByUrl('/students/details');
+                        this.router.navigateByUrl(
+                            '/students/manage/add?id=' +
+                                addedStudent.id +
+                                '&action=manage'
+                        );
                     },
                     (err) => {
                         this.toastr.error(err.error);

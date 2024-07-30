@@ -43,26 +43,12 @@
                       data-original-title="Delete">
                       <i class="fas fa-trash-alt"></i></a>
                   </td>
-                  <td *ngIf="showType === 'formerSchool'">
-                    <a [routerLink]="['/students/formerSchool/add']"
+                  <td *ngIf="showType === 'manage'">
+                    <a [routerLink]="['/students/manage/add']"
                       [queryParams]='{id: item.id, action: showType}'
                       class="view" title="Former school" data-toggle="tooltip"
                       data-original-title="Add former school">
-                      <i class="fas fa-plus"></i> Former school</a>
-                  </td>
-                  <td *ngIf="showType === 'class'">
-                    <a [routerLink]="['/students/class/add']"
-                      [queryParams]='{id: item.id, action: showType}'
-                      class="view" title="Add class" data-toggle="tooltip"
-                      data-original-title="Add class">
-                      <i class="fas fa-plus"></i> Class</a>
-                  </td>
-                  <td *ngIf="showType === 'parents'">
-                    <a [routerLink]="['/students/parents/add']"
-                      [queryParams]='{id: item.id, action: showType}'
-                      class="view" title="Add parent" data-toggle="tooltip"
-                      data-original-title="Add parent">
-                      <i class="fas fa-plus"></i> Parents</a>
+                      <i class="fas fa-wrench"></i> Manage student</a>
                   </td>
                 </tr>
               </tbody>

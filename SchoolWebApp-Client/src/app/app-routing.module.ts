@@ -49,7 +49,9 @@ import {ClassLeadershipRolesComponent} from './class/components/class-leadership
 import {ClassDetailsComponent} from './class/components/school-class/class-details/class-details.component';
 import {StaffAssignmentsComponent} from './staff/components/staff-assignments/staff-assignments.component';
 import {StudentsDetailsComponent} from './students/components/students-details/students-details.component';
-import { StudentAssignmentsComponent } from './students/components/student-assignments/student-assignments.component';
+import {StudentAssignmentsComponent} from './students/components/student-assignments/student-assignments.component';
+import {ParentsListComponent} from './students/components/parents/parents-list/parents-list.component';
+import {ParentAddFormComponent} from './students/components/parents/parent-add-form/parent-add-form.component';
 
 const routes: Routes = [
     {
@@ -128,13 +130,11 @@ const routes: Routes = [
         canActivateChild: [AuthGuard],
         children: [
             {path: 'details', component: StudentsDetailsComponent},
-            { path: 'add', component: StudentsAddFormComponent },
-            {path: 'formerSchool', component: StudentsDetailsComponent},
-            {path: 'formerSchool/add', component: StudentAssignmentsComponent},
-            {path: 'class', component: StudentsDetailsComponent},
-            { path: 'class/add', component: StudentAssignmentsComponent },
-            {path: 'parents', component: StudentsDetailsComponent},
-            {path: 'parents/add', component: StudentAssignmentsComponent}
+            {path: 'add', component: StudentsAddFormComponent},
+            {path: 'manage', component: StudentsDetailsComponent},
+            {path: 'manage/add', component: StudentAssignmentsComponent},
+            {path: 'parents', component: ParentsListComponent},
+            {path: 'parents/add', component: ParentAddFormComponent}
         ]
     },
     {

@@ -161,7 +161,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                             </div>
                         </div>
                     </div>
@@ -204,7 +204,7 @@
                                                 [readonly]="readonly"
                                                 formControlName="admissionDate" />
                                         </div>
-                                    </div>                                    
+                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
@@ -275,6 +275,15 @@
                             </div>
                         </div>
                         <div class="card-footer">
+                            <div *ngIf="readonly || editMode">
+                                <a [routerLink]="['/students/manage/add']"
+                                    class="btn btn-sm btn-flat btn-info float-left"
+                                    [queryParams]='{id: student.id, action: "details"}'
+                                    title="Manage student" data-ds-toggle="tooltip"
+                                    data-ds-original-title="Manage student">
+                                    <i class="fas fa-angle-double-right"></i> Manage other student details
+                                </a>
+                            </div>
                             <div class="form-group" *ngIf="!readonly">
                                 <button type="submit" [disabled]="studentForm.invalid"
                                     class="btn btn-success float-right"> <i class="fas
@@ -284,7 +293,7 @@
                             </div>
                         </div>
                     </div>
-                </div>                
+                </div>
             </div>
         </form>
     </div>

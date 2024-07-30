@@ -44,14 +44,14 @@
                                     </td>
                                     <td>{{ statusValues[item.status] }}</td>
 
-                                    <td *ngIf="showType === 'details'">
-                                        <a [routerLink]="['/parents/add']"
+                                    <td>
+                                        <a [routerLink]="['/students/parents/add']"
                                             [queryParams]="{id: item.id, action: 'view'}"
                                             class="view" title data-toggle="tooltip"
                                             data-original-title="View">
                                             <i class="fas fa-eye"></i></a>
                                         <span> | </span>
-                                        <a [routerLink]="['/parents/add']"
+                                        <a [routerLink]="['/students/parents/add']"
                                             [queryParams]="{id: item.id, action: 'edit'}"
                                             class="edit"
                                             title

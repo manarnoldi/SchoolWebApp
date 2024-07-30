@@ -22,6 +22,9 @@ import { StudentsMinTableComponent } from './components/students-details/student
 import { StudentParentsNewFormComponent } from './components/student-assignments/student-parents/student-parents-new-form/student-parents-new-form.component';
 import { StudentParentsExistingFormComponent } from './components/student-assignments/student-parents/student-parents-existing-form/student-parents-existing-form.component';
 import { StudentParentsTableComponent } from './components/student-assignments/student-parents/student-parents-table/student-parents-table.component';
+import { ParentsListComponent } from './components/parents/parents-list/parents-list.component';
+import { ParentAddFormComponent } from './components/parents/parent-add-form/parent-add-form.component';
+import { ParentsTableComponent } from './components/parents/parents-table/parents-table.component';
 
 @NgModule({
     declarations: [
@@ -44,7 +47,10 @@ import { StudentParentsTableComponent } from './components/student-assignments/s
         StudentsMinTableComponent,
         StudentParentsNewFormComponent,
         StudentParentsExistingFormComponent,
-        StudentParentsTableComponent
+        StudentParentsTableComponent,
+        ParentsListComponent,
+        ParentsTableComponent,
+        ParentAddFormComponent
     ],
     imports: [DataTablesModule, CoreModule, SharedModule],
     exports: [

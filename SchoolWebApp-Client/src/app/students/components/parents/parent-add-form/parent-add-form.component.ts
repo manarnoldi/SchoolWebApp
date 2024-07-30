@@ -1,7 +1,5 @@
 import {Status} from '@/core/enums/status';
 import {BreadCrumb} from '@/core/models/bread-crumb';
-import {Parent} from '@/parents/models/parent';
-import {ParentsService} from '@/parents/services/parents.service';
 import {Gender} from '@/settings/models/gender';
 import {Nationality} from '@/settings/models/nationality';
 import {Occupation} from '@/settings/models/occupation';
@@ -10,7 +8,9 @@ import {GenderService} from '@/settings/services/gender.service';
 import {NationalitiesService} from '@/settings/services/nationalities.service';
 import {OccupationsService} from '@/settings/services/occupations.service';
 import {ReligionsService} from '@/settings/services/religions.service';
+import { Parent } from '@/students/models/parent';
 import {StudentDetails} from '@/students/models/student-details';
+import { ParentsService } from '@/students/services/parents.service';
 import {DatePipe} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';

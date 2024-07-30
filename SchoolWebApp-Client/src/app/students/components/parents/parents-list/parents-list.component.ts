@@ -1,5 +1,5 @@
 import { BreadCrumb } from '@/core/models/bread-crumb';
-import { ParentsService } from '@/parents/services/parents.service';
+import { ParentsService } from '@/students/services/parents.service';
 import {Component, OnInit} from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';

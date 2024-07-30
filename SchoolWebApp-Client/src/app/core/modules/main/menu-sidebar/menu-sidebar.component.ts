@@ -147,12 +147,12 @@ export const MENU = [
             {
                 name: 'Manage students',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/students/formerSchool']
+                path: ['/students/manage']
             },
             {
-                name: 'Manage parents',
+                name: 'Parents',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/parents']
+                path: ['/students/parents']
             }
         ]
     },

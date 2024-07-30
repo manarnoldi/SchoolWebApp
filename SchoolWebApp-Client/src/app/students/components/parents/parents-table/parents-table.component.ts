@@ -1,5 +1,5 @@
 import { Status } from '@/core/enums/status';
-import {Parent} from '@/parents/models/parent';
+import { Parent } from '@/students/models/parent';
 import {
     AfterViewInit,
     Component,
