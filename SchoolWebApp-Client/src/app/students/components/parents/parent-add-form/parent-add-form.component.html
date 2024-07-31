@@ -7,9 +7,10 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12 pt-2 pb-2">
-                <a [routerLink]="['/students/parents']"
+                <a [routerLink]="routerLink"
+                    [queryParams]="queryParams"
                     class="btn btn-sm btn-flat btn-warning float-left">
-                    <i class="fas fa-angle-double-left"></i> Back to parent list
+                    <i class="fas fa-angle-double-left"></i> {{ studentId ? 'Back to student Parent list': 'Back to parent list'}}
                 </a>
                 <!-- <div class="col-md-12" *ngIf="readonly || editMode">
                     <a (click)="toggleEditParent()" class="edit float-right" title
@@ -206,7 +207,7 @@
                 <div class="col-md-7 pr-2 pl-1">
                     <div class="card card-success card-outline">
                         <div class="card-header p-2">
-                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                            <ul class="nav nav-pills " id="pills-tab" role="tablist">
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link active" id="other-tab"
                                         data-bs-toggle="pill" data-bs-target="#other"
@@ -291,6 +292,43 @@
                                                         class="form-control" id="otherDetails"
                                                         rows="2"
                                                         formControlName="otherDetails"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="border border-warning rounded p-2 mb-2" *ngIf="studentId && studentId > 0">
+                                            <div class="row " >
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        <label for="relationShipId"
+                                                            class="form-label">Relationship with
+                                                            student:</label>
+                                                        <select class="form-control"
+                                                            aria-label="Select relationship with child"
+                                                            formControlName="relationShipId"
+                                                            id="relationShipId"
+                                                            [attr.disabled]="readonly ? 'disabled' : null">
+                                                            <option [ngValue]="null">Select
+                                                                relationship
+                                                                with child</option>
+                                                            <option [ngValue]="relationShip.id"
+                                                                *ngFor="let relationShip of
+                                                            relationShips">{{relationShip.name}}</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        <label for="otherDetailsSP"
+                                                            class="form-label">Student-Parent any
+                                                            other
+                                                            details:</label>
+                                                        <textarea
+                                                            placeholder="Enter student-Parent any other details"
+                                                            [readonly]="readonly"
+                                                            class="form-control" id="otherDetailsSP"
+                                                            rows="2"
+                                                            formControlName="otherDetailsSP"></textarea>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

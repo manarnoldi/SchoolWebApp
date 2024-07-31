@@ -1,5 +1,5 @@
 import {LearningLevel} from '@/class/models/learning-level';
-import { SchoolClass } from '@/class/models/school-class';
+import {SchoolClass} from '@/class/models/school-class';
 import {SchoolStream} from '@/class/models/school-stream';
 import {SchoolClassesService} from '@/class/services/school-classes.service';
 import {AcademicYear} from '@/school/models/academic-year';
@@ -17,7 +17,7 @@ import {
     ViewChild
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import { Router } from '@angular/router';
+import {Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 
 @Component({
@@ -101,62 +101,67 @@ export class StudentClassFormComponent implements OnInit, AfterViewInit {
     resetFormControls() {
         this.action = 'add';
         this.studentClassForm.reset();
+        this.studentClassForm.patchValue({studentId: this.student?.id});
     }
 
     yearClassStreamUpdated = (yearClassStream: any) => {
-        this.yearClassStreamComponent.checkIfExists(
-            yearClassStream.academicYearId,
-            yearClassStream.learningLevelId,
-            yearClassStream.schoolStreamId
-        ).subscribe(
-            (schoolCl) => {
-                this.buttonSubmitActive = true;
-                if (!schoolCl) {
+        this.yearClassStreamComponent
+            .checkIfExists(
+                yearClassStream.academicYearId,
+                yearClassStream.learningLevelId,
+                yearClassStream.schoolStreamId
+            )
+            .subscribe(
+                (schoolCl) => {
+                    this.buttonSubmitActive = true;
+                    if (!schoolCl) {
+                        this.toastrSvc.error(
+                            'The class selected is not added yet. Ask administrator to register the class!'
+                        );
+                        this.buttonSubmitActive = false;
+                    }
+                },
+                (err) => {
+                    this.buttonSubmitActive = false;
                     this.toastrSvc.error(
                         'The class selected is not added yet. Ask administrator to register the class!'
                     );
-                    this.buttonSubmitActive = false;
                 }
-            },
-            (err) => {
-                this.buttonSubmitActive = false;
-                this.toastrSvc.error(
-                    'The class selected is not added yet. Ask administrator to register the class!'
-                );
-            }
-        );
+            );
     };
-    
+
     goToRegisteredClasses = () => {
         this.closeButton.nativeElement.click();
         this.router.navigate(['/class/classes']);
-     };
-    
+    };
+
     onSubmit = () => {
-        this.yearClassStreamComponent?.checkIfExists(
-            this.studentClassForm.value?.academicYearId,
-            this.studentClassForm.value?.learningLevelId,
-            this.studentClassForm.value?.schoolStreamId            
-        ).subscribe(
-            (schoolCl) => {
-                if (this.action == 'edit') {
-                    let studentClassId = this.studentClass.id;
-                    this.studentClass = new StudentClass(
-                        this.studentClassForm.value
-                    );
-                    this.studentClass.schoolClassId = parseInt(schoolCl.id);
-                    this.studentClass.id = studentClassId;
-                } else {
-                    this.studentClass = new StudentClass(
-                        this.studentClassForm.value
-                    );
-                    this.studentClass.schoolClassId = parseInt(schoolCl.id);
+        this.yearClassStreamComponent
+            ?.checkIfExists(
+                this.studentClassForm.value?.academicYearId,
+                this.studentClassForm.value?.learningLevelId,
+                this.studentClassForm.value?.schoolStreamId
+            )
+            .subscribe(
+                (schoolCl) => {
+                    if (this.action == 'edit') {
+                        let studentClassId = this.studentClass.id;
+                        this.studentClass = new StudentClass(
+                            this.studentClassForm.value
+                        );
+                        this.studentClass.schoolClassId = parseInt(schoolCl.id);
+                        this.studentClass.id = studentClassId;
+                    } else {
+                        this.studentClass = new StudentClass(
+                            this.studentClassForm.value
+                        );
+                        this.studentClass.schoolClassId = parseInt(schoolCl.id);
+                    }
+                    this.addItemEvent.emit(this.studentClass);
+                },
+                (err) => {
+                    this.toastrSvc.error(err.error?.message);
                 }
-                this.addItemEvent.emit(this.studentClass);
-            },
-            (err) => {
-                this.toastrSvc.error(err.error?.message);
-            }
-        );
+            );
     };
 }

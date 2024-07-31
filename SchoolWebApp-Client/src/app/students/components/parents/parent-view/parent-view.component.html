@@ -1,1 +1,25 @@
-<p>parent-view works!</p>
+<div class="card-details-box border-success bg-warning-subtle mb-1">
+    <div *ngIf="alignment === 'reduced'">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="py-1">
+                    <h4>
+                        {{parent?.fullName}}
+                    </h4>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="py-1">
+                    <b><i class="fas fa-calculator"></i> Parent number #</b>
+                    <br>{{parent?.upi}}
+                </div>
+            </div>  
+            <div class="col-md-3">
+                <div class="py-1">
+                    <b><i class="fas fa-power-off"></i> Status</b>
+                    <br>{{statuses[parent?.status]}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

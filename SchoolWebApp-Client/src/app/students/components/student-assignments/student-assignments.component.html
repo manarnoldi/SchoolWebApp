@@ -29,7 +29,7 @@
                                 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                                     <li class="nav-item" role="presentation">
                                         <button
-                                            class="nav-link active"
+                                            class="nav-link {{activeNav === 'formerSchool'? 'active':''}}"
                                             id="formerSchool-tab"
                                             data-bs-toggle="pill" data-bs-target="#formerSchool"
                                             type="button" role="tab" aria-controls="formerSchool"
@@ -37,7 +37,7 @@
                                     </li>
                                     <li class="nav-item" role="class">
                                         <button
-                                            class="nav-link"
+                                            class="nav-link {{activeNav === 'class'? 'active':''}}"
                                             id="class-tab"
                                             data-bs-toggle="pill" data-bs-target="#class"
                                             type="button" role="tab" aria-controls="class"
@@ -45,7 +45,7 @@
                                     </li>
                                     <li class="nav-item" role="presentation">
                                         <button
-                                            class="nav-link"
+                                            class="nav-link {{activeNav === 'parents'? 'active':''}}"
                                             id="parents-tab"
                                             data-bs-toggle="pill"
                                             data-bs-target="#parents" type="button" role="tab"
@@ -55,7 +55,7 @@
                                     </li>
                                     <li class="nav-item" role="presentation">
                                         <button
-                                            class="nav-link"
+                                            class="nav-link {{activeNav === 'discipline'? 'active':''}}"
                                             id="discipline-tab"
                                             data-bs-toggle="pill" data-bs-target="#discipline"
                                             type="button" role="tab" aria-controls="discipline"
@@ -63,7 +63,7 @@
                                     </li>
                                     <li class="nav-item" role="presentation">
                                         <button
-                                            class="nav-link"
+                                            class="nav-link {{activeNav === 'subjects'? 'active':''}}"
                                             id="subjects-tab"
                                             data-bs-toggle="pill" data-bs-target="#subjects"
                                             type="button" role="tab" aria-controls="subjects"
@@ -71,7 +71,7 @@
                                     </li>
                                     <li class="nav-item" role="presentation">
                                         <button
-                                            class="nav-link"
+                                            class="nav-link {{activeNav === 'attendance'? 'active':''}}"
                                             id="attendance-tab"
                                             data-bs-toggle="pill"
                                             data-bs-target="#attendance" type="button" role="tab"
@@ -84,7 +84,7 @@
                             <div class="card-body">
                                 <div class="tab-content" id="pills-tabContent">
                                     <div
-                                        class="tab-pane fade show active"
+                                        class="tab-pane fade {{activeNav === 'formerSchool'? 'show active':''}}"
                                         id="formerSchool"
                                         role="tabpanel"
                                         aria-labelledby="formerSchool-tab">
@@ -95,25 +95,29 @@
                                         </div>
                                     </div>
                                     <div
-                                        class="tab-pane fade"
+                                        class="tab-pane fade {{activeNav === 'class'? 'show active':''}}"
                                         id="class" role="tabpanel"
                                         aria-labelledby="class-tab">
                                         <div class="border border-info rounded p-2">
                                             <app-student-class [statuses]="statuses"
-                                                [student]="student" [academicYears]="academicYears" *ngIf="student && academicYears && learningLevels && schoolStreams"
-                                                [learningLevels]="learningLevels" [schoolStreams]="schoolStreams"></app-student-class>
+                                                [student]="student" [academicYears]="academicYears"
+                                                *ngIf="student && academicYears && learningLevels && schoolStreams"
+                                                [learningLevels]="learningLevels"
+                                                [schoolStreams]="schoolStreams"></app-student-class>
                                         </div>
                                     </div>
                                     <div
-                                        class="tab-pane fade"
+                                        class="tab-pane fade {{activeNav === 'parents'? 'show active':''}}"
                                         id="parents" role="tabpanel"
                                         aria-labelledby="parents-tab">
                                         <div class="border border-info rounded p-2">
-                                            <app-student-parents></app-student-parents>
+                                            <app-student-parents [statuses]="statuses"
+                                                [student]="student"
+                                                *ngIf="student"></app-student-parents>
                                         </div>
                                     </div>
                                     <div
-                                        class="tab-pane fade"
+                                        class="tab-pane fade {{activeNav === 'discipline'? 'show active':''}}"
                                         id="discipline" role="tabpanel"
                                         aria-labelledby="discipline-tab">
                                         <div class="border border-info rounded p-2">
@@ -121,7 +125,7 @@
                                         </div>
                                     </div>
                                     <div
-                                        class="tab-pane fade"
+                                        class="tab-pane fade {{activeNav === 'subjects'? 'show active':''}}"
                                         id="subjects" role="tabpanel"
                                         aria-labelledby="subjects-tab">
                                         <div class="border border-info rounded p-2">
@@ -129,7 +133,7 @@
                                         </div>
                                     </div>
                                     <div
-                                        class="tab-pane fade"
+                                        class="tab-pane fade {{activeNav === 'attendance'? 'show active':''}}"
                                         id="attendance" role="tabpanel"
                                         aria-labelledby="attendance-tab">
                                         <div class="border border-info rounded p-2">

@@ -1,4 +1,6 @@
 import {Status} from '@/core/enums/status';
+import {Nationality} from '@/settings/models/nationality';
+import {Occupation} from '@/settings/models/occupation';
 import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {StudentParent} from '@/students/models/student-parent';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
@@ -14,9 +16,12 @@ export class StudentParentsTableComponent implements OnInit {
     @Input() studentParents: StudentParent[] = [];
     @Input() showLoginControls: Boolean = false;
 
+    @Input() occupations: Occupation[] = [];
+    @Input() nationalities: Nationality[] = [];
+
     @Output() viewItemEvent = new EventEmitter<number>();
     @Output() editItemEvent = new EventEmitter<number>();
-    @Output() deleteItemEvent = new EventEmitter<number>();
+    @Output() deleteItemEvent = new EventEmitter<{}>();
 
     page = 1;
     pageSize = 10;
@@ -54,8 +59,11 @@ export class StudentParentsTableComponent implements OnInit {
         'Action'
     ];
 
-    deleteItem = (id: number) => {
-        this.deleteItemEvent.emit(id);
+    deleteItem = (parentId: number, studentId: number) => {
+        this.deleteItemEvent.emit({
+            parentId: parentId,
+            studentId: studentId
+        });
     };
 
     editItem = (id: number) => {

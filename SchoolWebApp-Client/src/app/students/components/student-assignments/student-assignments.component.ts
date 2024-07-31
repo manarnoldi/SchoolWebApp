@@ -39,6 +39,7 @@ export class StudentAssignmentsComponent implements OnInit {
     backLinkUrl: string;
     status = Status;
     statuses;
+    activeNav: string = "formerSchool";
 
     constructor(
         private toastr: ToastrService,
@@ -62,6 +63,7 @@ export class StudentAssignmentsComponent implements OnInit {
         this.route.queryParams.subscribe((params) => {
             this.studentId = params['id'];
             this.sourceLink = params['action'];
+            this.activeNav = params['activeNav'] ? params['activeNav']: "formerSchool";
             this.breadcrumbs = [
                 {link: ['/'], title: 'Home'},
                 {link: ['/students/' + this.sourceLink], title: 'Students'},

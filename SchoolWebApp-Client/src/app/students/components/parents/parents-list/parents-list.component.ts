@@ -1,8 +1,8 @@
-import { BreadCrumb } from '@/core/models/bread-crumb';
-import { ParentsService } from '@/students/services/parents.service';
+import {BreadCrumb} from '@/core/models/bread-crumb';
+import {ParentsService} from '@/students/services/parents.service';
 import {Component, OnInit} from '@angular/core';
-import { Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
+import {Router} from '@angular/router';
+import {ToastrService} from 'ngx-toastr';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -53,7 +53,7 @@ export class ParentsListComponent implements OnInit {
                         this.refreshItems();
                     },
                     (err) => {
-                        this.toarst.error(err);
+                        this.toarst.error(err.message);
                     }
                 );
             } else if (result.dismiss === Swal.DismissReason.cancel) {

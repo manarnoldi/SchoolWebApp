@@ -1,1 +1,71 @@
-<p>student-parents-existing-form works!</p>
+<form [formGroup]="studentExistingParentForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="modal-body">
+        <app-student-details-view [studentDetails]="student" [statuses]="statuses"
+            [alignment]="'reduced'"
+            *ngIf="statuses"></app-student-details-view>
+        <div class="border border-info mt-2 p-2 rounded">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="parentId" class="form-label">Select existing parent:</label>
+                        <ng-select labelForId="parentId" [items]="parents" bindLabel="fullName" (change)="loadParent()"
+                            formControlName="parentId"
+                            [ngClass]="{ 'is-invalid': (f.parentId.dirty || f.parentId.touched) && f.parentId.invalid }"
+                            placeholder="Select existing parent">
+                            <ng-template ng-label-tmp let-item="item">
+                                <span>{{ item.fullName + ' - [' + item.upi + ']'}}</span>
+                            </ng-template>
+                            <ng-template ng-option-tmp let-item="item" let-search="searchTerm"
+                                let-index="index">
+                                <span>{{ item.fullName + ' - [' + item.upi + ']'}}</span>
+                            </ng-template>
+                        </ng-select>
+                        <div class="invalid-feedback">Parent is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="relationShipId" class="form-label">Student-Parent Relationship:
+                            <span
+                                class="requiredField">*</span></label>
+                        <select class="form-control" aria-label="Select student-parent relationship"
+                            [attr.disabled]="action==='view' ? 'disabled':null"
+                            formControlName="relationShipId" id="relationShipId" [ngClass]="{
+                                'is-invalid': (f.relationShipId.dirty || f.relationShipId.touched) && f.relationShipId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select student-parent
+                                relationship</option>
+                            <option [ngValue]="relationShip.id" *ngFor="let relationShip of
+                                    relationShips">{{relationShip.name}}</option>
+                        </select>
+                        <div class="invalid-feedback">Student-Parent relationship is required</div>
+                    </div>
+                </div>
+            </div>
+            <app-parent-view [parent]="parent" [statuses]="statuses"
+                [alignment]="'reduced'" *ngIf="statuses && parent"></app-parent-view>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label for="otherDetails">Other details:</label>
+                        <textarea placeholder="Enter other details" id="otherDetails"
+                            [readOnly]="action==='view'" class="form-control" rows="2"
+                            formControlName="otherDetails"></textarea>
+                    </div>
+                </div>
+            </div>            
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button *ngIf="action !=='view'" type="submit"
+            [disabled]="studentExistingParentForm.invalid"
+            class="btn
+                btn-success"> <i class="fas fa-save"></i>
+            {{ action==='edit' ? 'Update' : 'Save' }}
+        </button>
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
+            #closeButton (click)="closeExistingStudentParentForm()">
+            <i class="fas fa-times"></i> Close
+        </button>
+    </div>
+</form>

@@ -14,47 +14,59 @@
                 <tr
                     *ngFor="let item of studentParents | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
                     <td>{{ item.parent?.fullName }}</td>
-                    <td>{{ item.parent?.occupationId }}</td>
-                    <td>{{ item.parent?.nationalityId }}</td>
+                    <td>
+                        <span *ngFor="let occupation of occupations">
+                            <span *ngIf="occupation.id === item.parent?.occupationId">
+                                {{ occupation.name }}
+                            </span>
+                        </span>
+                    </td>
+                    <td>
+                        <span *ngFor="let nationality of nationalities">
+                            <span *ngIf="nationality.id === item.parent?.nationalityId">
+                                {{ nationality.name }}
+                            </span>
+                        </span>
+                    </td>
                     <td>
                         <div class="my-0 icheck-success">
                             <input class="form-check-input c-radius" type="checkbox"
-                                [checked]="item.notifiable">
+                                [checked]="item.parent?.notifiable">
                             <label class="form-check-label"></label>
                         </div>
                     </td>
                     <td>
                         <div class="my-0 icheck-success">
                             <input class="form-check-input c-radius" type="checkbox"
-                                [checked]="item.payer">
+                                [checked]="item.parent?.payer">
                             <label class="form-check-label"></label>
                         </div>
                     </td>
                     <td>
                         <div class="my-0 icheck-success">
                             <input class="form-check-input c-radius" type="checkbox"
-                                [checked]="item.pickup">
+                                [checked]="item.parent?.pickup">
                             <label class="form-check-label"></label>
                         </div>
                     </td>
-                    <td>{{ statusValues[item.status] }}</td>
+                    <td>{{ statusValues[item.parent?.status] }}</td>
                     <td>{{ item.relationShip?.name }}</td>
                     <td>
-                        <a [routerLink]="['/parents/add']"
-                            [queryParams]="{id: item.parent?.id, action: 'view'}"
+                        <a [routerLink]="['/students/parents/add']"
+                            [queryParams]="{id: item.parent?.id, action: 'view', sId: item.studentId}"
                             class="view" title data-toggle="tooltip"
                             data-original-title="View">
                             <i class="fas fa-eye"></i></a>
                         <span> | </span>
-                        <a [routerLink]="['/parents/add']"
-                            [queryParams]="{id: item.parent?.id, action: 'edit'}"
+                        <a [routerLink]="['/students/parents/add']"
+                            [queryParams]="{id: item.parent?.id, action: 'edit', sId: item.studentId}"
                             class="edit"
                             title
                             data-toggle="tooltip" data-original-title="Edit">
                             <i class="fas fa-edit"></i></a>
                         <span> | </span>
                         <a class="delete" title data-toggle="tooltip"
-                            (click)="deleteItem(item.parent?.id)"
+                            (click)="deleteItem(item.parent?.id, item.studentId)"
                             data-original-title="Delete">
                             <i class="fas fa-trash-alt"></i></a>
                     </td>

@@ -19,12 +19,12 @@ import { StudentFormerSchoolFormComponent } from './components/student-assignmen
 import { StudentClassFormComponent } from './components/student-assignments/student-class/student-class-form/student-class-form.component';
 import { StudentClassTableComponent } from './components/student-assignments/student-class/student-class-table/student-class-table.component';
 import { StudentsMinTableComponent } from './components/students-details/students-min-table/students-min-table.component';
-import { StudentParentsNewFormComponent } from './components/student-assignments/student-parents/student-parents-new-form/student-parents-new-form.component';
 import { StudentParentsExistingFormComponent } from './components/student-assignments/student-parents/student-parents-existing-form/student-parents-existing-form.component';
 import { StudentParentsTableComponent } from './components/student-assignments/student-parents/student-parents-table/student-parents-table.component';
 import { ParentsListComponent } from './components/parents/parents-list/parents-list.component';
 import { ParentAddFormComponent } from './components/parents/parent-add-form/parent-add-form.component';
 import { ParentsTableComponent } from './components/parents/parents-table/parents-table.component';
+import { ParentViewComponent } from './components/parents/parent-view/parent-view.component';
 
 @NgModule({
     declarations: [
@@ -45,12 +45,12 @@ import { ParentsTableComponent } from './components/parents/parents-table/parent
         StudentClassFormComponent,
         StudentClassTableComponent,
         StudentsMinTableComponent,
-        StudentParentsNewFormComponent,
         StudentParentsExistingFormComponent,
         StudentParentsTableComponent,
         ParentsListComponent,
         ParentsTableComponent,
-        ParentAddFormComponent
+        ParentAddFormComponent,
+        ParentViewComponent
     ],
     imports: [DataTablesModule, CoreModule, SharedModule],
     exports: [

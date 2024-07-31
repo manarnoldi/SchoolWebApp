@@ -305,8 +305,7 @@ namespace SchoolWebApp.API.Controllers.Students
                     return BadRequest("An error occurred while adding the student-parent. The student does not exist in the database or has been deleted.");
                 if (!await _unitOfWork.Parents.ItemExistsAsync(s => s.Id == model.ParentId))
                     return BadRequest("An error occurred while adding the student-parent. The parent does not exist in the database or has been deleted.");
-                if (await _unitOfWork.StudentParent.ItemExistsAsync(s => s.StudentId == model.StudentId && s.ParentId == model.ParentId
-                && s.RelationShipId == model.RelationShipId))
+                if (await _unitOfWork.StudentParent.ItemExistsAsync(s => s.StudentId == model.StudentId && s.ParentId == model.ParentId))
                     return Conflict(new { message = $"The student-parent details submitted already exists" });
                 try
                 {

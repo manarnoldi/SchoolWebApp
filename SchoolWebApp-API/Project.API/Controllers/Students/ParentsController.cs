@@ -8,6 +8,9 @@ using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.DTOs.Students.StudentParent;
 using SchoolWebApp.Core.Entities.Staff;
+using SchoolWebApp.API.Utils;
+using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient;
 
 namespace SchoolWebApp.API.Controllers.Students
 {
@@ -219,10 +222,26 @@ namespace SchoolWebApp.API.Controllers.Students
                 await _unitOfWork.SaveChangesAsync();
                 return Ok();
             }
+            catch (MySqlException ex)
+            {
+                if (ex.Number == 2601 || ex.Number == 2627)
+                {
+                    _logger.LogError(ex, "Parent record cannot deleted since it contains related records." +
+                        "Delete related records first before deleting this record.");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Parent record cannot deleted since it contains related records." +
+                        "Delete related records first before deleting this record.");
+                } else
+                {
+                    _logger.LogError(ex, "An error occurred while deleting the parent record.");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the parent record - " +
+                        HandleExceptions.GetMessageForInnerExceptions(ex));
+                }
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while deleting the parent record.");
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the parent record - " + ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the parent record - " +
+                    HandleExceptions.GetMessageForInnerExceptions(ex));
             }
         }
     }

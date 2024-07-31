@@ -248,9 +248,7 @@ namespace SchoolWebApp.API.Controllers.Class
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while deleting the school class.");
-                
-
+                _logger.LogError(ex, "An error occurred while deleting the school class.");               
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the school class - " + 
                     HandleExceptions.GetMessageForInnerExceptions(ex));
             }

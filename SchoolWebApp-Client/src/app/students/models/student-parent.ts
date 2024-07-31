@@ -4,7 +4,7 @@ import { Relationship } from "@/settings/models/relationship";
 import { Parent } from "./parent";
 
 export class StudentParent extends ResourceModel<StudentParent> {
-    public OtherDetails?: string;
+    public otherDetails?: string;
 
     public studentId?: number;
     public student?: StudentDetails;

@@ -6,27 +6,42 @@
         <div class="modal-content">
             <div class="modal-header bg-success opacity-50">
                 <h5 class="modal-title" id="studentParentFormModalLabel">
-                    Record staff discipline
+                    Record student parents
                 </h5>
             </div>
-            <!-- <app-student-parents-new-form [studentParent]="studentParent"
+            <app-student-parents-existing-form [studentParent]="studentParent"
                 [statuses]="statuses"
-                [student]="student" [curricula]="curricula" [educationLevels]="educationLevels"
+                [student]="student" [relationShips]="relationships" [parents]="parents"
                 (addItemEvent)="AddStudentParent($event)"
-                *ngIf="student && curricula && educationLevels"></app-student-parents-new-form> -->
+                *ngIf="student && relationships && parents"></app-student-parents-existing-form>
         </div>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-12">
-        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right mb-2"
-            modelName="studentParent" buttonTitle="Add parent"></app-table-button>
+    <div class="col-8">
+
+    </div>
+    <div class="col-2">
+        <app-table-button btnClasses="btn btn-sm btn-flat btn-warning float-right"
+            modelName="studentParent" buttonTitle="Add existing parent"></app-table-button>
+    </div>
+    <div class="col-2">
+        <a
+            [routerLink]="['/students/parents/add']"
+            [queryParams]="{sId: studentId}"
+            [routerLinkActive]="'active'"
+            class="btn btn-sm btn-flat btn-success float-right mb-2">
+            <i class="fas fa-plus-circle"></i> Add new parent
+        </a>
     </div>
 </div>
 <div class="row">
     <div class="col-12">
-        <app-student-parents-table [tableTitle]="'Student parents list'" *ngIf="studentParents"
-            [studentParents]="studentParents" [showLoginControls]="false"></app-student-parents-table>
+        <app-student-parents-table [occupations]="occupations"
+            [nationalities]="nationalities" [tableTitle]="'Student parents list'"
+            *ngIf="studentParents && nationalities && occupations"
+            [studentParents]="studentParents" (deleteItemEvent)="deleteItem($event)"
+            [showLoginControls]="false"></app-student-parents-table>
     </div>
 </div>
