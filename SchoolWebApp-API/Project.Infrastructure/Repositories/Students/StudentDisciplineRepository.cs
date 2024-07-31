@@ -15,7 +15,11 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
 
         public async Task<List<StudentDiscipline>> GetByStudentId(int studentId)
         {
-            var studentDisciplines = await _dbContext.StudentDisciplines.Where(e => e.StudentId == studentId).ToListAsync();
+            var studentDisciplines = await _dbContext.StudentDisciplines.Where(e => e.StudentId == studentId)
+                .Include(s => s.Student)
+                .Include(s => s.Outcome)
+                .Include(s => s.OccurenceType)
+                .ToListAsync();
             return studentDisciplines;
         }
     }

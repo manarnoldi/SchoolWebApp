@@ -36,7 +36,7 @@ namespace SchoolWebApp.API.Controllers.Students
         {
             try
             {
-                return Ok(_mapper.Map<List<StudentDisciplineDto>>(await _unitOfWork.StudentDisciplines.GetAll()));
+                return Ok(_mapper.Map<List<StudentDisciplineDto>>(await _unitOfWork.StudentDisciplines.Find(includeProperties: "Student,Outcome,OccurenceType")));
             }
             catch (Exception ex)
             {

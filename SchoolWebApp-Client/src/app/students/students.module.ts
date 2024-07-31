@@ -25,6 +25,8 @@ import { ParentsListComponent } from './components/parents/parents-list/parents-
 import { ParentAddFormComponent } from './components/parents/parent-add-form/parent-add-form.component';
 import { ParentsTableComponent } from './components/parents/parents-table/parents-table.component';
 import { ParentViewComponent } from './components/parents/parent-view/parent-view.component';
+import { StudentDisciplineFormComponent } from './components/student-assignments/student-discipline/student-discipline-form/student-discipline-form.component';
+import { StudentDisciplineTableComponent } from './components/student-assignments/student-discipline/student-discipline-table/student-discipline-table.component';
 
 @NgModule({
     declarations: [
@@ -50,7 +52,9 @@ import { ParentViewComponent } from './components/parents/parent-view/parent-vie
         ParentsListComponent,
         ParentsTableComponent,
         ParentAddFormComponent,
-        ParentViewComponent
+        ParentViewComponent,
+        StudentDisciplineFormComponent,
+        StudentDisciplineTableComponent
     ],
     imports: [DataTablesModule, CoreModule, SharedModule],
     exports: [

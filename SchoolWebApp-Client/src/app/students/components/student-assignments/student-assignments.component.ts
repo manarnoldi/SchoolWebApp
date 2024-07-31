@@ -10,6 +10,10 @@ import {AcademicYear} from '@/school/models/academic-year';
 import {EducationLevel} from '@/school/models/educationLevel';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {EducationLevelService} from '@/school/services/education-level.service';
+import {OccurenceType} from '@/settings/models/occurence-type';
+import {Outcome} from '@/settings/models/outcome';
+import {OccurenceTypeService} from '@/settings/services/occurence-type.service';
+import {OutcomesService} from '@/settings/services/outcomes.service';
 import {StudentDetails} from '@/students/models/student-details';
 import {StudentDetailsService} from '@/students/services/student-details.service';
 import {Component, Input, OnInit} from '@angular/core';
@@ -29,6 +33,8 @@ export class StudentAssignmentsComponent implements OnInit {
 
     curricula: Curriculum[];
     educationLevels: EducationLevel[];
+    outcomes: Outcome[] = [];
+    occurenceTypes: OccurenceType[] = [];
 
     academicYears: AcademicYear[];
     learningLevels: LearningLevel[];
@@ -39,7 +45,7 @@ export class StudentAssignmentsComponent implements OnInit {
     backLinkUrl: string;
     status = Status;
     statuses;
-    activeNav: string = "formerSchool";
+    activeNav: string = 'formerSchool';
 
     constructor(
         private toastr: ToastrService,
@@ -49,7 +55,9 @@ export class StudentAssignmentsComponent implements OnInit {
         private educationLevelsSvc: EducationLevelService,
         private academicYrsSvc: AcademicYearsService,
         private learningLvlsSvc: LearningLevelsService,
-        private schoolStreamsSvc: SchoolStreamsService
+        private schoolStreamsSvc: SchoolStreamsService,
+        private outcomesSvc: OutcomesService,
+        private occurenceTypesSvc: OccurenceTypeService
     ) {
         this.statuses = Object.keys(this.status).filter((k) =>
             isNaN(Number(k))
@@ -63,7 +71,9 @@ export class StudentAssignmentsComponent implements OnInit {
         this.route.queryParams.subscribe((params) => {
             this.studentId = params['id'];
             this.sourceLink = params['action'];
-            this.activeNav = params['activeNav'] ? params['activeNav']: "formerSchool";
+            this.activeNav = params['activeNav']
+                ? params['activeNav']
+                : 'formerSchool';
             this.breadcrumbs = [
                 {link: ['/'], title: 'Home'},
                 {link: ['/students/' + this.sourceLink], title: 'Students'},
@@ -90,6 +100,9 @@ export class StudentAssignmentsComponent implements OnInit {
             let academicYrsReq = this.academicYrsSvc.get('/academicYears');
             let learningLvlsReq = this.learningLvlsSvc.get('/learningLevels');
             let schoolStreamsReq = this.schoolStreamsSvc.get('/schoolStreams');
+            let outcomesReq = this.outcomesSvc.get('/outcomes');
+            let occurenceTypesReq =
+                this.occurenceTypesSvc.get('/occurenceTypes');
 
             forkJoin([
                 studentByIdReq,
@@ -97,7 +110,9 @@ export class StudentAssignmentsComponent implements OnInit {
                 educationLevelsReq,
                 academicYrsReq,
                 learningLvlsReq,
-                schoolStreamsReq
+                schoolStreamsReq,
+                outcomesReq,
+                occurenceTypesReq
             ]).subscribe(
                 ([
                     student,
@@ -105,7 +120,9 @@ export class StudentAssignmentsComponent implements OnInit {
                     educationLevels,
                     academicYears,
                     learningLevels,
-                    schoolStreams
+                    schoolStreams,
+                    outcomes,
+                    occurenceTypes
                 ]) => {
                     this.student = student;
                     this.curricula = curricula;
@@ -113,6 +130,8 @@ export class StudentAssignmentsComponent implements OnInit {
                     this.academicYears = academicYears;
                     this.learningLevels = learningLevels;
                     this.schoolStreams = schoolStreams;
+                    this.outcomes = outcomes;
+                    this.occurenceTypes = occurenceTypes;
                 },
                 (err) => {
                     this.toastr.error(err.error);

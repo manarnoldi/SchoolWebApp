@@ -1,1 +1,33 @@
-<p>student-discipline works!</p>
+<div class="modal fade" id="studentDisciplineFormModal" tabindex="-1"
+    attr.aria-labelledby="studentDisciplineItemModalLabel" aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success opacity-50">
+                <h5 class="modal-title" id="studentDisciplineFormModalLabel">
+                    Record student discipline
+                </h5>
+            </div>
+            <app-student-discipline-form [studentDiscipline]="studentDiscipline" [statuses]="statuses"
+                [student]="student" [outcomes]="outcomes" [occurenceTypes]="occurenceTypes"
+                (addItemEvent)="AddStudentDiscipline($event)"
+                *ngIf="student && outcomes && occurenceTypes"></app-student-discipline-form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right mb-2"
+            modelName="studentDiscipline" buttonTitle="Add discipline"></app-table-button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <app-student-discipline-table [tableTitle]="'Student discipline list'"
+            [studentDisciplines]="studentDisciplines" [showLoginControls]="false"
+            (editItemEvent)="editItem($event)" (viewItemEvent)="editItem($event, 'view')"
+            (deleteItemEvent)="deleteItem($event)"></app-student-discipline-table>
+    </div>
+</div>

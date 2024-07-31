@@ -121,7 +121,9 @@
                                         id="discipline" role="tabpanel"
                                         aria-labelledby="discipline-tab">
                                         <div class="border border-info rounded p-2">
-                                            <app-student-discipline></app-student-discipline>
+                                            <app-student-discipline [statuses]="statuses"
+                                                [student]="student" [outcomes]="outcomes"
+                                                [occurenceTypes]="occurenceTypes"></app-student-discipline>
                                         </div>
                                     </div>
                                     <div
