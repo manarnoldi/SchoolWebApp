@@ -1,38 +1,72 @@
 <div class="card-details-box border-success bg-success-subtle">
-    <div class="row">        
-        <div class="col-md-3">
-            <div class="py-1">
-                <h4>
-                    {{schoolClass?.name}}
-                </h4>
+    <div *ngIf="alignment === 'extended'">
+        <div class="row">        
+            <div class="col-md-3">
+                <div class="py-1">
+                    <h4>
+                        {{schoolClass?.name}}
+                    </h4>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="py-1">
+                    <b><i class="fas fa-book-reader"></i> Learning level</b>
+                    <br>
+                    {{schoolClass?.academicYear.name}}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="py-1">
+                    <b><i class="fas fa-calendar-alt"></i> Academic year</b>
+                    <br>
+                    {{schoolClass?.learningLevel.name}}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="py-1">
+                    <b><i class="fas fa-book-open"></i> Stream</b>
+                    <br>
+                    {{schoolClass?.schoolStream.name}}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="py-1">
+                    <b><i class="fas fa-align-justify"></i> Description</b>
+                    <br>
+                    {{schoolClass?.description}}
+                </div>
             </div>
         </div>
-        <div class="col-md-2">
-            <div class="py-1">
-                <b><i class="fas fa-book-reader"></i> Learning level</b>
-                <br>
-                {{schoolClass?.academicYear.name}}
+    </div>   
+    <div *ngIf="alignment === 'reduced'">
+        <div class="row">        
+            <div class="col-md-3">
+                <div class="py-1">
+                    <h4>
+                        {{schoolClass?.name}}
+                    </h4>
+                </div>
             </div>
-        </div>
-        <div class="col-md-2">
-            <div class="py-1">
-                <b><i class="fas fa-calendar-alt"></i> Academic year</b>
-                <br>
-                {{schoolClass?.learningLevel.name}}
+            <div class="col-md-3">
+                <div class="py-1">
+                    <b><i class="fas fa-book-reader"></i> Learning level</b>
+                    <br>
+                    {{schoolClass?.academicYear.name}}
+                </div>
             </div>
-        </div>
-        <div class="col-md-2">
-            <div class="py-1">
-                <b><i class="fas fa-book-open"></i> Stream</b>
-                <br>
-                {{schoolClass?.schoolStream.name}}
+            <div class="col-md-3">
+                <div class="py-1">
+                    <b><i class="fas fa-calendar-alt"></i> Academic year</b>
+                    <br>
+                    {{schoolClass?.learningLevel.name}}
+                </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="py-1">
-                <b><i class="fas fa-align-justify"></i> Description</b>
-                <br>
-                {{schoolClass?.description}}
+            <div class="col-md-3">
+                <div class="py-1">
+                    <b><i class="fas fa-book-open"></i> Stream</b>
+                    <br>
+                    {{schoolClass?.schoolStream.name}}
+                </div>
             </div>
         </div>
     </div>

@@ -4,7 +4,6 @@ import { ClassLeadershipRole } from "./class-leadership-role";
 import { Person } from "@/school/models/person";
 
 export class ClassLeadership extends ResourceModel<ClassLeadership> {
-    public name?: string;
     public description?: string;
 
     public schoolClassId?: string;

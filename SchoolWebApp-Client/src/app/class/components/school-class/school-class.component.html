@@ -62,8 +62,8 @@
                                     <td>
                                         <ng-container
                                             *ngFor="let g of item.schoolClassLeaders; let i = index">
-                                            {{g.person?.fullName + ' - '+
-                                            g.classLeadershipRole?.name}}
+                                            {{g.person?.fullName + ' ['+
+                                            g.classLeadershipRole?.name + ']'}} 
                                             <br />
                                         </ng-container>
                                     </td>

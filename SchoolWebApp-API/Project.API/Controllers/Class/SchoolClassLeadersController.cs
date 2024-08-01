@@ -115,7 +115,7 @@ namespace SchoolWebApp.API.Controllers.Class
             try
             {
                 if (id <= 0) return BadRequest(id);
-                var _item = await _unitOfWork.SchoolClassLeaders.GetById(id);
+                var _item = await _unitOfWork.SchoolClassLeaders.GetById(id, includeProperties: "SchoolClass,ClassLeadershipRole");
 
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<SchoolClassLeadersDto>(_item);

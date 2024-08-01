@@ -10,7 +10,7 @@ namespace SchoolWebApp.Core.Entities.Class
         public Person Person { get; set; }
         public required int ClassLeadershipRoleId { get; set; }
         public ClassLeadershipRole ClassLeadershipRole { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
     }
 }

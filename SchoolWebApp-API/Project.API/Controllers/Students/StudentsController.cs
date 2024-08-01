@@ -9,6 +9,8 @@ using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.DTOs.Students.StudentParent;
 using SchoolWebApp.Core.Entities.Staff;
+using System;
+using SchoolWebApp.Core.Entities.Enums;
 
 namespace SchoolWebApp.API.Controllers.Students
 {
@@ -27,7 +29,7 @@ namespace SchoolWebApp.API.Controllers.Students
             _mapper = mapper;
         }
 
-        // GET: api/students
+        // GET: api/students?active=true
         /// <summary>
         /// A method for retrieving all students details
         /// </summary>
@@ -35,11 +37,14 @@ namespace SchoolWebApp.API.Controllers.Students
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentDto>))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(bool active)
         {
             try
             {
-                return Ok(_mapper.Map<List<StudentDto>>(await _unitOfWork.Students.Find(includeProperties: "LearningMode,Nationality,Religion,Gender")));
+                var studentsReturn = active ? await _unitOfWork.Students.Find(s => s.Status == Status.Active, includeProperties: "LearningMode,Nationality,Religion,Gender") :
+                    await _unitOfWork.Students.Find(includeProperties: "LearningMode,Nationality,Religion,Gender");
+
+                return Ok(_mapper.Map<List<StudentDto>>(studentsReturn));
             }
             catch (Exception ex)
             {
@@ -118,7 +123,7 @@ namespace SchoolWebApp.API.Controllers.Students
             {
                 if (studentId <= 0) return BadRequest(studentId);
                 if (studentId <= 0) return BadRequest(parentId);
-                var _item = await _unitOfWork.StudentParent.GetStudentParentByIds(studentId,parentId);
+                var _item = await _unitOfWork.StudentParent.GetStudentParentByIds(studentId, parentId);
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<StudentParentDto>(_item);
                 return Ok(_itemDto);

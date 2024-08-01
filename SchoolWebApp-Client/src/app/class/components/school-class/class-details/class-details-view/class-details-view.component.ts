@@ -8,5 +8,5 @@ import { Component, Input } from '@angular/core';
 })
 export class ClassDetailsViewComponent {
   @Input() schoolClass: SchoolClass;
-  
+  @Input() alignment: string = 'extended';
 }

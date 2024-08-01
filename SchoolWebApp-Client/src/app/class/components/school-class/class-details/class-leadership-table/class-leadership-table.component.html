@@ -15,12 +15,11 @@
                         <tr
                             *ngFor="let item of classLeaderships | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
                             <td>{{ personTypes[item.classLeadershipRole?.personType] }}</td>
-                            <td>{{ item.classLeadershipRole?.name }}</td>                            
+                            <td>{{ item.classLeadershipRole?.name }}</td>
                             <td>{{ item.person?.fullName }}</td>
                             <td>{{ item.description }}</td>
                             <app-table-action
-                                [tblShowViewButton]="true"
-                                (viewItemEvent)="viewItem(item.id)"
+                                [tblShowViewButton]="true" [tblShowViewButton]="false"
                                 (editItemEvent)="editItem(item.id)"
                                 (deleteItemEvent)="deleteItem(item.id)"></app-table-action>
                         </tr>

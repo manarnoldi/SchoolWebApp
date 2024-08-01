@@ -1,16 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MySql.Data.MySqlClient;
+using SchoolWebApp.API.Utils;
 using SchoolWebApp.Core.DTOs;
-using SchoolWebApp.Core.DTOs.Students.Student;
 using SchoolWebApp.Core.DTOs.Students.Parent;
+using SchoolWebApp.Core.DTOs.Students.Student;
+using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories;
-using SchoolWebApp.Core.DTOs.Students.StudentParent;
-using SchoolWebApp.Core.Entities.Staff;
-using SchoolWebApp.API.Utils;
-using Microsoft.Data.SqlClient;
-using MySql.Data.MySqlClient;
 
 namespace SchoolWebApp.API.Controllers.Students
 {
@@ -29,7 +27,7 @@ namespace SchoolWebApp.API.Controllers.Students
             _mapper = mapper;
         }
 
-        // GET: api/parents
+        // GET: api/parents?active=true
         /// <summary>
         /// A method for retrieving all parents details
         /// </summary>
@@ -37,11 +35,13 @@ namespace SchoolWebApp.API.Controllers.Students
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ParentDto>))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(bool active)
         {
             try
             {
-                return Ok(_mapper.Map<List<ParentDto>>(await _unitOfWork.Parents.Find(includeProperties: "Occupation,Nationality,Religion,Gender")));
+                var parentsReturn = active ? await _unitOfWork.Parents.Find(s => s.Status == Status.Active, includeProperties: "Occupation,Nationality,Religion,Gender") :
+                    await _unitOfWork.Parents.Find(includeProperties: "Occupation,Nationality,Religion,Gender");
+                return Ok(_mapper.Map<List<ParentDto>>(parentsReturn));
             }
             catch (Exception ex)
             {
@@ -230,7 +230,8 @@ namespace SchoolWebApp.API.Controllers.Students
                         "Delete related records first before deleting this record.");
                     return StatusCode(StatusCodes.Status500InternalServerError, "Parent record cannot deleted since it contains related records." +
                         "Delete related records first before deleting this record.");
-                } else
+                }
+                else
                 {
                     _logger.LogError(ex, "An error occurred while deleting the parent record.");
                     return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the parent record - " +

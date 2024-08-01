@@ -2,6 +2,29 @@
     [title]="dashboardTitle"
     [breadcrumbs]="breadcrumbs"></app-dashboard-header>
 <hr>
+<div
+    class="modal fade"
+    id="classLeaderFormModal"
+    tabindex="-1"
+    attr.aria-labelledby="ClassLeaderModalLabel"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success opacity-50">
+                <h5 class="modal-title" id="ClassLeaderFormModalLabel">
+                    School class leader
+                </h5>
+            </div>
+            <app-class-leadership-add-form (addItemEvent)="addClassLeader($event)"
+                [classLeadershipRoles]="classLeadershipRoles" [schoolClass]="schoolClass"
+                (errorSchoolClass)="errorEvent($event)" [persons]="persons"
+                [personTypes]="personTypes"
+                *ngIf="classLeadershipRoles && schoolClass"></app-class-leadership-add-form>
+        </div>
+    </div>
+</div>
 <section class="content">
     <div class="container-fluid">
         <div class="row py-2">
@@ -23,14 +46,16 @@
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <app-table-button modelName="classLeadershipRole"
+                        <app-table-button modelName="classLeader"
                             buttonTitle="Add Class Leader"></app-table-button>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <app-class-leadership-table
-                            [classLeaderships]="classLeaderships" [personTypes]="personTypes"></app-class-leadership-table>
+                        <app-class-leadership-table (editItemEvent)="editItem($event)"
+                            (deleteItemEvent)="deleteItem($event)"
+                            [classLeaderships]="classLeaderships"
+                            [personTypes]="personTypes"></app-class-leadership-table>
                     </div>
                 </div>
             </div>

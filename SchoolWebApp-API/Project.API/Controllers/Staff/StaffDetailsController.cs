@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Staff.StaffDetails;
+using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories;
+using System;
 
 namespace SchoolWebApp.API.Controllers.Staff
 {
@@ -23,7 +25,7 @@ namespace SchoolWebApp.API.Controllers.Staff
             _mapper = mapper;
         }
 
-        // GET: api/staffDetails
+        // GET: api/staffDetails?active=true
         /// <summary>
         /// A method for retrieving all staff details
         /// </summary>
@@ -31,11 +33,13 @@ namespace SchoolWebApp.API.Controllers.Staff
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StaffDetailDto>))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(bool active)
         {
             try
             {
-                return Ok(_mapper.Map<List<StaffDetailDto>>(await _unitOfWork.StaffDetails.Find(includeProperties: "StaffCategory,Designation,Nationality,Religion,Gender,EmploymentType")));
+                var staffReturn = active ? await _unitOfWork.StaffDetails.Find(s => s.Status == Status.Active, includeProperties: "StaffCategory,Designation,Nationality,Religion,Gender,EmploymentType") :
+                    await _unitOfWork.StaffDetails.Find(includeProperties: "StaffCategory,Designation,Nationality,Religion,Gender,EmploymentType");
+                return Ok(_mapper.Map<List<StaffDetailDto>>(staffReturn));
             }
             catch (Exception ex)
             {
