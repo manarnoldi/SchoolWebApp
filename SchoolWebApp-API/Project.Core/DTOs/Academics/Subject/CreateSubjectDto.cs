@@ -1,4 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SchoolWebApp.Core.DTOs.Academics.SubjectGroup;
+using SchoolWebApp.Core.DTOs.School.Department;
+using SchoolWebApp.Core.DTOs.Staff.StaffDetails;
+using SchoolWebApp.Core.Entities.School;
+using SchoolWebApp.Core.Entities.Staff;
+using System.ComponentModel.DataAnnotations;
 
 namespace SchoolWebApp.Core.DTOs.Academics.Subject
 {
@@ -23,7 +28,10 @@ namespace SchoolWebApp.Core.DTOs.Academics.Subject
         public bool Optional { get; set; }
 
         public int SubjectGroupId { get; set; }
+        public SubjectGroupDto? SubjectGroup { get; set; }
         public int DepartmentId { get; set; }
+        public DepartmentDto? Department { get; set; }
         public int StaffDetailsId { get; set; }
+        public StaffDetailDto? StaffDetails { get; set; }
     }
 }

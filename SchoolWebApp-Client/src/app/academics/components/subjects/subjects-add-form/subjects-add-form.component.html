@@ -1,0 +1,139 @@
+<form [formGroup]="subjectForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="modal-body">
+        <div class="card-details-box border-info">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="subjectGroupId" class="form-label">Subject group: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-control" aria-label="Select subject group"
+                            formControlName="subjectGroupId" id="subjectGroupId" [ngClass]="{
+                                'is-invalid': (f.subjectGroupId.dirty || f.subjectGroupId.touched) && f.subjectGroupId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select subject
+                                group</option>
+                            <option [ngValue]="subjectGroup.id" *ngFor="let subjectGroup of
+                            subjectGroups">{{subjectGroup.name}}</option>
+                        </select>
+                        <div class="invalid-feedback"> Subject group is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="departmentId" class="form-label">Department name: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-control" aria-label="Select department name"
+                            formControlName="departmentId" id="departmentId" [ngClass]="{
+                                'is-invalid': (f.departmentId.dirty || f.departmentId.touched) && f.departmentId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select department
+                                name</option>
+                            <option [ngValue]="department.id" *ngFor="let department of
+                            departments">{{department.name}}</option>
+                        </select>
+                        <div class="invalid-feedback"> Department is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="name">Subject name: <span
+                                class="requiredField">*</span></label>
+                        <input id="name" placeholder="Enter subject name" type="text"
+                            class="form-control" formControlName="name" [ngClass]="{
+                            'is-invalid': (f.name.dirty || f.name.touched) && f.name.invalid
+                            }" />
+                        <div class="invalid-feedback">Subject name is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="code">Subject code: <span
+                                class="requiredField">*</span></label>
+                        <input id="code" placeholder="Enter subject code" type="text"
+                            class="form-control" formControlName="code" [ngClass]="{
+                                'is-invalid': (f.code.dirty || f.code.touched) && f.code.invalid
+                                }" />
+                        <div class="invalid-feedback">Subject code is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="abbr">Subject abbreviation: <span
+                                class="requiredField">*</span></label>
+                        <input id="abbr" placeholder="Enter subject abbreviation" type="text"
+                            class="form-control" formControlName="abbr" [ngClass]="{
+                                'is-invalid': (f.abbr.dirty || f.abbr.touched) && f.abbr.invalid
+                                }" />
+                        <div class="invalid-feedback">Subject abbreviation is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="numOfLessons">Number of lessons/Week: <span
+                                class="requiredField">*</span></label>
+                        <input id="numOfLessons" placeholder="Enter points" type="number"
+                            class="form-control" formControlName="numOfLessons" [ngClass]="{
+                                'is-invalid': (f.numOfLessons.dirty || f.numOfLessons.touched) && f.numOfLessons.invalid
+                                }" />
+                        <div class="invalid-feedback">Number of lessons is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="staffDetailsId" class="form-label">Head of subject
+                            (HOS):</label>
+                        <ng-select labelForId="staffDetailsId" [items]="staffs" bindLabel="fullName"
+                            formControlName="staffDetailsId"
+                            [ngClass]="{ 'is-invalid': (f.staffDetailsId.dirty || f.staffDetailsId.touched) && f.staffDetailsId.invalid }"
+                            placeholder="Select existing STAFF">
+                            <ng-template ng-label-tmp let-item="item">
+                                <span>{{ item.fullName + ' - [' + item.upi + ']'}}</span>
+                            </ng-template>
+                            <ng-template ng-option-tmp let-item="item" let-search="searchTerm"
+                                let-index="index">
+                                <span>{{ item.fullName + ' - [' + item.upi + ']'}}</span>
+                            </ng-template>
+                        </ng-select>
+                        <div class="invalid-feedback">Head of institution is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <div class="custom-control custom-switch
+                                custom-switch-off-danger custom-switch-on-success">
+                            <input type="checkbox" class="custom-control-input"
+                                id="optional" formControlName="optional">
+                            <label class="custom-control-label" for="optional">Subject
+                                optional?</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea placeholder="Subject description" id="description"
+                            class="form-control" rows="2" formControlName="description"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" [disabled]="subjectForm.invalid" class="btn
+                btn-success"> <i class="fas fa-save"></i>
+                {{ editMode ? 'Update' : 'Save' }}
+            </button>
+            <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
+                #closeButton (click)="closeSubjectForm()">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+    </div>
+</form>

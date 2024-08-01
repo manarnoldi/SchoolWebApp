@@ -36,7 +36,7 @@ namespace SchoolWebApp.API.Controllers.Academics
         {
             try
             {
-                return Ok(_mapper.Map<List<SubjectDto>>(await _unitOfWork.Subjects.GetAll()));
+                return Ok(_mapper.Map<List<SubjectDto>>(await _unitOfWork.Subjects.Find(includeProperties: "Department,StaffDetails,SubjectGroup")));
             }
             catch (Exception ex)
             {
@@ -86,7 +86,7 @@ namespace SchoolWebApp.API.Controllers.Academics
             try
             {
                 if (id <= 0) return BadRequest(id);
-                var _item = await _unitOfWork.Subjects.GetById(id);
+                var _item = await _unitOfWork.Subjects.GetById(id, includeProperties: "Department,StaffDetails,SubjectGroup");
 
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<SubjectDto>(_item);

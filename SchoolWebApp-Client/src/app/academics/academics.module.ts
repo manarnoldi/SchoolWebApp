@@ -8,6 +8,8 @@ import { SubjectGroupsComponent } from './components/subject-groups/subject-grou
 import { SubjectGroupsAddFormComponent } from './components/subject-groups/subject-groups-add-form/subject-groups-add-form.component';
 import { GradesComponent } from './components/grades/grades.component';
 import { GradesAddFormComponent } from './components/grades/grades-add-form/grades-add-form.component';
+import { SubjectsComponent } from './components/subjects/subjects.component';
+import { SubjectsAddFormComponent } from './components/subjects/subjects-add-form/subjects-add-form.component';
 
 
 
@@ -19,7 +21,9 @@ import { GradesAddFormComponent } from './components/grades/grades-add-form/grad
     SubjectGroupsComponent,
     SubjectGroupsAddFormComponent,
     GradesComponent,
-    GradesAddFormComponent
+    GradesAddFormComponent,
+    SubjectsComponent,
+    SubjectsAddFormComponent
   ],
   imports: [
     CoreModule,
