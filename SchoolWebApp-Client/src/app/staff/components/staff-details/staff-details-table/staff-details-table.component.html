@@ -48,19 +48,12 @@
                                         data-original-title="Delete">
                                         <i class="fas fa-trash-alt"></i></a>
                                 </td>
-                                <td *ngIf="showType === 'attendance'">
-                                    <a [routerLink]="['/staff/attendance/add']"
+                                <td *ngIf="showType === 'manage'">
+                                    <a [routerLink]="['/staff/manage/add']"
                                         [queryParams]='{id: item.id, action: showType}'
-                                        class="view" title="Add attendance" data-toggle="tooltip"
-                                        data-original-title="Add attendance">
-                                        <i class="fas fa-plus"></i> Attendances</a>
-                                </td>
-                                <td *ngIf="showType === 'discipline'">
-                                    <a [routerLink]="['/staff/discipline/add']"
-                                        [queryParams]='{id: item.id, action: showType}'
-                                        class="view" title="Add discipline" data-toggle="tooltip"
-                                        data-original-title="Add discipline">
-                                        <i class="fas fa-plus"></i> Discipline</a>
+                                        class="view" title="Manage staff" data-toggle="tooltip"
+                                        data-original-title="Manage staff">
+                                        <i class="fas fa-wrench"></i> Manage staff</a>
                                 </td>
                             </tr>
                         </tbody>

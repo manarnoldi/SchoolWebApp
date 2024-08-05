@@ -114,24 +114,14 @@ export const MENU = [
         iconClasses: 'fas fa-user-tie',
         children: [
             {
-                name: 'Details',
+                name: 'Basic details',
                 iconClasses: 'fas fa-bullseye',
                 path: ['/staff/details']
             },
             {
-                name: 'Attendance',
+                name: 'Manage staff',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/staff/attendance']
-            },
-            {
-                name: 'Discipline',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/staff/discipline']
-            },
-            {
-                name: 'Subjects',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/staff/subjects']
+                path: ['/staff/manage']
             }
         ]
     },

@@ -19,6 +19,7 @@ import {forkJoin} from 'rxjs';
 export class StaffAssignmentsComponent implements OnInit {
     staffId: number = 0;
     sourceLink: string = '';
+    activeNav: string = 'attendance';
     staff: StaffDetails;
     outcomes: Outcome[] = [];
     occurenceTypes: OccurenceType[] = [];

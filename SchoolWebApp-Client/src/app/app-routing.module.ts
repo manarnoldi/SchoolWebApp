@@ -108,10 +108,8 @@ const routes: Routes = [
         children: [
             {path: 'details', component: StaffDetailsComponent},
             {path: 'add', component: StaffDetailsFormComponent},
-            {path: 'attendance', component: StaffDetailsComponent},
-            {path: 'attendance/add', component: StaffAssignmentsComponent},
-            {path: 'discipline', component: StaffDetailsComponent},
-            {path: 'discipline/add', component: StaffAssignmentsComponent}
+            {path: 'manage', component: StaffDetailsComponent},
+            {path: 'manage/add', component: StaffAssignmentsComponent}
         ]
     },
     // {

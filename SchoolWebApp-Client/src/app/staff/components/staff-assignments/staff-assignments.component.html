@@ -5,7 +5,7 @@
 
 <section class="content">
     <div class="container-fluid">
-        <div class="row py-2">
+        <div class="row py-1">
             <div class="col-12">
                 <a [routerLink]="[backLinkUrl]"
                     class="btn btn-sm btn-flat btn-warning float-left">
@@ -15,21 +15,21 @@
         </div>
 
         <div class="card">
-            <div class="card-body">
+            <div class="card-body p-1">
                 <div class="row">
                     <div class="col-12">
                         <app-staff-details-view [staffDetails]="staff" [statuses]="statuses"
                             *ngIf="statuses"></app-staff-details-view>
                     </div>
                 </div>
-                <div class="row pt-2">
+                <div class="row pt-1">
                     <div class="col-12">
-                        <div class="card card-success card-outline">
-                            <div class="card-header p-2">
-                                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                        <div class="card card-success card-outline mb-1">
+                            <div class="card-header">
+                                <ul class="nav nav-pills" id="pills-tab" role="tablist">
                                     <li class="nav-item" role="presentation">
                                         <button
-                                            class="nav-link {{sourceLink==='attendance'? 'active':''}}"
+                                            class="nav-link {{activeNav==='attendance'? 'active':''}}"
                                             id="attendance-tab"
                                             data-bs-toggle="pill" data-bs-target="#attendance"
                                             type="button" role="tab" aria-controls="attendance"
@@ -37,7 +37,7 @@
                                     </li>
                                     <li class="nav-item" role="presentation">
                                         <button
-                                            class="nav-link {{sourceLink==='discipline'? 'active':''}}"
+                                            class="nav-link {{activeNav==='discipline'? 'active':''}}"
                                             id="discipline-tab"
                                             data-bs-toggle="pill" data-bs-target="#discipline"
                                             type="button" role="tab" aria-controls="discipline"
@@ -45,7 +45,7 @@
                                     </li>
                                     <li class="nav-item" role="presentation">
                                         <button
-                                            class="nav-link {{sourceLink==='subjects'? 'active':''}}"
+                                            class="nav-link {{activeNav==='subjects'? 'active':''}}"
                                             id="subjects-tab"
                                             data-bs-toggle="pill"
                                             data-bs-target="#subjects" type="button" role="tab"
@@ -55,40 +55,37 @@
                                     </li>
                                 </ul>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body p-1">
                                 <div class="tab-content" id="pills-tabContent">
                                     <div
-                                        class="tab-pane fade {{sourceLink==='attendance'? 'show active':''}}"
+                                        class="tab-pane fade {{activeNav==='attendance'? 'show active':''}}"
                                         id="attendance"
                                         role="tabpanel"
                                         aria-labelledby="attendance-tab">
-                                        <div class="border border-info rounded p-2">
+                                        <div class="border border-info rounded p-1">
                                             <app-staff-attendance [statuses]="statuses"
                                                 [staff]="staff"></app-staff-attendance>
                                         </div>
                                     </div>
                                     <div
-                                        class="tab-pane fade {{sourceLink==='discipline'? 'show active':''}}"
+                                        class="tab-pane fade {{activeNav==='discipline'? 'show active':''}}"
                                         id="discipline" role="tabpanel"
                                         aria-labelledby="discipline-tab">
-                                        <div class="border border-info rounded p-2">
+                                        <div class="border border-info rounded p-1">
                                             <app-staff-discipline [statuses]="statuses"
                                                 [staff]="staff" [outcomes]="outcomes"
                                                 [occurenceTypes]="occurenceTypes"></app-staff-discipline>
                                         </div>
                                     </div>
                                     <div
-                                        class="tab-pane fade {{sourceLink==='subjects'? 'show active':''}}"
+                                        class="tab-pane fade {{activeNav==='subjects'? 'show active':''}}"
                                         id="subjects" role="tabpanel"
                                         aria-labelledby="subjects-tab">
-                                        <div class="border border-info rounded p-2">
+                                        <div class="border border-info rounded p-1">
 
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="card-footer">
-
                             </div>
                         </div>
                     </div>
