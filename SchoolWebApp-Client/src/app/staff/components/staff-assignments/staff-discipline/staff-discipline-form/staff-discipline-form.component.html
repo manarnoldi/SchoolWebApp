@@ -1,9 +1,8 @@
 <form [formGroup]="staffDisciplineForm" (ngSubmit)="onSubmit()" novalidate>
-    <div class="modal-body">
-
+    <div class="modal-body p-1">
         <app-staff-details-view [staffDetails]="staff" [statuses]="statuses" [alignment]="'reduced'"
             *ngIf="statuses"></app-staff-details-view>
-        <div class="border border-info mt-2 p-2 rounded">
+        <div class="border border-info mt-1 p-1 rounded">
             <div class="row">
                 <div class="col-6">
                     <div class="form-group">
@@ -41,7 +40,7 @@
                 </div>
             </div>
         </div>
-        <div class="border border-warning mt-2 p-2 rounded">
+        <div class="border border-warning mt-1 p-1 rounded">
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
@@ -86,7 +85,7 @@
             </div>
         </div>
     </div>
-    <div class="modal-footer">
+    <div class="modal-footer p-1">
         <button *ngIf="action !=='view'" type="submit" [disabled]="staffDisciplineForm.invalid"
             class="btn
                 btn-success"> <i class="fas fa-save"></i>

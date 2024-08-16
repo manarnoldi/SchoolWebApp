@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
 export class ParentsListComponent implements OnInit {
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Home'},
-        {link: ['/parents/details'], title: 'Parent: Parents list'}
+        {link: ['/students/parents'], title: 'Parent: Parents list'}
     ];
 
     dashboardTitle = 'Parent: Parents list';

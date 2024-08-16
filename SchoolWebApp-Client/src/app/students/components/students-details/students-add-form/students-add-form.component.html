@@ -6,7 +6,7 @@
     <hr />
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-12 pt-2 pb-2">
+            <div class="col-md-12 p-1">
                 <a [routerLink]="['/students/details']"
                     class="btn btn-sm btn-flat btn-warning float-left">
                     <i class="fas fa-angle-double-left"></i> Back to students list
@@ -22,10 +22,10 @@
         </div>
         <form [formGroup]="studentForm" (ngSubmit)="onSubmit()" novalidate>
             <div class="row">
-                <div class="col-md-6 pl-2 pr-1">
+                <div class="col-md-6 px-1">
                     <div class="card card-primary card-outline">
-                        <div class="card-body box-profile ">
-                            <div class="border border-info rounded p-2">
+                        <div class="card-body box-profile p-1">
+                            <div class="border border-info rounded p-1">
                                 <div class="text-center">
                                     <img class="profile-user-img img-fluid img-circle"
                                         [src]="studentImageUrl"
@@ -166,10 +166,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 pr-2 pl-1">
+                <div class="col-md-6 px-1">
                     <div class="card card-success card-outline">
-                        <div class="card-body">
-                            <div class="border border-info rounded p-2">
+                        <div class="card-body p-1">
+                            <div class="border border-info rounded p-1">
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group clearfix">
@@ -274,7 +274,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card-footer">
+                        <div class="card-footer p-1">
                             <div *ngIf="readonly || editMode">
                                 <a [routerLink]="['/students/manage/add']"
                                     class="btn btn-sm btn-flat btn-info float-left"
