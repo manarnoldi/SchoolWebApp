@@ -14,12 +14,23 @@ namespace SchoolWebApp.Infrastructure.Repositories.Staff
 
         public async Task<List<StaffSubject>> GetByAcademicYearId(int academicYearId)
         {
-            var staffSubjects = await _dbContext.StaffSubjects.Where(e => e.AcademicYearId == academicYearId).ToListAsync();
+            var staffSubjects = await _dbContext.StaffSubjects.Where(e => e.SchoolClass.AcademicYearId == academicYearId).ToListAsync();
             return staffSubjects;
         }
         public async Task<List<StaffSubject>> GetBySchoolClassId(int schoolClassId)
         {
             var staffSubjects = await _dbContext.StaffSubjects.Where(e => e.SchoolClassId == schoolClassId).ToListAsync();
+            return staffSubjects;
+        }
+
+        public async Task<List<StaffSubject>> GetByStaffDetailsId(int staffDetailsId)
+        {
+            var staffSubjects = await _dbContext.StaffSubjects
+                .Where(e => e.StaffDetailsId == staffDetailsId)
+                .Include(s => s.StaffDetails)
+                .Include(s => s.Subject)
+                .Include(s => s.SchoolClass)
+                .ToListAsync();
             return staffSubjects;
         }
     }

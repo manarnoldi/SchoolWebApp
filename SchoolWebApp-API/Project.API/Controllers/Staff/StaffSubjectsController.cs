@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
+using SchoolWebApp.Core.DTOs.Staff.StaffAttendance;
 using SchoolWebApp.Core.DTOs.Staff.StaffSubject;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories;
@@ -35,7 +36,7 @@ namespace SchoolWebApp.API.Controllers.Staff
         {
             try
             {
-                return Ok(_mapper.Map<List<StaffSubjectDto>>(await _unitOfWork.StaffSubjects.GetAll()));
+                return Ok(_mapper.Map<List<StaffSubjectDto>>(await _unitOfWork.StaffSubjects.Find(includeProperties: "StaffDetails,Subject,SchoolClass")));
             }
             catch (Exception ex)
             {
@@ -65,6 +66,34 @@ namespace SchoolWebApp.API.Controllers.Staff
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while retrieving paginated staff subjects.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/staffSubjects/byStaffDetailsId/5
+        /// <summary>
+        /// A method for retrieving staff subjects by staff details Id.
+        /// </summary>
+        /// <param name="id">The staff details Id to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byStaffDetailsId/{staffDetailsId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StaffSubjectDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetStaffSubjectssByStaffDetaildId(int staffDetailsId)
+        {
+            try
+            {
+                if (staffDetailsId <= 0) return BadRequest(staffDetailsId);
+                var _item = await _unitOfWork.StaffSubjects.GetByStaffDetailsId(staffDetailsId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<StaffSubjectDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the staff subjects by staff details id.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
@@ -141,7 +170,7 @@ namespace SchoolWebApp.API.Controllers.Staff
             try
             {
                 if (id <= 0) return BadRequest(id);
-                var _item = await _unitOfWork.StaffSubjects.GetById(id);
+                var _item = await _unitOfWork.StaffSubjects.GetById(id, includeProperties: "StaffDetails,Subject,SchoolClass");
 
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<StaffSubjectDto>(_item);
@@ -176,11 +205,9 @@ namespace SchoolWebApp.API.Controllers.Staff
                     return Conflict(new { message = $"The subject details submitted do not exist." });
                 if (!await _unitOfWork.SchoolClasses.ItemExistsAsync(s => s.Id == model.SchoolClassId))
                     return Conflict(new { message = $"The school class details submitted do not exist." });
-                if (!await _unitOfWork.AcademicYears.ItemExistsAsync(s => s.Id == model.AcademicYearId))
-                    return Conflict(new { message = $"The academic year details submitted do not exist." });
                 if (await _unitOfWork.StaffSubjects.ItemExistsAsync(s => s.StaffDetailsId == model.StaffDetailsId && s.SubjectId == model.SubjectId &&
-                s.SchoolClassId == model.SchoolClassId && s.AcademicYearId == model.AcademicYearId && s.Description == model.Description))
-                    return Conflict(new { message = $"The staff subject record already exists" });
+                s.SchoolClassId == model.SchoolClassId))
+                    return Conflict(new { message = $"The staff has already been allocated the subject." });
                 try
                 {
                     var _item = _mapper.Map<StaffSubject>(model);

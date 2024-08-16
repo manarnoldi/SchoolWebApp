@@ -1,0 +1,38 @@
+<div class="modal fade" id="staffSubjectFormModal" tabindex="-1"
+    attr.aria-labelledby="staffSubjectItemModalLabel" aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success opacity-50">
+                <h5 class="modal-title" id="staffSubjectFormModalLabel">
+                    Record staff subject
+                </h5>
+            </div>
+            <app-staff-subject-form [staffSubject]="staffSubject" [statuses]="statuses"
+                [subjects]="subjects"
+                [staff]="staff" [academicYears]="academicYears" [learningLevels]="learningLevels"
+                [schoolStreams]="schoolStreams"
+                (addItemEvent)="AddStaffSubject($event)"
+                *ngIf="staff && academicYears && learningLevels && schoolStreams"></app-staff-subject-form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right mb-1"
+            modelName="staffSubject" buttonTitle="Add subject"></app-table-button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <app-staff-subject-table [tableTitle]="'Staff subjects list'"
+            [staffSubjects]="staffSubjects" [showLoginControls]="false"
+            (editItemEvent)="editItem($event)" [academicYears]="academicYears"
+            [learningLevels]="learningLevels" [schoolStreams]="schoolStreams"
+            *ngIf="staffSubjects && academicYears && learningLevels && schoolStreams"
+            (deleteItemEvent)="deleteItem($event)"
+            (viewItemEvent)="editItem($event, 'view')"></app-staff-subject-table>
+    </div>
+</div>

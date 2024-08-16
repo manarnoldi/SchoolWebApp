@@ -11,8 +11,6 @@ namespace SchoolWebApp.Core.Entities.Staff
         public StaffDetails StaffDetails { get; set; }
         public int SubjectId { get; set; }
         public Subject Subject { get; set; }
-        public int AcademicYearId { get; set; }
-        public AcademicYear AcademicYear { get; set; }
         public int SchoolClassId { get; set; }
         public SchoolClass SchoolClass { get; set; }
     }

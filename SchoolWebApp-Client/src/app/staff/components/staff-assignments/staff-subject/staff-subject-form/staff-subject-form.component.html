@@ -1,0 +1,56 @@
+<form [formGroup]="staffSubjectForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="modal-body">
+        <app-staff-details-view [staffDetails]="staff" [statuses]="statuses" [alignment]="'reduced'"
+            *ngIf="statuses"></app-staff-details-view>
+        <div class="border border-info mt-1 p-1 rounded">
+            <app-year-class-stream #yearClassStream [academicYears]="academicYears"
+                [learningLevels]="learningLevels" [action]="action"
+                [schoolStreams]="schoolStreams" [f]="staffSubjectForm" *ngIf="staffSubjectForm"
+                (controlsChanged)="yearClassStreamUpdated($event)"></app-year-class-stream>
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="subjectId" class="form-label">Subject:</label>
+                        <select [attr.disabled]="action==='view' ? 'disabled':null"
+                            class="form-control"
+                            aria-label="Select subject name" formControlName="subjectId"
+                            id="subjectId">
+                            <option [ngValue]="null" hidden disabled selected>Select subject name</option>
+                            <option [ngValue]="subject.id" *ngFor="let subject of
+                            subjects">{{subject.name}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea [readOnly]="action==='view'" placeholder="Enter description"
+                            id="description" class="form-control" rows="2"
+                            formControlName="description"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row p-1" align="right" *ngIf="!buttonSubmitActive">
+                <div class="col-md-12">
+                    <a (click)="goToRegisteredClasses()" class="edit" title data-toggle="tooltip"
+                        role="button"
+                        data-original-title="View registered classes"> <i class="fas fa-eye"></i> View registered classes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button *ngIf="action !=='view'" type="submit" [disabled]="staffSubjectForm?.invalid"
+            class="btn
+                btn-success"> <i class="fas fa-save"></i>
+            {{ action==='edit' ? 'Update' : 'Save' }}
+        </button>
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
+            #closeButton (click)="closeStaffSubjectForm()">
+            <i class="fas fa-times"></i> Close
+        </button>
+    </div>
+</form>
+
+
+

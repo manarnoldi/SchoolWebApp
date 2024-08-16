@@ -14,6 +14,9 @@ import { StaffAttendanceTableComponent } from './components/staff-assignments/st
 import { StaffDisciplineComponent } from './components/staff-assignments/staff-discipline/staff-discipline.component';
 import { StaffDisciplineFormComponent } from './components/staff-assignments/staff-discipline/staff-discipline-form/staff-discipline-form.component';
 import { StaffDisciplineTableComponent } from './components/staff-assignments/staff-discipline/staff-discipline-table/staff-discipline-table.component';
+import { StaffSubjectComponent } from './components/staff-assignments/staff-subject/staff-subject.component';
+import { StaffSubjectFormComponent } from './components/staff-assignments/staff-subject/staff-subject-form/staff-subject-form.component';
+import { StaffSubjectTableComponent } from './components/staff-assignments/staff-subject/staff-subject-table/staff-subject-table.component';
 
 @NgModule({
     declarations: [
@@ -28,7 +31,10 @@ import { StaffDisciplineTableComponent } from './components/staff-assignments/st
         StaffAttendanceTableComponent,
         StaffDisciplineComponent,
         StaffDisciplineFormComponent,
-        StaffDisciplineTableComponent
+        StaffDisciplineTableComponent,
+        StaffSubjectComponent,
+        StaffSubjectFormComponent,
+        StaffSubjectTableComponent,
     ],
     imports: [DataTablesModule, CoreModule, SharedModule]
 })

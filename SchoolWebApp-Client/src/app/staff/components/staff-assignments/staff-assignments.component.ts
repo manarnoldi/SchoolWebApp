@@ -1,3 +1,5 @@
+import { Subject } from '@/academics/models/subject';
+import {SubjectsService} from '@/academics/services/subjects.service';
 import {Status} from '@/core/enums/status';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {OccurenceType} from '@/settings/models/occurence-type';
@@ -23,6 +25,7 @@ export class StaffAssignmentsComponent implements OnInit {
     staff: StaffDetails;
     outcomes: Outcome[] = [];
     occurenceTypes: OccurenceType[] = [];
+    subjects: Subject[] = [];
 
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Home'},
@@ -42,7 +45,8 @@ export class StaffAssignmentsComponent implements OnInit {
         private staffsSvc: StaffDetailsService,
         private route: ActivatedRoute,
         private outcomesSvc: OutcomesService,
-        private occurenceTypesSvc: OccurenceTypeService
+        private occurenceTypesSvc: OccurenceTypeService,
+        private subjectsSvc: SubjectsService
     ) {
         this.statuses = Object.keys(this.status).filter((k) =>
             isNaN(Number(k))
@@ -64,12 +68,15 @@ export class StaffAssignmentsComponent implements OnInit {
             let outcomesReq = this.outcomesSvc.get('/outcomes');
             let occurenceTypesReq =
                 this.occurenceTypesSvc.get('/occurenceTypes');
+            let subjectsReq =
+                this.subjectsSvc.get('/subjects');
 
-            forkJoin([staffByIdReq, outcomesReq, occurenceTypesReq]).subscribe(
-                ([staff, outcomes, occurenceTypes]) => {
+            forkJoin([staffByIdReq, outcomesReq, occurenceTypesReq,subjectsReq]).subscribe(
+                ([staff, outcomes, occurenceTypes, subjects]) => {
                     this.staff = staff;
                     this.outcomes = outcomes;
                     this.occurenceTypes = occurenceTypes;
+                    this.subjects = subjects;
                 },
                 (err) => {
                     this.toastr.error(err.error);

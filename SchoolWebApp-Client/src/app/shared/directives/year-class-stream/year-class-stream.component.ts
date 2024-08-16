@@ -1,9 +1,9 @@
 import {LearningLevel} from '@/class/models/learning-level';
 import {SchoolStream} from '@/class/models/school-stream';
-import { SchoolClassesService } from '@/class/services/school-classes.service';
+import {SchoolClassesService} from '@/class/services/school-classes.service';
 import {AcademicYear} from '@/school/models/academic-year';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 @Component({
     selector: 'app-year-class-stream',
@@ -15,10 +15,14 @@ export class YearClassStreamComponent implements OnInit {
     @Input() academicYears: AcademicYear[];
     @Input() learningLevels: LearningLevel[];
     @Input() schoolStreams: SchoolStream[];
+    @Input() action: string = 'edit';
 
     @Output() controlsChanged = new EventEmitter<any>();
 
-    constructor(private fb: FormBuilder, private schoolClassSvc: SchoolClassesService,) {}
+    constructor(
+        private fb: FormBuilder,
+        private schoolClassSvc: SchoolClassesService
+    ) {}
 
     ngOnInit(): void {
         this.initializeFormControl();
