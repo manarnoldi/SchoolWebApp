@@ -23,7 +23,7 @@
 
     </div>
     <div class="col-2">
-        <app-table-button btnClasses="btn btn-sm btn-flat btn-warning float-right"
+        <app-table-button btnClasses="btn btn-sm btn-flat btn-warning float-right mb-1"
             modelName="studentParent" buttonTitle="Add existing parent"></app-table-button>
     </div>
     <div class="col-2">
@@ -31,7 +31,7 @@
             [routerLink]="['/students/parents/add']"
             [queryParams]="{sId: studentId}"
             [routerLinkActive]="'active'"
-            class="btn btn-sm btn-flat btn-success float-right mb-2">
+            class="btn btn-sm btn-flat btn-success float-right mb-1">
             <i class="fas fa-plus-circle"></i> Add new parent
         </a>
     </div>

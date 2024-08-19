@@ -146,7 +146,7 @@ export class ParentAddFormComponent implements OnInit {
                         this.queryParams = {
                             id: this.studentId,
                             action: 'manage',
-                            activeNav: "parents"
+                            activeNav: 'parents'
                         };
                     }
                     if (
@@ -247,7 +247,9 @@ export class ParentAddFormComponent implements OnInit {
                         let studParentApp = new StudentParent();
                         if (this.studentId && this.studentId > 0) {
                             studParentApp.studentId = this.studentId;
-                            studParentApp.parentId = this.editMode ? parseInt(this.parent.id) : parseInt(res[0].id);
+                            studParentApp.parentId = this.editMode
+                                ? parseInt(this.parent.id)
+                                : parseInt(res[0].id);
                             studParentApp.relationShipId =
                                 this.parentForm.get('relationShipId').value;
                             studParentApp.otherDetails =
@@ -281,7 +283,7 @@ export class ParentAddFormComponent implements OnInit {
                             this.editMode = false;
                             this.toastr.success(replyMsg);
                             this.parentForm.reset();
-                            this.router.navigateByUrl('/parents/details');
+                            this.router.navigateByUrl('/students/parents');
                         }
                     },
                     (err) => {
@@ -317,8 +319,12 @@ export class ParentAddFormComponent implements OnInit {
             notifiable: this.parent?.notifiable,
             payer: this.parent?.payer,
             pickup: this.parent?.pickup,
-            relationShipId: this.studentParent?.relationShipId,
-            otherDetailsSP: this.studentParent?.otherDetails
+            relationShipId: this.studentParent
+                ? this.studentParent?.relationShipId
+                : null,
+            otherDetailsSP: this.studentParent
+                ? this.studentParent?.otherDetails
+                : null
         });
     };
 
