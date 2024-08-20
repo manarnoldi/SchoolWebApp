@@ -39,20 +39,7 @@ export class SubjectsComponent implements OnInit {
         {link: ['/'], title: 'Home'},
         {link: ['/academics/subjects'], title: 'Academics: Subjects'}
     ];
-    dashboardTitle = 'Academics: Subjects';
-    tableTitle: string = ' Subjects list';
-    tableHeaders: string[] = [
-        'Name',
-        'Code',
-        'Abbr',
-        'Lessons #',
-        'Optional',
-        'Subject group',
-        'Department',
-        'H.O.S',
-        'Description',
-        'Action'
-    ];
+    dashboardTitle = 'Academics: Subjects';   
 
     subject: Subject;
     subjects: Subject[] = [];

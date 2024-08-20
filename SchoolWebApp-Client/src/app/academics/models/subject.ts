@@ -1,7 +1,7 @@
 import {ResourceModel} from '@/core/models/ResourceModel';
-import { SubjectGroup } from './subject-group';
-import { Department } from '@/school/models/department';
-import { StaffDetails } from '@/staff/models/staff-details';
+import {SubjectGroup} from './subject-group';
+import {Department} from '@/school/models/department';
+import {StaffDetails} from '@/staff/models/staff-details';
 
 export class Subject extends ResourceModel<Subject> {
     public code?: string;
@@ -19,6 +19,8 @@ export class Subject extends ResourceModel<Subject> {
 
     public staffDetailsId?: number;
     public staffDetails?: StaffDetails;
+
+    public isSelected?: Boolean = false;
 
     constructor(model?: Partial<Subject>) {
         super(model);

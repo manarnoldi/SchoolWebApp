@@ -10,6 +10,7 @@ import { GradesComponent } from './components/grades/grades.component';
 import { GradesAddFormComponent } from './components/grades/grades-add-form/grades-add-form.component';
 import { SubjectsComponent } from './components/subjects/subjects.component';
 import { SubjectsAddFormComponent } from './components/subjects/subjects-add-form/subjects-add-form.component';
+import { SubjectsTableComponent } from './components/subjects/subjects-table/subjects-table.component';
 
 
 
@@ -23,7 +24,8 @@ import { SubjectsAddFormComponent } from './components/subjects/subjects-add-for
     GradesComponent,
     GradesAddFormComponent,
     SubjectsComponent,
-    SubjectsAddFormComponent
+    SubjectsAddFormComponent,
+    SubjectsTableComponent
   ],
   imports: [
     CoreModule,
