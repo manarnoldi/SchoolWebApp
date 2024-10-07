@@ -5,6 +5,7 @@ using SchoolWebApp.API.Utils;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Students.FormerSchool;
 using SchoolWebApp.Core.DTOs.Students.StudentClass;
+using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
@@ -82,7 +83,7 @@ namespace SchoolWebApp.API.Controllers.Students
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentClassDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GeByStudentId(int studentId)
+        public async Task<IActionResult> GetByStudentId(int studentId)
         {
             try
             {
@@ -143,6 +144,8 @@ namespace SchoolWebApp.API.Controllers.Students
         {
             if (ModelState.IsValid)
             {
+                if (await _unitOfWork.StudentClasses.CheckIfStudentAssignedForYear(model.SchoolClassId, model.StudentId))
+                    return Conflict(new { message = $"The student is already assigned to a class in the year." });
                 if (await _unitOfWork.StudentClasses.ItemExistsAsync(s => s.StudentId == model.StudentId && s.SchoolClassId == model.SchoolClassId))
                     return Conflict(new { message = $"The student class details submitted already exist." });
                 try

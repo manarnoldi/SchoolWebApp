@@ -1,0 +1,14 @@
+<form [formGroup]="studentSubjectsLoadForm" novalidate>
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group mb-1">
+                <select (change)="schoolClassChanged()" class="form-control form-control-sm" aria-label="Select student class"
+                    formControlName="studentClassId" id="studentClassId">
+                    <option [ngValue]="null">Select student class</option>
+                    <option [ngValue]="studentClass" *ngFor="let studentClass of
+                    studentClasses">{{studentClass.schoolClass?.name}}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</form>

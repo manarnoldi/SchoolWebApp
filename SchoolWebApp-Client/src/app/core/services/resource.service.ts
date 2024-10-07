@@ -21,6 +21,14 @@ export abstract class ResourceService<T extends ResourceModel<T>> {
             .pipe(map((result) => new this.tConstructor(result)));
     }
 
+    public createBatch(
+        url: string,
+        resources: Array<Partial<T> & {toJson: () => T}>
+    ): Observable<string> {
+        const body = resources.map((resource) => resource.toJson());
+        return this.httpClient.post<string>(url, body);
+    }
+
     public get(url, params?: any): Observable<T[]> {
         let httpParams = new HttpParams();
         if (params) {
@@ -31,7 +39,7 @@ export abstract class ResourceService<T extends ResourceModel<T>> {
                 );
             });
         }
-        
+
         return this.httpClient
             .get<T[]>(`${url}`, {params: httpParams})
             .pipe(map((result) => result.map((i) => new this.tConstructor(i))));

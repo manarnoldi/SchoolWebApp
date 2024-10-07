@@ -141,7 +141,7 @@ namespace Project.Infrastructure.Repositories
 
         public void Update(T model)
         {
-            _dbContext.Set<T>().Update(model);
+            _dbContext.Set<T>().Update(model);           
         }
 
         public void Delete(T model)

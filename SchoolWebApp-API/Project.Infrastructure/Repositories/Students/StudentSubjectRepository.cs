@@ -17,16 +17,53 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
         {
         }
 
-        public async Task<List<StudentSubject>> GetByAcademicYearId(int academicYearId)
+        public async Task<List<StudentSubject>> GetByStudentClassId(int studentClassId)
         {
-            var studentSubjects = await _dbContext.StudentSubjects.Where(e => e.AcademicYearId == academicYearId).ToListAsync();
+            var studentSubjects = await _dbContext.StudentSubjects
+                .Where(e => e.StudentClassId == studentClassId)
+                .Include(s => s.Subject)
+                .Include(s => s.StudentClass)
+                .ToListAsync();
             return studentSubjects;
         }
 
         public async Task<List<StudentSubject>> GetBySubjectId(int subjectId)
         {
-            var studentSubjects = await _dbContext.StudentSubjects.Where(e => e.SubjectId == subjectId).ToListAsync();
+            var studentSubjects = await _dbContext.StudentSubjects
+                .Where(e => e.SubjectId == subjectId)
+                .Include(s => s.Subject)
+                .Include(s => s.StudentClass)
+                .ToListAsync();
             return studentSubjects;
+        }
+
+        public async Task<List<StudentSubject>> GetByStudentId(int studentId)
+        {
+            var studentSubjects = await _dbContext.StudentSubjects
+                .Where(e => e.StudentClass.StudentId == studentId)
+                .Include(s => s.Subject)
+                .Include(s => s.StudentClass)
+                .ToListAsync();
+            return studentSubjects;
+        }
+
+        public async Task<List<StudentSubject>> GetBySchoolClassId(int schoolClassId, int studentId)
+        {
+            var studentSubjects = await _dbContext.StudentSubjects
+                .Where(e => e.StudentClass.SchoolClassId == schoolClassId && e.StudentClass.StudentId == studentId)
+                .Include(s => s.Subject)
+                .Include(s => s.StudentClass)
+                .ToListAsync();
+            return studentSubjects;
+        }
+
+        public async Task<StudentSubject> GetByStudentClassSubjectId(int studentClassId, int subjectId)
+        {
+            var studentSubject = await _dbContext
+                .StudentSubjects
+                .Where(ss => ss.SubjectId == subjectId && ss.StudentClassId == studentClassId)
+                .FirstOrDefaultAsync();
+            return studentSubject;
         }
     }
 }

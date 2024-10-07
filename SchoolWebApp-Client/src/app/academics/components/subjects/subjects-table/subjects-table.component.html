@@ -6,10 +6,11 @@
             <thead>
                 <tr>
                     <th *ngIf="showCheckBoxes">
-                        <div class="icheck-success m-0 p-0">
-                            <input type="checkbox" id="checkAll" (change)="checkAllClicked($event)">
+                        <!-- <div class="icheck-success m-0 p-0">
+                            <input #checkAll type="checkbox" id="checkAll"
+                                (change)="checkAllClicked($event)">
                             <label class="form-check-label" for="checkAll"></label>
-                        </div>
+                        </div> -->
                     </th>
                     <th>Name</th>
                     <th>Code</th>
@@ -28,7 +29,9 @@
                     *ngFor="let item of subjects| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
                     <th *ngIf="showCheckBoxes">
                         <div class="icheck-success">
-                            <input type="checkbox" id="{{item.id}}" [checked]="item.isSelected">
+                            <input type="checkbox" id="{{item.id}}"
+                                [(ngModel)]="item.isSelected"
+                                [disabled]="item.isSelected && item.isOriginallySelected">
                             <label class="form-check-label" for="{{item.id}}"></label>
                         </div>
                     </th>

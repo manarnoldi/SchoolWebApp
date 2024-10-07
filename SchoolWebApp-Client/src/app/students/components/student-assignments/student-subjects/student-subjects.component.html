@@ -1,1 +1,37 @@
-<p>student-subjects works!</p>
+<div class="modal fade" id="studentSubjectFormModal" tabindex="-1"
+    attr.aria-labelledby="studentSubjectItemModalLabel" aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success opacity-50">
+                <h5 class="modal-title" id="studentSubjectFormModalLabel">
+                    Record student subject
+                </h5>
+            </div>
+            <app-student-subjects-form [statuses]="statuses"
+                *ngIf="studentClasses" [student]="student" [subjects]="subjects"
+                [studentClasses]="studentClasses"
+                (addItemEvent)="AddStudentSubject($event)"></app-student-subjects-form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-6">
+        <app-student-subjects-load-form [studentClasses]="studentClasses"
+            *ngIf="studentClasses"
+            (loadClicked)="loadClicked($event)"></app-student-subjects-load-form>
+    </div>
+    <div class="col-6">
+        <app-table-button btnClasses="btn btn-flat btn-sm btn-success float-right mb-1"
+            modelName="studentSubject" buttonTitle="Manage student subjects"></app-table-button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <app-student-subjects-table [tableTitle]="'Student subjects list'"
+            [studentSubjects]="studentSubjects" *ngIf="studentSubjects"
+            (deleteItemEvent)="deleteItem($event)"></app-student-subjects-table>
+    </div>
+</div>

@@ -21,6 +21,7 @@ export class Subject extends ResourceModel<Subject> {
     public staffDetails?: StaffDetails;
 
     public isSelected?: Boolean = false;
+    public isOriginallySelected?: Boolean = false;
 
     constructor(model?: Partial<Subject>) {
         super(model);

@@ -1,0 +1,41 @@
+<form [formGroup]="studentSubjectsForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="modal-body p-1">
+        <app-student-details-view [studentDetails]="student" [statuses]="statuses"
+            [alignment]="'reduced'"
+            *ngIf="statuses"></app-student-details-view>
+        <div class="border border-info my-1 p-1 rounded">
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group mb-1">
+                        <select (change)="classChanged()" class="form-control form-control-sm"
+                            aria-label="Select class name"
+                            formControlName="studentClassId" id="studentClassId"
+                            [ngClass]="{ 'is-invalid': (f.studentClassId.dirty || f.studentClassId.touched) && f.studentClassId.invalid }">
+                            <option [ngValue]="null" hidden disabled selected>Select student
+                                class</option>
+                            <option [ngValue]="studentClass" *ngFor="let studentClass of
+                    studentClasses">{{studentClass.schoolClass?.name}}</option>
+                        </select>
+                        <div class="invalid-feedback"> Student class is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <app-subjects-table [tableTitle]="'Subjects list'" [subjects]="subjects"
+                    *ngIf="showSubjectsTbl"
+                    [showCheckBoxes]="true" [showAllCols]="false"></app-subjects-table>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer p-1">
+        <button *ngIf="action !=='view'" type="submit" [disabled]="studentSubjectsForm.invalid"
+            class="btn
+                btn-success"> <i class="fas fa-save"></i>
+            Update Record
+        </button>
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
+            #closeButton (click)="closeStudentSubjectsForm()">
+            <i class="fas fa-times"></i> Close
+        </button>
+    </div>
+</form>

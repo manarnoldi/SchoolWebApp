@@ -30,6 +30,7 @@ import { SubjectsTableComponent } from './components/subjects/subjects-table/sub
   imports: [
     CoreModule,
     SharedModule
-  ]
+  ],
+  exports:[SubjectsTableComponent]
 })
 export class AcademicsModule { }

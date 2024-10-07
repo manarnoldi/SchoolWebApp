@@ -1,6 +1,6 @@
 import {Subject} from '@/academics/models/subject';
 import {TableSettingsService} from '@/shared/services/table-settings.service';
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 @Component({
@@ -17,6 +17,8 @@ export class SubjectsTableComponent implements OnInit {
 
     @Output() editItemEvent = new EventEmitter<number>();
     @Output() deleteItemEvent = new EventEmitter<number>();
+
+    @ViewChild("checkAll") checkAllBox: ElementRef;
 
     page = 1;
     pageSize = 10;
@@ -54,9 +56,5 @@ export class SubjectsTableComponent implements OnInit {
 
     editItem = (id: number) => {
         this.editItemEvent.emit(id);
-    };
-
-    checkAllClicked = (evt) => {
-        this.subjects.forEach((c) => (c.isSelected = evt.target.checked));
     };
 }

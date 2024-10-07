@@ -1,13 +1,16 @@
 <div [formGroup]="f">
     <div class="row">
-        <div class="col-md-4">
-            <div class="form-group">
-                <label for="academicYearId" class="form-label">Academic year: <span
+        <div [ngClass]="includesLoad ? 'col-3': 'col-4'">
+            <div class="form-group mb-1" >
+                <label *ngIf="!includesLoad" for="academicYearId" class="form-label">Academic year: <span
                         class="requiredField">*</span></label>
-                <select (change)="controlsUpdated()" class="form-control"
-                    aria-label="Select academic year" [attr.disabled]="action==='view' ? 'disabled':null"
+                <select (change)="controlsUpdated()"  class="form-control"
+                    aria-label="Select academic year"
+                    [attr.disabled]="action==='view' ? 'disabled':null"
                     formControlName="academicYearId" id="academicYearId"
-                    [ngClass]="{ 'is-invalid': (f.controls.academicYearId.dirty || f.controls.academicYearId.touched) && f.controls.academicYearId.invalid }">
+                    [ngClass]="{ 'is-invalid': (f.controls.academicYearId.dirty || f.controls.academicYearId.touched) && f.controls.academicYearId.invalid,
+                        'form-control-sm': includesLoad
+                     }">
                     <option [ngValue]="null" hidden disabled selected>Select academic year
                     </option>
                     <option [ngValue]="academicYear.id" *ngFor="let academicYear of
@@ -16,14 +19,16 @@
                 <div class="invalid-feedback"> Academic year is required</div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                <label for="learningLevelId" class="form-label">Class/Learning level: <span
+        <div [ngClass]="includesLoad ? 'col-3': 'col-4'">
+            <div class="form-group mb-1">
+                <label *ngIf="!includesLoad" for="learningLevelId" class="form-label">Class/Learning level: <span
                         class="requiredField">*</span></label>
-                <select (change)="controlsUpdated()" class="form-control" [attr.disabled]="action==='view' ? 'disabled':null"
+                <select (change)="controlsUpdated()"  class="form-control" [ngClass]="includesLoad ? 'form-control-sm': ''"
+                    [attr.disabled]="action==='view' ? 'disabled':null"
                     aria-label="Select learning level"
                     formControlName="learningLevelId" id="learningLevelId"
-                    [ngClass]="{ 'is-invalid': (f.controls.learningLevelId.dirty || f.controls.learningLevelId.touched) && f.controls.learningLevelId.invalid }">
+                    [ngClass]="{ 'is-invalid': (f.controls.learningLevelId.dirty || f.controls.learningLevelId.touched) && f.controls.learningLevelId.invalid,
+                        'form-control-sm': includesLoad }">
                     <option [ngValue]="null" hidden disabled selected>Select learning
                         level</option>
                     <option [ngValue]="learningLevel.id" *ngFor="let learningLevel of
@@ -32,13 +37,15 @@
                 <div class="invalid-feedback"> Learning level is required</div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                <label for="schoolStreamId" class="form-label">Stream: <span
+        <div [ngClass]="includesLoad ? 'col-3': 'col-4'">
+            <div class="form-group mb-1">
+                <label *ngIf="!includesLoad" for="schoolStreamId" class="form-label">Stream: <span
                         class="requiredField">*</span></label>
-                <select (change)="controlsUpdated()" class="form-control" aria-label="Select stream"
-                    formControlName="schoolStreamId" id="schoolStreamId" [attr.disabled]="action==='view' ? 'disabled':null"
-                    [ngClass]="{ 'is-invalid': (f.controls.schoolStreamId.dirty || f.controls.schoolStreamId.touched) && f.controls.schoolStreamId.invalid }">
+                <select (change)="controlsUpdated()" class="form-control" [ngClass]="includesLoad ? 'form-control-sm': ''" aria-label="Select stream"
+                    formControlName="schoolStreamId" id="schoolStreamId"
+                    [attr.disabled]="action==='view' ? 'disabled':null"
+                    [ngClass]="{ 'is-invalid': (f.controls.schoolStreamId.dirty || f.controls.schoolStreamId.touched) && f.controls.schoolStreamId.invalid,
+                        'form-control-sm': includesLoad }">
                     <option [ngValue]="null" hidden disabled selected>Select stream
                     </option>
                     <option [ngValue]="schoolStream.id" *ngFor="let schoolStream of
@@ -46,6 +53,11 @@
                 </select>
                 <div class="invalid-feedback"> School stream is required</div>
             </div>
+        </div>
+        <div *ngIf="includesLoad" [ngClass]="includesLoad ? 'col-3': 'col-4'">
+            <button (click)="loadDataClicked()" [disabled]="f?.invalid" type="button" class="btn btn-flat btn-sm btn-success"> <i class="fas fa-save"></i>
+                Load
+            </button>
         </div>
     </div>
 </div>

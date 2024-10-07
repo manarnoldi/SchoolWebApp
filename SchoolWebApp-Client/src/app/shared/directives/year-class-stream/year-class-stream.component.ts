@@ -16,8 +16,10 @@ export class YearClassStreamComponent implements OnInit {
     @Input() learningLevels: LearningLevel[];
     @Input() schoolStreams: SchoolStream[];
     @Input() action: string = 'edit';
+    @Input() includesLoad: boolean = false;
 
     @Output() controlsChanged = new EventEmitter<any>();
+    @Output() dataLoadClicked = new EventEmitter<any>();
 
     constructor(
         private fb: FormBuilder,
@@ -78,5 +80,19 @@ export class YearClassStreamComponent implements OnInit {
             '&schoolStreamId=' +
             schoolStreamId;
         return this.schoolClassSvc.getByYearClassStream(urlToSend);
+    };
+
+    loadDataClicked = () => {
+        if (
+            this.f.value.academicYearId &&
+            this.f.value.learningLevelId &&
+            this.f.value.schoolStreamId
+        ) {
+            this.dataLoadClicked.emit({
+                academicYearId: this.f.controls.academicYearId.value,
+                learningLevelId: this.f.controls.learningLevelId.value,
+                schoolStreamId: this.f.controls.schoolStreamId.value
+            });
+        }
     };
 }

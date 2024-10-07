@@ -131,7 +131,8 @@
                                         id="subjects" role="tabpanel"
                                         aria-labelledby="subjects-tab">
                                         <div class="border border-info rounded p-1">
-                                            <app-student-subjects></app-student-subjects>
+                                            <app-student-subjects [statuses]="statuses"
+                                            [student]="student" *ngIf="student"></app-student-subjects>
                                         </div>
                                     </div>
                                     <div

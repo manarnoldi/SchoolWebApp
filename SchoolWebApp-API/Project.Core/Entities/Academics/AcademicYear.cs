@@ -31,7 +31,6 @@ namespace SchoolWebApp.Core.Entities.Academics
         public bool Status { get; set; }
 
         public List<SchoolClass> SchoolClasses { get; set; }
-        public List<StudentSubject> StudentSubjects { get; set; }
         public List<Session> Sessions { get; set; }
     }
 }

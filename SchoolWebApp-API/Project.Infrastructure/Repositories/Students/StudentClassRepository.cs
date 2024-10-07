@@ -21,5 +21,15 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
                 .ToListAsync();
             return studentClasses;
         }
+
+        public async Task<bool> CheckIfStudentAssignedForYear(int schoolClassId, int studentId)
+        {
+            var schoolClass = _dbContext.SchoolClasses.Find(schoolClassId);
+            var studentAssigned = await _dbContext
+                .StudentClasses
+                .Include(sc=>sc.SchoolClass)
+                .AnyAsync(sc => sc.StudentId == studentId && sc.SchoolClass.AcademicYearId == schoolClass.AcademicYearId);
+            return studentAssigned;
+        }
     }
 }

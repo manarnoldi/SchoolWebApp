@@ -12,5 +12,6 @@ namespace SchoolWebApp.Core.Entities.Students
         public int SchoolClassId { get; set; }
         public SchoolClass SchoolClass { get; set; }
         public List<StudentAttendance> StudentAttendances { get; set; }
+        public List<StudentSubject> StudentSubjects { get; set; }
     }
 }
