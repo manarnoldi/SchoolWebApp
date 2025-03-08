@@ -4,12 +4,17 @@
             [alignment]="'reduced'"
             *ngIf="statuses"></app-student-details-view>
         <div class="border border-info my-1 p-1 rounded">
-            <app-year-class-stream #yearClassStream [academicYears]="academicYears"
-                [learningLevels]="learningLevels" [action]="action"
-                [schoolStreams]="schoolStreams" [f]="studentAttendanceForm" *ngIf="studentAttendanceForm"
-                (controlsChanged)="yearClassStreamUpdated($event)"></app-year-class-stream>
             <div class="row">
-                <div class="col-6">
+                <div class="col-4">
+                    <div class="form-group mb-1">
+                        <label for="date">Student class: <span class="requiredField">*</span></label>
+                        <app-student-classes [student]="student" *ngIf="student" controlName="studentClassId"
+                            (studentClassChanged)="studentClassChanged($event)" controlInstruction="Select student class"
+                            controlTitle="Student class"></app-student-classes>
+                            
+                    </div>
+                </div>
+                <div class="col-4">
                     <div class="form-group">
                         <label for="date">Attendance date: <span
                                 class="requiredField">*</span></label>
@@ -21,7 +26,7 @@
                         <div class="invalid-feedback"> Start date is required</div>
                     </div>
                 </div>
-                <div class="col-6">
+                <div class="col-4">
                     <div class="form-group">
                         <div class="custom-control custom-switch
                             custom-switch-off-danger custom-switch-on-success">

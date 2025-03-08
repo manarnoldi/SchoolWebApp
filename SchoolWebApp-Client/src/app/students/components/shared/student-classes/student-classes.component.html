@@ -2,7 +2,6 @@
 <div *ngIf="controlContainer?.control?.get(controlName) as control">
     <select class="form-control form-control-sm"
         [id]="controlName"
-        [attr.aria-label]="controlInstruction"
         [formControlName]="controlName">
         <option [ngValue]="null">{{controlInstruction}}</option>
         <option [ngValue]="studentClass.id" *ngFor="let studentClass of

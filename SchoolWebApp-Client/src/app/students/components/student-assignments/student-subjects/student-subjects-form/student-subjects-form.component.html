@@ -9,17 +9,6 @@
                     <div class="form-group mb-1">
                         <app-student-classes [student]="student" *ngIf="student" controlName="studentClassId" controlInstruction="Select student class"
                     controlTitle="Student class" (studentClassChanged)="studentClassChanged($event)"></app-student-classes>
-
-                        <!-- <select (change)="classChanged()" class="form-control form-control-sm"
-                            aria-label="Select class name"
-                            formControlName="studentClassId" id="studentClassId"
-                            [ngClass]="{ 'is-invalid': (f.studentClassId.dirty || f.studentClassId.touched) && f.studentClassId.invalid }">
-                            <option [ngValue]="null" hidden disabled selected>Select student
-                                class</option>
-                            <option [ngValue]="studentClass" *ngFor="let studentClass of
-                    studentClasses">{{studentClass.schoolClass?.name}}</option>
-                        </select> -->
-                        <!-- <div class="invalid-feedback"> Student class is required</div> -->
                     </div>
                 </div>
             </div>

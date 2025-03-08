@@ -143,6 +143,7 @@ export class StudentAttendanceComponent implements OnInit {
                             'Student attendance saved successfully'
                         );
                         this.studentAttendanceFormComponent.closeButton.nativeElement.click();
+                        this.studentAttendanceFormComponent.setFormControls(null);
                         this.loadStudentAttendances();
                     },
                     (err) => {

@@ -1,14 +1,8 @@
-import {LearningLevel} from '@/class/models/learning-level';
-import {SchoolClass} from '@/class/models/school-class';
-import {SchoolStream} from '@/class/models/school-stream';
 import {SchoolClassesService} from '@/class/services/school-classes.service';
-import {AcademicYear} from '@/school/models/academic-year';
-import {YearClassStreamComponent} from '@/shared/directives/year-class-stream/year-class-stream.component';
 import {StudentAttendance} from '@/students/models/student-attendance';
 import {StudentDetails} from '@/students/models/student-details';
 import {formatDate} from '@angular/common';
 import {
-    AfterViewInit,
     Component,
     ElementRef,
     EventEmitter,
@@ -26,17 +20,12 @@ import {ToastrService} from 'ngx-toastr';
     templateUrl: './student-attendance-form.component.html',
     styleUrl: './student-attendance-form.component.scss'
 })
-export class StudentAttendanceFormComponent implements OnInit, AfterViewInit {
-    @ViewChild('yearClassStream')
-    yearClassStreamComponent: YearClassStreamComponent;
+export class StudentAttendanceFormComponent implements OnInit {
     @ViewChild('closeButton') closeButton: ElementRef;
     @Input() studentAttendance: StudentAttendance;
     @Input() statuses;
     @Input() student: StudentDetails;
 
-    @Input() academicYears: AcademicYear[];
-    @Input() schoolStreams: SchoolStream[];
-    @Input() learningLevels: LearningLevel[];
     action: string = 'add';
     buttonSubmitActive: boolean = true;
 
@@ -52,12 +41,8 @@ export class StudentAttendanceFormComponent implements OnInit, AfterViewInit {
         private toastrSvc: ToastrService,
         private schoolClassSvc: SchoolClassesService,
         private router: Router
-    ) {}
-
-    ngAfterViewInit(): void {
-        this.yearClassStreamComponent.initializeFormControl();
-    }
-
+    ) { }
+    
     ngOnInit(): void {
         this.refreshItems();
     }
@@ -75,33 +60,16 @@ export class StudentAttendanceFormComponent implements OnInit, AfterViewInit {
     };
 
     setFormControls = (studentAttendance: StudentAttendance) => {
-        this.schoolClassSvc
-            .getById(
-                studentAttendance?.studentClass?.schoolClassId,
-                '/schoolClasses'
-            )
-            .subscribe(
-                (schoolClass: SchoolClass) => {
-                    this.studentAttendanceForm.patchValue({
-                        date: formatDate(
-                            new Date(studentAttendance.date),
-                            'yyyy-MM-dd',
-                            'en'
-                        ),
-                        present: studentAttendance.present,
-                        remarks: studentAttendance.remarks,
-                        studentClassId: studentAttendance.studentClassId ?? null
-                    });
-                    this.yearClassStreamComponent.setFormControls({
-                        academicYearId: schoolClass?.academicYearId,
-                        learningLevelId: schoolClass?.learningLevelId,
-                        schoolStreamId: schoolClass?.schoolStreamId
-                    });
-                },
-                (err) => {
-                    this.toastrSvc.error(err.error?.message);
-                }
-            );
+        this.studentAttendanceForm.setValue({
+            date: formatDate(
+                new Date(studentAttendance == null || studentAttendance == undefined ? new Date() : studentAttendance.date ),
+                'yyyy-MM-dd',
+                'en'
+            ),
+            present: studentAttendance?.present ?? null,
+            remarks: studentAttendance?.remarks ?? null,
+            studentClassId: studentAttendance?.studentClassId ?? null
+        });
     };
 
     get f() {
@@ -128,31 +96,9 @@ export class StudentAttendanceFormComponent implements OnInit, AfterViewInit {
         this.studentAttendanceForm.reset();
     }
 
-    yearClassStreamUpdated = (yearClassStream: any) => {
-        this.yearClassStreamComponent
-            .checkIfExists(
-                yearClassStream.academicYearId,
-                yearClassStream.learningLevelId,
-                yearClassStream.schoolStreamId
-            )
-            .subscribe(
-                (schoolCl) => {
-                    this.buttonSubmitActive = true;
-                    if (!schoolCl) {
-                        this.toastrSvc.error(
-                            'The class selected is not added yet. Ask administrator to register the class!'
-                        );
-                        this.buttonSubmitActive = false;
-                    }
-                },
-                (err) => {
-                    this.buttonSubmitActive = false;
-                    this.toastrSvc.error(
-                        'The class selected is not added yet. Ask administrator to register the class!'
-                    );
-                }
-            );
-    };
+    studentClassChanged (studentClassId: number) {
+
+    }
 
     onSubmit = () => {
         if (this.editMode) {
