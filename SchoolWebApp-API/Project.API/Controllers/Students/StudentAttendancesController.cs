@@ -38,7 +38,7 @@ namespace SchoolWebApp.API.Controllers.Students
         {
             try
             {
-                return Ok(_mapper.Map<List<StudentAttendanceDto>>(await _unitOfWork.StudentAttendances.GetAll()));
+                return Ok(_mapper.Map<List<StudentAttendanceDto>>(await _unitOfWork.StudentAttendances.Find(includeProperties: "StudentClass")));
             }
             catch (Exception ex)
             {
@@ -96,6 +96,34 @@ namespace SchoolWebApp.API.Controllers.Students
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An error occurred while retrieving the student attendances by student class id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/studentAttendances/byStudentId/5
+        /// <summary>
+        /// A method for retrieving student attendances by student Id.
+        /// </summary>
+        /// <param name="id">The student Id to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byStudentId/{studentId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentAttendanceDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetStudentAttendancesByStudentId(int studentId)
+        {
+            try
+            {
+                if (studentId <= 0) return BadRequest(studentId);
+                var _item = await _unitOfWork.StudentAttendances.GetByStudentId(studentId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<StudentAttendanceDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the student attendances by student id.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }

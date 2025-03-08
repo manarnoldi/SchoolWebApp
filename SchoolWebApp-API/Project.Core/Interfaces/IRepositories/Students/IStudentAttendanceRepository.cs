@@ -7,5 +7,6 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.Students
     public interface IStudentAttendanceRepository : IBaseRepository<StudentAttendance>
     {
         Task<List<StudentAttendance>> GetByStudentClassId(int studentClassId);
+        Task<List<StudentAttendance>> GetByStudentId(int studentId);
     }
 }

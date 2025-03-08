@@ -2,12 +2,9 @@
     <div class="row">
         <div class="col-6">
             <div class="form-group mb-1">
-                <select (change)="schoolClassChanged()" class="form-control form-control-sm" aria-label="Select student class"
-                    formControlName="studentClassId" id="studentClassId">
-                    <option [ngValue]="null">Select student class</option>
-                    <option [ngValue]="studentClass" *ngFor="let studentClass of
-                    studentClasses">{{studentClass.schoolClass?.name}}</option>
-                </select>
+                <app-student-classes [student]="student" *ngIf="student" controlName="studentClassId"
+                    (studentClassChanged)="studentClassUpdated($event)" controlInstruction="Select student class"
+                    controlTitle="Student class"></app-student-classes>
             </div>
         </div>
     </div>

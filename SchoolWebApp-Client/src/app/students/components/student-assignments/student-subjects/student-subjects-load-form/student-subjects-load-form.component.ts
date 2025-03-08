@@ -1,8 +1,16 @@
 import {Subject} from '@/academics/models/subject';
 import {SchoolClass} from '@/class/models/school-class';
 import {StudentClass} from '@/students/models/student-class';
+import {StudentDetails} from '@/students/models/student-details';
 import {StudentSubject} from '@/students/models/student-subject';
-import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    EventEmitter,
+    Input,
+    OnInit,
+    Output
+} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 @Component({
@@ -11,9 +19,8 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
     styleUrl: './student-subjects-load-form.component.scss'
 })
 export class StudentSubjectsLoadFormComponent implements OnInit {
-    @Input() studentClasses: StudentClass[] = [];
-    @Input() subjects: Subject[] = [];
-    @Output() loadClicked = new EventEmitter<any>();
+    @Input() student: StudentDetails;
+    @Output() studentClassChanged = new EventEmitter<any>();
 
     studentSubjectsLoadForm: FormGroup;
 
@@ -32,25 +39,14 @@ export class StudentSubjectsLoadFormComponent implements OnInit {
         });
     };
 
-    setFormControls = (studentClass: StudentClass) => {
+    setFormControls = (studentClassId: number) => {
         this.studentSubjectsLoadForm.setValue({
-            studentClassId: studentClass ?? null
+            studentClassId: studentClassId ?? null
         });
     };
 
-    // onSubmit = () => {
-    //     let schoolClass = new SchoolClass(this.staffSubjectsLoadForm.value?.schoolClassId);
-    //     this.loadClicked.emit(schoolClass);
-    // };
-
-    schoolClassChanged = () => {
-        if (this.studentSubjectsLoadForm.value?.studentClassId) {
-            let studentClass = new StudentClass(
-                this.studentSubjectsLoadForm.value?.studentClassId
-            );
-            this.loadClicked.emit(studentClass);
-        } else {
-            this.loadClicked.emit(null);
-        }
+    studentClassUpdated = (studentClassId: number) => {
+        if (studentClassId) this.studentClassChanged.emit(studentClassId);
+        else this.studentClassChanged.emit(null);
     };
 }

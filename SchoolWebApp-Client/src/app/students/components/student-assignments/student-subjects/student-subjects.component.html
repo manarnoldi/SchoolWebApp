@@ -6,7 +6,7 @@
         <div class="modal-content">
             <div class="modal-header bg-success opacity-50">
                 <h5 class="modal-title" id="studentSubjectFormModalLabel">
-                    Record student subject
+                    Manage student subjects
                 </h5>
             </div>
             <app-student-subjects-form [statuses]="statuses"
@@ -19,9 +19,8 @@
 
 <div class="row">
     <div class="col-6">
-        <app-student-subjects-load-form [studentClasses]="studentClasses"
-            *ngIf="studentClasses"
-            (loadClicked)="loadClicked($event)"></app-student-subjects-load-form>
+        <app-student-subjects-load-form [student]="student" 
+            *ngIf="student" (studentClassChanged)="studentClassChanged($event)"></app-student-subjects-load-form>
     </div>
     <div class="col-6">
         <app-table-button btnClasses="btn btn-flat btn-sm btn-success float-right mb-1"

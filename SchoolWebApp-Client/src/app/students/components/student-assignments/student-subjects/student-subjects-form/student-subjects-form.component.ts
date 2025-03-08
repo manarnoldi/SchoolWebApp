@@ -82,15 +82,14 @@ export class StudentSubjectsFormComponent implements OnInit {
         let studentSubjts: StudentSubject[] = [];
 
         this.subjects.forEach((s) => {
-            if (s.isSelected) {
+            if (s.isSelected && !s.isOriginallySelected) {
                 studentSubjts.push(
                     new StudentSubject({
                         subjectId: parseInt(s.id),
                         studentClassId: parseInt(
-                            this.studentSubjectsForm.value?.studentClassId?.id
+                            this.studentSubjectsForm.value?.studentClassId
                         ),
-                        studentClass:
-                            this.studentSubjectsForm.value?.studentClassId,
+                        studentClass: null,
                         description: ''
                     })
                 );
@@ -101,10 +100,12 @@ export class StudentSubjectsFormComponent implements OnInit {
 
     academicYearChanged = () => {};
 
-    classChanged = () => {
+    studentClassChanged = (studentClassId: number) => {
+        if (studentClassId == null) {
+            return
+        }
         this.showSubjectsTbl = true;
-        this.studentClassId =
-            this.studentSubjectsForm.value?.studentClassId?.id;
+        this.studentClassId = studentClassId;
         this.subjects.forEach((s) => (s.isSelected = false));
         this.studentSubjectsSvc
             .get('/studentSubjects/byStudentClassId/' + this.studentClassId)
@@ -131,8 +132,8 @@ export class StudentSubjectsFormComponent implements OnInit {
     };
 
     closeStudentSubjectsForm = () => {
-        this.showSubjectsTbl = false;
-        this.studentSubjectsForm.reset();
-        this.refreshItems();
+        // this.showSubjectsTbl = false;
+        // this.studentSubjectsForm.reset();
+        // this.refreshItems();
     };
 }

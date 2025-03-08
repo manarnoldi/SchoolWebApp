@@ -52,6 +52,10 @@ export class StudentSubjectsComponent implements OnInit {
     }
 
     loadStudentSubjectsBySchoolClassId = (schoolClassId: number) => {
+        if (schoolClassId == null || schoolClassId == undefined) {
+            this.studentSubjects = [];
+            return;
+        }
         let studentSubjectByStudentIdReq = this.studentSubjectsSvc.get(
             '/studentSubjects/bySchoolClassId/' +
                 schoolClassId +
@@ -68,14 +72,23 @@ export class StudentSubjectsComponent implements OnInit {
         );
     };
 
-    loadClicked = (studentClass: StudentClass) => {
-        this.currentStudentClass = studentClass;
-        this.studentSubjects = [];
-        if (!studentClass) this.studentSubjects = [];
-        else
-            this.loadStudentSubjectsBySchoolClassId(
-                studentClass?.schoolClassId
+    studentClassChanged = (studentClassId: number) => {
+        if (!studentClassId) {
+            this.studentSubjects = [];
+            this.studentSubjectsFormComponent.showSubjectsTbl = false;
+            this.currentStudentClass = null;
+        } else {
+            this.currentStudentClass = this.studentClasses.find(
+                (sc) => sc.id == studentClassId.toString()
             );
+            this.loadStudentSubjectsBySchoolClassId(
+                this.currentStudentClass?.schoolClassId
+            );
+        }
+        this.studentSubjectsFormComponent.studentSubjectsForm
+            .get('studentClassId')
+            ?.setValue(studentClassId);
+        
     };
 
     loadStudentSubjects = () => {
@@ -117,6 +130,9 @@ export class StudentSubjectsComponent implements OnInit {
                             this.loadStudentSubjectsBySchoolClassId(
                                 this.currentStudentClass?.schoolClassId
                             );
+                            this.studentSubjectsLoadFormComponent.setFormControls(
+                                parseInt(this.currentStudentClass?.id)
+                            );
                             this.toastr.success('Record deleted successfully!');
                         },
                         (err) => {
@@ -130,7 +146,7 @@ export class StudentSubjectsComponent implements OnInit {
 
     AddStudentSubject = (studentSubjects: StudentSubject[]) => {
         Swal.fire({
-            title: `${this.studentSubjectsFormComponent.action == 'edit' ? 'Update' : 'Add'} Staff subject record?`,
+            title: `${this.studentSubjectsFormComponent.action == 'edit' ? 'Update' : 'Add'} Student subject record?`,
             text: `Confirm if you want to ${
                 this.studentSubjectsFormComponent.action == 'edit'
                     ? 'update'
@@ -145,12 +161,12 @@ export class StudentSubjectsComponent implements OnInit {
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.value) {
-                this.currentStudentClass = studentSubjects[0].studentClass;
-                studentSubjects.forEach((e) => {
-                    delete e.studentClass;
-                });
+                
                 this.studentSubjectsSvc
-                    .createBatch('/studentSubjects/batch', studentSubjects)
+                    .createBatch(
+                        '/studentSubjects/batch',
+                        studentSubjects
+                    )
                     .subscribe(
                         (res) => {
                             this.studentSubjectsFormComponent.action = 'add';
@@ -159,9 +175,11 @@ export class StudentSubjectsComponent implements OnInit {
                             );
                             this.studentSubjectsFormComponent.closeButton.nativeElement.click();
                             this.loadStudentSubjects();
-                            this.loadClicked(this.currentStudentClass);
+                            this.studentClassChanged(
+                                studentSubjects[0]?.studentClassId
+                            );
                             this.studentSubjectsLoadFormComponent.setFormControls(
-                                this.currentStudentClass
+                                studentSubjects[0]?.studentClassId
                             );
                         },
                         (err) => {
