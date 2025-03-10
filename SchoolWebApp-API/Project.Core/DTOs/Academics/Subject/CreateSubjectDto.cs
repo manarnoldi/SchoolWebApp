@@ -12,19 +12,19 @@ namespace SchoolWebApp.Core.DTOs.Academics.Subject
         [Required(ErrorMessage = "Enter the subject code")]
         [Display(Name = "Subject code")]
         [StringLength(255)]
-        public string Code { get; set; }
+        public required string Code { get; set; }
 
         [Required(ErrorMessage = "Enter the subject name")]
         [Display(Name = "Subject name")]
         [StringLength(255)]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         [Required(ErrorMessage = "Enter the subject abbreviation")]
         [Display(Name = "Subject abbreviation")]
         [StringLength(255)]
-        public string Abbr { get; set; }
+        public required string Abbr { get; set; }
         public int NumOfLessons { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public bool Optional { get; set; }
 
         public int SubjectGroupId { get; set; }

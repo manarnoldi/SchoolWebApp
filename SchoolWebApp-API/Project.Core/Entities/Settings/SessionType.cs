@@ -4,6 +4,6 @@ namespace SchoolWebApp.Core.Entities.Settings
 {
     public class SessionType : SettingsBase
     {
-        public List<Session> Sessions { get; set; }
+        public List<Session> Sessions { get; set; } = new();
     }
 }

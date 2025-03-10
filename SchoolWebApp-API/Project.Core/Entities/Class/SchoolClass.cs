@@ -12,17 +12,17 @@ namespace SchoolWebApp.Core.Entities.Class
         public string? Description { get; set; }
 
         public int LearningLevelId { get; set; }
-        public LearningLevel LearningLevel { get; set; }
+        public LearningLevel? LearningLevel { get; set; }
 
         public int SchoolStreamId { get; set; }
-        public SchoolStream SchoolStream { get; set; }
+        public SchoolStream? SchoolStream { get; set; }
 
         public int AcademicYearId { get; set; }
-        public AcademicYear AcademicYear { get; set; }
+        public AcademicYear? AcademicYear { get; set; }
 
-        public List<SchoolClassLeaders> SchoolClassLeaders { get; set; }
-        public List<Exam> Exams { get; set; }
-        public List<StudentClass> StudentClasses { get; set; }
-        public List<StaffSubject> StaffSubjects { get; set; }
+        public List<SchoolClassLeaders> SchoolClassLeaders { get; set; } = new();
+        public List<Exam> Exams { get; set; } = new();
+        public List<StudentClass> StudentClasses { get; set; } = new();
+        public List<StaffSubject> StaffSubjects { get; set; } = new();
     }
 }

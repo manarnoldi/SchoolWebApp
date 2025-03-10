@@ -4,6 +4,6 @@ namespace SchoolWebApp.Core.Entities.Settings
 {
     public class Religion: SettingsBase
     {
-        public List<Person> People { get; set; }
+        public List<Person> People { get; set; } = new();
     }
 }

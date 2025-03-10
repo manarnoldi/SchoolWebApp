@@ -8,11 +8,11 @@ namespace SchoolWebApp.Core.Entities.School
         [Required(ErrorMessage = "Enter the education level type name.")]
         [Display(Name = "Education level type name")]
         [StringLength(255)]
-        public string Name { get; set; }
+        public required string Name { get; set; }
         [StringLength(255)]
         public string? Abbr { get; set; }
         public string? Description { get; set; }
 
-        public List<EducationLevel> EducationLevels { get; set; }
+        public List<EducationLevel> EducationLevels { get; set; } = new();
     }
 }

@@ -10,6 +10,6 @@ namespace SchoolWebApp.Core.Entities.Shared
         public bool Present { get; set; }
 
         [StringLength(500)]
-        public string Remarks { get; set; }
+        public string? Remarks { get; set; }
     }
 }

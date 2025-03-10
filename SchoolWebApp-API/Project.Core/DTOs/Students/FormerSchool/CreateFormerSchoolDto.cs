@@ -13,12 +13,12 @@ namespace SchoolWebApp.Core.DTOs.Students.FormerSchool
         [Required(ErrorMessage = "Enter former school name")]
         [Display(Name = "School name")]
         [StringLength(255)]
-        public string SchoolName { get; set; }
+        public required string SchoolName { get; set; }
 
         [Required(ErrorMessage = "Enter student former class details")]
         [Display(Name = "Class details")]
         [StringLength(255)]
-        public string ClassDetails { get; set; }
+        public required string ClassDetails { get; set; }
 
         [StringLength(255)]
         [Display(Name = "Last exam marks and out of")]

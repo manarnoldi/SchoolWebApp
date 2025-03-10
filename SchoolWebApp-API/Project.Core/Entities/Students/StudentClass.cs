@@ -7,11 +7,11 @@ namespace SchoolWebApp.Core.Entities.Students
     {
         public string? Description { get; set; }
         public int StudentId { get; set; }
-        public Student Student { get; set; }
+        public Student? Student { get; set; }
 
         public int SchoolClassId { get; set; }
-        public SchoolClass SchoolClass { get; set; }
-        public List<StudentAttendance> StudentAttendances { get; set; }
-        public List<StudentSubject> StudentSubjects { get; set; }
+        public SchoolClass? SchoolClass { get; set; }
+        public List<StudentAttendance> StudentAttendances { get; set; } = new();
+        public List<StudentSubject> StudentSubjects { get; set; } = new();
     }
 }

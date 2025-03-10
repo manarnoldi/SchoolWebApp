@@ -8,7 +8,7 @@ namespace SchoolWebApp.Core.Entities.Shared
         [Required(ErrorMessage = "Enter occurence details")]
         [Display(Name = "Occurence details")]
         [StringLength(500)]
-        public string OccurenceDetails { get; set; }
+        public required string OccurenceDetails { get; set; }
 
 
         [Required(ErrorMessage = "Enter occurence start date")]
@@ -21,11 +21,11 @@ namespace SchoolWebApp.Core.Entities.Shared
         
         [Display(Name = "Outcome details")]
         [StringLength(255)]
-        public string OutcomeDetails { get; set; }
+        public string? OutcomeDetails { get; set; }
 
         public int? OutcomeId { get; set; }
-        public Outcome Outcome { get; set; }
+        public Outcome? Outcome { get; set; }
         public int? OccurenceTypeId { get; set; }
-        public OccurenceType OccurenceType { get; set; }
+        public OccurenceType? OccurenceType { get; set; }
     }
 }

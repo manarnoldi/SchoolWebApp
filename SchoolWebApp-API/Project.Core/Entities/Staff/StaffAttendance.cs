@@ -5,6 +5,6 @@ namespace SchoolWebApp.Core.Entities.Staff
     public  class StaffAttendance: Attendance
     {
         public int StaffDetailsId { get; set; }
-        public StaffDetails StaffDetails { get; set; }  
+        public StaffDetails? StaffDetails { get; set; }  
     }
 }

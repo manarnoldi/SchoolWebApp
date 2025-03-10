@@ -13,12 +13,12 @@ namespace SchoolWebApp.Core.DTOs.Class.Session
         [Required(ErrorMessage = "Enter the session name.")]
         [Display(Name = "Session name")]
         [StringLength(255)]
-        public string SessionName { get; set; }
+        public required string SessionName { get; set; }
 
         [Required(ErrorMessage = "Enter the session abbreviation.")]
         [Display(Name = "Session abbreviation")]
         [StringLength(255)]
-        public string Abbreviation { get; set; }
+        public required string Abbreviation { get; set; }
 
         [Required(ErrorMessage = "Enter the session start date.")]
         [Display(Name = "Session start date")]

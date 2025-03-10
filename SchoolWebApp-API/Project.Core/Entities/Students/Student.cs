@@ -16,17 +16,17 @@ namespace SchoolWebApp.Core.Entities.Students
 
         [Display(Name = "Health concerns")]
         [StringLength(500)]
-        public string HealthConcerns { get; set; }      
+        public string? HealthConcerns { get; set; }      
         
         public int LearningModeId { get; set; }
-        public LearningMode LearningMode { get; set; }
+        public LearningMode? LearningMode { get; set; }
 
-        public List<SchoolClassLeaders> SchoolClassLeaders { get; set; }
-        public List<Parent> Parents { get; set; }
-        public List<StudentParent> StudentParents { get; set; }
-        public List<FormerSchool> FormerSchools { get; set; }       
-        public List<StudentDiscipline> StudentDisciplines { get; set; }
-        public List<StudentClass> StudentClasses{ get; set; }
-        public List<ExamResult> ExamResults { get; set; }
+        public List<SchoolClassLeaders> SchoolClassLeaders { get; set; } = new();
+        public List<Parent> Parents { get; set; } = new();
+        public List<StudentParent> StudentParents { get; set; } = new();
+        public List<FormerSchool> FormerSchools { get; set; } = new();
+        public List<StudentDiscipline> StudentDisciplines { get; set; } = new();
+        public List<StudentClass> StudentClasses{ get; set; } = new();
+        public List<ExamResult> ExamResults { get; set; } = new();
     }
 }

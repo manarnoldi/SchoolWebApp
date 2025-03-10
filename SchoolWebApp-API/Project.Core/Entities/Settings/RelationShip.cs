@@ -5,7 +5,7 @@ namespace SchoolWebApp.Core.Entities.Settings
 {
     public class RelationShip : SettingsBase
     {
-        public List<StudentParent> StudentParents { get; set; }
+        public List<StudentParent> StudentParents { get; set; } = new();
 
     }
 }

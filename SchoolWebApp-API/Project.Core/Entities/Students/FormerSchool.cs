@@ -10,13 +10,13 @@ namespace SchoolWebApp.Core.Entities.Students
         [Required(ErrorMessage = "Enter former school name")]
         [Display(Name = "School name")]
         [StringLength(255)]
-        public string SchoolName { get; set; }
+        public required string SchoolName { get; set; }
         public string? Description { get; set; }
 
         [Required(ErrorMessage = "Enter student former class details")]
         [Display(Name = "Class details")]
         [StringLength(255)]
-        public string ClassDetails { get; set; }
+        public required string ClassDetails { get; set; }
 
         [StringLength(255)]
         [Display(Name = "Last exam marks and out of")]
@@ -27,10 +27,10 @@ namespace SchoolWebApp.Core.Entities.Students
         public string? Position { get; set; }
 
         public int StudentId { get; set; }
-        public Student Student { get; set; }
+        public Student? Student { get; set; }
         public int CurriculumId { get; set; }
-        public Curriculum Curriculum { get; set; }
+        public Curriculum? Curriculum { get; set; }
         public int EducationLevelId { get; set; }
-        public EducationLevel EducationLevel { get; set; }
+        public EducationLevel? EducationLevel { get; set; }
     }
 }

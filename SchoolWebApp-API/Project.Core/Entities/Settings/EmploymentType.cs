@@ -5,6 +5,6 @@ namespace SchoolWebApp.Core.Entities.Settings
 {
     public class EmploymentType : SettingsBase
     {
-        public List<StaffDetails> StaffDetails { get; set; }
+        public List<StaffDetails> StaffDetails { get; set; } = new();
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Infrastructure.Data;
 
@@ -10,9 +11,11 @@ using Project.Infrastructure.Data;
 namespace SchoolWebApp.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250310034246_Removed ExamHours and added OtherDetails to entity Exam")]
+    partial class RemovedExamHoursandaddedOtherDetailstoentityExam
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -147,6 +150,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
@@ -195,6 +199,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
@@ -396,9 +401,11 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("RemarksEng")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("RemarksSwa")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
@@ -435,6 +442,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime?>("Modified")
@@ -493,6 +501,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime?>("Modified")
@@ -565,6 +574,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int>("EducationLevelId")
@@ -780,9 +790,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "717d9b15-a428-440c-b26b-08d3bbb68b02",
-                            Created = new DateTime(2025, 3, 10, 7, 18, 59, 389, DateTimeKind.Local).AddTicks(53),
+                            Created = new DateTime(2025, 3, 10, 6, 42, 38, 299, DateTimeKind.Local).AddTicks(8013),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2025, 3, 10, 7, 18, 59, 389, DateTimeKind.Local).AddTicks(147),
+                            Modified = new DateTime(2025, 3, 10, 6, 42, 38, 299, DateTimeKind.Local).AddTicks(8174),
                             ModifiedBy = "admin",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
@@ -790,9 +800,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "95ed2407-3e58-4af2-88a4-1c4e96473f68",
-                            Created = new DateTime(2025, 3, 10, 7, 18, 59, 389, DateTimeKind.Local).AddTicks(272),
+                            Created = new DateTime(2025, 3, 10, 6, 42, 38, 299, DateTimeKind.Local).AddTicks(8711),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2025, 3, 10, 7, 18, 59, 389, DateTimeKind.Local).AddTicks(275),
+                            Modified = new DateTime(2025, 3, 10, 6, 42, 38, 299, DateTimeKind.Local).AddTicks(8717),
                             ModifiedBy = "admin",
                             Name = "HeadTeacher",
                             NormalizedName = "HEADTEACHER"
@@ -800,9 +810,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "48c50c3a-9958-453b-b649-4e21af131322",
-                            Created = new DateTime(2025, 3, 10, 7, 18, 59, 389, DateTimeKind.Local).AddTicks(332),
+                            Created = new DateTime(2025, 3, 10, 6, 42, 38, 299, DateTimeKind.Local).AddTicks(8855),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2025, 3, 10, 7, 18, 59, 389, DateTimeKind.Local).AddTicks(335),
+                            Modified = new DateTime(2025, 3, 10, 6, 42, 38, 299, DateTimeKind.Local).AddTicks(8860),
                             ModifiedBy = "admin",
                             Name = "Teacher",
                             NormalizedName = "TEACHER"
@@ -810,9 +820,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "448df289-142c-4959-a912-60733515e1b4",
-                            Created = new DateTime(2025, 3, 10, 7, 18, 59, 389, DateTimeKind.Local).AddTicks(389),
+                            Created = new DateTime(2025, 3, 10, 6, 42, 38, 299, DateTimeKind.Local).AddTicks(8978),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2025, 3, 10, 7, 18, 59, 389, DateTimeKind.Local).AddTicks(392),
+                            Modified = new DateTime(2025, 3, 10, 6, 42, 38, 299, DateTimeKind.Local).AddTicks(8983),
                             ModifiedBy = "admin",
                             Name = "Student",
                             NormalizedName = "STUDENT"
@@ -820,9 +830,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "269f0cf3-405e-4163-83f3-1b63ebebd62e",
-                            Created = new DateTime(2025, 3, 10, 7, 18, 59, 389, DateTimeKind.Local).AddTicks(461),
+                            Created = new DateTime(2025, 3, 10, 6, 42, 38, 299, DateTimeKind.Local).AddTicks(9260),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2025, 3, 10, 7, 18, 59, 389, DateTimeKind.Local).AddTicks(488),
+                            Modified = new DateTime(2025, 3, 10, 6, 42, 38, 299, DateTimeKind.Local).AddTicks(9291),
                             ModifiedBy = "admin",
                             Name = "Parent",
                             NormalizedName = "PARENT"
@@ -830,9 +840,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "cd12b44b-103b-48df-8887-a2bf42e0651e",
-                            Created = new DateTime(2025, 3, 10, 7, 18, 59, 389, DateTimeKind.Local).AddTicks(584),
+                            Created = new DateTime(2025, 3, 10, 6, 42, 38, 299, DateTimeKind.Local).AddTicks(9462),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2025, 3, 10, 7, 18, 59, 389, DateTimeKind.Local).AddTicks(587),
+                            Modified = new DateTime(2025, 3, 10, 6, 42, 38, 299, DateTimeKind.Local).AddTicks(9468),
                             ModifiedBy = "admin",
                             Name = "Accounts",
                             NormalizedName = "ACCOUNTS"
@@ -840,9 +850,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "97942bee-ef12-4425-8225-4f293d0f36dd",
-                            Created = new DateTime(2025, 3, 10, 7, 18, 59, 389, DateTimeKind.Local).AddTicks(663),
+                            Created = new DateTime(2025, 3, 10, 6, 42, 38, 299, DateTimeKind.Local).AddTicks(9586),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2025, 3, 10, 7, 18, 59, 389, DateTimeKind.Local).AddTicks(666),
+                            Modified = new DateTime(2025, 3, 10, 6, 42, 38, 299, DateTimeKind.Local).AddTicks(9592),
                             ModifiedBy = "admin",
                             Name = "Visitor",
                             NormalizedName = "VISITOR"
@@ -944,23 +954,23 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = "7e67d486-af3e-49f1-a109-a2b864b8e0ec",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "dbd50058-ccb8-46ff-843b-72c87a723b27",
-                            Created = new DateTime(2025, 3, 10, 7, 18, 59, 389, DateTimeKind.Local).AddTicks(863),
+                            ConcurrencyStamp = "47f034f2-1a43-4e88-937b-c03041d90342",
+                            Created = new DateTime(2025, 3, 10, 6, 42, 38, 300, DateTimeKind.Local).AddTicks(65),
                             CreatedBy = "admin",
                             Email = "admin@kodetek.co.ke",
                             EmailConfirmed = true,
                             FirstName = "SchoolSoft",
                             LastName = "Administrator",
                             LockoutEnabled = false,
-                            Modified = new DateTime(2025, 3, 10, 7, 18, 59, 389, DateTimeKind.Local).AddTicks(869),
+                            Modified = new DateTime(2025, 3, 10, 6, 42, 38, 300, DateTimeKind.Local).AddTicks(74),
                             ModifiedBy = "admin",
                             NormalizedEmail = "ADMIN@KODETEK.CO.KE",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEIaGADVwaQ4+tk8xw5g2ivkQVA/QfVjun8spLOmye6EzL2FRgwHQwUed+WM7XVWBA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPtJk+kHiOonSf8544e4W26QPSU24uDgbgGcCHVequYfQz9MCZ5SBns/MHiVRuYdjQ==",
                             PersonId = 5,
                             PhoneNumber = "+254724920000",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "8ce02d60-1970-47d4-88ca-3985a66363dd",
+                            SecurityStamp = "f9241d48-626c-4b19-846d-e67869f398a1",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -985,6 +995,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime?>("Modified")
@@ -1160,6 +1171,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
@@ -1199,6 +1211,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
@@ -1211,9 +1224,11 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("LogoAsBase64")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("LogoUrl")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
@@ -1243,6 +1258,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("OtherDetails")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
@@ -1250,18 +1266,22 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("ReportHeader")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("ReportSubTitle")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("ReportTitle")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("ReportTitleDetails")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
@@ -1309,6 +1329,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime?>("Modified")
@@ -1784,6 +1805,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("OutcomeDetails")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
@@ -1810,6 +1832,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Address")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
@@ -1829,6 +1852,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("varchar(13)");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
@@ -1854,6 +1878,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("PhoneNumber")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
@@ -1913,6 +1938,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Remarks")
+                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
@@ -2057,6 +2083,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Remarks")
+                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
@@ -2131,6 +2158,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("OtherDetails")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int>("RelationShipId")
@@ -2283,6 +2311,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("HealthConcerns")
+                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 

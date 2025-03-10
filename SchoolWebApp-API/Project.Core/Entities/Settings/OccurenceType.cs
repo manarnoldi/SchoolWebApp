@@ -5,6 +5,6 @@ namespace SchoolWebApp.Core.Entities.Settings
     public class OccurenceType: SettingsBase
     {
         public string? Abbreviation { get; set; }
-        public List<Discipline> Disciplines { get; set; }
+        public List<Discipline> Disciplines { get; set; } = new();
     }
 }

@@ -16,10 +16,10 @@ namespace SchoolWebApp.Core.Entities.Students
         public bool Pickup { get; set; }      
         
         public int OccupationId { get; set; }
-        public Occupation Occupation { get; set; }
+        public Occupation? Occupation { get; set; }
 
-        public List<Student> Students { get; set; }
-        public List<StudentParent> StudentParents { get; set; }
+        public List<Student> Students { get; set; } = new();
+        public List<StudentParent> StudentParents { get; set; } = new();
 
     }
 }

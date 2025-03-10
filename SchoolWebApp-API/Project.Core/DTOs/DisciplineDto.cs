@@ -7,7 +7,7 @@ namespace SchoolWebApp.Core.DTOs
 {
     public class DisciplineDto
     {
-        public string OccurenceDetails { get; set; }
+        public string? OccurenceDetails { get; set; }
 
 
         [Required(ErrorMessage = "Enter occurence start date")]
@@ -20,7 +20,7 @@ namespace SchoolWebApp.Core.DTOs
 
         [Display(Name = "Outcome details")]
         [StringLength(255)]
-        public string OutcomeDetails { get; set; }
+        public string? OutcomeDetails { get; set; }
 
         public int? OutcomeId { get; set; }
         public OutcomeDto? Outcome { get; set; }

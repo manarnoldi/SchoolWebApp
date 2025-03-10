@@ -13,12 +13,12 @@ namespace SchoolWebApp.Core.Entities.Academics
         [Required(ErrorMessage = "Enter the academic year")]
         [Display(Name = "Academic year")]
         [StringLength(255)]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         [Required(ErrorMessage = "Enter the academic year abbreviation")]
         [Display(Name = "Abbreviation")]
         [StringLength(255)]
-        public string Abbreviation { get; set; }
+        public required string Abbreviation { get; set; }
 
         [Display(Name = "Start date")]
         public DateTime StartDate { get; set; }
@@ -27,10 +27,10 @@ namespace SchoolWebApp.Core.Entities.Academics
         public DateTime EndDate { get; set; }
 
         [StringLength(500)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public bool Status { get; set; }
 
-        public List<SchoolClass> SchoolClasses { get; set; }
-        public List<Session> Sessions { get; set; }
+        public List<SchoolClass> SchoolClasses { get; set; } = new();
+        public List<Session> Sessions { get; set; } = new();
     }
 }

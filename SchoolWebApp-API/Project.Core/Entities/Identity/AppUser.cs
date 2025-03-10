@@ -11,7 +11,7 @@ namespace SchoolWebApp.Core.Entities.Identity
         [Required]
         public required string LastName { get; set; }
         public int PersonId { get; set; }
-        public Person Person { get; set; }
+        public Person? Person { get; set; }
         public DateTime? Created { get; set; }
 
         [StringLength(255)]

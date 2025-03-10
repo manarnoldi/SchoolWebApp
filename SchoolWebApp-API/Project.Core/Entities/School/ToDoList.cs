@@ -6,12 +6,12 @@ namespace SchoolWebApp.Core.Entities.School
 {
     public class ToDoList: Base
     {
-        public string ItemName { get; set; }
+        public required string ItemName { get; set; }
         public DateTime CompleteBy { get; set; }
         public Boolean Completed { get; set; }
 
         public int StaffDetailsId { get; set; }
-        public StaffDetails StaffDetails { get; set; }
+        public StaffDetails? StaffDetails { get; set; }
 
         [NotMapped]
         public double TimeToDeadline

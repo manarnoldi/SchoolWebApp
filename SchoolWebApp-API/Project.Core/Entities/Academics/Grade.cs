@@ -8,12 +8,12 @@ namespace SchoolWebApp.Core.Entities.Academics
         [Required(ErrorMessage = "Enter the grade name")]
         [Display(Name = "Grade name")]
         [StringLength(255)]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         [Required(ErrorMessage = "Enter the abbreviation")]
         [Display(Name = "Grade abbreviation")]
         [StringLength(255)]
-        public string Abbr { get; set; }
+        public required string Abbr { get; set; }
 
         [Required(ErrorMessage = "Enter the minimum score")]
         [Display(Name = "Minimum score")]
@@ -27,12 +27,12 @@ namespace SchoolWebApp.Core.Entities.Academics
         public float Points { get; set; }
 
         [Display(Name = "Remarks in Kiswahili")]
-        public string RemarksSwa { get; set; }
+        public string? RemarksSwa { get; set; }
 
         [Display(Name = "Remarks in English")]
-        public string RemarksEng { get; set; }
+        public string? RemarksEng { get; set; }
 
         public int CurriculumId { get; set; }
-        public Curriculum Curriculum { get; set; }
+        public Curriculum? Curriculum { get; set; }
     }
 }

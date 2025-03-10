@@ -12,12 +12,12 @@ namespace SchoolWebApp.Core.Entities.Class
         [Required(ErrorMessage = "Enter the session name.")]
         [Display(Name = "Session name")]
         [StringLength(255)]
-        public string SessionName { get; set; }
+        public required string SessionName { get; set; }
 
         [Required(ErrorMessage = "Enter the session abbreviation.")]
         [Display(Name = "Session abbreviation")]
         [StringLength(255)]
-        public string Abbreviation { get; set; }
+        public required string Abbreviation { get; set; }
 
         [Required(ErrorMessage = "Enter the session start date.")]
         [Display(Name = "Session start date")]
@@ -29,13 +29,13 @@ namespace SchoolWebApp.Core.Entities.Class
         public bool Status { get; set; }
 
         public int AcademicYearId { get; set; }
-        public AcademicYear AcademicYear { get; set; }
+        public AcademicYear? AcademicYear { get; set; }
         public int CurriculumId { get; set; }
-        public Curriculum Curriculum { get; set; }
+        public Curriculum? Curriculum { get; set; }
         public int SessionTypeId { get; set; }
-        public SessionType SessionType { get; set; }
+        public SessionType? SessionType { get; set; }
 
-        public List<Exam> Exams { get; set; }
-        public List<Event> Events { get; set; }
+        public List<Exam> Exams { get; set; } = new();
+        public List<Event> Events { get; set; } = new();
     }
 }

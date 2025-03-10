@@ -9,11 +9,11 @@ namespace SchoolWebApp.Core.Entities.Students
         [NotMapped]
         public override int Id { get; set; }
         public int RelationShipId { get; set; }
-        public RelationShip RelationShip { get; set; }
+        public RelationShip? RelationShip { get; set; }
         public int StudentId { get; set; }
-        public Student Student { get; set; }
+        public Student? Student { get; set; }
         public int ParentId { get; set; }
-        public Parent Parent { get; set; }
-        public string OtherDetails { get; set; }
+        public Parent? Parent { get; set; }
+        public string? OtherDetails { get; set; }
     }
 }

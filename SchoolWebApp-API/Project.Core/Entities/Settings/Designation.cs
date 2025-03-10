@@ -5,6 +5,6 @@ namespace SchoolWebApp.Core.Entities.Settings
 {
     public   class Designation: SettingsBase
     {
-        public List<StaffDetails> StaffDetails { get; set; }
+        public List<StaffDetails> StaffDetails { get; set; } = new();
     }
 }

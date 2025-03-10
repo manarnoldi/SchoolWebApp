@@ -5,6 +5,6 @@ namespace SchoolWebApp.Core.Entities.Settings
 {
     public class Occupation: SettingsBase
     {
-        public List<Parent> Parents  { get; set; }
+        public List<Parent> Parents  { get; set; } = new();
     }
 }

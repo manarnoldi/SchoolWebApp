@@ -7,9 +7,9 @@ namespace SchoolWebApp.Core.Entities.Identity
 {
     public class AuthenticationResponse
     {
-        public string Id {  get; set; }
+        public required string Id {  get; set; }
         public string? Token { get; set; }
         public DateTime Expiration { get; set; }
-        public IList<string> Roles { get; set; }
+        public IList<string>? Roles { get; set; }
     }
 }
