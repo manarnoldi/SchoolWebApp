@@ -155,6 +155,34 @@ namespace SchoolWebApp.API.Controllers.Academics
             }
         }
 
+        // GET api/subjects/byCurriculumId/5
+        /// <summary>
+        /// A method for retrieving subjects by curriculum Id.
+        /// </summary>
+        /// <param name="curriculumId">The curriculum Id whose subjects are to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byCurriculumId/{curriculumId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SubjectDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetSubjectsByCurriculumId(int curriculumId)
+        {
+            try
+            {
+                if (curriculumId <= 0) return BadRequest(curriculumId);
+                var _item = await _unitOfWork.Subjects.GetByCurriculumId(curriculumId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<SubjectDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the subjects by curriculum id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         // POST api/subjects
         /// <summary>
         /// A method for creating a subject record.

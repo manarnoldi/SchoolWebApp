@@ -1,6 +1,6 @@
 import {ExamType} from '@/academics/models/exam-type';
+import { ExamTypesService } from '@/academics/services/exam-types.service';
 import {BreadCrumb} from '@/core/models/bread-crumb';
-import {ExamTypesService} from '@/school/services/exam-types.service';
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
 import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {Component, OnInit, ViewChild} from '@angular/core';

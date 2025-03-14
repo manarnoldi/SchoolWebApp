@@ -15,7 +15,11 @@ namespace SchoolWebApp.Infrastructure.Repositories.Class
 
         public async Task<List<SchoolClass>> GetByAcademicYearId(int academicYearId)
         {
-            var schoolClasses = await _dbContext.SchoolClasses.Where(e => e.AcademicYearId == academicYearId).ToListAsync();
+            var schoolClasses = await _dbContext.SchoolClasses.Where(e => e.AcademicYearId == academicYearId)
+                .Include(l=>l.LearningLevel)
+                .Include(l=>l.SchoolStream)
+                .Include(l=>l.AcademicYear)
+                .ToListAsync();
             return schoolClasses;
         }
 

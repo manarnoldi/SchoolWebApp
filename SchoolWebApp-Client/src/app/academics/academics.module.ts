@@ -11,6 +11,10 @@ import { GradesAddFormComponent } from './components/grades/grades-add-form/grad
 import { SubjectsComponent } from './components/subjects/subjects.component';
 import { SubjectsAddFormComponent } from './components/subjects/subjects-add-form/subjects-add-form.component';
 import { SubjectsTableComponent } from './components/subjects/subjects-table/subjects-table.component';
+import { ExamsComponent } from './components/exams/exams.component';
+import { ExamListSearchFormComponent } from './components/exams/exam-list-search-form/exam-list-search-form.component';
+import { ExamAddFormComponent } from './components/exams/exam-add-form/exam-add-form.component';
+import { ExamTableComponent } from './components/exams/exam-table/exam-table.component';
 
 
 
@@ -18,6 +22,7 @@ import { SubjectsTableComponent } from './components/subjects/subjects-table/sub
   declarations: [
     CurriculumComponent,
     ExamTypesComponent,
+    ExamsComponent,
     AcademicsComponent,
     SubjectGroupsComponent,
     SubjectGroupsAddFormComponent,
@@ -25,7 +30,11 @@ import { SubjectsTableComponent } from './components/subjects/subjects-table/sub
     GradesAddFormComponent,
     SubjectsComponent,
     SubjectsAddFormComponent,
-    SubjectsTableComponent
+    SubjectsTableComponent,
+    ExamListSearchFormComponent,
+    ExamAddFormComponent,
+    ExamTableComponent,
+    ExamsComponent
   ],
   imports: [
     CoreModule,

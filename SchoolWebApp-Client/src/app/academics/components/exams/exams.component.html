@@ -1,0 +1,37 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <a
+                    [routerLink]="['/exams/add']"
+                    [routerLinkActive]="'active'"
+                    class="btn btn-sm btn-flat btn-success float-right mt-1">
+                    <i class="fas fa-plus-circle"></i> Add exams
+                </a>
+            </div>
+        </div>
+        <div class="card my-1  py-1 px-1">
+            <div class="row">
+                <div class="col-sm-12">
+                    <app-exam-list-search-form [subjects]="subjects" [schoolClasses]="schoolClasses" (clearListEvent)="clearList()"
+                        [sessions]="sessions" [curricula]="curricula" *ngIf="isLoading" (searchItemEvent)="onButtonSearchClick($event)"
+                        [academicYears]="academicYears" (curriculumYearChangedEvent)="curriculumYearChanged($event)"></app-exam-list-search-form>
+                </div>
+            </div>
+        </div>        
+        <div class="row">
+            <div class="col-12">
+                <app-exam-table [tableTitle]="'Examinations list'" *ngIf="isLoading"
+                    [subjects]="subjects" [exams]="exams" [examTypes]="examTypes"
+                    [schoolClasses]="schoolClasses" [sessions]="sessions"
+                    [curricula]="curricula"
+                    [academicYears]="academicYears" (editItemEvent)="editItem($event)"
+                    (deleteItemEvent)="deleteItem($event)"></app-exam-table>
+            </div>
+        </div>
+    </div>
+</section>

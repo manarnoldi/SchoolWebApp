@@ -2,6 +2,7 @@
 using Project.Infrastructure.Data;
 using Project.Infrastructure.Repositories;
 using SchoolWebApp.Core.Entities.Academics;
+using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Interfaces.IRepositories.Academics;
 
 namespace SchoolWebApp.Infrastructure.Repositories.Academics
@@ -10,6 +11,12 @@ namespace SchoolWebApp.Infrastructure.Repositories.Academics
     {
         public SubjectRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
+        }
+
+        public async Task<List<Subject>> GetByCurriculumId(int curriculumId)
+        {
+            var subjects = await _dbContext.Subjects.Where(s => s.SubjectGroup.CurriculumId == curriculumId).ToListAsync();
+            return subjects;
         }
 
         public async Task<List<Subject>> GetByDepartmentId(int departmentId)

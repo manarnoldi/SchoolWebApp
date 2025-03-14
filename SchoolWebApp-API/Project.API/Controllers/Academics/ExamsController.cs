@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Academics.Exam;
@@ -7,6 +8,7 @@ using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.Academics
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ExamsController : ControllerBase
@@ -33,7 +35,8 @@ namespace SchoolWebApp.API.Controllers.Academics
         {
             try
             {
-                return Ok(_mapper.Map<List<ExamDto>>(await _unitOfWork.Exams.GetAll()));
+                return Ok(_mapper.Map<List<ExamDto>>(await _unitOfWork.Exams
+                    .Find(includeProperties: "ExamType,SchoolClass,Session,Subject")));
             }
             catch (Exception ex)
             {
@@ -123,6 +126,40 @@ namespace SchoolWebApp.API.Controllers.Academics
             }
         }
 
+        // GET api/exams/examSearch/5/5/5/5/5
+        /// <summary>
+        /// A method for retrieving exams by searching.
+        /// </summary>
+        /// <param name="academicYearId">The academic year Id whose exams is to be retrieved</param>
+        /// <param name="curriculumId">The curriculum Id whose exams is to be retrieved</param>
+        /// <param name="sessionId">The session Id whose exams is to be retrieved</param>
+        /// <param name="schoolClassId">The school class Id whose exams is to be retrieved</param>
+        /// <param name="subjectId">The subject Id whose exams it to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("examSearch")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ExamDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ExamsSearch(int academicYearId, int curriculumId, int sessionId, int? schoolClassId = null, int? subjectId = null)
+        {
+            try
+            {
+                if (academicYearId <= 0) return BadRequest(academicYearId);
+                if (curriculumId <= 0) return BadRequest(curriculumId);
+                if (sessionId <= 0) return BadRequest(sessionId);
+                var _item = await _unitOfWork.Exams.SearchForExam(academicYearId, curriculumId, sessionId, schoolClassId, subjectId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<ExamDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the exams by session items.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         // GET api/exams/5
         /// <summary>
         /// A method for retrieving an exam record by Id.
@@ -139,7 +176,7 @@ namespace SchoolWebApp.API.Controllers.Academics
             try
             {
                 if (id <= 0) return BadRequest(id);
-                var _item = await _unitOfWork.Exams.GetById(id);
+                var _item = await _unitOfWork.Exams.GetById(id, includeProperties: "ExamType,SchoolClass,Session,Subject");
 
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<ExamDto>(_item);
@@ -167,7 +204,7 @@ namespace SchoolWebApp.API.Controllers.Academics
         {
             if (ModelState.IsValid)
             {
-                if (await _unitOfWork.Exams.ItemExistsAsync(s => s.Name == model.Name && s.ExamTypeId == model.ExamTypeId && s.SchoolClassId == model.SchoolClassId 
+                if (await _unitOfWork.Exams.ItemExistsAsync(s => s.Name == model.Name && s.ExamTypeId == model.ExamTypeId && s.SchoolClassId == model.SchoolClassId
                 && s.SessionId == model.SessionId && s.SubjectId == model.SubjectId))
                     return Conflict(new { message = $"The exam details submitted already exist." });
                 try

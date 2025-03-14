@@ -1,0 +1,49 @@
+<div class="card mb-1">
+    <app-table-heading [editControls]="false"
+        tableTitle="{{tableTitle}}"></app-table-heading>
+    <div class="card-body table-responsive p-0">
+        <table class="table table-striped table-hover text-nowrap">
+            <thead>
+                <tr>
+                    <th>Curriculum</th>
+                    <th>Year</th>
+                    <th>Session</th>
+                    <th>Class</th>
+                    <th>Subject</th>
+                    <th>Mark</th>
+                    <th>Contributing</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr
+                    *ngFor="let item of exams| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                    <td>
+                        <span *ngFor="let curriculum of curricula">
+                            <span *ngIf="curriculum.id === item.session?.curriculumId">
+                                {{ curriculum?.name }}
+                            </span>
+                        </span>
+                    </td>
+                    <td>
+                        <span *ngFor="let academicYear of academicYears">
+                            <span *ngIf="academicYear.id === item.session?.academicYearId">
+                                {{ academicYear?.name }}
+                            </span>
+                        </span>
+                    </td>
+                    <td>{{ item.session?.sessionName }}</td>
+                    <td>{{ item.schoolClass?.name }}</td>
+                    <td>{{ item.subject?.name }}</td>
+                    <td>{{ item.examMark }}</td>
+                    <td>{{ item.contributingMark }}</td>
+                    <app-table-action
+                        (editItemEvent)="editItem(item.id)"
+                        (deleteItemEvent)="deleteItem(item.id)"></app-table-action>
+                </tr>
+            </tbody>
+        </table>
+        <app-table-paging
+            [collectionSize]="exams.length"></app-table-paging>
+    </div>
+</div>

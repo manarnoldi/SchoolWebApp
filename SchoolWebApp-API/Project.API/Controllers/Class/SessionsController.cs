@@ -98,6 +98,36 @@ namespace SchoolWebApp.API.Controllers.Class
             }
         }
 
+        // GET api/sessions/byCurriculumYearId/5/5
+        /// <summary>
+        /// A method for retrieving sessions by curriculum Id and academic Year Id.
+        /// </summary>
+        /// <param name="curriculumId">The curriculum Id whose sessions to be retrieved</param>
+        /// <param name="academicYearId">The academic year Id whose sessions to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byCurriculumYearId/{curriculumId}/{academicYearId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SessionDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetExamsByCurriculumYearId(int curriculumId, int academicYearId)
+        {
+            try
+            {
+                if (curriculumId <= 0) return BadRequest(curriculumId);
+                if (academicYearId <= 0) return BadRequest(academicYearId);
+                var _item = await _unitOfWork.Sessions.GetByCurriculumIdYearId(curriculumId, academicYearId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<SessionDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the sessions by curriculum id and academic year id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         // GET api/sessions/5
         /// <summary>
         /// A method for retrieving a session record by Id.

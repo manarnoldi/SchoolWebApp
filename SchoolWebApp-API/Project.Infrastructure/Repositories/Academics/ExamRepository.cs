@@ -14,13 +14,39 @@ namespace SchoolWebApp.Infrastructure.Repositories.Academics
 
         public async Task<List<Exam>> GetBySchoolClassId(int schoolClassId)
         {
-            var exams = await _dbContext.Exams.Where(e => e.SchoolClassId == schoolClassId).ToListAsync();
+            var exams = await _dbContext.Exams.Where(e => e.SchoolClassId == schoolClassId).Include(e => e.ExamType)
+                .Include(e => e.SchoolClass)
+                .Include(e => e.Session)
+                .Include(e => e.Subject).ToListAsync();
             return exams;
         }
 
         public async Task<List<Exam>> GetBySessionId(int sessionId)
         {
-            var exams = await _dbContext.Exams.Where(e => e.SessionId == sessionId).ToListAsync();
+            var exams = await _dbContext.Exams.Where(e => e.SessionId == sessionId).Include(e => e.ExamType)
+                .Include(e => e.SchoolClass)
+                .Include(e => e.Session)
+                .Include(e => e.Subject).ToListAsync();
+            return exams;
+        }
+
+        public async Task<List<Exam>> SearchForExam(int academicYearId, int curriculumId, int sessionId, int? schoolClassId, int? subjectId)
+        {
+            var query = _dbContext.Exams
+                .Where(c => c.SchoolClass.AcademicYearId == academicYearId
+                && c.Session.CurriculumId == curriculumId
+                && c.SessionId == sessionId)
+                .Include(e => e.ExamType)
+                .Include(e => e.SchoolClass)
+                .Include(e => e.Session)
+                .Include(e => e.Subject)
+                .AsQueryable();
+
+            if (schoolClassId != null)
+                query = query.Where(s => s.SchoolClassId == schoolClassId);
+            if (subjectId != null)
+                query = query.Where(s => s.SubjectId == subjectId);
+            var exams = await query.ToListAsync();
             return exams;
         }
     }

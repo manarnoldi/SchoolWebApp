@@ -7,5 +7,6 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.Academics
     {
         Task<List<Subject>> GetBySubjectGroupId(int subjectGroupId);
         Task<List<Subject>> GetByDepartmentId(int departmentId);
+        Task<List<Subject>> GetByCurriculumId(int curriculumId);
     }
 }

@@ -53,6 +53,7 @@ import {StudentAssignmentsComponent} from './students/components/student-assignm
 import {ParentsListComponent} from './students/components/parents/parents-list/parents-list.component';
 import {ParentAddFormComponent} from './students/components/parents/parent-add-form/parent-add-form.component';
 import { SubjectsComponent } from './academics/components/subjects/subjects.component';
+import { ExamsComponent } from './academics/components/exams/exams.component';
 
 const routes: Routes = [
     {
@@ -146,7 +147,8 @@ const routes: Routes = [
             {path: 'examTypes', component: ExamTypesComponent},
             {path: 'subjectGroups', component: SubjectGroupsComponent},
             {path: 'subjects', component: SubjectsComponent},
-            {path: 'grades', component: GradesComponent}
+            {path: 'grades', component: GradesComponent},
+            {path: 'exams', component: ExamsComponent}
         ]
     },
     {

@@ -5,9 +5,9 @@ import { Session } from '@/class/models/session';
 import { Subject } from './subject';
 
 export class Exam extends ResourceModel<Exam> {
+    public name?: string;
     public examMark?: number;
     public contributingMark?: number;
-    public examHours?: number;
 
     public examTypeId?: number;
     public examType?: ExamType;
@@ -20,6 +20,8 @@ export class Exam extends ResourceModel<Exam> {
 
     public subjectId?: number;
     public subject?: Subject;
+
+    public otherDetails?: string;
 
     constructor(model?: Partial<Exam>) {
         super(model);
