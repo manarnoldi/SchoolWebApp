@@ -37,6 +37,7 @@ export class LearningLevelsFormComponent implements OnInit {
     refreshItems = () => {
         this.learningLevelForm = this.formBuilder.group({
             name: ['', [Validators.required]],
+            rank: [0, [Validators.required]],
             description: [''],
             educationLevelId: [null, [Validators.required]]
         });
@@ -45,6 +46,7 @@ export class LearningLevelsFormComponent implements OnInit {
     setFormControls = (learningLevel: LearningLevel) => {
         this.learningLevelForm.setValue({
             name: learningLevel.name,
+            rank: learningLevel.rank,
             description: learningLevel.description,
             educationLevelId: learningLevel.educationLevelId ?? null
         });

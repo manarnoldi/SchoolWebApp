@@ -40,6 +40,7 @@ export class LearningLevelsComponent implements OnInit {
     tableHeaders: string[] = [
         'Name',
         'Education level',
+        'Rank',
         'Description',
         'Action'
     ];

@@ -20,6 +20,7 @@ namespace SchoolWebApp.Core.Entities.Class
         public int AcademicYearId { get; set; }
         public AcademicYear? AcademicYear { get; set; }
 
+        public int Rank { get; set; }
         public List<SchoolClassLeaders> SchoolClassLeaders { get; set; } = new();
         public List<Exam> Exams { get; set; } = new();
         public List<StudentClass> StudentClasses { get; set; } = new();

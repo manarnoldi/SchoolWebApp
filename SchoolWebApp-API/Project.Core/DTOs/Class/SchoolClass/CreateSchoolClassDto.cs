@@ -14,6 +14,7 @@ namespace SchoolWebApp.Core.DTOs.Class.SchoolClass
         public SchoolStreamDto? SchoolStream { get; set; }
         public int AcademicYearId { get; set; }
         public AcademicYearDto? AcademicYear { get; set; }
-        
+        public int Rank { get; set; }
+
     }
 }

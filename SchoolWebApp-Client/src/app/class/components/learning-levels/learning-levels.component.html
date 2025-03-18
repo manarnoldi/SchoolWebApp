@@ -53,6 +53,7 @@
                                     *ngFor="let item of learningLevels| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
                                     <td>{{ item.name }}</td>
                                     <td>{{ item.educationLevel?.name }}</td>
+                                    <td>{{ item.rank }}</td>
                                     <td>{{ item.description }}</td>
                                     <app-table-action
                                         (editItemEvent)="editItem(item.id)"

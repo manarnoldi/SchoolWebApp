@@ -41,6 +41,19 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="rank" class="form-label">Rank: <span
+                                class="requiredField">*</span></label>
+                        <input id="rank" placeholder="Learning level rank" type="number"
+                            class="form-control" formControlName="rank" [ngClass]="{
+                            'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
+                            }" />
+                        <div class="invalid-feedback">Learning level rank is required</div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="modal-footer">
             <button type="submit" [disabled]="learningLevelForm.invalid" class="btn
