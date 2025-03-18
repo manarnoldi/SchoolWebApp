@@ -6,6 +6,7 @@ export class EducationLevel extends ResourceModel<EducationLevel> {
     public name?: string;
     public description?: string;
     public abbr?: string;
+    public rank?: number;
     public numOfYears?: number;
 
     public educationLevelTypeId?: number;

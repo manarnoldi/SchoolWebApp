@@ -33,7 +33,7 @@ import {StudentSubjectsLoadFormComponent} from './components/student-assignments
 import {AcademicsModule} from '@/academics/academics.module';
 import { StudentAttendanceFormComponent } from './components/student-assignments/student-attendance/student-attendance-form/student-attendance-form.component';
 import { StudentAttendanceTableComponent } from './components/student-assignments/student-attendance/student-attendance-table/student-attendance-table.component';
-import { StudentClassesComponent } from './components/shared/student-classes/student-classes.component';
+import { StudentClassesComponent } from '../shared/components/student-classes/student-classes.component';
 
 @NgModule({
     declarations: [
@@ -66,10 +66,8 @@ import { StudentClassesComponent } from './components/shared/student-classes/stu
         StudentSubjectsTableComponent,
         StudentSubjectsLoadFormComponent,
         StudentAttendanceFormComponent,
-        StudentAttendanceTableComponent,
-        StudentClassesComponent
+        StudentAttendanceTableComponent
     ],
-    imports: [AcademicsModule, DataTablesModule, CoreModule, SharedModule],
-    exports: [StudentsMinTableComponent]
+    imports: [AcademicsModule, DataTablesModule, CoreModule, SharedModule]
 })
 export class StudentsModule {}

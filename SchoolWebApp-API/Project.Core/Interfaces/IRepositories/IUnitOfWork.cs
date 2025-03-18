@@ -48,6 +48,7 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
         IGradeRepository Grades { get; }
         ISubjectGroupRepository SubjectGroups { get; }
         ISubjectRepository Subjects { get; }
+        IEducationLevelSubjectRepository EducationLevelSubjects { get; }
         #endregion
 
         #region Class

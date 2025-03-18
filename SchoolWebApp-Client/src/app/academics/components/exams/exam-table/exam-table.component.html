@@ -5,14 +5,7 @@
         <table class="table table-striped table-hover text-nowrap">
             <thead>
                 <tr>
-                    <th>Curriculum</th>
-                    <th>Year</th>
-                    <th>Session</th>
-                    <th>Class</th>
-                    <th>Subject</th>
-                    <th>Mark</th>
-                    <th>Contributing</th>
-                    <th>Action</th>
+                    <th *ngFor="let header of tableHeaders">{{header}}</th>
                 </tr>
             </thead>
             <tbody>
@@ -35,6 +28,8 @@
                     <td>{{ item.session?.sessionName }}</td>
                     <td>{{ item.schoolClass?.name }}</td>
                     <td>{{ item.subject?.name }}</td>
+                    <td>{{ item.examType?.name }}</td>
+                    <td>{{ item.name }}</td>
                     <td>{{ item.examMark }}</td>
                     <td>{{ item.contributingMark }}</td>
                     <app-table-action

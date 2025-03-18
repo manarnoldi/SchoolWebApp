@@ -1,0 +1,32 @@
+<form [formGroup]="academicYearSelectorForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group1">
+                <select class="form-select form-select-sm" aria-label="Academic year"
+                    formControlName="academicYearId" id="academicYearId"  (change)="academicYearEdulevelChanged()" >
+                    <option [ngValue]="null"  selected>-Select academic year-</option>
+                    <option [ngValue]="academicYear.id" *ngFor="let academicYear of
+                                    academicYears">{{academicYear.name}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group1">
+                <select class="form-select form-select-sm" aria-label="Education level"
+                    formControlName="educationLevelId" id="educationLevelId" (change)="academicYearEdulevelChanged()">
+                    <option [ngValue]="null"  selected>-Select education level-</option>
+                    <option [ngValue]="educationLevel.id" *ngFor="let educationLevel of
+                                    educationLevels">{{educationLevel.name}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group1">
+                <button type="submit" [disabled]="academicYearSelectorForm.invalid"
+                    class="btn btn-sm btn-flat btn-warning">
+                    <i class="fas fa-sync"></i> Search
+                </button>
+            </div>
+        </div>
+    </div>
+</form>

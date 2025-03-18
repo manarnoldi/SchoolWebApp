@@ -8,6 +8,7 @@ namespace SchoolWebApp.Core.DTOs.School.EducationLevel
     {
         public string? Abbr { get; set; }
         public int NumOfYears { get; set; }
+        public int Rank { get; set; }
         public int EducationLevelTypeId { get; set; }
         public EducationLevelTypeDto? EducationLevelType { get; set; }
         public int CurriculumId { get; set; }

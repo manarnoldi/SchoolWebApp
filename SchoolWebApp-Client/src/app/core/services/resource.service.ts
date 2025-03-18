@@ -51,6 +51,12 @@ export abstract class ResourceService<T extends ResourceModel<T>> {
             .pipe(map((result) => new this.tConstructor(result)));
     }
 
+    public getObjectBySearch(url): Observable<T> {
+        return this.httpClient
+            .get<T>(`${url}`)
+            .pipe(map((result) => new this.tConstructor(result)));
+    }
+
     public getCount(url): Observable<number> {
         return this.httpClient.get<number>(`${url}`);
     }

@@ -6,6 +6,7 @@ using SchoolWebApp.Core.Interfaces.IRepositories.School;
 using SchoolWebApp.Core.Interfaces.IRepositories.Settings;
 using SchoolWebApp.Core.Interfaces.IRepositories.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories.Students;
+using SchoolWebApp.Infrastructure.Repositories.Academics;
 
 namespace SchoolWebApp.Infrastructure.Repositories
 {
@@ -22,6 +23,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
         public IGradeRepository Grades { get; }
         public ISubjectGroupRepository SubjectGroups { get; }
         public ISubjectRepository Subjects { get; }
+        public IEducationLevelSubjectRepository EducationLevelSubjects { get; }
         #endregion
 
         #region School
@@ -84,6 +86,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
                 IGradeRepository gradeRepository,
                 ISubjectGroupRepository subjectGroupRepository,
                 ISubjectRepository subjectRepository,
+                IEducationLevelSubjectRepository educationLevelSubjectRepository,
 
                 //School
                 ISchoolDetailsRepository schoolDetailsRepository,
@@ -142,6 +145,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
             Grades = gradeRepository;
             SubjectGroups = subjectGroupRepository;
             Subjects = subjectRepository;
+            EducationLevelSubjects = educationLevelSubjectRepository;
             #endregion
 
             #region School

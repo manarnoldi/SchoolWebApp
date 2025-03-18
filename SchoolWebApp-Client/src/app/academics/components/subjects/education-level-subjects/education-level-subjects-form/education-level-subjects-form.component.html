@@ -1,0 +1,58 @@
+<form [formGroup]="educationLevelSubjectForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="modal-body p-1">
+        <div class="border border-info my-1 p-1 rounded">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="academicYearId" class="form-label">Academic year:
+                            <span class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm" (change)="eduLevelYearChanged()"
+                            aria-label="Academic year" [ngClass]="{
+                                'is-invalid': (f.academicYearId.dirty ||
+                                f.academicYearId.touched) && f.academicYearId.invalid }"
+                            formControlName="academicYearId" id="academicYearId">
+                            <option [ngValue]="null" selected>-Select academic year-</option>
+                            <option [ngValue]="academicYear.id"
+                                *ngFor="let academicYear of
+                                    academicYears">{{academicYear.name}}</option>
+                        </select>
+                        <div class="invalid-feedback"> Academic year is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="educationLevelId" class="form-label">Education level:
+                            <span class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm"  (change)="eduLevelYearChanged()"
+                            aria-label="Education level" [ngClass]="{
+                                'is-invalid': (f.educationLevelId.dirty ||
+                                f.educationLevelId.touched) && f.educationLevelId.invalid }"
+                            formControlName="educationLevelId" id="educationLevelId">
+                            <option [ngValue]="null" selected>-Select education level-</option>
+                            <option [ngValue]="educationLevel.id"
+                                *ngFor="let educationLevel of
+                                    educationLevels">{{educationLevel.name}}</option>
+                        </select>
+                        <div class="invalid-feedback"> Education level is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mt-1">
+                    <app-subjects-min-table [subjects]="subjects"
+                        [minimumTable]="true" *ngIf="!isLoading"></app-subjects-min-table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer p-1">
+        <button type="submit" [disabled]="educationLevelSubjectForm.invalid" class="btn
+                btn-success"> <i class="fas fa-save"></i>
+            {{ editMode ? 'Update' : 'Save' }}
+        </button>
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
+            #closeButton (click)="closeEducationLevelSubjectsForm()">
+            <i class="fas fa-times"></i> Close
+        </button>
+    </div>
+</form>

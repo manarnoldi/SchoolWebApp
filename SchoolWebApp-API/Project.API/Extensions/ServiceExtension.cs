@@ -32,6 +32,7 @@ namespace Project.API.Extensions
             services.AddTransient<IGradeRepository, GradeRepository>();
             services.AddTransient<ISubjectGroupRepository, SubjectGroupRepository>();
             services.AddTransient<ISubjectRepository, SubjectRepository>();
+            services.AddTransient<IEducationLevelSubjectRepository, EducationLevelSubjectRepository>();
             #endregion
 
             #region School Repositories

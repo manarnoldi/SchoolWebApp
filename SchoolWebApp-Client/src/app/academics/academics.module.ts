@@ -10,13 +10,13 @@ import { GradesComponent } from './components/grades/grades.component';
 import { GradesAddFormComponent } from './components/grades/grades-add-form/grades-add-form.component';
 import { SubjectsComponent } from './components/subjects/subjects.component';
 import { SubjectsAddFormComponent } from './components/subjects/subjects-add-form/subjects-add-form.component';
-import { SubjectsTableComponent } from './components/subjects/subjects-table/subjects-table.component';
 import { ExamsComponent } from './components/exams/exams.component';
 import { ExamListSearchFormComponent } from './components/exams/exam-list-search-form/exam-list-search-form.component';
 import { ExamAddFormComponent } from './components/exams/exam-add-form/exam-add-form.component';
 import { ExamTableComponent } from './components/exams/exam-table/exam-table.component';
-
-
+import { EducationLevelSubjectsComponent } from './components/subjects/education-level-subjects/education-level-subjects.component';
+import { EducationLevelSubjectsTableComponent } from './components/subjects/education-level-subjects/education-level-subjects-table/education-level-subjects-table.component';
+import { EducationLevelSubjectsFormComponent } from './components/subjects/education-level-subjects/education-level-subjects-form/education-level-subjects-form.component';
 
 @NgModule({
   declarations: [
@@ -30,16 +30,17 @@ import { ExamTableComponent } from './components/exams/exam-table/exam-table.com
     GradesAddFormComponent,
     SubjectsComponent,
     SubjectsAddFormComponent,
-    SubjectsTableComponent,
     ExamListSearchFormComponent,
     ExamAddFormComponent,
     ExamTableComponent,
-    ExamsComponent
+    ExamsComponent,
+    EducationLevelSubjectsComponent,
+    EducationLevelSubjectsTableComponent,
+    EducationLevelSubjectsFormComponent
   ],
   imports: [
     CoreModule,
     SharedModule
-  ],
-  exports:[SubjectsTableComponent]
+  ]
 })
 export class AcademicsModule { }

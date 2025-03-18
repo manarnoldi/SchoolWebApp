@@ -15,6 +15,11 @@ import {TableButtonComponent} from './directives/table-button/table-button.compo
 import {PersonSelectComponent} from './directives/person-select/person-select.component';
 import {YearClassStreamComponent} from './directives/year-class-stream/year-class-stream.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { SchoolClassMinimumTableComponent } from './components/school-class-minimum-table/school-class-minimum-table.component';
+import { SubjectsMinTableComponent } from './components/subjects-min-table/subjects-min-table.component';
+import { SubjectsTableComponent } from './components/subjects-table/subjects-table.component';
+import { StudentClassesComponent } from './components/student-classes/student-classes.component';
+import { AcademicYearsSelectorFormComponent } from './components/academic-years-selector-form/academic-years-selector-form.component';
 
 @NgModule({
     declarations: [
@@ -30,7 +35,12 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
         TablePagingComponent,
         TableButtonComponent,
         PersonSelectComponent,
-        YearClassStreamComponent
+        StudentClassesComponent,
+        YearClassStreamComponent,
+        SubjectsTableComponent,
+        SchoolClassMinimumTableComponent,
+        SubjectsMinTableComponent,
+        AcademicYearsSelectorFormComponent
     ],
 
     imports: [CommonModule, NgbModule, CoreModule],
@@ -48,6 +58,11 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
         TableButtonComponent,
         PersonSelectComponent,
         YearClassStreamComponent,
+        SubjectsTableComponent,
+        SchoolClassMinimumTableComponent,
+        SubjectsMinTableComponent,
+        StudentClassesComponent,
+        AcademicYearsSelectorFormComponent,
         CommonModule,
         NgbModule,
         CoreModule

@@ -58,7 +58,6 @@ export class ExamsComponent implements OnInit {
     refreshItems() {
         let curriculaReq = this.curriculaSvc.get('/curricula');
         let academicYearsReq = this.academicYearsSvc.get('/academicYears');
-        // let academicYearsReq = this.academicYearsSvc.get('/academicYears');
 
         forkJoin([curriculaReq, academicYearsReq]).subscribe(
             ([curricula, academicYears]) => {

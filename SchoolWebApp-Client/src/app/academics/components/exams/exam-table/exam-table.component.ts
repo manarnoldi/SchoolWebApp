@@ -51,6 +51,8 @@ export class ExamTableComponent implements OnInit {
         'Session',
         'Class',
         'Subject',
+        'Exam Type',
+        'Exam Name',
         'Exam Mark',
         'Contributing',
         'Action'

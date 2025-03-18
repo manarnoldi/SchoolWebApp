@@ -1,0 +1,41 @@
+<div class="card">
+    <app-table-heading [editControls]="false"
+        tableTitle="Class Mini Table"></app-table-heading>
+    <div class="card-body table-responsive p-0">
+        <table class="table table-striped table-hover text-nowrap">
+            <thead>
+                <tr>
+                    <th>
+                        <div class="icheck-success m-0 p-0">
+                            <input #checkAll type="checkbox" id="checkAll"
+                                (change)="checkAllClicked($event)">
+                            <label class="form-check-label" for="checkAll"></label>
+                        </div>
+                    </th>
+                    <th>Name</th>
+                    <th *ngIf="!minimumTable">Year</th>
+                    <th *ngIf="!minimumTable">Class</th>
+                    <th *ngIf="!minimumTable">Stream</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr
+                    *ngFor="let item of schoolClasses| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                    <th>
+                        <div class="icheck-success">
+                            <input type="checkbox" id="{{item.id}}" (change)="itemClicked($event)"
+                                [(ngModel)]="item.isSelected">
+                            <label class="form-check-label" for="{{item.id}}"></label>
+                        </div>
+                    </th>
+                    <td>{{ item.name }}</td>
+                    <td *ngIf="!minimumTable">{{ item.academicYear?.name }}</td>
+                    <td *ngIf="!minimumTable">{{ item.learningLevel?.name }}</td>
+                    <td *ngIf="!minimumTable">{{ item.schoolStream?.name }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <app-table-paging
+            [collectionSize]="schoolClasses.length"></app-table-paging>
+    </div>
+</div>

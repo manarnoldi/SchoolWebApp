@@ -2,7 +2,7 @@
     <div class="modal-body">
         <div class="card-details-box border-info">
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-8">
                     <div class="form-group">
                         <label for="name">Education level name: <span
                                 class="requiredField">*</span></label>
@@ -11,6 +11,17 @@
                             'is-invalid': (f.name.dirty || f.name.touched) && f.name.invalid
                             }" />
                         <div class="invalid-feedback">Education level name is required</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="rank">Rank: <span
+                                class="requiredField">*</span></label>
+                        <input id="rank" placeholder="Rank" type="number"
+                            class="form-control" formControlName="rank" [ngClass]="{
+                            'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
+                            }" />
+                        <div class="invalid-feedback">Education level rank is required</div>
                     </div>
                 </div>
             </div>

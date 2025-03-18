@@ -32,6 +32,7 @@ namespace Project.Infrastructure.Data
         public DbSet<Grade> Grades { get; set; }
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<SubjectGroup> SubjectGroups { get; set; }
+        public DbSet<EducationLevelSubject> EducationLevelSubjects { get; set; }
         #endregion
 
         #region Class

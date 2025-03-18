@@ -16,7 +16,9 @@ namespace SchoolWebApp.Core.DTOs.Academics.Exam
         [Required(ErrorMessage = "Enter the examination contributing mark")]
         [Display(Name = "Contributing mark")]
         public float ContributingMark { get; set; }
-
+        public DateOnly ExamStartDate { get; set; }
+        public DateOnly ExamEndDate { get; set; }
+        public DateOnly ExamMarkEntryEndDate { get; set; }
         public string? OtherDetails { get; set; }
 
         public int ExamTypeId { get; set; }

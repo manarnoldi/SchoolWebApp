@@ -32,5 +32,6 @@ namespace SchoolWebApp.Core.Entities.Academics
 
         public List<SchoolClass> SchoolClasses { get; set; } = new();
         public List<Session> Sessions { get; set; } = new();
+        public List<EducationLevelSubject> educationLevelSubjects { get; set; } = new();
     }
 }

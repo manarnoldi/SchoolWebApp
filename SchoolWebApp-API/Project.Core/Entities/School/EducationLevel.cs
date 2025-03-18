@@ -14,6 +14,8 @@ namespace SchoolWebApp.Core.Entities.School
         [StringLength(255)]
         public string? Abbr { get; set; }
         public int NumOfYears { get; set; }
+
+        public int Rank { get; set; }
         public string? Description { get; set; }
 
         public int EducationLevelTypeId { get; set; }
@@ -22,5 +24,6 @@ namespace SchoolWebApp.Core.Entities.School
         public Curriculum? Curriculum { get; set; }
 
         public List<LearningLevel> LearningLevels { get; set; } = new();
+        public List<EducationLevelSubject> educationLevelSubjects { get; set; } = new();
     }
 }

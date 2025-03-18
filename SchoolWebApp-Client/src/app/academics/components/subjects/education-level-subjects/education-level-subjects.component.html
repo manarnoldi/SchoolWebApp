@@ -1,0 +1,51 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr>
+<div class="modal fade" id="educationLevelSubjectFormModal" tabindex="-1"
+    attr.aria-labelledby="educationLevelSubjectItemModalLabel" aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success opacity-50">
+                <h5 class="modal-title" id="educationLevelSubjectFormModalLabel">
+                    Record education level subjects
+                </h5>
+            </div>
+            <app-education-level-subjects-form [educationLevels]="educationLevels" 
+                [academicYears]="academicYears" [subjects]="subjects" (selectChangeEvent)="academicYearEduLevelChangedInForm($event)"
+                (addItemEvent)="AddEducationLevelSubject($event)" 
+                [isLoading]="isLoading"></app-education-level-subjects-form>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right mt-1"
+                    modelName="educationLevelSubject"
+                    buttonTitle="Add Edu-Level Subjects"></app-table-button>
+            </div>
+        </div>
+        <div class="card my-1 py-1 px-1">
+            <div class="row">
+                <div class="col-sm-8">
+                    <app-academic-years-selector-form [academicYears]="academicYears"
+                        [educationLevels]="educationLevels" (clearListEvent)="academicYearEduLevelChanged()"
+                        (searchItemEvent)="loadByEducationLevelYear($event)"></app-academic-years-selector-form>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <app-education-level-subjects-table
+                    [educationLevelSubjects]="educationLevelSubjects"
+                    (editItemEvent)="editItem($event)"
+                    [tableTitle]="'Education Level subjects'" *ngIf="!isLoading"                    
+                    (deleteItemEvent)="deleteItem($event)"></app-education-level-subjects-table>
+            </div>
+        </div>
+    </div>
+</section>

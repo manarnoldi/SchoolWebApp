@@ -161,6 +161,11 @@ export const MENU = [
                 path: ['/academics/subjects']
             },
             {
+                name: "Edu-Level Subjects",
+                iconClasses: 'fas fa-bullseye',
+                path: '/academics/educationLevelSubjects'
+            },
+            {
                 name: 'Curricula',
                 iconClasses: 'fas fa-bullseye',
                 path: ['/academics/curricula']

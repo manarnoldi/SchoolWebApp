@@ -41,6 +41,7 @@ export class EducationLevelsComponent implements OnInit {
     tableTitle: string = ' Education levels list';
     tableHeaders: string[] = [
         'Name',
+        'Rank',
         'Abbreviation',
         'NumOfYears',
         'Education level Type',
@@ -87,7 +88,7 @@ export class EducationLevelsComponent implements OnInit {
             ([educationLevels, curricular, educationLevelTypes]) => {
                 this.collectionSize = educationLevels.length;
                 this.educationLevels = educationLevels.sort(
-                    (a, b) => parseInt(a.id) - parseInt(b.id)
+                    (a, b) => a.rank -b.rank
                 );
                 this.educationLevelTypes = educationLevelTypes;
                 this.curricula = curricular;

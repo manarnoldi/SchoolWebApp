@@ -1,8 +1,8 @@
 import {ResourceModel} from '@/core/models/ResourceModel';
-import { ExamType } from './exam-type';
-import { SchoolClass } from '@/class/models/school-class';
-import { Session } from '@/class/models/session';
-import { Subject } from './subject';
+import {ExamType} from './exam-type';
+import {SchoolClass} from '@/class/models/school-class';
+import {Session} from '@/class/models/session';
+import {Subject} from './subject';
 
 export class Exam extends ResourceModel<Exam> {
     public name?: string;
@@ -20,6 +20,10 @@ export class Exam extends ResourceModel<Exam> {
 
     public subjectId?: number;
     public subject?: Subject;
+
+    public examStartDate: Date;
+    public examEndDate: Date;
+    public examMarkEntryEndDate: Date;
 
     public otherDetails?: string;
 

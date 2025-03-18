@@ -19,6 +19,8 @@ export class SchoolClass extends ResourceModel<SchoolClass> {
 
     public schoolClassLeaders?: Person[];
 
+    public isSelected?: boolean = false;
+
     constructor(model?: Partial<SchoolClass>) {
         super(model);
     }
