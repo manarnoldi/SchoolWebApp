@@ -26,6 +26,8 @@ namespace SchoolWebApp.Core.Entities.Class
         [Required(ErrorMessage = "Enter the session end date.")]
         [Display(Name = "Session end date")]
         public DateTime EndDate { get; set; }
+
+        public int Rank { get; set; }
         public bool Status { get; set; }
 
         public int AcademicYearId { get; set; }
