@@ -82,7 +82,7 @@ export class SubjectsComponent implements OnInit {
             ([subjects, subjectGroups, departments, staffs]) => {
                 this.collectionSize = subjectGroups.length;
                 this.subjects = subjects.sort(
-                    (a, b) => parseInt(a.id) - parseInt(b.id)
+                    (a, b) => a.rank - b.rank
                 );
                 this.subjectGroups = subjectGroups;
                 this.departments = departments;

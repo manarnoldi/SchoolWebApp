@@ -13,8 +13,9 @@
                         </div> -->
                     </th>
                     <th>Name</th>
-                    <th>Code</th>
+                    <th>Code</th>                    
                     <th *ngIf="showAllCols">Abbr</th>
+                    <th>Rank</th>
                     <th *ngIf="showAllCols">Lessons #</th>
                     <th>Optional</th>
                     <th>Subject group</th>
@@ -36,8 +37,9 @@
                         </div>
                     </th>
                     <td>{{ item.name }}</td>
-                    <td>{{ item.code }}</td>
+                    <td>{{ item.code }}</td>                    
                     <td *ngIf="showAllCols">{{ item.abbr }}</td>
+                    <td>{{ item.rank }}</td>
                     <td *ngIf="showAllCols">{{ item.numOfLessons }}</td>
                     <td>{{ item.optional ? 'Optional': 'Compulsory' }}</td>
                     <td>{{ item.subjectGroup?.name }}</td>

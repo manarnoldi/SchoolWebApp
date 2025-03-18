@@ -26,7 +26,7 @@ namespace SchoolWebApp.Core.DTOs.Academics.Subject
         public int NumOfLessons { get; set; }
         public string? Description { get; set; }
         public bool Optional { get; set; }
-
+        public int Rank { get; set; }
         public int SubjectGroupId { get; set; }
         public SubjectGroupDto? SubjectGroup { get; set; }
         public int DepartmentId { get; set; }

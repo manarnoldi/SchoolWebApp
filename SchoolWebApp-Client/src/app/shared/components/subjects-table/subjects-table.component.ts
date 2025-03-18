@@ -39,8 +39,9 @@ export class SubjectsTableComponent implements OnInit {
 
     tableHeaders: string[] = [
         'Name',
-        'Code',
+        'Code',        
         'Abbr',
+        'Rank',
         'Lessons #',
         'Optional',
         'Subject group',

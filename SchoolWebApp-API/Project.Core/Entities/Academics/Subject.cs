@@ -26,7 +26,7 @@ namespace SchoolWebApp.Core.Entities.Academics
         public int NumOfLessons { get; set; }
         public string? Description { get; set; }
         public bool Optional { get; set; }
-
+        public int Rank { get; set; }
         public int SubjectGroupId { get; set; }
         public SubjectGroup? SubjectGroup { get; set; }
 
