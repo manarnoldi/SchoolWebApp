@@ -43,6 +43,7 @@ export class SessionFormComponent implements OnInit {
         this.sessionForm = this.formBuilder.group({
             sessionName: ['', [Validators.required]],
             abbreviation: ['', [Validators.required]],
+            rank: ['', [Validators.required]],
             startDate: [
                 formatDate(new Date(), 'yyyy-MM-dd', 'en'),
                 [
@@ -65,6 +66,7 @@ export class SessionFormComponent implements OnInit {
         this.sessionForm.setValue({
             sessionName: session.sessionName,
             abbreviation: session.abbreviation,
+            rank: session.rank,
             startDate: formatDate(
                 new Date(session.startDate),
                 'yyyy-MM-dd',

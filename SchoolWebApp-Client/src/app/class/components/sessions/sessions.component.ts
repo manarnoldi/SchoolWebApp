@@ -44,6 +44,7 @@ export class SessionsComponent implements OnInit {
         'Academic Year',
         'Name',
         'Abbreviation',
+        'Rank',
         'Curriculum',
         'Session Type',
         'Start Date',

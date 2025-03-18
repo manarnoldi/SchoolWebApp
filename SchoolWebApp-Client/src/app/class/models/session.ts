@@ -6,6 +6,7 @@ import { SessionType } from "@/settings/models/session-type";
 export class Session extends ResourceModel<Session> {
     public sessionName?: string;
     public abbreviation?: string;
+    public rank?: number;
     public startDate?: Date;
     public endDate?: Date;
     public status?: boolean;
