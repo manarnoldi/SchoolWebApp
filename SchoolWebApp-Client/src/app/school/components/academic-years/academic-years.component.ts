@@ -29,6 +29,7 @@ export class AcademicYearsComponent implements OnInit {
     tableHeaders: string[] = [
         'Name',
         'Abbreviation',
+        'Rank',
         'Start Date',
         'End Date',
         'Description',
@@ -75,6 +76,7 @@ export class AcademicYearsComponent implements OnInit {
         this.academicYearForm = this.formBuilder.group({
             name: ['', [Validators.required]],
             abbreviation: ['', [Validators.required]],
+            rank: ['', [Validators.required]],
             startDate: [
                 formatDate(
                     new Date(new Date().getFullYear(), 0, 1),
@@ -98,7 +100,7 @@ export class AcademicYearsComponent implements OnInit {
         forkJoin([academicYearsRequest]).subscribe(
             (res) => {
                 this.collectionSize = res[0].length;
-                this.academicYears= res[0].sort((a, b) => b.name.localeCompare(a.name));
+                this.academicYears= res[0].sort((a, b) => a.rank-b.rank);
                 this.isAuthLoading = false;
                 this.editMode = false;
             },
@@ -115,6 +117,7 @@ export class AcademicYearsComponent implements OnInit {
                 this.academicYearForm.setValue({
                     name: this.academicYear.name,
                     abbreviation: this.academicYear.abbreviation,
+                    rank: this.academicYear.rank,
                     startDate: formatDate(
                         new Date(this.academicYear.startDate),
                         'yyyy-MM-dd',

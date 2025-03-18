@@ -113,7 +113,7 @@ namespace SchoolWebApp.API.Controllers.Academics
         {
             if (ModelState.IsValid)
             {
-                if (await _unitOfWork.AcademicYears.ItemExistsAsync(a=> a.Name == model.Name && a.Status))
+                if (await _unitOfWork.AcademicYears.ItemExistsAsync(a => a.Name == model.Name && a.Status))
                     return Conflict(new { message = $"The academic year - '{model.Name}' already exists" });
                 try
                 {
@@ -149,17 +149,11 @@ namespace SchoolWebApp.API.Controllers.Academics
                 var itemExist = await _unitOfWork.AcademicYears.ItemExistsAsync(m => m.Id == model.Id);
                 if (!itemExist)
                     return BadRequest($"The academic year of Id- '{model.Id}' does not exist hence cannot be updated.");
+
                 try
                 {
-                    var existingItem = await _unitOfWork.AcademicYears.GetById(model.Id);
-                    //Manual mapping
-                    existingItem.Name = model.Name;
-                    existingItem.Abbreviation = model.Abbreviation;
-                    existingItem.StartDate = model.StartDate;
-                    existingItem.EndDate = model.EndDate;
-                    existingItem.Description = model.Description;
-                    existingItem.Status = model.Status;
-                    _unitOfWork.AcademicYears.Update(existingItem);
+                    var _item = _mapper.Map<AcademicYear>(model);
+                    _unitOfWork.AcademicYears.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

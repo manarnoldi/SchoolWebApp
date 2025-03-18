@@ -6,7 +6,7 @@ import {Person} from '@/school/models/person';
 
 export class SchoolClass extends ResourceModel<SchoolClass> {
     public name?: string;
-    public rank?: string;
+    public rank?: number;
     public description?: string;
 
     public learningLevelId?: string;

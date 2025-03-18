@@ -20,6 +20,7 @@ namespace SchoolWebApp.Core.DTOs.Academics.AcademicYear
 
         [Display(Name = "End date")]
         public DateTime EndDate { get; set; }
+        public int Rank { get; set; }
 
         [StringLength(500)]
         public string? Description { get; set; }

@@ -2,6 +2,7 @@ import {ResourceModel} from '@/core/models/ResourceModel';
 
 export class AcademicYear extends ResourceModel<AcademicYear> {
     public name?: string;
+    public rank?: number;
     public description?: string;
     public abbreviation?: string;
     public startDate?: Date;

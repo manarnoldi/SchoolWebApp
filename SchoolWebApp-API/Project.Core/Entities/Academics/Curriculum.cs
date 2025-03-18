@@ -20,7 +20,7 @@ namespace SchoolWebApp.Core.Entities.Academics
 
         [StringLength(500)]
         public string? Description { get; set; }
-
+        public int Rank { get; set; }
         public List<FormerSchool> FormerSchools  { get; set; } = new();
         public List<EducationLevel> EducationLevels { get; set; } = new();
         public List<SubjectGroup> SubjectGroups { get; set; } = new();

@@ -13,6 +13,7 @@ namespace SchoolWebApp.Core.DTOs.Academics.Curriculum
         [Display(Name = "Curriculum name")]
         [StringLength(255)]
         public required string Name { get; set; }
+        public int Rank { get; set; }
 
         [StringLength(500)]
         public string? Description { get; set; }
