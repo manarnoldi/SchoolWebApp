@@ -49,6 +49,7 @@ export class SchoolClassAddFormComponent implements  AfterViewInit,OnInit {
     initializeForm = () => {
         this.schoolClassForm = this.formBuilder.group({
             name: ['', [Validators.required]],
+            rank: ['', [Validators.required]],
             description: ['']
         });
         
@@ -57,6 +58,7 @@ export class SchoolClassAddFormComponent implements  AfterViewInit,OnInit {
     setFormControls = (schoolClass: SchoolClass) => {
         this.schoolClassForm.patchValue({
             name: schoolClass?.name,
+            rank: schoolClass?.rank,
             description: schoolClass?.description
         });
         this.yearClassStreamComponent.setFormControls(schoolClass);

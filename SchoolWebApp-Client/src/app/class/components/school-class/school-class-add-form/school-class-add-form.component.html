@@ -19,6 +19,19 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
+                        <label for="rank" class="form-label">Rank: <span
+                                class="requiredField">*</span></label>
+                        <input id="rank" placeholder="Class rank" type="number"
+                            class="form-control" formControlName="rank" [ngClass]="{
+                            'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
+                            }" />
+                        <div class="invalid-feedback">Class rank is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
                         <label>Description:</label>
                         <textarea placeholder="Enter description" id="description"
                             class="form-control" rows="3" formControlName="description"></textarea>

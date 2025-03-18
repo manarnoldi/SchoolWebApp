@@ -54,6 +54,7 @@ export class SchoolClassComponent implements OnInit {
         'Class',
         'Stream',
         'Class name',
+        'Rank',
         'Class Leaders',
         'Description',
         'Action',
