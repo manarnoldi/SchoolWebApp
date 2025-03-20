@@ -3,230 +3,290 @@
     [breadcrumbs]="breadcrumbs"></app-dashboard-header>
 <hr>
 <section class="content">
-    <div class="container-fluid">
+    <div class="container-fluid px-1">
+        <div class="row">
+            <div class="col-md-12 pt-1">
+                <a [routerLink]="['/academics/exams']"
+                    [queryParams]="{id: examId, eduLevelId: eduLevelId}"
+                    class="btn btn-sm btn-flat btn-warning float-left">
+                    <i class="fas fa-angle-double-left"></i> Back to exams list
+                </a>
+            </div>
+        </div>
         <form [formGroup]="examsAddForm" (ngSubmit)="onSubmit()" novalidate>
-            <div class="row">
-                <div class="col-md-4 ps-1 pe-0">
-                    <div class="card card-primary card-outline mt-1 mb-1">
-                        <div class="card-header">
-                            <h5>Exam Details</h5>
-                        </div>
-                        <div class="card-body box-profile">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="curriculumId" class="form-label">Curriculum:
-                                            <span class="requiredField">*</span></label>
-                                        <select class="form-select form-select-sm"
-                                            aria-label="Curriculum" [ngClass]="{
-                                                'is-invalid': (f.curriculumId.dirty ||
-                                                f.curriculumId.touched) && f.curriculumId.invalid }"
-                                            (change)="academicYearCurriculumChanged()"
-                                            formControlName="curriculumId" id="curriculumId">
-                                            <option [ngValue]="null" selected>-Select
-                                                curriculum-</option>
-                                            <option [ngValue]="curriculum.id"
-                                                *ngFor="let curriculum of
-                                                    curricula">{{curriculum.name}}</option>
-                                        </select>
-                                        <div class="invalid-feedback"> Curriculum is required</div>
+            <div class="card card-primary card-outline mt-1 mb-1">
+                <div class="card-header ps-2 pe-1 px-1">
+                    <h4 class="mb-1">Manage School Examinations</h4>
+                </div>
+                <div class="card-body p-1">
+                    <div class="row">
+                        <div class="col-md-4 pe-0">
+                            <div class="card-details-box border-success disabled">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="curriculumId" class="form-label">Curriculum:
+                                                <span class="requiredField">*</span></label>
+                                            <select class="form-select form-select-sm"
+                                                [attr.disabled]="editMode? 'disabled' : null"
+                                                aria-label="Curriculum" [ngClass]="{
+                                                    'is-invalid': (f.curriculumId.dirty ||
+                                                    f.curriculumId.touched) && f.curriculumId.invalid }"
+                                                (change)="academicYearCurriculumChanged()"
+                                                formControlName="curriculumId" id="curriculumId">
+                                                <option [ngValue]="null" selected>-Select
+                                                    curriculum-</option>
+                                                <option [ngValue]="curriculum.id"
+                                                    *ngFor="let curriculum of
+                                                        curricula">{{curriculum.name}}</option>
+                                            </select>
+                                            <div class="invalid-feedback"> Curriculum is
+                                                required</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="academicYearId" class="form-label">Academic
+                                                year: <span class="requiredField">*</span></label>
+                                            <select class="form-select form-select-sm"
+                                                [attr.disabled]="editMode? 'disabled' : null"
+                                                aria-label="Academic year" [ngClass]="{
+                                                    'is-invalid': (f.academicYearId.dirty ||
+                                                    f.academicYearId.touched) && f.academicYearId.invalid }"
+                                                (change)="academicYearCurriculumChanged()"
+                                                formControlName="academicYearId"
+                                                id="academicYearId">
+                                                <option [ngValue]="null" selected>-Select academic
+                                                    year-</option>
+                                                <option [ngValue]="academicYear.id"
+                                                    *ngFor="let academicYear of
+                                                            academicYears">{{academicYear.name}}</option>
+                                            </select>
+                                            <div class="invalid-feedback"> Academic year is
+                                                required</div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="academicYearId" class="form-label">Academic
-                                            year: <span class="requiredField">*</span></label>
-                                        <select class="form-select form-select-sm"
-                                            aria-label="Academic year" [ngClass]="{
-                                                'is-invalid': (f.academicYearId.dirty ||
-                                                f.academicYearId.touched) && f.academicYearId.invalid }"
-                                            (change)="academicYearCurriculumChanged()"
-                                            formControlName="academicYearId" id="academicYearId">
-                                            <option [ngValue]="null" selected>-Select academic
-                                                year-</option>
-                                            <option [ngValue]="academicYear.id"
-                                                *ngFor="let academicYear of
-                                                        academicYears">{{academicYear.name}}</option>
-                                        </select>
-                                        <div class="invalid-feedback"> Academic year is
-                                            required</div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="sessionId" class="form-label">Session: <span
+                                                    class="requiredField">*</span></label>
+                                            <select class="form-select form-select-sm"
+                                                [attr.disabled]="editMode? 'disabled' : null"
+                                                aria-label="Session" [ngClass]="{
+                                                    'is-invalid': (f.sessionId.dirty ||
+                                                    f.sessionId.touched) && f.sessionId.invalid }"
+                                                formControlName="sessionId" id="sessionId">
+                                                <option [ngValue]="null" selected>-Select
+                                                    session-</option>
+                                                <option [ngValue]="session.id"
+                                                    *ngFor="let session of
+                                                        sessions">{{session.sessionName}}</option>
+                                            </select>
+                                            <div class="invalid-feedback"> Session is required</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="educationLevelId"
+                                                class="form-label">Education
+                                                level: <span
+                                                    class="requiredField">*</span></label>
+                                            <select class="form-select form-select-sm"
+                                                [attr.disabled]="editMode? 'disabled' : null"
+                                                (change)="educationLevelChanged()"
+                                                aria-label="Education level" [ngClass]="{
+                                                    'is-invalid': (f.educationLevelId.dirty ||
+                                                    f.educationLevelId.touched) && f.educationLevelId.invalid }"
+                                                formControlName="educationLevelId"
+                                                id="educationLevelId">
+                                                <option [ngValue]="null" selected>-Select
+                                                    education level-</option>
+                                                <option [ngValue]="educationLevel.id"
+                                                    *ngFor="let educationLevel of
+                                                        educationLevels">{{educationLevel.name}}</option>
+                                            </select>
+                                            <div class="invalid-feedback"> Education level is
+                                                required</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="sessionId" class="form-label">Session: <span
-                                                class="requiredField">*</span></label>
-                                        <select class="form-select form-select-sm"
-                                            aria-label="Session" [ngClass]="{
-                                                'is-invalid': (f.sessionId.dirty ||
-                                                f.sessionId.touched) && f.sessionId.invalid }"
-                                            formControlName="sessionId" id="sessionId">
-                                            <option [ngValue]="null" selected>-Select
-                                                session-</option>
-                                            <option [ngValue]="session.id" *ngFor="let session of
-                                                    sessions">{{session.sessionName}}</option>
-                                        </select>
-                                        <div class="invalid-feedback"> Session is required</div>
+                            <div class="mt-1">
+                                <app-school-class-minimum-table [schoolClasses]="schoolClasses"
+                                    [minimumTable]="true" [disabled]="editMode"
+                                    *ngIf="isLoading"></app-school-class-minimum-table>
+                            </div>
+                        </div>
+                        <div class="col-md-4 px-1">
+                            <app-subjects-min-table [subjects]="subjects"
+                                [minimumTable]="true" [disabled]="editMode"
+                                *ngIf="isLoading"></app-subjects-min-table>
+                        </div>
+                        <div class="col-md-4 ps-0">
+                            <div class="card-details-box border-warning">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="examTypeId" class="form-label">Exam
+                                                type: <span
+                                                    class="requiredField">*</span></label>
+                                            <select class="form-select form-select-sm"
+                                                [attr.disabled]="editMode? 'disabled' : null"
+                                                aria-label="Exam type" [ngClass]="{
+                                                            'is-invalid': (f.examTypeId.dirty ||
+                                                            f.examTypeId.touched) && f.examTypeId.invalid }"
+                                                formControlName="examTypeId"
+                                                id="examTypeId">
+                                                <option [ngValue]="null" selected>-Select
+                                                    Exam
+                                                    type-</option>
+                                                <option [ngValue]="examType.id"
+                                                    *ngFor="let examType of
+                                                                        examTypes">{{examType.name}}</option>
+                                            </select>
+                                            <div class="invalid-feedback"> Exam type is
+                                                required</div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="educationLevelId" class="form-label">Education
-                                            level: <span
-                                                class="requiredField">*</span></label>
-                                        <select class="form-select form-select-sm"
-                                            aria-label="Education level" [ngClass]="{
-                                                'is-invalid': (f.educationLevelId.dirty ||
-                                                f.educationLevelId.touched) && f.educationLevelId.invalid }"
-                                            formControlName="educationLevelId"
-                                            id="educationLevelId">
-                                            <option [ngValue]="null" selected>-Select
-                                                education level-</option>
-                                            <option [ngValue]="educationLevel.id"
-                                                *ngFor="let educationLevel of
-                                                    educationLevels">{{educationLevel.name}}</option>
-                                        </select>
-                                        <div class="invalid-feedback"> Education level is
-                                            required</div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="name">Exam name:
+                                                <span class="requiredField">*</span></label>
+                                            <input placeholder="Enter exam name" id="name"
+                                                type="text"
+                                                [attr.disabled]="editMode? 'disabled' : null"
+                                                class="form-control form-control-sm"
+                                                formControlName="name"
+                                                [ngClass]="{ 'is-invalid':
+                                                                (f.name.dirty || f.name.touched) &&
+                                                                f.name.invalid }" />
+                                            <div class="invalid-feedback"> Exam name is
+                                                required</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="examMark">Exam mark:
+                                                        <span
+                                                            class="requiredField">*</span></label>
+                                                    <input placeholder="Enter exam mark"
+                                                        id="examMark"
+                                                        type="number"
+                                                        class="form-control form-control-sm"
+                                                        formControlName="examMark"
+                                                        [ngClass]="{ 'is-invalid':
+                                                                    (f.examMark.dirty || f.examMark.touched) &&
+                                                                    f.examMark.invalid }" />
+                                                    <div class="invalid-feedback"> Exam mark
+                                                        is
+                                                        required</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label
+                                                        for="contributingMark">Contributing
+                                                        mark:
+                                                        <span
+                                                            class="requiredField">*</span></label>
+                                                    <input
+                                                        placeholder="Enter contributing mark"
+                                                        id="contributingMark"
+                                                        type="number"
+                                                        class="form-control form-control-sm"
+                                                        formControlName="contributingMark"
+                                                        [ngClass]="{ 'is-invalid':
+                                                                    (f.contributingMark.dirty || f.contributingMark.touched) &&
+                                                                    f.contributingMark.invalid }" />
+                                                    <div class="invalid-feedback">
+                                                        Contributing mark is
+                                                        required</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="examStartDate">Exam start
+                                                        date:<span
+                                                            class="requiredField">*</span></label>
+                                                    <input
+                                                        placeholder="Enter exam start date"
+                                                        id="examStartDate" type="date"
+                                                        class="form-control"
+                                                        [ngClass]="{ 'is-invalid':
+                                                                (f.examStartDate.dirty || f.examStartDate.touched) &&
+                                                                f.examStartDate.invalid }"
+                                                        formControlName="examStartDate" />
+                                                    <div class="invalid-feedback"> Exam
+                                                        start date is
+                                                        required</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="examEndDate">Exam end
+                                                        date:<span
+                                                            class="requiredField">*</span></label>
+                                                    <input placeholder="Enter exam end date"
+                                                        id="examEndDate" type="date"
+                                                        class="form-control"
+                                                        [ngClass]="{ 'is-invalid':
+                                                                (f.examEndDate.dirty || f.examEndDate.touched) &&
+                                                                f.examEndDate.invalid }"
+                                                        formControlName="examEndDate" />
+                                                    <div class="invalid-feedback"> Exam end
+                                                        date is
+                                                        required</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="examMarkEntryEndDate">Entry
+                                                        end
+                                                        date:<span
+                                                            class="requiredField">*</span></label>
+                                                    <input
+                                                        placeholder="Enter exam mark entry date"
+                                                        id="examMarkEntryEndDate"
+                                                        type="date"
+                                                        class="form-control"
+                                                        [ngClass]="{ 'is-invalid':
+                                                                (f.examMarkEntryEndDate.dirty || f.examMarkEntryEndDate.touched) &&
+                                                                f.examMarkEntryEndDate.invalid }"
+                                                        formControlName="examMarkEntryEndDate" />
+                                                    <div class="invalid-feedback"> Entry end
+                                                        date is
+                                                        required</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group mb-0">
+                                            <label>Other details:</label>
+                                            <textarea placeholder="Enter any other details"
+                                                id="otherDetails"
+                                                class="form-control" rows="2"
+                                                formControlName="otherDetails"></textarea>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <app-school-class-minimum-table [schoolClasses]="schoolClasses"
-                        [minimumTable]="true"
-                        *ngIf="isLoading"></app-school-class-minimum-table>
                 </div>
-                <div class="col-md-4 px-1">
-                    <app-subjects-min-table [subjects]="subjects"
-                        [minimumTable]="true"
-                        *ngIf="isLoading"></app-subjects-min-table>
-                </div>
-                <div class="col-md-4  ps-0 pe-1">
-                    <div class="card card-warning card-outline mt-1">
-                        <div class="card-header">
-                            <h5>Exam Details</h5>
-                        </div>
-                        <div class="card-body box-profile">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="examTypeId" class="form-label">Exam
-                                            type: <span class="requiredField">*</span></label>
-                                        <select class="form-select form-select-sm"
-                                            aria-label="Exam type" [ngClass]="{
-                                                'is-invalid': (f.examTypeId.dirty ||
-                                                f.examTypeId.touched) && f.examTypeId.invalid }"
-                                            formControlName="examTypeId" id="examTypeId">
-                                            <option [ngValue]="null" selected>-Select Exam
-                                                type-</option>
-                                            <option [ngValue]="examType.id"
-                                                *ngFor="let examType of
-                                                            examTypes">{{examType.name}}</option>
-                                        </select>
-                                        <div class="invalid-feedback"> Exam type is required</div>
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="name">Exam name:
-                                            <span class="requiredField">*</span></label>
-                                        <input placeholder="Enter exam name" id="name"
-                                            type="text" class="form-control form-control-sm"
-                                            formControlName="name"
-                                            [ngClass]="{ 'is-invalid':
-                                                    (f.name.dirty || f.name.touched) &&
-                                                    f.name.invalid }" />
-                                        <div class="invalid-feedback"> Exam name is required</div>
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="examMark">Exam mark:
-                                                    <span class="requiredField">*</span></label>
-                                                <input placeholder="Enter exam mark" id="examMark"
-                                                    type="number"
-                                                    class="form-control form-control-sm"
-                                                    formControlName="examMark"
-                                                    [ngClass]="{ 'is-invalid':
-                                                        (f.examMark.dirty || f.examMark.touched) &&
-                                                        f.examMark.invalid }" />
-                                                <div class="invalid-feedback"> Exam mark is
-                                                    required</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="contributingMark">Contributing mark:
-                                                    <span class="requiredField">*</span></label>
-                                                <input placeholder="Enter contributing mark"
-                                                    id="contributingMark"
-                                                    type="number"
-                                                    class="form-control form-control-sm"
-                                                    formControlName="contributingMark"
-                                                    [ngClass]="{ 'is-invalid':
-                                                        (f.contributingMark.dirty || f.contributingMark.touched) &&
-                                                        f.contributingMark.invalid }" />
-                                                <div class="invalid-feedback"> Contributing mark is
-                                                    required</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="examStartDate">Exam start date:<span
-                                                        class="requiredField">*</span></label>
-                                                <input placeholder="Enter exam start date"
-                                                    id="examStartDate" type="date"
-                                                    class="form-control" [ngClass]="{ 'is-invalid':
-                                                    (f.examStartDate.dirty || f.examStartDate.touched) &&
-                                                    f.examStartDate.invalid }"
-                                                    formControlName="examStartDate" />
-                                                <div class="invalid-feedback"> Exam start date is
-                                                    required</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="examEndDate">Exam end date:<span
-                                                        class="requiredField">*</span></label>
-                                                <input placeholder="Enter exam end date"
-                                                    id="examEndDate" type="date"
-                                                    class="form-control" [ngClass]="{ 'is-invalid':
-                                                    (f.examEndDate.dirty || f.examEndDate.touched) &&
-                                                    f.examEndDate.invalid }"
-                                                    formControlName="examEndDate" />
-                                                <div class="invalid-feedback"> Exam end date is
-                                                    required</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="examMarkEntryEndDate">Entry end
-                                                    date:<span
-                                                        class="requiredField">*</span></label>
-                                                <input placeholder="Enter exam mark entry date"
-                                                    id="examMarkEntryEndDate" type="date"
-                                                    class="form-control" [ngClass]="{ 'is-invalid':
-                                                    (f.examMarkEntryEndDate.dirty || f.examMarkEntryEndDate.touched) &&
-                                                    f.examMarkEntryEndDate.invalid }"
-                                                    formControlName="examMarkEntryEndDate" />
-                                                <div class="invalid-feedback"> Entry end date is
-                                                    required</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="card-footer ">
+                    <button type="submit" [disabled]="examsAddForm.invalid" class="btn
+                        btn-success float-right"> <i class="fas fa-save"></i>
+                        {{editMode ? 'Update Exam': 'Save Exams'}}
+                    </button>
                 </div>
             </div>
         </form>

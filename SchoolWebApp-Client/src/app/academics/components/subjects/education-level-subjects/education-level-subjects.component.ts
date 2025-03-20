@@ -256,12 +256,14 @@ export class EducationLevelSubjectsComponent implements OnInit {
         forkJoin(checkForExistenceReq).subscribe(
             (educationLevelSubjs) => {
                 educationLevelSubjs.forEach((ls) => {
-                    deleteSubjectIdsReq.push(
-                        this.educationLevelSubjectSvc.delete(
-                            '/educationLevelSubjects',
-                            parseInt(ls.id)
-                        )
-                    );
+                    if (ls.id) {
+                        deleteSubjectIdsReq.push(
+                            this.educationLevelSubjectSvc.delete(
+                                '/educationLevelSubjects',
+                                parseInt(ls.id)
+                            )
+                        );
+                    }                    
                 });
                 if (deleteSubjectIdsReq.length <= 0) {
                     this.recordsUpdated(educationLevelSubjects);

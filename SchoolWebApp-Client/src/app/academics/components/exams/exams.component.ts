@@ -5,6 +5,7 @@ import {ExamSearch} from '@/academics/models/exam-search';
 import {ExamType} from '@/academics/models/exam-type';
 import {Subject} from '@/academics/models/subject';
 import {CurriculumService} from '@/academics/services/curriculum.service';
+import {EducationLevelSubjectService} from '@/academics/services/education-level-subject.service';
 import {ExamTypesService} from '@/academics/services/exam-types.service';
 import {ExamsService} from '@/academics/services/exams.service';
 import {SubjectsService} from '@/academics/services/subjects.service';
@@ -14,17 +15,35 @@ import {SchoolClassesService} from '@/class/services/school-classes.service';
 import {SessionsService} from '@/class/services/sessions.service';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {AcademicYear} from '@/school/models/academic-year';
+import {EducationLevel} from '@/school/models/educationLevel';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
-import {Component, OnInit} from '@angular/core';
+import {EducationLevelService} from '@/school/services/education-level.service';
+import {EducationLevelYear} from '@/shared/models/education-level-year';
+import {
+    AfterViewChecked,
+    AfterViewInit,
+    Component,
+    OnInit,
+    ViewChild
+} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
-import {forkJoin} from 'rxjs';
+import {forkJoin, map, Observable} from 'rxjs';
+import Swal from 'sweetalert2';
+import {ExamAddFormComponent} from './exam-add-form/exam-add-form.component';
+import {ActivatedRoute, Router} from '@angular/router';
+import {ExamListSearchFormComponent} from './exam-list-search-form/exam-list-search-form.component';
+import {EducationLevelSubject} from '@/academics/models/education-level-subject';
 
 @Component({
     selector: 'app-exams',
     templateUrl: './exams.component.html',
     styleUrl: './exams.component.scss'
 })
-export class ExamsComponent implements OnInit {
+export class ExamsComponent implements OnInit, AfterViewChecked {
+    @ViewChild(ExamAddFormComponent)
+    examAddFormComponent: ExamAddFormComponent;
+    @ViewChild(ExamListSearchFormComponent)
+    searchFormComponent: ExamListSearchFormComponent;
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Home'},
         {link: ['/academics/exams'], title: 'Academics: Exams'}
@@ -38,18 +57,123 @@ export class ExamsComponent implements OnInit {
     sessions: Session[] = [];
     curricula: Curriculum[] = [];
     academicYears: AcademicYear[] = [];
-
+    educationLevels: EducationLevel[] = [];
+    eduLevelId: number;
+    examId: number;
     isLoading: boolean = false;
-
+    viewInitialized = false;
     constructor(
         private toastr: ToastrService,
         private curriculaSvc: CurriculumService,
         private academicYearsSvc: AcademicYearsService,
         private sessionSvc: SessionsService,
         private subjectsSvc: SubjectsService,
+        private educationLevelSubjectSvc: EducationLevelSubjectService,
         private schoolClassesSvc: SchoolClassesService,
-        private examsSvc: ExamsService
+        private educationLevelSvc: EducationLevelService,
+        private examTypesSvc: ExamTypesService,
+        private examsSvc: ExamsService,
+        private router: Router,
+        private route: ActivatedRoute
     ) {}
+
+    ngAfterViewChecked(): void {
+        if (this.searchFormComponent && !this.viewInitialized) {
+            this.viewInitialized = true;
+            this.route.queryParams.subscribe((params) => {
+                this.examId = parseInt(params['id']);
+                this.eduLevelId = parseInt(params['eduLevelId']);
+                if (
+                    this.examId &&
+                    this.examId > 0 &&
+                    this.eduLevelId &&
+                    this.eduLevelId > 0
+                ) {
+                    this.examsSvc.getById(this.examId, '/exams').subscribe({
+                        next: (exam) => {
+                            let cuyear = new CurriculumYear();
+                            cuyear.academicYearId =
+                                exam.session?.academicYearId;
+                            cuyear.curriculumId = exam.session?.curriculumId;
+
+                            let ely = new EducationLevelYear();
+                            ely.academicYearId = exam.session?.academicYearId;
+                            ely.educationLevelId = this.eduLevelId;
+
+                            let es = new ExamSearch();
+                            es.academicYearId = exam.session?.academicYearId;
+                            es.educationLevelId = this.eduLevelId;
+                            es.curriculumId = exam.session?.curriculumId;
+                            es.examTypeId = exam.examTypeId;
+                            es.schoolClassId = exam.schoolClassId;
+                            es.sessionId = exam.sessionId;
+                            es.subjectId = exam.subjectId;
+
+                            let sessionFromCYReq =
+                                this.getSessionFromCurriculumYear(cuyear);
+                            let educationLevelSubjectsReq =
+                                this.getSubjectsByEducationLevelYear(ely);
+                            let schoolClassReq =
+                                this.getSchoolClassesByEducationLevelYear(ely);
+                            let examsSearchReq = this.getExamsBySearch(es);
+
+                            forkJoin([
+                                sessionFromCYReq,
+                                educationLevelSubjectsReq,
+                                schoolClassReq,
+                                examsSearchReq
+                            ]).subscribe({
+                                next: ([
+                                    sessions,
+                                    subjects,
+                                    schoolClasses,
+                                    exams
+                                ]) => {
+                                    this.subjects = subjects;
+                                    this.schoolClasses = schoolClasses;
+                                    this.sessions = sessions.sort(
+                                        (a, b) => a.rank - b.rank
+                                    );
+                                    this.exams = exams.sort((a, b) =>
+                                        a.session?.academicYear?.name.localeCompare(
+                                            b.session?.academicYear?.name
+                                        )
+                                    );
+                                    this.searchFormComponent.examListSearchForm
+                                        .get('curriculumId')
+                                        .setValue(exam.session?.curriculumId);
+                                    this.searchFormComponent.examListSearchForm
+                                        .get('examTypeId')
+                                        .setValue(exam.examTypeId);
+                                    this.searchFormComponent.examListSearchForm
+                                        .get('educationLevelId')
+                                        .setValue(this.eduLevelId);
+                                    this.searchFormComponent.examListSearchForm
+                                        .get('academicYearId')
+                                        .setValue(exam.session?.academicYearId);
+                                    this.searchFormComponent.examListSearchForm
+                                        .get('sessionId')
+                                        .setValue(exam.sessionId);
+                                    this.searchFormComponent.examListSearchForm
+                                        .get('schoolClassId')
+                                        .setValue(exam.schoolClassId);
+                                    this.searchFormComponent.examListSearchForm
+                                        .get('subjectId')
+                                        .setValue(exam.subjectId);
+                                },
+                                error: (err) => {
+                                    this.toastr.error(err.error);
+                                }
+                            });
+                        },
+                        error: (err) => {
+                            this.toastr.error(err.error);
+                        }
+                    });
+                }
+            });
+        }
+    }
 
     ngOnInit(): void {
         this.refreshItems();
@@ -58,48 +182,124 @@ export class ExamsComponent implements OnInit {
     refreshItems() {
         let curriculaReq = this.curriculaSvc.get('/curricula');
         let academicYearsReq = this.academicYearsSvc.get('/academicYears');
+        let educationLevelReq = this.educationLevelSvc.get('/educationLevels');
+        let examTypesReq = this.educationLevelSvc.get('/examTypes');
 
-        forkJoin([curriculaReq, academicYearsReq]).subscribe(
-            ([curricula, academicYears]) => {
-                this.curricula = curricula;
-                this.academicYears = academicYears;
+        forkJoin([
+            curriculaReq,
+            academicYearsReq,
+            educationLevelReq,
+            examTypesReq
+        ]).subscribe({
+            next: ([curricula, academicYears, educationLevels, examTypes]) => {
+                this.curricula = curricula.sort((a, b) => a.rank - b.rank);
+                this.examTypes = examTypes.sort((a, b) => a.rank - b.rank);
+                this.educationLevels = educationLevels.sort(
+                    (a, b) => a.rank - b.rank
+                );
+                this.academicYears = academicYears.sort(
+                    (a, b) => a.rank - b.rank
+                );
                 this.isLoading = true;
             },
-            (err) => {
+            error: (err) => {
                 this.toastr.error(err.error);
             }
-        );
+        });
     }
 
-    curriculumYearChanged = (cy: CurriculumYear) => {
-        this.sessions = [];
+    getSubjectsByEducationLevelYear = (
+        ely: EducationLevelYear
+    ): Observable<Subject[]> => {
+        return this.educationLevelSubjectSvc
+            .get(
+                '/educationLevelSubjects/byEducationLevelYearId/' +
+                    ely.educationLevelId +
+                    '/' +
+                    ely.academicYearId
+            )
+            .pipe(
+                map((educationLevelSubjects) => {
+                    educationLevelSubjects.forEach((els) => {
+                        this.subjects.push(els.subject);
+                    });
+                    return this.subjects.sort((a, b) => a.rank - b.rank);
+                })
+            );
+    };
+
+    getSchoolClassesByEducationLevelYear = (
+        ely: EducationLevelYear
+    ): Observable<SchoolClass[]> => {
+        return this.schoolClassesSvc
+            .get(
+                '/schoolClasses/byEducationLevelYearId/' +
+                    ely.educationLevelId +
+                    '/' +
+                    ely.academicYearId
+            )
+            .pipe(
+                map(
+                    (schoolClasses) =>
+                        (this.schoolClasses = schoolClasses.sort(
+                            (a, b) => a.rank - b.rank
+                        ))
+                )
+            );
+    };
+
+    educationLevelYearChanged = (ely: EducationLevelYear) => {
         this.subjects = [];
         this.schoolClasses = [];
-        this.exams = [];
-        let sessionsReq = this.sessionSvc.get(
-            `/sessions/byCurriculumYearId/${cy.curriculumId}/${cy.academicYearId}`
-        );
-        let subjectsReq = this.subjectsSvc.get(
-            `/subjects/byCurriculumId/${cy.curriculumId}`
-        );
-        let schoolClassesReq = this.schoolClassesSvc.get(
-            `/schoolClasses/byAcademicYearId/${cy.academicYearId}`
-        );
+        let educationLevelSubjectsReq =
+            this.getSubjectsByEducationLevelYear(ely);
+        let schoolClassReq = this.getSchoolClassesByEducationLevelYear(ely);
 
-        forkJoin([sessionsReq, subjectsReq, schoolClassesReq]).subscribe(
-            ([sessions, subjects, schoolClasses]) => {
-                this.sessions = sessions;
+        forkJoin([educationLevelSubjectsReq, schoolClassReq]).subscribe({
+            next: ([subjects, schoolClasses]) => {
                 this.subjects = subjects;
                 this.schoolClasses = schoolClasses;
             },
-            (err) => {
+            error: (err) => {
                 this.toastr.error(err.error);
             }
-        );
+        });
+    };
+
+    getSessionFromCurriculumYear = (
+        cy: CurriculumYear
+    ): Observable<Session[]> => {
+        return this.sessionSvc
+            .get(
+                `/sessions/byCurriculumYearId/${cy.curriculumId}/${cy.academicYearId}`
+            )
+            .pipe(map((sessions) => sessions));
+    };
+
+    curriculumYearChanged = (cy: CurriculumYear) => {
+        this.exams = [];
+        this.sessions = [];
+        this.getSessionFromCurriculumYear(cy).subscribe({
+            next: (sessions) => {
+                this.sessions = sessions.sort((a, b) => a.rank - b.rank);
+            },
+            error: (err) => {
+                this.toastr.error(err.error);
+            }
+        });
     };
 
     clearList = () => {
         this.exams = [];
+    };
+
+    getExamsBySearch = (es: ExamSearch): Observable<Exam[]> => {
+        return this.examsSvc
+            .get(
+                `/exams/examSearch?academicYearId=${es.academicYearId}&curriculumId=${es.curriculumId}&sessionId=
+            ${es.sessionId}&schoolClassId=${es.schoolClassId ?? ''}&subjectId=${es.subjectId ?? ''}&examTypeId=${es.examTypeId ?? ''}`
+            )
+            .pipe(map((exams) => exams));
     };
 
     onButtonSearchClick = (es: ExamSearch) => {
@@ -110,24 +310,24 @@ export class ExamsComponent implements OnInit {
             this.toastr.info('Select curriculum before searching!');
         else if (!es.sessionId)
             this.toastr.info('Select session before searching!');
+        else if (!es.educationLevelId)
+            this.toastr.info('Select education level before searching!');
+        else if (!es.schoolClassId)
+            this.toastr.info('Select class before searching!');
         else {
-            this.examsSvc
-                .get(
-                    `/exams/examSearch?academicYearId=${es.academicYearId}&curriculumId=${es.curriculumId}&sessionId=
-                    ${es.sessionId}&schoolClassId=${es.schoolClassId ?? ''}&subjectId=${es.subjectId ?? ''}`
-                )
-                .subscribe(
-                    (exams) => {
-                        exams.length <= 0
-                            ? this.toastr.info(
-                                  'No records found with the search parameters selected!'
-                              )
-                            : (this.exams = exams);
-                    },
-                    (err) => {
-                        this.toastr.error(err.error);
-                    }
-                );
+            this.eduLevelId = es.educationLevelId;
+            this.getExamsBySearch(es).subscribe({
+                next: (exams) => {
+                    exams.length <= 0
+                        ? this.toastr.info(
+                              'No records found with the search parameters selected!'
+                          )
+                        : (this.exams = exams);
+                },
+                error: (err) => {
+                    this.toastr.error(err.error);
+                }
+            });
         }
     };
 
@@ -149,29 +349,35 @@ export class ExamsComponent implements OnInit {
     }
 
     deleteItem(id: number) {
-        // Swal.fire({
-        //     title: `Delete record?`,
-        //     text: `Confirm if you want to delete record.`,
-        //     width: 400,
-        //     position: 'top',
-        //     padding: '1em',
-        //     icon: 'question',
-        //     showCancelButton: true,
-        //     confirmButtonText: `Delete`,
-        //     cancelButtonText: 'Cancel'
-        // }).then((result) => {
-        //     if (result.value) {
-        //         this.subjectGroupsSvc.delete('/subjects', id).subscribe(
-        //             (res) => {
-        //                 this.refreshItems();
-        //                 this.toastr.success('Record deleted successfully!');
-        //             },
-        //             (err) => {
-        //                 this.toastr.error(err);
-        //             }
-        //         );
-        //     } else if (result.dismiss === Swal.DismissReason.cancel) {
-        //     }
-        // });
+        Swal.fire({
+            title: `Delete exam record?`,
+            text: `Confirm if you want to delete exam record.`,
+            width: 400,
+            position: 'top',
+            padding: '1em',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: `Delete`,
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.value) {
+                this.examsSvc.delete('/exams', id).subscribe(
+                    (res) => {
+                        this.refreshItems();
+                        this.toastr.success(
+                            'Exam record deleted successfully!'
+                        );
+                        this.exams.splice(
+                            this.exams.findIndex((e) => e.id == id.toString()),
+                            1
+                        );
+                    },
+                    (err) => {
+                        this.toastr.error(err);
+                    }
+                );
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+            }
+        });
     }
 }

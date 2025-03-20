@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 using SchoolWebApp.API.Utils;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Class.SchoolClass;
 using SchoolWebApp.Core.Entities.Class;
-using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.Class
@@ -80,7 +78,7 @@ namespace SchoolWebApp.API.Controllers.Class
         /// <returns></returns>
         [HttpGet("byAcademicYearId/{academicYearId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SchoolClassDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<SchoolClassDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByAcademicYearId(int academicYearId)
@@ -96,6 +94,64 @@ namespace SchoolWebApp.API.Controllers.Class
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An error occurred while retrieving the school classes by academic year id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/schoolClasses/byEducationLevelId/5
+        /// <summary>
+        /// A method for retrieving school classes by education level Id.
+        /// </summary>
+        /// <param name="id">The education level Id to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byEducationLevelId/{educationLevelId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<SchoolClassDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetByEducationLevelId(int educationLevelId)
+        {
+            try
+            {
+                if (educationLevelId <= 0) return BadRequest(educationLevelId);
+                var _item = await _unitOfWork.SchoolClasses.GetByEducationLevelId(educationLevelId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<SchoolClassDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the school classes by education level id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/schoolClasses/byEducationLevelYearId/5/5
+        /// <summary>
+        /// A method for retrieving school classes by education level and academic year Ids.
+        /// </summary>
+        /// <param name="educationLevelId">The education level Id to be retrieved</param>
+        /// <param name="academicYearId">The academic year Id to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byEducationLevelYearId/{educationLevelId}/{academicYearId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<SchoolClassDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetByEducationLevelYearId(int educationLevelId, int academicYearId)
+        {
+            try
+            {
+                if (educationLevelId <= 0) return BadRequest(educationLevelId);
+                if (academicYearId <= 0) return BadRequest(academicYearId);
+                var _item = await _unitOfWork.SchoolClasses.GetByEducationLevelYearId(educationLevelId, academicYearId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<SchoolClassDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the school classes by education level and academic year id.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }

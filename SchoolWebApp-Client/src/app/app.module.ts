@@ -39,7 +39,8 @@ registerLocaleData(localeEn, 'en-EN');
             closeButton: true,
             easing: 'ease-in',
             easeTime: 1000,
-            progressBar: true
+            progressBar: true,
+            tapToDismiss: false
         }),
         NgbModule,
         NgIdleModule.forRoot()

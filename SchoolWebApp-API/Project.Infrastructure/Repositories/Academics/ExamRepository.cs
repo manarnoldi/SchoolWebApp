@@ -30,22 +30,27 @@ namespace SchoolWebApp.Infrastructure.Repositories.Academics
             return exams;
         }
 
-        public async Task<List<Exam>> SearchForExam(int academicYearId, int curriculumId, int sessionId, int? schoolClassId, int? subjectId)
+        public async Task<List<Exam>> SearchForExam(int academicYearId, int curriculumId, int sessionId, 
+            int schoolClassId, int? subjectId, int? examTypeId,string? examName)
         {
             var query = _dbContext.Exams
                 .Where(c => c.SchoolClass.AcademicYearId == academicYearId
                 && c.Session.CurriculumId == curriculumId
-                && c.SessionId == sessionId)
+                && c.SessionId == sessionId
+                && c.SchoolClassId == schoolClassId)
                 .Include(e => e.ExamType)
                 .Include(e => e.SchoolClass)
                 .Include(e => e.Session)
                 .Include(e => e.Subject)
                 .AsQueryable();
 
-            if (schoolClassId != null)
-                query = query.Where(s => s.SchoolClassId == schoolClassId);
+            if (examTypeId != null)
+                query = query.Where(s => s.ExamTypeId == examTypeId);
             if (subjectId != null)
                 query = query.Where(s => s.SubjectId == subjectId);
+            if (!(examName == null || examName == ""))
+                query = query.Where(s => s.Name == examName);
+
             var exams = await query.ToListAsync();
             return exams;
         }

@@ -16,7 +16,7 @@ import {Subscription} from 'rxjs';
 })
 export class ExamTableComponent implements OnInit {
     @Input() tableTitle: string = 'Examinations list';
-
+    @Input() eduLevelId: number;
     @Input() exams: Exam[] = [];
     @Input() subjects: Subject[] = [];
     @Input() examTypes: ExamType[] = [];
@@ -50,8 +50,8 @@ export class ExamTableComponent implements OnInit {
         'Year',
         'Session',
         'Class',
-        'Subject',
         'Exam Type',
+        'Subject',
         'Exam Name',
         'Exam Mark',
         'Contributing',

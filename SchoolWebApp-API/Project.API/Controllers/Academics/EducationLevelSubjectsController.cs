@@ -82,7 +82,7 @@ namespace SchoolWebApp.API.Controllers.Academics
         /// <returns></returns>
         [HttpGet("byEducationLevelId/{educationLevelId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EducationLevelSubjectDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<EducationLevelSubjectDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByEducationLevelId(int educationLevelId)
@@ -110,7 +110,7 @@ namespace SchoolWebApp.API.Controllers.Academics
         /// <returns></returns>
         [HttpGet("bySubjectId/{subjectId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EducationLevelSubjectDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<EducationLevelSubjectDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetBySubjectId(int subjectId)
@@ -138,7 +138,7 @@ namespace SchoolWebApp.API.Controllers.Academics
         /// <returns></returns>
         [HttpGet("byAcademicYearId/{academicYearId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EducationLevelSubjectDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<EducationLevelSubjectDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByAcademicYearId(int academicYearId)
@@ -167,7 +167,7 @@ namespace SchoolWebApp.API.Controllers.Academics
         /// <returns></returns>
         [HttpGet("byEducationLevelYearId/{educationLevelId}/{academicYearId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EducationLevelSubjectDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<EducationLevelSubjectDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByEducationLevelYearId(int educationLevelId, int academicYearId)
@@ -240,7 +240,7 @@ namespace SchoolWebApp.API.Controllers.Academics
                 if (educationLevelId <= 0) return BadRequest(educationLevelId);
                 if (subjectId <= 0) return BadRequest(subjectId);
                 var _item = await _unitOfWork.EducationLevelSubjects.GetByEducationLevelYearSubjectId(educationLevelId, academicYearId, subjectId);
-                if (_item == null) return NotFound();
+                //if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<EducationLevelSubjectDto>(_item);
                 return Ok(_itemDto);
             }

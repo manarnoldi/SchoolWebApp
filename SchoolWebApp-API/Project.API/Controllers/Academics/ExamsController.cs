@@ -126,7 +126,7 @@ namespace SchoolWebApp.API.Controllers.Academics
             }
         }
 
-        // GET api/exams/examSearch/5/5/5/5/5
+        // GET api/exams/examSearch/5/5/5/5/5/5
         /// <summary>
         /// A method for retrieving exams by searching.
         /// </summary>
@@ -141,15 +141,17 @@ namespace SchoolWebApp.API.Controllers.Academics
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ExamDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ExamsSearch(int academicYearId, int curriculumId, int sessionId, int? schoolClassId = null, int? subjectId = null)
+        public async Task<IActionResult> ExamsSearch(int academicYearId, int curriculumId, int sessionId, int schoolClassId,
+            int? subjectId = null, int? examTypeId = null, string? examName = null)
         {
             try
             {
                 if (academicYearId <= 0) return BadRequest(academicYearId);
                 if (curriculumId <= 0) return BadRequest(curriculumId);
                 if (sessionId <= 0) return BadRequest(sessionId);
-                var _item = await _unitOfWork.Exams.SearchForExam(academicYearId, curriculumId, sessionId, schoolClassId, subjectId);
-                if (_item == null) return NotFound();
+                if (schoolClassId <= 0) return BadRequest(schoolClassId);
+                var _item = await _unitOfWork.Exams.SearchForExam(academicYearId, curriculumId, sessionId, schoolClassId, subjectId, examTypeId, examName);
+                //if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<List<ExamDto>>(_item);
                 return Ok(_itemDto);
             }

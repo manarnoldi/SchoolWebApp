@@ -27,14 +27,22 @@
                     </td>
                     <td>{{ item.session?.sessionName }}</td>
                     <td>{{ item.schoolClass?.name }}</td>
-                    <td>{{ item.subject?.name }}</td>
                     <td>{{ item.examType?.name }}</td>
+                    <td>{{ item.subject?.name }}</td>
                     <td>{{ item.name }}</td>
                     <td>{{ item.examMark }}</td>
                     <td>{{ item.contributingMark }}</td>
-                    <app-table-action
-                        (editItemEvent)="editItem(item.id)"
-                        (deleteItemEvent)="deleteItem(item.id)"></app-table-action>
+                    <td>
+                        <a [routerLink]="['/academics/exams/add']"
+                            [queryParams]="{id: item.id, eduLevelId: eduLevelId}" class="edit"
+                            data-toggle="tooltip" data-original-title="Edit">
+                            <i class="fas fa-edit"></i></a>
+                        <span> | </span>
+                        <a class="delete" title data-toggle="tooltip"
+                            (click)="deleteItem(item.id)"
+                            data-original-title="Delete">
+                            <i class="fas fa-trash-alt"></i></a>
+                    </td>
                 </tr>
             </tbody>
         </table>

@@ -11,8 +11,9 @@ import {Subscription} from 'rxjs';
 })
 export class SchoolClassMinimumTableComponent implements OnInit {
     @Input() schoolClasses: SchoolClass[] = [];
+    @Input() disabled: boolean = false;
     @Input() minimumTable: Boolean = false;
-    @ViewChild('checkAll', {static: false}) checkAll: ElementRef;
+    @ViewChild('checkAllClasses', {static: false}) checkAll: ElementRef;
 
     page = 1;
     pageSize = 10;

@@ -7,6 +7,8 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.Class
     public interface ISchoolClassRepository : IBaseRepository<SchoolClass>
     {
         Task<List<SchoolClass>> GetByAcademicYearId(int academicYearId);
-        Task <SchoolClass> GetByYearClassStream(int academicYearId,int learningLevelId, int schoolStreamId);
+        Task<SchoolClass> GetByYearClassStream(int academicYearId, int learningLevelId, int schoolStreamId);
+        Task<List<SchoolClass>> GetByEducationLevelId(int educationLevelId);
+        Task<List<SchoolClass>> GetByEducationLevelYearId(int educationLevelId, int academicYearId);
     }
 }

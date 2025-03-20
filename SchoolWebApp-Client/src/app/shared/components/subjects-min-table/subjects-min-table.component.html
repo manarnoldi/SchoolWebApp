@@ -1,4 +1,4 @@
-<div class="card mt-1">
+<div class="card">
     <app-table-heading tableTitle="Subjects Mini Table"></app-table-heading>
     <div class="card-body table-responsive p-0">
         <table class="table table-striped table-hover text-nowrap">
@@ -6,9 +6,9 @@
                 <tr>
                     <th>
                         <div class="icheck-success m-0 p-0">
-                            <input #checkAll type="checkbox" id="checkAll" 
-                                (change)="checkAllClicked($event)">
-                            <label class="form-check-label" for="checkAll"></label>
+                            <input #checkAllSubjects type="checkbox" id="checkAllSubjects" 
+                                (change)="checkAllClicked($event)" [checked]="disabled" [attr.disabled]="disabled? 'disabled' : null">
+                            <label class="form-check-label" for="checkAllSubjects"></label>
                         </div>
                     </th>
                     <th>Name</th>
@@ -23,7 +23,7 @@
                     <th>
                         <div class="icheck-success">
                             <input type="checkbox" id="{{item.id}}" (change)="itemClicked($event)"
-                                [(ngModel)]="item.isSelected">
+                                [(ngModel)]="item.isSelected" [disabled]="disabled">
                             <label class="form-check-label" for="{{item.id}}"></label>
                         </div>
                     </th>

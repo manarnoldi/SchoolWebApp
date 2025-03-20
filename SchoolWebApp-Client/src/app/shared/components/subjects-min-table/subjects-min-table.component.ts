@@ -11,7 +11,8 @@ import {Subscription} from 'rxjs';
 export class SubjectsMinTableComponent implements OnInit {
     @Input() subjects: Subject[] = [];
     @Input() minimumTable: Boolean = false;
-    @ViewChild("checkAll", {static: false}) checkAll: ElementRef;
+    @Input() disabled: Boolean = false;
+    @ViewChild("checkAllSubjects", {static: false}) checkAll: ElementRef;
 
     page = 1;
     pageSize = 10;

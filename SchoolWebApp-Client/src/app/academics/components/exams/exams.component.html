@@ -3,7 +3,7 @@
     [breadcrumbs]="breadcrumbs"></app-dashboard-header>
 <hr>
 <section class="content">
-    <div class="container-fluid">
+    <div class="container-fluid px-1">
         <div class="row">
             <div class="col-12">
                 <a
@@ -14,24 +14,21 @@
                 </a>
             </div>
         </div>
-        <div class="card my-1  py-1 px-1">
-            <div class="row">
-                <div class="col-sm-12">
-                    <app-exam-list-search-form [subjects]="subjects" [schoolClasses]="schoolClasses" (clearListEvent)="clearList()"
-                        [sessions]="sessions" [curricula]="curricula" *ngIf="isLoading" (searchItemEvent)="onButtonSearchClick($event)"
-                        [academicYears]="academicYears" (curriculumYearChangedEvent)="curriculumYearChanged($event)"></app-exam-list-search-form>
-                </div>
-            </div>
-        </div>        
-        <div class="row">
-            <div class="col-12">
-                <app-exam-table [tableTitle]="'Examinations list'" *ngIf="isLoading"
-                    [subjects]="subjects" [exams]="exams" [examTypes]="examTypes"
-                    [schoolClasses]="schoolClasses" [sessions]="sessions"
-                    [curricula]="curricula"
-                    [academicYears]="academicYears" (editItemEvent)="editItem($event)"
-                    (deleteItemEvent)="deleteItem($event)"></app-exam-table>
-            </div>
+        <div class="card my-1">
+            <app-exam-list-search-form [subjects]="subjects"
+                [schoolClasses]="schoolClasses"
+                (clearListEvent)="clearList()"
+                (educationLevelYearChangedEvent)="educationLevelYearChanged($event)"
+                [sessions]="sessions" [curricula]="curricula"
+                (searchItemEvent)="onButtonSearchClick($event)" [examTypes]="examTypes"
+                [academicYears]="academicYears" [educationLevels]="educationLevels"
+                (curriculumYearChangedEvent)="curriculumYearChanged($event)"></app-exam-list-search-form>
         </div>
+        <app-exam-table [tableTitle]="'Examinations list'" *ngIf="isLoading"
+            [subjects]="subjects" [exams]="exams" [examTypes]="examTypes"
+            [schoolClasses]="schoolClasses" [sessions]="sessions"
+            [curricula]="curricula" [eduLevelId] = "eduLevelId"
+            [academicYears]="academicYears" (editItemEvent)="editItem($event)"
+            (deleteItemEvent)="deleteItem($event)"></app-exam-table>
     </div>
 </section>
