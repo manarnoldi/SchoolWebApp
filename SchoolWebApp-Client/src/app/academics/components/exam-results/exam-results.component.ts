@@ -49,8 +49,7 @@ export class ExamResultsComponent implements OnInit {
     constructor(
         private toastr: ToastrService,
         private examsSvc: ExamsService,
-        private examResultsSvc: ExamResultsService,
-        private studentSubjectsSvc: StudentSubjectsService
+        private examResultsSvc: ExamResultsService
     ) {}
 
     ngOnInit(): void {
@@ -63,8 +62,7 @@ export class ExamResultsComponent implements OnInit {
                 curricula,
                 academicYears,
                 educationLevels,
-                examTypes,
-                students
+                examTypes
             ]) => {
                 this.curricula = curricula.sort((a, b) => a.rank - b.rank);
                 this.examTypes = examTypes.sort((a, b) => a.rank - b.rank);

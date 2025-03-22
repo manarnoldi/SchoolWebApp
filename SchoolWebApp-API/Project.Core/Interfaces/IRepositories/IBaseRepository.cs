@@ -16,6 +16,7 @@ namespace Project.Core.Interfaces.IRepositories
         Task<bool> ItemExistsAsync(Expression<Func<T, bool>> expression);
         Task<bool> IsExists<Tvalue>(string key, Tvalue value);
         Task<bool> IsExistsForUpdate<Tid>(Tid id, string key, string value);
+        Task<int> RecordCount(Expression<Func<T, bool>> filter = null);
         void Create(T model);
         void CreateRange(List<T> model);
         void Update(T model);

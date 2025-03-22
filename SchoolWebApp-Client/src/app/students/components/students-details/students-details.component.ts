@@ -63,6 +63,9 @@ export class StudentsDetailsComponent implements OnInit {
 
     refreshItems = () => {
         this.sourceLink = this.router.url.split('/').pop();
+        if (this.sourceLink.includes('?')) {
+            this.sourceLink = this.sourceLink.split('?')[0];
+        }
         this.studentsSvc.get('/students').subscribe(
             (res) => {
                 this.students = res;

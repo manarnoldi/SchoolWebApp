@@ -1,6 +1,6 @@
 import {AuthService} from '@/core/services/auth.service';
 import {TableSettingsService} from '@/shared/services/table-settings.service';
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin, Subscription} from 'rxjs';
 import Swal from 'sweetalert2';
@@ -21,7 +21,8 @@ export class TodolistsComponent implements OnInit {
     todoList: TodoList;
 
     page = 1;
-    completeBtnColor = 'blue';
+    pageSize = 6;
+    completeBtnColors: string[] = [];
     editMode = false;
 
     curUserId: number;
@@ -36,17 +37,33 @@ export class TodolistsComponent implements OnInit {
         this.loadUserTodoLists();
     }
 
+    onMouseOver(index: number) {
+        this.completeBtnColors[index] = 'text-success';
+    }
+
+    onMouseOut(index: number) {
+        this.completeBtnColors[index] = 'text-primary';
+    }
     loadUserTodoLists = () => {
         let curUser = this.authService.getCurrentUser();
         this.curUserId = curUser.personId;
-        this.todoListSvc.get('/ToDoLists/byStaffId/' + this.curUserId).subscribe(
-            (res) => {
-                this.todoLists = res.sort((a,b) => new Date(a.completeBy).getTime() - new Date(b.completeBy).getTime());
-            },
-            (err) => {
-                this.toastr.error(err);
-            }
-        );
+        this.todoListSvc
+            .get('/ToDoLists/byStaffId/' + this.curUserId)
+            .subscribe(
+                (res) => {
+                    this.todoLists = res.sort(
+                        (a, b) =>
+                            new Date(b.completeBy).getTime() -
+                            new Date(a.completeBy).getTime()
+                    );
+                    this.completeBtnColors = this.todoLists.map((todo) =>
+                        todo.completed ? 'text-success' : 'text-primary'
+                    );
+                },
+                (err) => {
+                    this.toastr.error(err);
+                }
+            );
     };
 
     addItem = (todolistItem: TodoList) => {

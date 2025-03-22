@@ -53,6 +53,18 @@ namespace SchoolWebApp.API.Controllers.Students
             }
         }
 
+        // GET: api/students/GetCount
+        /// <summary>
+        /// A method for getting the total number of students in the school
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("GetCount")]
+        public async Task<ActionResult<int>> GetCount(bool active)
+        {
+            var retunStudentsReq = active ? _unitOfWork.Students.RecordCount(s => s.Status == Status.Active) : _unitOfWork.Students.RecordCount();
+            return Ok(await retunStudentsReq);
+        }
+
         // GET: api/students/paginated
         /// <summary>
         /// A method for retrieving a list of paginated students

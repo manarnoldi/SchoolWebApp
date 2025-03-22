@@ -27,6 +27,18 @@ namespace SchoolWebApp.API.Controllers.Students
             _mapper = mapper;
         }
 
+        // GET: api/parents/GetCount
+        /// <summary>
+        /// A method for getting the total number of parents in the school
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("GetCount")]
+        public async Task<ActionResult<int>> GetCount(bool active)
+        {
+            var returnParentsReq = active ? _unitOfWork.Parents.RecordCount(s => s.Status == Status.Active) : _unitOfWork.Parents.RecordCount();
+            return Ok(await returnParentsReq);
+        }
+
         // GET: api/parents?active=true
         /// <summary>
         /// A method for retrieving all parents details

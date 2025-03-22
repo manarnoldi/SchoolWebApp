@@ -1,71 +1,56 @@
-
-<!-- Small boxes (Stat box) -->
 <div class="row">
     <div class="col-lg-3 col-6">
-        <!-- small box -->
-        <div class="small-box bg-info opacity-70">
-            <div class="inner">
-                <h3>150</h3>
-                <p>New Orders</p>
+        <a [routerLink]="['/students/details']" class="nounderline"
+            [queryParams]='{active: true}'>
+            <div class="small-box bg-info opacity-60">
+                <div class="inner">
+                    <h3>{{studentCount}}</h3>
+                    <p>Students</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
             </div>
-            <div class="icon">
-                <i class="ion ion-bag"></i>
-            </div>
-            <!-- <a href="#" class="small-box-footer"
-                        >More info <i class="fas fa-arrow-circle-right"></i
-                    ></a> -->
-        </div>
+        </a>
     </div>
-    <!-- ./col -->
     <div class="col-lg-3 col-6">
-        <!-- small box -->
-        <div class="small-box bg-success opacity-70">
-            <div class="inner">
-                <h3>53<sup style="font-size: 20px">%</sup></h3>
-
-                <p>Bounce Rate</p>
+        <a [routerLink]="['/students/parents']" [queryParams]='{active: true}' class="nounderline">
+            <div class="small-box bg-success opacity-60">
+                <div class="inner">
+                    <h3>{{parentsCount}}</h3>
+                    <p>Parents</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-user-alt"></i>
+                </div>
             </div>
-            <div class="icon">
-                <i class="ion ion-stats-bars"></i>
-            </div>
-            <!-- <a href="#" class="small-box-footer"
-                        >More info <i class="fas fa-arrow-circle-right"></i
-                    ></a> -->
-        </div>
+        </a>
     </div>
-    <!-- ./col -->
     <div class="col-lg-3 col-6">
-        <!-- small box -->
-        <div class="small-box bg-warning opacity-70">
-            <div class="inner">
-                <h3>44</h3>
-
-                <p>User Registrations</p>
+        <a [routerLink]="['/staffDetails/byStaffCategoryId/'+ teachingStaffCategoryId]"
+            class="nounderline">
+            <div class="small-box bg-warning opacity-60">
+                <div class="inner">
+                    <h3>{{teachingStaffCount}}</h3>
+                    <p>Teaching Staff</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-user-tie"></i>
+                </div>
             </div>
-            <div class="icon">
-                <i class="ion ion-person-add"></i>
-            </div>
-            <!-- <a href="#" class="small-box-footer"
-                        >More info <i class="fas fa-arrow-circle-right"></i
-                    ></a> -->
-        </div>
+        </a>
     </div>
-    <!-- ./col -->
     <div class="col-lg-3 col-6">
-        <!-- small box -->
-        <div class="small-box bg-danger opacity-70">
-            <div class="inner">
-                <h3>65</h3>
-
-                <p>Unique Visitors</p>
+        <a [routerLink]="['/staffDetails/byStaffCategoryId/'+ nonTeachingStaffCategoryId]" class="nounderline">
+            <div class="small-box bg-danger opacity-60">
+                <div class="inner">
+                    <h3>{{nonTeachingStaffCount}}</h3>
+                    <p>Non-Teaching Staff</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-user"></i>
+                </div>
             </div>
-            <div class="icon">
-                <i class="ion ion-pie-graph"></i>
-            </div>
-            <!-- <a href="#" class="small-box-footer"
-                        >More info <i class="fas fa-arrow-circle-right"></i
-                    ></a> -->
-        </div>
+        </a>
     </div>
-    <!-- ./col -->
 </div>

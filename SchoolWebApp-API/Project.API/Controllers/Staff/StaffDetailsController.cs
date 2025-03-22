@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SchoolWebApp.API.Utils;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Staff.StaffDetails;
 using SchoolWebApp.Core.Entities.Enums;
+using SchoolWebApp.Core.Entities.Settings;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using System;
+using System.Linq.Expressions;
 
 namespace SchoolWebApp.API.Controllers.Staff
 {
@@ -47,6 +50,36 @@ namespace SchoolWebApp.API.Controllers.Staff
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
+        // GET: api/staffDetails/GetCount
+        /// <summary>
+        /// A method for getting the total number of staff per category and employment type in the school
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("GetCount")]
+        public async Task<ActionResult<int>> GetCount(bool active, int? staffCategoryId, int? employmentTypeId)
+        {
+            Expression<Func<StaffDetails, bool>> query = s => true; // Default to always true
+
+            if (active)
+            {
+                query = Utility.CombineExpressions(query, s => s.Status == Status.Active);
+            }
+
+            if (staffCategoryId != null && staffCategoryId > 0)
+            {
+                query = Utility.CombineExpressions(query, s => s.StaffCategoryId == staffCategoryId);
+            }
+
+            if (employmentTypeId != null && employmentTypeId > 0)
+            {
+                query = Utility.CombineExpressions(query, s => s.EmploymentTypeId == employmentTypeId);
+            }
+
+            var returnStaffReq = _unitOfWork.StaffDetails.RecordCount(query);
+            return Ok(await returnStaffReq);
+        }
+
 
         // GET: api/staffDetails/paginated
         /// <summary>
