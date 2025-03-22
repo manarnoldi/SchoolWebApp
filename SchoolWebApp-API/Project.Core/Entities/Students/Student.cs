@@ -27,6 +27,6 @@ namespace SchoolWebApp.Core.Entities.Students
         public List<FormerSchool> FormerSchools { get; set; } = new();
         public List<StudentDiscipline> StudentDisciplines { get; set; } = new();
         public List<StudentClass> StudentClasses{ get; set; } = new();
-        public List<ExamResult> ExamResults { get; set; } = new();
+        
     }
 }

@@ -1,0 +1,45 @@
+<div class="card mb-1">
+    <app-table-heading [editControls]="false"
+        tableTitle="{{tableTitle}}"></app-table-heading>
+    <div class="card-body table-responsive p-0">
+        <table class="table table-striped table-hover text-nowrap">
+            <thead>
+                <tr>
+                    <th class="py-1 " *ngFor="let header of tableHeaders">{{header}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr
+                    *ngFor="let item of examResults | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i">
+                    <td class="py-1 ">
+                        {{item.studentSubject?.studentClass?.student?.upi}}
+                    </td>
+                    <td class="py-1 ">
+                        {{item.studentSubject?.studentClass?.student?.fullName}}
+                    </td>
+                    <td class="py-1 ">
+                        {{item.studentSubject?.subject?.name}}
+                    </td>
+                    <td class="py-1 ">
+                        {{item.studentSubject?.subject?.name}}
+                    </td>
+                    <td class="py-1 ">{{ item.exam?.name }}</td>
+                    <td class="py-1 ">
+                        <input class="form-control form-control-sm p-0 w-auto"
+                            type="number"
+                            [id]="'score_' + item.studentId + '_' + i"
+                            (change)="validateNumber($event, i,item.exam?.examMark)"
+                            (blur)="validateNumber($event, i,item.exam?.examMark)"
+                            [(ngModel)]="item.score">
+                    </td>
+                    <td class="py-1 ">{{ item.exam?.examMark }}</td>
+                    <td class="py-1 ">{{ item.exam?.contributingMark }}</td>
+                    <app-table-action *ngIf="item.id" [tblShowEditButton]="false"
+                        (deleteItemEvent)="deleteItem(item)"></app-table-action>
+                </tr>
+            </tbody>
+        </table>
+        <app-table-paging
+            [collectionSize]="exams.length"></app-table-paging>
+    </div>
+</div>

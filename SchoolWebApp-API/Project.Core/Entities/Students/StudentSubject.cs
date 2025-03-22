@@ -10,5 +10,6 @@ namespace SchoolWebApp.Core.Entities.Students
         public int SubjectId { get; set; }
         public Subject? Subject { get; set; }
         public string? Description { get; set; }
+        public List<ExamResult> ExamResults { get; set; } = new();
     }
 }

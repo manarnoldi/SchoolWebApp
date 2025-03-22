@@ -57,6 +57,9 @@ import { ExamsComponent } from './academics/components/exams/exams.component';
 import { ExamAddFormComponent } from './academics/components/exams/exam-add-form/exam-add-form.component';
 import { EducationLevelSubject } from './academics/models/education-level-subject';
 import { EducationLevelSubjectsComponent } from './academics/components/subjects/education-level-subjects/education-level-subjects.component';
+import { Exam } from './academics/models/exam';
+import { ExamResult } from './academics/models/exam-result';
+import { ExamResultsComponent } from './academics/components/exam-results/exam-results.component';
 
 const routes: Routes = [
     {
@@ -153,7 +156,8 @@ const routes: Routes = [
             {path: 'educationLevelSubjects', component: EducationLevelSubjectsComponent},
             {path: 'grades', component: GradesComponent},
             {path: 'exams', component: ExamsComponent},
-            {path: 'exams/add', component: ExamAddFormComponent}
+            {path: 'exams/add', component: ExamAddFormComponent},
+            {path: 'examResults', component: ExamResultsComponent}
         ]
     },
     {

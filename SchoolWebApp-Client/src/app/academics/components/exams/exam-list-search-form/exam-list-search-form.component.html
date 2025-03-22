@@ -1,82 +1,82 @@
 <form class="px-1" [formGroup]="examListSearchForm" (ngSubmit)="onSubmit()" novalidate>
-    <div class="row d-flex">
-        <div class="col flex-grow-1 py-1 pe-0">
-            <div class="form-group1">
-                <select class="form-select form-select-sm" aria-label="Academic year" (change)="academicYearCurriculumChanged()"
-                    formControlName="academicYearId" id="academicYearId">
-                    <option [ngValue]="null"  selected>-Year-</option>
-                    <option [ngValue]="academicYear.id" *ngFor="let academicYear of
+    <div class="row">
+        <div class="col py-1 pe-0">
+            <select class="form-select form-select-sm" aria-label="Academic year"
+                (change)="academicYearCurriculumChanged()"
+                formControlName="academicYearId" id="academicYearId">
+                <option [ngValue]="null" selected>-Year-</option>
+                <option [ngValue]="academicYear.id" *ngFor="let academicYear of
                                     academicYears">{{academicYear.name}}</option>
-                </select>
-            </div>
+            </select>
         </div>
-        <div class="col flex-grow-1 py-1 px-1">
-            <div class="form-group1">
-                <select class="form-select form-select-sm" aria-label="Curriculum"  (change)="academicYearCurriculumChanged()"
-                    formControlName="curriculumId" id="curriculumId">
-                    <option [ngValue]="null"  selected>-Curriculum-</option>
-                    <option [ngValue]="curriculum.id" *ngFor="let curriculum of
+        <div class="col py-1 px-1">
+            <select class="form-select form-select-sm" aria-label="Curriculum"
+                (change)="academicYearCurriculumChanged()"
+                formControlName="curriculumId" id="curriculumId">
+                <option [ngValue]="null" selected>-Curriculum-</option>
+                <option [ngValue]="curriculum.id" *ngFor="let curriculum of
                                 curricula">{{curriculum.name}}</option>
-                </select>
-            </div>
-        </div>        
-        <div class="col flex-grow-1 py-1 px-0">
-            <div class="form-group1">
-                <select class="form-select form-select-sm" aria-label="Session" (change)="clearList()"
-                    formControlName="sessionId" id="sessionId">
-                    <option [ngValue]="null"  selected>-Session-</option>
-                    <option [ngValue]="session.id" *ngFor="let session of
+            </select>
+        </div>
+        <div class="col py-1 px-0">
+            <select class="form-select form-select-sm" aria-label="Session"
+                (change)="clearList()"
+                formControlName="sessionId" id="sessionId">
+                <option [ngValue]="null" selected>-Session-</option>
+                <option [ngValue]="session.id" *ngFor="let session of
                                 sessions">{{session.sessionName}}</option>
-                </select>
-            </div>
+            </select>
         </div>
-        <div class="col flex-grow-1 py-1 px-1">
-            <div class="form-group1">
-                <select class="form-select form-select-sm" aria-label="Education level"  (change)="educationLevelChanged()"
-                    formControlName="educationLevelId" id="educationLevelId">
-                    <option [ngValue]="null"  selected>-Level-</option>
-                    <option [ngValue]="educationLevel.id" *ngFor="let educationLevel of
+        <div class="col py-1 px-1">
+            <select class="form-select form-select-sm" aria-label="Education level"
+                (change)="educationLevelChanged()"
+                formControlName="educationLevelId" id="educationLevelId">
+                <option [ngValue]="null" selected>-Level-</option>
+                <option [ngValue]="educationLevel.id" *ngFor="let educationLevel of
                                     educationLevels">{{educationLevel.name}}</option>
-                </select>
-            </div>
+            </select>
         </div>
-        <div class="col flex-grow-1 py-1 px-0">
-            <div class="form-group1">
-                <select class="form-select form-select-sm" aria-label="Class"  (change)="clearList()"
-                    formControlName="schoolClassId" id="schoolClassId">
-                    <option [ngValue]="null"  selected>-Class-</option>
-                    <option [ngValue]="schoolClass.id" *ngFor="let schoolClass of
+        <div class="col py-1 px-0">
+            <select class="form-select form-select-sm" aria-label="Class"
+                (change)="clearList()"
+                formControlName="schoolClassId" id="schoolClassId">
+                <option [ngValue]="null" selected>-Class-</option>
+                <option [ngValue]="schoolClass.id" *ngFor="let schoolClass of
                                     schoolClasses">{{schoolClass.name}}</option>
-                </select>
-            </div>
+            </select>
         </div>
-        <div class="col flex-grow-1 py-1 px-1">
-            <div class="form-group1">
-                <select class="form-select form-select-sm" aria-label="Exam type"  (change)="clearList()"
-                    formControlName="examTypeId" id="examTypeId">
-                    <option [ngValue]="null"  selected>-Exam type-</option>
-                    <option [ngValue]="examType.id" *ngFor="let examType of
-                                    examTypes">{{examType.name}}</option>
-                </select>
-            </div>
-        </div>
-        <div class="col flex-grow-1 py-1 px-0">
-            <div class="form-group1">
-                <select class="form-select form-select-sm" aria-label="Subject"  (change)="clearList()"
-                    formControlName="subjectId" id="subjectId">
-                    <option [ngValue]="null"  selected>-Subject-</option>
-                    <option [ngValue]="subject.id" *ngFor="let subject of
+        <div class="col py-1 px-1">
+            <select class="form-select form-select-sm" aria-label="Subject"
+                (change)="clearList()"
+                formControlName="subjectId" id="subjectId">
+                <option [ngValue]="null" selected>-Subject-</option>
+                <option [ngValue]="subject.id" *ngFor="let subject of
                                     subjects">{{subject.name}}</option>
-                </select>
-            </div>
-        </div>        
-        <div class="col flex-grow-1 py-1 ps-1">
-            <div class="form-group1">
-                <button type="submit" [disabled]="examListSearchForm.invalid"
-                    class="btn btn-sm btn-flat btn-warning btn-block">
-                    <i class="fas fa-sync"></i> Search
-                </button>
-            </div>
+            </select>
+        </div>
+        <div class="col py-1 px-0">
+            <select class="form-select form-select-sm" aria-label="Exam type"
+                (change)="examTypeChanged()"
+                formControlName="examTypeId" id="examTypeId">
+                <option [ngValue]="null" selected>-Exam type-</option>
+                <option [ngValue]="examType.id" *ngFor="let examType of
+                                    examTypes">{{examType.name}}</option>
+            </select>
+        </div>
+        <div class="col py-1 px-1" *ngIf="showExamName">
+            <select class="form-select form-select-sm" aria-label="Exam name"
+                (change)="examChanged()"
+                formControlName="examId" id="examId">
+                <option [ngValue]="null" selected>-Exam name-</option>
+                <option [ngValue]="exam" *ngFor="let exam of
+                                    exams">{{exam.name}}</option>
+            </select>
+        </div>
+        <div class="col py-1 ps-0 pe-1">
+            <button type="submit" [disabled]="examListSearchForm.invalid"
+                class="btn btn-sm btn-flat btn-warning btn-block">
+                <i class="fas fa-sync"></i> Search
+            </button>
         </div>
     </div>
 </form>

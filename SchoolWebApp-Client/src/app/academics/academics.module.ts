@@ -17,6 +17,8 @@ import { ExamTableComponent } from './components/exams/exam-table/exam-table.com
 import { EducationLevelSubjectsComponent } from './components/subjects/education-level-subjects/education-level-subjects.component';
 import { EducationLevelSubjectsTableComponent } from './components/subjects/education-level-subjects/education-level-subjects-table/education-level-subjects-table.component';
 import { EducationLevelSubjectsFormComponent } from './components/subjects/education-level-subjects/education-level-subjects-form/education-level-subjects-form.component';
+import { ExamResultsComponent } from './components/exam-results/exam-results.component';
+import { ExamResultsTableComponent } from './components/exam-results/exam-results-table/exam-results-table.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,9 @@ import { EducationLevelSubjectsFormComponent } from './components/subjects/educa
     ExamsComponent,
     EducationLevelSubjectsComponent,
     EducationLevelSubjectsTableComponent,
-    EducationLevelSubjectsFormComponent
+    EducationLevelSubjectsFormComponent,
+    ExamResultsComponent,
+    ExamResultsTableComponent
   ],
   imports: [
     CoreModule,

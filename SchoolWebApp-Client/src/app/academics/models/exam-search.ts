@@ -8,6 +8,7 @@ export class ExamSearch {
     public academicYearId?: number;
     public curriculumId?: number;
     public educationLevelId?: number;
+    public examId?: number;
 
     constructor(examSeach?: ExamSearch) {
         if (examSeach) {

@@ -31,6 +31,8 @@ namespace SchoolWebApp.API.Controllers.Students
         /// </summary>
         /// <param name="studentSubjectId">The student subject id to be checked</param>
         /// <returns>The result if the student subject exists or not</returns>
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("checkIfExists/{studentSubjectId}")]
         public async Task<IActionResult> CheckIfExists(int studentSubjectId)
         {
@@ -92,7 +94,7 @@ namespace SchoolWebApp.API.Controllers.Students
             }
         }
 
-
+        
         // GET api/studentSubjects/byStudentClassId/5
         /// <summary>
         /// A method for retrieving student subjects by student class Id.
@@ -101,7 +103,7 @@ namespace SchoolWebApp.API.Controllers.Students
         /// <returns></returns>
         [HttpGet("byStudentClassId/{studentClassId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentSubjectDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentSubjectDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetStudentSubjectsByStudentClassId(int studentClassId)
@@ -121,6 +123,35 @@ namespace SchoolWebApp.API.Controllers.Students
             }
         }
 
+        // GET api/studentSubjects/bySchoolClassSubjectId/5/5
+        /// <summary>
+        /// A method for retrieving student subjects by school class and subject Ids.
+        /// </summary>
+        /// <param name="schoolClassId">The school class Id whose records are to be retrieved</param>
+        /// <param name="subjectId">The subject Id whose records are to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("bySchoolClassSubjectId/{schoolClassId}/{subjectId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentSubjectDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetStudentSubjectsBySchoolClassSubjectId(int schoolClassId, int subjectId)
+        {
+            try
+            {
+                if (schoolClassId <= 0) return BadRequest(schoolClassId);
+                var _item = await _unitOfWork.StudentSubjects.GetBySchoolClassSubjectId(schoolClassId, subjectId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<StudentSubjectDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the student subjects by school class and subject ids.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         // GET api/studentSubjects/bySchoolClassId/5
         /// <summary>
         /// A method for retrieving student subjects by school class Id.
@@ -129,7 +160,7 @@ namespace SchoolWebApp.API.Controllers.Students
         /// <returns></returns>
         [HttpGet("bySchoolClassId/{schoolClassId}/{studentId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentSubjectDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentSubjectDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetStudentSubjectsBySchoolClassId(int schoolClassId, int studentId)
@@ -158,7 +189,7 @@ namespace SchoolWebApp.API.Controllers.Students
         /// <returns></returns>
         [HttpGet("byStudentId/{studentId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentSubjectDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentSubjectDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetStudentSubjectsByStudentId(int studentId)
@@ -186,7 +217,7 @@ namespace SchoolWebApp.API.Controllers.Students
         /// <returns></returns>
         [HttpGet("bySubjectId/{subjectId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentSubjectDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentSubjectDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetStudentSubjectsBySubjectId(int subjectId)
@@ -244,6 +275,7 @@ namespace SchoolWebApp.API.Controllers.Students
         [HttpPost("batch")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateMany(List<StudentSubjectDto> model)
         {
             if (model == null || !model.Any())
@@ -361,6 +393,7 @@ namespace SchoolWebApp.API.Controllers.Students
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)
         {
             try

@@ -5,14 +5,9 @@ import {ExamSearch} from '@/academics/models/exam-search';
 import {ExamType} from '@/academics/models/exam-type';
 import {Subject} from '@/academics/models/subject';
 import {CurriculumService} from '@/academics/services/curriculum.service';
-import {EducationLevelSubjectService} from '@/academics/services/education-level-subject.service';
-import {ExamTypesService} from '@/academics/services/exam-types.service';
 import {ExamsService} from '@/academics/services/exams.service';
-import {SubjectsService} from '@/academics/services/subjects.service';
 import {SchoolClass} from '@/class/models/school-class';
 import {Session} from '@/class/models/session';
-import {SchoolClassesService} from '@/class/services/school-classes.service';
-import {SessionsService} from '@/class/services/sessions.service';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {AcademicYear} from '@/school/models/academic-year';
 import {EducationLevel} from '@/school/models/educationLevel';
@@ -21,18 +16,16 @@ import {EducationLevelService} from '@/school/services/education-level.service';
 import {EducationLevelYear} from '@/shared/models/education-level-year';
 import {
     AfterViewChecked,
-    AfterViewInit,
     Component,
     OnInit,
     ViewChild
 } from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
-import {forkJoin, map, Observable} from 'rxjs';
+import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 import {ExamAddFormComponent} from './exam-add-form/exam-add-form.component';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {ExamListSearchFormComponent} from './exam-list-search-form/exam-list-search-form.component';
-import {EducationLevelSubject} from '@/academics/models/education-level-subject';
 
 @Component({
     selector: 'app-exams',
@@ -66,14 +59,8 @@ export class ExamsComponent implements OnInit, AfterViewChecked {
         private toastr: ToastrService,
         private curriculaSvc: CurriculumService,
         private academicYearsSvc: AcademicYearsService,
-        private sessionSvc: SessionsService,
-        private subjectsSvc: SubjectsService,
-        private educationLevelSubjectSvc: EducationLevelSubjectService,
-        private schoolClassesSvc: SchoolClassesService,
         private educationLevelSvc: EducationLevelService,
-        private examTypesSvc: ExamTypesService,
         private examsSvc: ExamsService,
-        private router: Router,
         private route: ActivatedRoute
     ) {}
 
@@ -110,12 +97,12 @@ export class ExamsComponent implements OnInit, AfterViewChecked {
                             es.subjectId = exam.subjectId;
 
                             let sessionFromCYReq =
-                                this.getSessionFromCurriculumYear(cuyear);
+                                this.examsSvc.getSessionFromCurriculumYear(cuyear);
                             let educationLevelSubjectsReq =
-                                this.getSubjectsByEducationLevelYear(ely);
+                                this.examsSvc.getSubjectsByEducationLevelYear(ely);
                             let schoolClassReq =
-                                this.getSchoolClassesByEducationLevelYear(ely);
-                            let examsSearchReq = this.getExamsBySearch(es);
+                                this.examsSvc.getSchoolClassesByEducationLevelYear(ely);
+                            let examsSearchReq = this.examsSvc.getExamsBySearch(es);
 
                             forkJoin([
                                 sessionFromCYReq,
@@ -206,54 +193,14 @@ export class ExamsComponent implements OnInit, AfterViewChecked {
                 this.toastr.error(err.error);
             }
         });
-    }
-
-    getSubjectsByEducationLevelYear = (
-        ely: EducationLevelYear
-    ): Observable<Subject[]> => {
-        return this.educationLevelSubjectSvc
-            .get(
-                '/educationLevelSubjects/byEducationLevelYearId/' +
-                    ely.educationLevelId +
-                    '/' +
-                    ely.academicYearId
-            )
-            .pipe(
-                map((educationLevelSubjects) => {
-                    educationLevelSubjects.forEach((els) => {
-                        this.subjects.push(els.subject);
-                    });
-                    return this.subjects.sort((a, b) => a.rank - b.rank);
-                })
-            );
-    };
-
-    getSchoolClassesByEducationLevelYear = (
-        ely: EducationLevelYear
-    ): Observable<SchoolClass[]> => {
-        return this.schoolClassesSvc
-            .get(
-                '/schoolClasses/byEducationLevelYearId/' +
-                    ely.educationLevelId +
-                    '/' +
-                    ely.academicYearId
-            )
-            .pipe(
-                map(
-                    (schoolClasses) =>
-                        (this.schoolClasses = schoolClasses.sort(
-                            (a, b) => a.rank - b.rank
-                        ))
-                )
-            );
-    };
+    }    
 
     educationLevelYearChanged = (ely: EducationLevelYear) => {
         this.subjects = [];
         this.schoolClasses = [];
         let educationLevelSubjectsReq =
-            this.getSubjectsByEducationLevelYear(ely);
-        let schoolClassReq = this.getSchoolClassesByEducationLevelYear(ely);
+            this.examsSvc.getSubjectsByEducationLevelYear(ely);
+        let schoolClassReq = this.examsSvc.getSchoolClassesByEducationLevelYear(ely);
 
         forkJoin([educationLevelSubjectsReq, schoolClassReq]).subscribe({
             next: ([subjects, schoolClasses]) => {
@@ -266,20 +213,12 @@ export class ExamsComponent implements OnInit, AfterViewChecked {
         });
     };
 
-    getSessionFromCurriculumYear = (
-        cy: CurriculumYear
-    ): Observable<Session[]> => {
-        return this.sessionSvc
-            .get(
-                `/sessions/byCurriculumYearId/${cy.curriculumId}/${cy.academicYearId}`
-            )
-            .pipe(map((sessions) => sessions));
-    };
+    
 
     curriculumYearChanged = (cy: CurriculumYear) => {
         this.exams = [];
         this.sessions = [];
-        this.getSessionFromCurriculumYear(cy).subscribe({
+        this.examsSvc.getSessionFromCurriculumYear(cy).subscribe({
             next: (sessions) => {
                 this.sessions = sessions.sort((a, b) => a.rank - b.rank);
             },
@@ -293,14 +232,7 @@ export class ExamsComponent implements OnInit, AfterViewChecked {
         this.exams = [];
     };
 
-    getExamsBySearch = (es: ExamSearch): Observable<Exam[]> => {
-        return this.examsSvc
-            .get(
-                `/exams/examSearch?academicYearId=${es.academicYearId}&curriculumId=${es.curriculumId}&sessionId=
-            ${es.sessionId}&schoolClassId=${es.schoolClassId ?? ''}&subjectId=${es.subjectId ?? ''}&examTypeId=${es.examTypeId ?? ''}`
-            )
-            .pipe(map((exams) => exams));
-    };
+   
 
     onButtonSearchClick = (es: ExamSearch) => {
         this.exams = [];
@@ -316,7 +248,7 @@ export class ExamsComponent implements OnInit, AfterViewChecked {
             this.toastr.info('Select class before searching!');
         else {
             this.eduLevelId = es.educationLevelId;
-            this.getExamsBySearch(es).subscribe({
+            this.examsSvc.getExamsBySearch(es).subscribe({
                 next: (exams) => {
                     exams.length <= 0
                         ? this.toastr.info(
@@ -330,24 +262,7 @@ export class ExamsComponent implements OnInit, AfterViewChecked {
             });
         }
     };
-
-    editItem(id: number) {
-        // this.subjectsSvc.getById(id, '/subjects').subscribe(
-        //     (res) => {
-        //         let subjectId = res.id;
-        //         this.subject = new SubjectGroup(res);
-        //         this.subject.id = subjectId;
-        //         this.subjectsAddForm.setFormControls(this.subject);
-        //         this.subjectsAddForm.editMode = true;
-        //         this.subjectsAddForm.subject = this.subject;
-        //         this.tableButton.onClick();
-        //     },
-        //     (err) => {
-        //         this.toastr.error(err);
-        //     }
-        // );
-    }
-
+    
     deleteItem(id: number) {
         Swal.fire({
             title: `Delete exam record?`,

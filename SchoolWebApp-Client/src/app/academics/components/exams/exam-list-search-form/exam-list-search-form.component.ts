@@ -1,5 +1,6 @@
 import {Curriculum} from '@/academics/models/curriculum';
 import {CurriculumYear} from '@/academics/models/curriculum-year';
+import {Exam} from '@/academics/models/exam';
 import {ExamSearch} from '@/academics/models/exam-search';
 import {ExamType} from '@/academics/models/exam-type';
 import {Subject} from '@/academics/models/subject';
@@ -24,12 +25,16 @@ export class ExamListSearchFormComponent implements OnInit {
     @Input() subjects: Subject[] = [];
     @Input() examTypes: ExamType[] = [];
     @Input() educationLevels: EducationLevel[] = [];
+    @Input() exams: Exam[] = [];
+    @Input() showExamName: boolean = false;
 
     @Output() searchItemEvent = new EventEmitter<ExamSearch>();
     @Output() curriculumYearChangedEvent = new EventEmitter<CurriculumYear>();
     @Output() educationLevelYearChangedEvent =
         new EventEmitter<EducationLevelYear>();
     @Output() clearListEvent = new EventEmitter<void>();
+    @Output() examChangedEvent = new EventEmitter<Exam>();
+    @Output() examTypeChangedEvent = new EventEmitter<ExamSearch>();
 
     examListSearchForm: FormGroup;
     examSearch: ExamSearch;
@@ -43,6 +48,7 @@ export class ExamListSearchFormComponent implements OnInit {
     refreshItems = () => {
         this.examListSearchForm = this.formBuilder.group({
             examTypeId: [null],
+            examId: [null],
             educationLevelId: [null],
             academicYearId: [null],
             schoolClassId: [null],
@@ -53,7 +59,16 @@ export class ExamListSearchFormComponent implements OnInit {
     };
 
     clearList = () => {
+        this.exams = [];
+        this.examListSearchForm.get('examId').reset();
+        this.examListSearchForm.get('examTypeId').reset();
         this.clearListEvent.emit();
+    };
+
+    examChanged = () => {
+        let exam = this.examListSearchForm.get('examId').value;
+        if (!exam || exam == null) return;
+        this.examChangedEvent.emit(exam);
     };
 
     onSubmit = () => {
@@ -101,5 +116,16 @@ export class ExamListSearchFormComponent implements OnInit {
         educationLevelYear.educationLevelId = educationLevelId;
 
         this.educationLevelYearChangedEvent.emit(educationLevelYear);
+    };
+
+    examTypeChanged = () => {
+        this.exams = [];
+        this.examListSearchForm.get('examId').reset();
+        if (!this.examListSearchForm.get('examTypeId').value) {
+            this.exams = [];
+            return;
+        }
+        let examSearch = new ExamSearch(this.examListSearchForm.value);
+        this.examTypeChangedEvent.emit(examSearch);
     };
 }
