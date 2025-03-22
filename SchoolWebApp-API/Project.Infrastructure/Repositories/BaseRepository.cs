@@ -66,12 +66,17 @@ namespace Project.Infrastructure.Repositories
             return data;
         }
 
-        public virtual async Task<PaginatedDto<T>> GetPaginatedData(int pageNumber, int pageSize)
+        public virtual async Task<PaginatedDto<T>> GetPaginatedData(int pageNumber, int pageSize, string includeProperties = "")
         {
-            var query = _dbContext.Set<T>()
+            IQueryable<T> query = _dbContext.Set<T>()
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .AsNoTracking();
+            foreach (var includeProperty in includeProperties.Split
+                (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                query = query.Include(includeProperty);
+            }
 
             var data = await query.ToListAsync();
             var totalCount = await _dbContext.Set<T>().CountAsync();

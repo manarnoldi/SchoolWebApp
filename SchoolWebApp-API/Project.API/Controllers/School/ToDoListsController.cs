@@ -38,7 +38,7 @@ namespace SchoolWebApp.API.Controllers.School
         {
             try
             {
-                return Ok(_mapper.Map<List<ToDoListDto>>(await _unitOfWork.ToDoLists.GetAll()));
+                return Ok(_mapper.Map<List<ToDoListDto>>(await _unitOfWork.ToDoLists.Find(s=>s.Completed == false)));
             }
             catch (Exception ex)
             {

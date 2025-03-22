@@ -14,7 +14,9 @@ namespace SchoolWebApp.Infrastructure.Repositories.School
 
         public async Task<List<ToDoList>> GetByStaffId(int staffId)
         {
-            var toDoLists = await _dbContext.ToDoLists.Where(e => e.StaffDetailsId == staffId).ToListAsync();
+            var toDoLists = await _dbContext.ToDoLists.Where(e => e.StaffDetailsId == staffId && e.Completed == false)
+                .Include(s => s.StaffDetails)
+                .ToListAsync();
             return toDoLists;
         }
     }
