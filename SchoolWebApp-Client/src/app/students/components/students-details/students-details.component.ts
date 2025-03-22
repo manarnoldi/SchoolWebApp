@@ -62,11 +62,13 @@ export class StudentsDetailsComponent implements OnInit {
     }
 
     refreshItems = () => {
+        let searchUrl: string = '/students';
         this.sourceLink = this.router.url.split('/').pop();
         if (this.sourceLink.includes('?')) {
+            searchUrl = searchUrl + '?' + this.sourceLink.split('?')[1];
             this.sourceLink = this.sourceLink.split('?')[0];
         }
-        this.studentsSvc.get('/students').subscribe(
+        this.studentsSvc.get(searchUrl).subscribe(
             (res) => {
                 this.students = res;
                 if (this.itemDeleted) {

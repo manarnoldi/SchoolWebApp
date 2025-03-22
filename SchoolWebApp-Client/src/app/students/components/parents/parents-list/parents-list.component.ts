@@ -62,8 +62,13 @@ export class ParentsListComponent implements OnInit {
     }
 
     refreshItems = () => {
+        let searchUrl: string = '/parents';
         this.sourceLink = this.router.url.split('/').pop();
-        this.parentsSvc.get('/parents').subscribe(
+        if (this.sourceLink.includes('?')) {
+            searchUrl = searchUrl + '?' + this.sourceLink.split('?')[1];
+            this.sourceLink = this.sourceLink.split('?')[0];
+        }
+        this.parentsSvc.get(searchUrl).subscribe(
             (res) => {
                 this.parents = res;
                 if (this.itemDeleted) {

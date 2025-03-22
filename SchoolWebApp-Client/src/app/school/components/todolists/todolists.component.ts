@@ -21,7 +21,7 @@ export class TodolistsComponent implements OnInit {
     todoList: TodoList;
 
     page = 1;
-    pageSize = 6;
+    pageSize = 4;
     completeBtnColors: string[] = [];
     editMode = false;
 

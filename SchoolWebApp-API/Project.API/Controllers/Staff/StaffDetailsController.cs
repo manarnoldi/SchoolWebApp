@@ -36,13 +36,29 @@ namespace SchoolWebApp.API.Controllers.Staff
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StaffDetailDto>))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Get(bool active)
+        public async Task<IActionResult> Get(bool active, int? staffCategoryId, int? employmentTypeId)
         {
             try
             {
-                var staffReturn = active ? await _unitOfWork.StaffDetails.Find(s => s.Status == Status.Active, includeProperties: "StaffCategory,Designation,Nationality,Religion,Gender,EmploymentType") :
-                    await _unitOfWork.StaffDetails.Find(includeProperties: "StaffCategory,Designation,Nationality,Religion,Gender,EmploymentType");
-                return Ok(_mapper.Map<List<StaffDetailDto>>(staffReturn));
+                Expression<Func<StaffDetails, bool>> query = s => true; // Default to always true
+
+                if (active)
+                {
+                    query = Utility.CombineExpressions(query, s => s.Status == Status.Active);
+                }
+
+                if (staffCategoryId != null && staffCategoryId > 0)
+                {
+                    query = Utility.CombineExpressions(query, s => s.StaffCategoryId == staffCategoryId);
+                }
+
+                if (employmentTypeId != null && employmentTypeId > 0)
+                {
+                    query = Utility.CombineExpressions(query, s => s.EmploymentTypeId == employmentTypeId);
+                }
+
+                var returnStaffReq = _unitOfWork.StaffDetails.Find(query, includeProperties: "StaffCategory,Designation,Nationality,Religion,Gender,EmploymentType");
+                return Ok(await returnStaffReq);
             }
             catch (Exception ex)
             {

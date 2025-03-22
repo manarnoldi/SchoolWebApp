@@ -11,7 +11,7 @@
     </div>
     <div class="card-body p-1">
         <ul class="todo-list" data-widget="todo-list">
-            <li *ngFor="let todoList of todoLists | slice: (page - 1) * 6: page * 6;let i= index" class="card todo-item-box">
+            <li *ngFor="let todoList of todoLists | slice: (page - 1) * pageSize: page * pageSize;let i= index" class="card todo-item-box">
                 <i [id]="(page - 1) * pageSize + i"
                     class="fas fa-check-circle"
                     [ngClass]="completeBtnColors[(page - 1) * pageSize + i]"

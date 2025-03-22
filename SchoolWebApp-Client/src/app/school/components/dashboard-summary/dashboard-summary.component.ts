@@ -24,21 +24,52 @@ export class DashboardSummaryComponent implements OnInit {
         private toastr: ToastrService,
         private parentsSvc: ParentsService,
         private staffsSvc: StaffDetailsService,
-        private StaffCaegoriesSvc: StaffCategoriesService
+        private StaffCategoriesSvc: StaffCategoriesService
     ) {}
 
     ngOnInit(): void {
-        let studentsCountReq = this.studentsSvc.getCount(
-            '/students/GetCount?active=true'
-        );
-        let parentsCountReq = this.studentsSvc.getCount(
-            '/parents/GetCount?active=true'
-        );
+        this.StaffCategoriesSvc.get('/staffCategories').subscribe({
+            next: (staffCats) => {
+                this.teachingStaffCategoryId = parseInt(
+                    staffCats.find((s) => s.code == 'STAFFCAT001').id
+                );
+                this.nonTeachingStaffCategoryId = parseInt(
+                    staffCats.find((s) => s.code == 'STAFFCAT002').id
+                );
 
-        forkJoin([studentsCountReq, parentsCountReq]).subscribe({
-            next: ([studentsCount, parentsCount]) => {
-                this.studentCount = studentsCount;
-                this.parentsCount = parentsCount;
+                let requests = [];
+                requests.push(
+                    this.studentsSvc.getCount('/students/GetCount?active=true')
+                );
+
+                requests.push(
+                    this.studentsSvc.getCount('/parents/GetCount?active=true')
+                );
+                requests.push(
+                    this.staffsSvc.getCount(
+                        '/staffDetails/GetCount?active=true&staffCategoryId=' +
+                            this.teachingStaffCategoryId
+                    )
+                );
+                requests.push(
+                    this.staffsSvc.getCount(
+                        '/staffDetails/GetCount?active=true&staffCategoryId=' +
+                            this.nonTeachingStaffCategoryId
+                    )
+                );
+
+                forkJoin(...requests).subscribe(
+                    (res) => {
+                        this.studentCount = Number(res[0]);
+                        this.parentsCount = Number(res[1]);
+                        this.teachingStaffCount = Number(res[2]);
+                        this.nonTeachingStaffCount = Number(res[3]);
+                    },
+                    (err) => {
+                        console.error(err);
+                        this.toastr.error(err.error);
+                    }
+                );
             },
             error: (err) => {
                 this.toastr.error(err.error?.message);

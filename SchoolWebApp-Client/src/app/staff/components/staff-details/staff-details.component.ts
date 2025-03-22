@@ -61,8 +61,13 @@ export class StaffDetailsComponent implements OnInit {
     }
 
     refreshItems = () => {
+        let searchUrl: string = '/staffDetails';
         this.sourceLink = this.router.url.split('/').pop();
-        this.staffsSvc.get('/staffDetails').subscribe(
+        if (this.sourceLink.includes('?')) {
+            searchUrl = searchUrl + '?' + this.sourceLink.split('?')[1];
+            this.sourceLink = this.sourceLink.split('?')[0];
+        }
+        this.staffsSvc.get(searchUrl).subscribe(
             (res) => {
                 this.staffs = res;
                 if (this.itemDeleted) {
