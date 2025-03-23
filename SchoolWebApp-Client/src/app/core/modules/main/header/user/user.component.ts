@@ -13,7 +13,7 @@ export class UserComponent implements OnInit {
     constructor(private authService: AuthService) {}
 
     ngOnInit(): void {
-        this.user  = JSON.parse(sessionStorage.getItem('current_user'));
+        this.user  = JSON.parse(localStorage.getItem('current_user'));
         this.authService.currentUser = this.user;
     }
 

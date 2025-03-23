@@ -46,25 +46,25 @@ export class AuthService {
     // Set current user
     setCurrentUser(user) {
         this.currentUser = user;
-        sessionStorage.setItem('current_user', JSON.stringify(user));
+        localStorage.setItem('current_user', JSON.stringify(user));
     }
 
     getCurrentUser() {
-        return JSON.parse(sessionStorage.getItem('current_user'));
+        return JSON.parse(localStorage.getItem('current_user'));
     }
 
     getToken() {
-        return sessionStorage.getItem('ssw_token');
+        return localStorage.getItem('ssw_token');
     }
 
     get isLoggedIn(): boolean {
-        let authToken = sessionStorage.getItem('ssw_token');
+        let authToken = localStorage.getItem('ssw_token');
         return authToken !== null ? true : false;
     }
 
     doLogout() {
-        let removeToken = sessionStorage.removeItem('ssw_token');
-        sessionStorage.removeItem('current_user');
+        let removeToken = localStorage.removeItem('ssw_token');
+        localStorage.removeItem('current_user');
         this.appService.setUserLoggedIn(false);
         if (removeToken == null) {
             this.router.navigate(['/login']);

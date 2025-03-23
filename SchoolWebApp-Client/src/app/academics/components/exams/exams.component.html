@@ -16,7 +16,7 @@
         </div>
         <div class="card my-1">
             <app-exam-list-search-form [subjects]="subjects"
-                [schoolClasses]="schoolClasses"
+                [schoolClasses]="schoolClasses" (examTypeChangedEvent)="examTypeChanged()"
                 (clearListEvent)="clearList()"
                 (educationLevelYearChangedEvent)="educationLevelYearChanged($event)"
                 [sessions]="sessions" [curricula]="curricula"

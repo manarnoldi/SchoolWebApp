@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             //this.spinner.show();
             this.authService.signIn(this.loginForm.value).subscribe(
                 (result: any) => {
-                    sessionStorage.setItem('ssw_token', result.token);
+                    localStorage.setItem('ssw_token', result.token);
                     this.authService.getUserProfile(result.id).subscribe(
                         (res) => {
                             let cuUser: User = {...res};

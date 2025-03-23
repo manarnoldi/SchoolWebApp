@@ -27,7 +27,7 @@ export class MenuSidebarComponent implements OnInit {
         this.ui.subscribe((state: UiState) => {
             this.classes = `${BASE_CLASSES} ${state.sidebarSkin}`;
         });
-        this.user = JSON.parse(sessionStorage.getItem('current_user'));
+        this.user = JSON.parse(localStorage.getItem('current_user'));
     }
 }
 

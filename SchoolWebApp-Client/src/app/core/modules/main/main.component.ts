@@ -17,7 +17,9 @@ export class MainComponent implements OnInit {
     constructor(
         private renderer: Renderer2,
         private store: Store<AppState>
-    ) {}
+    ) {
+        console.log("I reached here!");
+    }
 
     ngOnInit() {
         this.ui = this.store.select('ui');

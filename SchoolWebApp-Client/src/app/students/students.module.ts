@@ -34,6 +34,10 @@ import {AcademicsModule} from '@/academics/academics.module';
 import { StudentAttendanceFormComponent } from './components/student-assignments/student-attendance/student-attendance-form/student-attendance-form.component';
 import { StudentAttendanceTableComponent } from './components/student-assignments/student-attendance/student-attendance-table/student-attendance-table.component';
 import { StudentClassesComponent } from '../shared/components/student-classes/student-classes.component';
+import { StudentsSubjectsComponent } from './components/students-subjects/students-subjects.component';
+import { StudentsSubjectsTableComponent } from './components/students-subjects/students-subjects-table/students-subjects-table.component';
+import { StudentsSubjectsAddFormComponent } from './components/students-subjects/students-subjects-add-form/students-subjects-add-form.component';
+import { StudentsSubjectsSearchFormComponent } from './components/students-subjects/students-subjects-search-form/students-subjects-search-form.component';
 
 @NgModule({
     declarations: [
@@ -66,7 +70,11 @@ import { StudentClassesComponent } from '../shared/components/student-classes/st
         StudentSubjectsTableComponent,
         StudentSubjectsLoadFormComponent,
         StudentAttendanceFormComponent,
-        StudentAttendanceTableComponent
+        StudentAttendanceTableComponent,
+        StudentsSubjectsComponent,
+        StudentsSubjectsTableComponent,
+        StudentsSubjectsAddFormComponent,
+        StudentsSubjectsSearchFormComponent
     ],
     imports: [AcademicsModule, DataTablesModule, CoreModule, SharedModule]
 })

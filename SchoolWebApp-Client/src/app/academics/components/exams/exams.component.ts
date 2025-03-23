@@ -14,12 +14,7 @@ import {EducationLevel} from '@/school/models/educationLevel';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {EducationLevelService} from '@/school/services/education-level.service';
 import {EducationLevelYear} from '@/shared/models/education-level-year';
-import {
-    AfterViewChecked,
-    Component,
-    OnInit,
-    ViewChild
-} from '@angular/core';
+import {AfterViewChecked, Component, OnInit, ViewChild} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
@@ -97,12 +92,19 @@ export class ExamsComponent implements OnInit, AfterViewChecked {
                             es.subjectId = exam.subjectId;
 
                             let sessionFromCYReq =
-                                this.examsSvc.getSessionFromCurriculumYear(cuyear);
+                                this.examsSvc.getSessionFromCurriculumYear(
+                                    cuyear
+                                );
                             let educationLevelSubjectsReq =
-                                this.examsSvc.getSubjectsByEducationLevelYear(ely);
+                                this.examsSvc.getSubjectsByEducationLevelYear(
+                                    ely
+                                );
                             let schoolClassReq =
-                                this.examsSvc.getSchoolClassesByEducationLevelYear(ely);
-                            let examsSearchReq = this.examsSvc.getExamsBySearch(es);
+                                this.examsSvc.getSchoolClassesByEducationLevelYear(
+                                    ely
+                                );
+                            let examsSearchReq =
+                                this.examsSvc.getExamsBySearch(es);
 
                             forkJoin([
                                 sessionFromCYReq,
@@ -193,14 +195,15 @@ export class ExamsComponent implements OnInit, AfterViewChecked {
                 this.toastr.error(err.error);
             }
         });
-    }    
+    }
 
     educationLevelYearChanged = (ely: EducationLevelYear) => {
         this.subjects = [];
         this.schoolClasses = [];
         let educationLevelSubjectsReq =
             this.examsSvc.getSubjectsByEducationLevelYear(ely);
-        let schoolClassReq = this.examsSvc.getSchoolClassesByEducationLevelYear(ely);
+        let schoolClassReq =
+            this.examsSvc.getSchoolClassesByEducationLevelYear(ely);
 
         forkJoin([educationLevelSubjectsReq, schoolClassReq]).subscribe({
             next: ([subjects, schoolClasses]) => {
@@ -213,7 +216,9 @@ export class ExamsComponent implements OnInit, AfterViewChecked {
         });
     };
 
-    
+    examTypeChanged = () => {
+        this.exams = [];
+    };
 
     curriculumYearChanged = (cy: CurriculumYear) => {
         this.exams = [];
@@ -231,8 +236,6 @@ export class ExamsComponent implements OnInit, AfterViewChecked {
     clearList = () => {
         this.exams = [];
     };
-
-   
 
     onButtonSearchClick = (es: ExamSearch) => {
         this.exams = [];
@@ -262,7 +265,7 @@ export class ExamsComponent implements OnInit, AfterViewChecked {
             });
         }
     };
-    
+
     deleteItem(id: number) {
         Swal.fire({
             title: `Delete exam record?`,
