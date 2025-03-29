@@ -1,5 +1,4 @@
-
-import { TodoList } from '@/school/models/todolist';
+import {TodoList} from '@/school/models/todolist';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
@@ -12,7 +11,7 @@ export class TodolistFormComponent implements OnInit {
     @Output() addToDoListItemEvent = new EventEmitter<TodoList>();
     todoListItemAddForm: FormGroup;
     @Input() editmode: Boolean = false;
-    
+
     constructor(private formBuilder: FormBuilder) {}
 
     ngOnInit(): void {
@@ -47,4 +46,8 @@ export class TodolistFormComponent implements OnInit {
         this.editmode = false;
         this.todoListItemAddForm.reset();
     }
+
+    clearControls = () => {
+        this.resetFormControls();
+    };
 }

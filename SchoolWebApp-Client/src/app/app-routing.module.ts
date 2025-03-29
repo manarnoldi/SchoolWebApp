@@ -60,6 +60,7 @@ import { EducationLevelSubjectsComponent } from './academics/components/subjects
 import { Exam } from './academics/models/exam';
 import { ExamResult } from './academics/models/exam-result';
 import { ExamResultsComponent } from './academics/components/exam-results/exam-results.component';
+import { StudentsSubjectsComponent } from './students/components/students-subjects/students-subjects.component';
 
 const routes: Routes = [
     {
@@ -140,7 +141,9 @@ const routes: Routes = [
             {path: 'manage', component: StudentsDetailsComponent},
             {path: 'manage/add', component: StudentAssignmentsComponent},
             {path: 'parents', component: ParentsListComponent},
-            {path: 'parents/add', component: ParentAddFormComponent}
+            { path: 'parents/add', component: ParentAddFormComponent },
+            {path: 'students-subjects', component: StudentsSubjectsComponent},
+            
         ]
     },
     {

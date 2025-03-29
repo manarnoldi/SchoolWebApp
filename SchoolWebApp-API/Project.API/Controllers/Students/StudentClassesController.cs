@@ -100,6 +100,34 @@ namespace SchoolWebApp.API.Controllers.Students
             }
         }
 
+        // GET api/studentClasses/bySchoolClassId/5
+        /// <summary>
+        /// A method for retrieving student classes by school class Id.
+        /// </summary>
+        /// <param name="schoolClassId">The school class Id to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("bySchoolClassId/{schoolClassId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentClassDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetBySchoolClassId(int schoolClassId)
+        {
+            try
+            {
+                if (schoolClassId <= 0) return BadRequest(schoolClassId);
+                var _item = await _unitOfWork.StudentClasses.GetBySchoolClassId(schoolClassId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<StudentClassDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the student classes by school class id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         // GET api/studentClasses/5
         /// <summary>
         /// A method for retrieving a student class record by Id.

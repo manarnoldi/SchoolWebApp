@@ -1,1 +1,57 @@
-<p>students-subjects-search-form works!</p>
+<form class="px-1" [formGroup]="studentsSubjectsSearchForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="row">
+        <div class="col-2 py-1 pe-0">
+            <select class="form-select form-select-sm" aria-label="Curriculum"
+                (change)="curriculumChanged()"
+                formControlName="curriculumId" id="curriculumId">
+                <option [ngValue]="null" selected>-Curriculum-</option>
+                <option [ngValue]="curriculum.id" *ngFor="let curriculum of
+                                curricula">{{curriculum.name}}</option>
+            </select>
+        </div>
+        <div class="col-2 py-1 px-1">
+            <select class="form-select form-select-sm" aria-label="Academic year"
+                (change)="educationLevelYearChanged()"
+                formControlName="academicYearId" id="academicYearId">
+                <option [ngValue]="null" selected>-Year-</option>
+                <option [ngValue]="academicYear.id" *ngFor="let academicYear of
+                                    academicYears">{{academicYear.name}}</option>
+            </select>
+        </div>
+        <div class="col-2 py-1 px-0">
+            <select class="form-select form-select-sm" aria-label="Education level"
+                (change)="educationLevelYearChanged()"
+                formControlName="educationLevelId" id="educationLevelId">
+                <option [ngValue]="null" selected>-Level-</option>
+                <option [ngValue]="educationLevel.id" *ngFor="let educationLevel of
+                                    educationLevels">{{educationLevel.name}}</option>
+            </select>
+        </div>
+        <div class="col-2 py-1 px-1">
+            <select class="form-select form-select-sm" aria-label="Class"
+                (change)="schoolClassChanged()"
+                formControlName="schoolClassId" id="schoolClassId">
+                <option [ngValue]="null" selected>-Class-</option>
+                <option [ngValue]="schoolClass.id" *ngFor="let schoolClass of
+                                    schoolClasses">{{schoolClass.name}}</option>
+            </select>
+        </div>
+        <div class="col-2 py-1 px-0">
+            <select class="form-select form-select-sm" aria-label="Student"
+                (change)="studentsChanged()"
+                formControlName="studentClassId" id="studentClassId">
+                <option [ngValue]="null" selected>-Student-</option>
+                <option [ngValue]="studentClass.id" *ngFor="let studentClass of
+                                studentClasses">{{studentClass.student.upi + "-"
+                    +studentClass.student.fullName}}</option>
+            </select>
+        </div>
+
+        <div class="col-2 py-1 ps-1">
+            <button type="submit" [disabled]="studentsSubjectsSearchForm.invalid"
+                class="btn btn-sm btn-flat btn-warning btn-block">
+                <i class="fas fa-sync"></i> Search
+            </button>
+        </div>
+    </div>
+</form>

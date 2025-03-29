@@ -140,6 +140,7 @@ namespace SchoolWebApp.API.Controllers.Students
             try
             {
                 if (schoolClassId <= 0) return BadRequest(schoolClassId);
+                if (subjectId <= 0) return BadRequest(subjectId);
                 var _item = await _unitOfWork.StudentSubjects.GetBySchoolClassSubjectId(schoolClassId, subjectId);
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<List<StudentSubjectDto>>(_item);
@@ -151,6 +152,36 @@ namespace SchoolWebApp.API.Controllers.Students
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
+        //// GET api/studentSubjects/byStudentClassSubjectId/5/5
+        ///// <summary>
+        ///// A method for retrieving student subjects by student class and subject Ids.
+        ///// </summary>
+        ///// <param name="studentClassId">The student class Id whose records are to be retrieved</param>
+        ///// <param name="subjectId">The subject Id whose records are to be retrieved</param>
+        ///// <returns></returns>
+        //[HttpGet("byStudentClassSubjectId/{studentClassId}/{subjectId}")]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentSubjectDto>))]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        //public async Task<IActionResult> GetByStudentClassSubjectId(int studentClassId, int subjectId)
+        //{
+        //    try
+        //    {
+        //        if (studentClassId <= 0) return BadRequest(studentClassId);
+        //        if (subjectId <= 0) return BadRequest(subjectId);
+        //        var _item = await _unitOfWork.StudentSubjects.GetByStudentClassSubjectId(studentClassId, subjectId);
+        //        if (_item == null) return NotFound();
+        //        var _itemDto = _mapper.Map<List<StudentSubjectDto>>(_item);
+        //        return Ok(_itemDto);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, $"An error occurred while retrieving the student subjects by student class and subject ids.");
+        //        return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        //    }
+        //}
 
         // GET api/studentSubjects/bySchoolClassId/5
         /// <summary>

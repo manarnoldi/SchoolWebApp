@@ -22,7 +22,7 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
             var studentSubjects = await _dbContext.StudentSubjects
                 .Where(e => e.StudentClassId == studentClassId)
                 .Include(s => s.Subject)
-                .Include(s => s.StudentClass)
+                .Include(s => s.StudentClass.Student)
                 .ToListAsync();
             return studentSubjects;
         }
