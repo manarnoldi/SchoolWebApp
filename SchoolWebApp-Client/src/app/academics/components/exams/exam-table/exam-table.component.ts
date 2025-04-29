@@ -18,10 +18,6 @@ export class ExamTableComponent implements OnInit {
     @Input() tableTitle: string = 'Examinations list';
     @Input() eduLevelId: number;
     @Input() exams: Exam[] = [];
-    @Input() subjects: Subject[] = [];
-    @Input() examTypes: ExamType[] = [];
-    @Input() schoolClasses: SchoolClass[] = [];
-    @Input() sessions: Session[] = [];
     @Input() curricula: Curriculum[] = [];
     @Input() academicYears: AcademicYear[] = [];
 

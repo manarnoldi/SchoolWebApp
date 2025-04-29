@@ -11,7 +11,7 @@
                 (educationLevelYearChangedEvent)="educationLevelYearChanged($event)"
                 [sessions]="sessions" [curricula]="curricula" (examTypeChangedEvent)="examTypeChanged($event)"
                 (examChangedEvent)="examChanged($event)"
-                (searchItemEvent)="onButtonSearchClick()" [examTypes]="examTypes" [exams]="exams"
+                (searchItemEvent)="onButtonSearchClick($event)" [examTypes]="examTypes" [exams]="exams"
                 [academicYears]="academicYears" [educationLevels]="educationLevels" [showExamName]="true"
                 (curriculumYearChangedEvent)="curriculumYearChanged($event)"></app-exam-list-search-form>
         </div>

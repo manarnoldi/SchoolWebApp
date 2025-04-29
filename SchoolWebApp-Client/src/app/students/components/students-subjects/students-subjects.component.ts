@@ -38,7 +38,9 @@ export class StudentsSubjectsComponent implements OnInit {
 
     studentSubjects: StudentSubject[] = [];
 
-    studentsChanged = () => {};
+    studentsChanged = () => {
+        this.studentSubjects = [];
+    };
 
     doneLoading = false;
 
@@ -75,6 +77,7 @@ export class StudentsSubjectsComponent implements OnInit {
     };
 
     curriculumChanged = (curriculumId: number) => {
+        this.studentSubjects = [];
         this.educationLevelSvc
             .get('/educationLevels/byCurriculumId/' + curriculumId)
             .subscribe({
@@ -90,6 +93,7 @@ export class StudentsSubjectsComponent implements OnInit {
     };
 
     educationLevelYearChanged = (ely: EducationLevelYear) => {
+        this.studentSubjects = [];
         this.schoolClassSvc
             .get(
                 '/schoolClasses/byEducationLevelYearId/' +
@@ -111,6 +115,7 @@ export class StudentsSubjectsComponent implements OnInit {
 
     schoolClassChanged = (schoolClassId: number) => {
         this.studentClasses = [];
+        this.studentSubjects = [];
         this.studentClassesSvc
             .get('/studentClasses/bySchoolClassId/' + schoolClassId)
             .subscribe({
@@ -157,4 +162,6 @@ export class StudentsSubjectsComponent implements OnInit {
                 });
         }
     };
+
+    deleteItem = (id: number) => {};
 }

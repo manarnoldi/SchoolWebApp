@@ -66,8 +66,7 @@ export class ExamListSearchFormComponent implements OnInit {
     };
 
     examChanged = () => {
-        let exam = this.examListSearchForm.get('examId').value;
-        if (!exam || exam == null) return;
+        let exam = this.examListSearchForm.get('examId').value;       
         this.examChangedEvent.emit(exam);
     };
 

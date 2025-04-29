@@ -136,8 +136,9 @@ export class ExamResultsComponent implements OnInit {
     };
 
     examChanged = (exam: Exam) => {
-        this.exam = exam;
         this.examResults = [];
+        if (!exam || exam == null) return;
+        this.exam = exam;        
     };
 
     deleteExamResult = (examR: ExamResult) => {
@@ -182,23 +183,23 @@ export class ExamResultsComponent implements OnInit {
         });
     };
 
-    onButtonSearchClick = () => {
+    onButtonSearchClick = (es: ExamSearch) => {
         this.examResults = [];
-        if (!this.exam?.schoolClass?.academicYearId)
+        if (!es?.academicYearId)
             this.toastr.info('Select academic year before searching!');
-        else if (!this.exam?.session?.curriculumId)
+        else if (!es.curriculumId)
             this.toastr.info('Select curriculum before searching!');
-        else if (!this.exam?.sessionId)
+        else if (!es.sessionId)
             this.toastr.info('Select session before searching!');
         else if (!this.educLevelId)
             this.toastr.info('Select education level before searching!');
-        else if (!this.exam?.schoolClassId)
+        else if (!es.schoolClassId)
             this.toastr.info('Select class before searching!');
-        else if (!this.exam?.subjectId)
+        else if (!es.subjectId)
             this.toastr.info('Select subject before searching!');
-        else if (!this.exam?.examTypeId)
+        else if (!es.examTypeId)
             this.toastr.info('Select exam type before searching!');
-        else if (!this.exam.id)
+        else if (!es.examId)
             this.toastr.info('Select exam name before searching!');
         else {
             this.examResultsSvc
@@ -217,6 +218,11 @@ export class ExamResultsComponent implements OnInit {
     };
 
     submitExamResults = (examR: ExamResult) => {
+        if (!this.examResults || this.examResults.length <= 0) {
+            this.toastr.error("There are no exam results on the list. Do the selections and load the results.");
+            return;
+        }
+        
         Swal.fire({
             title: `Submit exam results?`,
             text: `Confirm if you want to submit exam results.`,

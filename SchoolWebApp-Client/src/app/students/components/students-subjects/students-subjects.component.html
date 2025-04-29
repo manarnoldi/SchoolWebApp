@@ -19,16 +19,13 @@
                 [educationLevels]="educationLevels" [academicYears]="academicYears"
                 [schoolClasses]="schoolClasses" [studentClasses]="studentClasses"
                 (curriculumChangedEvent)="curriculumChanged($event)"
-                (studentsChangedEvent)="studentsChanged()"
+                (studentChangedEvent)="studentsChanged()"
                 (educationLevelYearChangedEvent)="educationLevelYearChanged($event)"
                 (schoolClassChangedEvent)="schoolClassChanged($event)"
                 (searchItemEvent)="dataSubmitted($event)"></app-students-subjects-search-form>
         </div>
-        <!-- <app-exam-table [tableTitle]="'Examinations list'" *ngIf="isLoading"
-            [subjects]="subjects" [exams]="exams" [examTypes]="examTypes"
-            [schoolClasses]="schoolClasses" [sessions]="sessions"
-            [curricula]="curricula" [eduLevelId]="eduLevelId"
-            [academicYears]="academicYears"
-            (deleteItemEvent)="deleteItem($event)"></app-exam-table> -->
+        <app-students-subjects-table [tableTitle]="'Student subjects list'"
+            [studentSubjects]="studentSubjects"
+            (deleteItemEvent)="deleteItem($event)"></app-students-subjects-table>
     </div>
 </section>

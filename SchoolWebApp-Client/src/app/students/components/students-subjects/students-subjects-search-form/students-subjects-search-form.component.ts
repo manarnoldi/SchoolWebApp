@@ -3,7 +3,7 @@ import {SchoolClass} from '@/class/models/school-class';
 import {AcademicYear} from '@/school/models/academic-year';
 import {EducationLevel} from '@/school/models/educationLevel';
 import {EducationLevelYear} from '@/shared/models/education-level-year';
-import { StudentClass } from '@/students/models/student-class';
+import {StudentClass} from '@/students/models/student-class';
 import {StudentDetails} from '@/students/models/student-details';
 import {StudentSubjectSearch} from '@/students/models/student-subject-search';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
@@ -26,6 +26,7 @@ export class StudentsSubjectsSearchFormComponent implements OnInit {
     @Output() educationLevelYearChangedEvent =
         new EventEmitter<EducationLevelYear>();
     @Output() schoolClassChangedEvent = new EventEmitter<number>();
+    @Output() studentChangedEvent = new EventEmitter<void>();
 
     studentsSubjectsSearchForm: FormGroup;
     ssSearch: StudentSubjectSearch;
@@ -72,14 +73,17 @@ export class StudentsSubjectsSearchFormComponent implements OnInit {
         this.educationLevelYearChangedEvent.emit(ely);
     };
 
-    schoolClassChanged = () => {        
+    schoolClassChanged = () => {
+        this.studentsSubjectsSearchForm.get('studentClassId').reset();
         let schoolClassId =
             this.studentsSubjectsSearchForm.get('schoolClassId').value;
         if (!schoolClassId || schoolClassId == '') return;
         this.schoolClassChangedEvent.emit(schoolClassId);
     };
 
-    studentsChanged = () => {};
+    studentsChanged = () => {
+        this.studentChangedEvent.emit();
+    };
 
     onSubmit = () => {
         this.ssSearch = new StudentSubjectSearch(

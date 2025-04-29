@@ -25,9 +25,7 @@
                 (curriculumYearChangedEvent)="curriculumYearChanged($event)"></app-exam-list-search-form>
         </div>
         <app-exam-table [tableTitle]="'Examinations list'" *ngIf="isLoading"
-            [subjects]="subjects" [exams]="exams" [examTypes]="examTypes"
-            [schoolClasses]="schoolClasses" [sessions]="sessions"
-            [curricula]="curricula" [eduLevelId] = "eduLevelId"
+            [exams]="exams" [curricula]="curricula" [eduLevelId]="eduLevelId"
             [academicYears]="academicYears"
             (deleteItemEvent)="deleteItem($event)"></app-exam-table>
     </div>
