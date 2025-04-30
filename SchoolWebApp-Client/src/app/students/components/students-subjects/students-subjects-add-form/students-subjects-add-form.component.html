@@ -1,1 +1,146 @@
-<p>students-subjects-add-form works!</p>
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 p-1">
+                <a [routerLink]="['/students/students-subjects']"
+                    [queryParams]="{id: studentSubjectId}"
+                    class="btn btn-sm btn-flat btn-warning float-left">
+                    <i class="fas fa-angle-double-left"></i> Back to student subjects list
+                </a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 p-1 pt-0">
+                <form [formGroup]="studentSubjectsAddForm" (ngSubmit)="onSubmit()" novalidate>
+                    <div class="card card-success card-outline ">
+                        <div class="card-header p-1">
+                            <h4 class="mb-1">Manage Students Subjects</h4>
+                        </div>
+                        <div class="card-body p-1">
+                            <div class="card-details-box border-success disabled p-1">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="curriculumId" class="form-label">Curriculum:
+                                                <span class="requiredField">*</span></label>
+                                            <select class="form-select form-select-sm"
+                                                [attr.disabled]="editMode? 'disabled' : null"
+                                                aria-label="Curriculum" [ngClass]="{
+                                                    'is-invalid': (f.curriculumId.dirty ||
+                                                    f.curriculumId.touched) && f.curriculumId.invalid }"
+                                                (change)="academicYearCurriculumChanged()"
+                                                formControlName="curriculumId" id="curriculumId">
+                                                <option [ngValue]="null" selected>-Select
+                                                    curriculum-</option>
+                                                <option [ngValue]="curriculum.id"
+                                                    *ngFor="let curriculum of
+                                                        curricula">{{curriculum.name}}</option>
+                                            </select>
+                                            <div class="invalid-feedback"> Curriculum is
+                                                required</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="academicYearId" class="form-label">Academic
+                                                year: <span class="requiredField">*</span></label>
+                                            <select class="form-select form-select-sm"
+                                                [attr.disabled]="editMode? 'disabled' : null"
+                                                aria-label="Academic year" [ngClass]="{
+                                                    'is-invalid': (f.academicYearId.dirty ||
+                                                    f.academicYearId.touched) && f.academicYearId.invalid }"
+                                                (change)="academicYearCurriculumChanged()"
+                                                formControlName="academicYearId"
+                                                id="academicYearId">
+                                                <option [ngValue]="null" selected>-Select academic
+                                                    year-</option>
+                                                <option [ngValue]="academicYear.id"
+                                                    *ngFor="let academicYear of
+                                                            academicYears">{{academicYear.name}}</option>
+                                            </select>
+                                            <div class="invalid-feedback"> Academic year is
+                                                required</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="schoolClassId" class="form-label">Class:
+                                                <span
+                                                    class="requiredField">*</span></label>
+                                            <select class="form-select form-select-sm"
+                                                [attr.disabled]="editMode? 'disabled' : null"
+                                                aria-label="School Class" [ngClass]="{
+                                                    'is-invalid': (f.schoolClassId.dirty ||
+                                                    f.schoolClassId.touched) && f.schoolClassId.invalid }"
+                                                formControlName="schoolClassId" id="schoolClassId">
+                                                <option [ngValue]="null" selected>-Select
+                                                    Class-</option>
+                                                <option [ngValue]="schoolClass.id"
+                                                    *ngFor="let schoolClass of
+                                                        schoolClasses">{{schoolClass.Name}}</option>
+                                            </select>
+                                            <div class="invalid-feedback"> School class is
+                                                required</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="educationLevelId"
+                                                class="form-label">Education
+                                                level: <span
+                                                    class="requiredField">*</span></label>
+                                            <select class="form-select form-select-sm"
+                                                [attr.disabled]="editMode? 'disabled' : null"
+                                                (change)="educationLevelChanged()"
+                                                aria-label="Education level" [ngClass]="{
+                                                    'is-invalid': (f.educationLevelId.dirty ||
+                                                    f.educationLevelId.touched) && f.educationLevelId.invalid }"
+                                                formControlName="educationLevelId"
+                                                id="educationLevelId">
+                                                <option [ngValue]="null" selected>-Select
+                                                    education level-</option>
+                                                <option [ngValue]="educationLevel.id"
+                                                    *ngFor="let educationLevel of
+                                                        educationLevels">{{educationLevel.name}}</option>
+                                            </select>
+                                            <div class="invalid-feedback"> Education level is
+                                                required</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                <div class="row g-0">
+                                    <div class="col-md-8">
+                                        <div class="mt-1 mr-1">
+                                            <app-students-min-table [students]="students"
+                                            [tableTitle]="'Class Students List'"
+                                            *ngIf="isLoading"></app-students-min-table>
+                                        </div>                                       
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mt-1">
+                                            <app-subjects-min-table [subjects]="subjects"
+                                            [tableTitle]="'Subjects List'"
+                                            [minimumTable]="true" [disabled]="editMode"
+                                            *ngIf="isLoading"></app-subjects-min-table>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                        </div>
+                        <div class="card-footer p-1">
+                            <button type="submit" [disabled]="studentSubjectsAddForm.invalid"
+                                class="btn
+                        btn-success float-right"> <i class="fas fa-save"></i>
+                                {{editMode ? 'Update Students-Subjects': 'Save Students-Subjects'}}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

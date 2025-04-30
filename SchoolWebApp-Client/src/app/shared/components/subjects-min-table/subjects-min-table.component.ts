@@ -12,6 +12,8 @@ export class SubjectsMinTableComponent implements OnInit {
     @Input() subjects: Subject[] = [];
     @Input() minimumTable: Boolean = false;
     @Input() disabled: Boolean = false;
+    @Input() tableTitle = "Subjects Mini Table";
+    
     @ViewChild("checkAllSubjects", {static: false}) checkAll: ElementRef;
 
     page = 1;

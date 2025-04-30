@@ -61,6 +61,7 @@ import { Exam } from './academics/models/exam';
 import { ExamResult } from './academics/models/exam-result';
 import { ExamResultsComponent } from './academics/components/exam-results/exam-results.component';
 import { StudentsSubjectsComponent } from './students/components/students-subjects/students-subjects.component';
+import { StudentsSubjectsAddFormComponent } from './students/components/students-subjects/students-subjects-add-form/students-subjects-add-form.component';
 
 const routes: Routes = [
     {
@@ -142,7 +143,8 @@ const routes: Routes = [
             {path: 'manage/add', component: StudentAssignmentsComponent},
             {path: 'parents', component: ParentsListComponent},
             { path: 'parents/add', component: ParentAddFormComponent },
-            {path: 'students-subjects', component: StudentsSubjectsComponent},
+            { path: 'students-subjects', component: StudentsSubjectsComponent },
+            {path: 'students-subjects/add', component: StudentsSubjectsAddFormComponent}
             
         ]
     },

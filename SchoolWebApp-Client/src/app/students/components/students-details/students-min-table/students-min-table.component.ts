@@ -14,6 +14,7 @@ import {Subscription} from 'rxjs';
 })
 export class StudentsMinTableComponent implements OnInit {
     @Input() students: StudentDetails[] = [];
+    @Input() tableTitle: string = 'Parent students list';
     
     @Output() viewItemEvent = new EventEmitter<number>();
     @Output() editItemEvent = new EventEmitter<number>();
@@ -32,9 +33,7 @@ export class StudentsMinTableComponent implements OnInit {
     collectionSize = 0;
     pageSubscription: Subscription;
     pageSizeSubscription: Subscription;
-
-    tableTitle: string = 'Parent students list';
-
+ 
     statusVals = Status;
     statusValues;
 
