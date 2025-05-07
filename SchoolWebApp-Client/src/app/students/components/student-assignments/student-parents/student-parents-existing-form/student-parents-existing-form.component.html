@@ -28,7 +28,7 @@
                         <label for="relationShipId" class="form-label">Student-Parent Relationship:
                             <span
                                 class="requiredField">*</span></label>
-                        <select class="form-control" aria-label="Select student-parent relationship"
+                        <select class="form-select form-select-sm" aria-label="Select student-parent relationship"
                             [attr.disabled]="action==='view' ? 'disabled':null"
                             formControlName="relationShipId" id="relationShipId" [ngClass]="{
                                 'is-invalid': (f.relationShipId.dirty || f.relationShipId.touched) && f.relationShipId.invalid

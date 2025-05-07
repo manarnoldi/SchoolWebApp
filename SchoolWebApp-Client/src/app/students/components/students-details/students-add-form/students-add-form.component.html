@@ -74,7 +74,7 @@
                                             <label for="nationalityId"
                                                 class="form-label">Nationality: <span
                                                     class="requiredField">*</span></label>
-                                            <select class="form-control"
+                                            <select class="form-select form-select-sm"
                                                 aria-label="Select nationality"
                                                 formControlName="nationalityId" id="nationalityId"
                                                 [attr.disabled]="readonly ? 'disabled' : null"
@@ -98,7 +98,7 @@
                                             <label for="religionId" class="form-label">Religion:
                                                 <span
                                                     class="requiredField">*</span></label>
-                                            <select class="form-control"
+                                            <select class="form-select form-select-sm"
                                                 aria-label="Select religion"
                                                 formControlName="religionId" id="religionId"
                                                 [attr.disabled]="readonly ? 'disabled' : null"
@@ -119,7 +119,7 @@
                                         <div class="form-group">
                                             <label for="genderId" class="form-label">Gender: <span
                                                     class="requiredField">*</span></label>
-                                            <select class="form-control" aria-label="Select gender"
+                                            <select class="form-select form-select-sm" aria-label="Select gender"
                                                 formControlName="genderId" id="genderId"
                                                 [attr.disabled]="readonly ? 'disabled' : null"
                                                 [ngClass]="{
@@ -212,7 +212,7 @@
                                             <label for="learningModeId"
                                                 class="form-label">Learning mode: <span
                                                     class="requiredField">*</span></label>
-                                            <select class="form-control"
+                                            <select class="form-select form-select-sm"
                                                 aria-label="Select learning mode"
                                                 formControlName="learningModeId" id="learningModeId"
                                                 [ngClass]="{ 'is-invalid': (f.learningModeId.dirty || f.learningModeId.touched) && f.learningModeId.invalid }"

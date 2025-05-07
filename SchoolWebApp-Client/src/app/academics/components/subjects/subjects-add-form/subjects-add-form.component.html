@@ -6,7 +6,7 @@
                     <div class="form-group">
                         <label for="subjectGroupId" class="form-label">Subject group: <span
                                 class="requiredField">*</span></label>
-                        <select class="form-control" aria-label="Select subject group"
+                        <select class="form-select form-select-sm" aria-label="Select subject group"
                             formControlName="subjectGroupId" id="subjectGroupId" [ngClass]="{
                                 'is-invalid': (f.subjectGroupId.dirty || f.subjectGroupId.touched) && f.subjectGroupId.invalid
                                 }">
@@ -22,7 +22,7 @@
                     <div class="form-group">
                         <label for="departmentId" class="form-label">Department name: <span
                                 class="requiredField">*</span></label>
-                        <select class="form-control" aria-label="Select department name"
+                        <select class="form-select form-select-sm" aria-label="Select department name"
                             formControlName="departmentId" id="departmentId" [ngClass]="{
                                 'is-invalid': (f.departmentId.dirty || f.departmentId.touched) && f.departmentId.invalid
                                 }">

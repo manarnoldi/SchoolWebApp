@@ -23,7 +23,7 @@
                     <div class="form-group">
                         <label for="sessionId" class="form-label">Session name: <span
                                 class="requiredField">*</span></label>
-                        <select class="form-control" aria-label="Select session name"
+                        <select class="form-select form-select-sm" aria-label="Select session name"
                             formControlName="sessionId" id="sessionId"
                             [ngClass]="{'is-invalid': (f.sessionId.dirty || f.sessionId.touched) && f.sessionId.invalid }">
                             <option [ngValue]="null" hidden disabled selected>Select session
