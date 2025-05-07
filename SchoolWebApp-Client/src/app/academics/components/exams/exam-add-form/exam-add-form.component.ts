@@ -278,7 +278,7 @@ export class ExamAddFormComponent implements OnInit {
         this.subjects = [];
         this.schoolClasses = [];
         this.sessions = [];
-        this.examsAddForm.get('educationLevelId').setValue(null);
+        this.examsAddForm.get('educationLevelId').reset();
         let curriculumYearId = this.examsAddForm.get('curriculumId').value;
         let academicYearId = this.examsAddForm.get('academicYearId').value;
 

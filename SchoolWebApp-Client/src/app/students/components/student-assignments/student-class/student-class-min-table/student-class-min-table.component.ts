@@ -2,7 +2,7 @@ import {Status} from '@/core/enums/status';
 import {LearningMode} from '@/school/models/learning-mode';
 import {LearningModesService} from '@/school/services/learning-modes.service';
 import {TableSettingsService} from '@/shared/services/table-settings.service';
-import {StudentDetails} from '@/students/models/student-details';
+import {StudentClass} from '@/students/models/student-class';
 import {
     Component,
     ElementRef,
@@ -16,12 +16,12 @@ import {ToastrService} from 'ngx-toastr';
 import {Subscription} from 'rxjs';
 
 @Component({
-    selector: 'app-students-min-table',
-    templateUrl: './students-min-table.component.html',
-    styleUrl: './students-min-table.component.scss'
+    selector: 'app-student-class-min-table',
+    templateUrl: './student-class-min-table.component.html',
+    styleUrl: './student-class-min-table.component.scss'
 })
-export class StudentsMinTableComponent implements OnInit {
-    @Input() students: StudentDetails[] = [];
+export class StudentClassMinTableComponent implements OnInit {
+    @Input() studentClasses: StudentClass[] = [];
     @Input() tableTitle: string = 'Parent students list';
     @Input() showCheckBoxes: boolean = false;
     @Input() disabled: Boolean = false;
@@ -50,9 +50,7 @@ export class StudentsMinTableComponent implements OnInit {
         private tableSettingsSvc: TableSettingsService,
         private learningModesSvc: LearningModesService,
         private toastr: ToastrService
-    ) {
-        
-    }
+    ) {}
 
     ngOnInit(): void {
         this.statusValues = Object.keys(this.statusVals).filter((k) =>
@@ -98,18 +96,18 @@ export class StudentsMinTableComponent implements OnInit {
 
     checkAllClicked = (inputSelectAll: any) => {
         if (inputSelectAll?.target?.checked) {
-            this.students.forEach((c) => {
+            this.studentClasses.forEach((c) => {
                 c.isSelected = true;
             });
         } else {
-            this.students.forEach((c) => {
+            this.studentClasses.forEach((c) => {
                 c.isSelected = false;
             });
         }
     };
 
     itemClicked = (inputCheckItem: any) => {
-        if (this.students.some((s) => !s.isSelected)) {
+        if (this.studentClasses.some((s) => !s.isSelected)) {
             this.checkAll.nativeElement.checked = false;
         } else {
             this.checkAll.nativeElement.checked = true;

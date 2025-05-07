@@ -18,34 +18,33 @@
                                 <th *ngIf="!header.min">
                                     {{ header.name }}
                                 </th>
-                              </ng-container>                            
+                            </ng-container>
                         </tr>
                     </thead>
                     <tbody>
                         <tr
-                            *ngFor="let item of students | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                            *ngFor="let item of studentClasses | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
                             <th *ngIf="showCheckBoxes">
                                 <div class="icheck-success m-0 p-0">
                                     <input type="checkbox" id="stud-id-{{item.id}}"
                                         (change)="itemClicked($event)"
                                         [(ngModel)]="item.isSelected" [disabled]="disabled">
-                                    <label class="form-check-label" for="stud-id-{{item.id}}"></label>
+                                    <label class="form-check-label"
+                                        for="stud-id-{{item.id}}"></label>
                                 </div>
                             </th>
-                            <td >{{ item.upi }}</td>
-                            <td>{{ item.fullName }}</td>
-                            <td *ngIf="!showMinimum">{{ item.admissionDate | date: 'dd/MM/yyyy' }}</td>
+                            <td>{{ item.student?.upi }}</td>
+                            <td>{{ item.student?.fullName }}</td>
+                            <td *ngIf="!showMinimum">{{ item.student?.admissionDate | date:
+                                'dd/MM/yyyy' }}</td>
                             <td *ngIf="!showMinimum">
                                 <div *ngFor="let lm of learningModes">
-                                    <div *ngIf="lm.id === item.learningModeId">
+                                    <div *ngIf="lm.id === item.student?.learningModeId">
                                         {{ lm.name }}
                                     </div>
                                 </div>
                             </td>
-                            <td>{{ statusValues[item.status] }}</td>
-                            <!-- <app-table-action [tblShowViewButton]="true" [tblShowEditButton]="false" [tblShowDeleteButton]="false"
-                                (viewItemEvent)="viewStudent(item.id)" (editItemEvent)="editStudent(item.id)"
-                                (deleteItemEvent)="deleteStudent(item.id)"></app-table-action> -->
+                            <td>{{ statusValues[item.student?.status] }}</td>
                         </tr>
                     </tbody>
                 </table>

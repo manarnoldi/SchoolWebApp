@@ -16,11 +16,11 @@
                     <td>{{ item.subject?.code }}</td>
                     <td>{{ item.subject?.name }}</td>
                     <td>
-                        <a [routerLink]="['/academics/exams/add']"
+                        <!-- <a [routerLink]="['/academics/exams/add']"
                             [queryParams]="{id: item.id}" class="edit"
                             data-toggle="tooltip" data-original-title="Edit">
                             <i class="fas fa-edit"></i></a>
-                        <span> | </span>
+                        <span> | </span> -->
                         <a class="delete" title data-toggle="tooltip"
                             (click)="deleteItem(item.id)"
                             data-original-title="Delete">

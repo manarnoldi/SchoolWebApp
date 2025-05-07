@@ -11,6 +11,9 @@ export class StudentClass extends ResourceModel<StudentClass> {
     public schoolClassId?: number;
     public schoolClass?: SchoolClass;
 
+    public isSelected?: Boolean = false;
+    public isOriginallySelected?: Boolean = false;
+
     constructor(model?: Partial<StudentClass>) {
         super(model);
     }

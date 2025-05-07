@@ -32,7 +32,7 @@
                                                 aria-label="Curriculum" [ngClass]="{
                                                     'is-invalid': (f.curriculumId.dirty ||
                                                     f.curriculumId.touched) && f.curriculumId.invalid }"
-                                                (change)="academicYearCurriculumChanged()"
+                                                (change)="curriculumChanged()"
                                                 formControlName="curriculumId" id="curriculumId">
                                                 <option [ngValue]="null" selected>-Select
                                                     curriculum-</option>
@@ -53,9 +53,9 @@
                                                 aria-label="Academic year" [ngClass]="{
                                                     'is-invalid': (f.academicYearId.dirty ||
                                                     f.academicYearId.touched) && f.academicYearId.invalid }"
-                                                (change)="academicYearCurriculumChanged()"
                                                 formControlName="academicYearId"
-                                                id="academicYearId">
+                                                id="academicYearId"
+                                                (change)="educationLevelYearChanged()">
                                                 <option [ngValue]="null" selected>-Select academic
                                                     year-</option>
                                                 <option [ngValue]="academicYear.id"
@@ -68,34 +68,13 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label for="schoolClassId" class="form-label">Class:
-                                                <span
-                                                    class="requiredField">*</span></label>
-                                            <select class="form-select form-select-sm"
-                                                [attr.disabled]="editMode? 'disabled' : null"
-                                                aria-label="School Class" [ngClass]="{
-                                                    'is-invalid': (f.schoolClassId.dirty ||
-                                                    f.schoolClassId.touched) && f.schoolClassId.invalid }"
-                                                formControlName="schoolClassId" id="schoolClassId">
-                                                <option [ngValue]="null" selected>-Select
-                                                    Class-</option>
-                                                <option [ngValue]="schoolClass.id"
-                                                    *ngFor="let schoolClass of
-                                                        schoolClasses">{{schoolClass.Name}}</option>
-                                            </select>
-                                            <div class="invalid-feedback"> School class is
-                                                required</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
                                             <label for="educationLevelId"
                                                 class="form-label">Education
                                                 level: <span
                                                     class="requiredField">*</span></label>
                                             <select class="form-select form-select-sm"
                                                 [attr.disabled]="editMode? 'disabled' : null"
-                                                (change)="educationLevelChanged()"
+                                                (change)="educationLevelYearChanged()"
                                                 aria-label="Education level" [ngClass]="{
                                                     'is-invalid': (f.educationLevelId.dirty ||
                                                     f.educationLevelId.touched) && f.educationLevelId.invalid }"
@@ -111,28 +90,55 @@
                                                 required</div>
                                         </div>
                                     </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="schoolClassId" class="form-label">Class:
+                                                <span
+                                                    class="requiredField">*</span></label>
+                                            <select class="form-select form-select-sm"
+                                                [attr.disabled]="editMode? 'disabled' : null"
+                                                aria-label="School Class" [ngClass]="{
+                                                    'is-invalid': (f.schoolClassId.dirty ||
+                                                    f.schoolClassId.touched) && f.schoolClassId.invalid }"
+                                                formControlName="schoolClassId" id="schoolClassId"
+                                                (change)="schoolClassChanged()">
+                                                <option [ngValue]="null" selected>-Select
+                                                    Class-</option>
+                                                <option [ngValue]="schoolClass.id"
+                                                    *ngFor="let schoolClass of
+                                                        schoolClasses">{{schoolClass.name}}</option>
+                                            </select>
+                                            <div class="invalid-feedback"> School class is
+                                                required</div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
-                                <div class="row g-0">
-                                    <div class="col-md-8">
-                                        <div class="mt-1 mr-1">
-                                            <app-students-min-table [students]="students"
+                            <div class="row g-0">
+                                <div class="col-md-6">
+                                    <div class="mt-1 mr-1">
+                                        <app-student-class-min-table
+                                            [studentClasses]="studentClasses"
+                                            [showCheckBoxes]="true"
                                             [tableTitle]="'Class Students List'"
-                                            *ngIf="isLoading"></app-students-min-table>
-                                        </div>                                       
+                                            [showMinimum]="true"
+                                            *ngIf="isLoading"></app-student-class-min-table>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="mt-1">
-                                            <app-subjects-min-table [subjects]="subjects"
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mt-1">
+                                        <app-subjects-min-table [subjects]="subjects"
                                             [tableTitle]="'Subjects List'"
                                             [minimumTable]="true" [disabled]="editMode"
                                             *ngIf="isLoading"></app-subjects-min-table>
-                                        </div>                                        
                                     </div>
                                 </div>
+                            </div>
                         </div>
                         <div class="card-footer p-1">
-                            <button type="submit" [disabled]="studentSubjectsAddForm.invalid"
+                            <button type="submit"
+                                [disabled]="studentSubjectsAddForm.invalid || studentClasses.length <= 0 || subjects.length <= 0"
                                 class="btn
                         btn-success float-right"> <i class="fas fa-save"></i>
                                 {{editMode ? 'Update Students-Subjects': 'Save Students-Subjects'}}

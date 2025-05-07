@@ -21,10 +21,10 @@
                 <tr
                     *ngFor="let item of subjects| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
                     <th>
-                        <div class="icheck-success">
-                            <input type="checkbox" id="{{item.id}}" (change)="itemClicked($event)"
+                        <div class="icheck-success m-0 p-0">
+                            <input type="checkbox" id="subj-id-{{item.id}}" (change)="itemClicked($event)"
                                 [(ngModel)]="item.isSelected" [disabled]="disabled">
-                            <label class="form-check-label" for="{{item.id}}"></label>
+                            <label class="form-check-label" for="subj-id-{{item.id}}"></label>
                         </div>
                     </th>
                     <td>{{ item.name }}</td>

@@ -17,6 +17,7 @@ import {StudentSubjectsService} from '@/students/services/student-subjects.servi
 import {Component, OnInit} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-students-subjects',
@@ -163,5 +164,39 @@ export class StudentsSubjectsComponent implements OnInit {
         }
     };
 
-    deleteItem = (id: number) => {};
+    deleteItem(id: number) {
+        Swal.fire({
+            title: `Delete student subject record?`,
+            text: `Confirm if you want to delete student subject record.`,
+            width: 400,
+            position: 'top',
+            padding: '1em',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: `Delete`,
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.value) {
+                this.studentSubjectsSvc
+                    .delete('/studentSubjects', id)
+                    .subscribe(
+                        (res) => {
+                            this.toastr.success(
+                                'Student subject record deleted successfully!'
+                            );
+                            this.studentSubjects.splice(
+                                this.studentSubjects.findIndex(
+                                    (e) => e.id == id.toString()
+                                ),
+                                1
+                            );
+                        },
+                        (err) => {
+                            this.toastr.error(err);
+                        }
+                    );
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+            }
+        });
+    }
 }

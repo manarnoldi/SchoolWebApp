@@ -169,6 +169,10 @@ td {
     table-layout: fixed !important;
 }
 
+// table .icheck-success {
+//     min-height: 0 !important;
+//   }
+
 .icheck-success[class*='icheck-'] > label {
     padding-left: 22px !important;
     line-height: 18px;
@@ -204,5 +208,10 @@ td {
     padding: 0.25em !important;
     padding-left: 0.5em !important;
 }
+
+.form-group {
+    margin-bottom: 0.25rem !important;
+}
+
 /* Importing Bootstrap SCSS file. */
 @import 'bootstrap/scss/bootstrap';

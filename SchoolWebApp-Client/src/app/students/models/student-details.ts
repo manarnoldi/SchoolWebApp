@@ -31,6 +31,8 @@ export class StudentDetails extends ResourceModel<StudentDetails> {
     public email?: string;
     public otherDetails?: string;
     public healthConcerns?: string;
+    public isSelected?: Boolean = false;
+    public isOriginallySelected?: Boolean = false;
 
     constructor(model?: Partial<StudentDetails>) {
         super(model);

@@ -38,6 +38,7 @@ import { StudentsSubjectsComponent } from './components/students-subjects/studen
 import { StudentsSubjectsTableComponent } from './components/students-subjects/students-subjects-table/students-subjects-table.component';
 import { StudentsSubjectsAddFormComponent } from './components/students-subjects/students-subjects-add-form/students-subjects-add-form.component';
 import { StudentsSubjectsSearchFormComponent } from './components/students-subjects/students-subjects-search-form/students-subjects-search-form.component';
+import { StudentClassMinTableComponent } from './components/student-assignments/student-class/student-class-min-table/student-class-min-table.component';
 
 @NgModule({
     declarations: [
@@ -74,7 +75,8 @@ import { StudentsSubjectsSearchFormComponent } from './components/students-subje
         StudentsSubjectsComponent,
         StudentsSubjectsTableComponent,
         StudentsSubjectsAddFormComponent,
-        StudentsSubjectsSearchFormComponent
+        StudentsSubjectsSearchFormComponent,
+        StudentClassMinTableComponent
     ],
     imports: [AcademicsModule, DataTablesModule, CoreModule, SharedModule]
 })
