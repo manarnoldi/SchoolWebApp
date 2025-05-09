@@ -6,13 +6,9 @@
         <div class="border border-info my-1 p-1 rounded">
             <div class="row">
                 <div class="col-4">
-                    <div class="form-group mb-1">
-                        <label for="date">Student class: <span class="requiredField">*</span></label>
-                        <app-student-classes [student]="student" *ngIf="student" controlName="studentClassId"
+                        <app-student-classes [showLabel]="true" [student]="student" *ngIf="student" controlName="studentClassId"
                             (studentClassChanged)="studentClassChanged($event)" controlInstruction="Select student class"
                             controlTitle="Student class"></app-student-classes>
-                            
-                    </div>
                 </div>
                 <div class="col-4">
                     <div class="form-group">

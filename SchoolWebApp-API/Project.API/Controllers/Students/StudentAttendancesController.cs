@@ -128,6 +128,35 @@ namespace SchoolWebApp.API.Controllers.Students
             }
         }
 
+        // GET api/studentAttendances/byStudentClassIdAttendanceDate/5/2025-05-09
+        /// <summary>
+        /// A method for retrieving student attendances by student class Id and attendance date
+        /// </summary>
+        /// <param name="studentClassId">The student class Id to be retrieved</param>
+        /// <param name="attendanceDate">The attendance date to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byStudentClassIdAttendanceDate/{studentClassId}/{attendanceDate}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentAttendanceDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetStudentAttendancesByStudentClassIdAttendanceDate(int studentClassId, DateOnly attendanceDate)
+        {
+            try
+            {
+                if (studentClassId <= 0) return BadRequest(studentClassId);
+                var _item = await _unitOfWork.StudentAttendances.GetByStudentClassAttendanceDate(studentClassId, attendanceDate);
+                //if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<StudentAttendanceDto>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the student attendances by student class id and attendance date.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         // GET api/studentAttendances/5
         /// <summary>
         /// A method for retrieving of student attendances record by Id.
@@ -156,6 +185,8 @@ namespace SchoolWebApp.API.Controllers.Students
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
+
 
         // POST api/studentAttendances
         /// <summary>
@@ -189,6 +220,55 @@ namespace SchoolWebApp.API.Controllers.Students
                 {
                     _logger.LogError(ex, $"An error occurred while adding the student attendance");
                     return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred while adding the student attendance - {ex.Message}");
+                }
+            }
+            return BadRequest(ModelState);
+        }
+
+
+        // POST api/studentAttendances
+        /// <summary>
+        /// A method for creating multiple students attendance records
+        /// </summary>
+        /// <param name="model">The list of students attendance</param>
+        /// <returns></returns>
+        [HttpPost("batch")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreateMany(List<StudentAttendanceDto> model)
+        {
+            if (model == null || !model.Any())
+            {
+                return BadRequest("No student attendances provided.");
+            }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    foreach (var item in model)
+                    {
+                        var existingStudentAttend = await _unitOfWork.StudentAttendances.GetByStudentClassAttendanceDate(item.StudentClassId, DateOnly.FromDateTime(item.Date));
+
+                        if (existingStudentAttend != null)
+                        {
+                            existingStudentAttend.Remarks = item.Remarks;
+                            existingStudentAttend.Present = item.Present;
+                            _unitOfWork.StudentAttendances.Update(existingStudentAttend);
+                        }
+                        else
+                        {
+                            var _item = _mapper.Map<StudentAttendance>(item);
+                            _unitOfWork.StudentAttendances.Create(_item);
+                        }
+                    }
+                    await _unitOfWork.SaveChangesAsync();
+                    return Ok("Student attendances updated successfully");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"An error occurred while updating the student attendances.");
+                    return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
                 }
             }
             return BadRequest(ModelState);

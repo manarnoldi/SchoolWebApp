@@ -1,11 +1,10 @@
 <form [formGroup]="studentSubjectsLoadForm" novalidate>
     <div class="row">
         <div class="col-6">
-            <div class="form-group mb-1">
-                <app-student-classes [student]="student" *ngIf="student" controlName="studentClassId"
-                    (studentClassChanged)="studentClassUpdated($event)" controlInstruction="Select student class"
-                    controlTitle="Student class"></app-student-classes>
-            </div>
+            <app-student-classes [student]="student" *ngIf="student" controlName="studentClassId"
+                (studentClassChanged)="studentClassUpdated($event)"
+                controlInstruction="Select student class"
+                controlTitle="Student class"></app-student-classes>
         </div>
     </div>
 </form>

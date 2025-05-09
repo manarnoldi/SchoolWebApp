@@ -8,5 +8,6 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.Students
     {
         Task<List<StudentAttendance>> GetByStudentClassId(int studentClassId);
         Task<List<StudentAttendance>> GetByStudentId(int studentId);
+        Task<StudentAttendance> GetByStudentClassAttendanceDate(int studentClassId, DateOnly attendanceDate);
     }
 }

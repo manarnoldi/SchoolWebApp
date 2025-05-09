@@ -1,10 +1,13 @@
 
 <div *ngIf="controlContainer?.control?.get(controlName) as control">
-    <select class="form-control form-control-sm"
-        [id]="controlName"
-        [formControlName]="controlName">
-        <option [ngValue]="null">{{controlInstruction}}</option>
-        <option [ngValue]="studentClass.id" *ngFor="let studentClass of
+    <div class="form-group mb-1">
+        <label *ngIf="showLabel" for="date">Student class: <span class="requiredField">*</span></label>
+        <select class="form-select form-select-sm"
+            [id]="controlName"
+            [formControlName]="controlName">
+            <option [ngValue]="null">{{controlInstruction}}</option>
+            <option [ngValue]="studentClass.id" *ngFor="let studentClass of
                     studentClasses">{{studentClass.schoolClass?.name}}</option>
-    </select>
+        </select>
+    </div>
 </div>

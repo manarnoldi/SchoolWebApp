@@ -148,6 +148,11 @@ export const MENU = [
                 name: 'Subject Allocation',
                 iconClasses: 'fas fa-bullseye',
                 path: ['/students/students-subjects']
+            },
+            {
+                name: 'Attendance',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/students/students-attendances']
             }
         ]
     },

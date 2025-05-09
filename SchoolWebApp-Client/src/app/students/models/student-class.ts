@@ -1,6 +1,6 @@
-import { ResourceModel } from "@/core/models/ResourceModel";
-import { StudentDetails } from "./student-details";
-import { SchoolClass } from "@/class/models/school-class";
+import {ResourceModel} from '@/core/models/ResourceModel';
+import {StudentDetails} from './student-details';
+import {SchoolClass} from '@/class/models/school-class';
 
 export class StudentClass extends ResourceModel<StudentClass> {
     public description?: string;
@@ -11,8 +11,11 @@ export class StudentClass extends ResourceModel<StudentClass> {
     public schoolClassId?: number;
     public schoolClass?: SchoolClass;
 
-    public isSelected?: Boolean = false;
-    public isOriginallySelected?: Boolean = false;
+    public isSelected?: boolean = false;
+    public isOriginallySelected?: boolean = false;
+
+    public remarks?: string = '';
+    public hasRecord?: boolean = false;
 
     constructor(model?: Partial<StudentClass>) {
         super(model);

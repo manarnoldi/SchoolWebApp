@@ -29,6 +29,7 @@ import {ToastrService} from 'ngx-toastr';
 export class StudentClassesComponent implements OnInit {
     @Input() student: StudentDetails;
     @Output() studentClassChanged = new EventEmitter<any>();
+    @Input() showLabel = false;
 
     @Input() controlName!: string;
     @Input() controlTitle!: string;

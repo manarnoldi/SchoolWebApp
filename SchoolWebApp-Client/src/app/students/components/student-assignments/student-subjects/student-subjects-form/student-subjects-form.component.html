@@ -6,10 +6,8 @@
         <div class="border border-info my-1 p-1 rounded">
             <div class="row">
                 <div class="col-6">
-                    <div class="form-group mb-1">
                         <app-student-classes [student]="student" *ngIf="student" controlName="studentClassId" controlInstruction="Select student class"
                     controlTitle="Student class" (studentClassChanged)="studentClassChanged($event)"></app-student-classes>
-                    </div>
                 </div>
             </div>
             <div class="row">

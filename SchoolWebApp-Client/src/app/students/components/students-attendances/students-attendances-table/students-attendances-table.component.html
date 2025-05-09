@@ -1,0 +1,57 @@
+<div class="card mb-1">
+    <app-table-heading [editControls]="false"
+        tableTitle="{{tableTitle}}"></app-table-heading>
+    <div class="card-body table-responsive p-0">
+        <table class="table table-striped table-hover text-nowrap">
+            <thead>
+                <tr>
+                    <th *ngFor="let header of tableHeaders">{{header}}</th>
+                    <th>
+                        <div class="icheck-success m-0 p-0">
+                            <input #checkAllStudents type="checkbox" id="checkAllStudents"
+                                (change)="checkAllClicked($event)" [checked]="disabled"
+                                [attr.disabled]="disabled? 'disabled' : null">
+                            <label class="form-check-label"
+                                for="checkAllStudents"><b>Present?</b></label>
+                        </div>
+                    </th>
+                    <th>Remarks</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr
+                    *ngFor="let item of studentClasses| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                    <td>{{ item.student?.upi }}</td>
+                    <td>{{ item.student?.fullName }}</td>
+                    <td>{{ currentDate| date: 'dd-MMM-yyyy' }}</td>
+                    <td>
+                        <div class="icheck-success m-0 p-0">
+                            <input type="checkbox" id="{{item.id}}"
+                                [(ngModel)]="item.isSelected" (change)="itemClicked($event)">
+                            <label class="form-check-label" for="{{item.id}}"></label>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <textarea placeholder="Enter remarks"
+                                class="form-control form-control-sm" rows="1"
+                                [(ngModel)]="item.remarks"
+                                id="{{item.remarks}}"></textarea>
+                        </div>
+                    </td>
+                    <td>
+                        <span *ngIf="item.hasRecord">
+                            <app-table-action
+                                (deleteItemEvent)="deleteItem(item.id)"
+                                [tblShowViewButton]="false"
+                                [tblShowEditButton]="false"></app-table-action>
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <app-table-paging
+            [collectionSize]="studentClasses.length"></app-table-paging>
+    </div>
+</div>

@@ -3,6 +3,7 @@ using Project.Infrastructure.Data;
 using Project.Infrastructure.Repositories;
 using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories.Students;
+using System;
 
 namespace SchoolWebApp.Infrastructure.Repositories.Students
 {
@@ -26,6 +27,16 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
                 .Include(s => s.StudentClass)
                 .Where(e => e.StudentClass.StudentId == studentId).ToListAsync();
             return staffAttendances;
+        }
+
+        public async Task<StudentAttendance> GetByStudentClassAttendanceDate(int studentClassId, DateOnly attendanceDate)
+        {
+            var studentAttendance = await _dbContext.StudentAttendances
+                .Include(s => s.StudentClass)
+                .Where(s => s.StudentClassId == studentClassId && DateOnly.FromDateTime(s.Date) == attendanceDate)
+                .FirstOrDefaultAsync();
+
+            return studentAttendance;
         }
     }
 }

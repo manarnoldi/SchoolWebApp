@@ -1,0 +1,35 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr>
+<section class="content">
+    <div class="container-fluid px-1">
+        <div class="card card-success card-outline mt-1">
+            <div class="card-header p-1">
+                <h4 class="mb-1">Manage Students Attendances</h4>
+            </div>
+            <div class="card-body p-1">
+                <div class="card my-1">
+                    <app-students-attendances-search-form [curricula]="curricula"
+                        [educationLevels]="educationLevels" [academicYears]="academicYears"
+                        [schoolClasses]="schoolClasses" [studentClasses]="studentClasses"
+                        (curriculumChangedEvent)="curriculumChanged($event)"
+                        (educationLevelYearChangedEvent)="educationLevelYearChanged($event)"
+                        (schoolClassChangedEvent)="schoolClassChanged($event)"
+                        (dateChangedEvent)="dateChanged($event)"
+                        (searchItemEvent)="searchForDataMethod($event)"></app-students-attendances-search-form>
+                </div>
+                <app-students-attendances-table [tableTitle]="'Students attendances list'"
+                    [studentClasses]="studentClasses" [currentDate]="attendanceDate"
+                    (deleteItemEvent)="deleteAttendance($event)"></app-students-attendances-table>
+            </div>
+            <div class="card-footer p-1">
+                <button [disabled]="studentClasses.length <= 0" type="submit" (click)="submitAttendances()"
+                    class="btn btn-success float-right"> <i
+                        class="fas fa-save"></i>
+                    Update Student Attendances
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
