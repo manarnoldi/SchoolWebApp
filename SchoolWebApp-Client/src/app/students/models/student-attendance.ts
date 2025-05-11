@@ -8,6 +8,9 @@ export class StudentAttendance extends ResourceModel<StudentAttendance> {
     public present?: boolean;
     public remarks?: string;
 
+    public timeIn?: string;
+    public timeOut?: string;
+
     constructor(model?: Partial<StudentAttendance>) {
         super(model);
     }

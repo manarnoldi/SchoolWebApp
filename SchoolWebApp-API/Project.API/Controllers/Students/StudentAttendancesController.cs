@@ -254,6 +254,8 @@ namespace SchoolWebApp.API.Controllers.Students
                         {
                             existingStudentAttend.Remarks = item.Remarks;
                             existingStudentAttend.Present = item.Present;
+                            existingStudentAttend.TimeIn = item.TimeIn;
+                            existingStudentAttend.TimeOut = item.TimeOut;
                             _unitOfWork.StudentAttendances.Update(existingStudentAttend);
                         }
                         else

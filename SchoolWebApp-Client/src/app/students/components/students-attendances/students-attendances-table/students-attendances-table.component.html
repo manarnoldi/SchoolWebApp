@@ -1,4 +1,4 @@
-<div class="card mb-1">
+<div class="card mb-0">
     <app-table-heading [editControls]="false"
         tableTitle="{{tableTitle}}"></app-table-heading>
     <div class="card-body table-responsive p-0">
@@ -15,6 +15,8 @@
                                 for="checkAllStudents"><b>Present?</b></label>
                         </div>
                     </th>
+                    <th>Time In</th>
+                    <th>Time Out</th>
                     <th>Remarks</th>
                     <th>Action</th>
                 </tr>
@@ -22,17 +24,23 @@
             <tbody>
                 <tr
                     *ngFor="let item of studentClasses| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
-                    <td>{{ item.student?.upi }}</td>
-                    <td>{{ item.student?.fullName }}</td>
-                    <td>{{ currentDate| date: 'dd-MMM-yyyy' }}</td>
-                    <td>
+                    <td class="py-11">{{ item.student?.upi }}</td>
+                    <td class="py-11">{{ item.student?.fullName }}</td>
+                    <td class="py-11">{{ currentDate| date: 'dd-MMM-yyyy' }}</td>
+                    <td class="py-11">
                         <div class="icheck-success m-0 p-0">
                             <input type="checkbox" id="{{item.id}}"
                                 [(ngModel)]="item.isSelected" (change)="itemClicked($event)">
                             <label class="form-check-label" for="{{item.id}}"></label>
                         </div>
                     </td>
-                    <td>
+                    <td class="py-11">
+                        <ngb-timepicker [(ngModel)]="item.timeIn"></ngb-timepicker>
+                    </td>
+                    <td class="py-11">
+                        <ngb-timepicker [(ngModel)]="item.timeOut"></ngb-timepicker>
+                    </td>
+                    <td class="py-11">
                         <div>
                             <textarea placeholder="Enter remarks"
                                 class="form-control form-control-sm" rows="1"
@@ -40,14 +48,12 @@
                                 id="{{item.remarks}}"></textarea>
                         </div>
                     </td>
-                    <td>
-                        <span *ngIf="item.hasRecord">
-                            <app-table-action
-                                (deleteItemEvent)="deleteItem(item.id)"
-                                [tblShowViewButton]="false"
-                                [tblShowEditButton]="false"></app-table-action>
-                        </span>
-                    </td>
+                    <span *ngIf="item.hasRecord">
+                        <app-table-action
+                            (deleteItemEvent)="deleteItem(item.id)"
+                            [tblShowViewButton]="false"
+                            [tblShowEditButton]="false"></app-table-action>
+                    </span>
                 </tr>
             </tbody>
         </table>

@@ -122,6 +122,11 @@ export const MENU = [
                 name: 'Manage staff',
                 iconClasses: 'fas fa-bullseye',
                 path: ['/staff/manage']
+            },
+            {
+                name: 'Attendance',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/staff/staff-attendances']
             }
         ]
     },

@@ -17,6 +17,9 @@ export class StudentClass extends ResourceModel<StudentClass> {
     public remarks?: string = '';
     public hasRecord?: boolean = false;
 
+    public timeIn? = { hour: 8, minute: 0 };
+    public timeOut? = { hour: 17, minute: 0 };
+
     constructor(model?: Partial<StudentClass>) {
         super(model);
     }

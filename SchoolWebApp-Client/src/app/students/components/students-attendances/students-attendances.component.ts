@@ -19,6 +19,7 @@ import {forkJoin} from 'rxjs';
 import {StudentsAttendancesTableComponent} from './students-attendances-table/students-attendances-table.component';
 import Swal from 'sweetalert2';
 import {StudentAttendance} from '@/students/models/student-attendance';
+import {DateService} from '@/shared/services/date.service';
 
 @Component({
     selector: 'app-students-attendances',
@@ -228,14 +229,25 @@ export class StudentsAttendancesComponent implements OnInit {
                             });
 
                             forkJoin(checkStudAttendancesReq).subscribe({
-                                next: (saRes) => {
+                                next: (saRes: StudentAttendance[]) => {
                                     for (let i = 0; i < saRes.length; i++) {
                                         if (saRes[i].id) {
+                                            let [hourIn, minuteIn] = saRes[i].timeIn ? saRes[i].timeIn.split(':').map(Number) : [8, 0];;
+                                            let [hourOut, minuteOut] = saRes[i].timeIn ? saRes[i].timeIn.split(':').map(Number) : [17, 0];
+
                                             studentClasses[i].isSelected =
                                                 saRes[i].present;
                                             studentClasses[i].remarks =
                                                 saRes[i].remarks;
                                             studentClasses[i].hasRecord = true;
+                                            studentClasses[i].timeIn = {
+                                                hour: hourIn,
+                                                minute: minuteIn
+                                            };
+                                            studentClasses[i].timeOut = {
+                                                hour: hourOut,
+                                                minute: minuteOut
+                                            };
                                         }
                                     }
                                     this.studentClasses = studentClasses;
@@ -276,9 +288,26 @@ export class StudentsAttendancesComponent implements OnInit {
 
                 this.studentClasses.forEach((st) => {
                     let sa = new StudentAttendance();
+                    let dateIn = new Date(
+                        1970,
+                        0,
+                        1,
+                        st.timeIn.hour,
+                        st.timeIn.minute
+                    );
+                    let dateOut = new Date(
+                        1970,
+                        0,
+                        1,
+                        st.timeIn.hour,
+                        st.timeIn.minute
+                    );
+
                     sa.date = this.attendanceDate;
                     sa.present = st.isSelected;
                     sa.remarks = st.remarks;
+                    sa.timeIn = this.datePipe.transform(dateIn, 'HH:mm:ss');
+                    sa.timeOut = this.datePipe.transform(dateOut, 'HH:mm:ss');
                     sa.studentClassId = parseInt(st.id);
 
                     studentAttendances.push(sa);

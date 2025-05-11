@@ -6,7 +6,11 @@ import {DatePipe, registerLocaleData} from '@angular/common';
 import localeEn from '@angular/common/locales/en';
 
 import {CoreModule} from './core/core.module';
-import {NgbActiveModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {
+    NgbActiveModal,
+    NgbModule,
+    NgbTimepickerConfig
+} from '@ng-bootstrap/ng-bootstrap';
 import {HTTP_INTERCEPTORS} from '@angular/common/http';
 import {environment} from 'environments/environment';
 import {AuthInterceptor} from './core/interceptors/authconfig.interceptor';
@@ -58,7 +62,18 @@ registerLocaleData(localeEn, 'en-EN');
             multi: true
         },
         {provide: 'BASE_API_URL', useValue: environment.baseUrl},
-        DatePipe
+        DatePipe,
+        {
+            provide: NgbTimepickerConfig,
+            useFactory: () => {
+                const config = new NgbTimepickerConfig();
+                config.spinners = false;
+                config.meridian = false;
+                config.size = 'small';
+                config.minuteStep = 10;
+                return config;
+            }
+        }
     ],
     bootstrap: [AppComponent]
 })

@@ -63,6 +63,7 @@ import { ExamResultsComponent } from './academics/components/exam-results/exam-r
 import { StudentsSubjectsComponent } from './students/components/students-subjects/students-subjects.component';
 import { StudentsSubjectsAddFormComponent } from './students/components/students-subjects/students-subjects-add-form/students-subjects-add-form.component';
 import { StudentsAttendancesComponent } from './students/components/students-attendances/students-attendances.component';
+import { StaffsAttendancesComponent } from './staff/components/staffs-attendances/staffs-attendances.component';
 
 const routes: Routes = [
     {
@@ -119,7 +120,8 @@ const routes: Routes = [
             {path: 'details', component: StaffDetailsComponent},
             {path: 'add', component: StaffDetailsFormComponent},
             {path: 'manage', component: StaffDetailsComponent},
-            {path: 'manage/add', component: StaffAssignmentsComponent}
+            {path: 'manage/add', component: StaffAssignmentsComponent},
+            {path: 'staff-attendances', component: StaffsAttendancesComponent}
         ]
     },
     // {
