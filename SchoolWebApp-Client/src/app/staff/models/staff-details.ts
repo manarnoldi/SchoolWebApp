@@ -45,6 +45,15 @@ export class StaffDetails extends ResourceModel<StaffDetails> {
     public email?: string;
     public otherDetails?: string;
 
+    public isSelected?: boolean = false;
+    public isOriginallySelected?: boolean = false;
+
+    public remarks?: string = '';
+    public hasRecord?: boolean = false;
+
+    public timeIn? = { hour: 8, minute: 0 };
+    public timeOut? = { hour: 17, minute: 0 };
+
     constructor(model?: Partial<StaffDetails>) {
         super(model);
     }

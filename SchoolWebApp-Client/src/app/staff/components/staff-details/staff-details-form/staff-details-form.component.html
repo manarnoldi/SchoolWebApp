@@ -207,24 +207,26 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="designationId"
-                                                class="form-label">Designation: <span
+                                            <label for="employmentTypeId"
+                                                class="form-label">Employment type: <span
                                                     class="requiredField">*</span></label>
                                             <select class="form-select form-select-sm" aria-label="Select
-                                                    designation"
-                                                formControlName="designationId" id="designationId"
-                                                [ngClass]="{ 'is-invalid': (f.designationId.dirty ||
-                                                    f.designationId.touched) && f.designationId.invalid
+                                                    employment type"
+                                                formControlName="employmentTypeId"
+                                                id="employmentTypeId"
+                                                [ngClass]="{ 'is-invalid': (f.employmentTypeId.dirty ||
+                                                    f.employmentTypeId.touched) && f.employmentTypeId.invalid
                                                     }"
                                                 [attr.disabled]="readonly ? 'disabled' : null">
-                                                <option [ngValue]="null">Select staff
-                                                    designation</option>
-                                                <option [ngValue]="designation.id" *ngFor="let
-                                                        designation of designations">{{designation.name}}</option>
+                                                <option [ngValue]="null">Select employment
+                                                    type</option>
+                                                <option [ngValue]="employmentType.id" *ngFor="let
+                                                        employmentType of employmentTypes">{{employmentType.name}}</option>
                                             </select>
-                                            <div class="invalid-feedback"> Staff designation is
+                                            <div class="invalid-feedback"> Staff employment type is
                                                 required</div>
                                         </div>
+                                        
                                         <div class="form-group">
                                             <label for="staffCategoryId"
                                                 class="form-label">Staff category: <span
@@ -246,23 +248,22 @@
                                                 required</div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="employmentTypeId"
-                                                class="form-label">Employment type: <span
+                                            <label for="designationId"
+                                                class="form-label">Designation: <span
                                                     class="requiredField">*</span></label>
                                             <select class="form-select form-select-sm" aria-label="Select
-                                                    employment type"
-                                                formControlName="employmentTypeId"
-                                                id="employmentTypeId"
-                                                [ngClass]="{ 'is-invalid': (f.employmentTypeId.dirty ||
-                                                    f.employmentTypeId.touched) && f.employmentTypeId.invalid
+                                                    designation"
+                                                formControlName="designationId" id="designationId"
+                                                [ngClass]="{ 'is-invalid': (f.designationId.dirty ||
+                                                    f.designationId.touched) && f.designationId.invalid
                                                     }"
                                                 [attr.disabled]="readonly ? 'disabled' : null">
-                                                <option [ngValue]="null">Select employment
-                                                    type</option>
-                                                <option [ngValue]="employmentType.id" *ngFor="let
-                                                        employmentType of employmentTypes">{{employmentType.name}}</option>
+                                                <option [ngValue]="null">Select staff
+                                                    designation</option>
+                                                <option [ngValue]="designation.id" *ngFor="let
+                                                        designation of designations">{{designation.name}}</option>
                                             </select>
-                                            <div class="invalid-feedback"> Staff employment type is
+                                            <div class="invalid-feedback"> Staff designation is
                                                 required</div>
                                         </div>
                                     </div>

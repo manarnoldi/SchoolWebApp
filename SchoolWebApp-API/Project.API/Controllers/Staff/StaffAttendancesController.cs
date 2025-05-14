@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Staff.StaffAttendance;
+using SchoolWebApp.Core.DTOs.Students.StudentAttendance;
 using SchoolWebApp.Core.Entities.Staff;
+using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.Staff
@@ -127,6 +129,34 @@ namespace SchoolWebApp.API.Controllers.Staff
             }
         }
 
+        // GET api/staffAttendances/byStaffIdAttendanceDate/5/2025-05-09
+        /// <summary>
+        /// A method for retrieving staff attendances by staff Id and attendance date
+        /// </summary>
+        /// <param name="staffId">Thestaff Id to be retrieved</param>
+        /// <param name="attendanceDate">The attendance date to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byStaffIdAttendanceDate/{staffId}/{attendanceDate}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StaffAttendanceDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetStaffAttendancesByStaffIdAttendanceDate(int staffId, DateOnly attendanceDate)
+        {
+            try
+            {
+                if (staffId <= 0) return BadRequest(staffId);
+                var _item = await _unitOfWork.StaffAttendances.GetByStaffAttendanceDate(staffId, attendanceDate);
+                var _itemDto = _mapper.Map<StaffAttendanceDto>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the staff attendances by staff id and attendance date.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         // POST api/staffAttendances
         /// <summary>
         /// A method for creating a staff attendance record.
@@ -159,6 +189,56 @@ namespace SchoolWebApp.API.Controllers.Staff
                 {
                     _logger.LogError(ex, $"An error occurred while adding the staff attendance");
                     return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred while adding the staff attendance - {ex.Message}");
+                }
+            }
+            return BadRequest(ModelState);
+        }
+
+        // POST api/staffAttendances
+        /// <summary>
+        /// A method for creating multiple staff attendance records
+        /// </summary>
+        /// <param name="model">The list of staff attendance</param>
+        /// <returns></returns>
+        [HttpPost("batch")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreateMany(List<StaffAttendanceDto> model)
+        {
+            if (model == null || !model.Any())
+            {
+                return BadRequest("No staff attendances provided.");
+            }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    foreach (var item in model)
+                    {
+                        var existingStaffAttend = await _unitOfWork.StaffAttendances.GetByStaffAttendanceDate(item.StaffDetailsId, DateOnly.FromDateTime(item.Date));
+
+                        if (existingStaffAttend != null)
+                        {
+                            existingStaffAttend.Remarks = item.Remarks;
+                            existingStaffAttend.Present = item.Present;
+                            existingStaffAttend.TimeIn = item.TimeIn;
+                            existingStaffAttend.TimeOut = item.TimeOut;
+                            _unitOfWork.StaffAttendances.Update(existingStaffAttend);
+                        }
+                        else
+                        {
+                            var _item = _mapper.Map<StaffAttendance>(item);
+                            _unitOfWork.StaffAttendances.Create(_item);
+                        }
+                    }
+                    await _unitOfWork.SaveChangesAsync();
+                    return Ok("Staff attendances updated successfully");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"An error occurred while updating the staff attendances.");
+                    return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
                 }
             }
             return BadRequest(ModelState);

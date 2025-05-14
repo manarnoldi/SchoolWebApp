@@ -7,5 +7,6 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.Staff
     {
         Task<List<StaffDetails>> GetByStaffCategoryId(int staffCategoryId);
         Task<List<StaffDetails>> GetByEmploymentTypeId(int employmentTypeId);
+        Task<List<StaffDetails>> SearchForStaff(int? staffCategoryId, int? employmentTypeId);
     }
 }

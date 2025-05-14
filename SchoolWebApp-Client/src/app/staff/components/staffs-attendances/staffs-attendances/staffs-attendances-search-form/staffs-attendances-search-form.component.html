@@ -1,1 +1,39 @@
-<p>staffs-attendances-search-form works!</p>
+<form class="px-1" [formGroup]="staffAttendanceSearchForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="row g-0">
+        <div class="col-2 py-1 pe-0">
+            <select class="form-select form-select-sm" aria-label="Staff category"
+                (change)="staffCategoryChanged()"
+                formControlName="staffCategoryId" id="staffCategoryId">
+                <option [ngValue]="null" selected>-Staff category-</option>
+                <option [ngValue]="staffCategory.id" *ngFor="let staffCategory of
+                                staffCategories">{{staffCategory.name}}</option>
+            </select>
+        </div>
+        <div class="col-2 py-1 px-1">
+            <select class="form-select form-select-sm" aria-label="Employment type"
+                (change)="employmentTypeChanged()"
+                formControlName="employmentTypeId" id="employmentTypeId">
+                <option [ngValue]="null" selected>-Employment type-</option>
+                <option [ngValue]="employmentType.id" *ngFor="let employmentType of
+                                    employmentTypes">{{employmentType.name}}</option>
+            </select>
+        </div>
+
+        <div class="col-2 py-1 px-0">
+            <input placeholder="Attendance date" id="attendanceDate" type="date"
+                aria-label="attendance date" max="{{today}}"
+                class="form-control form-control-sm" formControlName="attendanceDate"
+                (change)="dateChanged()" />
+        </div>
+        <div class="col-2 py-1 px-0">
+        </div>
+        <div class="col-2 py-1 px-1">
+        </div>
+        <div class="col-2 py-1 ps-1">
+            <button type="submit" [disabled]="staffAttendanceSearchForm.invalid"
+                class="btn btn-sm btn-flat btn-warning btn-block">
+                <i class="fas fa-sync"></i> Search
+            </button>
+        </div>
+    </div>
+</form>

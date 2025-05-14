@@ -2,6 +2,7 @@
 using Project.Infrastructure.Data;
 using Project.Infrastructure.Repositories;
 using SchoolWebApp.Core.Entities.Staff;
+using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories.Staff;
 
 namespace SchoolWebApp.Infrastructure.Repositories.Staff
@@ -20,6 +21,16 @@ namespace SchoolWebApp.Infrastructure.Repositories.Staff
                 .OrderBy(s=>s.Date)
                 .ToListAsync();
             return staffAttendances;
+        }
+
+        public async Task<StaffAttendance> GetByStaffAttendanceDate(int staffId, DateOnly attendanceDate)
+        {
+            var staffAttendance = await _dbContext.StaffAttendances
+                .Include(s => s.StaffDetails)
+                .Where(s => s.StaffDetailsId == staffId && DateOnly.FromDateTime(s.Date) == attendanceDate)
+                .FirstOrDefaultAsync();
+
+            return staffAttendance;
         }
     }
 }

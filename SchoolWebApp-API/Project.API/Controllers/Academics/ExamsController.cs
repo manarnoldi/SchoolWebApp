@@ -126,7 +126,7 @@ namespace SchoolWebApp.API.Controllers.Academics
             }
         }
 
-        // GET api/exams/examSearch/5/5/5/5/5/5
+        // GET api/exams/examSearch?academicYearId=5&curriculumId=5&sessionId=5&schoolClassId=5&subjectId=5&examTypeId=5&examName='Exam 1'
         /// <summary>
         /// A method for retrieving exams by searching.
         /// </summary>

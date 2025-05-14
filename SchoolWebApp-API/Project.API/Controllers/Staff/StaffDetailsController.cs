@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.API.Utils;
 using SchoolWebApp.Core.DTOs;
+using SchoolWebApp.Core.DTOs.Academics.Exam;
 using SchoolWebApp.Core.DTOs.Staff.StaffDetails;
 using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Settings;
@@ -203,6 +204,33 @@ namespace SchoolWebApp.API.Controllers.Staff
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An error occurred while retrieving the staff details by id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/staffDetails/staffSearch?staffCategoryId=5&employmentTypeId=5
+        /// <summary>
+        /// A method for retrieving staff details by searching.
+        /// </summary>
+        /// <param name="staffCategoryId">The staff category Id whose staffs is to be retrieved</param>
+        /// <param name="employmentTypeId">The employment type Id whose staffs is to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("staffSearch")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ExamDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> StaffSearch(int? staffCategoryId = null, int? employmentTypeId = null)
+        {
+            try
+            {
+                var _item = await _unitOfWork.StaffDetails.SearchForStaff(staffCategoryId, employmentTypeId);
+                var _itemDto = _mapper.Map<List<StaffDetailDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the staff by search items.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }

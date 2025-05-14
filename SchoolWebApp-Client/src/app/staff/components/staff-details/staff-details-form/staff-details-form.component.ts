@@ -16,11 +16,7 @@ import {StaffDetails} from '@/staff/models/staff-details';
 import {StaffDetailsService} from '@/staff/services/staff-details.service';
 import {DatePipe} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
-import {
-    FormBuilder,
-    FormGroup,
-    Validators
-} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin, of} from 'rxjs';
@@ -46,7 +42,7 @@ export class StaffDetailsFormComponent implements OnInit {
     staff: StaffDetails;
     staffId: number = 0;
     staffs: StaffDetails[] = [];
-    staffImageUrl: string= "../../../../../../assets/img/user_image.png";
+    staffImageUrl: string = '../../../../../../assets/img/user_image.png';
 
     staffCategories: StaffCategory[] = [];
     designations: Designation[] = [];
@@ -210,7 +206,7 @@ export class StaffDetailsFormComponent implements OnInit {
             if (result.value) {
                 if (this.editMode) {
                     this.staff = Object.assign(
-                        this.staff,
+                        {id: this.staff.id},
                         this.staffForm.value
                     );
                     let birthDate = this.staffForm.get('dateOfBirth').value;
@@ -230,7 +226,7 @@ export class StaffDetailsFormComponent implements OnInit {
                         : new Date(endOfEmpDate);
                 }
                 let reqToProcess = this.editMode
-                    ? this.staffsSvc.update('/staffDetails', this.staff)
+                    ? this.staffsSvc.update('/staffDetails', new StaffDetails(this.staff))
                     : this.staffsSvc.create(
                           '/staffDetails',
                           new StaffDetails(this.staffForm.value)
