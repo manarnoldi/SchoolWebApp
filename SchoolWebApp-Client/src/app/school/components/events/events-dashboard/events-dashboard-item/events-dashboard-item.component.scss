@@ -12,36 +12,36 @@
 }
 
 .dateDisplay {
-  width: 100%;                 /* Take full width of col-2 */
-  aspect-ratio: 1 / 1;         /* Ensures it stays a square */
-  border-radius: 50%;          /* Makes it a circle */
-  background-color: #f8f9fa;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  padding: 8px;
-  font-size: 0.75rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  box-sizing: border-box;
-  transition: all 0.3s ease-in-out;
-  max-width: 100%;             /* Prevents it from exceeding the col width */
+    width: 100%; /* Take full width of col-2 */
+    aspect-ratio: 1 / 1; /* Ensures it stays a square */
+    border-radius: 50%; /* Makes it a circle */
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    padding: 8px;
+    font-size: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-sizing: border-box;
+    transition: all 0.3s ease-in-out;
+    max-width: 100%; /* Prevents it from exceeding the col width */
 }
 
 /* Optional tweaks for smaller screens */
 @media (max-width: 768px) {
-  .dateDisplay {
-    font-size: 0.7rem;
-    padding: 6px;
-  }
+    .dateDisplay {
+        font-size: 0.7rem;
+        padding: 6px;
+    }
 }
 
 @media (max-width: 480px) {
-  .dateDisplay {
-    font-size: 0.65rem;
-    padding: 4px;
-  }
+    .dateDisplay {
+        font-size: 0.65rem;
+        padding: 4px;
+    }
 }
 .dateDay,
 .dateMonth,
@@ -115,4 +115,12 @@
 
 .actionsDisplay i:hover {
     transform: scale(1.2);
+}
+
+.lineEventLocation {
+    color: #17a2b8;
+}
+
+.lineEventDate {
+    color: #6c757d;
 }

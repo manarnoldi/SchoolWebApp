@@ -24,15 +24,17 @@
                             <a href="#" (click)="toggleText(); $event.preventDefault()">less</a>
                         </span>
                     </ng-container>
-
                     <div class="eventLocation">
-                        <i class="fas fa-map-marker-alt text-success me-1"></i>
-                        {{ event.eventLocation }}
-                        <div class="float-right mr-3">
+                        <span class='lineEventLocation'>
+                            <i class="fas fa-map-marker-alt text-success me-1"></i> {{
+                            event.eventLocation }}
+                        </span>
+                        <span class="float-right mr-3 lineEventDate">
                             <i class="far fa-calendar"></i>
                             {{ event.startDate | date:'EEEE, MMM d, y, h:mm:ss a'}}
-                        </div>
+                        </span>
                     </div>
+
                 </div>
             </div>
         </div>
