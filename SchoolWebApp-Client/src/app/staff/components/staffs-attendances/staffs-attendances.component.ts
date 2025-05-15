@@ -7,13 +7,13 @@ import {StaffAttendance} from '@/staff/models/staff-attendance';
 import {StaffDetails} from '@/staff/models/staff-details';
 import {StaffAttendancesService} from '@/staff/services/staff-attendances.service';
 import {StaffDetailsService} from '@/staff/services/staff-details.service';
-import {StaffAttendanceSearch} from '@/staff/models/staff-attendance-search';
 import {DatePipe} from '@angular/common';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
 import {StaffsAttendancesTableComponent} from './staffs-attendances/staffs-attendances-table/staffs-attendances-table.component';
 import Swal from 'sweetalert2';
+import { StaffAttendanceSearch } from '@/students/models/staff-attendance-search';
 
 @Component({
     selector: 'app-staffs-attendances',

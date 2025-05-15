@@ -12,6 +12,7 @@ import {SessionsService} from '@/class/services/sessions.service';
 import Swal from 'sweetalert2';
 import {AcademicYear} from '@/school/models/academic-year';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
     selector: 'app-events',
@@ -25,6 +26,8 @@ export class EventsComponent implements OnInit {
     eventForm: EventsAddFormComponent;
     tblShowViewButton: true;
     isAuthLoading: boolean;
+
+    querySource!: string;
 
     page = 1;
     pageSize = 10;
@@ -60,7 +63,8 @@ export class EventsComponent implements OnInit {
         private tableSettingsSvc: TableSettingsService,
         private eventsSvc: EventsService,
         private sessionsSvc: SessionsService,
-        private academicYearsSvc: AcademicYearsService
+        private academicYearsSvc: AcademicYearsService,
+        private route: ActivatedRoute
     ) {}
 
     ngOnInit(): void {
@@ -77,24 +81,27 @@ export class EventsComponent implements OnInit {
         let eventsReq = this.eventsSvc.get('/events');
         let sessionsReq = this.sessionsSvc.get('/sessions');
         let academicYearsReq = this.academicYearsSvc.get('/academicYears');
-
-        forkJoin([eventsReq, sessionsReq, academicYearsReq]).subscribe(
-            ([events, sessions, academicYears]) => {
-                this.collectionSize = events.length;
-                this.events = events.sort(
-                    (a, b) => +new Date(b.startDate) - +new Date(a.startDate)
-                );
-                this.sessions = sessions;
-                this.academicYears = academicYears.sort((a, b) =>
-                    b.name.localeCompare(a.name)
-                );
-                this.isAuthLoading = false;
-                this.eventForm.editMode = false;
-            },
-            (err) => {
-                this.toastr.error(err.error);
-            }
-        );
+        this.route.queryParams.subscribe((params) => {
+            this.querySource = params['source'];
+            forkJoin([eventsReq, sessionsReq, academicYearsReq]).subscribe(
+                ([events, sessions, academicYears]) => {
+                    this.collectionSize = events.length;
+                    this.events = events.sort(
+                        (a, b) =>
+                            +new Date(b.startDate) - +new Date(a.startDate)
+                    );
+                    this.sessions = sessions;
+                    this.academicYears = academicYears.sort((a, b) =>
+                        b.name.localeCompare(a.name)
+                    );
+                    this.isAuthLoading = false;
+                    this.eventForm.editMode = false;
+                },
+                (err) => {
+                    this.toastr.error(err.error);
+                }
+            );
+        });
     }
 
     editItem(id: number) {

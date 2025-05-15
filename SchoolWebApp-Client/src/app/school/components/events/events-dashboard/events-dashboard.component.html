@@ -1,0 +1,24 @@
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="ion ion-calendar mr-1"></i>
+            Upcoming events list
+        </h3>
+        <div class="card-tools">
+            <a
+                [routerLink]="['/school/events']"
+                [routerLinkActive]="'active'"
+                [queryParams]="{source: 'dashboard'}"
+                class="btn btn-success btn-sm btn-flat float-right">
+                <i class="fas fa-plus"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body p-1 eventCard">
+        <div *ngFor="let event of upcomingEvents">
+            <app-events-dashboard-item [event]="event"></app-events-dashboard-item>
+        </div>
+    </div>
+    <div class="card-footer clearfix">
+    </div>
+</div>

@@ -1,6 +1,6 @@
 import {EmploymentType} from '@/settings/models/employment-type';
 import {StaffCategory} from '@/settings/models/staff-category';
-import {StaffAttendanceSearch} from '@/staff/models/staff-attendance-search';
+import { StaffAttendanceSearch } from '@/students/models/staff-attendance-search';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 

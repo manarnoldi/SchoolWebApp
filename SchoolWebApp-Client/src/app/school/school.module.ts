@@ -17,6 +17,8 @@ import { DepartmentsAddFormComponent } from './components/departments/department
 import { EventsComponent } from './components/events/events.component';
 import { EventsAddFormComponent } from './components/events/events-add-form/events-add-form.component';
 import { EventsTableComponent } from './components/events/events-table/events-table.component';
+import { EventsDashboardComponent } from './components/events/events-dashboard/events-dashboard.component';
+import { EventsDashboardItemComponent } from './components/events/events-dashboard/events-dashboard-item/events-dashboard-item.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +37,9 @@ import { EventsTableComponent } from './components/events/events-table/events-ta
     DepartmentsAddFormComponent,
     EventsComponent,
     EventsAddFormComponent,
-    EventsTableComponent
+    EventsTableComponent,
+    EventsDashboardComponent,
+    EventsDashboardItemComponent
   ],
   imports: [
     CoreModule,

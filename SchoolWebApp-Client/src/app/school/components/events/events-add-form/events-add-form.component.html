@@ -6,7 +6,7 @@
                     <div class="form-group">
                         <label for="academicYearId" class="form-label">Academic year: <span
                                 class="requiredField">*</span></label>
-                        <select (change)="loadSessions()" class="form-control"
+                        <select (change)="loadSessions()" class="form-select form-select-sm"
                             aria-label="Select academic year"
                             formControlName="academicYearId" id="academicYearId" [ngClass]="{
                                 'is-invalid': (f.academicYearId.dirty || f.academicYearId.touched) && f.academicYearId.invalid

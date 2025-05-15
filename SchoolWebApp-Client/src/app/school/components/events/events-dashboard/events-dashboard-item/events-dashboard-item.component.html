@@ -1,0 +1,44 @@
+<div class="card mb-1">
+    <div class="row align-items-stretch">
+        <div class="col-2">
+            <div class="dateDisplay">
+                <div class="dateDay">{{ event.startDate | date: 'EEE' }}</div>
+                <div class="dateMonth">{{ event.startDate | date: 'MMM' }}</div>
+                <div class="dateDate">{{ event.startDate | date: 'dd' }}</div>
+            </div>
+        </div>
+        <div class="col-10 px-1">
+            <div class="eventBox">
+                <div class="eventTitle">{{ event.eventName }}</div>
+                <div class="eventDescription">
+                    <ng-container *ngIf="!showFullText">
+                        <span class="truncate-text">
+                            {{ event.description | slice:0:100 }}...
+                            <a href="#" (click)="toggleText(); $event.preventDefault()">more</a>
+                        </span>
+                    </ng-container>
+
+                    <ng-container *ngIf="showFullText">
+                        <span>
+                            {{ event.description }}
+                            <a href="#" (click)="toggleText(); $event.preventDefault()">less</a>
+                        </span>
+                    </ng-container>
+
+                    <div class="eventLocation">
+                        <i class="fas fa-map-marker-alt text-success me-1"></i>
+                        {{ event.eventLocation }}
+                        <div class="float-right mr-3">
+                            <i class="far fa-calendar"></i>
+                            {{ event.startDate | date:'EEEE, MMM d, y, h:mm:ss a'}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="col-2 d-flex flex-column justify-content-between align-items-end">
+            <i role="button" class="fas fa-edit text-warning"></i>
+            <i role="button" class="fas fa-trash text-danger"></i>
+        </div> -->
+    </div>
+</div>

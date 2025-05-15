@@ -213,5 +213,15 @@ td {
     margin-bottom: 0.25rem !important;
 }
 
+.eventCard {
+    background-color: #eeeeee !important;
+}
+
+// .truncate-multiline {
+//   display: -webkit-box;
+//   -webkit-line-clamp: 2; /* or 2 lines */
+//   -webkit-box-orient: vertical;
+//   overflow: hidden;
+// }
 /* Importing Bootstrap SCSS file. */
 @import 'bootstrap/scss/bootstrap';

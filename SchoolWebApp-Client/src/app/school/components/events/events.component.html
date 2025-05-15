@@ -32,6 +32,10 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
+                <a *ngIf="querySource==='dashboard'"
+                    class="btn btn-flat btn-sm btn-warning float-left my-1 rounded"
+                    [routerLink]="['/']"
+                    [routerLinkActive]="'active'"><< Back to dashboard</a>
                 <app-table-button modelName="event"
                     buttonTitle="Add event"></app-table-button>
             </div>
