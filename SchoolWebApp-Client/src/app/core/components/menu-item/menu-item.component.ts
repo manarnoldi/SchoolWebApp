@@ -52,7 +52,7 @@ export class MenuItemComponent implements OnInit {
         this.isOneOfChildrenActive = false;
         if (this.isExpandable) {
             this.menuItem.children.forEach((item) => {
-                if (item.path[0] === url) {
+                if (url.includes(item.path[0])) {
                     this.isOneOfChildrenActive = true;
                     this.isMenuExtended = true;
                 }

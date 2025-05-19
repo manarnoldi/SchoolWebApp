@@ -34,7 +34,7 @@ export class ClassDetailsComponent implements OnInit {
 
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Home'},
-        {link: ['/class/classDetails'], title: 'Class: Class details'}
+        {link: ['/class/classes/manage'], title: 'Class: Class details'}
     ];
 
     dashboardTitle = 'Class details';

@@ -105,7 +105,7 @@ const routes: Routes = [
         children: [
             {path: 'classNames', component: LearningLevelsComponent},
             {path: 'streams', component: SchoolStreamsComponent},
-            {path: 'classDetails', component: ClassDetailsComponent},
+            {path: 'classes/manage', component: ClassDetailsComponent},
             {path: 'classes', component: SchoolClassComponent},
             {path: 'sessions', component: SessionsComponent},
             {path: 'leadership-roles', component: ClassLeadershipRolesComponent}
@@ -118,7 +118,7 @@ const routes: Routes = [
         canActivateChild: [AuthGuard],
         children: [
             {path: 'details', component: StaffDetailsComponent},
-            {path: 'add', component: StaffDetailsFormComponent},
+            {path: 'details/add', component: StaffDetailsFormComponent},
             {path: 'manage', component: StaffDetailsComponent},
             {path: 'manage/add', component: StaffAssignmentsComponent},
             {path: 'staff-attendances', component: StaffsAttendancesComponent}
@@ -141,7 +141,7 @@ const routes: Routes = [
         canActivateChild: [AuthGuard],
         children: [
             {path: 'details', component: StudentsDetailsComponent},
-            {path: 'add', component: StudentsAddFormComponent},
+            {path: 'details/add', component: StudentsAddFormComponent},
             {path: 'manage', component: StudentsDetailsComponent},
             {path: 'manage/add', component: StudentAssignmentsComponent},
             {path: 'parents', component: ParentsListComponent},
