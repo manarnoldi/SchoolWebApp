@@ -1,0 +1,65 @@
+<form class="px-1" [formGroup]="curriculumYearStaffFilterForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="row g-0">
+        <ng-content *ngIf="showCurriculum">
+            <div class="col py-1 pe-0">
+                <select class="form-select form-select-sm" aria-label="Curriculum"
+                    (change)="curriculumChanged()"
+                    formControlName="curriculumId" id="curriculumId">
+                    <option [ngValue]="null" selected>-Curriculum-</option>
+                    <option [ngValue]="curriculum.id" *ngFor="let curriculum of
+                                curricula">{{curriculum.name}}</option>
+                </select>
+            </div>
+        </ng-content>
+        <ng-content *ngIf="showAcademicYear">
+            <div class="col py-1 px-1">
+                <select class="form-select form-select-sm" aria-label="Academic year"
+                    (change)="academicYearChanged()"
+                    formControlName="academicYearId" id="academicYearId">
+                    <option [ngValue]="null" selected>-Year-</option>
+                    <option [ngValue]="academicYear.id" *ngFor="let academicYear of
+                                    academicYears">{{academicYear.name}}</option>
+                </select>
+            </div>
+        </ng-content>
+        <ng-component *ngIf="showStaffCategory">
+            <div class="col py-1 px-0">
+                <select class="form-select form-select-sm" aria-label="Staff category"
+                    (change)="staffCategoryChanged()"
+                    formControlName="staffCategoryId" id="staffCategoryId">
+                    <option [ngValue]="null" selected>-Staff category-</option>
+                    <option [ngValue]="staffCategory.id" *ngFor="let staffCategory of
+                                    staffCategories">{{staffCategory.name}}</option>
+                </select>
+            </div>
+        </ng-component>
+        <ng-component *ngIf="showEmploymentType">
+            <div class="col py-1 px-1">
+                <select class="form-select form-select-sm" aria-label="Employment type"
+                    (change)="employmentTypeChanged()"
+                    formControlName="employmentTypeId" id="employmentTypeId">
+                    <option [ngValue]="null" selected>-Employment type-</option>
+                    <option [ngValue]="employmentType.id" *ngFor="let employmentType of
+                                    employmentTypes">{{employmentType.name}}</option>
+                </select>
+            </div>
+        </ng-component>
+        <ng-component *ngIf="showLearningMode">
+            <div class="col py-1 px-0">
+                <select class="form-select form-select-sm" aria-label="Learning mode"
+                    (change)="learningModeChanged()"
+                    formControlName="learningModeId" id="learningModeId">
+                    <option [ngValue]="null" selected>-Learning mode-</option>
+                    <option [ngValue]="learningMode.id" *ngFor="let learningMode of
+                                    learningModes">{{learningMode.name}}</option>
+                </select>
+            </div>
+        </ng-component>
+        <div class="col py-1 ps-1">
+            <button type="submit" [disabled]="curriculumYearStaffFilterForm.invalid"
+                class="btn btn-sm btn-flat btn-warning btn-block">
+                <i class="fas fa-sync"></i> Search
+            </button>
+        </div>
+    </div>
+</form>

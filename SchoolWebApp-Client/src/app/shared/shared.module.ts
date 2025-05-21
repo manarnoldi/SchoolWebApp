@@ -20,6 +20,8 @@ import { SubjectsMinTableComponent } from './components/subjects-min-table/subje
 import { SubjectsTableComponent } from './components/subjects-table/subjects-table.component';
 import { StudentClassesComponent } from './components/student-classes/student-classes.component';
 import { AcademicYearsSelectorFormComponent } from './components/academic-years-selector-form/academic-years-selector-form.component';
+import { CurriculumYearFilterFormComponent } from './components/curriculum-year-filter-form/curriculum-year-filter-form.component';
+import { DateMonthYearFilterFormComponent } from './components/date-month-year-filter-form/date-month-year-filter-form.component';
 
 @NgModule({
     declarations: [
@@ -40,7 +42,9 @@ import { AcademicYearsSelectorFormComponent } from './components/academic-years-
         SubjectsTableComponent,
         SchoolClassMinimumTableComponent,
         SubjectsMinTableComponent,
-        AcademicYearsSelectorFormComponent
+        AcademicYearsSelectorFormComponent,
+        CurriculumYearFilterFormComponent,
+        DateMonthYearFilterFormComponent
     ],
 
     imports: [CommonModule, NgbModule, CoreModule],

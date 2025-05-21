@@ -1,0 +1,46 @@
+<form class="px-1" [formGroup]="dateMonthYearFilterForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="row g-0">
+        <ng-content *ngIf="showMonth">
+            <div class="col py-1 pe-0">
+                <select class="form-select form-select-sm" aria-label="Month"
+                    (change)="monthChanged()"
+                    formControlName="month" id="month">
+                    <option [ngValue]="null" selected>-Month-</option>
+                    <option [ngValue]="month.id" *ngFor="let month of
+                                months">{{month}}</option>
+                </select>
+            </div>
+        </ng-content>
+        <ng-content *ngIf="showYear">
+            <div class="col py-1 px-1">
+                <select class="form-select form-select-sm" aria-label="Year"
+                    (change)="yearChanged()"
+                    formControlName="year" id="year">
+                    <option [ngValue]="null" selected>-Year-</option>
+                    <option [ngValue]="year.id" *ngFor="let year of
+                                    years">{{year}}</option>
+                </select>
+            </div>
+        </ng-content>
+        <ng-component *ngIf="showDateFrom">
+            <div class="col py-1 px-0">
+                <input placeholder="Date from" id="dateFrom" type="date"
+                    aria-label="Date from" class="form-control form-control-sm" formControlName="dateFrom"
+                    (change)="dateFromChanged()" />
+            </div>
+        </ng-component>
+        <ng-component *ngIf="showDateTo">
+            <div class="col py-1 px-0">
+                <input placeholder="Date to" id="dateTo" type="date"
+                    aria-label="Date to" class="form-control form-control-sm" formControlName="dateTo"
+                    (change)="dateToChanged()" />
+            </div>
+        </ng-component>
+        <div class="col py-1 ps-1">
+            <button type="submit" [disabled]="dateMonthYearFilterForm.invalid"
+                class="btn btn-sm btn-flat btn-warning btn-block">
+                <i class="fas fa-sync"></i> Search
+            </button>
+        </div>
+    </div>
+</form>
