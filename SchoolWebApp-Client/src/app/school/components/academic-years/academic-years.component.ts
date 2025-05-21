@@ -100,7 +100,7 @@ export class AcademicYearsComponent implements OnInit {
         forkJoin([academicYearsRequest]).subscribe(
             (res) => {
                 this.collectionSize = res[0].length;
-                this.academicYears= res[0].sort((a, b) => a.rank-b.rank);
+                this.academicYears= res[0].sort((a, b) => b.rank-a.rank);
                 this.isAuthLoading = false;
                 this.editMode = false;
             },

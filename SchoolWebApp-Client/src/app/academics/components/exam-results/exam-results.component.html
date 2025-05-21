@@ -18,8 +18,8 @@
         <app-exam-results-table [tableTitle]="'Examination results'" (deleteItemEvent)="deleteExamResult($event)"
             [examResults]="examResults" *ngIf="isLoading"></app-exam-results-table>
 
-        <div class="row">
-            <div class="col-12">
+        <div class="row m-0">
+            <div class="col-12 p-0">
                 <a
                     (click)="submitExamResults($event)"
                     class="btn btn-sm btn-flat btn-success float-right mt-1">

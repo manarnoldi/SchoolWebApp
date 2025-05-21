@@ -1,5 +1,5 @@
 <form class="px-1" [formGroup]="examListSearchForm" (ngSubmit)="onSubmit()" novalidate>
-    <div class="row">
+    <div class="row g-0">
         <div class="col py-1 pe-0">
             <select class="form-select form-select-sm" aria-label="Academic year"
                 (change)="academicYearCurriculumChanged()"
@@ -72,7 +72,7 @@
                                     exams">{{exam.name}}</option>
             </select>
         </div>
-        <div class="col py-1 ps-0 pe-1">
+        <div class="col py-1 ps-1">
             <button type="submit" [disabled]="examListSearchForm.invalid"
                 class="btn btn-sm btn-flat btn-warning btn-block">
                 <i class="fas fa-sync"></i> Search
