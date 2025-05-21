@@ -98,6 +98,34 @@ namespace SchoolWebApp.API.Controllers.School
             }
         }
 
+        // GET api/events/byAcademicYearId/5
+        /// <summary>
+        /// A method for retrieving an events by academic year Id.
+        /// </summary>
+        /// <param name="academicYearId">The academic year Id of the events to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byAcademicYearId")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetEventsByAcademicYearId(int? academicYearId = null)
+        {
+            try
+            {
+                var _item = await _unitOfWork.Events.GetByAcademicYearId(academicYearId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<EventDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the events by session id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+
         // GET api/events/5
         /// <summary>
         /// A method for retrieving an event record by Id.

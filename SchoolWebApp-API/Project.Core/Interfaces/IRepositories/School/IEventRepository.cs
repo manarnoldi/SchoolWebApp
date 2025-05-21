@@ -7,5 +7,6 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.School
     public interface IEventRepository : IBaseRepository<Event>
     {
         Task<List<Event>> GetBySessionId(int sessionId);
+        Task<List<Event>> GetByAcademicYearId(int? academicYearId);
     }
 }

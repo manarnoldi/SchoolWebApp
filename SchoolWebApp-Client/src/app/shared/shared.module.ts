@@ -67,6 +67,8 @@ import { DateMonthYearFilterFormComponent } from './components/date-month-year-f
         SubjectsMinTableComponent,
         StudentClassesComponent,
         AcademicYearsSelectorFormComponent,
+        CurriculumYearFilterFormComponent,
+        DateMonthYearFilterFormComponent,
         CommonModule,
         NgbModule,
         CoreModule

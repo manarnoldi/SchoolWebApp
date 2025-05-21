@@ -13,6 +13,8 @@ import Swal from 'sweetalert2';
 import {AcademicYear} from '@/school/models/academic-year';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {ActivatedRoute} from '@angular/router';
+import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
+import {CurriculumYearStaff} from '@/shared/models/curriculum-year-staff';
 
 @Component({
     selector: 'app-events',
@@ -24,6 +26,8 @@ export class EventsComponent implements OnInit {
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
     @ViewChild(EventsAddFormComponent)
     eventForm: EventsAddFormComponent;
+    @ViewChild(CurriculumYearFilterFormComponent)
+    cyfFormComponent: CurriculumYearFilterFormComponent;
     tblShowViewButton: true;
     isAuthLoading: boolean;
 
@@ -78,23 +82,22 @@ export class EventsComponent implements OnInit {
     }
 
     refreshItems() {
-        let eventsReq = this.eventsSvc.get('/events');
         let sessionsReq = this.sessionsSvc.get('/sessions');
         let academicYearsReq = this.academicYearsSvc.get('/academicYears');
         this.route.queryParams.subscribe((params) => {
             this.querySource = params['source'];
-            forkJoin([eventsReq, sessionsReq, academicYearsReq]).subscribe(
-                ([events, sessions, academicYears]) => {
-                    this.collectionSize = events.length;
-                    this.events = events.sort(
-                        (a, b) =>
-                            +new Date(b.startDate) - +new Date(a.startDate)
-                    );
+            forkJoin([sessionsReq, academicYearsReq]).subscribe(
+                ([sessions, academicYears]) => {
                     this.sessions = sessions;
                     this.academicYears = academicYears.sort((a, b) =>
                         b.name.localeCompare(a.name)
                     );
-                    this.isAuthLoading = false;
+                    const topYear = academicYears.find(y=>y.status == true);
+                    let cysPass = new CurriculumYearStaff();
+                    cysPass.academicYearId = parseInt(topYear.id);
+
+                    this.cyfFormComponent.setFormControls(cysPass);
+                    this.cyfFormComponent.onSubmit();
                     this.eventForm.editMode = false;
                 },
                 (err) => {
@@ -103,6 +106,24 @@ export class EventsComponent implements OnInit {
             );
         });
     }
+
+    academicYearChanged = (id: number) => {
+        this.events = [];
+    };
+
+    searchClicked = (cys: CurriculumYearStaff) => {
+        let searchStr = `/events/byAcademicYearId?academicYearId=${cys.academicYearId ?? ''}`;
+        this.eventsSvc.get(searchStr).subscribe({
+            next: (events) => {
+                this.events = events.sort(
+                    (a, b) => +new Date(b.startDate) - +new Date(a.startDate)
+                );
+                this.collectionSize = events.length;
+                this.isAuthLoading = false;
+            },
+            error: (err) => this.toastr.error(err.error)
+        });
+    };
 
     editItem(id: number) {
         this.eventsSvc.getById(id, '/events').subscribe(

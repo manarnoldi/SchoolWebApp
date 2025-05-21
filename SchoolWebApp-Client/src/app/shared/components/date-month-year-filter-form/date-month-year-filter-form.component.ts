@@ -35,6 +35,15 @@ export class DateMonthYearFilterFormComponent implements OnInit {
         this.refreshItems();
     }
 
+    setFormControls = (dmySearch: DateMonthYear) => {
+        this.dateMonthYearFilterForm.setValue({
+            month: dmySearch.month ?? null,
+            year: dmySearch.year ?? null,
+            dateFrom: dmySearch.dateFrom ?? null,
+            dateTo: dmySearch.dateTo ?? null
+        });
+    };
+
     refreshItems = () => {
         this.dateMonthYearFilterForm = this.formBuilder.group({
             month: [null],

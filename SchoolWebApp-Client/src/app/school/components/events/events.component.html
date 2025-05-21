@@ -21,6 +21,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+
             <app-events-add-form (addItemEvent)="addEvent($event)"
                 [sessions]="sessions" [academicYears]="academicYears"
                 (errorEvent)="errorEvent($event)"
@@ -40,6 +41,16 @@
                     buttonTitle="Add event"></app-table-button>
             </div>
         </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="card my-1">
+                    <app-curriculum-year-filter-form
+                        [showAcademicYear]="true" (searchItemEvent)="searchClicked($event)" (academicYearChangedEvent)="academicYearChanged($event)"
+                        [academicYears]="academicYears"></app-curriculum-year-filter-form>
+                </div>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-12">
                 <div class="card">
