@@ -31,64 +31,69 @@
     </div>
 </div>
 <section class="content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
+    <div class="container-fluid px-1">
+        <div class="row g-0">
+            <div class="col-9">
+                <app-curriculum-year-filter-form
+                    [showCurriculum]="true" [showEducationLevel]="true"
+                    [academicYears]="academicYears" [curricula]="curricula"
+                    [educationLevels]="educationLevels" (academicYearChangedEvent)="academicYearChanged($event)"
+                    (curriculumChangedEvent)="curriculumChanged($event)" (educationLevelChangedEvent)="educLevelChanged($event)"
+                    (searchItemEvent)="loadSchoolClasses($event)"
+                    [showAcademicYear]="true"></app-curriculum-year-filter-form>
+            </div>
+            <div class="col-3">
                 <app-table-button modelName="schoolClass"
                     buttonTitle="Add school class"></app-table-button>
             </div>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <app-table-heading [editControls]="true"
-                        tableTitle="{{tableTitle}}"></app-table-heading>
-                    <div class="card-body table-responsive p-0">
-                        <table class="table table-striped table-hover text-nowrap">
-                            <thead>
-                                <tr>
-                                    <th *ngFor="let header of tableHeaders">
-                                        {{ header }}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr
-                                    *ngFor="let item of schoolClasses| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
-                                    <td>{{ item.academicYear?.name }}</td>
-                                    <td>{{ item.learningLevel?.name }}</td>
-                                    <td>{{ item.schoolStream?.name }}</td>
-                                    <td>{{ item.name }}</td>
-                                    <td>{{ item.rank }}</td>
-                                    <td>
-                                        <ng-container
-                                            *ngFor="let g of item.schoolClassLeaders; let i = index">
-                                            {{g.person?.fullName + ' ['+
-                                            g.classLeadershipRole?.name + ']'}} 
-                                            <br />
-                                        </ng-container>
-                                    </td>
-                                    <td>{{ item.description }}</td>
-                                    <app-table-action
-                                        (editItemEvent)="editItem(item.id)"
-                                        (deleteItemEvent)="deleteItem(item.id)"></app-table-action>
-                                    <td>
-                                        <app-item-link [itemId]="item.id"
-                                            [sourceUrl]="'/class/classes'"
-                                            [destinationUrl]="'/class/classes/manage'"
-                                            [sourceUrlName]="'School Classes'"
-                                            [itemName]="'Manage leadership'">
-                                            <i class="fas fa-wrench"></i>
-                                        </app-item-link>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <app-table-paging
-                            [collectionSize]="collectionSize"
-                            (onInitEvent)="resetForm()"></app-table-paging>
-                    </div>
-                </div>
+        <div class="card">
+            <app-table-heading [editControls]="true"
+                tableTitle="{{tableTitle}} - {{schoolClasses.length}} items"></app-table-heading>
+            <div class="card-body table-responsive p-0">
+                <table class="table table-striped table-hover text-nowrap">
+                    <thead>
+                        <tr>
+                            <th *ngFor="let header of tableHeaders">
+                                {{ header }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            *ngFor="let item of schoolClasses| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                            <td>{{ item.academicYear?.name }}</td>
+                            <td>{{ item.learningLevel?.name }}</td>
+                            <td>{{ item.schoolStream?.name }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.rank }}</td>
+                            <td>
+                                <ng-container
+                                    *ngFor="let g of item.schoolClassLeaders; let i = index">
+                                    {{g.person?.fullName + ' ['+
+                                    g.classLeadershipRole?.name + ']'}}
+                                    <br />
+                                </ng-container>
+                            </td>
+                            <td>{{ item.description }}</td>
+                            <app-table-action
+                                (editItemEvent)="editItem(item.id)"
+                                (deleteItemEvent)="deleteItem(item.id)"></app-table-action>
+                            <td>
+                                <app-item-link [itemId]="item.id"
+                                    [sourceUrl]="'/class/classes'"
+                                    [destinationUrl]="'/class/classes/manage'"
+                                    [sourceUrlName]="'School Classes'"
+                                    [itemName]="'Manage leadership'">
+                                    <i class="fas fa-wrench"></i>
+                                </app-item-link>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <app-table-paging
+                    [collectionSize]="schoolClasses.length"
+                    (onInitEvent)="resetForm()"></app-table-paging>
             </div>
         </div>
     </div>

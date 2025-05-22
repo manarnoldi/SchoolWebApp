@@ -21,6 +21,12 @@ import Swal from 'sweetalert2';
 import {LearningLevel} from '@/class/models/learning-level';
 import {LearningLevelsService} from '@/class/services/learning-levels.service';
 import {ClassLeadershipsService} from '@/class/services/class-leaderships.service';
+import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
+import {CurriculumYearStaff} from '@/shared/models/curriculum-year-staff';
+import {CurriculumService} from '@/academics/services/curriculum.service';
+import {Curriculum} from '@/academics/models/curriculum';
+import {EducationLevelService} from '@/school/services/education-level.service';
+import {EducationLevel} from '@/school/models/educationLevel';
 
 @Component({
     selector: 'app-school-class',
@@ -33,12 +39,13 @@ export class SchoolClassComponent implements OnInit {
     @ViewChild(SchoolClassAddFormComponent)
     schoolClassForm: SchoolClassAddFormComponent;
     @Output() btnAddClickEvent = new EventEmitter<void>();
+    @ViewChild(CurriculumYearFilterFormComponent)
+    cyfFormComponent: CurriculumYearFilterFormComponent;
     tblShowViewButton: true;
     isAuthLoading: boolean;
 
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
     pageSubscription: Subscription;
     pageSizeSubscription: Subscription;
 
@@ -66,6 +73,8 @@ export class SchoolClassComponent implements OnInit {
     learningLevels: LearningLevel[] = [];
     schoolStreams: SchoolStream[] = [];
     academicYears: AcademicYear[] = [];
+    curricula: Curriculum[] = [];
+    educationLevels: EducationLevel[] = [];
 
     constructor(
         private toastr: ToastrService,
@@ -74,7 +83,9 @@ export class SchoolClassComponent implements OnInit {
         private learningLevelsSvc: LearningLevelsService,
         private schoolStreamsSvc: SchoolStreamsService,
         private academicYearsSvc: AcademicYearsService,
-        private classLeadershipsService: ClassLeadershipsService
+        private classLeadershipsService: ClassLeadershipsService,
+        private educationLevelSvc: EducationLevelService,
+        private curriculumSvc: CurriculumService
     ) {}
 
     ngOnInit(): void {
@@ -87,53 +98,76 @@ export class SchoolClassComponent implements OnInit {
         );
     }
 
+    academicYearChanged = (acadYearId: number) => {
+        this.schoolClasses = [];
+    };
+
+    educLevelChanged = (edulvId: number) => {
+        this.schoolClasses = [];
+    };
+
+    curriculumChanged = (curId: number) => {
+        this.cyfFormComponent.curriculumYearStaffFilterForm
+            .get('educationLevelId')
+            .reset();
+        this.schoolClasses = [];
+        this.educationLevels = [];
+        this.educationLevelSvc.educationLevelsByCurriculum(curId).subscribe({
+            next: (educLevels) => {
+                this.educationLevels = educLevels;
+            },
+            error: (err) => {
+                this.toastr.error(err.error);
+            }
+        });
+    };
+
     refreshItems() {
-        let schoolClassesReq = this.schoolClassesSvc.get('/schoolClasses');
         let learningLevelsReq = this.learningLevelsSvc.get('/learningLevels');
         let schoolStreamsReq = this.schoolStreamsSvc.get('/schoolStreams');
         let academicYearsReq = this.academicYearsSvc.get('/academicYears');
+        let curriculaReq = this.curriculumSvc.get('/curricula');
 
         forkJoin([
-            schoolClassesReq,
             learningLevelsReq,
             schoolStreamsReq,
-            academicYearsReq
+            academicYearsReq,
+            curriculaReq
         ]).subscribe(
-            ([schoolClasses, learningLevels, schoolStreams, academicYears]) => {
-                this.collectionSize = schoolClasses.length;
-
-                this.learningLevels = learningLevels;
-                this.schoolStreams = schoolStreams;
-                this.academicYears = academicYears.sort((a, b) =>
-                    b.name.localeCompare(a.name)
-                );
-                this.isAuthLoading = false;
-                this.schoolClassForm.editMode = false;
-
-                let schoolClassLeadersReq = [];
-                schoolClasses.forEach((sc) =>
-                    schoolClassLeadersReq.push(
-                        this.classLeadershipsService.get(
-                            '/schoolClassLeaders/bySchoolClassId/' + sc.id
+            ([learningLevels, schoolStreams, academicYears, curricula]) => {
+                this.educationLevelSvc
+                    .educationLevelsByCurriculum(
+                        parseInt(
+                            curricula.sort((a, b) => a.rank - b.rank)[0].id
                         )
                     )
-                );
-
-                forkJoin([...schoolClassLeadersReq]).subscribe(
-                    (resp) => {
-                        for (let i = 0; i < schoolClasses.length; i++) {
-                            schoolClasses[i].schoolClassLeaders = resp[i];
+                    .subscribe({
+                        next: (educationLevels) => {
+                            this.learningLevels = learningLevels;
+                            this.schoolStreams = schoolStreams;
+                            this.academicYears = academicYears.sort(
+                                (a, b) => b.rank - a.rank
+                            );
+                            this.curricula = curricula.sort(
+                                (a, b) => a.rank - b.rank
+                            );
+                            const topCurriculum = this.curricula[0];
+                            const topYear = this.academicYears[0];
+                            let cysPass = new CurriculumYearStaff();
+                            cysPass.academicYearId = parseInt(topYear.id);
+                            cysPass.curriculumId = parseInt(topCurriculum.id);
+                            this.cyfFormComponent.setFormControls(cysPass);
+                            this.educationLevels = educationLevels.sort(
+                                (a, b) => a.rank - b.rank
+                            );
+                            this.loadSchoolClasses(cysPass);
+                            this.isAuthLoading = false;
+                            this.schoolClassForm.editMode = false;
+                        },
+                        error: (err) => {
+                            this.toastr.error(err.error);
                         }
-                        this.schoolClasses = schoolClasses.sort(
-                            (a, b) =>
-                                parseInt(b.academicYearId) -
-                                parseInt(a.academicYearId)
-                        );
-                    },
-                    (er) => {
-                        this.toastr.error(er.error);
-                    }
-                );
+                    });
             },
             (err) => {
                 this.toastr.error(err.error);
@@ -141,12 +175,62 @@ export class SchoolClassComponent implements OnInit {
         );
     }
 
+    // loadEducationLevelsByCurriculumId = (curriculumId: number) => {
+    //     this.educationLevelSvc
+    //         .educationLevelsByCurriculum(curriculumId)
+    //         .subscribe({
+    //             next: (educLevels) => {
+    //                 this.educationLevels = educLevels;
+    //             },
+    //             error: (err) => {
+    //                 this.toastr.error(err.error);
+    //             }
+    //         });
+    // };
+
+    loadSchoolClasses = (cys: CurriculumYearStaff) => {
+        this.schoolClassesSvc
+            .getByEducationLevelandYear(
+                cys.educationLevelId,
+                cys.academicYearId
+            )
+            .subscribe({
+                next: (schoolClasses) => {
+                    let schoolClassLeadersReq = [];
+                    schoolClasses.forEach((sc) =>
+                        schoolClassLeadersReq.push(
+                            this.classLeadershipsService.get(
+                                '/schoolClassLeaders/bySchoolClassId/' + sc.id
+                            )
+                        )
+                    );
+                    schoolClassLeadersReq.push();
+                    forkJoin([...schoolClassLeadersReq]).subscribe(
+                        (resp) => {
+                            for (let i = 0; i < schoolClasses.length - 1; i++) {
+                                schoolClasses[i].schoolClassLeaders = resp[i];
+                            }
+                            this.schoolClasses = schoolClasses.sort(
+                                (a, b) => a.rank - b.rank
+                            );
+                        },
+                        (er) => {
+                            this.toastr.error(er.error);
+                        }
+                    );
+                },
+                error: (err) => {
+                    this.toastr.error(err.error);
+                }
+            });
+    };
+
     editItem(id: number) {
         this.schoolClassesSvc.getById(id, '/schoolClasses').subscribe(
             (res) => {
                 let schoolClassId = res.id;
                 this.schoolClass = new SchoolClass(res);
-                this.schoolClass.id = schoolClassId;                
+                this.schoolClass.id = schoolClassId;
                 this.schoolClassForm.editMode = true;
                 this.schoolClassForm.schoolClass = this.schoolClass;
                 this.schoolClassForm.setFormControls(this.schoolClass);

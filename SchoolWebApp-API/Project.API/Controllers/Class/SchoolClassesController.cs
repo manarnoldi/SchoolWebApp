@@ -133,12 +133,12 @@ namespace SchoolWebApp.API.Controllers.Class
         /// <param name="educationLevelId">The education level Id to be retrieved</param>
         /// <param name="academicYearId">The academic year Id to be retrieved</param>
         /// <returns></returns>
-        [HttpGet("byEducationLevelYearId/{educationLevelId}/{academicYearId}")]
+        [HttpGet("byEducationLevelYearId")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<SchoolClassDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetByEducationLevelYearId(int educationLevelId, int academicYearId)
+        public async Task<IActionResult> GetByEducationLevelYearId(int? educationLevelId, int? academicYearId)
         {
             try
             {

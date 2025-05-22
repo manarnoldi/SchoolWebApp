@@ -1,5 +1,6 @@
 import {Curriculum} from '@/academics/models/curriculum';
 import {AcademicYear} from '@/school/models/academic-year';
+import { EducationLevel } from '@/school/models/educationLevel';
 import {LearningMode} from '@/school/models/learning-mode';
 import {EmploymentType} from '@/settings/models/employment-type';
 import {StaffCategory} from '@/settings/models/staff-category';
@@ -14,12 +15,14 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 })
 export class CurriculumYearFilterFormComponent implements OnInit {
     @Input() curricula: Curriculum[] = [];
+    @Input() educationLevels: EducationLevel[] = [];
     @Input() academicYears: AcademicYear[] = [];
     @Input() staffCategories: StaffCategory[] = [];
     @Input() employmentTypes: EmploymentType[] = [];
     @Input() learningModes: LearningMode[] = [];
 
     @Input() showCurriculum: boolean = false;
+    @Input() showEducationLevel: boolean = false;
     @Input() showAcademicYear: boolean = false;
     @Input() showStaffCategory: boolean = false;
     @Input() showEmploymentType: boolean = false;
@@ -27,6 +30,7 @@ export class CurriculumYearFilterFormComponent implements OnInit {
 
     @Output() searchItemEvent = new EventEmitter<CurriculumYearStaff>();
     @Output() curriculumChangedEvent = new EventEmitter<number>();
+    @Output() educationLevelChangedEvent = new EventEmitter<number>();
     @Output() academicYearChangedEvent = new EventEmitter<number>();
     @Output() staffCategoryChangedEvent = new EventEmitter<number>();
     @Output() employmentTypeChangedEvent = new EventEmitter<number>();
@@ -44,6 +48,7 @@ export class CurriculumYearFilterFormComponent implements OnInit {
     setFormControls = (cysSearch: CurriculumYearStaff) => {
         this.curriculumYearStaffFilterForm.setValue({
             curriculumId: cysSearch.curriculumId ?? null,
+            educationLevelId: cysSearch.educationLevelId ?? null,
             academicYearId: cysSearch.academicYearId ?? null,
             staffCategoryId: cysSearch.staffCategoryId ?? null,
             employmentTypeId: cysSearch.employmentTypeId ?? null,
@@ -54,6 +59,7 @@ export class CurriculumYearFilterFormComponent implements OnInit {
     refreshItems = () => {
         this.curriculumYearStaffFilterForm = this.formBuilder.group({
             curriculumId: [null],
+            educationLevelId: [null],
             academicYearId: [null],
             staffCategoryId: [null],
             employmentTypeId: [null],
@@ -65,6 +71,12 @@ export class CurriculumYearFilterFormComponent implements OnInit {
         let curriculumId =
             this.curriculumYearStaffFilterForm.get('curriculumId').value;
         this.curriculumChangedEvent.emit(curriculumId);
+    };
+
+    educationLevelChanged = () => {
+        let educationLevelId =
+            this.curriculumYearStaffFilterForm.get('educationLevelId').value;
+        this.educationLevelChangedEvent.emit(educationLevelId);
     };
 
     academicYearChanged = () => {
@@ -88,7 +100,7 @@ export class CurriculumYearFilterFormComponent implements OnInit {
     learningModeChanged = () => {
         let learningModeId =
             this.curriculumYearStaffFilterForm.get('learningModeId').value;
-        this.academicYearChangedEvent.emit(learningModeId);
+        this.learningModeChangedChangedEvent.emit(learningModeId);
     };
 
     onSubmit = () => {

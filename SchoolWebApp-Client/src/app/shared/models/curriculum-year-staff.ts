@@ -1,5 +1,6 @@
 export class CurriculumYearStaff {
     public curriculumId?: number;
+    public educationLevelId?: number;
     public academicYearId?: number;
     public staffCategoryId?: number;
     public employmentTypeId?: number;

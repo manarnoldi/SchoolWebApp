@@ -9,6 +9,6 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.Class
         Task<List<SchoolClass>> GetByAcademicYearId(int academicYearId);
         Task<SchoolClass> GetByYearClassStream(int academicYearId, int learningLevelId, int schoolStreamId);
         Task<List<SchoolClass>> GetByEducationLevelId(int educationLevelId);
-        Task<List<SchoolClass>> GetByEducationLevelYearId(int educationLevelId, int academicYearId);
+        Task<List<SchoolClass>> GetByEducationLevelYearId(int? educationLevelId, int? academicYearId);
     }
 }

@@ -108,6 +108,7 @@ export class EducationLevelsComponent implements OnInit {
 
     curriculumChanged = (id: number) => {
         this.educationLevels = [];
+        this.collectionSize = 0;
     };
 
     searchClicked = (cys: CurriculumYearStaff) => {

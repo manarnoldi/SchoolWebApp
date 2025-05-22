@@ -13,7 +13,7 @@ import {LearningLevelsService} from '@/class/services/learning-levels.service';
 import {CurriculumYearStaff} from '@/shared/models/curriculum-year-staff';
 import {CurriculumService} from '@/academics/services/curriculum.service';
 import {Curriculum} from '@/academics/models/curriculum';
-import { CurriculumYearFilterFormComponent } from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
+import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
 
 @Component({
     selector: 'app-learning-levels',
@@ -26,7 +26,7 @@ export class LearningLevelsComponent implements OnInit {
     @ViewChild(LearningLevelsFormComponent)
     learningLevelForm: LearningLevelsFormComponent;
     @ViewChild(CurriculumYearFilterFormComponent)
-        cyfFormComponent: CurriculumYearFilterFormComponent;
+    cyfFormComponent: CurriculumYearFilterFormComponent;
     tblShowViewButton: true;
     isAuthLoading: boolean;
 
@@ -81,9 +81,7 @@ export class LearningLevelsComponent implements OnInit {
         forkJoin([curriculaReq, educationLevelReq]).subscribe(
             ([curricula, educationLevels]) => {
                 this.educationLevels = educationLevels;
-                this.curricula = curricula.sort(
-                    (a, b) => a.rank - b.rank
-                );
+                this.curricula = curricula.sort((a, b) => a.rank - b.rank);
                 const topCurriculum = this.curricula[0];
 
                 let cysPass = new CurriculumYearStaff();
@@ -103,6 +101,7 @@ export class LearningLevelsComponent implements OnInit {
 
     curriculumChanged = (id: number) => {
         this.learningLevels = [];
+        this.collectionSize = 0;
     };
 
     searchClicked = (cys: CurriculumYearStaff) => {

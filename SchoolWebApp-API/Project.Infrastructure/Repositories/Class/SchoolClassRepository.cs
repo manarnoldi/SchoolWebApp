@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Project.Infrastructure.Data;
 using Project.Infrastructure.Repositories;
+using SchoolWebApp.Core.Entities.Academics;
 using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Interfaces.IRepositories.Class;
 
@@ -32,14 +33,19 @@ namespace SchoolWebApp.Infrastructure.Repositories.Class
             return schoolClasses;
         }
 
-        public async Task<List<SchoolClass>> GetByEducationLevelYearId(int educationLevelId, int academicYearId)
+        public async Task<List<SchoolClass>> GetByEducationLevelYearId(int? educationLevelId, int? academicYearId)
         {
-            var schoolClasses = await _dbContext.SchoolClasses.Where(s => s.LearningLevel.EducationLevelId == educationLevelId
-            && s.AcademicYearId == academicYearId)
+            var query = _dbContext.SchoolClasses
                 .Include(l => l.LearningLevel)
                 .Include(l => l.SchoolStream)
                 .Include(l => l.AcademicYear)
-                .ToListAsync();
+                .AsQueryable();
+            if (educationLevelId != null)
+                query = query.Where(s => s.LearningLevel.EducationLevelId == educationLevelId);
+            if (academicYearId != null)
+                query = query.Where(s => s.AcademicYearId == academicYearId);
+
+            var schoolClasses = await query.ToListAsync();
             return schoolClasses;
         }
 
