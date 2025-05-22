@@ -31,10 +31,16 @@
 <section class="content">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12">
-                <app-table-button modelName="educationLevel"
-                    buttonTitle="Add education level"></app-table-button>
-            </div>
+            <!-- <div class="card my-1"> -->
+                <div class="col-6">
+                    <app-curriculum-year-filter-form
+                        [showCurriculum]="true"></app-curriculum-year-filter-form>
+                </div>
+                <div class="col-6">
+                    <app-table-button modelName="educationLevel"
+                        buttonTitle="Add education level"></app-table-button>
+                </div>
+            <!-- </div> -->
         </div>
         <div class="row">
             <div class="col-12">
@@ -50,7 +56,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let item of educationLevels| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                                <tr
+                                    *ngFor="let item of educationLevels| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
                                     <td>{{ item.name }}</td>
                                     <td>{{ item.rank }}</td>
                                     <td>{{ item.abbr }}</td>

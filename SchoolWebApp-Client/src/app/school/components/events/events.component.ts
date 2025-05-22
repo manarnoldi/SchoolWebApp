@@ -6,7 +6,6 @@ import {BreadCrumb} from '@/core/models/bread-crumb';
 import {Session} from '@/class/models/session';
 import {SchoolEvent} from '@/school/models/schoolEvent';
 import {ToastrService} from 'ngx-toastr';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {EventsService} from '@/school/services/events.service';
 import {SessionsService} from '@/class/services/sessions.service';
 import Swal from 'sweetalert2';
@@ -33,38 +32,22 @@ export class EventsComponent implements OnInit {
 
     querySource!: string;
 
-    page = 1;
-    pageSize = 10;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
-
-    tableModel: string = 'event';
+    
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Home'},
         {link: ['/school/events'], title: 'School: Events'}
     ];
+
     dashboardTitle = 'School: Events';
-    tableTitle: string = ' Events list';
-    tableHeaders: string[] = [
-        'Academic year',
-        'Session',
-        'Event name',
-        'Event location',
-        'Start date',
-        'End date',
-        'Description',
-        'Action'
-    ];
 
     event: SchoolEvent;
     events: SchoolEvent[] = [];
+    
     sessions: Session[] = [];
     academicYears: AcademicYear[] = [];
 
     constructor(
         private toastr: ToastrService,
-        private tableSettingsSvc: TableSettingsService,
         private eventsSvc: EventsService,
         private sessionsSvc: SessionsService,
         private academicYearsSvc: AcademicYearsService,
@@ -73,12 +56,6 @@ export class EventsComponent implements OnInit {
 
     ngOnInit(): void {
         this.refreshItems();
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
     }
 
     refreshItems() {
@@ -118,7 +95,6 @@ export class EventsComponent implements OnInit {
                 this.events = events.sort(
                     (a, b) => +new Date(b.startDate) - +new Date(a.startDate)
                 );
-                this.collectionSize = events.length;
                 this.isAuthLoading = false;
             },
             error: (err) => this.toastr.error(err.error)
