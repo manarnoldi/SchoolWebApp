@@ -68,11 +68,11 @@ namespace SchoolWebApp.API.Controllers.School
             }
         }
 
-        // GET api/educationLevels/byCurriculumId/5
+        // GET api/educationLevels/byCurriculumId?curriculumId=5
         /// <summary>
         /// A method for retrieving education levels by curriculum Id.
         /// </summary>
-        /// <param name="id">The curriculum Id to be retrieved</param>
+        /// <param name="curriculumId">The curriculum Id whose records are to be retrieved</param>
         /// <returns></returns>
         [HttpGet("byCurriculumId")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

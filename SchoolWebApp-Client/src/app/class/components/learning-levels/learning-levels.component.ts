@@ -8,8 +8,12 @@ import {ToastrService} from 'ngx-toastr';
 import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {EducationLevelService} from '@/school/services/education-level.service';
 import Swal from 'sweetalert2';
-import { LearningLevel } from '@/class/models/learning-level';
-import { LearningLevelsService } from '@/class/services/learning-levels.service';
+import {LearningLevel} from '@/class/models/learning-level';
+import {LearningLevelsService} from '@/class/services/learning-levels.service';
+import {CurriculumYearStaff} from '@/shared/models/curriculum-year-staff';
+import {CurriculumService} from '@/academics/services/curriculum.service';
+import {Curriculum} from '@/academics/models/curriculum';
+import { CurriculumYearFilterFormComponent } from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
 
 @Component({
     selector: 'app-learning-levels',
@@ -21,6 +25,8 @@ export class LearningLevelsComponent implements OnInit {
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
     @ViewChild(LearningLevelsFormComponent)
     learningLevelForm: LearningLevelsFormComponent;
+    @ViewChild(CurriculumYearFilterFormComponent)
+        cyfFormComponent: CurriculumYearFilterFormComponent;
     tblShowViewButton: true;
     isAuthLoading: boolean;
 
@@ -48,12 +54,14 @@ export class LearningLevelsComponent implements OnInit {
     learningLevel: LearningLevel;
     learningLevels: LearningLevel[] = [];
     educationLevels: EducationLevel[] = [];
+    curricula: Curriculum[] = [];
 
     constructor(
         private toastr: ToastrService,
         private tableSettingsSvc: TableSettingsService,
         private learningLevelSvc: LearningLevelsService,
-        private educationLevelSvc: EducationLevelService
+        private educationLevelSvc: EducationLevelService,
+        private curriculumSvc: CurriculumService
     ) {}
 
     ngOnInit(): void {
@@ -67,16 +75,23 @@ export class LearningLevelsComponent implements OnInit {
     }
 
     refreshItems() {
-        let learningLevelsReq = this.learningLevelSvc.get('/learningLevels');
+        let curriculaReq = this.curriculumSvc.get('/curricula');
         let educationLevelReq = this.educationLevelSvc.get('/educationLevels');
 
-        forkJoin([learningLevelsReq, educationLevelReq]).subscribe(
-            ([learningLevels, educationLevels]) => {
-                this.collectionSize = learningLevels.length;
-                this.learningLevels = learningLevels.sort(
-                    (a, b) => parseInt(a.id) - parseInt(b.id)
-                );
+        forkJoin([curriculaReq, educationLevelReq]).subscribe(
+            ([curricula, educationLevels]) => {
                 this.educationLevels = educationLevels;
+                this.curricula = curricula.sort(
+                    (a, b) => a.rank - b.rank
+                );
+                const topCurriculum = this.curricula[0];
+
+                let cysPass = new CurriculumYearStaff();
+                cysPass.curriculumId = parseInt(topCurriculum.id);
+
+                this.cyfFormComponent.setFormControls(cysPass);
+                this.cyfFormComponent.onSubmit();
+
                 this.isAuthLoading = false;
                 this.learningLevelForm.editMode = false;
             },
@@ -85,6 +100,29 @@ export class LearningLevelsComponent implements OnInit {
             }
         );
     }
+
+    curriculumChanged = (id: number) => {
+        this.learningLevels = [];
+    };
+
+    searchClicked = (cys: CurriculumYearStaff) => {
+        let searchStr = `/learningLevels/byCurriculumId?curriculumId=${cys.curriculumId ?? ''}`;
+        this.learningLevelSvc.get(searchStr).subscribe({
+            next: (learningLevels) => {
+                this.learningLevels = learningLevels.sort(
+                    (a, b) => a.rank - b.rank
+                );
+                this.collectionSize = learningLevels.length;
+                if (this.collectionSize <= 0) {
+                    this.toastr.info(
+                        'No record found for the selected curriculum!'
+                    );
+                }
+                this.isAuthLoading = false;
+            },
+            error: (err) => this.toastr.error(err.error)
+        });
+    };
 
     editItem(id: number) {
         this.learningLevelSvc.getById(id, '/learningLevels').subscribe(

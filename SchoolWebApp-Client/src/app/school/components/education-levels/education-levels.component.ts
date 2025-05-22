@@ -86,10 +86,10 @@ export class EducationLevelsComponent implements OnInit {
         forkJoin([curriculaReq, educationLevelTypeReq]).subscribe(
             ([curricular, educationLevelTypes]) => {
                 this.educationLevelTypes = educationLevelTypes;
-                this.curricula = curricular;
-                const topCurriculum = curricular.sort(
+                this.curricula = curricular.sort(
                     (a, b) => a.rank - b.rank
-                )[0];
+                );
+                const topCurriculum = this.curricula[0];
 
                 let cysPass = new CurriculumYearStaff();
                 cysPass.curriculumId = parseInt(topCurriculum.id);

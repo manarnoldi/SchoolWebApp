@@ -69,6 +69,33 @@ namespace SchoolWebApp.API.Controllers.Class
             }
         }
 
+        // GET api/educationLevels/byCurriculumId?curriculumId=5
+        /// <summary>
+        /// A method for retrieving education levels by curriculum Id.
+        /// </summary>
+        /// <param name="curriculumId">The curriculum Id whose records are to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byCurriculumId")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LearningLevelDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetLearningLevelsByCurriculumId(int? curriculumId = null)
+        {
+            try
+            {
+                var _item = await _unitOfWork.LearningLevels.GetByCurriculumId(curriculumId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<LearningLevelDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the learning levels by curriculum id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         // GET api/learningLevels/5
         /// <summary>
         /// A method for retrieving of learning levels record by Id.
