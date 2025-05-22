@@ -64,40 +64,37 @@ export class CurriculumYearFilterFormComponent implements OnInit {
     curriculumChanged = () => {
         let curriculumId =
             this.curriculumYearStaffFilterForm.get('curriculumId').value;
-        if (!curriculumId || curriculumId == '') return;
         this.curriculumChangedEvent.emit(curriculumId);
     };
 
     academicYearChanged = () => {
         let academicYearId =
             this.curriculumYearStaffFilterForm.get('academicYearId').value;
-        if (!academicYearId || academicYearId == '') return;
         this.academicYearChangedEvent.emit(academicYearId);
     };
 
     staffCategoryChanged = () => {
         let staffCategoryId =
             this.curriculumYearStaffFilterForm.get('staffCategoryId').value;
-        if (!staffCategoryId || staffCategoryId == '') return;
         this.staffCategoryChangedEvent.emit(staffCategoryId);
     };
 
     employmentTypeChanged = () => {
         let employmentTypeId =
             this.curriculumYearStaffFilterForm.get('employmentTypeId').value;
-        if (!employmentTypeId || employmentTypeId == '') return;
         this.employmentTypeChangedEvent.emit(employmentTypeId);
     };
 
     learningModeChanged = () => {
         let learningModeId =
             this.curriculumYearStaffFilterForm.get('learningModeId').value;
-        if (!learningModeId || learningModeId == '') return;
         this.academicYearChangedEvent.emit(learningModeId);
     };
 
     onSubmit = () => {
-        this.cysSearch = new CurriculumYearStaff(this.curriculumYearStaffFilterForm.value);
+        this.cysSearch = new CurriculumYearStaff(
+            this.curriculumYearStaffFilterForm.value
+        );
         this.searchItemEvent.emit(this.cysSearch);
     };
 }

@@ -29,14 +29,14 @@
     </div>
 </div>
 <section class="content">
-    <div class="container-fluid">
+    <div class="container-fluid px-1">
         <div class="row g-0">
             <ng-content *ngIf="querySource==='dashboard'">
                 <div class="col">
                     <a
-                        class="btn btn-flat btn-sm btn-warning float-left my-1 rounded"
+                        class="btn btn-flat btn-sm btn-warning float-left my-1"
                         [routerLink]="['/']"
-                        [routerLinkActive]="'active'"><< Back to dashboard</a>
+                        [routerLinkActive]="'active'"><i class="fas fa-angle-double-left"></i> Back to dashboard</a>
 
                 </div>
             </ng-content>
@@ -48,6 +48,7 @@
             </div>
             <div class="col">
                 <app-table-button modelName="event"
+                    [btnClasses]="'btn btn-sm btn-flat btn-success float-right my-1'"
                     buttonTitle="Add event"></app-table-button>
             </div>
         </div>

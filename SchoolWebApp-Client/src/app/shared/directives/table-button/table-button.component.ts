@@ -19,7 +19,7 @@ export class TableButtonComponent implements OnInit {
     @Input() modelName: string = '';
     @Input() buttonTitle: string = '';
     @Input() btnClasses: string =
-        'btn btn-sm btn-flat btn-success float-right my-1 rounded';
+        'btn btn-sm btn-flat btn-success float-right my-1';
     @Input() btnIcon = 'fa-plus-circle';
 
     constructor() {}

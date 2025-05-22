@@ -74,16 +74,15 @@ namespace SchoolWebApp.API.Controllers.School
         /// </summary>
         /// <param name="id">The curriculum Id to be retrieved</param>
         /// <returns></returns>
-        [HttpGet("byCurriculumId/{curriculumId}")]
+        [HttpGet("byCurriculumId")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EducationLevelDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetEducationLevelsByCurriculumId(int curriculumId)
+        public async Task<IActionResult> GetEducationLevelsByCurriculumId(int? curriculumId = null)
         {
             try
             {
-                if (curriculumId <= 0) return BadRequest(curriculumId);
                 var _item = await _unitOfWork.EducationLevels.GetByCurriculumId(curriculumId);
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<List<EducationLevelDto>>(_item);

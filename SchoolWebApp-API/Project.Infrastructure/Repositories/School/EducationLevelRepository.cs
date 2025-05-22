@@ -11,9 +11,17 @@ namespace SchoolWebApp.Infrastructure.Repositories.School
         public EducationLevelRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
         }
-        public async Task<List<EducationLevel>> GetByCurriculumId(int curriculumId)
+        public async Task<List<EducationLevel>> GetByCurriculumId(int? curriculumId)
         {
-            var educationLevels = await _dbContext.EducationLevels.Where(e => e.CurriculumId == curriculumId).ToListAsync();
+            var query = _dbContext.EducationLevels
+                .Include(e => e.EducationLevelType)
+                .Include(e => e.Curriculum)
+                .AsQueryable();
+
+            if (curriculumId != null)
+                query = query.Where(e => e.CurriculumId == curriculumId);
+
+            var educationLevels = await query.ToListAsync();
             return educationLevels;
         }
     }

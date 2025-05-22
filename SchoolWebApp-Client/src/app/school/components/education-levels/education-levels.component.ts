@@ -12,6 +12,8 @@ import {EducationLevelService} from '@/school/services/education-level.service';
 import {CurriculumService} from '@/academics/services/curriculum.service';
 import {EducationLevelTypesService} from '@/school/services/education-level-types.service';
 import Swal from 'sweetalert2';
+import {CurriculumYearStaff} from '@/shared/models/curriculum-year-staff';
+import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
 
 @Component({
     selector: 'app-education-levels',
@@ -23,6 +25,8 @@ export class EducationLevelsComponent implements OnInit {
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
     @ViewChild(EducationLevelFormComponent)
     educationLevelForm: EducationLevelFormComponent;
+    @ViewChild(CurriculumYearFilterFormComponent)
+    cyfFormComponent: CurriculumYearFilterFormComponent;
     tblShowViewButton: true;
     isAuthLoading: boolean;
 
@@ -74,24 +78,25 @@ export class EducationLevelsComponent implements OnInit {
     }
 
     refreshItems() {
-        let educationLevelsReq = this.educationLevelSvc.get('/educationLevels');
         let curriculaReq = this.curriculumSvc.get('/curricula');
         let educationLevelTypeReq = this.educationLevelTypeSvc.get(
             '/educationLevelTypes'
         );
 
-        forkJoin([
-            educationLevelsReq,
-            curriculaReq,
-            educationLevelTypeReq
-        ]).subscribe(
-            ([educationLevels, curricular, educationLevelTypes]) => {
-                this.collectionSize = educationLevels.length;
-                this.educationLevels = educationLevels.sort(
-                    (a, b) => a.rank -b.rank
-                );
+        forkJoin([curriculaReq, educationLevelTypeReq]).subscribe(
+            ([curricular, educationLevelTypes]) => {
                 this.educationLevelTypes = educationLevelTypes;
                 this.curricula = curricular;
+                const topCurriculum = curricular.sort(
+                    (a, b) => a.rank - b.rank
+                )[0];
+
+                let cysPass = new CurriculumYearStaff();
+                cysPass.curriculumId = parseInt(topCurriculum.id);
+
+                this.cyfFormComponent.setFormControls(cysPass);
+                this.cyfFormComponent.onSubmit();
+
                 this.isAuthLoading = false;
                 this.educationLevelForm.editMode = false;
             },
@@ -100,6 +105,29 @@ export class EducationLevelsComponent implements OnInit {
             }
         );
     }
+
+    curriculumChanged = (id: number) => {
+        this.educationLevels = [];
+    };
+
+    searchClicked = (cys: CurriculumYearStaff) => {
+        let searchStr = `/educationLevels/byCurriculumId?curriculumId=${cys.curriculumId ?? ''}`;
+        this.educationLevelSvc.get(searchStr).subscribe({
+            next: (educationLevels) => {
+                this.educationLevels = educationLevels.sort(
+                    (a, b) => a.rank - b.rank
+                );
+                this.collectionSize = educationLevels.length;
+                if (this.collectionSize <= 0) {
+                    this.toastr.info(
+                        'No record found for the selected curriculum!'
+                    );
+                }
+                this.isAuthLoading = false;
+            },
+            error: (err) => this.toastr.error(err.error)
+        });
+    };
 
     editItem(id: number) {
         this.educationLevelSvc.getById(id, '/educationLevels').subscribe(
