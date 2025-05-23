@@ -175,19 +175,6 @@ export class SchoolClassComponent implements OnInit {
         );
     }
 
-    // loadEducationLevelsByCurriculumId = (curriculumId: number) => {
-    //     this.educationLevelSvc
-    //         .educationLevelsByCurriculum(curriculumId)
-    //         .subscribe({
-    //             next: (educLevels) => {
-    //                 this.educationLevels = educLevels;
-    //             },
-    //             error: (err) => {
-    //                 this.toastr.error(err.error);
-    //             }
-    //         });
-    // };
-
     loadSchoolClasses = (cys: CurriculumYearStaff) => {
         this.schoolClassesSvc
             .getByEducationLevelandYear(

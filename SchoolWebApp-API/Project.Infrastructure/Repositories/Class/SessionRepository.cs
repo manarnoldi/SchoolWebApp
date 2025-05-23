@@ -19,16 +19,21 @@ namespace SchoolWebApp.Infrastructure.Repositories.Class
             return sessions;
         }
 
-        public async Task<List<Session>> GetByCurriculumIdYearId(int curriculumId, int academicYearId)
+        public async Task<List<Session>> GetByCurriculumIdYearId(int? curriculumId, int? academicYearId)
         {
-            var sessions = await _dbContext.Sessions
-                .Where(s => s.CurriculumId == curriculumId && s.AcademicYearId == academicYearId)
+            var query = _dbContext.Sessions
                 .Include(c => c.Curriculum)
                 .Include(a => a.AcademicYear)
                 .Include(st => st.SessionType)
-                .ToListAsync();
-            return sessions;
+                .AsQueryable();
 
+            if(curriculumId != null)
+                query = query.Where(c=>c.CurriculumId == curriculumId);
+            if (academicYearId != null)
+                query = query.Where(c => c.AcademicYearId == academicYearId);
+           
+            var sessions = await query.ToListAsync();
+            return sessions;
         }
     }
 }

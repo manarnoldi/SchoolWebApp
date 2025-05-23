@@ -105,17 +105,18 @@ namespace SchoolWebApp.API.Controllers.Class
         /// <param name="curriculumId">The curriculum Id whose sessions to be retrieved</param>
         /// <param name="academicYearId">The academic year Id whose sessions to be retrieved</param>
         /// <returns></returns>
-        [HttpGet("byCurriculumYearId/{curriculumId}/{academicYearId}")]
+        [HttpGet("byCurriculumYearId")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SessionDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetExamsByCurriculumYearId(int curriculumId, int academicYearId)
+        public async Task<IActionResult> GetExamsByCurriculumYearId(int? curriculumId, int? academicYearId)
         {
             try
             {
                 if (curriculumId <= 0) return BadRequest(curriculumId);
                 if (academicYearId <= 0) return BadRequest(academicYearId);
+
                 var _item = await _unitOfWork.Sessions.GetByCurriculumIdYearId(curriculumId, academicYearId);
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<List<SessionDto>>(_item);

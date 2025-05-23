@@ -14,6 +14,8 @@ import {ToastrService} from 'ngx-toastr';
 import {Subscription, forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 import {SessionFormComponent} from './session-form/session-form.component';
+import {CurriculumYearStaff} from '@/shared/models/curriculum-year-staff';
+import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
 
 @Component({
     selector: 'app-sessions',
@@ -24,12 +26,13 @@ export class SessionsComponent implements OnInit {
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
     @ViewChild(SessionFormComponent) sessionForm: SessionFormComponent;
+    @ViewChild(CurriculumYearFilterFormComponent)
+    cyfFormComponent: CurriculumYearFilterFormComponent;
     tblShowViewButton: true;
     isAuthLoading: boolean;
 
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
     pageSubscription: Subscription;
     pageSizeSubscription: Subscription;
 
@@ -79,25 +82,25 @@ export class SessionsComponent implements OnInit {
     }
 
     refreshItems() {
-        let sessionsReq = this.sessionSvc.get('/sessions');
         let acadYearsReq = this.acadYearSvc.get('/academicYears');
         let curriculaReq = this.curriculumSvc.get('/curricula');
         let sessionTypeReq = this.sessionTypeSvc.get('/sessionTypes');
 
-        forkJoin([
-            sessionsReq,
-            acadYearsReq,
-            curriculaReq,
-            sessionTypeReq
-        ]).subscribe(
-            ([sessions, academicYears, curricular, sessionTypes]) => {
-                this.collectionSize = sessions.length;
-                this.sessions = sessions.sort((a, b) =>
-                    b.academicYear.name.localeCompare(a.academicYear.name)
+        forkJoin([acadYearsReq, curriculaReq, sessionTypeReq]).subscribe(
+            ([academicYears, curricular, sessionTypes]) => {
+                this.academicYears = academicYears.sort(
+                    (a, b) => b.rank - a.rank
                 );
-                this.academicYears = academicYears;
-                this.curricula = curricular;
+                this.curricula = curricular.sort((a, b) => a.rank - b.rank);
                 this.sessionTypes = sessionTypes;
+                const topCurriculum = this.curricula[0];
+                const topYear = this.academicYears[0];
+                let cysPass = new CurriculumYearStaff();
+                cysPass.academicYearId = parseInt(topYear.id);
+                cysPass.curriculumId = parseInt(topCurriculum.id);
+                this.cyfFormComponent.setFormControls(cysPass);
+                
+                this.searchClicked(cysPass);
                 this.isAuthLoading = false;
                 this.sessionForm.editMode = false;
             },
@@ -106,6 +109,27 @@ export class SessionsComponent implements OnInit {
             }
         );
     }
+
+    academicYearChanged = (acadId: number) => {
+        this.sessions = [];
+    };
+
+    curriculumChanged = (currId: number) => {
+        this.sessions = [];
+    };
+
+    searchClicked = (cys: CurriculumYearStaff) => {
+        this.sessionSvc
+            .getByCurriculumYear(cys.curriculumId, cys.academicYearId)
+            .subscribe({
+                next: (sessions) => {
+                    this.sessions = sessions.sort((a, b) => a.rank - b.rank);
+                },
+                error: (err) => {
+                    this.toastr.error(err.error);
+                }
+            });
+    };
 
     editItem(id: number) {
         this.sessionSvc.getById(id, '/sessions').subscribe(
