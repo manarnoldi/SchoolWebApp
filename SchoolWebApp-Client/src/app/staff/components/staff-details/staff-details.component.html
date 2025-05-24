@@ -3,9 +3,27 @@
     [breadcrumbs]="breadcrumbs"></app-dashboard-header>
 <hr>
 <section class="content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
+    <div class="container-fluid px-1">
+        <div class="row g-0">
+            <ng-content *ngIf="querySource==='dashboard'">
+                <div class="col-1">
+                    <a
+                        class="btn btn-flat btn-sm btn-warning float-left btn-block my-1"
+                        [routerLink]="['/']"
+                        [routerLinkActive]="'active'"><i class="fas fa-angle-double-left"></i> Back</a>
+
+                </div>
+            </ng-content>
+            <div class="col-10">
+                <app-curriculum-year-filter-form [showStaffCategory]="true"
+                    [staffCategories]="staffCats" [showPersonStatus]="true"
+                    [employmentTypes]="empTypes" (searchItemEvent)="searchClicked($event)"
+                    (employmentTypeChangedEvent)="employmentTypeChanged($event)"
+                    (staffCategoryChangedEvent)="staffCategoryChanged($event)"
+                    (statusChangedEvent)="statusChanged($event)"
+                    [showEmploymentType]="true"></app-curriculum-year-filter-form>
+            </div>
+            <div class="col-1">
                 <a
                     [routerLink]="['/staff/details/add']"
                     [routerLinkActive]="'active'"
@@ -14,7 +32,8 @@
                 </a>
             </div>
         </div>
-        <app-staff-details-table *ngIf="staffs" [staffs]="staffs" [showType]="sourceLink"
+        <app-staff-details-table *ngIf="staffs && showTable" [staffs]="staffs"
+            [showType]="sourceLink"
             (deleteItemEvent)="deleteItem($event)"></app-staff-details-table>
     </div>
 </section>

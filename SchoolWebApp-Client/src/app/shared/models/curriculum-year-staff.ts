@@ -1,3 +1,5 @@
+import { Status } from "@/core/enums/status";
+
 export class CurriculumYearStaff {
     public curriculumId?: number;
     public educationLevelId?: number;
@@ -5,6 +7,7 @@ export class CurriculumYearStaff {
     public staffCategoryId?: number;
     public employmentTypeId?: number;
     public learningModeId?: number;
+    public status?: Status;
 
     constructor(model?: CurriculumYearStaff) {
         Object.assign(this, model);

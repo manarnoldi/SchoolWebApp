@@ -1,7 +1,7 @@
 <form class="px-0" [formGroup]="curriculumYearStaffFilterForm" (ngSubmit)="onSubmit()" novalidate>
     <div class="row g-0">
         <ng-content *ngIf="showAcademicYear">
-            <div class="col py-1 pe-0">                
+            <div class="col py-1 pe-0">
                 <select class="form-select form-select-sm" aria-label="Academic year"
                     (change)="academicYearChanged()"
                     formControlName="academicYearId" id="academicYearId">
@@ -19,7 +19,7 @@
                     <option [ngValue]="null" selected>-Curriculum-</option>
                     <option [ngValue]="curriculum.id" *ngFor="let curriculum of
                                 curricula">{{curriculum.name}}</option>
-                </select>                
+                </select>
             </div>
         </ng-content>
         <ng-content *ngIf="showEducationLevel">
@@ -33,7 +33,7 @@
                 </select>
             </div>
         </ng-content>
-        <ng-component *ngIf="showStaffCategory">
+        <ng-content *ngIf="showStaffCategory">
             <div class="col py-1 px-1">
                 <select class="form-select form-select-sm" aria-label="Staff category"
                     (change)="staffCategoryChanged()"
@@ -43,8 +43,9 @@
                                     staffCategories">{{staffCategory.name}}</option>
                 </select>
             </div>
-        </ng-component>
-        <ng-component *ngIf="showEmploymentType">
+        </ng-content>
+        
+        <ng-content *ngIf="showEmploymentType">
             <div class="col py-1 px-0">
                 <select class="form-select form-select-sm" aria-label="Employment type"
                     (change)="employmentTypeChanged()"
@@ -54,8 +55,9 @@
                                     employmentTypes">{{employmentType.name}}</option>
                 </select>
             </div>
-        </ng-component>
-        <ng-component *ngIf="showLearningMode">
+        </ng-content>
+
+        <ng-content *ngIf="showLearningMode">
             <div class="col py-1 px-1">
                 <select class="form-select form-select-sm" aria-label="Learning mode"
                     (change)="learningModeChanged()"
@@ -65,7 +67,18 @@
                                     learningModes">{{learningMode.name}}</option>
                 </select>
             </div>
-        </ng-component>
+        </ng-content>
+        <ng-content *ngIf="showPersonStatus">
+            <div class="col py-1 px-1">
+                <select class="form-select form-select-sm" aria-label="Status"
+                    (change)="statusChanged()"
+                    formControlName="status" id="status">
+                    <option [ngValue]="null" selected>-Status-</option>
+                    <option [ngValue]="status" *ngFor="let status of
+                                    statuses">{{status}}</option>
+                </select>
+            </div>
+        </ng-content>
         <div class="col py-1 ps-1">
             <button type="submit" [disabled]="curriculumYearStaffFilterForm.invalid"
                 class="btn btn-sm btn-flat btn-warning">

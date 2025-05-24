@@ -1,6 +1,7 @@
 import {Curriculum} from '@/academics/models/curriculum';
+import {Status} from '@/core/enums/status';
 import {AcademicYear} from '@/school/models/academic-year';
-import { EducationLevel } from '@/school/models/educationLevel';
+import {EducationLevel} from '@/school/models/educationLevel';
 import {LearningMode} from '@/school/models/learning-mode';
 import {EmploymentType} from '@/settings/models/employment-type';
 import {StaffCategory} from '@/settings/models/staff-category';
@@ -27,6 +28,7 @@ export class CurriculumYearFilterFormComponent implements OnInit {
     @Input() showStaffCategory: boolean = false;
     @Input() showEmploymentType: boolean = false;
     @Input() showLearningMode: boolean = false;
+    @Input() showPersonStatus: boolean = false;
 
     @Output() searchItemEvent = new EventEmitter<CurriculumYearStaff>();
     @Output() curriculumChangedEvent = new EventEmitter<number>();
@@ -34,12 +36,19 @@ export class CurriculumYearFilterFormComponent implements OnInit {
     @Output() academicYearChangedEvent = new EventEmitter<number>();
     @Output() staffCategoryChangedEvent = new EventEmitter<number>();
     @Output() employmentTypeChangedEvent = new EventEmitter<number>();
-    @Output() learningModeChangedChangedEvent = new EventEmitter<number>();
+    @Output() learningModeChangedEvent = new EventEmitter<number>();
+    @Output() statusChangedEvent = new EventEmitter<number>();
 
     curriculumYearStaffFilterForm: FormGroup;
     cysSearch: CurriculumYearStaff;
+    statuses;
+    status = Status;
 
-    constructor(private formBuilder: FormBuilder) {}
+    constructor(private formBuilder: FormBuilder) {
+        this.statuses = Object.keys(this.status).filter((k) =>
+            isNaN(Number(k))
+        );
+    }
 
     ngOnInit(): void {
         this.refreshItems();
@@ -52,7 +61,8 @@ export class CurriculumYearFilterFormComponent implements OnInit {
             academicYearId: cysSearch.academicYearId ?? null,
             staffCategoryId: cysSearch.staffCategoryId ?? null,
             employmentTypeId: cysSearch.employmentTypeId ?? null,
-            learningModeId: cysSearch.learningModeId ?? null
+            learningModeId: cysSearch.learningModeId ?? null,
+            status: this.statuses[cysSearch.status] ?? null
         });
     };
 
@@ -63,7 +73,8 @@ export class CurriculumYearFilterFormComponent implements OnInit {
             academicYearId: [null],
             staffCategoryId: [null],
             employmentTypeId: [null],
-            learningModeId: [null]
+            learningModeId: [null],
+            status: [null]
         });
     };
 
@@ -100,7 +111,12 @@ export class CurriculumYearFilterFormComponent implements OnInit {
     learningModeChanged = () => {
         let learningModeId =
             this.curriculumYearStaffFilterForm.get('learningModeId').value;
-        this.learningModeChangedChangedEvent.emit(learningModeId);
+        this.learningModeChangedEvent.emit(learningModeId);
+    };
+
+    statusChanged = () => {
+        let status = this.curriculumYearStaffFilterForm.get('status').value;
+        this.statusChangedEvent.emit(status);
     };
 
     onSubmit = () => {

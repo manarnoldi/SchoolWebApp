@@ -28,7 +28,7 @@
     </div>
     <div class="col-lg-3 col-6 px-1">
         <a [routerLink]="['/staff/details']"
-            [queryParams]='{active: true, staffCategoryId: teachingStaffCategoryId}'
+            [queryParams]="{status: status.Active, staffCategoryId: teachingStaffCategoryId, source:'dashboard'}"
             class="nounderline">
             <div class="small-box bg-warning opacity-60 mb-1">
                 <div class="inner">
@@ -43,7 +43,7 @@
     </div>
     <div class="col-lg-3 col-6 pl-0 pr-1">
         <a [routerLink]="['/staff/details']"
-            [queryParams]='{active: true, staffCategoryId: nonTeachingStaffCategoryId}'
+            [queryParams]="{status: status.Active, staffCategoryId: nonTeachingStaffCategoryId, source:'dashboard'}"
             class="nounderline">
             <div class="small-box bg-danger opacity-60 mb-1">
                 <div class="inner">

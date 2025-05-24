@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.API.Utils;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Academics.Exam;
+using SchoolWebApp.Core.DTOs.Class.Session;
 using SchoolWebApp.Core.DTOs.Staff.StaffDetails;
 using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Settings;
@@ -41,25 +42,9 @@ namespace SchoolWebApp.API.Controllers.Staff
         {
             try
             {
-                Expression<Func<StaffDetails, bool>> query = s => true; // Default to always true
-
-                if (active)
-                {
-                    query = Utility.CombineExpressions(query, s => s.Status == Status.Active);
-                }
-
-                if (staffCategoryId != null && staffCategoryId > 0)
-                {
-                    query = Utility.CombineExpressions(query, s => s.StaffCategoryId == staffCategoryId);
-                }
-
-                if (employmentTypeId != null && employmentTypeId > 0)
-                {
-                    query = Utility.CombineExpressions(query, s => s.EmploymentTypeId == employmentTypeId);
-                }
-
-                var returnStaffReq = _unitOfWork.StaffDetails.Find(query, includeProperties: "StaffCategory,Designation,Nationality,Religion,Gender,EmploymentType");
-                return Ok(await returnStaffReq);
+                var staffs = await _unitOfWork.StaffDetails
+                    .SearchForStaff(staffCategoryId, employmentTypeId, active ? Status.Active : null);
+                return Ok(_mapper.Map<List<StaffDetailDto>>(staffs));
             }
             catch (Exception ex)
             {
@@ -220,11 +205,11 @@ namespace SchoolWebApp.API.Controllers.Staff
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ExamDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> StaffSearch(int? staffCategoryId = null, int? employmentTypeId = null)
+        public async Task<IActionResult> StaffSearch(Status? status, int? staffCategoryId = null, int? employmentTypeId = null)
         {
             try
             {
-                var _item = await _unitOfWork.StaffDetails.SearchForStaff(staffCategoryId, employmentTypeId);
+                var _item = await _unitOfWork.StaffDetails.SearchForStaff(staffCategoryId, employmentTypeId, status);
                 var _itemDto = _mapper.Map<List<StaffDetailDto>>(_item);
                 return Ok(_itemDto);
             }

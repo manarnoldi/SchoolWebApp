@@ -1,9 +1,19 @@
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {StaffDetailsService} from '@/staff/services/staff-details.service';
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import Swal from 'sweetalert2';
 import {ActivatedRoute, Router} from '@angular/router';
+import {StaffCategoriesService} from '@/settings/services/staff-categories.service';
+import {EmploymentTypeService} from '@/settings/services/employment-type.service';
+import {forkJoin, map, Observable} from 'rxjs';
+import {StaffCategory} from '@/settings/models/staff-category';
+import {EmploymentType} from '@/settings/models/employment-type';
+import {Curriculum} from '@/academics/models/curriculum';
+import {CurriculumYearStaff} from '@/shared/models/curriculum-year-staff';
+import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
+import {Status} from '@/core/enums/status';
+import {StaffDetails} from '@/staff/models/staff-details';
 
 @Component({
     selector: 'app-staff-details',
@@ -11,6 +21,9 @@ import {ActivatedRoute, Router} from '@angular/router';
     styleUrl: './staff-details.component.scss'
 })
 export class StaffDetailsComponent implements OnInit {
+    @ViewChild(CurriculumYearFilterFormComponent)
+    cyfFormComponent: CurriculumYearFilterFormComponent;
+
     dashboardTitle = 'Staff details list';
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Home'},
@@ -18,14 +31,27 @@ export class StaffDetailsComponent implements OnInit {
     ];
 
     staffs;
+    showTable = false;
     itemDeleted: boolean = false;
     sourceLink: string = 'details';
+    staffCats: StaffCategory[] = [];
+    empTypes: EmploymentType[] = [];
+
+    statuses;
+    status = Status;
+    querySource = '';
 
     constructor(
         private staffsSvc: StaffDetailsService,
         private toastr: ToastrService,
-        private router: Router
-    ) {}
+        private router: Router,
+        private staffCatSvc: StaffCategoriesService,
+        private empTypeSvc: EmploymentTypeService
+    ) {
+        this.statuses = Object.keys(this.status).filter((k) =>
+            isNaN(Number(k))
+        );
+    }
 
     ngOnInit(): void {
         this.refreshItems();
@@ -60,28 +86,100 @@ export class StaffDetailsComponent implements OnInit {
         });
     }
 
-    refreshItems = () => {
-        let searchUrl: string = '/staffDetails';
-        this.sourceLink = this.router.url.split('/').pop();
-        if (this.sourceLink.includes('?')) {
-            searchUrl = searchUrl + '?' + this.sourceLink.split('?')[1];
-            this.sourceLink = this.sourceLink.split('?')[0];
-        }
-        this.staffsSvc.get(searchUrl).subscribe(
-            (res) => {
-                this.staffs = res;
-                if (this.itemDeleted) {
-                    this.toastr.success('Record deleted successfully!');
-                    this.itemDeleted = false;
-                    let currentUrl = this.router.url;
-                    this.router
-                        .navigateByUrl('/', {skipLocationChange: true})
-                        .then(() => this.router.navigate([currentUrl]));
+    searchClicked = (cfy: CurriculumYearStaff) => {
+        this.showTable = false;
+        this.staffsSvc
+            .getBySearchDetails(
+                cfy.status,
+                cfy.employmentTypeId,
+                cfy.staffCategoryId
+            )
+            .subscribe({
+                next: (staffs) => {
+                    this.staffs = staffs;
+                    this.showTable = true;
+                },
+                error: (err) => {
+                    this.toastr.error(err.error);
                 }
+            });
+    };
+
+    employmentTypeChanged = (id: number) => {
+        this.staffs = [];
+    };
+
+    staffCategoryChanged = (id: number) => {
+        this.staffs = [];
+    };
+
+    statusChanged = (status: any) => {
+        this.staffs = [];
+    };
+
+    refreshItems = () => {
+        let staffCatsReq = this.staffCatSvc.get('/staffCategories');
+        let emloyTypesReq = this.empTypeSvc.get('/employmentTypes');
+
+        forkJoin([staffCatsReq, emloyTypesReq]).subscribe({
+            next: ([staffCats, empTypes]) => {
+                let cysPass = new CurriculumYearStaff();
+                cysPass.academicYearId = null;
+                cysPass.curriculumId = null;
+                cysPass.status = Status.Active;
+
+                let linkMain = this.router.url.split('?')[0];
+                let linkParams = this.router.url.split('?')[1];
+                this.sourceLink =
+                    linkMain.split('/')[linkMain.split('/').length - 1];
+
+                linkParams?.split('&').forEach((link) => {
+                    if (link.includes('status'))
+                        cysPass.status = parseInt(link.split('=')[1]);
+                    if (link.includes('employmentTypeId'))
+                        cysPass.employmentTypeId = parseInt(link.split('=')[1]);
+                    if (link.includes('staffCategoryId'))
+                        cysPass.staffCategoryId = parseInt(link.split('=')[1]);
+                    if (link.includes('dashboard'))
+                        this.querySource = link.split('=')[1];
+                });
+
+                this.cyfFormComponent.setFormControls(cysPass);
+                this.staffsSvc
+                    .getBySearchDetails(
+                        cysPass.status,
+                        cysPass.employmentTypeId,
+                        cysPass.staffCategoryId
+                    )
+                    .subscribe({
+                        next: (staffs) => {
+                            this.staffCats = staffCats;
+                            this.empTypes = empTypes;
+                            this.staffs = staffs;
+                            this.showTable = true;
+                            if (this.itemDeleted) {
+                                this.toastr.success(
+                                    'Record deleted successfully!'
+                                );
+                                this.itemDeleted = false;
+                                let currentUrl = this.router.url;
+                                this.router
+                                    .navigateByUrl('/', {
+                                        skipLocationChange: true
+                                    })
+                                    .then(() =>
+                                        this.router.navigate([currentUrl])
+                                    );
+                            }
+                        },
+                        error: (err) => {
+                            this.toastr.error(err.error);
+                        }
+                    });
             },
-            (err) => {
+            error: (err) => {
                 this.toastr.error(err.error);
             }
-        );
+        });
     };
 }

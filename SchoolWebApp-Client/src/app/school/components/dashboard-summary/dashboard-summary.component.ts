@@ -1,3 +1,4 @@
+import { Status } from '@/core/enums/status';
 import {StaffCategoriesService} from '@/settings/services/staff-categories.service';
 import {StaffDetailsService} from '@/staff/services/staff-details.service';
 import {ParentsService} from '@/students/services/parents.service';
@@ -18,6 +19,8 @@ export class DashboardSummaryComponent implements OnInit {
     nonTeachingStaffCount: number = 0;
     teachingStaffCategoryId: number = 0;
     nonTeachingStaffCategoryId: number = 0;
+
+    status = Status;
 
     constructor(
         private studentsSvc: StudentDetailsService,

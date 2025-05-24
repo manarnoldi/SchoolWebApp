@@ -1,3 +1,4 @@
+import {Status} from '@/core/enums/status';
 import {StaffDetails} from '@/staff/models/staff-details';
 import {
     AfterViewInit,
@@ -20,14 +21,17 @@ export class StaffDetailsTableComponent implements AfterViewInit, OnDestroy {
     @Input() tableTitle: string = 'Staff list';
     @Input() staffs: StaffDetails[] = [];
     @Input() showLoginControls: Boolean = false;
-    @Input() showType: string = "details";
+    @Input() showType: string = 'details';
 
     @Output() deleteItemEvent = new EventEmitter<number>();
+
+    statuses;
+    status = Status;
 
     dtOptions: Config = {};
     dtTrigger: Subject<any> = new Subject();
 
-    tableHeaders: string[] = [        
+    tableHeaders: string[] = [
         'Full name',
         'Staff category',
         'Designation',
@@ -35,6 +39,7 @@ export class StaffDetailsTableComponent implements AfterViewInit, OnDestroy {
         'Phone number',
         'Employment date',
         'Nationality',
+        'Status',
         'Action'
     ];
 
@@ -45,7 +50,16 @@ export class StaffDetailsTableComponent implements AfterViewInit, OnDestroy {
                 {width: 150, targets: 7},
                 {width: 250, targets: 0}
             ]
+            // rowCallback: (row: Node, data: any, index: number) => {
+            //     if (data) {
+            //         $('td', row).addClass('bg-danger');
+            //     }
+            //     return row;
+            // }
         };
+        this.statuses = Object.keys(this.status).filter((k) =>
+            isNaN(Number(k))
+        );
     }
 
     deleteStaff = (id: number) => {
