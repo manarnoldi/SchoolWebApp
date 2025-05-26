@@ -16,18 +16,18 @@
         </div>
     </div>
 </div>
-
-<div class="row">
-    <div class="col-12">
-        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right mb-1"
+<div class="row g-0">
+    <div class="col-6">
+        <app-date-month-year-filter-form [showMonth]="true" [months]="months" [years]="years" (monthChangedEvent)="monthChanged($event)"
+        (yearChangedEvent)="yearChanged($event)"
+            [showYear]="true" (searchItemEvent)="searchStaffAttendances($event)" ></app-date-month-year-filter-form>
+    </div>
+    <div class="col-6">
+        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right my-1"
             modelName="staffAttendance" buttonTitle="Add attendance"></app-table-button>
     </div>
 </div>
-<div class="row">
-    <div class="col-12">
-        <app-staff-attendance-table [tableTitle]="'Staff attendance list'"
-            [staffAttendances]="staffAttendances" [showLoginControls]="false"
-            (editItemEvent)="editItem($event)"
-            (deleteItemEvent)="deleteItem($event)"></app-staff-attendance-table>
-    </div>
-</div>
+<app-staff-attendance-table [tableTitle]="'Staff attendance list'"
+    [staffAttendances]="staffAttendances" [showLoginControls]="false"
+    (editItemEvent)="editItem($event)"
+    (deleteItemEvent)="deleteItem($event)"></app-staff-attendance-table>

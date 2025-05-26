@@ -32,7 +32,7 @@
                         <td>{{ statuses[item.status] }}</td>
                         <td
                             *ngIf="showType === 'details'">
-                            <ng-content *ngIf="item.status !== status.Terminated">
+                            <!-- <ng-content *ngIf="item.status !== status.Terminated"> -->
                                 <a [routerLink]="['/staff/details/add']"
                                     [queryParams]="{id: item.id, action: 'view'}"
                                     class="view" title data-toggle="tooltip"
@@ -49,14 +49,16 @@
                                     (click)="deleteStaff(item.id)"
                                     data-original-title="Delete">
                                     <i class="fas fa-trash-alt"></i></a>
-                            </ng-content>
+                            <!-- </ng-content> -->
                         </td>
                         <td *ngIf="showType === 'manage'">
-                            <a [routerLink]="['/staff/manage/add']"
-                                [queryParams]='{id: item.id, action: showType}'
-                                class="view" title="Manage staff" data-toggle="tooltip"
-                                data-original-title="Manage staff">
-                                <i class="fas fa-wrench"></i> Manage staff</a>
+                            <!-- <ng-content *ngIf="item.status !== status.Terminated"> -->
+                                <a [routerLink]="['/staff/manage/add']"
+                                    [queryParams]='{id: item.id, action: showType}'
+                                    class="view" title="Manage staff" data-toggle="tooltip"
+                                    data-original-title="Manage staff">
+                                    <i class="fas fa-wrench"></i> Manage staff</a>
+                            <!-- </ng-content> -->
                         </td>
                     </tr>
                 </tbody>

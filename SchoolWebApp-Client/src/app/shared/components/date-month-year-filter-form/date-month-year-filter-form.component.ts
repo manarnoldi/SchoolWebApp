@@ -35,6 +35,25 @@ export class DateMonthYearFilterFormComponent implements OnInit {
         this.refreshItems();
     }
 
+    readonly monthNames = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+    ];
+
+    getMonthName(month: number): string {
+        return this.monthNames[month - 1];
+    }
+
     setFormControls = (dmySearch: DateMonthYear) => {
         this.dateMonthYearFilterForm.setValue({
             month: dmySearch.month ?? null,

@@ -4,10 +4,7 @@ export class DateMonthYear {
     public month?: number;
     public year?: number;
 
-    constructor(dateFrom?: Date, dateTo?: Date, month?: number, year?: number) {
-        this.dateFrom = dateFrom;
-        this.dateTo = dateTo;
-        this.month = month;
-        this.year = year;
+     constructor(model?: DateMonthYear) {
+        Object.assign(this, model);
     }
 }

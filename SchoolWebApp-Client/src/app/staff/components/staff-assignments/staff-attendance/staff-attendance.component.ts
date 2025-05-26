@@ -7,7 +7,9 @@ import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 import {StaffAttendanceFormComponent} from './staff-attendance-form/staff-attendance-form.component';
 import {StaffDetails} from '@/staff/models/staff-details';
-import { TableButtonComponent } from '@/shared/directives/table-button/table-button.component';
+import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
+import {DateMonthYear} from '@/shared/models/date-month-year';
+import {DateMonthYearFilterFormComponent} from '@/shared/components/date-month-year-filter-form/date-month-year-filter-form.component';
 
 @Component({
     selector: 'app-staff-attendance',
@@ -21,8 +23,15 @@ export class StaffAttendanceComponent implements OnInit {
     staffAttendanceFormComponent: StaffAttendanceFormComponent;
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
+    @ViewChild(DateMonthYearFilterFormComponent)
+    dmyFormComponent: DateMonthYearFilterFormComponent;
+
+    today = new Date();
 
     staffId: number = 0;
+    months: number[];
+    years: number[];
+
     staffAttendance: StaffAttendance;
     staffAttendances: StaffAttendance[] = [];
     constructor(
@@ -35,21 +44,59 @@ export class StaffAttendanceComponent implements OnInit {
         this.loadStaffAttendances();
     }
 
-    loadStaffAttendances = () => {
+    searchStaffAttendances = (dmy: DateMonthYear) => {
         this.route.queryParams.subscribe((params) => {
             this.staffId = params['id'];
-            let attendanceByStaffDetailsIdReq = this.staffAttendancesSvc.get(
-                '/staffAttendances/byStaffDetailsId/' + this.staffId.toString()
-            );
+            this.staffAttendancesSvc
+                .get(
+                    `/staffAttendances/byMonthYearStaffId/${dmy.month}/${dmy.year}/${this.staffId.toString()}`
+                )
+                .subscribe({
+                    next: (staffAttends) => {
+                        this.staffAttendances = staffAttends.sort(
+                            (a, b) =>
+                                new Date(a?.date ?? '').getTime() -
+                                new Date(b?.date ?? '').getTime()
+                        );
+                    },
+                    error: (err) => {
+                        this.toastr.error(err.error);
+                    }
+                });
+        });
+    };
 
-            forkJoin([attendanceByStaffDetailsIdReq]).subscribe(
-                ([staffAttendances]) => {
-                    this.staffAttendances = staffAttendances;
-                },
-                (err) => {
-                    this.toastr.error(err.error);
-                }
-            );
+    monthChanged = (month: number) => {
+        this.staffAttendances = [];
+    };
+
+    yearChanged = (year: number) => {
+        this.staffAttendances = [];
+    };
+
+    loadStaffAttendances = () => {
+        let monthsReq = this.staffAttendancesSvc.getDistinctMonths();
+        let yearsReq = this.staffAttendancesSvc.getDistinctYears();
+
+        forkJoin([monthsReq, yearsReq]).subscribe({
+            next: ([months, years]) => {
+                this.months = months;
+                this.years = years;
+
+                const topMonth = this.today.getMonth() + 1;
+                const topYear = this.today.getFullYear();
+
+                let dmy = new DateMonthYear();
+                dmy.month = topMonth;
+                dmy.year = topYear;
+
+                this.dmyFormComponent.setFormControls(dmy);
+
+                this.searchStaffAttendances(dmy);
+            },
+            error: (err) => {
+                this.toastr.error(err.error);
+            }
         });
     };
 
@@ -59,9 +106,12 @@ export class StaffAttendanceComponent implements OnInit {
                 let staffAttendanceId = res.id;
                 this.staffAttendance = new StaffAttendance(res);
                 this.staffAttendance.id = staffAttendanceId;
-                this.staffAttendanceFormComponent.setFormControls(this.staffAttendance);
+                this.staffAttendanceFormComponent.setFormControls(
+                    this.staffAttendance
+                );
                 this.staffAttendanceFormComponent.editMode = true;
-                this.staffAttendanceFormComponent.staffAttendance = this.staffAttendance;
+                this.staffAttendanceFormComponent.staffAttendance =
+                    this.staffAttendance;
                 this.tableButton.onClick();
             },
             (err) => {
@@ -83,15 +133,17 @@ export class StaffAttendanceComponent implements OnInit {
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.value) {
-                this.staffAttendancesSvc.delete('/staffAttendances', id).subscribe(
-                    (res) => {
-                        this.loadStaffAttendances();
-                        this.toastr.success('Record deleted successfully!');
-                    },
-                    (err) => {
-                        this.toastr.error(err);
-                    }
-                );
+                this.staffAttendancesSvc
+                    .delete('/staffAttendances', id)
+                    .subscribe(
+                        (res) => {
+                            this.loadStaffAttendances();
+                            this.toastr.success('Record deleted successfully!');
+                        },
+                        (err) => {
+                            this.toastr.error(err);
+                        }
+                    );
             } else if (result.dismiss === Swal.DismissReason.cancel) {
             }
         });

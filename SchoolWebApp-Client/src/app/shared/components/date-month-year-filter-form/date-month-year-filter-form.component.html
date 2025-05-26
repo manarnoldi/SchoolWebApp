@@ -1,4 +1,4 @@
-<form class="px-1" [formGroup]="dateMonthYearFilterForm" (ngSubmit)="onSubmit()" novalidate>
+<form class="px-0" [formGroup]="dateMonthYearFilterForm" (ngSubmit)="onSubmit()" novalidate>
     <div class="row g-0">
         <ng-content *ngIf="showMonth">
             <div class="col py-1 pe-0">
@@ -6,8 +6,8 @@
                     (change)="monthChanged()"
                     formControlName="month" id="month">
                     <option [ngValue]="null" selected>-Month-</option>
-                    <option [ngValue]="month.id" *ngFor="let month of
-                                months">{{month}}</option>
+                    <option [ngValue]="month" *ngFor="let month of
+                                months">{{getMonthName(month)}}</option>
                 </select>
             </div>
         </ng-content>
@@ -17,7 +17,7 @@
                     (change)="yearChanged()"
                     formControlName="year" id="year">
                     <option [ngValue]="null" selected>-Year-</option>
-                    <option [ngValue]="year.id" *ngFor="let year of
+                    <option [ngValue]="year" *ngFor="let year of
                                     years">{{year}}</option>
                 </select>
             </div>
@@ -25,20 +25,22 @@
         <ng-component *ngIf="showDateFrom">
             <div class="col py-1 px-0">
                 <input placeholder="Date from" id="dateFrom" type="date"
-                    aria-label="Date from" class="form-control form-control-sm" formControlName="dateFrom"
+                    aria-label="Date from" class="form-control form-control-sm"
+                    formControlName="dateFrom"
                     (change)="dateFromChanged()" />
             </div>
         </ng-component>
         <ng-component *ngIf="showDateTo">
             <div class="col py-1 px-0">
                 <input placeholder="Date to" id="dateTo" type="date"
-                    aria-label="Date to" class="form-control form-control-sm" formControlName="dateTo"
+                    aria-label="Date to" class="form-control form-control-sm"
+                    formControlName="dateTo"
                     (change)="dateToChanged()" />
             </div>
         </ng-component>
         <div class="col py-1 ps-1">
             <button type="submit" [disabled]="dateMonthYearFilterForm.invalid"
-                class="btn btn-sm btn-flat btn-warning btn-block">
+                class="btn btn-sm btn-flat btn-warning">
                 <i class="fas fa-sync"></i> Search
             </button>
         </div>

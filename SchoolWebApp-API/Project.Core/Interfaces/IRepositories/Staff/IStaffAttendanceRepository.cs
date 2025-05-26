@@ -7,5 +7,8 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.Staff
     {
         Task<List<StaffAttendance>> GetByStaffDetailsId(int staffDetailsId);
         Task<StaffAttendance> GetByStaffAttendanceDate(int staffId, DateOnly attendanceDate);
+        Task<List<StaffAttendance>> GetByMonthYearStaffId(int month, int year, int staffId);
+        Task<List<int>> GetDistinctMonths();
+        Task<List<int>> GetDistinctYears();
     }
 }
