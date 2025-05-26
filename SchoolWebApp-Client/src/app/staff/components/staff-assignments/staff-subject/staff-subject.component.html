@@ -19,20 +19,21 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right mb-1"
+<div class="row g-0">
+    <div class="col-6">
+        <app-curriculum-year-filter-form [academicYears]="academicYears"
+            (searchItemEvent)="searchForSubjects($event)" (academicYearChangedEvent)="academicYearChanged($event)"
+            [showAcademicYear]="true"></app-curriculum-year-filter-form>
+    </div>
+    <div class="col-6">
+        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right my-1"
             modelName="staffSubject" buttonTitle="Add subject"></app-table-button>
     </div>
 </div>
-<div class="row">
-    <div class="col-12">
-        <app-staff-subject-table [tableTitle]="'Staff subjects list'"
-            [staffSubjects]="staffSubjects" [showLoginControls]="false"
-            (editItemEvent)="editItem($event)" [academicYears]="academicYears"
-            [learningLevels]="learningLevels" [schoolStreams]="schoolStreams"
-            *ngIf="staffSubjects && academicYears && learningLevels && schoolStreams"
-            (deleteItemEvent)="deleteItem($event)"
-            (viewItemEvent)="editItem($event, 'view')"></app-staff-subject-table>
-    </div>
-</div>
+<app-staff-subject-table [tableTitle]="'Staff subjects list'"
+    [staffSubjects]="staffSubjects" [showLoginControls]="false"
+    (editItemEvent)="editItem($event)" [academicYears]="academicYears"
+    [learningLevels]="learningLevels" [schoolStreams]="schoolStreams"
+    *ngIf="staffSubjects && academicYears && learningLevels && schoolStreams"
+    (deleteItemEvent)="deleteItem($event)"
+    (viewItemEvent)="editItem($event, 'view')"></app-staff-subject-table>

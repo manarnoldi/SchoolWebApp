@@ -8,5 +8,6 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.Staff
         Task<List<StaffSubject>> GetByAcademicYearId(int academicYearId);
         Task<List<StaffSubject>> GetBySchoolClassId(int schoolClassId);
         Task<List<StaffSubject>> GetByStaffDetailsId(int staffDetailsId);
+        Task<List<StaffSubject>> GetByStaffYearId(int staffDetailsId, int academicYearId);
     }
 }

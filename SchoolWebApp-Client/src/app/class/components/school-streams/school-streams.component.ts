@@ -1,12 +1,12 @@
-import { BreadCrumb } from '@/core/models/bread-crumb';
-import { SchoolStream } from '@/class/models/school-stream';
-import { SchoolStreamsService } from '@/class/services/school-streams.service';
-import { TableButtonComponent } from '@/shared/directives/table-button/table-button.component';
-import { TableSettingsService } from '@/shared/services/table-settings.service';
+import {BreadCrumb} from '@/core/models/bread-crumb';
+import {SchoolStream} from '@/class/models/school-stream';
+import {SchoolStreamsService} from '@/class/services/school-streams.service';
+import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
+import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {Component, OnInit, ViewChild} from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
-import { Subscription, forkJoin } from 'rxjs';
+import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {ToastrService} from 'ngx-toastr';
+import {Subscription, forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -25,7 +25,13 @@ export class SchoolStreamsComponent implements OnInit {
 
     dashboardTitle = 'Settings: School streams';
     tableTitle: string = 'School streams list';
-    tableHeaders: string[] = ['Name', 'Abbreviation', 'Description', 'Action'];
+    tableHeaders: string[] = [
+        'Name',
+        'Abbreviation',
+        'Rank',
+        'Description',
+        'Action'
+    ];
 
     schoolStream: SchoolStream;
     schoolStreams: SchoolStream[] = [];
@@ -65,17 +71,17 @@ export class SchoolStreamsComponent implements OnInit {
     refreshItems() {
         this.schoolStreamForm = this.formBuilder.group({
             name: ['', [Validators.required]],
+            rank: ['', [Validators.required]],
             abbreviation: [''],
             description: ['']
         });
 
-        let schoolStreamsRequest =
-            this.schoolStreamsSvc.get('/schoolStreams');
+        let schoolStreamsRequest = this.schoolStreamsSvc.get('/schoolStreams');
 
         forkJoin([schoolStreamsRequest]).subscribe(
             (res) => {
                 this.collectionSize = res[0].length;
-                this.schoolStreams = res[0];
+                this.schoolStreams = res[0].sort((a, b) => a.rank - b.rank);
                 this.isAuthLoading = false;
                 this.editMode = false;
             },
@@ -92,6 +98,7 @@ export class SchoolStreamsComponent implements OnInit {
                 this.schoolStreamForm.setValue({
                     name: this.schoolStream.name,
                     abbreviation: this.schoolStream.abbreviation,
+                    rank: this.schoolStream.rank,
                     description: this.schoolStream.description
                 });
                 this.editMode = true;
@@ -150,23 +157,19 @@ export class SchoolStreamsComponent implements OnInit {
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.value) {
-                if (this.editMode) {
-                    this.schoolStream.name =
-                        this.schoolStreamForm.get('name').value;
-                    this.schoolStream.abbreviation =
-                        this.schoolStreamForm.get('abbreviation').value;
-                    this.schoolStream.description =
-                        this.schoolStreamForm.get('description').value;
-                }
+                let toSubmitDetails = new SchoolStream(
+                    this.schoolStreamForm.value
+                );
+                if (this.editMode) toSubmitDetails.id = this.schoolStream.id;
 
                 let reqToProcess = this.editMode
                     ? this.schoolStreamsSvc.update(
                           '/schoolStreams',
-                          this.schoolStream
+                          toSubmitDetails
                       )
                     : this.schoolStreamsSvc.create(
                           '/schoolStreams',
-                          new SchoolStream(this.schoolStreamForm.value)
+                          toSubmitDetails
                       );
 
                 let replyMsg = `School stream ${

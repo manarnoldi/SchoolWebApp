@@ -5,5 +5,6 @@ namespace SchoolWebApp.Core.DTOs.School.SchoolStream
     public class CreateSchoolStreamDto : BaseSettinsDto
     {
         public string? Abbreviation { get; set; }
+        public int Rank { get; set; }
     }
 }

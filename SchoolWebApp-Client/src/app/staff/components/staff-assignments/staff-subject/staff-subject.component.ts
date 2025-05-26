@@ -16,6 +16,8 @@ import {SchoolStream} from '@/class/models/school-stream';
 import {LearningLevelsService} from '@/class/services/learning-levels.service';
 import {SchoolStreamsService} from '@/class/services/school-streams.service';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
+import {CurriculumYearStaff} from '@/shared/models/curriculum-year-staff';
+import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
 
 @Component({
     selector: 'app-staff-subject',
@@ -30,7 +32,10 @@ export class StaffSubjectComponent implements OnInit {
     staffSubjectFormComponent: StaffSubjectFormComponent;
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
+    @ViewChild(CurriculumYearFilterFormComponent)
+    cyfFormComponent: CurriculumYearFilterFormComponent;
 
+    firstLoad: boolean = true;
     staffId: number = 0;
     staffSubject: StaffSubject;
     staffSubjects: StaffSubject[];
@@ -51,39 +56,70 @@ export class StaffSubjectComponent implements OnInit {
         this.loadStaffSubjects();
     }
 
-    loadStaffSubjects = () => {
+    academicYearChanged = (yearId: number) => {
+        this.staffSubjects = [];
+    };
+
+    searchForSubjects = (cyf: CurriculumYearStaff) => {
+        if (!cyf.academicYearId) {
+            this.toastr.error('Select academic year before clicking search!');
+            return;
+        }
         this.route.queryParams.subscribe((params) => {
             this.staffId = params['id'];
-            let subjectsByStaffDetailsIdReq = this.staffSubjectsSvc.get(
-                '/staffSubjects/byStaffDetailsId/' + this.staffId.toString()
-            );
-            let academicYearsReq = this.academicYearsSvc.get('/academicYears');
-            let learningLevelsReq =
-                this.learningLevelsSvc.get('/learningLevels');
-            let schoolStreamsReq = this.schoolStreamsSvc.get('/schoolStreams');
-
-            forkJoin([
-                subjectsByStaffDetailsIdReq,
-                academicYearsReq,
-                learningLevelsReq,
-                schoolStreamsReq
-            ]).subscribe(
-                ([
-                    staffSubjects,
-                    academicYears,
-                    learningLevels,
-                    schoolStreams
-                ]) => {
-                    this.staffSubjects = staffSubjects;
-                    this.academicYears = academicYears;
-                    this.learningLevels = learningLevels;
-                    this.schoolStreams = schoolStreams;
-                },
-                (err) => {
-                    this.toastr.error(err.error);
-                }
-            );
+            this.staffSubjectsSvc
+                .getByStaffYearId(this.staffId, cyf.academicYearId)
+                .subscribe({
+                    next: (staffSubjects) => {
+                        this.staffSubjects = staffSubjects;
+                        if (this.staffSubjects.length <= 0 && !this.firstLoad) {
+                            this.toastr.info(
+                                'No staff subject record/s found for the search parameters!'
+                            );
+                        }
+                        this.firstLoad = false;
+                    },
+                    error: (err) => {
+                        this.toastr.error(err.error);
+                    }
+                });
         });
+    };
+
+    loadStaffSubjects = () => {
+        let academicYearsReq = this.academicYearsSvc.get('/academicYears');
+        let learningLevelsReq = this.learningLevelsSvc.get('/learningLevels');
+        let schoolStreamsReq = this.schoolStreamsSvc.get('/schoolStreams');
+
+        forkJoin([
+            academicYearsReq,
+            learningLevelsReq,
+            schoolStreamsReq
+        ]).subscribe(
+            ([academicYears, learningLevels, schoolStreams]) => {
+                this.academicYears = academicYears.sort(
+                    (a, b) => b.rank - a.rank
+                );
+                this.learningLevels = learningLevels.sort(
+                    (a, b) => a.rank - b.rank
+                );
+                this.schoolStreams = schoolStreams.sort(
+                    (a, b) => b.rank - a.rank
+                );
+
+                const year = this.academicYears[0];
+
+                let dmy = new CurriculumYearStaff();
+                dmy.academicYearId = parseInt(year.id);
+
+                this.cyfFormComponent.setFormControls(dmy);
+
+                this.searchForSubjects(dmy);
+            },
+            (err) => {
+                this.toastr.error(err.error);
+            }
+        );
     };
 
     editItem(id: number, action = 'edit') {
@@ -136,7 +172,9 @@ export class StaffSubjectComponent implements OnInit {
         Swal.fire({
             title: `${this.staffSubjectFormComponent.action == 'edit' ? 'Update' : 'Add'} Staff subject record?`,
             text: `Confirm if you want to ${
-                this.staffSubjectFormComponent.action == 'edit' ? 'update' : 'add'
+                this.staffSubjectFormComponent.action == 'edit'
+                    ? 'update'
+                    : 'add'
             } staff subject.`,
             width: 400,
             position: 'top',
@@ -150,9 +188,10 @@ export class StaffSubjectComponent implements OnInit {
                 let app = new StaffSubject(staffSubject);
                 if (this.staffSubjectFormComponent.action == 'edit')
                     app.id = staffSubject.id;
-                let reqToProcess = this.staffSubjectFormComponent.action == 'edit'
-                    ? this.staffSubjectsSvc.update('/staffSubjects', app)
-                    : this.staffSubjectsSvc.create('/staffSubjects', app);
+                let reqToProcess =
+                    this.staffSubjectFormComponent.action == 'edit'
+                        ? this.staffSubjectsSvc.update('/staffSubjects', app)
+                        : this.staffSubjectsSvc.create('/staffSubjects', app);
 
                 forkJoin([reqToProcess]).subscribe(
                     (res) => {

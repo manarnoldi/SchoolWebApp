@@ -126,6 +126,36 @@ namespace SchoolWebApp.API.Controllers.Staff
             }
         }
 
+        // GET api/staffSubjects/byStaffYearId/5/5
+        /// <summary>
+        /// A method for retrieving staff subjects by academic year Id.
+        /// </summary>
+        /// <param name="staffId">The staff Id whose staff subjects will be retrieved</param>
+        /// <param name="yearId">The year Id whose staff subjects will be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byStaffYearId/{staffId}/{yearId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StaffSubjectDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetByStaffYearId(int staffId, int yearId)
+        {
+            try
+            {
+                if (staffId <= 0) return BadRequest(staffId);
+                if (yearId <= 0) return BadRequest(yearId);
+                var _item = await _unitOfWork.StaffSubjects.GetByStaffYearId(staffId, yearId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<StaffSubjectDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the staff subjects by staff and academic year id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         // GET api/staffSubjects/bySchoolClassId/5
         /// <summary>
         /// A method for retrieving staff subjects by school class Id.

@@ -45,6 +45,18 @@
                                     class="form-control" formControlName="abbreviation" />
                             </div>
                         </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="rank" class="form-label">Rank: <span
+                                        class="requiredField">*</span></label>
+                                <input id="rank" placeholder="Rank" type="number"
+                                    class="form-control" formControlName="rank" [ngClass]="{
+                                    'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
+                                    }" />
+                                <div class="invalid-feedback">Rank is required</div>
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12">
@@ -56,16 +68,16 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" [disabled]="schoolStreamForm.invalid" class="btn
+                    <div class="modal-footer">
+                        <button type="submit" [disabled]="schoolStreamForm.invalid" class="btn
                         btn-success"> <i class="fas fa-save"></i>
-                        {{ editMode ? 'Update' : 'Save' }}
-                    </button>
-                    <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
-                        (click)="refreshItems()">
-                        <i class="fas fa-times"></i> Close
-                    </button>
+                            {{ editMode ? 'Update' : 'Save' }}
+                        </button>
+                        <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
+                            (click)="refreshItems()">
+                            <i class="fas fa-times"></i> Close
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -93,9 +105,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let item of schoolStreams | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                                <tr
+                                    *ngFor="let item of schoolStreams | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
                                     <td>{{ item.name }}</td>
                                     <td>{{ item.abbreviation }}</td>
+                                    <td>{{ item.rank }}</td>
                                     <td>{{ item.description }}</td>
                                     <app-table-action
                                         (editItemEvent)="editItem(item.id)"

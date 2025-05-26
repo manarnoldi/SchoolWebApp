@@ -54,6 +54,14 @@ export class StaffDisciplineComponent implements OnInit, AfterViewInit {
         this.loadStaffDisciplines();
     }
 
+    dateFromChanged = (id: number) => {
+        this.staffDisciplines = [];
+    };
+
+    dateToChanged = (id: number) => {
+        this.staffDisciplines = [];
+    };
+
     searchByDate = (dmy: DateMonthYear) => {
         this.route.queryParams.subscribe((params) => {
             this.staffId = params['id'];
@@ -72,7 +80,10 @@ export class StaffDisciplineComponent implements OnInit, AfterViewInit {
                                 ).getTime() -
                                 new Date(b?.occurenceStartDate ?? '').getTime()
                         );
-                        if (this.staffDisciplines.length <= 0 && !this.firstLoad) {
+                        if (
+                            this.staffDisciplines.length <= 0 &&
+                            !this.firstLoad
+                        ) {
                             this.toastr.info(
                                 'No staff discipline record/s found for the search parameters!'
                             );

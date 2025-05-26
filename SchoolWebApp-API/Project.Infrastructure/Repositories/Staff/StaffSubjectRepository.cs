@@ -14,12 +14,23 @@ namespace SchoolWebApp.Infrastructure.Repositories.Staff
 
         public async Task<List<StaffSubject>> GetByAcademicYearId(int academicYearId)
         {
-            var staffSubjects = await _dbContext.StaffSubjects.Where(e => e.SchoolClass.AcademicYearId == academicYearId).ToListAsync();
+            var staffSubjects = await _dbContext
+                .StaffSubjects
+                .Where(e => e.SchoolClass.AcademicYearId == academicYearId)                
+                .Include(s => s.Subject)
+                .Include(s => s.SchoolClass)
+                .Include(s => s.StaffDetails)
+                .ToListAsync();
             return staffSubjects;
         }
         public async Task<List<StaffSubject>> GetBySchoolClassId(int schoolClassId)
         {
-            var staffSubjects = await _dbContext.StaffSubjects.Where(e => e.SchoolClassId == schoolClassId).ToListAsync();
+            var staffSubjects = await _dbContext.StaffSubjects
+                .Where(e => e.SchoolClassId == schoolClassId)
+                .Include(s => s.Subject)
+                .Include(s => s.SchoolClass)
+                .Include(s => s.StaffDetails)
+                .ToListAsync();
             return staffSubjects;
         }
 
@@ -27,9 +38,20 @@ namespace SchoolWebApp.Infrastructure.Repositories.Staff
         {
             var staffSubjects = await _dbContext.StaffSubjects
                 .Where(e => e.StaffDetailsId == staffDetailsId)
-                .Include(s => s.StaffDetails)
                 .Include(s => s.Subject)
                 .Include(s => s.SchoolClass)
+                .Include(s => s.StaffDetails)
+                .ToListAsync();
+            return staffSubjects;
+        }
+
+        public async Task<List<StaffSubject>> GetByStaffYearId(int staffDetailsId, int academicYearId)
+        {
+            var staffSubjects = await _dbContext.StaffSubjects
+                .Where(e => e.StaffDetailsId == staffDetailsId && e.SchoolClass.AcademicYearId == academicYearId)
+                .Include(s => s.Subject)
+                .Include(s => s.SchoolClass)
+                .Include(s => s.StaffDetails)
                 .ToListAsync();
             return staffSubjects;
         }
