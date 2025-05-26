@@ -1,5 +1,5 @@
 import {DateMonthYear} from '@/shared/models/date-month-year';
-import {DatePipe} from '@angular/common';
+import {DatePipe, formatDate} from '@angular/common';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 
@@ -58,8 +58,12 @@ export class DateMonthYearFilterFormComponent implements OnInit {
         this.dateMonthYearFilterForm.setValue({
             month: dmySearch.month ?? null,
             year: dmySearch.year ?? null,
-            dateFrom: dmySearch.dateFrom ?? null,
-            dateTo: dmySearch.dateTo ?? null
+            dateFrom: dmySearch.dateFrom
+                ? formatDate(dmySearch.dateFrom, 'yyyy-MM-dd', 'en')
+                : null,
+            dateTo: dmySearch.dateTo
+                ? formatDate(dmySearch.dateTo, 'yyyy-MM-dd', 'en')
+                : null
         });
     };
 
@@ -74,25 +78,21 @@ export class DateMonthYearFilterFormComponent implements OnInit {
 
     monthChanged = () => {
         let month = this.dateMonthYearFilterForm.get('month').value;
-        if (!month || month == '') return;
         this.monthChangedEvent.emit(month);
     };
 
     yearChanged = () => {
         let year = this.dateMonthYearFilterForm.get('year').value;
-        if (!year || year == '') return;
         this.yearChangedEvent.emit(year);
     };
 
     dateFromChanged = () => {
         let dateFrom = this.dateMonthYearFilterForm.get('dateFrom').value;
-        if (!dateFrom || dateFrom == '') return;
         this.dateFromChangedEvent.emit(dateFrom);
     };
 
     dateToChanged = () => {
         let dateTo = this.dateMonthYearFilterForm.get('dateTo').value;
-        if (!dateTo || dateTo == '') return;
         this.dateToChangedEvent.emit(dateTo);
     };
 

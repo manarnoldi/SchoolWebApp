@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
+using SchoolWebApp.Core.DTOs.Staff.StaffAttendance;
 using SchoolWebApp.Core.DTOs.Staff.StaffDiscipline;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories;
@@ -94,6 +95,35 @@ namespace SchoolWebApp.API.Controllers.Staff
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An error occurred while retrieving the staff disciplines by staff details id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/staffDisciplines/byDateFromDateTo/5/2025-05-01/2025-05-31
+        /// <summary>
+        /// A method for retrieving staff attendances by staff Id,dateFrom and date to
+        /// </summary>
+        /// <param name="staffId">Thestaff Id to be retrieved</param>
+        /// <param name="dateFrom">The occurence date from to be retrieved</param>
+        /// <param name="dateTo">The occurence date to,to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byDateFromDateTo/{staffId}/{dateFrom}/{dateTo}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StaffDisciplineDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetByStaffIdDateFromDateTo(int staffId, DateOnly dateFrom, DateOnly dateTo)
+        {
+            try
+            {
+                if (staffId <= 0) return BadRequest(staffId);
+                var _items = await _unitOfWork.StaffDisciplines.GetByStaffDateFromandDateTo(staffId, dateFrom, dateTo);
+                var _itemDto = _mapper.Map<List<StaffDisciplineDto>>(_items);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the staff disciplines by staff id date from and date to.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }

@@ -22,22 +22,28 @@
                 </select>
             </div>
         </ng-content>
-        <ng-component *ngIf="showDateFrom">
-            <div class="col py-1 px-0">
-                <input placeholder="Date from" id="dateFrom" type="date"
-                    aria-label="Date from" class="form-control form-control-sm"
-                    formControlName="dateFrom"
-                    (change)="dateFromChanged()" />
+        <ng-content *ngIf="showDateFrom">
+            <div class="col py-1 px-1">
+                <div class="d-flex align-items-center gap-2">
+                    <b>From:</b>
+                    <input placeholder="Date from" id="dateFrom" type="date"
+                        aria-label="Date from" class="form-control form-control-sm"
+                        formControlName="dateFrom"
+                        (change)="dateFromChanged()" />
+                </div>
             </div>
-        </ng-component>
-        <ng-component *ngIf="showDateTo">
+        </ng-content>
+        <ng-content *ngIf="showDateTo">
             <div class="col py-1 px-0">
-                <input placeholder="Date to" id="dateTo" type="date"
-                    aria-label="Date to" class="form-control form-control-sm"
-                    formControlName="dateTo"
-                    (change)="dateToChanged()" />
+                <div class="d-flex align-items-center gap-2">
+                    <b>To:</b>
+                    <input placeholder="Date to" id="dateTo" type="date"
+                        aria-label="Date to" class="form-control form-control-sm"
+                        formControlName="dateTo"
+                        (change)="dateToChanged()" />
+                </div>
             </div>
-        </ng-component>
+        </ng-content>
         <div class="col py-1 ps-1">
             <button type="submit" [disabled]="dateMonthYearFilterForm.invalid"
                 class="btn btn-sm btn-flat btn-warning">

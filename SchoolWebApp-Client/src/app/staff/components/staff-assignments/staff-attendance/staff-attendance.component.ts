@@ -1,6 +1,12 @@
 import {StaffAttendance} from '@/staff/models/staff-attendance';
 import {StaffAttendancesService} from '@/staff/services/staff-attendances.service';
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    Input,
+    OnInit,
+    ViewChild
+} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
@@ -16,7 +22,7 @@ import {DateMonthYearFilterFormComponent} from '@/shared/components/date-month-y
     templateUrl: './staff-attendance.component.html',
     styleUrl: './staff-attendance.component.scss'
 })
-export class StaffAttendanceComponent implements OnInit {
+export class StaffAttendanceComponent implements OnInit, AfterViewInit {
     @Input() statuses;
     @Input() staff: StaffDetails;
     @ViewChild(StaffAttendanceFormComponent)
@@ -27,7 +33,7 @@ export class StaffAttendanceComponent implements OnInit {
     dmyFormComponent: DateMonthYearFilterFormComponent;
 
     today = new Date();
-
+    firstLoad: boolean = true;
     staffId: number = 0;
     months: number[];
     years: number[];
@@ -40,17 +46,25 @@ export class StaffAttendanceComponent implements OnInit {
         private route: ActivatedRoute
     ) {}
 
-    ngOnInit(): void {
+    ngAfterViewInit(): void {
         this.loadStaffAttendances();
+        
     }
 
+    ngOnInit(): void {}
+
     searchStaffAttendances = (dmy: DateMonthYear) => {
+        if (!dmy.month || dmy.month < 1 || dmy.month > 12) {
+            this.toastr.error('The month selected is not valid/correct!');
+            return;
+        } else if (!dmy.year) {
+            this.toastr.error('The year selected is not valid/correct!');
+            return;
+        }
         this.route.queryParams.subscribe((params) => {
             this.staffId = params['id'];
             this.staffAttendancesSvc
-                .get(
-                    `/staffAttendances/byMonthYearStaffId/${dmy.month}/${dmy.year}/${this.staffId.toString()}`
-                )
+                .getByMonthYearStaffId(dmy.month, dmy.year, this.staffId)
                 .subscribe({
                     next: (staffAttends) => {
                         this.staffAttendances = staffAttends.sort(
@@ -58,6 +72,12 @@ export class StaffAttendanceComponent implements OnInit {
                                 new Date(a?.date ?? '').getTime() -
                                 new Date(b?.date ?? '').getTime()
                         );
+                        if (this.staffAttendances.length <= 0 && !this.firstLoad) {
+                            this.toastr.info(
+                                'No staff attendance record/s found for the search parameters!'
+                            );
+                        }
+                        this.firstLoad = false;
                     },
                     error: (err) => {
                         this.toastr.error(err.error);

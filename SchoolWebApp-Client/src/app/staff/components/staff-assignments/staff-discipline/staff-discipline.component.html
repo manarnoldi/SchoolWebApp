@@ -16,18 +16,18 @@
         </div>
     </div>
 </div>
-
-<div class="row">
-    <div class="col-12">
-        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right mb-1"
+<div class="row g-0">
+    <div class="col-8">
+        <app-date-month-year-filter-form [showDateFrom]="true" (searchItemEvent)="searchByDate($event)"
+            [showDateTo]="true"></app-date-month-year-filter-form>
+    </div>
+    <div class="col-4">
+        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right my-1"
             modelName="staffDiscipline" buttonTitle="Add discipline"></app-table-button>
     </div>
 </div>
-<div class="row">
-    <div class="col-12">
-        <app-staff-discipline-table [tableTitle]="'Staff discipline list'"
-            [staffDisciplines]="staffDisciplines" [showLoginControls]="false"
-            (editItemEvent)="editItem($event)" (viewItemEvent)="editItem($event, 'view')"
-            (deleteItemEvent)="deleteItem($event)"></app-staff-discipline-table>
-    </div>
-</div>
+
+<app-staff-discipline-table [tableTitle]="'Staff discipline list'"
+    [staffDisciplines]="staffDisciplines" [showLoginControls]="false"
+    (editItemEvent)="editItem($event)" (viewItemEvent)="editItem($event, 'view')"
+    (deleteItemEvent)="deleteItem($event)"></app-staff-discipline-table>

@@ -4,8 +4,8 @@
 <hr>
 
 <section class="content">
-    <div class="container-fluid">
-        <div class="row py-1">
+    <div class="container-fluid px-1">
+        <div class="row g-0 py-1">
             <div class="col-12">
                 <a [routerLink]="[backLinkUrl]"
                     class="btn btn-sm btn-flat btn-warning float-left">
@@ -16,13 +16,13 @@
 
         <div class="card">
             <div class="card-body p-1">
-                <div class="row">
+                <div class="row g-0">
                     <div class="col-12">
                         <app-staff-details-view [staffDetails]="staff" [statuses]="statuses"
                             *ngIf="statuses"></app-staff-details-view>
                     </div>
                 </div>
-                <div class="row pt-1">
+                <div class="row g-0 pt-1">
                     <div class="col-12">
                         <div class="card card-success card-outline mb-1">
                             <div class="card-header p-1">

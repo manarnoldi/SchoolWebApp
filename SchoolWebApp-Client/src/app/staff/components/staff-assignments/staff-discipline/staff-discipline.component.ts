@@ -1,5 +1,11 @@
 import {StaffDetails} from '@/staff/models/staff-details';
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    Input,
+    OnInit,
+    ViewChild
+} from '@angular/core';
 import {StaffDisciplineFormComponent} from './staff-discipline-form/staff-discipline-form.component';
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
 import {StaffDiscipline} from '@/staff/models/staff-discipline';
@@ -8,17 +14,18 @@ import {StaffDisciplinesService} from '@/staff/services/staff-disciplines.servic
 import {ActivatedRoute} from '@angular/router';
 import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
-import {OutcomesService} from '@/settings/services/outcomes.service';
-import {OccurenceTypeService} from '@/settings/services/occurence-type.service';
 import {OccurenceType} from '@/settings/models/occurence-type';
 import {Outcome} from '@/settings/models/outcome';
+import {DateMonthYear} from '@/shared/models/date-month-year';
+import {DatePipe} from '@angular/common';
+import {DateMonthYearFilterFormComponent} from '@/shared/components/date-month-year-filter-form/date-month-year-filter-form.component';
 
 @Component({
     selector: 'app-staff-discipline',
     templateUrl: './staff-discipline.component.html',
     styleUrl: './staff-discipline.component.scss'
 })
-export class StaffDisciplineComponent implements OnInit {
+export class StaffDisciplineComponent implements OnInit, AfterViewInit {
     @Input() statuses;
     @Input() staff: StaffDetails;
     @Input() outcomes: Outcome[];
@@ -27,39 +34,70 @@ export class StaffDisciplineComponent implements OnInit {
     staffDisciplineFormComponent: StaffDisciplineFormComponent;
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
+    @ViewChild(DateMonthYearFilterFormComponent)
+    dmyFormComponent: DateMonthYearFilterFormComponent;
 
+    firstLoad: boolean = true;
     staffId: number = 0;
     staffDiscipline: StaffDiscipline;
     staffDisciplines: StaffDiscipline[] = [];
-   
+
     constructor(
         private toastr: ToastrService,
         private staffDisciplinesSvc: StaffDisciplinesService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private datePipe: DatePipe
     ) {}
+    ngOnInit(): void {}
 
-    ngOnInit(): void {
+    ngAfterViewInit(): void {
         this.loadStaffDisciplines();
     }
 
-    loadStaffDisciplines = () => {
+    searchByDate = (dmy: DateMonthYear) => {
         this.route.queryParams.subscribe((params) => {
             this.staffId = params['id'];
-            let disciplineByStaffDetailsIdReq = this.staffDisciplinesSvc.get(
-                '/staffDisciplines/byStaffDetailsId/' + this.staffId.toString()
-            );            
-
-            forkJoin([
-                disciplineByStaffDetailsIdReq,
-            ]).subscribe(
-                ([staffDisciplines]) => {
-                    this.staffDisciplines = staffDisciplines;                    
-                },
-                (err) => {
-                    this.toastr.error(err.error);
-                }
-            );
+            this.staffDisciplinesSvc
+                .getByDateFromDateToStaffId(
+                    this.staffId,
+                    this.datePipe.transform(dmy.dateFrom, 'yyyy-MM-dd'),
+                    this.datePipe.transform(dmy.dateTo, 'yyyy-MM-dd')
+                )
+                .subscribe({
+                    next: (staffDisciplines) => {
+                        this.staffDisciplines = staffDisciplines.sort(
+                            (a, b) =>
+                                new Date(
+                                    a?.occurenceStartDate ?? ''
+                                ).getTime() -
+                                new Date(b?.occurenceStartDate ?? '').getTime()
+                        );
+                        if (this.staffDisciplines.length <= 0 && !this.firstLoad) {
+                            this.toastr.info(
+                                'No staff discipline record/s found for the search parameters!'
+                            );
+                        }
+                        this.firstLoad = false;
+                    },
+                    error: (err) => {
+                        this.toastr.error(err.error);
+                    }
+                });
         });
+    };
+
+    loadStaffDisciplines = () => {
+        const today = new Date();
+        const dateFrom = new Date(today.getFullYear(), 0, 1);
+        const dateTo = new Date(today.getFullYear(), 11, 31);
+
+        let dmy = new DateMonthYear();
+        dmy.dateFrom = dateFrom;
+        dmy.dateTo = dateTo;
+
+        this.dmyFormComponent.setFormControls(dmy);
+
+        this.searchByDate(dmy);
     };
 
     editItem(id: number, action = 'edit') {
@@ -131,9 +169,16 @@ export class StaffDisciplineComponent implements OnInit {
                 let app = new StaffDiscipline(staffDiscipline);
                 if (this.staffDisciplineFormComponent.action == 'edit')
                     app.id = staffDiscipline.id;
-                let reqToProcess = this.staffDisciplineFormComponent.action == 'edit'
-                    ? this.staffDisciplinesSvc.update('/staffDisciplines', app)
-                    : this.staffDisciplinesSvc.create('/staffDisciplines', app);
+                let reqToProcess =
+                    this.staffDisciplineFormComponent.action == 'edit'
+                        ? this.staffDisciplinesSvc.update(
+                              '/staffDisciplines',
+                              app
+                          )
+                        : this.staffDisciplinesSvc.create(
+                              '/staffDisciplines',
+                              app
+                          );
 
                 forkJoin([reqToProcess]).subscribe(
                     (res) => {
@@ -141,7 +186,7 @@ export class StaffDisciplineComponent implements OnInit {
                         this.toastr.success(
                             'Staff discipline saved successfully'
                         );
-                        this.staffDisciplineFormComponent.closeButton.nativeElement.click();                   
+                        this.staffDisciplineFormComponent.closeButton.nativeElement.click();
                         this.loadStaffDisciplines();
                     },
                     (err) => {

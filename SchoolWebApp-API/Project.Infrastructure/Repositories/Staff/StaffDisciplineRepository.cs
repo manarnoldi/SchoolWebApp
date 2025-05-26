@@ -27,5 +27,18 @@ namespace SchoolWebApp.Infrastructure.Repositories.Staff
                 .ToListAsync();
             return staffDisciplines;
         }
+
+        public async Task<List<StaffDiscipline>> GetByStaffDateFromandDateTo(int staffId, DateOnly dateFrom, DateOnly dateTo)
+        {
+            var staffDisciplines = await _dbContext.StaffDisciplines
+                .Where(s => s.StaffDetailsId == staffId && DateOnly.FromDateTime(s.OccurenceStartDate) >= dateFrom &&
+                DateOnly.FromDateTime(s.OccurenceStartDate) <= dateTo)
+                .Include(s => s.StaffDetails)
+                .Include(s => s.Outcome)
+                .Include(s => s.OccurenceType)
+                .ToListAsync();
+
+            return staffDisciplines;
+        }
     }
 }
