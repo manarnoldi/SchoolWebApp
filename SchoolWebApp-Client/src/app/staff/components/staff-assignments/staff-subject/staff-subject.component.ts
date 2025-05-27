@@ -18,6 +18,8 @@ import {SchoolStreamsService} from '@/class/services/school-streams.service';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {CurriculumYearStaff} from '@/shared/models/curriculum-year-staff';
 import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
+import {SchoolClassesService} from '@/class/services/school-classes.service';
+import {SchoolClass} from '@/class/models/school-class';
 
 @Component({
     selector: 'app-staff-subject',
@@ -40,8 +42,7 @@ export class StaffSubjectComponent implements OnInit {
     staffSubject: StaffSubject;
     staffSubjects: StaffSubject[];
     academicYears: AcademicYear[];
-    learningLevels: LearningLevel[];
-    schoolStreams: SchoolStream[];
+    schoolClasses: SchoolClass[];
 
     constructor(
         private toastr: ToastrService,
@@ -49,7 +50,8 @@ export class StaffSubjectComponent implements OnInit {
         private route: ActivatedRoute,
         private academicYearsSvc: AcademicYearsService,
         private learningLevelsSvc: LearningLevelsService,
-        private schoolStreamsSvc: SchoolStreamsService
+        private schoolStreamsSvc: SchoolStreamsService,
+        private schoolClassesSvc: SchoolClassesService
     ) {}
 
     ngOnInit(): void {
@@ -58,6 +60,24 @@ export class StaffSubjectComponent implements OnInit {
 
     academicYearChanged = (yearId: number) => {
         this.staffSubjects = [];
+    };
+
+    yearChanged = (yearId: number) => {
+        this.schoolClasses = [];
+        if (!yearId || yearId <= 0) {
+            this.toastr.error('Select year first!');
+            return;
+        }
+        this.schoolClassesSvc.getByAcademicYearId(yearId).subscribe({
+            next: (schoolClasses) => {
+                this.schoolClasses = schoolClasses.sort(
+                    (a, b) => a.rank - b.rank
+                );
+            },
+            error: (err) => {
+                this.toastr.error(err.error);
+            }
+        });
     };
 
     searchForSubjects = (cyf: CurriculumYearStaff) => {
@@ -88,25 +108,12 @@ export class StaffSubjectComponent implements OnInit {
 
     loadStaffSubjects = () => {
         let academicYearsReq = this.academicYearsSvc.get('/academicYears');
-        let learningLevelsReq = this.learningLevelsSvc.get('/learningLevels');
-        let schoolStreamsReq = this.schoolStreamsSvc.get('/schoolStreams');
 
-        forkJoin([
-            academicYearsReq,
-            learningLevelsReq,
-            schoolStreamsReq
-        ]).subscribe(
-            ([academicYears, learningLevels, schoolStreams]) => {
+        forkJoin([academicYearsReq]).subscribe(
+            ([academicYears]) => {
                 this.academicYears = academicYears.sort(
                     (a, b) => b.rank - a.rank
                 );
-                this.learningLevels = learningLevels.sort(
-                    (a, b) => a.rank - b.rank
-                );
-                this.schoolStreams = schoolStreams.sort(
-                    (a, b) => b.rank - a.rank
-                );
-
                 const year = this.academicYears[0];
 
                 let dmy = new CurriculumYearStaff();

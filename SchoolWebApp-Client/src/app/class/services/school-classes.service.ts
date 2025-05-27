@@ -31,6 +31,13 @@ export class SchoolClassesService extends ResourceService<SchoolClass> {
     ): Observable<SchoolClass[]> => {
         return this.get(
             `/schoolClasses/byEducationLevelYearId?educationLevelId=${educationLevelId ?? ''}&academicYearId=${academicYearId ?? ''}`
-        ).pipe(map((educationLevels) => educationLevels));
+        ).pipe(map((schoolClasses) => schoolClasses));
+    };
+
+    public getByAcademicYearId = (
+        yearId: number
+    ): Observable<SchoolClass[]> => {
+        let url = `/schoolClasses/byAcademicYearId/${yearId}`;
+        return this.get(url).pipe(map((schoolClasses) => schoolClasses));
     };
 }

@@ -1,14 +1,9 @@
 import {Subject} from '@/academics/models/subject';
-import {LearningLevel} from '@/class/models/learning-level';
 import {SchoolClass} from '@/class/models/school-class';
-import {SchoolStream} from '@/class/models/school-stream';
-import {SchoolClassesService} from '@/class/services/school-classes.service';
 import {AcademicYear} from '@/school/models/academic-year';
-import {YearClassStreamComponent} from '@/shared/directives/year-class-stream/year-class-stream.component';
 import {StaffDetails} from '@/staff/models/staff-details';
 import {StaffSubject} from '@/staff/models/staff-subject';
 import {
-    AfterViewInit,
     Component,
     ElementRef,
     EventEmitter,
@@ -18,18 +13,14 @@ import {
     ViewChild
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Router} from '@angular/router';
-import {ToastrService} from 'ngx-toastr';
 
 @Component({
     selector: 'app-staff-subject-form',
     templateUrl: './staff-subject-form.component.html',
     styleUrl: './staff-subject-form.component.scss'
 })
-export class StaffSubjectFormComponent implements OnInit, AfterViewInit {
+export class StaffSubjectFormComponent implements OnInit {
     @ViewChild('closeButton') closeButton: ElementRef;
-    @ViewChild('yearClassStream')
-    yearClassStreamComponent: YearClassStreamComponent;
     buttonSubmitActive: boolean = true;
     @Input() staffSubject: StaffSubject;
     @Input() statuses;
@@ -38,58 +29,42 @@ export class StaffSubjectFormComponent implements OnInit, AfterViewInit {
     @Input() subjects: Subject[] = [];
 
     @Input() academicYears: AcademicYear[] = [];
-    @Input() learningLevels: LearningLevel[] = [];
-    @Input() schoolStreams: SchoolStream[] = [];
+    @Input() schoolClasses: SchoolClass[] = [];
 
     action: string = 'add';
+    schoolClassName: string;
 
     @Output() addItemEvent = new EventEmitter<StaffSubject>();
     @Output() errorEvent = new EventEmitter<string>();
+    @Output() yearChangedEvent = new EventEmitter<number>();
 
     staffSubjectForm: FormGroup;
 
-    constructor(
-        private formBuilder: FormBuilder,
-        private toastrSvc: ToastrService,
-        private schoolClassSvc: SchoolClassesService,
-        private router: Router
-    ) {}
+    constructor(private formBuilder: FormBuilder) {}
 
     ngOnInit(): void {
         this.refreshItems();
     }
 
-    ngAfterViewInit(): void {
-        this.yearClassStreamComponent.initializeFormControl();
-    }
     refreshItems = () => {
         this.staffSubjectForm = this.formBuilder.group({
             staffDetailsId: [this.staff?.id, [Validators.required]],
+            academicYearId: [null, [Validators.required]],
+            schoolClassId: [null, [Validators.required]],
             description: [''],
-            subjectId: [null]
+            subjectId: [null, [Validators.required]]
         });
     };
 
     setFormControls = (staffSubject: StaffSubject) => {
-        this.schoolClassSvc
-            .getById(staffSubject.schoolClassId, '/schoolClasses')
-            .subscribe(
-                (sClass: SchoolClass) => {
-                    this.staffSubjectForm.patchValue({
-                        description: staffSubject.description,
-                        subjectId: staffSubject.subjectId ?? null,
-                        staffDetailsId: staffSubject.staffDetailsId ?? null
-                    });
-                    this.yearClassStreamComponent.setFormControls({
-                        academicYearId: sClass.academicYearId,
-                        learningLevelId: sClass.learningLevelId,
-                        schoolStreamId: sClass.schoolStreamId
-                    });
-                },
-                (err) => {
-                    this.toastrSvc.error(err.error?.message);
-                }
-            );
+        this.staffSubjectForm.setValue({
+            staffDetailsId: this.staff?.id,
+            academicYearId: staffSubject.schoolClass?.academicYearId,
+            schoolClassId: staffSubject.schoolClassId,
+            description: staffSubject.description,
+            subjectId: staffSubject.subjectId
+        });
+        this.schoolClassName = staffSubject.schoolClass?.name;
     };
 
     get f() {
@@ -103,68 +78,19 @@ export class StaffSubjectFormComponent implements OnInit, AfterViewInit {
     resetFormControls() {
         this.action = 'add';
         this.staffSubjectForm.reset();
-        this.staffSubjectForm.patchValue({staffDetailsId: this.staff?.id});
+        this.staffSubjectForm.get('staffDetailsId').setValue(this.staff?.id);
     }
 
-    yearClassStreamUpdated = (yearClassStream) => {
-        this.yearClassStreamComponent
-            .checkIfExists(
-                yearClassStream.academicYearId,
-                yearClassStream.learningLevelId,
-                yearClassStream.schoolStreamId
-            )
-            .subscribe(
-                (schoolCl) => {
-                    this.buttonSubmitActive = true;
-                    if (!schoolCl) {
-                        this.toastrSvc.error(
-                            'The class selected is not added yet. Ask administrator to register the class!'
-                        );
-                        this.buttonSubmitActive = false;
-                    }
-                },
-                (err) => {
-                    this.buttonSubmitActive = false;
-                    this.toastrSvc.error(
-                        'The class selected is not added yet. Ask administrator to register the class!'
-                    );
-                }
-            );
-    };
-
-    goToRegisteredClasses = () => {
-        this.closeButton.nativeElement.click();
-        this.router.navigate(['/class/classes']);
+    yearChanged = () => {
+        this.staffSubjectForm.get('schoolClassId').reset();
+        let academicYearId = this.staffSubjectForm.get('academicYearId').value;
+        this.yearChangedEvent.emit(academicYearId);
     };
 
     onSubmit = () => {
-        this.yearClassStreamComponent
-            ?.checkIfExists(
-                this.staffSubjectForm.value?.academicYearId,
-                this.staffSubjectForm.value?.learningLevelId,
-                this.staffSubjectForm.value?.schoolStreamId
-            )
-            .subscribe(
-                (schoolCl) => {
-                    if (this.action == 'edit') {
-                        let staffSubjectId = this.staffSubject.id;
-                        this.staffSubject = new StaffSubject(
-                            this.staffSubjectForm.value
-                        );
-                        this.staffSubject.schoolClassId = parseInt(schoolCl.id);
-                        this.staffSubject.id = staffSubjectId;
-                    } else {
-                        this.staffSubject = new StaffSubject(
-                            this.staffSubjectForm.value
-                        );
-                        this.staffSubject.schoolClassId = parseInt(schoolCl.id);
-                    }
-                    
-                    this.addItemEvent.emit(this.staffSubject);
-                },
-                (err) => {
-                    this.toastrSvc.error(err.error?.message);
-                }
-            );
+        let staffSubjectId = this.staffSubject?.id;
+        this.staffSubject = new StaffSubject(this.staffSubjectForm.value);
+        this.staffSubject.id = staffSubjectId;
+        this.addItemEvent.emit(this.staffSubject);
     };
 }

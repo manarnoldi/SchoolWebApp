@@ -9,7 +9,6 @@ import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {EducationLevelService} from '@/school/services/education-level.service';
 import {EducationLevelYear} from '@/shared/models/education-level-year';
 import {StudentClass} from '@/students/models/student-class';
-import {StudentDetails} from '@/students/models/student-details';
 import {StudentSubject} from '@/students/models/student-subject';
 import {StudentSubjectSearch} from '@/students/models/student-subject-search';
 import {StudentClassService} from '@/students/services/student-class.service';
@@ -80,7 +79,7 @@ export class StudentsSubjectsComponent implements OnInit {
     curriculumChanged = (curriculumId: number) => {
         this.studentSubjects = [];
         this.educationLevelSvc
-            .get('/educationLevels/byCurriculumId/' + curriculumId)
+            .educationLevelsByCurriculum(curriculumId)
             .subscribe({
                 next: (educationLevels) => {
                     this.educationLevels = educationLevels.sort(
@@ -96,11 +95,9 @@ export class StudentsSubjectsComponent implements OnInit {
     educationLevelYearChanged = (ely: EducationLevelYear) => {
         this.studentSubjects = [];
         this.schoolClassSvc
-            .get(
-                '/schoolClasses/byEducationLevelYearId/' +
-                    ely.educationLevelId +
-                    '/' +
-                    ely.academicYearId
+            .getByEducationLevelandYear(
+                ely.educationLevelId,
+                ely.academicYearId
             )
             .subscribe({
                 next: (schoolClasses) => {

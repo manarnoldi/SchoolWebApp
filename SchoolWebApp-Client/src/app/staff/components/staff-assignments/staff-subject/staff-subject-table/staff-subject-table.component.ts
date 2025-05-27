@@ -17,8 +17,6 @@ export class StaffSubjectTableComponent implements OnInit {
     @Input() showLoginControls: Boolean = false;
 
     @Input() academicYears: AcademicYear[];
-    @Input() learningLevels: LearningLevel[];
-    @Input() schoolStreams: SchoolStream[];
 
     @Output() viewItemEvent = new EventEmitter<number>();
     @Output() editItemEvent = new EventEmitter<number>();
@@ -45,8 +43,7 @@ export class StaffSubjectTableComponent implements OnInit {
         'Staff full name',
         'Staff number',
         'Year',
-        'Class',
-        'Stream',
+        'Class name',
         'Subject',
         'Action'
     ];

@@ -22,20 +22,7 @@
                             </span>
                         </span>
                     </td>
-                    <td>
-                        <span *ngFor="let learningLevel of learningLevels">
-                            <span *ngIf="learningLevel.id === item.schoolClass?.learningLevelId">
-                                {{ learningLevel.name}}
-                            </span>
-                        </span>
-                    </td>
-                    <td>
-                        <span *ngFor="let schoolStream of schoolStreams">
-                            <span *ngIf="schoolStream.id === item.schoolClass?.schoolStreamId">
-                                {{ schoolStream.name}}
-                            </span>
-                        </span>
-                    </td>
+                    <td>{{ item.schoolClass?.name }}</td>
                     <td>{{ item.subject?.name}}</td>
                     <app-table-action
                         (editItemEvent)="editItem(item.id)"

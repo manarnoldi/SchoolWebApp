@@ -10,11 +10,11 @@
                 </h5>
             </div>
             <app-staff-subject-form [staffSubject]="staffSubject" [statuses]="statuses"
-                [subjects]="subjects"
-                [staff]="staff" [academicYears]="academicYears" [learningLevels]="learningLevels"
-                [schoolStreams]="schoolStreams"
+                [subjects]="subjects" [schoolClasses]="schoolClasses"
+                (yearChangedEvent)="yearChanged($event)"
+                [staff]="staff" [academicYears]="academicYears"
                 (addItemEvent)="AddStaffSubject($event)"
-                *ngIf="staff && academicYears && learningLevels && schoolStreams"></app-staff-subject-form>
+                *ngIf="staff && academicYears"></app-staff-subject-form>
         </div>
     </div>
 </div>
@@ -22,7 +22,8 @@
 <div class="row g-0">
     <div class="col-6">
         <app-curriculum-year-filter-form [academicYears]="academicYears"
-            (searchItemEvent)="searchForSubjects($event)" (academicYearChangedEvent)="academicYearChanged($event)"
+            (searchItemEvent)="searchForSubjects($event)"
+            (academicYearChangedEvent)="academicYearChanged($event)"
             [showAcademicYear]="true"></app-curriculum-year-filter-form>
     </div>
     <div class="col-6">
@@ -33,7 +34,6 @@
 <app-staff-subject-table [tableTitle]="'Staff subjects list'"
     [staffSubjects]="staffSubjects" [showLoginControls]="false"
     (editItemEvent)="editItem($event)" [academicYears]="academicYears"
-    [learningLevels]="learningLevels" [schoolStreams]="schoolStreams"
-    *ngIf="staffSubjects && academicYears && learningLevels && schoolStreams"
+    *ngIf="staffSubjects && academicYears"
     (deleteItemEvent)="deleteItem($event)"
     (viewItemEvent)="editItem($event, 'view')"></app-staff-subject-table>

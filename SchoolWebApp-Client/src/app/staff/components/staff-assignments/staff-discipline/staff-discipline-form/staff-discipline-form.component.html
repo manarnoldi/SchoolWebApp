@@ -46,7 +46,7 @@
                     <div class="form-group">
                         <label for="occurenceTypeId" class="form-label">Occurence type:</label>
                         <select [attr.disabled]="action==='view' ? 'disabled':null"
-                            class="form-control"
+                            class="form-select form-select-sm"
                             aria-label="Select occurence type" formControlName="occurenceTypeId"
                             id="occurenceTypeId">
                             <option [ngValue]="null" hidden disabled selected>Select occurence
@@ -60,7 +60,7 @@
                     <div class="form-group">
                         <label for="outcomeId" class="form-label">Outcome:</label>
                         <select [attr.disabled]="action==='view' ? 'disabled':null"
-                            class="form-control"
+                            class="form-select form-select-sm"
                             aria-label="Select outcome"
                             formControlName="outcomeId" id="outcomeId">
                             <option [ngValue]="null" hidden disabled selected>Select

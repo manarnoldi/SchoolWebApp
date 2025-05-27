@@ -19,7 +19,6 @@ import {forkJoin} from 'rxjs';
 import {StudentsAttendancesTableComponent} from './students-attendances-table/students-attendances-table.component';
 import Swal from 'sweetalert2';
 import {StudentAttendance} from '@/students/models/student-attendance';
-import {DateService} from '@/shared/services/date.service';
 
 @Component({
     selector: 'app-students-attendances',
@@ -86,7 +85,7 @@ export class StudentsAttendancesComponent implements OnInit {
         this.educationLevels = [];
         this.schoolClasses = [];
         this.educationLevelSvc
-            .get('/educationLevels/byCurriculumId/' + curriculumId)
+            .educationLevelsByCurriculum(curriculumId)
             .subscribe({
                 next: (educationLevels) => {
                     this.educationLevels = educationLevels.sort(
@@ -103,11 +102,9 @@ export class StudentsAttendancesComponent implements OnInit {
         this.studentClasses = [];
         this.schoolClasses = [];
         this.schoolClassSvc
-            .get(
-                '/schoolClasses/byEducationLevelYearId/' +
-                    ely.educationLevelId +
-                    '/' +
-                    ely.academicYearId
+            .getByEducationLevelandYear(
+                ely.educationLevelId,
+                ely.academicYearId
             )
             .subscribe({
                 next: (schoolClasses) => {
@@ -232,8 +229,18 @@ export class StudentsAttendancesComponent implements OnInit {
                                 next: (saRes: StudentAttendance[]) => {
                                     for (let i = 0; i < saRes.length; i++) {
                                         if (saRes[i].id) {
-                                            let [hourIn, minuteIn] = saRes[i].timeIn ? saRes[i].timeIn.split(':').map(Number) : [8, 0];;
-                                            let [hourOut, minuteOut] = saRes[i].timeIn ? saRes[i].timeIn.split(':').map(Number) : [17, 0];
+                                            let [hourIn, minuteIn] = saRes[i]
+                                                .timeIn
+                                                ? saRes[i].timeIn
+                                                      .split(':')
+                                                      .map(Number)
+                                                : [8, 0];
+                                            let [hourOut, minuteOut] = saRes[i]
+                                                .timeIn
+                                                ? saRes[i].timeIn
+                                                      .split(':')
+                                                      .map(Number)
+                                                : [17, 0];
 
                                             studentClasses[i].isSelected =
                                                 saRes[i].present;
