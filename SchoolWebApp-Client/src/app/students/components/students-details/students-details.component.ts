@@ -1,7 +1,7 @@
 import {Status} from '@/core/enums/status';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
-import {CurriculumYearStaff} from '@/shared/models/curriculum-year-staff';
+import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
 import {StudentDetailsService} from '@/students/services/student-details.service';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -46,7 +46,7 @@ export class StudentsDetailsComponent implements OnInit {
         this.students = [];
     };
 
-    searchClicked = (cfy: CurriculumYearStaff) => {
+    searchClicked = (cfy: CurriculumYearPerson) => {
         this.showTable = false;
         this.studentsSvc.getBySearchDetails(cfy.status).subscribe({
             next: (students) => {
@@ -99,7 +99,7 @@ export class StudentsDetailsComponent implements OnInit {
                 this.sourceLink = this.sourceLink.split('?')[0];
             }
 
-            let cysPass = new CurriculumYearStaff();
+            let cysPass = new CurriculumYearPerson();
             cysPass.academicYearId = null;
             cysPass.curriculumId = null;
 

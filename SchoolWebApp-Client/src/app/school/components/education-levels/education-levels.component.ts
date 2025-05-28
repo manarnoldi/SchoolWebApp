@@ -12,7 +12,7 @@ import {EducationLevelService} from '@/school/services/education-level.service';
 import {CurriculumService} from '@/academics/services/curriculum.service';
 import {EducationLevelTypesService} from '@/school/services/education-level-types.service';
 import Swal from 'sweetalert2';
-import {CurriculumYearStaff} from '@/shared/models/curriculum-year-staff';
+import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
 import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
 
 @Component({
@@ -91,7 +91,7 @@ export class EducationLevelsComponent implements OnInit {
                 );
                 const topCurriculum = this.curricula[0];
 
-                let cysPass = new CurriculumYearStaff();
+                let cysPass = new CurriculumYearPerson();
                 cysPass.curriculumId = parseInt(topCurriculum.id);
 
                 this.cyfFormComponent.setFormControls(cysPass);
@@ -111,7 +111,7 @@ export class EducationLevelsComponent implements OnInit {
         this.collectionSize = 0;
     };
 
-    searchClicked = (cys: CurriculumYearStaff) => {
+    searchClicked = (cys: CurriculumYearPerson) => {
         let searchStr = `/educationLevels/byCurriculumId?curriculumId=${cys.curriculumId ?? ''}`;
         this.educationLevelSvc.get(searchStr).subscribe({
             next: (educationLevels) => {

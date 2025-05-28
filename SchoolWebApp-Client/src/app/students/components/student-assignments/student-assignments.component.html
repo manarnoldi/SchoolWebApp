@@ -81,16 +81,16 @@
                                     </li>
                                 </ul>
                             </div>
-                            <div class="card-body p-1">
+                            <div class="card-body p-1 ">
                                 <div class="tab-content" id="pills-tabContent">
                                     <div
                                         class="tab-pane fade {{activeNav === 'formerSchool'? 'show active':''}}"
                                         id="formerSchool"
                                         role="tabpanel"
                                         aria-labelledby="formerSchool-tab">
-                                        <div class="border border-info rounded p-1">
+                                        <div class="border border-info rounded p-1  pt-0">
                                             <app-student-former-school [statuses]="status"
-                                                [student]="student" [curricula]="curricula"
+                                                [student]="student" [curricula]="curricula" *ngIf="curricula && educationLevels"
                                                 [educationLevels]="educationLevels"></app-student-former-school>
                                         </div>
                                     </div>
@@ -98,7 +98,7 @@
                                         class="tab-pane fade {{activeNav === 'class'? 'show active':''}}"
                                         id="class" role="tabpanel"
                                         aria-labelledby="class-tab">
-                                        <div class="border border-info rounded p-1">
+                                        <div class="border border-info rounded p-1  pt-0">
                                             <app-student-class [statuses]="statuses"
                                                 [student]="student" [academicYears]="academicYears"
                                                 *ngIf="student && academicYears && learningLevels && schoolStreams"
@@ -110,7 +110,7 @@
                                         class="tab-pane fade {{activeNav === 'parents'? 'show active':''}}"
                                         id="parents" role="tabpanel"
                                         aria-labelledby="parents-tab">
-                                        <div class="border border-info rounded p-1">
+                                        <div class="border border-info rounded p-1  pt-0">
                                             <app-student-parents [statuses]="statuses"
                                                 [student]="student"
                                                 *ngIf="student"></app-student-parents>
@@ -120,7 +120,7 @@
                                         class="tab-pane fade {{activeNav === 'discipline'? 'show active':''}}"
                                         id="discipline" role="tabpanel"
                                         aria-labelledby="discipline-tab">
-                                        <div class="border border-info rounded p-1">
+                                        <div class="border border-info rounded p-1  pt-0">
                                             <app-student-discipline [statuses]="statuses"
                                                 [student]="student" [outcomes]="outcomes"
                                                 [occurenceTypes]="occurenceTypes"></app-student-discipline>
@@ -130,7 +130,7 @@
                                         class="tab-pane fade {{activeNav === 'subjects'? 'show active':''}}"
                                         id="subjects" role="tabpanel"
                                         aria-labelledby="subjects-tab">
-                                        <div class="border border-info rounded p-1">
+                                        <div class="border border-info rounded p-1  pt-0">
                                             <app-student-subjects [statuses]="statuses"
                                             [student]="student" *ngIf="student"></app-student-subjects>
                                         </div>
@@ -139,7 +139,7 @@
                                         class="tab-pane fade {{activeNav === 'attendance'? 'show active':''}}"
                                         id="attendance" role="tabpanel"
                                         aria-labelledby="attendance-tab">
-                                        <div class="border border-info rounded p-1">
+                                        <div class="border border-info rounded p-1  pt-0">
                                             <app-student-attendance [student]="student" [statuses]="statuses"></app-student-attendance>
                                         </div>
                                     </div>

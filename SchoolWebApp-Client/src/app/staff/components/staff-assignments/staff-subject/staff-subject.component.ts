@@ -4,19 +4,14 @@ import {StaffSubjectFormComponent} from './staff-subject-form/staff-subject-form
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
 import {StaffSubject} from '@/staff/models/staff-subject';
 import {ToastrService} from 'ngx-toastr';
-import {StaffAttendancesService} from '@/staff/services/staff-attendances.service';
 import {ActivatedRoute} from '@angular/router';
 import {StaffSubjectsService} from '@/staff/services/staff-subjects.service';
 import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 import {Subject} from '@/academics/models/subject';
 import {AcademicYear} from '@/school/models/academic-year';
-import {LearningLevel} from '@/class/models/learning-level';
-import {SchoolStream} from '@/class/models/school-stream';
-import {LearningLevelsService} from '@/class/services/learning-levels.service';
-import {SchoolStreamsService} from '@/class/services/school-streams.service';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
-import {CurriculumYearStaff} from '@/shared/models/curriculum-year-staff';
+import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
 import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
 import {SchoolClassesService} from '@/class/services/school-classes.service';
 import {SchoolClass} from '@/class/models/school-class';
@@ -78,7 +73,7 @@ export class StaffSubjectComponent implements OnInit {
         });
     };
 
-    searchForSubjects = (cyf: CurriculumYearStaff) => {
+    searchForSubjects = (cyf: CurriculumYearPerson) => {
         if (!cyf.academicYearId) {
             this.toastr.error('Select academic year before clicking search!');
             return;
@@ -114,7 +109,7 @@ export class StaffSubjectComponent implements OnInit {
                 );
                 const year = this.academicYears[0];
 
-                let dmy = new CurriculumYearStaff();
+                let dmy = new CurriculumYearPerson();
                 dmy.academicYearId = parseInt(year.id);
 
                 this.cyfFormComponent.setFormControls(dmy);

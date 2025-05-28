@@ -22,7 +22,7 @@ import {LearningLevel} from '@/class/models/learning-level';
 import {LearningLevelsService} from '@/class/services/learning-levels.service';
 import {ClassLeadershipsService} from '@/class/services/class-leaderships.service';
 import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
-import {CurriculumYearStaff} from '@/shared/models/curriculum-year-staff';
+import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
 import {CurriculumService} from '@/academics/services/curriculum.service';
 import {Curriculum} from '@/academics/models/curriculum';
 import {EducationLevelService} from '@/school/services/education-level.service';
@@ -153,7 +153,7 @@ export class SchoolClassComponent implements OnInit {
                             );
                             const topCurriculum = this.curricula[0];
                             const topYear = this.academicYears[0];
-                            let cysPass = new CurriculumYearStaff();
+                            let cysPass = new CurriculumYearPerson();
                             cysPass.academicYearId = parseInt(topYear.id);
                             cysPass.curriculumId = parseInt(topCurriculum.id);
                             this.cyfFormComponent.setFormControls(cysPass);
@@ -175,7 +175,7 @@ export class SchoolClassComponent implements OnInit {
         );
     }
 
-    loadSchoolClasses = (cys: CurriculumYearStaff) => {
+    loadSchoolClasses = (cys: CurriculumYearPerson) => {
         this.schoolClassesSvc
             .getByEducationLevelandYear(
                 cys.educationLevelId,

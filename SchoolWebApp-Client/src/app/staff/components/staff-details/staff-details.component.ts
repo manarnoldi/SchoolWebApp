@@ -10,7 +10,7 @@ import {forkJoin, map, Observable} from 'rxjs';
 import {StaffCategory} from '@/settings/models/staff-category';
 import {EmploymentType} from '@/settings/models/employment-type';
 import {Curriculum} from '@/academics/models/curriculum';
-import {CurriculumYearStaff} from '@/shared/models/curriculum-year-staff';
+import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
 import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
 import {Status} from '@/core/enums/status';
 import {StaffDetails} from '@/staff/models/staff-details';
@@ -87,7 +87,7 @@ export class StaffDetailsComponent implements OnInit {
         });
     }
 
-    searchClicked = (cfy: CurriculumYearStaff) => {
+    searchClicked = (cfy: CurriculumYearPerson) => {
         this.showTable = false;
         this.staffsSvc
             .getBySearchDetails(
@@ -124,7 +124,7 @@ export class StaffDetailsComponent implements OnInit {
         this.route.queryParams.subscribe((params) => {
             forkJoin([staffCatsReq, emloyTypesReq]).subscribe({
                 next: ([staffCats, empTypes]) => {
-                    let cysPass = new CurriculumYearStaff();
+                    let cysPass = new CurriculumYearPerson();
                     cysPass.academicYearId = null;
                     cysPass.curriculumId = null;
                     cysPass.status = Status.Active;

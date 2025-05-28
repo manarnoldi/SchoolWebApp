@@ -14,7 +14,7 @@ import {ToastrService} from 'ngx-toastr';
 import {Subscription, forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 import {SessionFormComponent} from './session-form/session-form.component';
-import {CurriculumYearStaff} from '@/shared/models/curriculum-year-staff';
+import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
 import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
 
 @Component({
@@ -95,7 +95,7 @@ export class SessionsComponent implements OnInit {
                 this.sessionTypes = sessionTypes;
                 const topCurriculum = this.curricula[0];
                 const topYear = this.academicYears[0];
-                let cysPass = new CurriculumYearStaff();
+                let cysPass = new CurriculumYearPerson();
                 cysPass.academicYearId = parseInt(topYear.id);
                 cysPass.curriculumId = parseInt(topCurriculum.id);
                 this.cyfFormComponent.setFormControls(cysPass);
@@ -118,7 +118,7 @@ export class SessionsComponent implements OnInit {
         this.sessions = [];
     };
 
-    searchClicked = (cys: CurriculumYearStaff) => {
+    searchClicked = (cys: CurriculumYearPerson) => {
         this.sessionSvc
             .getByCurriculumYear(cys.curriculumId, cys.academicYearId)
             .subscribe({

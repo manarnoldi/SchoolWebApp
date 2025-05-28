@@ -1,5 +1,5 @@
 import {StudentDetails} from '@/students/models/student-details';
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {StudentFormerSchoolFormComponent} from './student-former-school-form/student-former-school-form.component';
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
 import {StudentFormerSchool} from '@/students/models/student-former-school';
@@ -10,13 +10,15 @@ import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 import {EducationLevel} from '@/school/models/educationLevel';
 import {Curriculum} from '@/academics/models/curriculum';
+import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
+import { CurriculumYearFilterFormComponent } from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
 
 @Component({
     selector: 'app-student-former-school',
     templateUrl: './student-former-school.component.html',
     styleUrl: './student-former-school.component.scss'
 })
-export class StudentFormerSchoolComponent implements OnInit {
+export class StudentFormerSchoolComponent implements AfterViewInit {
     @Input() statuses;
     @Input() student: StudentDetails;
     @Input() curricula: Curriculum[];
@@ -25,8 +27,11 @@ export class StudentFormerSchoolComponent implements OnInit {
     studentFormerSchoolFormComponent: StudentFormerSchoolFormComponent;
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
+    @ViewChild(CurriculumYearFilterFormComponent)
+        cyfFormComponent: CurriculumYearFilterFormComponent;
 
     studentId: number = 0;
+    firstLoad: boolean = true;
     studentFormerSchool: StudentFormerSchool;
     studentFormerSchools: StudentFormerSchool[] = [];
     constructor(
@@ -35,26 +40,60 @@ export class StudentFormerSchoolComponent implements OnInit {
         private route: ActivatedRoute
     ) {}
 
-    ngOnInit(): void {
+    ngAfterViewInit(): void {
         this.loadStudentFormerSchools();
     }
 
-    loadStudentFormerSchools = () => {
+    searchSubmited = (cyf: CurriculumYearPerson) => {
         this.route.queryParams.subscribe((params) => {
             this.studentId = params['id'];
-            let formerSchoolByStudentIdReq = this.studentFormerSchoolsSvc.get(
-                '/formerSchools/byStudentId/' + this.studentId.toString()
-            );
-
-            forkJoin([formerSchoolByStudentIdReq]).subscribe(
-                ([studentFormerSchools]) => {
-                    this.studentFormerSchools = studentFormerSchools;
-                },
-                (err) => {
-                    this.toastr.error(err.error);
-                }
-            );
+            this.studentFormerSchoolsSvc
+                .getBySearch(this.studentId, cyf.curriculumId)
+                .subscribe({
+                    next: (formerSchools) => {
+                        this.studentFormerSchools = formerSchools;
+                        if (this.studentFormerSchools.length <= 0 && !this.firstLoad) {
+                            this.toastr.info(
+                                'No student former school record/s found for the search parameters!'
+                            );
+                        }
+                        this.firstLoad = false;
+                    },
+                    error: (err) => {
+                        this.toastr.error(err.error);
+                    }
+                });
         });
+    };
+
+    curriculumChanged = (curId: number) => {
+        this.studentFormerSchools = [];
+    };
+
+    loadStudentFormerSchools = () => {
+        const curc = this.curricula[0];
+
+        let dmy = new CurriculumYearPerson();
+        dmy.curriculumId = parseInt(curc.id);
+        this.cyfFormComponent.setFormControls(dmy);
+
+        this.searchSubmited(dmy);
+
+        // this.route.queryParams.subscribe((params) => {
+        //     this.studentId = params['id'];
+        //     let formerSchoolByStudentIdReq = this.studentFormerSchoolsSvc.get(
+        //         '/formerSchools/byStudentId/' + this.studentId.toString()
+        //     );
+
+        //     forkJoin([formerSchoolByStudentIdReq]).subscribe(
+        //         ([studentFormerSchools]) => {
+        //             this.studentFormerSchools = studentFormerSchools;
+        //         },
+        //         (err) => {
+        //             this.toastr.error(err.error);
+        //         }
+        //     );
+        // });
     };
 
     editItem(id: number, action = 'edit') {

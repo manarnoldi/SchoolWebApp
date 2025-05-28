@@ -18,17 +18,19 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right mb-1"
+<div class="row g-0">
+    <div class="col-6">
+        <app-curriculum-year-filter-form [curricula]="curricula"
+            (searchItemEvent)="searchSubmited($event)"
+            (curriculumChangedEvent)="curriculumChanged($event)"
+            [showCurriculum]="true"></app-curriculum-year-filter-form>
+    </div>
+    <div class="col-6">
+        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right my-1"
             modelName="studentFormerSchool" buttonTitle="Add former school"></app-table-button>
     </div>
 </div>
-<div class="row">
-    <div class="col-12">
-        <app-student-former-school-table [tableTitle]="'Student former schools list'"
-            [studentFormerSchools]="studentFormerSchools" [showLoginControls]="false"
-            (editItemEvent)="editItem($event)" (viewItemEvent)="editItem($event, 'view')"
-            (deleteItemEvent)="deleteItem($event)"></app-student-former-school-table>
-    </div>
-</div>
+<app-student-former-school-table [tableTitle]="'Student former schools list'"
+    [studentFormerSchools]="studentFormerSchools" [showLoginControls]="false"
+    (editItemEvent)="editItem($event)" (viewItemEvent)="editItem($event, 'view')"
+    (deleteItemEvent)="deleteItem($event)"></app-student-former-school-table>

@@ -5,7 +5,7 @@ import {EducationLevel} from '@/school/models/educationLevel';
 import {LearningMode} from '@/school/models/learning-mode';
 import {EmploymentType} from '@/settings/models/employment-type';
 import {StaffCategory} from '@/settings/models/staff-category';
-import {CurriculumYearStaff} from '@/shared/models/curriculum-year-staff';
+import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 
@@ -30,7 +30,7 @@ export class CurriculumYearFilterFormComponent implements OnInit {
     @Input() showLearningMode: boolean = false;
     @Input() showPersonStatus: boolean = false;
 
-    @Output() searchItemEvent = new EventEmitter<CurriculumYearStaff>();
+    @Output() searchItemEvent = new EventEmitter<CurriculumYearPerson>();
     @Output() curriculumChangedEvent = new EventEmitter<number>();
     @Output() educationLevelChangedEvent = new EventEmitter<number>();
     @Output() academicYearChangedEvent = new EventEmitter<number>();
@@ -40,7 +40,7 @@ export class CurriculumYearFilterFormComponent implements OnInit {
     @Output() statusChangedEvent = new EventEmitter<number>();
 
     curriculumYearStaffFilterForm: FormGroup;
-    cysSearch: CurriculumYearStaff;
+    cysSearch: CurriculumYearPerson;
     statuses;
     status = Status;
 
@@ -54,7 +54,7 @@ export class CurriculumYearFilterFormComponent implements OnInit {
         this.refreshItems();
     }
 
-    setFormControls = (cysSearch: CurriculumYearStaff) => {
+    setFormControls = (cysSearch: CurriculumYearPerson) => {
         this.curriculumYearStaffFilterForm.setValue({
             curriculumId: cysSearch.curriculumId ?? null,
             educationLevelId: cysSearch.educationLevelId ?? null,
@@ -120,7 +120,7 @@ export class CurriculumYearFilterFormComponent implements OnInit {
     };
 
     onSubmit = () => {
-        this.cysSearch = new CurriculumYearStaff(
+        this.cysSearch = new CurriculumYearPerson(
             this.curriculumYearStaffFilterForm.value
         );
         this.searchItemEvent.emit(this.cysSearch);

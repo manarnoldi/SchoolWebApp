@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
+using SchoolWebApp.Core.DTOs.Staff.StaffDetails;
 using SchoolWebApp.Core.DTOs.Students.FormerSchool;
+using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories;
@@ -95,6 +97,33 @@ namespace SchoolWebApp.API.Controllers.Students
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An error occurred while retrieving the former schools by student id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/formerSchools/search?status=0&staffCategoryId=5&employmentTypeId=5
+        /// <summary>
+        /// A method for retrieving student former school details by searching.
+        /// </summary>
+        /// <param name="studentId">The student Id whose former schools is to be retrieved</param>
+        /// <param name="curriculumId">The curriculum Id whose former schools is to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("search")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<FormerSchoolDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> FormerSchoolsSearch(int? studentId, int? curriculumId)
+        {
+            try
+            {
+                var _item = await _unitOfWork.FormerSchools.Search(studentId, curriculumId);
+                var _itemDto = _mapper.Map<List<FormerSchoolDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the former schools by search items.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }

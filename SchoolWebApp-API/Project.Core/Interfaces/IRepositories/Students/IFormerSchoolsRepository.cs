@@ -6,5 +6,6 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.Students
     public interface IFormerSchoolsRepository : IBaseRepository<FormerSchool>
     {
         Task<List<FormerSchool>> GetByStudentId(int studentId);
+        Task<List<FormerSchool>> Search(int? studentId, int? curriculumId);
     }
 }

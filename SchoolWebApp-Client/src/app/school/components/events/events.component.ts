@@ -13,7 +13,7 @@ import {AcademicYear} from '@/school/models/academic-year';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {ActivatedRoute} from '@angular/router';
 import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
-import {CurriculumYearStaff} from '@/shared/models/curriculum-year-staff';
+import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
 
 @Component({
     selector: 'app-events',
@@ -70,7 +70,7 @@ export class EventsComponent implements OnInit {
                         b.name.localeCompare(a.name)
                     );
                     const topYear = academicYears.find(y=>y.status == true);
-                    let cysPass = new CurriculumYearStaff();
+                    let cysPass = new CurriculumYearPerson();
                     cysPass.academicYearId = parseInt(topYear.id);
 
                     this.cyfFormComponent.setFormControls(cysPass);
@@ -88,7 +88,7 @@ export class EventsComponent implements OnInit {
         this.events = [];
     };
 
-    searchClicked = (cys: CurriculumYearStaff) => {
+    searchClicked = (cys: CurriculumYearPerson) => {
         let searchStr = `/events/byAcademicYearId?academicYearId=${cys.academicYearId ?? ''}`;
         this.eventsSvc.get(searchStr).subscribe({
             next: (events) => {

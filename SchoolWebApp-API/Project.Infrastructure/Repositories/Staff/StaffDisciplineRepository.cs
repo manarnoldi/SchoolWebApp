@@ -3,11 +3,6 @@ using Project.Infrastructure.Data;
 using Project.Infrastructure.Repositories;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories.Staff;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SchoolWebApp.Infrastructure.Repositories.Staff
 {
