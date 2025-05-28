@@ -1,7 +1,13 @@
 import {OccurenceType} from '@/settings/models/occurence-type';
 import {Outcome} from '@/settings/models/outcome';
 import {StudentDetails} from '@/students/models/student-details';
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    Input,
+    OnInit,
+    ViewChild
+} from '@angular/core';
 import {StudentDisciplineFormComponent} from './student-discipline-form/student-discipline-form.component';
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
 import {StudentDiscipline} from '@/students/models/student-discipline';
@@ -10,13 +16,16 @@ import {StudentDisciplinesService} from '@/students/services/student-disciplines
 import {ActivatedRoute} from '@angular/router';
 import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
+import {DateMonthYearFilterFormComponent} from '@/shared/components/date-month-year-filter-form/date-month-year-filter-form.component';
+import {DateMonthYear} from '@/shared/models/date-month-year';
+import {DatePipe} from '@angular/common';
 
 @Component({
     selector: 'app-student-discipline',
     templateUrl: './student-discipline.component.html',
     styleUrl: './student-discipline.component.scss'
 })
-export class StudentDisciplineComponent implements OnInit {
+export class StudentDisciplineComponent implements OnInit, AfterViewInit {
     @Input() statuses;
     @Input() student: StudentDetails;
     @Input() outcomes: Outcome[];
@@ -26,6 +35,11 @@ export class StudentDisciplineComponent implements OnInit {
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
 
+    @ViewChild(DateMonthYearFilterFormComponent)
+    dmyFormComponent: DateMonthYearFilterFormComponent;
+
+    firstLoad: boolean = true;
+
     studentId: number = 0;
     studentDiscipline: StudentDiscipline;
     studentDisciplines: StudentDiscipline[] = [];
@@ -33,30 +47,69 @@ export class StudentDisciplineComponent implements OnInit {
     constructor(
         private toastr: ToastrService,
         private studentDisciplinesSvc: StudentDisciplinesService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private datePipe: DatePipe
     ) {}
+    ngOnInit(): void {}
 
-    ngOnInit(): void {
+    ngAfterViewInit(): void {
         this.loadStudentDisciplines();
     }
 
+    dateFromChanged = (id: number) => {
+        this.studentDisciplines = [];
+    };
+
+    dateToChanged = (id: number) => {
+        this.studentDisciplines = [];
+    };
+
     loadStudentDisciplines = () => {
+        const today = new Date();
+        const dateFrom = new Date(today.getFullYear(), 0, 1);
+        const dateTo = new Date(today.getFullYear(), 11, 31);
+
+        let dmy = new DateMonthYear();
+        dmy.dateFrom = dateFrom;
+        dmy.dateTo = dateTo;
+
+        this.dmyFormComponent.setFormControls(dmy);
+
+        this.searchByDate(dmy);
+    };
+
+    searchByDate = (dmy: DateMonthYear) => {
         this.route.queryParams.subscribe((params) => {
             this.studentId = params['id'];
-            let disciplineByStudentDetailsIdReq =
-                this.studentDisciplinesSvc.get(
-                    '/studentDisciplines/byStudentId/' +
-                        this.studentId.toString()
-                );
-
-            forkJoin([disciplineByStudentDetailsIdReq]).subscribe(
-                ([studentDisciplines]) => {
-                    this.studentDisciplines = studentDisciplines;
-                },
-                (err) => {
-                    this.toastr.error(err.error);
-                }
-            );
+            this.studentDisciplinesSvc
+                .getByDateFromDateToStudentId(
+                    this.studentId,
+                    this.datePipe.transform(dmy.dateFrom, 'yyyy-MM-dd'),
+                    this.datePipe.transform(dmy.dateTo, 'yyyy-MM-dd')
+                )
+                .subscribe({
+                    next: (studentDisciplines) => {
+                        this.studentDisciplines = studentDisciplines.sort(
+                            (a, b) =>
+                                new Date(
+                                    a?.occurenceStartDate ?? ''
+                                ).getTime() -
+                                new Date(b?.occurenceStartDate ?? '').getTime()
+                        );
+                        if (
+                            this.studentDisciplines.length <= 0 &&
+                            !this.firstLoad
+                        ) {
+                            this.toastr.info(
+                                'No student discipline record/s found for the search parameters!'
+                            );
+                        }
+                        this.firstLoad = false;
+                    },
+                    error: (err) => {
+                        this.toastr.error(err.error);
+                    }
+                });
         });
     };
 

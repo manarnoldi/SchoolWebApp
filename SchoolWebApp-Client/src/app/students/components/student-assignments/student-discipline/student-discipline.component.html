@@ -9,7 +9,8 @@
                     Record student discipline
                 </h5>
             </div>
-            <app-student-discipline-form [studentDiscipline]="studentDiscipline" [statuses]="statuses"
+            <app-student-discipline-form [studentDiscipline]="studentDiscipline"
+                [statuses]="statuses"
                 [student]="student" [outcomes]="outcomes" [occurenceTypes]="occurenceTypes"
                 (addItemEvent)="AddStudentDiscipline($event)"
                 *ngIf="student && outcomes && occurenceTypes"></app-student-discipline-form>
@@ -17,17 +18,20 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right mb-1"
+<div class="row g-0">
+    <div class="col-8">
+        <app-date-month-year-filter-form [showDateFrom]="true"
+            (searchItemEvent)="searchByDate($event)"
+            [showDateTo]="true" (dateFromChangedEvent)="dateFromChanged($event)"
+            (dateToChangedEvent)="dateToChanged($event)"></app-date-month-year-filter-form>
+    </div>
+    <div class="col-4">
+        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right my-1"
             modelName="studentDiscipline" buttonTitle="Add discipline"></app-table-button>
     </div>
 </div>
-<div class="row">
-    <div class="col-12">
-        <app-student-discipline-table [tableTitle]="'Student discipline list'"
-            [studentDisciplines]="studentDisciplines" [showLoginControls]="false"
-            (editItemEvent)="editItem($event)" (viewItemEvent)="editItem($event, 'view')"
-            (deleteItemEvent)="deleteItem($event)"></app-student-discipline-table>
-    </div>
-</div>
+
+<app-student-discipline-table [tableTitle]="'Student discipline list'"
+    [studentDisciplines]="studentDisciplines" [showLoginControls]="false"
+    (editItemEvent)="editItem($event)" (viewItemEvent)="editItem($event, 'view')"
+    (deleteItemEvent)="deleteItem($event)"></app-student-discipline-table>

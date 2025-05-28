@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
+using SchoolWebApp.Core.DTOs.Staff.StaffDiscipline;
 using SchoolWebApp.Core.DTOs.Students.StudentDiscipline;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Entities.Students;
@@ -95,6 +96,35 @@ namespace SchoolWebApp.API.Controllers.Students
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An error occurred while retrieving the student disciplines by student id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/studentDisciplines/byDateFromDateTo/5/2025-05-01/2025-05-31
+        /// <summary>
+        /// A method for retrieving student disciplines by student Id,dateFrom and date to
+        /// </summary>
+        /// <param name="studentId">The student Id to be retrieved</param>
+        /// <param name="dateFrom">The occurence date from to be retrieved</param>
+        /// <param name="dateTo">The occurence date to,to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byDateFromDateTo/{studentId}/{dateFrom}/{dateTo}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentDisciplineDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetByStudentIdDateFromDateTo(int studentId, DateOnly dateFrom, DateOnly dateTo)
+        {
+            try
+            {
+                if (studentId <= 0) return BadRequest(studentId);
+                var _items = await _unitOfWork.StudentDisciplines.GetByStudentDateFromandDateTo(studentId, dateFrom, dateTo);
+                var _itemDto = _mapper.Map<List<StudentDisciplineDto>>(_items);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the student disciplines by student id date from and date to.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }

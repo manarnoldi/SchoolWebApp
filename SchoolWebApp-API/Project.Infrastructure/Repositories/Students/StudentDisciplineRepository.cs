@@ -22,5 +22,18 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
                 .ToListAsync();
             return studentDisciplines;
         }
+
+        public async Task<List<StudentDiscipline>> GetByStudentDateFromandDateTo(int studentId, DateOnly dateFrom, DateOnly dateTo)
+        {
+            var studentDisciplines = await _dbContext.StudentDisciplines
+                .Where(s => s.StudentId == studentId && DateOnly.FromDateTime(s.OccurenceStartDate) >= dateFrom &&
+                DateOnly.FromDateTime(s.OccurenceStartDate) <= dateTo)
+                .Include(s => s.Student)
+                .Include(s => s.Outcome)
+                .Include(s => s.OccurenceType)
+                .ToListAsync();
+
+            return studentDisciplines;
+        }
     }
 }
