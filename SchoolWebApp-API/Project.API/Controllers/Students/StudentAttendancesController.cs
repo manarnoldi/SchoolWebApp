@@ -157,6 +157,84 @@ namespace SchoolWebApp.API.Controllers.Students
             }
         }
 
+        // GET api/studentAttendances/byMonthYearStudentClassId/5/2025/5
+        /// <summary>
+        /// A method for retrieving student attendances by month, year, studentClassId.
+        /// </summary>
+        /// <param name="month">The month of the student attendances to be retrieved</param>
+        /// <param name="year">The year of the student attendances to be retrieved</param>
+        /// <param name="studentClassId">The student class Id of the student attendances to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byMonthYearStudentClassId/{month}/{year}/{studentClassId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentAttendanceDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetByMonthYearStudentClassId(int month, int year, int studentClassId)
+        {
+            try
+            {
+                if (month <= 0) return BadRequest(month);
+                if (year <= 0) return BadRequest(year);
+                if (studentClassId <= 0) return BadRequest(studentClassId);
+
+                var _item = await _unitOfWork.StudentAttendances.GetByMonthYearStudentClassId(month, year, studentClassId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<StudentAttendanceDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the student attendances by month, year and student class id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/studentAttendances/getDistictMonths
+        /// <summary>
+        /// A method for retrieving distinct months from student attendances
+        /// </summary>
+        /// <returns> A distinct list of months </returns>
+        [HttpGet("getDistictMonths")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<int>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetDistinctMonths()
+        {
+            try
+            {
+                var _items = await _unitOfWork.StudentAttendances.GetDistinctMonths();
+                return Ok(_items);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the student attendances distinct months.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/studentAttendances/getDistictYears
+        /// <summary>
+        /// A method for retrieving distinct years from student attendances
+        /// </summary>
+        /// <returns> A distinct list of years</returns>
+        [HttpGet("getDistictYears")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<int>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetDistinctYears()
+        {
+            try
+            {
+                var _items = await _unitOfWork.StudentAttendances.GetDistinctYears();
+                return Ok(_items);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the student attendances distinct years.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+
         // GET api/studentAttendances/5
         /// <summary>
         /// A method for retrieving of student attendances record by Id.

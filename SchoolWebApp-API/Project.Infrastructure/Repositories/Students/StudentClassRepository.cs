@@ -19,6 +19,7 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
                 .Where(e => e.StudentId == studentId)
                 .Include(f => f.Student)
                 .Include(f => f.SchoolClass)
+                .Include(f => f.SchoolClass.AcademicYear)
                 .ToListAsync();
             return studentClasses;
         }

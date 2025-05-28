@@ -1,5 +1,16 @@
 <form class="px-0" [formGroup]="dateMonthYearFilterForm" (ngSubmit)="onSubmit()" novalidate>
     <div class="row g-0">
+        <ng-content *ngIf="showSchoolClass">
+            <div class="col py-1 px-1">
+                <select class="form-select form-select-sm" aria-label="Student class "
+                    (change)="studentClassChanged()"
+                    formControlName="studentClassId" id="studentClassId">
+                    <option [ngValue]="null" selected>-Student class-</option>
+                    <option [ngValue]="studentClass.id" *ngFor="let studentClass of
+                                studentClasses">{{studentClass.schoolClass?.name}}</option>
+                </select>
+            </div>
+        </ng-content>
         <ng-content *ngIf="showMonth">
             <div class="col py-1 pe-0">
                 <select class="form-select form-select-sm" aria-label="Month"

@@ -10,6 +10,12 @@ import {SchoolClassesService} from '@/class/services/school-classes.service';
 import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 import {SchoolClass} from '@/class/models/school-class';
+import {DateMonthYear} from '@/shared/models/date-month-year';
+import {AcademicYearsService} from '@/school/services/academic-years.service';
+import {AcademicYear} from '@/school/models/academic-year';
+import {DateMonthYearFilterFormComponent} from '@/shared/components/date-month-year-filter-form/date-month-year-filter-form.component';
+import {StudentClass} from '@/students/models/student-class';
+import {StudentClassService} from '@/students/services/student-class.service';
 
 @Component({
     selector: 'app-student-attendance',
@@ -23,15 +29,25 @@ export class StudentAttendanceComponent implements OnInit {
     studentAttendanceFormComponent: StudentAttendanceFormComponent;
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
+    @ViewChild(DateMonthYearFilterFormComponent)
+    dmyFormComponent: DateMonthYearFilterFormComponent;
 
+    today = new Date();
     studentId: number = 0;
     studentAttendance: StudentAttendance;
-    studentAttendances: StudentAttendance[];
-    schoolClasses: SchoolClass[];
+    studentAttendances: StudentAttendance[] = [];
+    schoolClasses: SchoolClass[] = [];
+    studentClasses: StudentClass[];
+    months: number[];
+    years: number[];
+
+    firstLoad: boolean = true;
+
     constructor(
         private toastr: ToastrService,
         private studentAttendancesSvc: StudentAttendancesService,
         private schoolClassesSvc: SchoolClassesService,
+        private studentClassesSvc: StudentClassService,
         private route: ActivatedRoute
     ) {}
 
@@ -39,23 +55,151 @@ export class StudentAttendanceComponent implements OnInit {
         this.loadStudentAttendances();
     }
 
+    monthChanged = (month: number) => {
+        this.studentAttendances = [];
+    };
+
+    yearChanged = (year: number) => {
+        this.studentAttendances = [];
+    };
+
+    schoolClassChanged = (sci: number) => {
+        this.studentAttendances = [];
+    };
+
+    // loadStudentAttendances = () => {
+    //     this.route.queryParams.subscribe((params) => {
+    //         this.studentId = params['id'];
+    //         let attendanceByStudentIdReq = this.studentAttendancesSvc.get(
+    //             '/studentAttendances/byStudentId/' + this.studentId.toString()
+    //         );
+    //         let schoolClassesReq = this.schoolClassesSvc.get('/schoolClasses');
+
+    //         forkJoin([attendanceByStudentIdReq, schoolClassesReq]).subscribe(
+    //             ([studentAttendances, schoolClasses]) => {
+    //                 this.studentAttendances = studentAttendances;
+    //                 this.schoolClasses = schoolClasses;
+    //             },
+    //             (err) => {
+    //                 this.toastr.error(err.error);
+    //             }
+    //         );
+    //     });
+    // };
+
+    searchStudentAttendances = (dmy: DateMonthYear) => {
+        if (!dmy.studentClassId) {
+            this.toastr.error(
+                'The student class selected is not valid/correct!'
+            );
+            return;
+        } else if (!dmy.month || dmy.month < 1 || dmy.month > 12) {
+            this.toastr.error('The month selected is not valid/correct!');
+            return;
+        } else if (!dmy.year) {
+            this.toastr.error('The year selected is not valid/correct!');
+            return;
+        }
+
+        this.route.queryParams.subscribe((params) => {
+            this.studentId = params['id'];
+            this.studentAttendancesSvc
+                .getByMonthYearSchoolClassId(
+                    dmy.month,
+                    dmy.year,
+                    dmy.studentClassId
+                )
+                .subscribe({
+                    next: (studAttends) => {
+                        this.studentAttendances = studAttends.sort(
+                            (a, b) =>
+                                new Date(a?.date ?? '').getTime() -
+                                new Date(b?.date ?? '').getTime()
+                        );
+                        if (
+                            this.studentAttendances.length <= 0 &&
+                            !this.firstLoad
+                        ) {
+                            this.toastr.info(
+                                'No student attendance record/s found for the search parameters!'
+                            );
+                        }
+                        this.firstLoad = false;
+                    },
+                    error: (err) => {
+                        this.toastr.error(err.error);
+                    }
+                });
+        });
+    };
+
+    // schoolClassChanged = (acadYearId: number) => {
+    //     if (!acadYearId) {
+    //         this.toastr.error(
+    //             'The academic year selected is not valid/correct!'
+    //         );
+    //         return;
+    //     }
+
+    //     this.schoolClassesSvc
+    //         .get('/schoolClasses/byAcademicYearId/1')
+    //         .subscribe({
+    //             next: (schoolClasses) => {
+    //                 this.schoolClasses = schoolClasses.sort((a, b) => a.rank - b.rank);;
+    //             },
+    //             error: (err) => {
+    //                 this.toastr.error(err.error);
+    //             }
+    //         });
+    // };
+
     loadStudentAttendances = () => {
         this.route.queryParams.subscribe((params) => {
             this.studentId = params['id'];
-            let attendanceByStudentIdReq = this.studentAttendancesSvc.get(
-                '/studentAttendances/byStudentId/' + this.studentId.toString()
-            );
+            let monthsReq = this.studentAttendancesSvc.getDistinctMonths();
+            let yearsReq = this.studentAttendancesSvc.getDistinctYears();
             let schoolClassesReq = this.schoolClassesSvc.get('/schoolClasses');
+            let studentClassesReq = this.studentClassesSvc.get(
+                '/studentClasses/byStudentId/' + this.studentId
+            );
 
-            forkJoin([attendanceByStudentIdReq, schoolClassesReq]).subscribe(
-                ([studentAttendances, schoolClasses]) => {
-                    this.studentAttendances = studentAttendances;
-                    this.schoolClasses = schoolClasses;
+            forkJoin([
+                monthsReq,
+                yearsReq,
+                schoolClassesReq,
+                studentClassesReq
+            ]).subscribe({
+                next: ([months, years, schoolClasses, studentClasses]) => {
+                    this.months = months;
+                    this.years = years;
+                    this.schoolClasses = schoolClasses.sort(
+                        (a, b) => a.rank - b.rank
+                    );
+                    this.studentClasses = studentClasses.sort(
+                        (a, b) =>
+                            b.schoolClass?.academicYear.rank -
+                            a.schoolClass?.academicYear.rank
+                    );
+
+                    const topMonth = this.today.getMonth() + 1;                    
+                    const topStudClass = this.studentClasses[0];
+                    const topYear = new Date(
+                        topStudClass.schoolClass?.academicYear?.startDate
+                    ).getFullYear();
+
+                    let dmy = new DateMonthYear();
+                    dmy.month = topMonth;
+                    dmy.year = topYear;
+                    dmy.studentClassId = parseInt(topStudClass.id);
+
+                    this.dmyFormComponent.setFormControls(dmy);
+
+                    this.searchStudentAttendances(dmy);
                 },
-                (err) => {
+                error: (err) => {
                     this.toastr.error(err.error);
                 }
-            );
+            });
         });
     };
 
@@ -143,7 +287,9 @@ export class StudentAttendanceComponent implements OnInit {
                             'Student attendance saved successfully'
                         );
                         this.studentAttendanceFormComponent.closeButton.nativeElement.click();
-                        this.studentAttendanceFormComponent.setFormControls(null);
+                        this.studentAttendanceFormComponent.setFormControls(
+                            null
+                        );
                         this.loadStudentAttendances();
                     },
                     (err) => {

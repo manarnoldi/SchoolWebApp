@@ -4,7 +4,9 @@ export class DateMonthYear {
     public month?: number;
     public year?: number;
 
-     constructor(model?: DateMonthYear) {
+    public studentClassId?: number;
+
+    constructor(model?: DateMonthYear) {
         Object.assign(this, model);
     }
 }

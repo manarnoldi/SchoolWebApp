@@ -45,7 +45,6 @@ namespace SchoolWebApp.Infrastructure.Repositories.Staff
         public async Task<List<int>> GetDistinctMonths()
         {
             var months = await _dbContext.StaffAttendances
-                .Include(s => s.StaffDetails)
                 .Select(s => s.Date.Month)
                 .Distinct()
                 .OrderBy(m => m)
@@ -56,7 +55,6 @@ namespace SchoolWebApp.Infrastructure.Repositories.Staff
         public async Task<List<int>> GetDistinctYears()
         {
             var years = await _dbContext.StaffAttendances
-                .Include(s => s.StaffDetails)
                 .Select(s => s.Date.Year)
                 .Distinct()
                 .OrderByDescending(m => m)

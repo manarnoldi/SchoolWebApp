@@ -48,7 +48,11 @@ export class StudentClassesComponent implements OnInit {
             .get('/studentClasses/byStudentId/' + this.student?.id)
             .subscribe(
                 (studentClasses) => {
-                    this.studentClasses = studentClasses;
+                    this.studentClasses = studentClasses.sort(
+                        (a, b) =>
+                            b.schoolClass?.academicYear?.rank -
+                            a.schoolClass?.academicYear?.rank
+                    );
                 },
                 (err) => {
                     this.toastrSvc.error(err.error?.message);
@@ -62,7 +66,5 @@ export class StudentClassesComponent implements OnInit {
                 this.studentClassChanged.emit(value); // Emit new value
             });
         }
-
-
     }
 }

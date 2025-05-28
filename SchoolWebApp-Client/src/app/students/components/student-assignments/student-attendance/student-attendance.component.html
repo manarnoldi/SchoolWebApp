@@ -9,26 +9,33 @@
                     Record student attendance
                 </h5>
             </div>
-            <app-student-attendance-form [student]="student" [studentAttendance]="studentAttendance" [statuses]="statuses"
-            (addItemEvent)="AddStudentAttendance($event)"
-            *ngIf="student" ></app-student-attendance-form>
+            <app-student-attendance-form [student]="student" [studentAttendance]="studentAttendance"
+                [statuses]="statuses"
+                (addItemEvent)="AddStudentAttendance($event)"
+                *ngIf="student"></app-student-attendance-form>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right mb-1"
+<div class="row g-0">
+    <div class="col-9">
+        <app-date-month-year-filter-form [showMonth]="true" [months]="months" [years]="years"
+            [showSchoolClass]="true"
+            (monthChangedEvent)="monthChanged($event)" [studentClasses]="studentClasses"
+            (yearChangedEvent)="yearChanged($event)"
+            (schoolClassChangedEvent)="schoolClassChanged($event)"
+            [showYear]="true" (schoolClassChangedEvent)="schoolClassChanged($event)"
+            (searchItemEvent)="searchStudentAttendances($event)"></app-date-month-year-filter-form>
+    </div>
+    <div class="col-3">
+        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right my-1"
             modelName="studentAttendance" buttonTitle="Add attendance"></app-table-button>
     </div>
 </div>
-<div class="row">
-    <div class="col-12">
-        <app-student-attendance-table [tableTitle]="'Student attendance list'"
-            [schoolClasses]="schoolClasses" *ngIf="schoolClasses && studentAttendances"
-            [studentAttendances]="studentAttendances" [showLoginControls]="false"
-            (editItemEvent)="editItem($event)" (viewItemEvent)="editItem($event)"
-            (deleteItemEvent)="deleteItem($event)"
-            [student]="student"></app-student-attendance-table>
-    </div>
-</div>
+
+<app-student-attendance-table [tableTitle]="'Student attendance list'"
+    [schoolClasses]="schoolClasses" *ngIf="schoolClasses && studentAttendances"
+    [studentAttendances]="studentAttendances" [showLoginControls]="false"
+    (editItemEvent)="editItem($event)" (viewItemEvent)="editItem($event)"
+    (deleteItemEvent)="deleteItem($event)"
+    [student]="student"></app-student-attendance-table>
