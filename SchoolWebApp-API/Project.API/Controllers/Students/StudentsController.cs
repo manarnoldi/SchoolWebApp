@@ -11,6 +11,8 @@ using SchoolWebApp.Core.DTOs.Students.StudentParent;
 using SchoolWebApp.Core.Entities.Staff;
 using System;
 using SchoolWebApp.Core.Entities.Enums;
+using SchoolWebApp.Core.DTOs.Academics.Exam;
+using SchoolWebApp.Core.DTOs.Staff.StaffDetails;
 
 namespace SchoolWebApp.API.Controllers.Students
 {
@@ -155,7 +157,7 @@ namespace SchoolWebApp.API.Controllers.Students
         /// <returns></returns>
         [HttpGet("byLearningModeId/{learningModeId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetStudentsByLearningModeId(int learningModeId)
@@ -171,6 +173,32 @@ namespace SchoolWebApp.API.Controllers.Students
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An error occurred while retrieving the studnets by learning mode id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/students/studentSearch?status=0
+        /// <summary>
+        /// A method for retrieving student details by searching.
+        /// </summary>
+        /// <param name="status">The status whose students is to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("studentSearch")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> StaffSearch(Status? status)
+        {
+            try
+            {
+                var _item = await _unitOfWork.Students.SearchForStudent(status);
+                var _itemDto = _mapper.Map<List<StudentDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the student by search items.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }

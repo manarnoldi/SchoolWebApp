@@ -22,9 +22,11 @@ export class StudentsTableComponent implements AfterViewInit, OnDestroy {
     @Input() students: StudentDetails[] = [];
     @Input() showLoginControls: Boolean = false;
     @Input() showType: string = 'details';
+    @Input() querySource: string = '';
+    @Input() status: Status = Status.Active;
 
     @Output() deleteItemEvent = new EventEmitter<number>();
-
+ statusT = Status;
     dtOptions: Config = {};
     dtTrigger: Subject<any> = new Subject();
 

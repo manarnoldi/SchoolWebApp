@@ -8,6 +8,7 @@
         <div class="row">
             <div class="col-md-12 p-1">
                 <a [routerLink]="['/students/details']"
+                 [queryParams]="{status: status, source:querySource}"
                     class="btn btn-sm btn-flat btn-warning float-left">
                     <i class="fas fa-angle-double-left"></i> Back to students list
                 </a>
@@ -278,7 +279,7 @@
                             <div *ngIf="readonly || editMode">
                                 <a [routerLink]="['/students/manage/add']"
                                     class="btn btn-sm btn-flat btn-info float-left"
-                                    [queryParams]='{id: student.id, action: "details"}'
+                                    [queryParams]='{id: student?.id, action: "details"}'
                                     title="Manage student" data-ds-toggle="tooltip"
                                     data-ds-original-title="Manage student">
                                     <i class="fas fa-angle-double-right"></i> Manage other student details

@@ -116,7 +116,7 @@ namespace SchoolWebApp.API.Controllers.Staff
         /// <returns></returns>
         [HttpGet("byEmploymentTypeId/{employmentTypeId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StaffDetailDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StaffDetailDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetStaffDetailsByEmploymentTypeId(int employmentTypeId)
@@ -144,7 +144,7 @@ namespace SchoolWebApp.API.Controllers.Staff
         /// <returns></returns>
         [HttpGet("byStaffCategoryId/{staffCategoryId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StaffDetailDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StaffDetailDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetStaffDetailsByStaffCategoryId(int staffCategoryId)
@@ -193,16 +193,17 @@ namespace SchoolWebApp.API.Controllers.Staff
             }
         }
 
-        // GET api/staffDetails/staffSearch?staffCategoryId=5&employmentTypeId=5
+        // GET api/staffDetails/staffSearch?status=0&staffCategoryId=5&employmentTypeId=5
         /// <summary>
         /// A method for retrieving staff details by searching.
         /// </summary>
+        /// <param name="status">The status whose staffs is to be retrieved</param>
         /// <param name="staffCategoryId">The staff category Id whose staffs is to be retrieved</param>
         /// <param name="employmentTypeId">The employment type Id whose staffs is to be retrieved</param>
         /// <returns></returns>
         [HttpGet("staffSearch")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ExamDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StaffDetailDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> StaffSearch(Status? status, int? staffCategoryId = null, int? employmentTypeId = null)

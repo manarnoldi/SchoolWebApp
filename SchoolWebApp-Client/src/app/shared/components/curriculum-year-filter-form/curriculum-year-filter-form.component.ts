@@ -45,7 +45,7 @@ export class CurriculumYearFilterFormComponent implements OnInit {
     status = Status;
 
     constructor(private formBuilder: FormBuilder) {
-        this.statuses = Object.keys(this.status).filter((k) =>
+        this.statuses = Object.keys(Status).filter((k) =>
             isNaN(Number(k))
         );
     }
@@ -62,7 +62,7 @@ export class CurriculumYearFilterFormComponent implements OnInit {
             staffCategoryId: cysSearch.staffCategoryId ?? null,
             employmentTypeId: cysSearch.employmentTypeId ?? null,
             learningModeId: cysSearch.learningModeId ?? null,
-            status: this.statuses[cysSearch.status] ?? null
+            status: cysSearch.status ?? null
         });
     };
 

@@ -1,5 +1,6 @@
 export enum Status {
     Active,
     Suspended,
-    Terminated
+    Terminated,
+    Alumni
 }

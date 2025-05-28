@@ -4,6 +4,7 @@
     {
         Active,
         Suspended,
-        Terminated
+        Terminated,
+        Alumni
     }
 }

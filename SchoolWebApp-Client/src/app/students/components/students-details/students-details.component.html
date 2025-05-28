@@ -3,9 +3,24 @@
     [breadcrumbs]="breadcrumbs"></app-dashboard-header>
 <hr>
 <section class="content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
+    <div class="container-fluid px-1">
+        <div class="row g-0">
+            <ng-content *ngIf="querySource==='dashboard'">
+                <div class="col">
+                    <a
+                        class="btn btn-flat btn-sm btn-warning float-left my-1"
+                        [routerLink]="['/']"
+                        [routerLinkActive]="'active'"><i class="fas fa-angle-double-left"></i>
+                        Back
+                    </a>
+                </div>
+            </ng-content>
+            <div class="col">
+                <app-curriculum-year-filter-form (searchItemEvent)="searchClicked($event)"
+                    (statusChangedEvent)="statusChanged($event)"
+                    [showPersonStatus]="true"></app-curriculum-year-filter-form>
+            </div>
+            <div class="col">
                 <a
                     [routerLink]="['/students/details/add']"
                     [routerLinkActive]="'active'"
@@ -14,7 +29,8 @@
                 </a>
             </div>
         </div>
-        <app-students-table *ngIf="students" [students]="students" [showType]="sourceLink"
-        (deleteItemEvent)="deleteItem($event)"></app-students-table>
+        <app-students-table *ngIf="students && showTable" [students]="students"
+            [showType]="sourceLink" [status]="status"
+            (deleteItemEvent)="deleteItem($event)" [querySource]="querySource"></app-students-table>
     </div>
 </section>

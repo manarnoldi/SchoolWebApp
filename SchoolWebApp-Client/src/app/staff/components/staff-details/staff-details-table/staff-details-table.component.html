@@ -14,7 +14,9 @@
                 </thead>
                 <tbody>
                     <tr *ngFor="let item of staffs"
-                        [ngClass]="item.status === status.Terminated ? 'bg-danger-subtle': item.status === status.Suspended ? 'bg-warning-subtle':''">
+                        [ngClass]="item.status === statusT.Terminated ? 'bg-danger-subtle': 
+                        item.status === statusT.Suspended ? 'bg-warning-subtle':
+                        item.status === statusT.Alumni ? 'bg-success-subtle':''">
                         <td *ngIf="showLoginControls">
                             <a [routerLink]="['/users/add']"
                                 [queryParams]="{id: item.id}" class="edit"
@@ -33,31 +35,31 @@
                         <td
                             *ngIf="showType === 'details'">
                             <!-- <ng-content *ngIf="item.status !== status.Terminated"> -->
-                                <a [routerLink]="['/staff/details/add']"
-                                    [queryParams]="{id: item.id, action: 'view'}"
-                                    class="view" title data-toggle="tooltip"
-                                    data-original-title="View">
-                                    <i class="fas fa-eye"></i></a>
-                                <span> | </span>
-                                <a [routerLink]="['/staff/details/add']"
-                                    [queryParams]="{id: item.id, action: 'edit'}" class="edit"
-                                    title
-                                    data-toggle="tooltip" data-original-title="Edit">
-                                    <i class="fas fa-edit"></i></a>
-                                <span> | </span>
-                                <a class="delete" title data-toggle="tooltip"
-                                    (click)="deleteStaff(item.id)"
-                                    data-original-title="Delete">
-                                    <i class="fas fa-trash-alt"></i></a>
+                            <a [routerLink]="['/staff/details/add']"
+                                [queryParams]="{id: item.id, action: 'view'}"
+                                class="view" title data-toggle="tooltip"
+                                data-original-title="View">
+                                <i class="fas fa-eye"></i></a>
+                            <span> | </span>
+                            <a [routerLink]="['/staff/details/add']"
+                                [queryParams]="{id: item.id, action: 'edit'}" class="edit"
+                                title
+                                data-toggle="tooltip" data-original-title="Edit">
+                                <i class="fas fa-edit"></i></a>
+                            <span> | </span>
+                            <a class="delete" title data-toggle="tooltip"
+                                (click)="deleteStaff(item.id)"
+                                data-original-title="Delete">
+                                <i class="fas fa-trash-alt"></i></a>
                             <!-- </ng-content> -->
                         </td>
                         <td *ngIf="showType === 'manage'">
                             <!-- <ng-content *ngIf="item.status !== status.Terminated"> -->
-                                <a [routerLink]="['/staff/manage/add']"
-                                    [queryParams]='{id: item.id, action: showType}'
-                                    class="view" title="Manage staff" data-toggle="tooltip"
-                                    data-original-title="Manage staff">
-                                    <i class="fas fa-wrench"></i> Manage staff</a>
+                            <a [routerLink]="['/staff/manage/add']"
+                                [queryParams]='{id: item.id, action: showType}'
+                                class="view" title="Manage staff" data-toggle="tooltip"
+                                data-original-title="Manage staff">
+                                <i class="fas fa-wrench"></i> Manage staff</a>
                             <!-- </ng-content> -->
                         </td>
                     </tr>

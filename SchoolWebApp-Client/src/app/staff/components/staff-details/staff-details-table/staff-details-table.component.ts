@@ -26,7 +26,7 @@ export class StaffDetailsTableComponent implements AfterViewInit, OnDestroy {
     @Output() deleteItemEvent = new EventEmitter<number>();
 
     statuses;
-    status = Status;
+    statusT = Status;
 
     dtOptions: Config = {};
     dtTrigger: Subject<any> = new Subject();
@@ -57,7 +57,7 @@ export class StaffDetailsTableComponent implements AfterViewInit, OnDestroy {
             //     return row;
             // }
         };
-        this.statuses = Object.keys(this.status).filter((k) =>
+        this.statuses = Object.keys(this.statusT).filter((k) =>
             isNaN(Number(k))
         );
     }

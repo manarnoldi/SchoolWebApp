@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-lg-3 col-6 px-1">
         <a [routerLink]="['/students/details']" class="nounderline"
-            [queryParams]='{active: true}'>
+            [queryParams]="{status: status.Active, source:'dashboard'}">
             <div class="small-box bg-info opacity-60 mb-1 ">
                 <div class="inner">
                     <h3>{{studentCount}}</h3>

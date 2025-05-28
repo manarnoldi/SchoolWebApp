@@ -74,8 +74,8 @@
                     (change)="statusChanged()"
                     formControlName="status" id="status">
                     <option [ngValue]="null" selected>-Status-</option>
-                    <option [ngValue]="status" *ngFor="let status of
-                                    statuses">{{status}}</option>
+                    <option [ngValue]="status[key]" *ngFor="let key of 
+                                    statuses">{{key}}</option>
                 </select>
             </div>
         </ng-content>

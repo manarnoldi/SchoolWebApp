@@ -45,6 +45,8 @@ export class StudentsAddFormComponent implements OnInit {
     religions: Religion[] = [];
     genders: Gender[] = [];
 
+    status: Status = Status.Active;
+    querySource: string = '';
     statusVals = Status;
     statusValues;
 
@@ -74,6 +76,12 @@ export class StudentsAddFormComponent implements OnInit {
     loadDropdowns = () => {
         this.route.queryParams.subscribe((params) => {
             this.studentId = params['id'];
+            this.status = params['status']
+                ? parseInt(params['status'])
+                : Status.Active;
+            this.querySource = params['querySource']
+                ? params['querySource']
+                : '';
             if (params['action'] == 'view') {
                 this.readonly = true;
             } else if (params['action'] == 'edit') {
@@ -213,14 +221,21 @@ export class StudentsAddFormComponent implements OnInit {
                 } successfully!`;
                 forkJoin([reqToProcess]).subscribe(
                     ([addedStudent]) => {
-                        this.editMode = false;
                         this.toastr.success(replyMsg);
                         this.studentForm.reset();
-                        this.router.navigateByUrl(
-                            '/students/manage/add?id=' +
+
+                        if (this.editMode) {
+                            this.editMode = false;
+                            let retUrl = `/students/details?source=${this.querySource}&status=${this.status}`;
+                            this.router.navigateByUrl(retUrl);
+                        } else {
+                            this.editMode = false;
+                            let retUrl =
+                                '/students/manage/add?id=' +
                                 addedStudent.id +
-                                '&action=manage'
-                        );
+                                '&action=manage';
+                            this.router.navigateByUrl(retUrl);
+                        }
                     },
                     (err) => {
                         this.toastr.error(err.error);

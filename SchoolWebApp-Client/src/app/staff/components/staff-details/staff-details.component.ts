@@ -46,7 +46,8 @@ export class StaffDetailsComponent implements OnInit {
         private toastr: ToastrService,
         private router: Router,
         private staffCatSvc: StaffCategoriesService,
-        private empTypeSvc: EmploymentTypeService
+        private empTypeSvc: EmploymentTypeService,
+        private route: ActivatedRoute
     ) {
         this.statuses = Object.keys(this.status).filter((k) =>
             isNaN(Number(k))
@@ -120,66 +121,65 @@ export class StaffDetailsComponent implements OnInit {
     refreshItems = () => {
         let staffCatsReq = this.staffCatSvc.get('/staffCategories');
         let emloyTypesReq = this.empTypeSvc.get('/employmentTypes');
+        this.route.queryParams.subscribe((params) => {
+            forkJoin([staffCatsReq, emloyTypesReq]).subscribe({
+                next: ([staffCats, empTypes]) => {
+                    let cysPass = new CurriculumYearStaff();
+                    cysPass.academicYearId = null;
+                    cysPass.curriculumId = null;
+                    cysPass.status = Status.Active;
 
-        forkJoin([staffCatsReq, emloyTypesReq]).subscribe({
-            next: ([staffCats, empTypes]) => {
-                let cysPass = new CurriculumYearStaff();
-                cysPass.academicYearId = null;
-                cysPass.curriculumId = null;
-                cysPass.status = Status.Active;
+                    let linkMain = this.router.url.split('?')[0];
+                    this.sourceLink =
+                        linkMain.split('/')[linkMain.split('/').length - 1];
 
-                let linkMain = this.router.url.split('?')[0];
-                let linkParams = this.router.url.split('?')[1];
-                this.sourceLink =
-                    linkMain.split('/')[linkMain.split('/').length - 1];
-
-                linkParams?.split('&').forEach((link) => {
-                    if (link.includes('status'))
-                        cysPass.status = parseInt(link.split('=')[1]);
-                    if (link.includes('employmentTypeId'))
-                        cysPass.employmentTypeId = parseInt(link.split('=')[1]);
-                    if (link.includes('staffCategoryId'))
-                        cysPass.staffCategoryId = parseInt(link.split('=')[1]);
-                    if (link.includes('dashboard'))
-                        this.querySource = link.split('=')[1];
-                });
-
-                this.cyfFormComponent.setFormControls(cysPass);
-                this.staffsSvc
-                    .getBySearchDetails(
-                        cysPass.status,
-                        cysPass.employmentTypeId,
-                        cysPass.staffCategoryId
-                    )
-                    .subscribe({
-                        next: (staffs) => {
-                            this.staffCats = staffCats;
-                            this.empTypes = empTypes;
-                            this.staffs = staffs;
-                            this.showTable = true;
-                            if (this.itemDeleted) {
-                                this.toastr.success(
-                                    'Record deleted successfully!'
-                                );
-                                this.itemDeleted = false;
-                                let currentUrl = this.router.url;
-                                this.router
-                                    .navigateByUrl('/', {
-                                        skipLocationChange: true
-                                    })
-                                    .then(() =>
-                                        this.router.navigate([currentUrl])
+                    cysPass.status = params['status']
+                        ? params['status']
+                        : Status.Active;
+                    cysPass.employmentTypeId = params['employmentTypeId']
+                        ? parseInt(params['employmentTypeId'])
+                        : null;
+                    cysPass.staffCategoryId = params['staffCategoryId']
+                        ? parseInt(params['staffCategoryId'])
+                        : null;
+                    this.querySource = params['source'];
+                    this.cyfFormComponent.setFormControls(cysPass);
+                    this.staffsSvc
+                        .getBySearchDetails(
+                            cysPass.status,
+                            cysPass.employmentTypeId,
+                            cysPass.staffCategoryId
+                        )
+                        .subscribe({
+                            next: (staffs) => {
+                                this.staffCats = staffCats;
+                                this.empTypes = empTypes;
+                                this.staffs = staffs;
+                                this.showTable = true;
+                                if (this.itemDeleted) {
+                                    this.toastr.success(
+                                        'Record deleted successfully!'
                                     );
+                                    this.itemDeleted = false;
+                                    let currentUrl = this.router.url;
+                                    this.router
+                                        .navigateByUrl('/', {
+                                            skipLocationChange: true
+                                        })
+                                        .then(() =>
+                                            this.router.navigate([currentUrl])
+                                        );
+                                }
+                            },
+                            error: (err) => {
+                                this.toastr.error(err.error);
                             }
-                        },
-                        error: (err) => {
-                            this.toastr.error(err.error);
-                        }
-                    });
-            },
-            error: (err) => {
-                this.toastr.error(err.error);
-            }
+                        });
+                },
+                error: (err) => {
+                    this.toastr.error(err.error);
+                }
+            });
         });
     };
 }

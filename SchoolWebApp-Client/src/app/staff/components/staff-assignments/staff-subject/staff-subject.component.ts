@@ -49,8 +49,6 @@ export class StaffSubjectComponent implements OnInit {
         private staffSubjectsSvc: StaffSubjectsService,
         private route: ActivatedRoute,
         private academicYearsSvc: AcademicYearsService,
-        private learningLevelsSvc: LearningLevelsService,
-        private schoolStreamsSvc: SchoolStreamsService,
         private schoolClassesSvc: SchoolClassesService
     ) {}
 
