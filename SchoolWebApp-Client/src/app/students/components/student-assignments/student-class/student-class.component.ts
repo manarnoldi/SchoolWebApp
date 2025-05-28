@@ -8,7 +8,13 @@ import {AcademicYear} from '@/school/models/academic-year';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {StudentDetails} from '@/students/models/student-details';
 import {StudentDetailsService} from '@/students/services/student-details.service';
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    Input,
+    OnInit,
+    ViewChild
+} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
@@ -17,13 +23,17 @@ import {TableButtonComponent} from '@/shared/directives/table-button/table-butto
 import {StudentClass} from '@/students/models/student-class';
 import {StudentClassService} from '@/students/services/student-class.service';
 import Swal from 'sweetalert2';
+import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
+import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
+import {SchoolClass} from '@/class/models/school-class';
+import {SchoolClassesService} from '@/class/services/school-classes.service';
 
 @Component({
     selector: 'app-student-class',
     templateUrl: './student-class.component.html',
     styleUrl: './student-class.component.scss'
 })
-export class StudentClassComponent implements OnInit {
+export class StudentClassComponent implements AfterViewInit {
     @Input() statuses;
     @Input() student: StudentDetails;
     @Input() academicYears: AcademicYear[];
@@ -34,33 +44,84 @@ export class StudentClassComponent implements OnInit {
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
 
+    @ViewChild(CurriculumYearFilterFormComponent)
+    cyfFormComponent: CurriculumYearFilterFormComponent;
+
+    firstLoad: boolean = true;
+
     studentId: number = 0;
     studentClass: StudentClass;
     studentClasses: StudentClass[];
+
+    schoolClasses: SchoolClass[];
+
     constructor(
         private toastr: ToastrService,
         private studentClassSvc: StudentClassService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private schoolClassesSvc: SchoolClassesService
     ) {}
 
-    ngOnInit(): void {
+    ngAfterViewInit(): void {
         this.loadStudentClasses();
     }
 
     loadStudentClasses = () => {
+        const year = this.academicYears.sort((a, b) => b.rank - a.rank)[0];
+        let dmy = new CurriculumYearPerson();
+        dmy.academicYearId = parseInt(year.id);
+        this.cyfFormComponent.setFormControls(dmy);
+        this.searchForClasses(dmy);
+    };
+
+    yearChanged = (yearId: number) => {
+        this.schoolClasses = [];
+        if (!yearId || yearId <= 0) {
+            this.toastr.error('Select year first!');
+            return;
+        }
+        this.schoolClassesSvc.getByAcademicYearId(yearId).subscribe({
+            next: (schoolClasses) => {
+                this.schoolClasses = schoolClasses.sort(
+                    (a, b) => a.rank - b.rank
+                );
+            },
+            error: (err) => {
+                this.toastr.error(err.error);
+            }
+        });
+    };
+
+    academicYearChanged = (id: number) => {
+        this.studentClasses = [];
+    };
+
+    searchForClasses = (cyf: CurriculumYearPerson) => {
+        if (!cyf.academicYearId) {
+            this.toastr.error('Select academic year before clicking search!');
+            return;
+        }
         this.route.queryParams.subscribe((params) => {
             this.studentId = params['id'];
-            let sClassesByStudIdReq = this.studentClassSvc.get(
-                '/studentClasses/byStudentId/' + this.studentId.toString()
-            );
-            forkJoin([sClassesByStudIdReq]).subscribe(
-                ([studentClasses]) => {
-                    this.studentClasses = studentClasses;
-                },
-                (err) => {
-                    this.toastr.error(err.error);
-                }
-            );
+            this.studentClassSvc
+                .getByStudentYearId(this.studentId, cyf.academicYearId)
+                .subscribe({
+                    next: (studentClasses) => {
+                        this.studentClasses = studentClasses;
+                        if (
+                            this.studentClasses.length <= 0 &&
+                            !this.firstLoad
+                        ) {
+                            this.toastr.info(
+                                'No student classes record/s found for the search parameters!'
+                            );
+                        }
+                        this.firstLoad = false;
+                    },
+                    error: (err) => {
+                        this.toastr.error(err.error);
+                    }
+                });
         });
     };
 

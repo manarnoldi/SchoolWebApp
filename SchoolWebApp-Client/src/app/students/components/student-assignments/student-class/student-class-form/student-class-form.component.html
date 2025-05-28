@@ -4,10 +4,38 @@
             [alignment]="'reduced'"
             *ngIf="statuses"></app-student-details-view>
         <div class="border border-info my-1 p-1 rounded">
-            <app-year-class-stream #yearClassStream [academicYears]="academicYears"
-                [learningLevels]="learningLevels"
-                [schoolStreams]="schoolStreams" [f]="studentClassForm"
-                (controlsChanged)="yearClassStreamUpdated($event)"></app-year-class-stream>
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="academicYearId" class="form-label">Academic year:</label>
+                        <select [attr.disabled]="action!=='add' ? 'disabled':null"
+                            class="form-select form-select-sm" (change)="yearChanged()"
+                            aria-label="Select year" formControlName="academicYearId"
+                            id="academicYearId">
+                            <option [ngValue]="null" hidden disabled selected>-Select year-</option>
+                            <option [ngValue]="academicYear.id" *ngFor="let academicYear of
+                            academicYears">{{academicYear.name}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="schoolClassId" class="form-label">Class:</label>
+                        <input type="text" class="form-control form-control-sm" disabled
+                            *ngIf="action!=='add'" value="{{schoolClassName}}" />
+                        <select *ngIf="action==='add'"
+                            [attr.disabled]="action!=='add' ? 'disabled':null"
+                            class="form-select form-select-sm"
+                            aria-label="Select class" formControlName="schoolClassId"
+                            id="schoolClassId">
+                            <option [ngValue]="null" hidden disabled selected>-Select
+                                class-</option>
+                            <option [ngValue]="schoolClass.id" *ngFor="let schoolClass of
+                            schoolClasses">{{schoolClass.name}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-12">
                     <div class="form-group">
@@ -16,13 +44,6 @@
                             [readOnly]="action==='view'"
                             class="form-control" rows="2" formControlName="description"></textarea>
                     </div>
-                </div>
-            </div>
-            <div class="row p-1" align="right" *ngIf="!buttonSubmitActive">
-                <div class="col-md-12">
-                    <a (click)="goToRegisteredClasses()" class="edit" title data-toggle="tooltip"
-                        role="button"
-                        data-original-title="View registered classes"> <i class="fas fa-eye"></i> View registered classes</a>
                 </div>
             </div>
         </div>

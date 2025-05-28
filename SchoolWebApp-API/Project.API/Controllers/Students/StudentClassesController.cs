@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.API.Utils;
 using SchoolWebApp.Core.DTOs;
+using SchoolWebApp.Core.DTOs.Staff.StaffSubject;
 using SchoolWebApp.Core.DTOs.Students.FormerSchool;
 using SchoolWebApp.Core.DTOs.Students.StudentClass;
 using SchoolWebApp.Core.Entities.Class;
@@ -124,6 +125,36 @@ namespace SchoolWebApp.API.Controllers.Students
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An error occurred while retrieving the student classes by school class id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/studentClasses/byStudentYearId/5/5
+        /// <summary>
+        /// A method for retrieving student classes by student id and year id.
+        /// </summary>
+        /// <param name="studentId">The student Id whose student classes will be retrieved</param>
+        /// <param name="yearId">The year Id whose student classes will be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byStudentYearId/{studentId}/{yearId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentClassDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetByStudentYearId(int studentId, int yearId)
+        {
+            try
+            {
+                if (studentId <= 0) return BadRequest(studentId);
+                if (yearId <= 0) return BadRequest(yearId);
+                var _item = await _unitOfWork.StudentClasses.GetByStudentYearId(studentId, yearId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<StudentClassDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the student classes by student id and year id.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }

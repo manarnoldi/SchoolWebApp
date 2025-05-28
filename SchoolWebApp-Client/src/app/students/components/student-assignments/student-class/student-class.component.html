@@ -10,8 +10,9 @@
                 </h5>
             </div>
             <app-student-class-form [studentClass]="studentClass"
-                [statuses]="statuses"
+                [statuses]="statuses" [schoolClasses]="schoolClasses"
                 [student]="student" [schoolStreams]="schoolStreams"
+                (yearChangedEvent)="yearChanged($event)"
                 [learningLevels]="learningLevels" [academicYears]="academicYears"
                 (addItemEvent)="AddStudentClass($event)"
                 *ngIf="student && academicYears && learningLevels && schoolStreams"></app-student-class-form>
@@ -19,20 +20,23 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right mb-1"
+<div class="row g-0">
+    <div class="col-6">
+        <app-curriculum-year-filter-form [academicYears]="academicYears"
+            (searchItemEvent)="searchForClasses($event)"
+            (academicYearChangedEvent)="academicYearChanged($event)"
+            [showAcademicYear]="true"></app-curriculum-year-filter-form>
+    </div>
+    <div class="col-6">
+        <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right my-1"
             modelName="studentClass" buttonTitle="Add class"></app-table-button>
     </div>
 </div>
-<div class="row">
-    <div class="col-12">
-        <app-student-class-table [tableTitle]="'Student classes list'"
-            [studentClasses]="studentClasses" [showLoginControls]="false"
-            [academicYears]="academicYears" [learningLevels]="learningLevels"
-            [schoolStreams]="schoolStreams"
-            *ngIf="student && academicYears && learningLevels && schoolStreams &&  studentClasses"
-            (editItemEvent)="editItem($event)" (viewItemEvent)="editItem($event, 'view')"
-            (deleteItemEvent)="deleteItem($event)"></app-student-class-table>
-    </div>
-</div>
+
+<app-student-class-table [tableTitle]="'Student classes list'"
+    [studentClasses]="studentClasses" [showLoginControls]="false"
+    [academicYears]="academicYears" [learningLevels]="learningLevels"
+    [schoolStreams]="schoolStreams"
+    *ngIf="student && academicYears && learningLevels && schoolStreams &&  studentClasses"
+    (editItemEvent)="editItem($event)" (viewItemEvent)="editItem($event, 'view')"
+    (deleteItemEvent)="deleteItem($event)"></app-student-class-table>

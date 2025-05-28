@@ -8,5 +8,6 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.Students
         Task<List<StudentClass>> GetByStudentId(int studentId);
         Task<List<StudentClass>> GetBySchoolClassId(int schoolClassId);
         Task<bool> CheckIfStudentAssignedForYear(int schoolClassId, int studentId);
+        Task<List<StudentClass>> GetByStudentYearId(int studentId, int yearId);
     }
 }
