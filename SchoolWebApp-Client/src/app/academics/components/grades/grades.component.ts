@@ -1,15 +1,17 @@
-import { TableButtonComponent } from '@/shared/directives/table-button/table-button.component';
+import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
 import {Component, OnInit, ViewChild} from '@angular/core';
-import { GradesAddFormComponent } from './grades-add-form/grades-add-form.component';
-import { forkJoin, Subscription } from 'rxjs';
-import { BreadCrumb } from '@/core/models/bread-crumb';
-import { Grade } from '@/academics/models/grade';
-import { Curriculum } from '@/academics/models/curriculum';
-import { ToastrService } from 'ngx-toastr';
-import { TableSettingsService } from '@/shared/services/table-settings.service';
-import { GradesService } from '@/academics/services/grades.service';
-import { CurriculumService } from '@/academics/services/curriculum.service';
+import {GradesAddFormComponent} from './grades-add-form/grades-add-form.component';
+import {forkJoin, Subscription} from 'rxjs';
+import {BreadCrumb} from '@/core/models/bread-crumb';
+import {Grade} from '@/academics/models/grade';
+import {Curriculum} from '@/academics/models/curriculum';
+import {ToastrService} from 'ngx-toastr';
+import {TableSettingsService} from '@/shared/services/table-settings.service';
+import {GradesService} from '@/academics/services/grades.service';
+import {CurriculumService} from '@/academics/services/curriculum.service';
 import Swal from 'sweetalert2';
+import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
+import { CurriculumYearFilterFormComponent } from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
 
 @Component({
     selector: 'app-grades',
@@ -21,12 +23,15 @@ export class GradesComponent implements OnInit {
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
     @ViewChild(GradesAddFormComponent)
     gradeForm: GradesAddFormComponent;
+    @ViewChild(CurriculumYearFilterFormComponent)
+    cyfFormComponent: CurriculumYearFilterFormComponent;
+    
     tblShowViewButton: true;
     isAuthLoading: boolean;
 
+    firstLoad: boolean = true;
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
     pageSubscription: Subscription;
     pageSizeSubscription: Subscription;
 
@@ -40,6 +45,7 @@ export class GradesComponent implements OnInit {
     tableHeaders: string[] = [
         'Name',
         'Abbreviation',
+        'Rank',
         'Minimum Score',
         'Maximum Score',
         'Points',
@@ -70,17 +76,45 @@ export class GradesComponent implements OnInit {
         );
     }
 
+    searchClicked = (cys: CurriculumYearPerson) => {
+        let searchStr = `/grades/byCurriculumId?curriculumId=${cys.curriculumId ?? ''}`;
+        this.gradesSvc.get(searchStr).subscribe({
+            next: (grades) => {
+                this.grades = grades.sort((a, b) => a.rank - b.rank);
+
+                if (this.grades.length <= 0 && !this.firstLoad) {
+                    this.toastr.info(
+                        'No record found for the selected curriculum!'
+                    );
+                }
+                this.isAuthLoading = false;
+                 this.firstLoad = false;
+            },
+            error: (err) => this.toastr.error(err.error)
+        });
+    };
+
+    curriculumChanged = (id: number) => {
+        this.grades = [];
+    };
+
     refreshItems() {
-        let gradesReq = this.gradesSvc.get('/grades');
         let curriculaReq = this.curriculumSvc.get('/curricula');
 
-        forkJoin([gradesReq, curriculaReq]).subscribe(
-            ([grades, curricular]) => {
-                this.collectionSize = grades.length;
-                this.grades = grades.sort(
-                    (a, b) => parseInt(a.id) - parseInt(b.id)
-                );
-                this.curricula = curricular;
+        forkJoin([curriculaReq]).subscribe(
+            ([curricula]) => {
+                this.isAuthLoading = false;
+                this.gradeForm.editMode = false;
+
+                this.curricula = curricula.sort((a, b) => a.rank - b.rank);
+                const topCurriculum = this.curricula[0];
+
+                let cysPass = new CurriculumYearPerson();
+                cysPass.curriculumId = parseInt(topCurriculum.id);
+
+                this.cyfFormComponent.setFormControls(cysPass);
+                this.cyfFormComponent.onSubmit();
+
                 this.isAuthLoading = false;
                 this.gradeForm.editMode = false;
             },

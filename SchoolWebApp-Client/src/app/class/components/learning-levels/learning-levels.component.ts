@@ -32,7 +32,6 @@ export class LearningLevelsComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
     pageSubscription: Subscription;
     pageSizeSubscription: Subscription;
 
@@ -55,6 +54,8 @@ export class LearningLevelsComponent implements OnInit {
     learningLevels: LearningLevel[] = [];
     educationLevels: EducationLevel[] = [];
     curricula: Curriculum[] = [];
+
+    firstLoad: boolean = true;
 
     constructor(
         private toastr: ToastrService,
@@ -101,7 +102,6 @@ export class LearningLevelsComponent implements OnInit {
 
     curriculumChanged = (id: number) => {
         this.learningLevels = [];
-        this.collectionSize = 0;
     };
 
     searchClicked = (cys: CurriculumYearPerson) => {
@@ -111,12 +111,12 @@ export class LearningLevelsComponent implements OnInit {
                 this.learningLevels = learningLevels.sort(
                     (a, b) => a.rank - b.rank
                 );
-                this.collectionSize = learningLevels.length;
-                if (this.collectionSize <= 0) {
+                if (this.learningLevels.length <= 0 && !this.firstLoad) {
                     this.toastr.info(
                         'No record found for the selected curriculum!'
                     );
                 }
+                this.firstLoad = false;
                 this.isAuthLoading = false;
             },
             error: (err) => this.toastr.error(err.error)

@@ -1,5 +1,5 @@
-import { ResourceModel } from "@/core/models/ResourceModel";
-import { Curriculum } from "./curriculum";
+import {ResourceModel} from '@/core/models/ResourceModel';
+import {Curriculum} from './curriculum';
 
 export class Grade extends ResourceModel<Grade> {
     public name?: string;
@@ -8,14 +8,16 @@ export class Grade extends ResourceModel<Grade> {
     public minScore?: number;
     public maxScore?: number;
     public points?: number;
-    
+
     public remarksSwa?: string;
     public remarksEng?: string;
 
     public curriculumId?: string;
     public curriculum?: Curriculum;
 
+    public rank?: number;
+
     constructor(model?: Partial<Grade>) {
         super(model);
-      }
+    }
 }

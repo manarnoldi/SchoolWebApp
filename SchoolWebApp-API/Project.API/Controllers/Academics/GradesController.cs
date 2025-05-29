@@ -73,14 +73,13 @@ namespace SchoolWebApp.API.Controllers.Academics
         /// <summary>
         /// A method for retrieving grades by curriculum Id.
         /// </summary>
-        /// <param name="id">The curriculum Id to be retrieved</param>
         /// <returns></returns>
-        [HttpGet("byCurriculumId/{curriculumId}")]
+        [HttpGet("byCurriculumId")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GradeDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetGradesByCurriculumId(int curriculumId)
+        public async Task<IActionResult> GetGradesByCurriculumId(int? curriculumId)
         {
             try
             {

@@ -31,7 +31,7 @@ namespace SchoolWebApp.Core.DTOs.Academics.Grade
 
         [Display(Name = "Remarks in English")]
         public string? RemarksEng { get; set; }
-
+        public int Rank { get; set; }
         public int CurriculumId { get; set; }
         public CurriculumDto? Curriculum { get; set; }
     }

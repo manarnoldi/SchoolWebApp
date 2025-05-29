@@ -2,7 +2,9 @@
 using Project.Infrastructure.Data;
 using Project.Infrastructure.Repositories;
 using SchoolWebApp.Core.Entities.Academics;
+using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Interfaces.IRepositories.Academics;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SchoolWebApp.Infrastructure.Repositories.Academics
 {
@@ -11,10 +13,15 @@ namespace SchoolWebApp.Infrastructure.Repositories.Academics
         public GradeRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
         }
-
-        public async Task<List<Grade>> GetByCurriculumId(int curriculumId)
+        public async Task<List<Grade>> GetByCurriculumId(int? curriculumId)
         {
-            var grades = await _dbContext.Grades.Where(e => e.CurriculumId == curriculumId).ToListAsync();
+            var query = _dbContext.Grades
+                .Include(e => e.Curriculum)
+                .AsQueryable();
+            if (curriculumId != null)
+                query = query.Where(e => e.CurriculumId == curriculumId);
+
+            var grades = await query.ToListAsync();
             return grades;
         }
     }
