@@ -27,7 +27,7 @@
             modelName="staffAttendance" buttonTitle="Add attendance"></app-table-button>
     </div>
 </div>
-<app-staff-attendance-table [tableTitle]="'Staff attendance list'"
+<app-staff-attendance-table [tableTitle]="'Staff attendance list'" *ngIf="isDoneLoading"
     [staffAttendances]="staffAttendances" [showLoginControls]="false"
     (editItemEvent)="editItem($event)"
     (deleteItemEvent)="deleteItem($event)"></app-staff-attendance-table>

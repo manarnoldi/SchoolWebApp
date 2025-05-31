@@ -7,7 +7,7 @@ namespace SchoolWebApp.Core.Entities.Shared
         [Display(Name = "Attendance date")]
         public DateTime Date { get; set; }
 
-        public bool Present { get; set; }
+        public bool? Present { get; set; }
 
         public TimeOnly? TimeIn { get; set; }
         public TimeOnly? TimeOut { get; set; }

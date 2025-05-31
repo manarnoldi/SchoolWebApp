@@ -1,0 +1,18 @@
+<form class="px-0" [formGroup]="reportLoaderForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="row g-0">
+        <div class="col">
+            <select class="form-select form-select-sm" aria-label="Report name"
+                formControlName="reportName" id="reportName" (change)="reportNameChanged()">
+                <option [ngValue]="null" selected>-Report name-</option>
+                <option [ngValue]="reportName" *ngFor="let reportName of
+                                    reportNames">{{reportName.title}}</option>
+            </select>
+        </div>
+        <div class="col ps-1">
+            <button type="submit" [disabled]="reportLoaderForm.invalid"
+                class="btn btn-sm btn-flat btn-warning">
+                <i class="fas fa-sync"></i> Load Report
+            </button>
+        </div>
+    </div>
+</form>

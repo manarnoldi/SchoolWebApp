@@ -19,4 +19,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Entities\Report\" />
+  </ItemGroup>
+
 </Project>

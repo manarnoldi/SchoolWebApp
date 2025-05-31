@@ -26,7 +26,6 @@ export class ExamTableComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
     pageSubscription: Subscription;
     pageSizeSubscription: Subscription;
 

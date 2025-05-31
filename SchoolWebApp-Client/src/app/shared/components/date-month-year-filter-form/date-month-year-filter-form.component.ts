@@ -1,5 +1,6 @@
 import {SchoolClass} from '@/class/models/school-class';
 import {AcademicYear} from '@/school/models/academic-year';
+import {StaffCategory} from '@/settings/models/staff-category';
 import {DateMonthYear} from '@/shared/models/date-month-year';
 import {StudentClass} from '@/students/models/student-class';
 import {DatePipe, formatDate} from '@angular/common';
@@ -15,12 +16,14 @@ export class DateMonthYearFilterFormComponent implements OnInit {
     @Input() months: number[] = [];
     @Input() years: number[] = [];
     @Input() studentClasses: StudentClass[] = [];
+    @Input() staffCategories: StaffCategory[] = [];
 
     @Input() showMonth: boolean = false;
     @Input() showYear: boolean = false;
     @Input() showDateFrom: boolean = false;
     @Input() showDateTo: boolean = false;
     @Input() showSchoolClass: boolean = false;
+    @Input() showStaffCategory: boolean = false;
 
     @Output() searchItemEvent = new EventEmitter<DateMonthYear>();
     @Output() monthChangedEvent = new EventEmitter<number>();
@@ -28,6 +31,7 @@ export class DateMonthYearFilterFormComponent implements OnInit {
     @Output() dateFromChangedEvent = new EventEmitter<number>();
     @Output() dateToChangedEvent = new EventEmitter<number>();
     @Output() schoolClassChangedEvent = new EventEmitter<number>();
+    @Output() staffCategoryChangedEvent = new EventEmitter<number>();
 
     dateMonthYearFilterForm: FormGroup;
     dmySearch: DateMonthYear;
@@ -63,6 +67,7 @@ export class DateMonthYearFilterFormComponent implements OnInit {
     setFormControls = (dmySearch: DateMonthYear) => {
         this.dateMonthYearFilterForm.setValue({
             studentClassId: dmySearch.studentClassId ?? null,
+            staffCategoryId: dmySearch.staffCategoryId ?? null,
             month: dmySearch.month ?? null,
             year: dmySearch.year ?? null,
             dateFrom: dmySearch.dateFrom
@@ -77,6 +82,7 @@ export class DateMonthYearFilterFormComponent implements OnInit {
     refreshItems = () => {
         this.dateMonthYearFilterForm = this.formBuilder.group({
             studentClassId: [null],
+            staffCategoryId: [null],
             month: [null],
             year: [null],
             dateFrom: [null],
@@ -108,6 +114,12 @@ export class DateMonthYearFilterFormComponent implements OnInit {
         let studentClassId =
             this.dateMonthYearFilterForm.get('studentClassId').value;
         this.schoolClassChangedEvent.emit(studentClassId);
+    };
+
+    staffCategoryChanged = () => {
+        let staffCategoryId =
+            this.dateMonthYearFilterForm.get('staffCategoryId').value;
+        this.staffCategoryChangedEvent.emit(staffCategoryId);
     };
 
     onSubmit = () => {

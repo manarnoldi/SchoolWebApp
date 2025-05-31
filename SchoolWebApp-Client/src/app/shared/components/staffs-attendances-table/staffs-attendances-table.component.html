@@ -18,7 +18,7 @@
                     <th>Time In (24Hrs)</th>
                     <th>Time Out (24Hrs)</th>
                     <th>Remarks</th>
-                    <th>Action</th>
+                    <th *ngIf="showActions">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -30,6 +30,7 @@
                     <td class="py-11">
                         <div class="icheck-success m-0 p-0">
                             <input type="checkbox" id="{{item.id}}"
+                                [attr.disabled]="!showActions ? 'disabled' : null"
                                 [(ngModel)]="item.isSelected" (change)="itemClicked($event)">
                             <label class="form-check-label" for="{{item.id}}"></label>
                         </div>
@@ -43,12 +44,13 @@
                     <td class="py-11">
                         <div>
                             <textarea placeholder="Enter remarks"
+                                [attr.disabled]="!showActions ? 'disabled' : null"
                                 class="form-control form-control-sm" rows="1"
                                 [(ngModel)]="item.remarks"
                                 id="{{item.remarks}}"></textarea>
                         </div>
                     </td>
-                    <span *ngIf="item.hasRecord">
+                    <span *ngIf="item.hasRecord && showActions">
                         <app-table-action
                             (deleteItemEvent)="deleteItem(item.id)"
                             [tblShowViewButton]="false"

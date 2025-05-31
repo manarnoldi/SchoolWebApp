@@ -1,0 +1,21 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr>
+<section class="content">
+    <div class="container-fluid px-1">
+        <div class="row g-0 card-details-box border-info mt-1 p-1">
+            <div class="col-md-6">
+                <app-reports-loader [reportTitle]="'staff'"
+                    (reportNameChangedEvent)="reportNameChanged($event)"
+                    (searchItemEvent)="searchItem($event)"></app-reports-loader>
+            </div>
+
+        </div>
+        <div class="row g-0 card-details-box border-danger mt-1 p-1" *ngIf="currentReport === 1">
+            <div class="col-md-12">
+                <app-staff-attendance-report></app-staff-attendance-report>
+            </div>
+        </div>
+    </div>
+</section>

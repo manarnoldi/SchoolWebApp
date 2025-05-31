@@ -37,7 +37,7 @@ export class LearningLevelsComponent implements OnInit {
 
     tableModel: string = 'learningLevel';
     breadcrumbs: BreadCrumb[] = [
-        {link: ['/'], title: 'Class'},
+        {link: ['/'], title: 'Dashboard'},
         {link: ['/class/learningLevels'], title: 'Class: Learning Levels'}
     ];
     dashboardTitle = 'Class: Learning Levels';

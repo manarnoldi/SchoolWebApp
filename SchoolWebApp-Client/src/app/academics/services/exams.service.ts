@@ -63,7 +63,7 @@ export class ExamsService extends ResourceService<Exam> {
     ): Observable<Session[]> => {
         return this.sessionSvc
             .get(
-                `/sessions/byCurriculumYearId/${cy.curriculumId}/${cy.academicYearId}`
+                `/sessions/byCurriculumYearId?curriculumId=${cy.curriculumId}&academicYearId=${cy.academicYearId}`
             )
             .pipe(map((sessions) => sessions));
     };
@@ -94,9 +94,9 @@ export class ExamsService extends ResourceService<Exam> {
     ): Observable<SchoolClass[]> => {
         return this.schoolClassesSvc
             .get(
-                '/schoolClasses/byEducationLevelYearId/' +
+                '/schoolClasses/byEducationLevelYearId?educationLevelId=' +
                     ely.educationLevelId +
-                    '/' +
+                    '&academicYearId=' +
                     ely.academicYearId
             )
             .pipe(

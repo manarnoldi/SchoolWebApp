@@ -3,12 +3,12 @@
         <a [routerLink]="['/students/details']" class="nounderline"
             [queryParams]="{status: status.Active, source:'dashboard'}">
             <div class="small-box bg-info opacity-60 mb-1 ">
-                <div class="inner">
-                    <h3>{{studentCount}}</h3>
-                    <p>Students</p>
+                <div class="inner pt-1">
+                    <h4 class="mb-1">{{studentCount}}</h4>
+                    <div>Students</div>
                 </div>
                 <div class="icon">
-                    <i class="fas fa-user-graduate"></i>
+                    <i class="fas fa-user-graduate fs-1"></i>
                 </div>
             </div>
         </a>
@@ -16,12 +16,12 @@
     <div class="col-lg-3 col-6 px-0">
         <a [routerLink]="['/students/parents']" [queryParams]='{active: true}' class="nounderline">
             <div class="small-box bg-success opacity-60 mb-1">
-                <div class="inner">
-                    <h3>{{parentsCount}}</h3>
-                    <p>Parents</p>
+                <div class="inner pt-1">
+                    <h4 class="mb-1" >{{parentsCount}}</h4>
+                    <div>Parents</div>
                 </div>
                 <div class="icon">
-                    <i class="fas fa-user-alt"></i>
+                    <i class="fas fa-user-alt fs-1"></i>
                 </div>
             </div>
         </a>
@@ -31,12 +31,12 @@
             [queryParams]="{status: status.Active, staffCategoryId: teachingStaffCategoryId, source:'dashboard'}"
             class="nounderline">
             <div class="small-box bg-warning opacity-60 mb-1">
-                <div class="inner">
-                    <h3>{{teachingStaffCount}}</h3>
-                    <p>Teaching Staff</p>
+                <div class="inner pt-1">
+                    <h4 class="mb-1">{{teachingStaffCount}}</h4>
+                    <div>Teaching Staff</div>
                 </div>
                 <div class="icon">
-                    <i class="fas fa-user-tie"></i>
+                    <i class="fas fa-user-tie fs-1"></i>
                 </div>
             </div>
         </a>
@@ -46,12 +46,12 @@
             [queryParams]="{status: status.Active, staffCategoryId: nonTeachingStaffCategoryId, source:'dashboard'}"
             class="nounderline">
             <div class="small-box bg-danger opacity-60 mb-1">
-                <div class="inner">
-                    <h3>{{nonTeachingStaffCount}}</h3>
-                    <p>Non-Teaching Staff</p>
+                <div class="inner pt-1">
+                    <h4 class="mb-1">{{nonTeachingStaffCount}}</h4>
+                    <div>Non-Teaching Staff</div>
                 </div>
                 <div class="icon">
-                    <i class="fas fa-user"></i>
+                    <i class="fas fa-user fs-1"></i>
                 </div>
             </div>
         </a>

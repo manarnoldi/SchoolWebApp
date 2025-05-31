@@ -18,11 +18,10 @@ export class StaffAttendanceTableComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
     pageSubscription: Subscription;
     pageSizeSubscription: Subscription;
 
-    constructor(private tableSettingsSvc: TableSettingsService,) {
+    constructor(private tableSettingsSvc: TableSettingsService) {
         
     }
 
@@ -36,6 +35,7 @@ export class StaffAttendanceTableComponent implements OnInit {
     }
 
     tableHeaders: string[] = [
+        'Staff No',
         'Staff Full Name',
         'Month',
         'Year',

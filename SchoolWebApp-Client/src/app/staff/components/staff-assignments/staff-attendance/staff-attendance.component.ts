@@ -32,6 +32,8 @@ export class StaffAttendanceComponent implements OnInit, AfterViewInit {
     @ViewChild(DateMonthYearFilterFormComponent)
     dmyFormComponent: DateMonthYearFilterFormComponent;
 
+    isDoneLoading = false;
+
     today = new Date();
     firstLoad: boolean = true;
     staffId: number = 0;
@@ -67,6 +69,7 @@ export class StaffAttendanceComponent implements OnInit, AfterViewInit {
                 .getByMonthYearStaffId(dmy.month, dmy.year, this.staffId)
                 .subscribe({
                     next: (staffAttends) => {
+                        this.isDoneLoading = true;
                         this.staffAttendances = staffAttends.sort(
                             (a, b) =>
                                 new Date(a?.date ?? '').getTime() -

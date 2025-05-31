@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
+using SchoolWebApp.Core.DTOs.Reports.Staff;
 using SchoolWebApp.Core.DTOs.Staff.StaffAttendance;
 using SchoolWebApp.Core.DTOs.Students.StudentAttendance;
 using SchoolWebApp.Core.Entities.Staff;
@@ -167,6 +168,36 @@ namespace SchoolWebApp.API.Controllers.Staff
             try
             {
                 var _items = await _unitOfWork.StaffAttendances.GetDistinctYears();
+                return Ok(_items);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the staff attendances distinct years.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/staffAttendances/getAttendanceReport/5/2025/1
+        /// <summary>
+        /// A method for retrieving staff attendances report
+        /// </summary>
+        /// <returns> A distinct list of years</returns>
+        /// <param name="month">The month of the staff attendances to be retrieved</param>
+        /// <param name="year">The staff details Id to be retrieved</param>
+        /// <param name="staffCategoryId">The staff category Id of the staff attendances to be retrieved</param>
+        /// <returns>A list of sumarized staff attendance</returns>
+        [HttpGet("getAttendanceReport/{month}/{year}/{staffCategoryId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StaffAttendanceReportDto>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]       
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetAttendanceReport(int month, int year, int staffCategoryId)
+        {
+            try
+            {
+                if (month <= 0) return BadRequest(month);
+                if (year <= 0) return BadRequest(year);
+                if (staffCategoryId <= 0) return BadRequest(staffCategoryId);
+                var _items = await _unitOfWork.StaffAttendances.GetStaffAttendanceReport(month, year, staffCategoryId);
                 return Ok(_items);
             }
             catch (Exception ex)

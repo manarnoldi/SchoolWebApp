@@ -52,18 +52,23 @@ import {StudentsDetailsComponent} from './students/components/students-details/s
 import {StudentAssignmentsComponent} from './students/components/student-assignments/student-assignments.component';
 import {ParentsListComponent} from './students/components/parents/parents-list/parents-list.component';
 import {ParentAddFormComponent} from './students/components/parents/parent-add-form/parent-add-form.component';
-import { SubjectsComponent } from './academics/components/subjects/subjects.component';
-import { ExamsComponent } from './academics/components/exams/exams.component';
-import { ExamAddFormComponent } from './academics/components/exams/exam-add-form/exam-add-form.component';
-import { EducationLevelSubject } from './academics/models/education-level-subject';
-import { EducationLevelSubjectsComponent } from './academics/components/subjects/education-level-subjects/education-level-subjects.component';
-import { Exam } from './academics/models/exam';
-import { ExamResult } from './academics/models/exam-result';
-import { ExamResultsComponent } from './academics/components/exam-results/exam-results.component';
-import { StudentsSubjectsComponent } from './students/components/students-subjects/students-subjects.component';
-import { StudentsSubjectsAddFormComponent } from './students/components/students-subjects/students-subjects-add-form/students-subjects-add-form.component';
-import { StudentsAttendancesComponent } from './students/components/students-attendances/students-attendances.component';
-import { StaffsAttendancesComponent } from './staff/components/staffs-attendances/staffs-attendances.component';
+import {SubjectsComponent} from './academics/components/subjects/subjects.component';
+import {ExamsComponent} from './academics/components/exams/exams.component';
+import {ExamAddFormComponent} from './academics/components/exams/exam-add-form/exam-add-form.component';
+import {EducationLevelSubject} from './academics/models/education-level-subject';
+import {EducationLevelSubjectsComponent} from './academics/components/subjects/education-level-subjects/education-level-subjects.component';
+import {Exam} from './academics/models/exam';
+import {ExamResult} from './academics/models/exam-result';
+import {ExamResultsComponent} from './academics/components/exam-results/exam-results.component';
+import {StudentsSubjectsComponent} from './students/components/students-subjects/students-subjects.component';
+import {StudentsSubjectsAddFormComponent} from './students/components/students-subjects/students-subjects-add-form/students-subjects-add-form.component';
+import {StudentsAttendancesComponent} from './students/components/students-attendances/students-attendances.component';
+import {StaffsAttendancesComponent} from './staff/components/staffs-attendances/staffs-attendances.component';
+import { ReportsComponent } from './reports/reports.component';
+import { SchoolReportComponent } from './reports/components/school-report/school-report.component';
+import { ClassReportComponent } from './reports/components/class-report/class-report.component';
+import { StaffReportComponent } from './reports/components/staff-report/staff-report.component';
+import { AcademicsReportComponent } from './reports/components/academics-report/academics-report.component';
 
 const routes: Routes = [
     {
@@ -145,11 +150,16 @@ const routes: Routes = [
             {path: 'manage', component: StudentsDetailsComponent},
             {path: 'manage/add', component: StudentAssignmentsComponent},
             {path: 'parents', component: ParentsListComponent},
-            { path: 'parents/add', component: ParentAddFormComponent },
-            { path: 'students-subjects', component: StudentsSubjectsComponent },
-            {path: 'students-subjects/add', component: StudentsSubjectsAddFormComponent},
-            {path: 'students-attendances', component: StudentsAttendancesComponent}
-            
+            {path: 'parents/add', component: ParentAddFormComponent},
+            {path: 'students-subjects', component: StudentsSubjectsComponent},
+            {
+                path: 'students-subjects/add',
+                component: StudentsSubjectsAddFormComponent
+            },
+            {
+                path: 'students-attendances',
+                component: StudentsAttendancesComponent
+            }
         ]
     },
     {
@@ -162,7 +172,10 @@ const routes: Routes = [
             {path: 'examTypes', component: ExamTypesComponent},
             {path: 'subjectGroups', component: SubjectGroupsComponent},
             {path: 'subjects', component: SubjectsComponent},
-            {path: 'educationLevelSubjects', component: EducationLevelSubjectsComponent},
+            {
+                path: 'educationLevelSubjects',
+                component: EducationLevelSubjectsComponent
+            },
             {path: 'grades', component: GradesComponent},
             {path: 'exams', component: ExamsComponent},
             {path: 'exams/add', component: ExamAddFormComponent},
@@ -186,6 +199,18 @@ const routes: Routes = [
             {path: 'religions', component: ReligionsComponent},
             {path: 'sessionTypes', component: SessionTypesComponent},
             {path: 'staffCategories', component: StaffCategoriesComponent}
+        ]
+    },
+    {
+        path: 'reports',
+        component: ReportsComponent,
+        canActivate: [AuthGuard],
+        canActivateChild: [AuthGuard],
+        children: [
+            {path: 'school', component: SchoolReportComponent},
+            {path: 'class', component: ClassReportComponent},
+            {path: 'staff', component: StaffReportComponent},
+            {path: 'academics', component: AcademicsReportComponent}
         ]
     },
     {

@@ -23,6 +23,7 @@ import {AcademicsModule} from './academics/academics.module';
 import {StaffModule} from './staff/staff.module';
 import {StudentsModule} from './students/students.module';
 import {ClassModule} from './class/class.module';
+import {ReportsModule} from './reports/reports.module';
 registerLocaleData(localeEn, 'en-EN');
 
 @NgModule({
@@ -35,6 +36,7 @@ registerLocaleData(localeEn, 'en-EN');
         ClassModule,
         AcademicsModule,
         StaffModule,
+        ReportsModule,
         StudentsModule,
         ToastrModule.forRoot({
             timeOut: 10000,

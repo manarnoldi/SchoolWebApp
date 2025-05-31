@@ -1,0 +1,13 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr>
+<section class="content">
+    <div class="container-fluid px-1">
+        <div class="row g-0 card-details-box border-primary mt-1">
+            <div class="col-md-6">
+                <app-reports-loader [reportTitle]="'academics'"></app-reports-loader>
+            </div>
+        </div>
+    </div>
+</section>

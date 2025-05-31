@@ -21,6 +21,7 @@ export class StaffsAttendancesTableComponent implements OnInit {
     @Input() staffs: StaffDetails[] = [];
     @Input() currentDate: Date = new Date();
     @Input() disabled: Boolean = false;
+    @Input() showActions: Boolean = true;
 
     @Output() deleteItemEvent = new EventEmitter<number>();
 

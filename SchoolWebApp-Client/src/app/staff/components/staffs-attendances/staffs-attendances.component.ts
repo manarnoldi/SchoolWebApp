@@ -11,9 +11,10 @@ import {DatePipe} from '@angular/common';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
-import {StaffsAttendancesTableComponent} from './staffs-attendances/staffs-attendances-table/staffs-attendances-table.component';
+import {StaffsAttendancesTableComponent} from '../../../shared/components/staffs-attendances-table/staffs-attendances-table.component';
 import Swal from 'sweetalert2';
-import { StaffAttendanceSearch } from '@/students/models/staff-attendance-search';
+import {StaffAttendanceSearch} from '@/students/models/staff-attendance-search';
+import {Status} from '@/core/enums/status';
 
 @Component({
     selector: 'app-staffs-attendances',
@@ -85,73 +86,83 @@ export class StaffsAttendancesComponent implements OnInit {
         this.saSearch = saSearch;
 
         this.attendanceDate = saSearch.attendanceDate;
-        let searchStr = `/staffDetails/staffSearch?staffCategoryId=${saSearch.staffCategoryId ?? ''}&employmentTypeId=${saSearch.employmentTypeId ?? ''}`;
-        this.staffsSvc.get(searchStr).subscribe({
-            next: (staffs) => {
-                if (staffs.length <= 0) {
-                    this.toastr.info(
-                        'No records found with the search parameters selected!'
-                    );
-                } else {
-                    let checkStaffAttendancesReq = [];
-                    staffs.forEach((sc) => {
-                        let attendDate = this.datePipe.transform(
-                            this.attendanceDate,
-                            'yyyy-MM-dd'
+        this.staffsSvc
+            .getBySearchDetails(
+                Status.Active,
+                saSearch.employmentTypeId,
+                saSearch.staffCategoryId
+            )
+            .subscribe({
+                next: (staffs) => {
+                    if (staffs.length <= 0) {
+                        this.toastr.info(
+                            'No records found with the search parameters selected!'
                         );
-                        let reqString =
-                            '/staffAttendances/byStaffIdAttendanceDate/' +
-                            sc.id +
-                            '/' +
-                            attendDate;
-                        checkStaffAttendancesReq.push(
-                            this.staffAttendancesSvc.getObjectBySearch(
-                                reqString
-                            )
-                        );
-                    });
-
-                    forkJoin(checkStaffAttendancesReq).subscribe({
-                        next: (saRes: StaffAttendance[]) => {
-                            for (let i = 0; i < saRes.length; i++) {
-                                if (saRes[i].id) {
-                                    let [hourIn, minuteIn] = saRes[i].timeIn
-                                        ? saRes[i].timeIn.split(':').map(Number)
-                                        : [8, 0];
-                                    let [hourOut, minuteOut] = saRes[i].timeIn
-                                        ? saRes[i].timeIn.split(':').map(Number)
-                                        : [17, 0];
-
-                                    staffs[i].isSelected = saRes[i].present;
-                                    staffs[i].remarks = saRes[i].remarks;
-                                    staffs[i].hasRecord = true;
-                                    staffs[i].timeIn = {
-                                        hour: hourIn,
-                                        minute: minuteIn
-                                    };
-                                    staffs[i].timeOut = {
-                                        hour: hourOut,
-                                        minute: minuteOut
-                                    };
-                                }
-                            }
-                            this.staffs = staffs.sort((a, b) =>
-                                a.upi.localeCompare(b.upi)
+                    } else {
+                        let checkStaffAttendancesReq = [];
+                        staffs.forEach((sc) => {
+                            let attendDate = this.datePipe.transform(
+                                this.attendanceDate,
+                                'yyyy-MM-dd'
                             );
-                            this.staffsAttendancesTableComponent.staffs =
-                                this.staffs;
-                            this.staffsAttendancesTableComponent.updateCheckAll();
-                        },
-                        error: (err) => {
-                            this.toastr.error(err.error);
-                        }
-                    });
+                            let reqString =
+                                '/staffAttendances/byStaffIdAttendanceDate/' +
+                                sc.id +
+                                '/' +
+                                attendDate;
+                            checkStaffAttendancesReq.push(
+                                this.staffAttendancesSvc.getObjectBySearch(
+                                    reqString
+                                )
+                            );
+                        });
+
+                        forkJoin(checkStaffAttendancesReq).subscribe({
+                            next: (saRes: StaffAttendance[]) => {
+                                for (let i = 0; i < saRes.length; i++) {
+                                    if (saRes[i].id) {
+                                        let [hourIn, minuteIn] = saRes[i].timeIn
+                                            ? saRes[i].timeIn
+                                                  .split(':')
+                                                  .map(Number)
+                                            : [8, 0];
+                                        let [hourOut, minuteOut] = saRes[i]
+                                            .timeIn
+                                            ? saRes[i].timeIn
+                                                  .split(':')
+                                                  .map(Number)
+                                            : [17, 0];
+
+                                        staffs[i].isSelected = saRes[i].present;
+                                        staffs[i].remarks = saRes[i].remarks;
+                                        staffs[i].hasRecord = true;
+                                        staffs[i].timeIn = {
+                                            hour: hourIn,
+                                            minute: minuteIn
+                                        };
+                                        staffs[i].timeOut = {
+                                            hour: hourOut,
+                                            minute: minuteOut
+                                        };
+                                    }
+                                }
+                                this.staffs = staffs.sort((a, b) =>
+                                    a.upi.localeCompare(b.upi)
+                                );
+                                this.staffsAttendancesTableComponent.staffs =
+                                    this.staffs;
+                                this.staffsAttendancesTableComponent.updateCheckAll();
+                            },
+                            error: (err) => {
+                                this.toastr.error(err.error);
+                            }
+                        });
+                    }
+                },
+                error: (err) => {
+                    this.toastr.error(err.error);
                 }
-            },
-            error: (err) => {
-                this.toastr.error(err.error);
-            }
-        });
+            });
     };
 
     deleteAttendance(id: number) {
@@ -210,8 +221,8 @@ export class StaffsAttendancesComponent implements OnInit {
     }
     submitAttendances = () => {
         if (this.staffs.length <= 0)
-        this.toastr.error('There are no records to save!');
-      
+            this.toastr.error('There are no records to save!');
+
         Swal.fire({
             title: `Update staff attendances records?`,
             text: `Confirm if you want to batch update staff attendances.`,
@@ -253,10 +264,7 @@ export class StaffsAttendancesComponent implements OnInit {
                 });
 
                 this.staffAttendancesSvc
-                    .createBatch(
-                        '/staffAttendances/batch',
-                        staffAttendances
-                    )
+                    .createBatch('/staffAttendances/batch', staffAttendances)
                     .subscribe({
                         next: (res) => {
                             this.toastr.success(

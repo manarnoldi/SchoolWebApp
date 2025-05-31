@@ -176,7 +176,7 @@ export const MENU = [
                 path: ['/academics/subjects']
             },
             {
-                name: "Edu-Level Subjects",
+                name: 'Edu-Level Subjects',
                 iconClasses: 'fas fa-bullseye',
                 path: ['/academics/educationLevelSubjects']
             },
@@ -266,6 +266,32 @@ export const MENU = [
                 name: 'Staff categories',
                 iconClasses: 'fas fa-bullseye',
                 path: ['/settings/staffCategories']
+            }
+        ]
+    },
+    {
+        name: 'Reports',
+        iconClasses: 'fas fa-chart-bar',
+        children: [
+            // {
+            //     name: 'School',
+            //     iconClasses: 'fas fa-bullseye',
+            //     path: ['/reports/school']
+            // },
+            {
+                name: 'Staff',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/reports/staff']
+            },
+            {
+                name: 'Class',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/reports/class']
+            },
+            {
+                name: 'Academics',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/reports/academics']
             }
         ]
     }

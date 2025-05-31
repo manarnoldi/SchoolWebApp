@@ -10,6 +10,7 @@ namespace SchoolWebApp.Core.Profiles.Staff
         {
             CreateMap<StaffAttendance, StaffAttendanceDto>();
             CreateMap<StaffAttendanceDto, StaffAttendance>();
+            CreateMap<StaffAttendanceDto, StaffAttendance>();
             CreateMap<CreateStaffAttendanceDto, StaffAttendance>();
             CreateMap<CreateStaffAttendanceDto, StaffAttendanceDto>();
         }

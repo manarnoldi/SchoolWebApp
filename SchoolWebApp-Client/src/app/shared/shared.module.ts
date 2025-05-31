@@ -15,13 +15,15 @@ import {TableButtonComponent} from './directives/table-button/table-button.compo
 import {PersonSelectComponent} from './directives/person-select/person-select.component';
 import {YearClassStreamComponent} from './directives/year-class-stream/year-class-stream.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import { SchoolClassMinimumTableComponent } from './components/school-class-minimum-table/school-class-minimum-table.component';
-import { SubjectsMinTableComponent } from './components/subjects-min-table/subjects-min-table.component';
-import { SubjectsTableComponent } from './components/subjects-table/subjects-table.component';
-import { StudentClassesComponent } from './components/student-classes/student-classes.component';
-import { AcademicYearsSelectorFormComponent } from './components/academic-years-selector-form/academic-years-selector-form.component';
-import { CurriculumYearFilterFormComponent } from './components/curriculum-year-filter-form/curriculum-year-filter-form.component';
-import { DateMonthYearFilterFormComponent } from './components/date-month-year-filter-form/date-month-year-filter-form.component';
+import {SchoolClassMinimumTableComponent} from './components/school-class-minimum-table/school-class-minimum-table.component';
+import {SubjectsMinTableComponent} from './components/subjects-min-table/subjects-min-table.component';
+import {SubjectsTableComponent} from './components/subjects-table/subjects-table.component';
+import {StudentClassesComponent} from './components/student-classes/student-classes.component';
+import {AcademicYearsSelectorFormComponent} from './components/academic-years-selector-form/academic-years-selector-form.component';
+import {CurriculumYearFilterFormComponent} from './components/curriculum-year-filter-form/curriculum-year-filter-form.component';
+import {DateMonthYearFilterFormComponent} from './components/date-month-year-filter-form/date-month-year-filter-form.component';
+import {StaffsAttendancesSearchFormComponent} from './components/staffs-attendances-search-form/staffs-attendances-search-form.component';
+import {StaffsAttendancesTableComponent} from './components/staffs-attendances-table/staffs-attendances-table.component';
 
 @NgModule({
     declarations: [
@@ -44,7 +46,9 @@ import { DateMonthYearFilterFormComponent } from './components/date-month-year-f
         SubjectsMinTableComponent,
         AcademicYearsSelectorFormComponent,
         CurriculumYearFilterFormComponent,
-        DateMonthYearFilterFormComponent
+        DateMonthYearFilterFormComponent,
+        StaffsAttendancesSearchFormComponent,
+        StaffsAttendancesTableComponent
     ],
 
     imports: [CommonModule, NgbModule, CoreModule],
@@ -69,6 +73,8 @@ import { DateMonthYearFilterFormComponent } from './components/date-month-year-f
         AcademicYearsSelectorFormComponent,
         CurriculumYearFilterFormComponent,
         DateMonthYearFilterFormComponent,
+        StaffsAttendancesSearchFormComponent,
+        StaffsAttendancesTableComponent,
         CommonModule,
         NgbModule,
         CoreModule

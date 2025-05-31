@@ -8,7 +8,8 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 export class TableHeadingComponent implements OnInit {
     @Input() tableTitle: string = '';
     @Input() editControls: boolean = false;
-
+    @Input() backColor: string = "bg-info";
+    
     @Output() searchItemEvent = new EventEmitter<string>();
 
     searchItem(searchText: string) {
