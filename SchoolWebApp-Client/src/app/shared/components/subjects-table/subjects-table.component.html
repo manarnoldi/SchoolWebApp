@@ -13,7 +13,7 @@
                         </div> -->
                     </th>
                     <th>Name</th>
-                    <th>Code</th>                    
+                    <th>Code</th>
                     <th *ngIf="showAllCols">Abbr</th>
                     <th>Rank</th>
                     <th *ngIf="showAllCols">Lessons #</th>
@@ -37,7 +37,7 @@
                         </div>
                     </th>
                     <td>{{ item.name }}</td>
-                    <td>{{ item.code }}</td>                    
+                    <td>{{ item.code }}</td>
                     <td *ngIf="showAllCols">{{ item.abbr }}</td>
                     <td>{{ item.rank }}</td>
                     <td *ngIf="showAllCols">{{ item.numOfLessons }}</td>
@@ -52,7 +52,8 @@
                 </tr>
             </tbody>
         </table>
-        <app-table-paging
+        <app-table-paging (pageChangedEvent)="pageChanged($event)"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"
             [collectionSize]="subjects.length"></app-table-paging>
     </div>
 </div>

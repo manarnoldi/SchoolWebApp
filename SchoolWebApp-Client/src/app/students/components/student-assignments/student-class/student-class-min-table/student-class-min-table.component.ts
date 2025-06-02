@@ -1,7 +1,6 @@
 import {Status} from '@/core/enums/status';
 import {LearningMode} from '@/school/models/learning-mode';
 import {LearningModesService} from '@/school/services/learning-modes.service';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {StudentClass} from '@/students/models/student-class';
 import {
     Component,
@@ -13,7 +12,6 @@ import {
     ViewChild
 } from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
-import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-student-class-min-table',
@@ -37,9 +35,6 @@ export class StudentClassMinTableComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
     statusVals = Status;
     statusValues;
@@ -47,7 +42,6 @@ export class StudentClassMinTableComponent implements OnInit {
     learningModes: LearningMode[] = [];
 
     constructor(
-        private tableSettingsSvc: TableSettingsService,
         private learningModesSvc: LearningModesService,
         private toastr: ToastrService
     ) {}
@@ -55,13 +49,6 @@ export class StudentClassMinTableComponent implements OnInit {
     ngOnInit(): void {
         this.statusValues = Object.keys(this.statusVals).filter((k) =>
             isNaN(Number(k))
-        );
-
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
         );
 
         this.learningModesSvc.get('/learningModes').subscribe(
@@ -104,6 +91,14 @@ export class StudentClassMinTableComponent implements OnInit {
                 c.isSelected = false;
             });
         }
+    };
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
     };
 
     itemClicked = (inputCheckItem: any) => {

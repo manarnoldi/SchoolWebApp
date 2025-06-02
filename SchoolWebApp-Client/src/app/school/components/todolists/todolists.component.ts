@@ -1,8 +1,7 @@
 import {AuthService} from '@/core/services/auth.service';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
-import {forkJoin, Subscription} from 'rxjs';
+import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 import {TodoList} from '../../models/todolist';
 import {TodolistsService} from '../../services/todolists.service';
@@ -26,6 +25,14 @@ export class TodolistsComponent implements OnInit {
     editMode = false;
 
     curUserId: number;
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
 
     constructor(
         private todoListSvc: TodolistsService,

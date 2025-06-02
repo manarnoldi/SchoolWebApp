@@ -75,9 +75,9 @@
                         </tr>
                     </tbody>
                 </table>
-                <app-table-paging
-                    [collectionSize]="sessions.length"
-                    (onInitEvent)="resetForm()"></app-table-paging>
+                <app-table-paging (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"
+                    [collectionSize]="sessions.length"></app-table-paging>
             </div>
         </div>
     </div>

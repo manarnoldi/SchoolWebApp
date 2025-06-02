@@ -3,11 +3,10 @@ import {ClassLeadershipRolesService} from '@/class/services/class-leadership-rol
 import {PersonType} from '@/core/enums/personTypes';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ToastrService} from 'ngx-toastr';
-import {forkJoin, Subscription} from 'rxjs';
+import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -20,8 +19,6 @@ export class ClassLeadershipRolesComponent implements OnInit {
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
     page = 1;
     pageSize = 10;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
     classLeadershipRoleForm: FormGroup;
 
@@ -44,8 +41,7 @@ export class ClassLeadershipRolesComponent implements OnInit {
     constructor(
         private classLeadershipRoleSvc: ClassLeadershipRolesService,
         private toastr: ToastrService,
-        private formBuilder: FormBuilder,
-        private tableSettingsSvc: TableSettingsService
+        private formBuilder: FormBuilder
     ) {
         this.personTypes = Object.keys(this.personType).filter((k) =>
             isNaN(Number(k))
@@ -134,7 +130,7 @@ export class ClassLeadershipRolesComponent implements OnInit {
                 let app = new ClassLeadershipRole(
                     this.classLeadershipRoleForm.value
                 );
-                let personTypeNum = PersonType["Teacher"];
+                let personTypeNum = PersonType['Teacher'];
                 app.personType = personTypeNum;
                 if (this.editMode) app.id = this.classLeadershipRole.id;
                 let reqToProcess = this.editMode
@@ -198,12 +194,6 @@ export class ClassLeadershipRolesComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
         this.refreshItems();
     }
 
@@ -211,4 +201,12 @@ export class ClassLeadershipRolesComponent implements OnInit {
         this.classLeadershipRoleForm.reset();
         this.editMode = false;
     }
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
 }

@@ -1,12 +1,11 @@
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {DepartmentsAddFormComponent} from './departments-add-form/departments-add-form.component';
-import {forkJoin, Subscription} from 'rxjs';
+import {forkJoin} from 'rxjs';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {Department} from '@/school/models/department';
 import {StaffDetails} from '@/staff/models/staff-details';
 import {ToastrService} from 'ngx-toastr';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {DepartmentsService} from '@/school/services/departments.service';
 import {StaffDetailsService} from '@/staff/services/staff-details.service';
 import Swal from 'sweetalert2';
@@ -26,9 +25,6 @@ export class DepartmentsComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
     tableModel: string = 'department';
     breadcrumbs: BreadCrumb[] = [
@@ -51,20 +47,21 @@ export class DepartmentsComponent implements OnInit {
 
     constructor(
         private toastr: ToastrService,
-        private tableSettingsSvc: TableSettingsService,
         private departmentsSvc: DepartmentsService,
         private staffDetailsSvc: StaffDetailsService
     ) {}
 
     ngOnInit(): void {
         this.refreshItems();
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
     }
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
 
     refreshItems() {
         let departmentsReq = this.departmentsSvc.get('/departments');
@@ -72,7 +69,6 @@ export class DepartmentsComponent implements OnInit {
 
         forkJoin([departmentsReq, staffDetailsReq]).subscribe(
             ([departments, staffDetails]) => {
-                this.collectionSize = departments.length;
                 this.departments = departments.sort(
                     (a, b) => parseInt(a.id) - parseInt(b.id)
                 );

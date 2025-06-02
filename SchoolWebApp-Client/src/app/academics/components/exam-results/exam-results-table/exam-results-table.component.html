@@ -39,7 +39,8 @@
                 </tr>
             </tbody>
         </table>
-        <app-table-paging
+        <app-table-paging (pageChangedEvent)="pageChanged($event)"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"
             [collectionSize]="exams.length"></app-table-paging>
     </div>
 </div>

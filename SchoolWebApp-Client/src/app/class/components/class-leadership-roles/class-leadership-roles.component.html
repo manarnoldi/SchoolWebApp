@@ -85,7 +85,7 @@
                                     *ngFor="let item of classLeadershipRoles| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
                                     <td>{{ item.name }}</td>
                                     <td>{{ personTypes[item.personType] }}</td>
-                                    <td>{{ item.description }}</td>                                    
+                                    <td>{{ item.description }}</td>
                                     <app-table-action
                                         (editItemEvent)="editItem(item.id)"
                                         (deleteItemEvent)="deleteItem(item.id)"></app-table-action>
@@ -94,7 +94,8 @@
                         </table>
                         <app-table-paging
                             [collectionSize]="collectionSize"
-                            (onInitEvent)="resetForm()"></app-table-paging>
+                            (pageChangedEvent)="pageChanged($event)"
+                            (pageSizeChangedEvent)="pageSizeChanged($event)"></app-table-paging>
                     </div>
                 </div>
             </div>

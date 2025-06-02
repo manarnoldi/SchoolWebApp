@@ -2,11 +2,10 @@ import {BreadCrumb} from '@/core/models/bread-crumb';
 import {SchoolStream} from '@/class/models/school-stream';
 import {SchoolStreamsService} from '@/class/services/school-streams.service';
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ToastrService} from 'ngx-toastr';
-import {Subscription, forkJoin} from 'rxjs';
+import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -40,9 +39,7 @@ export class SchoolStreamsComponent implements OnInit {
     isAuthLoading: boolean;
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
+
     tableModel: string = 'schoolStream';
 
     schoolStreamForm: FormGroup;
@@ -50,23 +47,24 @@ export class SchoolStreamsComponent implements OnInit {
     constructor(
         private schoolStreamsSvc: SchoolStreamsService,
         private toastr: ToastrService,
-        private tableSettingsSvc: TableSettingsService,
         private formBuilder: FormBuilder
     ) {}
 
     ngOnInit(): void {
         this.refreshItems();
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
     }
 
     get f() {
         return this.schoolStreamForm.controls;
     }
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
 
     refreshItems() {
         this.schoolStreamForm = this.formBuilder.group({
@@ -80,7 +78,6 @@ export class SchoolStreamsComponent implements OnInit {
 
         forkJoin([schoolStreamsRequest]).subscribe(
             (res) => {
-                this.collectionSize = res[0].length;
                 this.schoolStreams = res[0].sort((a, b) => a.rank - b.rank);
                 this.isAuthLoading = false;
                 this.editMode = false;

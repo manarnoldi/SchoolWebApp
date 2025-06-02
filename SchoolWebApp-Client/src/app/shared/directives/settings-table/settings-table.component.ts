@@ -1,4 +1,3 @@
-
 import {
     Component,
     Input,
@@ -9,7 +8,7 @@ import {
     ElementRef
 } from '@angular/core';
 import {TableButtonComponent} from '../table-button/table-button.component';
-import { Setting } from '@/core/models/setting';
+import {Setting} from '@/core/models/setting';
 
 @Component({
     selector: 'app-settings-table',
@@ -26,12 +25,13 @@ export class SettingsTableComponent {
     @Input() tblItems: Setting[] = [];
     @Input() tblShowView: boolean = false;
 
-    @Input() collectionSize = 0;
-
     @Output() editItemEvent = new EventEmitter<number>();
     @Output() deleteItemEvent = new EventEmitter<number>();
-    // eslint-disable-next-line @angular-eslint/no-output-on-prefix
-    @Output() onInitEvent = new EventEmitter<void>();
+    @Output() pageChangedEvent = new EventEmitter<number>();
+    @Output() pageSizeChangedEvent = new EventEmitter<number>();
+
+    page: number = 1;
+    pageSize: number = 10;
 
     editItem(id: number) {
         this.editItemEvent.emit(id);
@@ -41,15 +41,15 @@ export class SettingsTableComponent {
         this.deleteItemEvent.emit(id);
     }
 
-    onInit() {
-        this.onInitEvent.emit();
-    }
-
     onButtonClick() {
         this.tableButton.onClick();
     }
 
-    pageChanged(): void {
-        this.onInitEvent.emit();
+    pageChanged(page: number) {
+        this.pageChangedEvent.emit(page);
     }
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSizeChangedEvent.emit(pageSize);
+    };
 }

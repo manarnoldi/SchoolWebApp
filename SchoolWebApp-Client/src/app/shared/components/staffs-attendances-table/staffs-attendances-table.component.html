@@ -59,7 +59,8 @@
                 </tr>
             </tbody>
         </table>
-        <app-table-paging
+        <app-table-paging (pageChangedEvent)="pageChanged($event)"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"
             [collectionSize]="staffs.length"></app-table-paging>
     </div>
 </div>

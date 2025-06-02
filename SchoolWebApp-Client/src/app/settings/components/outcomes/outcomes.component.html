@@ -23,8 +23,7 @@
                         <input placeholder="Enter outcome name" id="name" type="text"
                             class="form-control" formControlName="name"
                             [ngClass]="{ 'is-invalid': (f.name.dirty ||
-                            f.name.touched) && f.name.invalid }"
-                            />
+                            f.name.touched) && f.name.invalid }" />
                         <div class="invalid-feedback"> Outcome name is required</div>
                     </div>
                     <div class="form-group">
@@ -57,7 +56,8 @@
             [tblHeaders]="tableHeaders"
             [tblItems]="outcomes"
             [tblShowView]="tblShowViewButton"
-            [collectionSize]="collectionSize"
+            (pageChangedEvent)="pageChanged($event)"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"
             (editItemEvent)="editItem($event)"
             (deleteItemEvent)="deleteItem($event)"
             (onInitEvent)="refreshItems()"

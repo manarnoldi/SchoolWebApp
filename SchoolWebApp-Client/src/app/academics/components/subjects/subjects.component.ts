@@ -8,7 +8,6 @@ import {SubjectGroup} from '@/academics/models/subject-group';
 import {Department} from '@/school/models/department';
 import {StaffDetails} from '@/staff/models/staff-details';
 import {ToastrService} from 'ngx-toastr';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {SubjectsService} from '@/academics/services/subjects.service';
 import {SubjectGroupsService} from '@/academics/services/subject-groups.service';
 import {DepartmentsService} from '@/school/services/departments.service';
@@ -30,16 +29,13 @@ export class SubjectsComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
     tableModel: string = 'subject';
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Home'},
         {link: ['/academics/subjects'], title: 'Academics: Subjects'}
     ];
-    dashboardTitle = 'Academics: Subjects';   
+    dashboardTitle = 'Academics: Subjects';
 
     subject: Subject;
     subjects: Subject[] = [];
@@ -50,7 +46,6 @@ export class SubjectsComponent implements OnInit {
 
     constructor(
         private toastr: ToastrService,
-        private tableSettingsSvc: TableSettingsService,
         private subjectsSvc: SubjectsService,
         private subjectGroupsSvc: SubjectGroupsService,
         private departmentsSvc: DepartmentsService,
@@ -59,12 +54,6 @@ export class SubjectsComponent implements OnInit {
 
     ngOnInit(): void {
         this.refreshItems();
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
     }
 
     refreshItems() {
@@ -80,10 +69,7 @@ export class SubjectsComponent implements OnInit {
             staffsReq
         ]).subscribe(
             ([subjects, subjectGroups, departments, staffs]) => {
-                this.collectionSize = subjectGroups.length;
-                this.subjects = subjects.sort(
-                    (a, b) => a.rank - b.rank
-                );
+                this.subjects = subjects.sort((a, b) => a.rank - b.rank);
                 this.subjectGroups = subjectGroups;
                 this.departments = departments;
                 this.staffs = staffs;
@@ -147,6 +133,14 @@ export class SubjectsComponent implements OnInit {
 
     errorEvent = (errorName: string) => {
         this.toastr.error(errorName);
+    };
+    
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
     };
 
     addSubject = (subject: Subject) => {

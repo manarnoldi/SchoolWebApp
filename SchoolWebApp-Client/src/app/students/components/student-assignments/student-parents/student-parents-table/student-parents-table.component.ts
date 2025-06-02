@@ -1,10 +1,8 @@
 import {Status} from '@/core/enums/status';
 import {Nationality} from '@/settings/models/nationality';
 import {Occupation} from '@/settings/models/occupation';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {StudentParent} from '@/students/models/student-parent';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-student-parents-table',
@@ -25,27 +23,25 @@ export class StudentParentsTableComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
-    constructor(private tableSettingsSvc: TableSettingsService) {}
+    constructor() {}
 
     statusVals = Status;
     statusValues;
 
     ngOnInit(): void {
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
-
         this.statusValues = Object.keys(this.statusVals).filter((k) =>
             isNaN(Number(k))
         );
     }
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
 
     tableHeaders: string[] = [
         'Full name',

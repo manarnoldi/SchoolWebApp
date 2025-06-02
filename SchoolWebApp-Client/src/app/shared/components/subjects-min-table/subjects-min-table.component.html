@@ -6,8 +6,9 @@
                 <tr>
                     <th>
                         <div class="icheck-success m-0 p-0">
-                            <input #checkAllSubjects type="checkbox" id="checkAllSubjects" 
-                                (change)="checkAllClicked($event)" [checked]="disabled" [attr.disabled]="disabled? 'disabled' : null">
+                            <input #checkAllSubjects type="checkbox" id="checkAllSubjects"
+                                (change)="checkAllClicked($event)" [checked]="disabled"
+                                [attr.disabled]="disabled? 'disabled' : null">
                             <label class="form-check-label" for="checkAllSubjects"></label>
                         </div>
                     </th>
@@ -22,7 +23,8 @@
                     *ngFor="let item of subjects| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
                     <th>
                         <div class="icheck-success m-0 p-0">
-                            <input type="checkbox" id="subj-id-{{item.id}}" (change)="itemClicked($event)"
+                            <input type="checkbox" id="subj-id-{{item.id}}"
+                                (change)="itemClicked($event)"
                                 [(ngModel)]="item.isSelected" [disabled]="disabled">
                             <label class="form-check-label" for="subj-id-{{item.id}}"></label>
                         </div>
@@ -34,7 +36,8 @@
                 </tr>
             </tbody>
         </table>
-        <app-table-paging
+        <app-table-paging (pageChangedEvent)="pageChanged($event)"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"
             [collectionSize]="subjects.length"></app-table-paging>
     </div>
 </div>

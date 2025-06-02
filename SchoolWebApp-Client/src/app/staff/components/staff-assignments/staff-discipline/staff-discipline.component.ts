@@ -38,6 +38,7 @@ export class StaffDisciplineComponent implements OnInit, AfterViewInit {
     dmyFormComponent: DateMonthYearFilterFormComponent;
 
     firstLoad: boolean = true;
+    doneLoading: boolean = false;
     staffId: number = 0;
     staffDiscipline: StaffDiscipline;
     staffDisciplines: StaffDiscipline[] = [];
@@ -80,6 +81,9 @@ export class StaffDisciplineComponent implements OnInit, AfterViewInit {
                                 ).getTime() -
                                 new Date(b?.occurenceStartDate ?? '').getTime()
                         );
+                        if (this.firstLoad) {
+                            this.dmyFormComponent.setFormControls(dmy);
+                        }
                         if (
                             this.staffDisciplines.length <= 0 &&
                             !this.firstLoad
@@ -89,6 +93,7 @@ export class StaffDisciplineComponent implements OnInit, AfterViewInit {
                             );
                         }
                         this.firstLoad = false;
+                        this.doneLoading = true;
                     },
                     error: (err) => {
                         this.toastr.error(err.error);
@@ -105,8 +110,6 @@ export class StaffDisciplineComponent implements OnInit, AfterViewInit {
         let dmy = new DateMonthYear();
         dmy.dateFrom = dateFrom;
         dmy.dateTo = dateTo;
-
-        this.dmyFormComponent.setFormControls(dmy);
 
         this.searchByDate(dmy);
     };

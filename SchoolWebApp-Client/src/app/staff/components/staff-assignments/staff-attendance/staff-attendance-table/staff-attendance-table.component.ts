@@ -1,8 +1,5 @@
-import { TableSettingsService } from '@/shared/services/table-settings.service';
 import {StaffAttendance} from '@/staff/models/staff-attendance';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import { Subscription } from 'rxjs';
-
 @Component({
     selector: 'app-staff-attendance-table',
     templateUrl: './staff-attendance-table.component.html',
@@ -18,21 +15,10 @@ export class StaffAttendanceTableComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
-    constructor(private tableSettingsSvc: TableSettingsService) {
-        
-    }
+    constructor() {}
 
-    ngOnInit(): void {
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
-    }
+    ngOnInit(): void {}
 
     tableHeaders: string[] = [
         'Staff No',
@@ -44,6 +30,14 @@ export class StaffAttendanceTableComponent implements OnInit {
         'Remarks',
         'Action'
     ];
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
 
     deleteItem = (id: number) => {
         this.deleteItemEvent.emit(id);

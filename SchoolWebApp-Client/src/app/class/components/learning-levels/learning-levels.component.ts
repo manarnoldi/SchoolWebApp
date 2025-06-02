@@ -1,11 +1,10 @@
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {LearningLevelsFormComponent} from './learning-levels-form/learning-levels-form.component';
-import {Subscription, forkJoin} from 'rxjs';
+import {forkJoin} from 'rxjs';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {EducationLevel} from '@/school/models/educationLevel';
 import {ToastrService} from 'ngx-toastr';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {EducationLevelService} from '@/school/services/education-level.service';
 import Swal from 'sweetalert2';
 import {LearningLevel} from '@/class/models/learning-level';
@@ -32,8 +31,6 @@ export class LearningLevelsComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
     tableModel: string = 'learningLevel';
     breadcrumbs: BreadCrumb[] = [
@@ -59,19 +56,20 @@ export class LearningLevelsComponent implements OnInit {
 
     constructor(
         private toastr: ToastrService,
-        private tableSettingsSvc: TableSettingsService,
         private learningLevelSvc: LearningLevelsService,
         private educationLevelSvc: EducationLevelService,
         private curriculumSvc: CurriculumService
     ) {}
 
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
+
     ngOnInit(): void {
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
         this.refreshItems();
     }
 

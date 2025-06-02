@@ -37,8 +37,10 @@
                 <app-curriculum-year-filter-form
                     [showCurriculum]="true" [showEducationLevel]="true"
                     [academicYears]="academicYears" [curricula]="curricula"
-                    [educationLevels]="educationLevels" (academicYearChangedEvent)="academicYearChanged($event)"
-                    (curriculumChangedEvent)="curriculumChanged($event)" (educationLevelChangedEvent)="educLevelChanged($event)"
+                    [educationLevels]="educationLevels"
+                    (academicYearChangedEvent)="academicYearChanged($event)"
+                    (curriculumChangedEvent)="curriculumChanged($event)"
+                    (educationLevelChangedEvent)="educLevelChanged($event)"
                     (searchItemEvent)="loadSchoolClasses($event)"
                     [showAcademicYear]="true"></app-curriculum-year-filter-form>
             </div>
@@ -92,8 +94,8 @@
                     </tbody>
                 </table>
                 <app-table-paging
-                    [collectionSize]="schoolClasses.length"
-                    (onInitEvent)="resetForm()"></app-table-paging>
+                    [collectionSize]="schoolClasses.length" (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"></app-table-paging>
             </div>
         </div>
     </div>

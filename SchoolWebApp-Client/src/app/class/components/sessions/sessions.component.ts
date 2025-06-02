@@ -8,10 +8,9 @@ import {SessionsService} from '@/class/services/sessions.service';
 import {SessionType} from '@/settings/models/session-type';
 import {SessionTypesService} from '@/settings/services/session-types.service';
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
-import {Subscription, forkJoin} from 'rxjs';
+import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 import {SessionFormComponent} from './session-form/session-form.component';
 import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
@@ -33,8 +32,6 @@ export class SessionsComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
     tableModel: string = 'educationLevelType';
     breadcrumbs: BreadCrumb[] = [
@@ -64,7 +61,6 @@ export class SessionsComponent implements OnInit {
 
     constructor(
         private toastr: ToastrService,
-        private tableSettingsSvc: TableSettingsService,
         private sessionSvc: SessionsService,
         private acadYearSvc: AcademicYearsService,
         private curriculumSvc: CurriculumService,
@@ -73,13 +69,15 @@ export class SessionsComponent implements OnInit {
 
     ngOnInit(): void {
         this.refreshItems();
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
     }
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
 
     refreshItems() {
         let acadYearsReq = this.acadYearSvc.get('/academicYears');
@@ -99,7 +97,7 @@ export class SessionsComponent implements OnInit {
                 cysPass.academicYearId = parseInt(topYear.id);
                 cysPass.curriculumId = parseInt(topCurriculum.id);
                 this.cyfFormComponent.setFormControls(cysPass);
-                
+
                 this.searchClicked(cysPass);
                 this.isAuthLoading = false;
                 this.sessionForm.editMode = false;

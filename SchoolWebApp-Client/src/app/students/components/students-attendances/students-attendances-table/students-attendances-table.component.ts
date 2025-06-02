@@ -1,8 +1,5 @@
-import {TableSettingsService} from '@/shared/services/table-settings.service';
-import {StudentAttendance} from '@/students/models/student-attendance';
 import {StudentClass} from '@/students/models/student-class';
 import {
-    AfterViewInit,
     Component,
     ElementRef,
     EventEmitter,
@@ -11,13 +8,11 @@ import {
     Output,
     ViewChild
 } from '@angular/core';
-import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-students-attendances-table',
     templateUrl: './students-attendances-table.component.html',
-    styleUrl: './students-attendances-table.component.scss',
-    providers: [TableSettingsService]
+    styleUrl: './students-attendances-table.component.scss'
 })
 export class StudentsAttendancesTableComponent implements OnInit {
     @Input() tableTitle: string = 'Students attendance list';
@@ -33,11 +28,8 @@ export class StudentsAttendancesTableComponent implements OnInit {
 
     page = 1;
     pageSize = 20;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
-    constructor(private tableSettingsSvc: TableSettingsService) {}
+    constructor() {}
 
     updateCheckAll = () => {
         if (this.checkAll) {
@@ -52,13 +44,6 @@ export class StudentsAttendancesTableComponent implements OnInit {
     };
 
     ngOnInit(): void {
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
-        this.tableSettingsSvc.changePageSize(20);
         this.updateCheckAll();
     }
 

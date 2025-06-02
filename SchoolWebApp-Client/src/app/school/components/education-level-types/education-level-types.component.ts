@@ -1,196 +1,203 @@
-import { BreadCrumb } from '@/core/models/bread-crumb';
-import { EducationLevelType } from '@/school/models/education-level-types';
-import { EducationLevelTypesService } from '@/school/services/education-level-types.service';
-import { TableButtonComponent } from '@/shared/directives/table-button/table-button.component';
-import { TableSettingsService } from '@/shared/services/table-settings.service';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
-import { Subscription, forkJoin } from 'rxjs';
+import {BreadCrumb} from '@/core/models/bread-crumb';
+import {EducationLevelType} from '@/school/models/education-level-types';
+import {EducationLevelTypesService} from '@/school/services/education-level-types.service';
+import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {ToastrService} from 'ngx-toastr';
+import { forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-education-level-types',
-  templateUrl: './education-level-types.component.html',
-  styleUrl: './education-level-types.component.scss'
+    selector: 'app-education-level-types',
+    templateUrl: './education-level-types.component.html',
+    styleUrl: './education-level-types.component.scss'
 })
-export class EducationLevelTypesComponent implements OnInit{
-  @ViewChild('closebutton') closeButton;
-  @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
+export class EducationLevelTypesComponent implements OnInit {
+    @ViewChild('closebutton') closeButton;
+    @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
 
-  breadcrumbs: BreadCrumb[] = [
-      {link: ['/'], title: 'Home'},
-      {link: ['/settings/educationLevelTypes'], title: 'Settings: Education level types'}
-  ];
+    breadcrumbs: BreadCrumb[] = [
+        {link: ['/'], title: 'Home'},
+        {
+            link: ['/settings/educationLevelTypes'],
+            title: 'Settings: Education level types'
+        }
+    ];
 
-  dashboardTitle = 'Settings:  Education level types';
-  tableTitle: string = ' Education level types list';
-  tableHeaders: string[] = ['Name', 'Abbreviation', 'Description', 'Action'];
+    dashboardTitle = 'Settings:  Education level types';
+    tableTitle: string = ' Education level types list';
+    tableHeaders: string[] = ['Name', 'Abbreviation', 'Description', 'Action'];
 
-  educationLevelType: EducationLevelType;
-  educationLevelTypes: EducationLevelType[] = [];
-  tblShowViewButton: true;
-  editMode = false;
-  isAuthLoading: boolean;
-  page = 1;
-  pageSize = 10;
-  collectionSize = 0;
-  pageSubscription: Subscription;
-  pageSizeSubscription: Subscription;
-  tableModel: string = 'educationLevelType';
+    educationLevelType: EducationLevelType;
+    educationLevelTypes: EducationLevelType[] = [];
+    tblShowViewButton: true;
+    editMode = false;
+    isAuthLoading: boolean;
+    page = 1;
+    pageSize = 10;
+    tableModel: string = 'educationLevelType';
 
-  educationLevelTypeForm: FormGroup;
+    educationLevelTypeForm: FormGroup;
 
-  constructor(
-      private educationLevelTypesSvc: EducationLevelTypesService,
-      private toastr: ToastrService,
-      private tableSettingsSvc: TableSettingsService,
-      private formBuilder: FormBuilder
-  ) {}
+    constructor(
+        private educationLevelTypesSvc: EducationLevelTypesService,
+        private toastr: ToastrService,
+        private formBuilder: FormBuilder
+    ) {}
 
-  ngOnInit(): void {
-      this.refreshItems();
-      this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-          (page) => (this.page = page)
-      );
-      this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-          (pageSize) => (this.pageSize = pageSize)
-      );
-  }
+    ngOnInit(): void {
+        this.refreshItems();
+    }
 
-  get f() {
-      return this.educationLevelTypeForm.controls;
-  }
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
 
-  refreshItems() {
-      this.educationLevelTypeForm = this.formBuilder.group({
-          name: ['', [Validators.required]],
-          abbr: [''],
-          description: ['']
-      });
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
 
-      let educationLevelTypesRequest =
-          this.educationLevelTypesSvc.get('/educationLevelTypes');
 
-      forkJoin([educationLevelTypesRequest]).subscribe(
-          (res) => {
-              this.collectionSize = res[0].length;
-              this.educationLevelTypes = res[0];
-              this.isAuthLoading = false;
-              this.editMode = false;
-          },
-          (err) => {
-              this.toastr.error(err.error);
-          }
-      );
-  }
+    get f() {
+        return this.educationLevelTypeForm.controls;
+    }
 
-  editItem(id: number) {
-      this.educationLevelTypesSvc.getById(id, '/educationLevelTypes').subscribe(
-          (res) => {
-              this.educationLevelType = new EducationLevelType(res);
-              this.educationLevelTypeForm.setValue({
-                  name: this.educationLevelType.name,
-                  abbr: this.educationLevelType.abbr,
-                  description: this.educationLevelType.description
-              });
-              this.editMode = true;
-              this.tableButton.onClick();
-          },
-          (err) => {
-              this.toastr.error(err);
-          }
-      );
-  }
+    refreshItems() {
+        this.educationLevelTypeForm = this.formBuilder.group({
+            name: ['', [Validators.required]],
+            abbr: [''],
+            description: ['']
+        });
 
-  deleteItem(id: number) {
-      Swal.fire({
-          title: `Delete record?`,
-          text: `Confirm if you want to delete record.`,
-          width: 400,
-          position: 'top',
-          padding: '1em',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: `Delete`,
-          cancelButtonText: 'Cancel'
-      }).then((result) => {
-          if (result.value) {
-              this.educationLevelTypesSvc.delete('/educationLevelTypes', id).subscribe(
-                  (res) => {
-                      this.refreshItems();
-                      this.toastr.success('Record deleted successfully!');
-                  },
-                  (err) => {
-                      this.toastr.error(err);
-                  }
-              );
-          } else if (result.dismiss === Swal.DismissReason.cancel) {
-          }
-      });
-  }
+        let educationLevelTypesRequest = this.educationLevelTypesSvc.get(
+            '/educationLevelTypes'
+        );
 
-  onSubmit() {
-      if (this.educationLevelTypeForm.invalid) {
-          return;
-      }
+        forkJoin([educationLevelTypesRequest]).subscribe(
+            (res) => {
+                this.educationLevelTypes = res[0];
+                this.isAuthLoading = false;
+                this.editMode = false;
+            },
+            (err) => {
+                this.toastr.error(err.error);
+            }
+        );
+    }
 
-      Swal.fire({
-          title: `${this.editMode ? 'Update' : 'Add'} record?`,
-          text: `Confirm if you want to ${
-              this.editMode ? 'edit' : 'add'
-          } record.`,
-          width: 400,
-          heightAuto: true,
-          position: 'top',
-          padding: '1em',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: `${this.editMode ? 'Update' : 'Add'}`,
-          cancelButtonText: 'Cancel'
-      }).then((result) => {
-          if (result.value) {
-              if (this.editMode) {
-                  this.educationLevelType.name =
-                      this.educationLevelTypeForm.get('name').value;
-                  this.educationLevelType.abbr=
-                      this.educationLevelTypeForm.get('abbr').value;
-                  this.educationLevelType.description =
-                      this.educationLevelTypeForm.get('description').value;
-              }
+    editItem(id: number) {
+        this.educationLevelTypesSvc
+            .getById(id, '/educationLevelTypes')
+            .subscribe(
+                (res) => {
+                    this.educationLevelType = new EducationLevelType(res);
+                    this.educationLevelTypeForm.setValue({
+                        name: this.educationLevelType.name,
+                        abbr: this.educationLevelType.abbr,
+                        description: this.educationLevelType.description
+                    });
+                    this.editMode = true;
+                    this.tableButton.onClick();
+                },
+                (err) => {
+                    this.toastr.error(err);
+                }
+            );
+    }
 
-              let reqToProcess = this.editMode
-                  ? this.educationLevelTypesSvc.update(
-                        '/educationLevelTypes',
-                        this.educationLevelType
-                    )
-                  : this.educationLevelTypesSvc.create(
-                        '/educationLevelTypes',
-                        new EducationLevelType(this.educationLevelTypeForm.value)
+    deleteItem(id: number) {
+        Swal.fire({
+            title: `Delete record?`,
+            text: `Confirm if you want to delete record.`,
+            width: 400,
+            position: 'top',
+            padding: '1em',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: `Delete`,
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.value) {
+                this.educationLevelTypesSvc
+                    .delete('/educationLevelTypes', id)
+                    .subscribe(
+                        (res) => {
+                            this.refreshItems();
+                            this.toastr.success('Record deleted successfully!');
+                        },
+                        (err) => {
+                            this.toastr.error(err);
+                        }
                     );
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+            }
+        });
+    }
 
-              let replyMsg = `Education level type ${
-                  this.editMode ? 'updated' : 'created'
-              } successfully!`;
+    onSubmit() {
+        if (this.educationLevelTypeForm.invalid) {
+            return;
+        }
 
-              forkJoin([reqToProcess]).subscribe(
-                  (res) => {
-                      this.editMode = false;
-                      this.toastr.success(replyMsg);
-                      this.refreshItems();
-                      this.educationLevelTypeForm.reset();
-                      this.closeButton.nativeElement.click();
-                  },
-                  (err) => {
-                      this.toastr.error(err.error?.message);
-                  }
-              );
-          } else if (result.dismiss === Swal.DismissReason.cancel) {
-          }
-      });
-  }
+        Swal.fire({
+            title: `${this.editMode ? 'Update' : 'Add'} record?`,
+            text: `Confirm if you want to ${
+                this.editMode ? 'edit' : 'add'
+            } record.`,
+            width: 400,
+            heightAuto: true,
+            position: 'top',
+            padding: '1em',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: `${this.editMode ? 'Update' : 'Add'}`,
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.value) {
+                if (this.editMode) {
+                    this.educationLevelType.name =
+                        this.educationLevelTypeForm.get('name').value;
+                    this.educationLevelType.abbr =
+                        this.educationLevelTypeForm.get('abbr').value;
+                    this.educationLevelType.description =
+                        this.educationLevelTypeForm.get('description').value;
+                }
 
-  resetForm() {
-      this.educationLevelTypeForm.reset();
-  }
+                let reqToProcess = this.editMode
+                    ? this.educationLevelTypesSvc.update(
+                          '/educationLevelTypes',
+                          this.educationLevelType
+                      )
+                    : this.educationLevelTypesSvc.create(
+                          '/educationLevelTypes',
+                          new EducationLevelType(
+                              this.educationLevelTypeForm.value
+                          )
+                      );
+
+                let replyMsg = `Education level type ${
+                    this.editMode ? 'updated' : 'created'
+                } successfully!`;
+
+                forkJoin([reqToProcess]).subscribe(
+                    (res) => {
+                        this.editMode = false;
+                        this.toastr.success(replyMsg);
+                        this.refreshItems();
+                        this.educationLevelTypeForm.reset();
+                        this.closeButton.nativeElement.click();
+                    },
+                    (err) => {
+                        this.toastr.error(err.error?.message);
+                    }
+                );
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+            }
+        });
+    }
+
+    resetForm() {
+        this.educationLevelTypeForm.reset();
+    }
 }

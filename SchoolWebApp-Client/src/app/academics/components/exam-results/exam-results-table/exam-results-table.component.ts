@@ -1,19 +1,14 @@
 import {Exam} from '@/academics/models/exam';
 import {ExamResult} from '@/academics/models/exam-result';
-import {ExamType} from '@/academics/models/exam-type';
-import {Subject} from '@/academics/models/subject';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
-import {StudentDetails} from '@/students/models/student-details';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
-import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-exam-results-table',
     templateUrl: './exam-results-table.component.html',
     styleUrl: './exam-results-table.component.scss'
 })
-export class ExamResultsTableComponent implements OnInit {
+export class ExamResultsTableComponent {
     @Input() tableTitle: string = 'Examination results';
     @Input() examResults: ExamResult[] = [];
     @Input() exams: Exam[] = [];
@@ -22,23 +17,8 @@ export class ExamResultsTableComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
-    constructor(
-        private tableSettingsSvc: TableSettingsService,
-        private toarst: ToastrService
-    ) {}
-
-    ngOnInit(): void {
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
-    }
+    constructor(private toarst: ToastrService) {}
 
     validateNumber(event: Event, index: number, examMark: number) {
         const input = event.target as HTMLInputElement;
@@ -63,6 +43,14 @@ export class ExamResultsTableComponent implements OnInit {
 
     deleteItem = (examRes: ExamResult) => {
         this.deleteItemEvent.emit(examRes);
+    };
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
     };
 
     tableHeaders: string[] = [

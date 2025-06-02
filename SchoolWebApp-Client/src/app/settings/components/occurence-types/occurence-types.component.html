@@ -40,7 +40,8 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label>Abbreviation</label>
-                                <input id="abbreviation" placeholder="Enter abbreviation" type="text"
+                                <input id="abbreviation" placeholder="Enter abbreviation"
+                                    type="text"
                                     class="form-control" formControlName="abbreviation" />
                             </div>
                         </div>
@@ -103,8 +104,9 @@
                             </tbody>
                         </table>
                         <app-table-paging
-                            [collectionSize]="collectionSize"
-                            (onInitEvent)="resetForm()"></app-table-paging>
+                            [collectionSize]="occurenceTypes.length"
+                            (pageChangedEvent)="pageChanged($event)"
+                            (pageSizeChangedEvent)="pageSizeChanged($event)"></app-table-paging>
                     </div>
                 </div>
             </div>

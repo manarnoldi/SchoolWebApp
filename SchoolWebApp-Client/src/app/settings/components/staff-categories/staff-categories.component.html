@@ -100,8 +100,9 @@
                             </tbody>
                         </table>
                         <app-table-paging
-                            [collectionSize]="collectionSize"
-                            (onInitEvent)="resetForm()"></app-table-paging>
+                            [collectionSize]="staffCategories.length"
+                            (pageChangedEvent)="pageChanged($event)"
+                            (pageSizeChangedEvent)="pageSizeChanged($event)"></app-table-paging>
                     </div>
                 </div>
             </div>

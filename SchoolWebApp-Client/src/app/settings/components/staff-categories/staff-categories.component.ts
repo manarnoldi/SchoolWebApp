@@ -1,13 +1,11 @@
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {StaffCategory} from '@/settings/models/staff-category';
 import {StaffCategoriesService} from '@/settings/services/staff-categories.service';
-import {SettingsTableComponent} from '@/shared/directives/settings-table/settings-table.component';
-import { TableButtonComponent } from '@/shared/directives/table-button/table-button.component';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
+import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ToastrService} from 'ngx-toastr';
-import {Subscription, forkJoin} from 'rxjs';
+import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -18,18 +16,16 @@ import Swal from 'sweetalert2';
 export class StaffCategoriesComponent implements OnInit {
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
-    
+
     page = 1;
     pageSize = 10;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
     staffCategoryForm: FormGroup;
 
     buttonTitle: string = 'Add staff category';
     tableModel: string = 'staffCategory';
     tableTitle: string = 'Staff categories list';
-    tableHeaders: string[] = ['Name','Code', 'Description', 'Action'];
+    tableHeaders: string[] = ['Name', 'Code', 'Description', 'Action'];
 
     editMode = false;
     staffCategory: StaffCategory;
@@ -37,13 +33,10 @@ export class StaffCategoriesComponent implements OnInit {
     staffCategories: StaffCategory[] = [];
     tblShowViewButton: false;
 
-    collectionSize = 0;
-
     constructor(
         private staffCategoriesSvc: StaffCategoriesService,
         private toastr: ToastrService,
-        private formBuilder: FormBuilder,
-        private tableSettingsSvc: TableSettingsService
+        private formBuilder: FormBuilder
     ) {}
     closeResult = '';
     dashboardTitle = 'Staff category list';
@@ -173,7 +166,6 @@ export class StaffCategoriesComponent implements OnInit {
 
         this.staffCategoriesSvc.get('/staffCategories').subscribe(
             (res) => {
-                this.collectionSize = res.length;
                 this.staffCategories = res.slice(
                     (this.page - 1) * this.pageSize,
                     (this.page - 1) * this.pageSize + this.pageSize
@@ -191,12 +183,6 @@ export class StaffCategoriesComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
         this.refreshItems();
     }
 
@@ -204,4 +190,11 @@ export class StaffCategoriesComponent implements OnInit {
         this.staffCategoryForm.reset();
         this.editMode = false;
     }
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
 }

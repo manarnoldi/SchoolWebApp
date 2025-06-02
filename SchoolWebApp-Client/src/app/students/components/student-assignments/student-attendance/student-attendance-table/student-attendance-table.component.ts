@@ -1,16 +1,14 @@
 import {SchoolClass} from '@/class/models/school-class';
-import { TableSettingsService } from '@/shared/services/table-settings.service';
 import {StudentAttendance} from '@/students/models/student-attendance';
-import { StudentDetails } from '@/students/models/student-details';
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import { Subscription } from 'rxjs';
+import {StudentDetails} from '@/students/models/student-details';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
     selector: 'app-student-attendance-table',
     templateUrl: './student-attendance-table.component.html',
     styleUrl: './student-attendance-table.component.scss'
 })
-export class StudentAttendanceTableComponent implements OnInit {
+export class StudentAttendanceTableComponent {
     @Input() tableTitle: string = 'Student attendance list';
     @Input() studentAttendances: StudentAttendance[] = [];
     @Input() schoolClasses: SchoolClass[] = [];
@@ -22,20 +20,6 @@ export class StudentAttendanceTableComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
-
-    constructor(private tableSettingsSvc: TableSettingsService) {}
-
-    ngOnInit(): void {
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
-    }
 
     tableHeaders: string[] = [
         'Student Full Name',
@@ -48,6 +32,14 @@ export class StudentAttendanceTableComponent implements OnInit {
         'Remarks',
         'Action'
     ];
+
+     pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
 
     deleteItem = (id: number) => {
         this.deleteItemEvent.emit(id);

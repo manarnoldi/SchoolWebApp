@@ -23,8 +23,7 @@
                         <input placeholder="Enter religion name" id="name" type="text"
                             class="form-control" formControlName="name"
                             [ngClass]="{ 'is-invalid': (f.name.dirty ||
-                            f.name.touched) && f.name.invalid }"
-                            />
+                            f.name.touched) && f.name.invalid }" />
                         <div class="invalid-feedback"> Religion name is required</div>
                     </div>
                     <div class="form-group">
@@ -57,10 +56,10 @@
             [tblHeaders]="tableHeaders"
             [tblItems]="religions"
             [tblShowView]="tblShowViewButton"
-            [collectionSize]="collectionSize"
+            (pageChangedEvent)="pageChanged($event)"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"
             (editItemEvent)="editItem($event)"
             (deleteItemEvent)="deleteItem($event)"
-            (onInitEvent)="refreshItems()"
             #settingsTable></app-settings-table>
     </div>
 </section>

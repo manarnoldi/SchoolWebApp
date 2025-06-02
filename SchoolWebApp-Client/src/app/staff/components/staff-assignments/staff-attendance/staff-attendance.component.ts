@@ -16,6 +16,7 @@ import {StaffDetails} from '@/staff/models/staff-details';
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
 import {DateMonthYear} from '@/shared/models/date-month-year';
 import {DateMonthYearFilterFormComponent} from '@/shared/components/date-month-year-filter-form/date-month-year-filter-form.component';
+import {AcademicYearsService} from '@/school/services/academic-years.service';
 
 @Component({
     selector: 'app-staff-attendance',
@@ -45,12 +46,12 @@ export class StaffAttendanceComponent implements OnInit, AfterViewInit {
     constructor(
         private toastr: ToastrService,
         private staffAttendancesSvc: StaffAttendancesService,
+        private academicYearsSvc: AcademicYearsService,
         private route: ActivatedRoute
     ) {}
 
     ngAfterViewInit(): void {
         this.loadStaffAttendances();
-        
     }
 
     ngOnInit(): void {}
@@ -69,18 +70,24 @@ export class StaffAttendanceComponent implements OnInit, AfterViewInit {
                 .getByMonthYearStaffId(dmy.month, dmy.year, this.staffId)
                 .subscribe({
                     next: (staffAttends) => {
-                        this.isDoneLoading = true;
                         this.staffAttendances = staffAttends.sort(
                             (a, b) =>
                                 new Date(a?.date ?? '').getTime() -
                                 new Date(b?.date ?? '').getTime()
                         );
-                        if (this.staffAttendances.length <= 0 && !this.firstLoad) {
+                        if (this.firstLoad) {
+                            this.dmyFormComponent.setFormControls(dmy);
+                        }
+                        if (
+                            this.staffAttendances.length <= 0 &&
+                            !this.firstLoad
+                        ) {
                             this.toastr.info(
                                 'No staff attendance record/s found for the search parameters!'
                             );
                         }
                         this.firstLoad = false;
+                        this.isDoneLoading = true;
                     },
                     error: (err) => {
                         this.toastr.error(err.error);
@@ -98,22 +105,21 @@ export class StaffAttendanceComponent implements OnInit, AfterViewInit {
     };
 
     loadStaffAttendances = () => {
-        let monthsReq = this.staffAttendancesSvc.getDistinctMonths();
-        let yearsReq = this.staffAttendancesSvc.getDistinctYears();
-
-        forkJoin([monthsReq, yearsReq]).subscribe({
-            next: ([months, years]) => {
-                this.months = months;
-                this.years = years;
-
+        let yearsReq = this.academicYearsSvc.get('/academicYears');
+        forkJoin([yearsReq]).subscribe({
+            next: ([years]) => {
+                this.years = [
+                    ...new Set(
+                        years.map((yr) => new Date(yr.startDate).getFullYear())
+                    )
+                ].sort((a, b) => b - a);
+                this.months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
                 const topMonth = this.today.getMonth() + 1;
-                const topYear = this.today.getFullYear();
+                const topYear = this.years[0];
 
                 let dmy = new DateMonthYear();
                 dmy.month = topMonth;
                 dmy.year = topYear;
-
-                this.dmyFormComponent.setFormControls(dmy);
 
                 this.searchStaffAttendances(dmy);
             },

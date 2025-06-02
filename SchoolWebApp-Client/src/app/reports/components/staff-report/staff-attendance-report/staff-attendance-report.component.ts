@@ -3,17 +3,9 @@ import {StaffAttendancesReportService} from '@/reports/services/staff-attendance
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {EmploymentType} from '@/settings/models/employment-type';
 import {StaffCategory} from '@/settings/models/staff-category';
-import {EmploymentTypeService} from '@/settings/services/employment-type.service';
 import {StaffCategoriesService} from '@/settings/services/staff-categories.service';
-import {StaffsAttendancesTableComponent} from '@/shared/components/staffs-attendances-table/staffs-attendances-table.component';
 import {DateMonthYear} from '@/shared/models/date-month-year';
-import {StaffAttendance} from '@/staff/models/staff-attendance';
-import {StaffDetails} from '@/staff/models/staff-details';
-import {StaffAttendancesService} from '@/staff/services/staff-attendances.service';
-import {StaffDetailsService} from '@/staff/services/staff-details.service';
-import {StaffAttendanceSearch} from '@/students/models/staff-attendance-search';
-import {DatePipe} from '@angular/common';
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
 

@@ -6,12 +6,11 @@ import {BreadCrumb} from '@/core/models/bread-crumb';
 import {Grade} from '@/academics/models/grade';
 import {Curriculum} from '@/academics/models/curriculum';
 import {ToastrService} from 'ngx-toastr';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {GradesService} from '@/academics/services/grades.service';
 import {CurriculumService} from '@/academics/services/curriculum.service';
 import Swal from 'sweetalert2';
 import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
-import { CurriculumYearFilterFormComponent } from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
+import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
 
 @Component({
     selector: 'app-grades',
@@ -25,15 +24,13 @@ export class GradesComponent implements OnInit {
     gradeForm: GradesAddFormComponent;
     @ViewChild(CurriculumYearFilterFormComponent)
     cyfFormComponent: CurriculumYearFilterFormComponent;
-    
+
     tblShowViewButton: true;
     isAuthLoading: boolean;
 
     firstLoad: boolean = true;
     page = 1;
     pageSize = 10;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
     tableModel: string = 'grade';
     breadcrumbs: BreadCrumb[] = [
@@ -61,19 +58,12 @@ export class GradesComponent implements OnInit {
 
     constructor(
         private toastr: ToastrService,
-        private tableSettingsSvc: TableSettingsService,
         private gradesSvc: GradesService,
         private curriculumSvc: CurriculumService
     ) {}
 
     ngOnInit(): void {
         this.refreshItems();
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
     }
 
     searchClicked = (cys: CurriculumYearPerson) => {
@@ -88,7 +78,7 @@ export class GradesComponent implements OnInit {
                     );
                 }
                 this.isAuthLoading = false;
-                 this.firstLoad = false;
+                this.firstLoad = false;
             },
             error: (err) => this.toastr.error(err.error)
         });
@@ -175,6 +165,14 @@ export class GradesComponent implements OnInit {
 
     errorEvent = (errorName: string) => {
         this.toastr.error(errorName);
+    };
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
     };
 
     addGrade = (grade: Grade) => {

@@ -140,7 +140,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let item of academicYears| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                                <tr
+                                    *ngFor="let item of academicYears| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
                                     <td>{{ item.name }}</td>
                                     <td>{{ item.abbreviation }}</td>
                                     <td>{{ item.rank }}</td>
@@ -155,9 +156,9 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <app-table-paging
-                            [collectionSize]="collectionSize"
-                            (onInitEvent)="resetForm()"></app-table-paging>
+                        <app-table-paging (pageChangedEvent)="pageChanged($event)"
+                            (pageSizeChangedEvent)="pageSizeChanged($event)"
+                            [collectionSize]="academicYears.length"></app-table-paging>
                     </div>
                 </div>
             </div>

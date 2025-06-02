@@ -1,14 +1,12 @@
-import { TableSettingsService } from '@/shared/services/table-settings.service';
-import { StudentDiscipline } from '@/students/models/student-discipline';
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import { Subscription } from 'rxjs';
+import {StudentDiscipline} from '@/students/models/student-discipline';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
     selector: 'app-student-discipline-table',
     templateUrl: './student-discipline-table.component.html',
     styleUrl: './student-discipline-table.component.scss'
 })
-export class StudentDisciplineTableComponent implements OnInit {
+export class StudentDisciplineTableComponent {
     @Input() tableTitle: string = 'Student discipline records';
     @Input() studentDisciplines: StudentDiscipline[] = [];
     @Input() showLoginControls: Boolean = false;
@@ -19,20 +17,6 @@ export class StudentDisciplineTableComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
-
-    constructor(private tableSettingsSvc: TableSettingsService) {}
-
-    ngOnInit(): void {
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
-    }
 
     tableHeaders: string[] = [
         'Student Full Name',
@@ -43,6 +27,14 @@ export class StudentDisciplineTableComponent implements OnInit {
         'Outcome',
         'Action'
     ];
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
 
     deleteItem = (id: number) => {
         this.deleteItemEvent.emit(id);

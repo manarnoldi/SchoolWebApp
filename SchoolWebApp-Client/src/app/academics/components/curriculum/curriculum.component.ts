@@ -2,7 +2,6 @@ import {BreadCrumb} from '@/core/models/bread-crumb';
 import {Curriculum} from '@/academics/models/curriculum';
 import {CurriculumService} from '@/academics/services/curriculum.service';
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ToastrService} from 'ngx-toastr';
@@ -34,9 +33,6 @@ export class CurriculumComponent implements OnInit {
     isAuthLoading: boolean;
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
     tableModel: string = 'curriculum';
 
     curriculumForm: FormGroup;
@@ -44,19 +40,20 @@ export class CurriculumComponent implements OnInit {
     constructor(
         private curriculaSvc: CurriculumService,
         private toastr: ToastrService,
-        private tableSettingsSvc: TableSettingsService,
         private formBuilder: FormBuilder
     ) {}
 
     ngOnInit(): void {
         this.refreshItems();
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
     }
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
 
     get f() {
         return this.curriculumForm.controls;
@@ -74,7 +71,6 @@ export class CurriculumComponent implements OnInit {
 
         forkJoin([curriculaRequest]).subscribe(
             (res) => {
-                this.collectionSize = res[0].length;
                 this.curricula = res[0].slice(
                     (this.page - 1) * this.pageSize,
                     (this.page - 1) * this.pageSize + this.pageSize

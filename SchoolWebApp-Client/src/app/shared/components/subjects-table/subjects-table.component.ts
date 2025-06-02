@@ -1,6 +1,13 @@
 import {Subject} from '@/academics/models/subject';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
-import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    EventEmitter,
+    Input,
+    OnInit,
+    Output,
+    ViewChild
+} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 @Component({
@@ -18,28 +25,18 @@ export class SubjectsTableComponent implements OnInit {
     @Output() editItemEvent = new EventEmitter<number>();
     @Output() deleteItemEvent = new EventEmitter<number>();
 
-    @ViewChild("checkAll") checkAllBox: ElementRef;
+    @ViewChild('checkAll') checkAllBox: ElementRef;
 
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
-    constructor(private tableSettingsSvc: TableSettingsService) {}
+    constructor() {}
 
-    ngOnInit(): void {
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
-    }
+    ngOnInit(): void {}
 
     tableHeaders: string[] = [
         'Name',
-        'Code',        
+        'Code',
         'Abbr',
         'Rank',
         'Lessons #',
@@ -57,5 +54,13 @@ export class SubjectsTableComponent implements OnInit {
 
     editItem = (id: number) => {
         this.editItemEvent.emit(id);
+    };
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
     };
 }

@@ -1,14 +1,12 @@
-import { TableSettingsService } from '@/shared/services/table-settings.service';
-import { StudentSubject } from '@/students/models/student-subject';
+import {StudentSubject} from '@/students/models/student-subject';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-students-subjects-table',
     templateUrl: './students-subjects-table.component.html',
     styleUrl: './students-subjects-table.component.scss'
 })
-export class StudentsSubjectsTableComponent implements OnInit {
+export class StudentsSubjectsTableComponent {
     @Input() tableTitle: string = 'Student subjects list';
     @Input() studentSubjects: StudentSubject[] = [];
 
@@ -17,20 +15,14 @@ export class StudentsSubjectsTableComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
-    constructor(private tableSettingsSvc: TableSettingsService) {}
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
 
-    ngOnInit(): void {
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
-    }
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
 
     tableHeaders: string[] = [
         'Adm No',

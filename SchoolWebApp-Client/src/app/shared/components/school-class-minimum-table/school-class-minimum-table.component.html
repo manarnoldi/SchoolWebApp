@@ -7,7 +7,8 @@
                 <tr>
                     <th>
                         <div class="icheck-success m-0 p-0">
-                            <input #checkAllClasses type="checkbox" id="checkAllClasses" [attr.disabled]="disabled? 'disabled' : null"
+                            <input #checkAllClasses type="checkbox" id="checkAllClasses"
+                                [attr.disabled]="disabled? 'disabled' : null"
                                 (change)="checkAllClicked($event)" [checked]="disabled">
                             <label class="form-check-label" for="checkAllClasses"></label>
                         </div>
@@ -35,7 +36,8 @@
                 </tr>
             </tbody>
         </table>
-        <app-table-paging
+        <app-table-paging (pageChangedEvent)="pageChanged($event)"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"
             [collectionSize]="schoolClasses.length"></app-table-paging>
     </div>
 </div>

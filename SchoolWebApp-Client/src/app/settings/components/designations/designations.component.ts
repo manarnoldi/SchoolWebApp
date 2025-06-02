@@ -1,12 +1,11 @@
-import { BreadCrumb } from '@/core/models/bread-crumb';
-import { Designation } from '@/settings/models/designation';
-import { DesignationsService } from '@/settings/services/designations.service';
-import { SettingsTableComponent } from '@/shared/directives/settings-table/settings-table.component';
-import { TableSettingsService } from '@/shared/services/table-settings.service';
+import {BreadCrumb} from '@/core/models/bread-crumb';
+import {Designation} from '@/settings/models/designation';
+import {DesignationsService} from '@/settings/services/designations.service';
+import {SettingsTableComponent} from '@/shared/directives/settings-table/settings-table.component';
 import {Component, OnInit, ViewChild} from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
-import { Subscription, forkJoin } from 'rxjs';
+import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {ToastrService} from 'ngx-toastr';
+import {Subscription, forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -19,8 +18,6 @@ export class DesignationsComponent implements OnInit {
     @ViewChild(SettingsTableComponent) settingsTblBtn: SettingsTableComponent;
     page = 1;
     pageSize = 10;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
     designationForm: FormGroup;
 
@@ -40,8 +37,7 @@ export class DesignationsComponent implements OnInit {
     constructor(
         private designationsSvc: DesignationsService,
         private toastr: ToastrService,
-        private formBuilder: FormBuilder,
-        private tableSettingsSvc: TableSettingsService
+        private formBuilder: FormBuilder
     ) {}
     closeResult = '';
     dashboardTitle = 'Designations list';
@@ -180,14 +176,15 @@ export class DesignationsComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
         this.refreshItems();
     }
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
 
     resetForm() {
         this.designationForm.reset();

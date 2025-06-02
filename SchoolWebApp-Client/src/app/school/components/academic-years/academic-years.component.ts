@@ -2,12 +2,11 @@ import {BreadCrumb} from '@/core/models/bread-crumb';
 import {AcademicYear} from '@/school/models/academic-year';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {formatDate} from '@angular/common';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ToastrService} from 'ngx-toastr';
-import {Subscription, forkJoin} from 'rxjs';
+import { forkJoin } from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -44,9 +43,6 @@ export class AcademicYearsComponent implements OnInit {
     isAuthLoading: boolean;
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
     tableModel: string = 'academicYear';
 
     academicYearForm: FormGroup;
@@ -54,19 +50,20 @@ export class AcademicYearsComponent implements OnInit {
     constructor(
         private academicYearsSvc: AcademicYearsService,
         private toastr: ToastrService,
-        private tableSettingsSvc: TableSettingsService,
         private formBuilder: FormBuilder
     ) {}
 
     ngOnInit(): void {
         this.refreshItems();
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
     }
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
 
     get f() {
         return this.academicYearForm.controls;
@@ -99,8 +96,7 @@ export class AcademicYearsComponent implements OnInit {
 
         forkJoin([academicYearsRequest]).subscribe(
             (res) => {
-                this.collectionSize = res[0].length;
-                this.academicYears= res[0].sort((a, b) => b.rank-a.rank);
+                this.academicYears = res[0].sort((a, b) => b.rank - a.rank);
                 this.isAuthLoading = false;
                 this.editMode = false;
             },

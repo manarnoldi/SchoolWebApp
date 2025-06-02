@@ -1,4 +1,3 @@
-import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {StaffDetails} from '@/staff/models/staff-details';
 import {
     Component,
@@ -9,7 +8,6 @@ import {
     Output,
     ViewChild
 } from '@angular/core';
-import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-staffs-attendances-table',
@@ -31,11 +29,8 @@ export class StaffsAttendancesTableComponent implements OnInit {
 
     page = 1;
     pageSize = 20;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
-    constructor(private tableSettingsSvc: TableSettingsService) {}
+    constructor() {}
 
     updateCheckAll = () => {
         if (this.checkAll) {
@@ -50,13 +45,6 @@ export class StaffsAttendancesTableComponent implements OnInit {
     };
 
     ngOnInit(): void {
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
-        this.tableSettingsSvc.changePageSize(20);
         this.updateCheckAll();
     }
 
@@ -78,6 +66,14 @@ export class StaffsAttendancesTableComponent implements OnInit {
         } else {
             this.checkAll.nativeElement.checked = true;
         }
+    };
+    
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
     };
 
     deleteItem = (id: number) => {

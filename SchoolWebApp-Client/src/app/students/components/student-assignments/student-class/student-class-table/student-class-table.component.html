@@ -1,6 +1,6 @@
 <div class="card mb-1">
     <app-table-heading
-        tableTitle="{{tableTitle}} - {{studentClasses?.length}} items"></app-table-heading>
+        tableTitle="{{tableTitle}}"></app-table-heading>
     <div class="card-body table-responsive p-0">
         <table class="table table-striped table-hover text-nowrap">
             <thead>
@@ -42,7 +42,8 @@
                 </tr>
             </tbody>
         </table>
-        <app-table-paging
+        <app-table-paging (pageChangedEvent)="pageChanged($event)"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"
             [collectionSize]="studentClasses.length"></app-table-paging>
     </div>
 </div>

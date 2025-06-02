@@ -29,7 +29,7 @@
 </div>
 <section class="content">
     <div class="container-fluid px-1">
-         <div class="row g-0">
+        <div class="row g-0">
             <div class="col-6">
                 <app-curriculum-year-filter-form
                     [showCurriculum]="true" (searchItemEvent)="searchClicked($event)"
@@ -72,8 +72,8 @@
                     </tbody>
                 </table>
                 <app-table-paging
-                    [collectionSize]="grades.length"
-                    (onInitEvent)="resetForm()"></app-table-paging>
+                    [collectionSize]="grades.length" (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"></app-table-paging>
             </div>
         </div>
     </div>

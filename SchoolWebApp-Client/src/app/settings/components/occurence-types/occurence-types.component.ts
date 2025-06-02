@@ -1,203 +1,196 @@
-import { BreadCrumb } from '@/core/models/bread-crumb';
-import { OccurenceType } from '@/settings/models/occurence-type';
-import { OccurenceTypeService } from '@/settings/services/occurence-type.service';
-import { TableButtonComponent } from '@/shared/directives/table-button/table-button.component';
-import { TableSettingsService } from '@/shared/services/table-settings.service';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
-import { Subscription, forkJoin } from 'rxjs';
+import {BreadCrumb} from '@/core/models/bread-crumb';
+import {OccurenceType} from '@/settings/models/occurence-type';
+import {OccurenceTypeService} from '@/settings/services/occurence-type.service';
+import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ToastrService} from 'ngx-toastr';
+import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-occurence-types',
-  templateUrl: './occurence-types.component.html',
-  styleUrl: './occurence-types.component.scss'
+    selector: 'app-occurence-types',
+    templateUrl: './occurence-types.component.html',
+    styleUrl: './occurence-types.component.scss'
 })
-export class OccurenceTypesComponent implements OnInit{
-  @ViewChild('closebutton') closeButton;
-  @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
+export class OccurenceTypesComponent implements OnInit {
+    @ViewChild('closebutton') closeButton;
+    @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
 
-  breadcrumbs: BreadCrumb[] = [
-      {link: ['/'], title: 'Home'},
-      {link: ['/settings/occurenceTypes'], title: 'Settings: Occurence types'}
-  ];
+    breadcrumbs: BreadCrumb[] = [
+        {link: ['/'], title: 'Home'},
+        {link: ['/settings/occurenceTypes'], title: 'Settings: Occurence types'}
+    ];
 
-  dashboardTitle = 'Settings: Occurence types';
-  tableTitle: string = 'Occurence types list';
-  tableHeaders: string[] = [
-      'Name',        
-      'Abbreviation',
-      'Description',
-      'Action'
-  ];
+    dashboardTitle = 'Settings: Occurence types';
+    tableTitle: string = 'Occurence types list';
+    tableHeaders: string[] = ['Name', 'Abbreviation', 'Description', 'Action'];
 
-  occurenceType: OccurenceType;
-  occurenceTypes: OccurenceType[] = [];
-  tblShowViewButton: true;
-  editMode = false;
-  isAuthLoading: boolean;
-  page = 1;
-  pageSize = 10;
-  collectionSize = 0;
-  pageSubscription: Subscription;
-  pageSizeSubscription: Subscription;
-  tableModel: string = 'occurenceType';
+    occurenceType: OccurenceType;
+    occurenceTypes: OccurenceType[] = [];
+    tblShowViewButton: true;
+    editMode = false;
+    isAuthLoading: boolean;
+    page = 1;
+    pageSize = 10;
 
-  occurenceTypeForm: FormGroup;
+    tableModel: string = 'occurenceType';
 
-  constructor(
-      private occurenceTypesSvc: OccurenceTypeService,
-      private toastr: ToastrService,
-      private tableSettingsSvc: TableSettingsService,
-      private formBuilder: FormBuilder
-  ) {}
+    occurenceTypeForm: FormGroup;
 
-  ngOnInit(): void {
-      this.refreshItems();
-      this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-          (page) => (this.page = page)
-      );
-      this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-          (pageSize) => (this.pageSize = pageSize)
-      );
-  }
+    constructor(
+        private occurenceTypesSvc: OccurenceTypeService,
+        private toastr: ToastrService,
+        private formBuilder: FormBuilder
+    ) {}
 
-  get f() {
-      return this.occurenceTypeForm.controls;
-  }
+    ngOnInit(): void {
+        this.refreshItems();
+    }
 
-  refreshItems() {
-      this.occurenceTypeForm = this.formBuilder.group({
-          name: ['', [Validators.required]],
-          abbreviation: [''],
-          description: ['']
-      });
+    get f() {
+        return this.occurenceTypeForm.controls;
+    }
 
-      let occurenceTypesRequest = this.occurenceTypesSvc.get('/occurenceTypes');
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
 
-      forkJoin([occurenceTypesRequest]).subscribe(
-          (res) => {
-              this.collectionSize = res[0].length;
-              this.occurenceTypes = res[0].slice(
-                  (this.page - 1) * this.pageSize,
-                  (this.page - 1) * this.pageSize + this.pageSize
-              );
-              this.isAuthLoading = false;
-              this.editMode = false;
-          },
-          (err) => {
-              this.toastr.error(err.error);
-          }
-      );
-  }
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
 
-  editItem(id: number) {
-      this.occurenceTypesSvc.getById(id, '/occurenceTypes').subscribe(
-          (res) => {
-              this.occurenceType = new OccurenceType(res);
-              this.occurenceTypeForm.setValue({
-                  name: this.occurenceType.name,
-                  abbreviation: this.occurenceType.abbreviation,
-                  description: this.occurenceType.description
-              });
-              this.editMode = true;
-              this.tableButton.onClick();
-          },
-          (err) => {
-              this.toastr.error(err);
-          }
-      );
-  }
+    refreshItems() {
+        this.occurenceTypeForm = this.formBuilder.group({
+            name: ['', [Validators.required]],
+            abbreviation: [''],
+            description: ['']
+        });
 
-  deleteItem(id: number) {
-      Swal.fire({
-          title: `Delete record?`,
-          text: `Confirm if you want to delete record.`,
-          width: 400,
-          position: 'top',
-          padding: '1em',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: `Delete`,
-          cancelButtonText: 'Cancel'
-      }).then((result) => {
-          if (result.value) {
-              this.occurenceTypesSvc.delete('/occurenceTypes', id).subscribe(
-                  (res) => {
-                      this.refreshItems();
-                      this.toastr.success('Record deleted successfully!');
-                  },
-                  (err) => {
-                      this.toastr.error(err);
-                  }
-              );
-          } else if (result.dismiss === Swal.DismissReason.cancel) {
-          }
-      });
-  }
+        let occurenceTypesRequest =
+            this.occurenceTypesSvc.get('/occurenceTypes');
 
-  onSubmit() {
-      if (this.occurenceTypeForm.invalid) {
-          return;
-      }
+        forkJoin([occurenceTypesRequest]).subscribe(
+            (res) => {
+                this.occurenceTypes = res[0].slice(
+                    (this.page - 1) * this.pageSize,
+                    (this.page - 1) * this.pageSize + this.pageSize
+                );
+                this.isAuthLoading = false;
+                this.editMode = false;
+            },
+            (err) => {
+                this.toastr.error(err.error);
+            }
+        );
+    }
 
-      Swal.fire({
-          title: `${this.editMode ? 'Update' : 'Add'} record?`,
-          text: `Confirm if you want to ${
-              this.editMode ? 'edit' : 'add'
-          } record.`,
-          width: 400,
-          heightAuto: true,
-          position: 'top',
-          padding: '1em',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: `${this.editMode ? 'Update' : 'Add'}`,
-          cancelButtonText: 'Cancel'
-      }).then((result) => {
-          if (result.value) {
-              if (this.editMode) {
-                  this.occurenceType.name =
-                      this.occurenceTypeForm.get('name').value;
-                  this.occurenceType.abbreviation =
-                      this.occurenceTypeForm.get('abbreviation').value;
-                  this.occurenceType.description =
-                      this.occurenceTypeForm.get('description').value;
-              }
+    editItem(id: number) {
+        this.occurenceTypesSvc.getById(id, '/occurenceTypes').subscribe(
+            (res) => {
+                this.occurenceType = new OccurenceType(res);
+                this.occurenceTypeForm.setValue({
+                    name: this.occurenceType.name,
+                    abbreviation: this.occurenceType.abbreviation,
+                    description: this.occurenceType.description
+                });
+                this.editMode = true;
+                this.tableButton.onClick();
+            },
+            (err) => {
+                this.toastr.error(err);
+            }
+        );
+    }
 
-              let reqToProcess = this.editMode
-                  ? this.occurenceTypesSvc.update(
-                        '/occurenceTypes',
-                        this.occurenceType
-                    )
-                  : this.occurenceTypesSvc.create(
-                        '/occurenceTypes',
-                        new OccurenceType(this.occurenceTypeForm.value)
-                    );
+    deleteItem(id: number) {
+        Swal.fire({
+            title: `Delete record?`,
+            text: `Confirm if you want to delete record.`,
+            width: 400,
+            position: 'top',
+            padding: '1em',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: `Delete`,
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.value) {
+                this.occurenceTypesSvc.delete('/occurenceTypes', id).subscribe(
+                    (res) => {
+                        this.refreshItems();
+                        this.toastr.success('Record deleted successfully!');
+                    },
+                    (err) => {
+                        this.toastr.error(err);
+                    }
+                );
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+            }
+        });
+    }
 
-              let replyMsg = `Occurence type ${
-                  this.editMode ? 'updated' : 'created'
-              } successfully!`;
+    onSubmit() {
+        if (this.occurenceTypeForm.invalid) {
+            return;
+        }
 
-              forkJoin([reqToProcess]).subscribe(
-                  (res) => {
-                      this.editMode = false;
-                      this.toastr.success(replyMsg);
-                      this.refreshItems();
-                      this.occurenceTypeForm.reset();
-                      this.closeButton.nativeElement.click();
-                  },
-                  (err) => {
-                      this.toastr.error(err.error?.message);
-                  }
-              );
-          } else if (result.dismiss === Swal.DismissReason.cancel) {
-          }
-      });
-  }
+        Swal.fire({
+            title: `${this.editMode ? 'Update' : 'Add'} record?`,
+            text: `Confirm if you want to ${
+                this.editMode ? 'edit' : 'add'
+            } record.`,
+            width: 400,
+            heightAuto: true,
+            position: 'top',
+            padding: '1em',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: `${this.editMode ? 'Update' : 'Add'}`,
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.value) {
+                if (this.editMode) {
+                    this.occurenceType.name =
+                        this.occurenceTypeForm.get('name').value;
+                    this.occurenceType.abbreviation =
+                        this.occurenceTypeForm.get('abbreviation').value;
+                    this.occurenceType.description =
+                        this.occurenceTypeForm.get('description').value;
+                }
 
-  resetForm() {
-      this.occurenceTypeForm.reset();
-  }
+                let reqToProcess = this.editMode
+                    ? this.occurenceTypesSvc.update(
+                          '/occurenceTypes',
+                          this.occurenceType
+                      )
+                    : this.occurenceTypesSvc.create(
+                          '/occurenceTypes',
+                          new OccurenceType(this.occurenceTypeForm.value)
+                      );
+
+                let replyMsg = `Occurence type ${
+                    this.editMode ? 'updated' : 'created'
+                } successfully!`;
+
+                forkJoin([reqToProcess]).subscribe(
+                    (res) => {
+                        this.editMode = false;
+                        this.toastr.success(replyMsg);
+                        this.refreshItems();
+                        this.occurenceTypeForm.reset();
+                        this.closeButton.nativeElement.click();
+                    },
+                    (err) => {
+                        this.toastr.error(err.error?.message);
+                    }
+                );
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+            }
+        });
+    }
+
+    resetForm() {
+        this.occurenceTypeForm.reset();
+    }
 }

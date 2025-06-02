@@ -1,15 +1,13 @@
 import {AcademicYear} from '@/school/models/academic-year';
 import {SchoolEvent} from '@/school/models/schoolEvent';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Subscription} from 'rxjs';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
     selector: 'app-events-table',
     templateUrl: './events-table.component.html',
     styleUrl: './events-table.component.scss'
 })
-export class EventsTableComponent implements OnInit {
+export class EventsTableComponent {
     @Input() events: SchoolEvent[] = [];
     @Input() academicYears: AcademicYear[] = [];
 
@@ -19,8 +17,6 @@ export class EventsTableComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
     tableTitle: string = ' Events list';
     tableHeaders: string[] = [
@@ -36,17 +32,6 @@ export class EventsTableComponent implements OnInit {
 
     tableModel: string = 'event';
 
-    constructor(private tableSettingsSvc: TableSettingsService) {}
-
-    ngOnInit(): void {
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
-    }
-
     editItem = (id: number) => {
         this.editItemEvent.emit(id);
     };
@@ -57,5 +42,13 @@ export class EventsTableComponent implements OnInit {
 
     resetForm = () => {
         this.resetFormEvent.emit();
+    };
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
     };
 }

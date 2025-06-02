@@ -53,7 +53,7 @@
                                 <tr
                                     *ngFor="let item of departments| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
                                     <td>{{ item.code }}</td>
-                                    <td>{{ item.name }}</td>                                    
+                                    <td>{{ item.name }}</td>
                                     <td>{{ item.description }}</td>
                                     <td>{{ item.staffDetails?.fullName }}</td>
                                     <app-table-action
@@ -62,8 +62,9 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <app-table-paging
-                            [collectionSize]="collectionSize"
+                        <app-table-paging (onPageSettingsChangedEvent)="pageChanged($event)"
+                            (pageSizeChangedEvent)="pageSizeChanged($event)"
+                            [collectionSize]="departments.length"
                             (onInitEvent)="resetForm()"></app-table-paging>
                     </div>
                 </div>

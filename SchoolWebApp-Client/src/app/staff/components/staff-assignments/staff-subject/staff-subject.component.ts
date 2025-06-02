@@ -1,5 +1,5 @@
 import {StaffDetails} from '@/staff/models/staff-details';
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {StaffSubjectFormComponent} from './staff-subject-form/staff-subject-form.component';
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
 import {StaffSubject} from '@/staff/models/staff-subject';
@@ -21,7 +21,7 @@ import {SchoolClass} from '@/class/models/school-class';
     templateUrl: './staff-subject.component.html',
     styleUrl: './staff-subject.component.scss'
 })
-export class StaffSubjectComponent implements OnInit {
+export class StaffSubjectComponent implements OnInit, AfterViewInit {
     @Input() statuses;
     @Input() staff: StaffDetails;
     @Input() subjects: Subject[];
@@ -32,6 +32,7 @@ export class StaffSubjectComponent implements OnInit {
     @ViewChild(CurriculumYearFilterFormComponent)
     cyfFormComponent: CurriculumYearFilterFormComponent;
 
+    isDLoading = false;
     firstLoad: boolean = true;
     staffId: number = 0;
     staffSubject: StaffSubject;
@@ -46,9 +47,12 @@ export class StaffSubjectComponent implements OnInit {
         private academicYearsSvc: AcademicYearsService,
         private schoolClassesSvc: SchoolClassesService
     ) {}
+    ngAfterViewInit(): void {
+        this.loadStaffSubjects();
+    }
 
     ngOnInit(): void {
-        this.loadStaffSubjects();
+        
     }
 
     academicYearChanged = (yearId: number) => {
@@ -90,7 +94,11 @@ export class StaffSubjectComponent implements OnInit {
                                 'No staff subject record/s found for the search parameters!'
                             );
                         }
+                        if (this.firstLoad) {
+                            this.cyfFormComponent.setFormControls(cyf);
+                        }
                         this.firstLoad = false;
+                        this.isDLoading = true;
                     },
                     error: (err) => {
                         this.toastr.error(err.error);
@@ -111,8 +119,6 @@ export class StaffSubjectComponent implements OnInit {
 
                 let dmy = new CurriculumYearPerson();
                 dmy.academicYearId = parseInt(year.id);
-
-                this.cyfFormComponent.setFormControls(dmy);
 
                 this.searchForSubjects(dmy);
             },

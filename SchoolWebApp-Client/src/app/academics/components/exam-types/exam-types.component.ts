@@ -1,12 +1,11 @@
 import {ExamType} from '@/academics/models/exam-type';
-import { ExamTypesService } from '@/academics/services/exam-types.service';
+import {ExamTypesService} from '@/academics/services/exam-types.service';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ToastrService} from 'ngx-toastr';
-import {Subscription, forkJoin} from 'rxjs';
+import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -40,9 +39,6 @@ export class ExamTypesComponent implements OnInit {
     isAuthLoading: boolean;
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
     tableModel: string = 'examType';
 
     examTypeForm: FormGroup;
@@ -50,18 +46,11 @@ export class ExamTypesComponent implements OnInit {
     constructor(
         private examTypesSvc: ExamTypesService,
         private toastr: ToastrService,
-        private tableSettingsSvc: TableSettingsService,
         private formBuilder: FormBuilder
     ) {}
 
     ngOnInit(): void {
         this.refreshItems();
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
     }
 
     get f() {
@@ -80,7 +69,6 @@ export class ExamTypesComponent implements OnInit {
 
         forkJoin([examTypesRequest]).subscribe(
             (res) => {
-                this.collectionSize = res[0].length;
                 this.examTypes = res[0].slice(
                     (this.page - 1) * this.pageSize,
                     (this.page - 1) * this.pageSize + this.pageSize
@@ -193,4 +181,12 @@ export class ExamTypesComponent implements OnInit {
     resetForm() {
         this.examTypeForm.reset();
     }
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
 }

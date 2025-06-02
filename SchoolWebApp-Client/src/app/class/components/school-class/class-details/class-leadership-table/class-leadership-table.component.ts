@@ -1,7 +1,5 @@
-import { ClassLeadership } from '@/class/models/class-leadership';
-import { TableSettingsService } from '@/shared/services/table-settings.service';
+import {ClassLeadership} from '@/class/models/class-leadership';
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-class-leadership-table',
@@ -19,7 +17,7 @@ export class ClassLeadershipTableComponent {
 
     tableHeaders: string[] = [
         'Role for',
-        'Role name',        
+        'Role name',
         'Full name',
         'Description',
         'Action'
@@ -27,12 +25,7 @@ export class ClassLeadershipTableComponent {
 
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
-    
-    constructor(private tableSettingsSvc: TableSettingsService) { }
-    
+
     deleteItem = (id: number) => {
         this.deleteItemEvent.emit(id);
     };
@@ -43,5 +36,13 @@ export class ClassLeadershipTableComponent {
 
     editItem = (id: number) => {
         this.editItemEvent.emit(id);
+    };
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
     };
 }

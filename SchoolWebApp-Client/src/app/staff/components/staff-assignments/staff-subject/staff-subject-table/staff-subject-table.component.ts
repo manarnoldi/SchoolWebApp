@@ -1,10 +1,6 @@
-import { LearningLevel } from '@/class/models/learning-level';
-import { SchoolStream } from '@/class/models/school-stream';
-import { AcademicYear } from '@/school/models/academic-year';
-import { TableSettingsService } from '@/shared/services/table-settings.service';
-import { StaffSubject } from '@/staff/models/staff-subject';
+import {AcademicYear} from '@/school/models/academic-year';
+import {StaffSubject} from '@/staff/models/staff-subject';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-staff-subject-table',
@@ -24,20 +20,18 @@ export class StaffSubjectTableComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
-    constructor(private tableSettingsSvc: TableSettingsService) {}
+    constructor() {}
 
-    ngOnInit(): void {
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
-    }
+    ngOnInit(): void {}
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
 
     tableHeaders: string[] = [
         'Staff full name',

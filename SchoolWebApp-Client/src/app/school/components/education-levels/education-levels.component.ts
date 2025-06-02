@@ -1,13 +1,12 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {EducationLevelFormComponent} from './education-level-form/education-level-form.component';
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
-import {Subscription, forkJoin} from 'rxjs';
+import {forkJoin} from 'rxjs';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {EducationLevel} from '@/school/models/educationLevel';
 import {EducationLevelType} from '@/school/models/education-level-types';
 import {Curriculum} from '@/academics/models/curriculum';
 import {ToastrService} from 'ngx-toastr';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {EducationLevelService} from '@/school/services/education-level.service';
 import {CurriculumService} from '@/academics/services/curriculum.service';
 import {EducationLevelTypesService} from '@/school/services/education-level-types.service';
@@ -32,9 +31,6 @@ export class EducationLevelsComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
     tableModel: string = 'educationLevel';
     breadcrumbs: BreadCrumb[] = [
@@ -61,7 +57,6 @@ export class EducationLevelsComponent implements OnInit {
 
     constructor(
         private toastr: ToastrService,
-        private tableSettingsSvc: TableSettingsService,
         private educationLevelSvc: EducationLevelService,
         private curriculumSvc: CurriculumService,
         private educationLevelTypeSvc: EducationLevelTypesService
@@ -69,12 +64,6 @@ export class EducationLevelsComponent implements OnInit {
 
     ngOnInit(): void {
         this.refreshItems();
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
     }
 
     refreshItems() {
@@ -86,9 +75,7 @@ export class EducationLevelsComponent implements OnInit {
         forkJoin([curriculaReq, educationLevelTypeReq]).subscribe(
             ([curricular, educationLevelTypes]) => {
                 this.educationLevelTypes = educationLevelTypes;
-                this.curricula = curricular.sort(
-                    (a, b) => a.rank - b.rank
-                );
+                this.curricula = curricular.sort((a, b) => a.rank - b.rank);
                 const topCurriculum = this.curricula[0];
 
                 let cysPass = new CurriculumYearPerson();
@@ -106,9 +93,16 @@ export class EducationLevelsComponent implements OnInit {
         );
     }
 
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
+
     curriculumChanged = (id: number) => {
         this.educationLevels = [];
-        this.collectionSize = 0;
     };
 
     searchClicked = (cys: CurriculumYearPerson) => {
@@ -118,8 +112,8 @@ export class EducationLevelsComponent implements OnInit {
                 this.educationLevels = educationLevels.sort(
                     (a, b) => a.rank - b.rank
                 );
-                this.collectionSize = educationLevels.length;
-                if (this.collectionSize <= 0) {
+
+                if (this.educationLevels.length <= 0) {
                     this.toastr.info(
                         'No record found for the selected curriculum!'
                     );

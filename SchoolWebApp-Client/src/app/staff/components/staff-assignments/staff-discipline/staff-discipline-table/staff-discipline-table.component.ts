@@ -1,7 +1,5 @@
-import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {StaffDiscipline} from '@/staff/models/staff-discipline';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-staff-discipline-table',
@@ -19,20 +17,18 @@ export class StaffDisciplineTableComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
-    constructor(private tableSettingsSvc: TableSettingsService) {}
+    constructor() {}
 
-    ngOnInit(): void {
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
-    }
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    ngOnInit(): void {}
 
     tableHeaders: string[] = [
         'Staff Full Name',

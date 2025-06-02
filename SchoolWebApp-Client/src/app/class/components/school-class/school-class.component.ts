@@ -7,13 +7,12 @@ import {
     ViewChild
 } from '@angular/core';
 import {SchoolClassAddFormComponent} from './school-class-add-form/school-class-add-form.component';
-import {forkJoin, Subscription} from 'rxjs';
+import {forkJoin} from 'rxjs';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {SchoolClass} from '@/class/models/school-class';
 import {SchoolStream} from '@/class/models/school-stream';
 import {AcademicYear} from '@/school/models/academic-year';
 import {ToastrService} from 'ngx-toastr';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {SchoolClassesService} from '@/class/services/school-classes.service';
 import {SchoolStreamsService} from '@/class/services/school-streams.service';
@@ -46,8 +45,6 @@ export class SchoolClassComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
     tableModel: string = 'schoolClass';
     breadcrumbs: BreadCrumb[] = [
@@ -78,7 +75,6 @@ export class SchoolClassComponent implements OnInit {
 
     constructor(
         private toastr: ToastrService,
-        private tableSettingsSvc: TableSettingsService,
         private schoolClassesSvc: SchoolClassesService,
         private learningLevelsSvc: LearningLevelsService,
         private schoolStreamsSvc: SchoolStreamsService,
@@ -90,12 +86,6 @@ export class SchoolClassComponent implements OnInit {
 
     ngOnInit(): void {
         this.refreshItems();
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
     }
 
     academicYearChanged = (acadYearId: number) => {
@@ -120,6 +110,14 @@ export class SchoolClassComponent implements OnInit {
                 this.toastr.error(err.error);
             }
         });
+    };
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
     };
 
     refreshItems() {

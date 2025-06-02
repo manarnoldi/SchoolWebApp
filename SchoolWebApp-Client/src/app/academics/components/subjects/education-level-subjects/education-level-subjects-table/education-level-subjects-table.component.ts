@@ -1,7 +1,5 @@
 import {EducationLevelSubject} from '@/academics/models/education-level-subject';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-education-level-subjects-table',
@@ -17,20 +15,10 @@ export class EducationLevelSubjectsTableComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
-    constructor(private tableSettingsSvc: TableSettingsService) {}
+    constructor() {}
 
-    ngOnInit(): void {
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
-    }
+    ngOnInit(): void {}
 
     tableHeaders: string[] = [
         'Academic Year',
@@ -46,5 +34,13 @@ export class EducationLevelSubjectsTableComponent implements OnInit {
 
     editItem = (id: number) => {
         this.editItemEvent.emit(id);
+    };
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
     };
 }

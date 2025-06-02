@@ -1,7 +1,8 @@
 <div class="row">
     <div class="col-12">
         <div class="card mb-0">
-            <app-table-heading tableTitle="{{tableTitle}}"></app-table-heading>
+            <app-table-heading
+                tableTitle="{{tableTitle}} - {{students?.length}} items"></app-table-heading>
             <div class="card-body table-responsive p-0">
                 <table class="table table-sm table-striped table-hover text-nowrap">
                     <thead>
@@ -18,7 +19,7 @@
                                 <th *ngIf="!header.min">
                                     {{ header.name }}
                                 </th>
-                              </ng-container>                            
+                            </ng-container>
                         </tr>
                     </thead>
                     <tbody>
@@ -29,12 +30,14 @@
                                     <input type="checkbox" id="stud-id-{{item.id}}"
                                         (change)="itemClicked($event)"
                                         [(ngModel)]="item.isSelected" [disabled]="disabled">
-                                    <label class="form-check-label" for="stud-id-{{item.id}}"></label>
+                                    <label class="form-check-label"
+                                        for="stud-id-{{item.id}}"></label>
                                 </div>
                             </th>
-                            <td >{{ item.upi }}</td>
+                            <td>{{ item.upi }}</td>
                             <td>{{ item.fullName }}</td>
-                            <td *ngIf="!showMinimum">{{ item.admissionDate | date: 'dd/MM/yyyy' }}</td>
+                            <td *ngIf="!showMinimum">{{ item.admissionDate | date: 'dd/MM/yyyy'
+                                }}</td>
                             <td *ngIf="!showMinimum">
                                 <div *ngFor="let lm of learningModes">
                                     <div *ngIf="lm.id === item.learningModeId">
@@ -50,7 +53,8 @@
                     </tbody>
                 </table>
                 <app-table-paging
-                    [collectionSize]="collectionSize"></app-table-paging>
+                    [collectionSize]="students.length" (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"></app-table-paging>
             </div>
         </div>
     </div>

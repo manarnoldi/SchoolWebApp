@@ -1,12 +1,11 @@
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {SubjectGroupsAddFormComponent} from './subject-groups-add-form/subject-groups-add-form.component';
-import {forkJoin, Subscription} from 'rxjs';
+import {forkJoin} from 'rxjs';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {SubjectGroup} from '@/academics/models/subject-group';
 import {Curriculum} from '@/academics/models/curriculum';
 import {ToastrService} from 'ngx-toastr';
-import {TableSettingsService} from '@/shared/services/table-settings.service';
 import {SubjectGroupsService} from '@/academics/services/subject-groups.service';
 import {CurriculumService} from '@/academics/services/curriculum.service';
 import Swal from 'sweetalert2';
@@ -26,9 +25,6 @@ export class SubjectGroupsComponent implements OnInit {
 
     page = 1;
     pageSize = 10;
-    collectionSize = 0;
-    pageSubscription: Subscription;
-    pageSizeSubscription: Subscription;
 
     tableModel: string = 'subjectGroup';
     breadcrumbs: BreadCrumb[] = [
@@ -51,20 +47,21 @@ export class SubjectGroupsComponent implements OnInit {
 
     constructor(
         private toastr: ToastrService,
-        private tableSettingsSvc: TableSettingsService,
         private subjectGroupsSvc: SubjectGroupsService,
         private curriculumSvc: CurriculumService
     ) {}
 
     ngOnInit(): void {
         this.refreshItems();
-        this.pageSubscription = this.tableSettingsSvc.page.subscribe(
-            (page) => (this.page = page)
-        );
-        this.pageSizeSubscription = this.tableSettingsSvc.pageSize.subscribe(
-            (pageSize) => (this.pageSize = pageSize)
-        );
     }
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
+    };
 
     refreshItems() {
         let subjectGroupsReq = this.subjectGroupsSvc.get('/subjectGroups');
@@ -72,7 +69,6 @@ export class SubjectGroupsComponent implements OnInit {
 
         forkJoin([subjectGroupsReq, curriculaReq]).subscribe(
             ([subjectGroups, curricular]) => {
-                this.collectionSize = subjectGroups.length;
                 this.subjectGroups = subjectGroups.sort(
                     (a, b) => parseInt(a.id) - parseInt(b.id)
                 );
@@ -155,8 +151,7 @@ export class SubjectGroupsComponent implements OnInit {
         }).then((result) => {
             if (result.value) {
                 let app = new SubjectGroup(subjectGroup);
-                if (this.subjectGroupForm.editMode)
-                    app.id = subjectGroup.id;
+                if (this.subjectGroupForm.editMode) app.id = subjectGroup.id;
                 let reqToProcess = this.subjectGroupForm.editMode
                     ? this.subjectGroupsSvc.update('/subjectGroups', app)
                     : this.subjectGroupsSvc.create('/subjectGroups', app);
@@ -165,9 +160,7 @@ export class SubjectGroupsComponent implements OnInit {
                     (res) => {
                         this.subjectGroupForm.editMode = false;
                         this.subjectGroupForm.refreshItems();
-                        this.toastr.success(
-                            'Subject group saved successfully'
-                        );
+                        this.toastr.success('Subject group saved successfully');
                         this.refreshItems();
                         this.closeButton.nativeElement.click();
                     },

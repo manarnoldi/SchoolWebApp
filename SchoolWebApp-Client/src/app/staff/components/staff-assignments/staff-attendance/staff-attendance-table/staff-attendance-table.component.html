@@ -27,6 +27,8 @@
             </tbody>
         </table>
         <app-table-paging
-            [collectionSize]="staffAttendances.length"></app-table-paging>
+            [collectionSize]="staffAttendances.length" (pageChangedEvent)="pageChanged($event)"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"></app-table-paging>
     </div>
 </div>
