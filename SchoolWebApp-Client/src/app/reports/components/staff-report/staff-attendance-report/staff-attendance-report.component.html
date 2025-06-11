@@ -1,11 +1,11 @@
 <div class="card my-1">
-    <app-date-month-year-filter-form [staffCategories]="staffCategories" [months]="months"
+    <app-school-soft-filter-form [staffCategories]="staffCategories" [months]="months"
         [years]="years"
         [showStaffCategory]="true" [showMonth]="true" [showYear]="true"
         (monthChangedEvent)="monthChangedChanged($event)"
         (staffCategoryChangedEvent)="staffCategoryChanged($event)"
         (yearChangedEvent)="yearChanged($event)"
-        (searchItemEvent)="searchForDataMethod($event)"></app-date-month-year-filter-form>
+        (searchItemEvent)="searchForDataMethod($event)"></app-school-soft-filter-form>
 </div>
 <app-staff-attendance-report-table [tableTitle]="'Staff attendances report'"
     [staffAttendancesRpt]="staffAttendancesRpt"></app-staff-attendance-report-table>

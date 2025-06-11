@@ -34,7 +34,7 @@
     <div class="container-fluid px-1">
         <div class="row g-0">
             <div class="col-9">
-                <app-curriculum-year-filter-form
+                <app-school-soft-filter-form
                     [showCurriculum]="true" [showEducationLevel]="true"
                     [academicYears]="academicYears" [curricula]="curricula"
                     [educationLevels]="educationLevels"
@@ -42,7 +42,7 @@
                     (curriculumChangedEvent)="curriculumChanged($event)"
                     (educationLevelChangedEvent)="educLevelChanged($event)"
                     (searchItemEvent)="loadSchoolClasses($event)"
-                    [showAcademicYear]="true"></app-curriculum-year-filter-form>
+                    [showAcademicYear]="true"></app-school-soft-filter-form>
             </div>
             <div class="col-3">
                 <app-table-button modelName="schoolClass"

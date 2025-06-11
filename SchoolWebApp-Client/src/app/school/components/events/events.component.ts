@@ -12,8 +12,8 @@ import Swal from 'sweetalert2';
 import {AcademicYear} from '@/school/models/academic-year';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {ActivatedRoute} from '@angular/router';
-import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
-import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
+import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
+import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
 
 @Component({
     selector: 'app-events',
@@ -25,8 +25,8 @@ export class EventsComponent implements OnInit {
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
     @ViewChild(EventsAddFormComponent)
     eventForm: EventsAddFormComponent;
-    @ViewChild(CurriculumYearFilterFormComponent)
-    cyfFormComponent: CurriculumYearFilterFormComponent;
+    @ViewChild(SchoolSoftFilterFormComponent)
+    ssFilterFormComponent: SchoolSoftFilterFormComponent;
     tblShowViewButton: true;
     isAuthLoading: boolean;
 
@@ -70,11 +70,11 @@ export class EventsComponent implements OnInit {
                         b.name.localeCompare(a.name)
                     );
                     const topYear = academicYears.find(y=>y.status == true);
-                    let cysPass = new CurriculumYearPerson();
+                    let cysPass = new SchoolSoftFilter();
                     cysPass.academicYearId = parseInt(topYear.id);
 
-                    this.cyfFormComponent.setFormControls(cysPass);
-                    this.cyfFormComponent.onSubmit();
+                    this.ssFilterFormComponent.setFormControls(cysPass);
+                    this.ssFilterFormComponent.onSubmit();
                     this.eventForm.editMode = false;
                 },
                 (err) => {
@@ -88,7 +88,7 @@ export class EventsComponent implements OnInit {
         this.events = [];
     };
 
-    searchClicked = (cys: CurriculumYearPerson) => {
+    searchClicked = (cys: SchoolSoftFilter) => {
         let searchStr = `/events/byAcademicYearId?academicYearId=${cys.academicYearId ?? ''}`;
         this.eventsSvc.get(searchStr).subscribe({
             next: (events) => {

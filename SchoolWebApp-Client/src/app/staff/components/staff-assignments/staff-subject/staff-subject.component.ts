@@ -11,10 +11,10 @@ import Swal from 'sweetalert2';
 import {Subject} from '@/academics/models/subject';
 import {AcademicYear} from '@/school/models/academic-year';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
-import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
-import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
+import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
 import {SchoolClassesService} from '@/class/services/school-classes.service';
 import {SchoolClass} from '@/class/models/school-class';
+import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
 
 @Component({
     selector: 'app-staff-subject',
@@ -29,8 +29,8 @@ export class StaffSubjectComponent implements OnInit, AfterViewInit {
     staffSubjectFormComponent: StaffSubjectFormComponent;
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
-    @ViewChild(CurriculumYearFilterFormComponent)
-    cyfFormComponent: CurriculumYearFilterFormComponent;
+    @ViewChild(SchoolSoftFilterFormComponent)
+    ssFilterFormComponent: SchoolSoftFilterFormComponent;
 
     isDLoading = false;
     firstLoad: boolean = true;
@@ -77,7 +77,7 @@ export class StaffSubjectComponent implements OnInit, AfterViewInit {
         });
     };
 
-    searchForSubjects = (cyf: CurriculumYearPerson) => {
+    searchForSubjects = (cyf: SchoolSoftFilter) => {
         if (!cyf.academicYearId) {
             this.toastr.error('Select academic year before clicking search!');
             return;
@@ -95,7 +95,7 @@ export class StaffSubjectComponent implements OnInit, AfterViewInit {
                             );
                         }
                         if (this.firstLoad) {
-                            this.cyfFormComponent.setFormControls(cyf);
+                            this.ssFilterFormComponent.setFormControls(cyf);
                         }
                         this.firstLoad = false;
                         this.isDLoading = true;
@@ -117,7 +117,7 @@ export class StaffSubjectComponent implements OnInit, AfterViewInit {
                 );
                 const year = this.academicYears[0];
 
-                let dmy = new CurriculumYearPerson();
+                let dmy = new SchoolSoftFilter();
                 dmy.academicYearId = parseInt(year.id);
 
                 this.searchForSubjects(dmy);

@@ -8,6 +8,7 @@
                     <th *ngFor="let header of tableHeaders">
                         {{ header }}
                     </th>
+                    <th *ngIf="showEditDeleteControls">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -20,7 +21,7 @@
                     <td>{{ item.date | date: 'dd/MM/yyyy - EEEE' }}</td>
                     <td>{{ item.present === null? '': item.present ? 'Present': 'Absent' }}</td>
                     <td>{{ item.remarks }}</td>
-                    <app-table-action
+                    <app-table-action *ngIf="showEditDeleteControls"
                         (editItemEvent)="editItem(item.id)"
                         (deleteItemEvent)="deleteItem(item.id)"></app-table-action>
                 </tr>

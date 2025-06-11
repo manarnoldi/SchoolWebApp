@@ -20,10 +20,10 @@
 
 <div class="row g-0">
     <div class="col-6">
-        <app-curriculum-year-filter-form [curricula]="curricula"
+        <app-school-soft-filter-form [curricula]="curricula"
             (searchItemEvent)="searchSubmited($event)"
             (curriculumChangedEvent)="curriculumChanged($event)"
-            [showCurriculum]="true"></app-curriculum-year-filter-form>
+            [showCurriculum]="true"></app-school-soft-filter-form>
     </div>
     <div class="col-6">
         <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right my-1"

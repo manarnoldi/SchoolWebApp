@@ -24,51 +24,74 @@ export class ReportsLoaderComponent implements OnInit {
                 new ReportName({
                     id: 1,
                     title: 'Staff attendance report',
-                    category: 'staff'
+                    category: 'staff',
+                    code: 'STAFF001',
+                    rank: 1
                 })
             );
             this.reportNames.push(
                 new ReportName({
                     id: 2,
+                    title: 'Staff attendance report - detailed',
+                    category: 'staff',
+                    code: 'STAFF002',
+                    rank: 2
+                })
+            );
+            this.reportNames.push(
+                new ReportName({
+                    id: 3,
                     title: 'Staff subject allocation report',
-                    category: 'staff'
+                    category: 'staff',
+                    code: 'STAFF003',
+                    rank: 3
                 })
             );
         } else if (this.reportTitle.toLowerCase() == 'class') {
             this.reportNames.push(
                 new ReportName({
-                    id: 3,
+                    id: 4,
                     title: 'Class list report',
-                    category: 'class'
+                    category: 'class',
+                    code: 'CLASS001',
+                    rank: 1
                 })
             );
             this.reportNames.push(
                 new ReportName({
-                    id: 4,
+                    id: 5,
                     title: 'Class attendance report',
-                    category: 'class'
+                    category: 'class',
+                    code: 'CLASS002',
+                    rank: 2
                 })
             );
         } else if (this.reportTitle.toLowerCase() == 'academics') {
             this.reportNames.push(
                 new ReportName({
-                    id: 3,
+                    id: 6,
                     title: 'Missing marks report',
-                    category: 'academics'
+                    category: 'academics',
+                    code: 'ACADEMICS001',
+                    rank: 1
                 })
             );
             this.reportNames.push(
                 new ReportName({
-                    id: 4,
+                    id: 7,
                     title: 'Results analysis Report',
-                    category: 'academics'
+                    category: 'academics',
+                    code: 'ACADEMICS002',
+                    rank: 2
                 })
             );
             this.reportNames.push(
                 new ReportName({
-                    id: 4,
+                    id: 8,
                     title: 'Report forms',
-                    category: 'academics'
+                    category: 'academics',
+                    code: 'ACADEMICS003',
+                    rank: 3
                 })
             );
         }

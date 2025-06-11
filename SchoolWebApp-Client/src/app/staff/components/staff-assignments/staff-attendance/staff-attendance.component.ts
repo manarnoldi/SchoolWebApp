@@ -15,8 +15,8 @@ import {StaffAttendanceFormComponent} from './staff-attendance-form/staff-attend
 import {StaffDetails} from '@/staff/models/staff-details';
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
 import {DateMonthYear} from '@/shared/models/date-month-year';
-import {DateMonthYearFilterFormComponent} from '@/shared/components/date-month-year-filter-form/date-month-year-filter-form.component';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
+import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
 
 @Component({
     selector: 'app-staff-attendance',
@@ -30,8 +30,8 @@ export class StaffAttendanceComponent implements OnInit, AfterViewInit {
     staffAttendanceFormComponent: StaffAttendanceFormComponent;
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
-    @ViewChild(DateMonthYearFilterFormComponent)
-    dmyFormComponent: DateMonthYearFilterFormComponent;
+    @ViewChild(SchoolSoftFilterFormComponent)
+    ssFilterFormComponent: SchoolSoftFilterFormComponent;
 
     isDoneLoading = false;
 
@@ -76,7 +76,7 @@ export class StaffAttendanceComponent implements OnInit, AfterViewInit {
                                 new Date(b?.date ?? '').getTime()
                         );
                         if (this.firstLoad) {
-                            this.dmyFormComponent.setFormControls(dmy);
+                            this.ssFilterFormComponent.setFormControls(dmy);
                         }
                         if (
                             this.staffAttendances.length <= 0 &&

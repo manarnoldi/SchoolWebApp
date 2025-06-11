@@ -18,7 +18,7 @@ import {OccurenceType} from '@/settings/models/occurence-type';
 import {Outcome} from '@/settings/models/outcome';
 import {DateMonthYear} from '@/shared/models/date-month-year';
 import {DatePipe} from '@angular/common';
-import {DateMonthYearFilterFormComponent} from '@/shared/components/date-month-year-filter-form/date-month-year-filter-form.component';
+import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
 
 @Component({
     selector: 'app-staff-discipline',
@@ -34,8 +34,8 @@ export class StaffDisciplineComponent implements OnInit, AfterViewInit {
     staffDisciplineFormComponent: StaffDisciplineFormComponent;
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
-    @ViewChild(DateMonthYearFilterFormComponent)
-    dmyFormComponent: DateMonthYearFilterFormComponent;
+    @ViewChild(SchoolSoftFilterFormComponent)
+    ssFilterFormComponent: SchoolSoftFilterFormComponent;
 
     firstLoad: boolean = true;
     doneLoading: boolean = false;
@@ -82,7 +82,7 @@ export class StaffDisciplineComponent implements OnInit, AfterViewInit {
                                 new Date(b?.occurenceStartDate ?? '').getTime()
                         );
                         if (this.firstLoad) {
-                            this.dmyFormComponent.setFormControls(dmy);
+                            this.ssFilterFormComponent.setFormControls(dmy);
                         }
                         if (
                             this.staffDisciplines.length <= 0 &&

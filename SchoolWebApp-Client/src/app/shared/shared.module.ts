@@ -20,10 +20,10 @@ import {SubjectsMinTableComponent} from './components/subjects-min-table/subject
 import {SubjectsTableComponent} from './components/subjects-table/subjects-table.component';
 import {StudentClassesComponent} from './components/student-classes/student-classes.component';
 import {AcademicYearsSelectorFormComponent} from './components/academic-years-selector-form/academic-years-selector-form.component';
-import {CurriculumYearFilterFormComponent} from './components/curriculum-year-filter-form/curriculum-year-filter-form.component';
-import {DateMonthYearFilterFormComponent} from './components/date-month-year-filter-form/date-month-year-filter-form.component';
 import {StaffsAttendancesSearchFormComponent} from './components/staffs-attendances-search-form/staffs-attendances-search-form.component';
 import {StaffsAttendancesTableComponent} from './components/staffs-attendances-table/staffs-attendances-table.component';
+import {StaffAttendanceTableComponent} from './components/staff-attendance-table/staff-attendance-table.component';
+import { SchoolSoftFilterFormComponent } from './components/school-soft-filter-form/school-soft-filter-form.component';
 
 @NgModule({
     declarations: [
@@ -45,10 +45,10 @@ import {StaffsAttendancesTableComponent} from './components/staffs-attendances-t
         SchoolClassMinimumTableComponent,
         SubjectsMinTableComponent,
         AcademicYearsSelectorFormComponent,
-        CurriculumYearFilterFormComponent,
-        DateMonthYearFilterFormComponent,
         StaffsAttendancesSearchFormComponent,
-        StaffsAttendancesTableComponent
+        StaffsAttendancesTableComponent,
+        StaffAttendanceTableComponent,
+        SchoolSoftFilterFormComponent
     ],
 
     imports: [CommonModule, NgbModule, CoreModule],
@@ -71,10 +71,10 @@ import {StaffsAttendancesTableComponent} from './components/staffs-attendances-t
         SubjectsMinTableComponent,
         StudentClassesComponent,
         AcademicYearsSelectorFormComponent,
-        CurriculumYearFilterFormComponent,
-        DateMonthYearFilterFormComponent,
+        SchoolSoftFilterFormComponent,
         StaffsAttendancesSearchFormComponent,
         StaffsAttendancesTableComponent,
+        StaffAttendanceTableComponent,
         CommonModule,
         NgbModule,
         CoreModule

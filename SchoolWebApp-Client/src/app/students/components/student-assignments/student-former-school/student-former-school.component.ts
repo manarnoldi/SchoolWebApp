@@ -10,8 +10,8 @@ import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 import {EducationLevel} from '@/school/models/educationLevel';
 import {Curriculum} from '@/academics/models/curriculum';
-import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
-import { CurriculumYearFilterFormComponent } from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
+import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
+import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
 
 @Component({
     selector: 'app-student-former-school',
@@ -27,8 +27,8 @@ export class StudentFormerSchoolComponent implements AfterViewInit {
     studentFormerSchoolFormComponent: StudentFormerSchoolFormComponent;
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
-    @ViewChild(CurriculumYearFilterFormComponent)
-        cyfFormComponent: CurriculumYearFilterFormComponent;
+    @ViewChild(SchoolSoftFilterFormComponent)
+        ssFFormComponent: SchoolSoftFilterFormComponent;
 
     studentId: number = 0;
     firstLoad: boolean = true;
@@ -44,7 +44,7 @@ export class StudentFormerSchoolComponent implements AfterViewInit {
         this.loadStudentFormerSchools();
     }
 
-    searchSubmited = (cyf: CurriculumYearPerson) => {
+    searchSubmited = (cyf: SchoolSoftFilter) => {
         this.route.queryParams.subscribe((params) => {
             this.studentId = params['id'];
             this.studentFormerSchoolsSvc
@@ -73,9 +73,9 @@ export class StudentFormerSchoolComponent implements AfterViewInit {
     loadStudentFormerSchools = () => {
         const curc = this.curricula[0];
 
-        let dmy = new CurriculumYearPerson();
+        let dmy = new SchoolSoftFilter();
         dmy.curriculumId = parseInt(curc.id);
-        this.cyfFormComponent.setFormControls(dmy);
+        this.ssFFormComponent.setFormControls(dmy);
 
         this.searchSubmited(dmy);
 

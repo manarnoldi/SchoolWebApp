@@ -12,7 +12,6 @@ import {
     AfterViewInit,
     Component,
     Input,
-    OnInit,
     ViewChild
 } from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
@@ -23,10 +22,10 @@ import {TableButtonComponent} from '@/shared/directives/table-button/table-butto
 import {StudentClass} from '@/students/models/student-class';
 import {StudentClassService} from '@/students/services/student-class.service';
 import Swal from 'sweetalert2';
-import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
-import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
+import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
 import {SchoolClass} from '@/class/models/school-class';
 import {SchoolClassesService} from '@/class/services/school-classes.service';
+import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
 
 @Component({
     selector: 'app-student-class',
@@ -44,8 +43,8 @@ export class StudentClassComponent implements AfterViewInit {
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
 
-    @ViewChild(CurriculumYearFilterFormComponent)
-    cyfFormComponent: CurriculumYearFilterFormComponent;
+    @ViewChild(SchoolSoftFilterFormComponent)
+    ssFilterFormComponent: SchoolSoftFilterFormComponent;
 
     firstLoad: boolean = true;
 
@@ -68,9 +67,9 @@ export class StudentClassComponent implements AfterViewInit {
 
     loadStudentClasses = () => {
         const year = this.academicYears.sort((a, b) => b.rank - a.rank)[0];
-        let dmy = new CurriculumYearPerson();
+        let dmy = new SchoolSoftFilter();
         dmy.academicYearId = parseInt(year.id);
-        this.cyfFormComponent.setFormControls(dmy);
+        this.ssFilterFormComponent.setFormControls(dmy);
         this.searchForClasses(dmy);
     };
 
@@ -96,7 +95,7 @@ export class StudentClassComponent implements AfterViewInit {
         this.studentClasses = [];
     };
 
-    searchForClasses = (cyf: CurriculumYearPerson) => {
+    searchForClasses = (cyf: SchoolSoftFilter) => {
         if (!cyf.academicYearId) {
             this.toastr.error('Select academic year before clicking search!');
             return;

@@ -6,6 +6,7 @@ export class DateMonthYear {
 
     public studentClassId?: number;
     public staffCategoryId?: number;
+    public staffDetailsId?: number;
 
     constructor(model?: DateMonthYear) {
         Object.assign(this, model);

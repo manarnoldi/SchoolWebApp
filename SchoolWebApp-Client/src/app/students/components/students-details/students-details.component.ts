@@ -1,7 +1,7 @@
 import {Status} from '@/core/enums/status';
 import {BreadCrumb} from '@/core/models/bread-crumb';
-import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
-import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
+import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
+import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
 import {StudentDetailsService} from '@/students/services/student-details.service';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -14,8 +14,8 @@ import Swal from 'sweetalert2';
     styleUrl: './students-details.component.scss'
 })
 export class StudentsDetailsComponent implements OnInit {
-    @ViewChild(CurriculumYearFilterFormComponent)
-    cyfFormComponent: CurriculumYearFilterFormComponent;
+    @ViewChild(SchoolSoftFilterFormComponent)
+    ssFFormComponent: SchoolSoftFilterFormComponent;
 
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Home'},
@@ -46,7 +46,7 @@ export class StudentsDetailsComponent implements OnInit {
         this.students = [];
     };
 
-    searchClicked = (cfy: CurriculumYearPerson) => {
+    searchClicked = (cfy: SchoolSoftFilter) => {
         this.showTable = false;
         this.studentsSvc.getBySearchDetails(cfy.status).subscribe({
             next: (students) => {
@@ -99,7 +99,7 @@ export class StudentsDetailsComponent implements OnInit {
                 this.sourceLink = this.sourceLink.split('?')[0];
             }
 
-            let cysPass = new CurriculumYearPerson();
+            let cysPass = new SchoolSoftFilter();
             cysPass.academicYearId = null;
             cysPass.curriculumId = null;
 
@@ -112,7 +112,7 @@ export class StudentsDetailsComponent implements OnInit {
                     this.students = students.sort((a, b) =>
                         a.upi.localeCompare(b.upi)
                     );
-                    this.cyfFormComponent.setFormControls(cysPass);
+                    this.ssFFormComponent.setFormControls(cysPass);
                     this.showTable = true;
                     if (this.itemDeleted) {
                         this.toarst.success('Record deleted successfully!');

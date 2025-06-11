@@ -17,7 +17,6 @@ import {forkJoin} from 'rxjs';
 export class StaffAttendanceReportComponent implements OnInit {
     staffAttendancesRpt: StaffAttendancesReport[] = [];
     staffCategories: StaffCategory[] = [];
-    employmentTypes: EmploymentType[] = [];
 
     months: number[];
     years: number[];

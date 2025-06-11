@@ -9,6 +9,7 @@ export class StaffAttendanceTableComponent implements OnInit {
     @Input() tableTitle: string = 'Staff attendance list';
     @Input() staffAttendances: StaffAttendance[] = [];
     @Input() showLoginControls: Boolean = false;
+    @Input() showEditDeleteControls: Boolean = false;
 
     @Output() editItemEvent = new EventEmitter<number>();
     @Output() deleteItemEvent = new EventEmitter<number>();
@@ -27,8 +28,7 @@ export class StaffAttendanceTableComponent implements OnInit {
         'Year',
         'Date',
         'Present?',
-        'Remarks',
-        'Action'
+        'Remarks'
     ];
 
     pageSizeChanged = (pageSize: number) => {

@@ -12,9 +12,14 @@
             </div>
 
         </div>
-        <div class="row g-0 card-details-box border-danger mt-1 p-1" *ngIf="currentReport === 1">
+        <div class="row g-0 card-details-box border-danger mt-1 p-1" *ngIf="currentReport?.code === 'STAFF001'">
             <div class="col-md-12">
                 <app-staff-attendance-report></app-staff-attendance-report>
+            </div>
+        </div>
+        <div class="row g-0 card-details-box border-danger mt-1 p-1" *ngIf="currentReport?.code === 'STAFF002'">
+            <div class="col-md-12">
+                <app-staff-attendance-details-report></app-staff-attendance-details-report>
             </div>
         </div>
     </div>

@@ -11,11 +11,9 @@ import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 import {SchoolClass} from '@/class/models/school-class';
 import {DateMonthYear} from '@/shared/models/date-month-year';
-import {AcademicYearsService} from '@/school/services/academic-years.service';
-import {AcademicYear} from '@/school/models/academic-year';
-import {DateMonthYearFilterFormComponent} from '@/shared/components/date-month-year-filter-form/date-month-year-filter-form.component';
 import {StudentClass} from '@/students/models/student-class';
 import {StudentClassService} from '@/students/services/student-class.service';
+import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
 
 @Component({
     selector: 'app-student-attendance',
@@ -29,8 +27,8 @@ export class StudentAttendanceComponent implements OnInit {
     studentAttendanceFormComponent: StudentAttendanceFormComponent;
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
-    @ViewChild(DateMonthYearFilterFormComponent)
-    dmyFormComponent: DateMonthYearFilterFormComponent;
+    @ViewChild(SchoolSoftFilterFormComponent)
+    ssFilterFormComponent: SchoolSoftFilterFormComponent;
 
     today = new Date();
     studentId: number = 0;
@@ -192,7 +190,7 @@ export class StudentAttendanceComponent implements OnInit {
                     dmy.year = topYear;
                     dmy.studentClassId = parseInt(topStudClass.id);
 
-                    this.dmyFormComponent.setFormControls(dmy);
+                    this.ssFilterFormComponent.setFormControls(dmy);
 
                     this.searchStudentAttendances(dmy);
                 },

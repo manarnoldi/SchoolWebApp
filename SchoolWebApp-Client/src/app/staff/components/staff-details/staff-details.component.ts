@@ -6,14 +6,12 @@ import Swal from 'sweetalert2';
 import {ActivatedRoute, Router} from '@angular/router';
 import {StaffCategoriesService} from '@/settings/services/staff-categories.service';
 import {EmploymentTypeService} from '@/settings/services/employment-type.service';
-import {forkJoin, map, Observable} from 'rxjs';
+import {forkJoin} from 'rxjs';
 import {StaffCategory} from '@/settings/models/staff-category';
 import {EmploymentType} from '@/settings/models/employment-type';
-import {Curriculum} from '@/academics/models/curriculum';
-import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
-import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
+import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
 import {Status} from '@/core/enums/status';
-import {StaffDetails} from '@/staff/models/staff-details';
+import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
 
 @Component({
     selector: 'app-staff-details',
@@ -21,8 +19,8 @@ import {StaffDetails} from '@/staff/models/staff-details';
     styleUrl: './staff-details.component.scss'
 })
 export class StaffDetailsComponent implements OnInit {
-    @ViewChild(CurriculumYearFilterFormComponent)
-    cyfFormComponent: CurriculumYearFilterFormComponent;
+    @ViewChild(SchoolSoftFilterFormComponent)
+    ssFilterFormComponent: SchoolSoftFilterFormComponent;
 
     dashboardTitle = 'Staff details list';
     breadcrumbs: BreadCrumb[] = [
@@ -87,7 +85,7 @@ export class StaffDetailsComponent implements OnInit {
         });
     }
 
-    searchClicked = (cfy: CurriculumYearPerson) => {
+    searchClicked = (cfy: SchoolSoftFilter) => {
         this.showTable = false;
         this.staffsSvc
             .getBySearchDetails(
@@ -124,7 +122,7 @@ export class StaffDetailsComponent implements OnInit {
         this.route.queryParams.subscribe((params) => {
             forkJoin([staffCatsReq, emloyTypesReq]).subscribe({
                 next: ([staffCats, empTypes]) => {
-                    let cysPass = new CurriculumYearPerson();
+                    let cysPass = new SchoolSoftFilter();
                     cysPass.academicYearId = null;
                     cysPass.curriculumId = null;
                     cysPass.status = Status.Active;
@@ -143,7 +141,7 @@ export class StaffDetailsComponent implements OnInit {
                         ? parseInt(params['staffCategoryId'])
                         : null;
                     this.querySource = params['source'];
-                    this.cyfFormComponent.setFormControls(cysPass);
+                    this.ssFilterFormComponent.setFormControls(cysPass);
                     this.staffsSvc
                         .getBySearchDetails(
                             cysPass.status,

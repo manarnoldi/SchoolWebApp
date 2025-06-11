@@ -20,12 +20,12 @@ import Swal from 'sweetalert2';
 import {LearningLevel} from '@/class/models/learning-level';
 import {LearningLevelsService} from '@/class/services/learning-levels.service';
 import {ClassLeadershipsService} from '@/class/services/class-leaderships.service';
-import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
-import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
+import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
 import {CurriculumService} from '@/academics/services/curriculum.service';
 import {Curriculum} from '@/academics/models/curriculum';
 import {EducationLevelService} from '@/school/services/education-level.service';
 import {EducationLevel} from '@/school/models/educationLevel';
+import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
 
 @Component({
     selector: 'app-school-class',
@@ -38,8 +38,8 @@ export class SchoolClassComponent implements OnInit {
     @ViewChild(SchoolClassAddFormComponent)
     schoolClassForm: SchoolClassAddFormComponent;
     @Output() btnAddClickEvent = new EventEmitter<void>();
-    @ViewChild(CurriculumYearFilterFormComponent)
-    cyfFormComponent: CurriculumYearFilterFormComponent;
+    @ViewChild(SchoolSoftFilterFormComponent)
+    ssFilterFormComponent: SchoolSoftFilterFormComponent;
     tblShowViewButton: true;
     isAuthLoading: boolean;
 
@@ -97,7 +97,7 @@ export class SchoolClassComponent implements OnInit {
     };
 
     curriculumChanged = (curId: number) => {
-        this.cyfFormComponent.curriculumYearStaffFilterForm
+        this.ssFilterFormComponent.schoolSoftFilterForm
             .get('educationLevelId')
             .reset();
         this.schoolClasses = [];
@@ -151,10 +151,10 @@ export class SchoolClassComponent implements OnInit {
                             );
                             const topCurriculum = this.curricula[0];
                             const topYear = this.academicYears[0];
-                            let cysPass = new CurriculumYearPerson();
+                            let cysPass = new SchoolSoftFilter();
                             cysPass.academicYearId = parseInt(topYear.id);
                             cysPass.curriculumId = parseInt(topCurriculum.id);
-                            this.cyfFormComponent.setFormControls(cysPass);
+                            this.ssFilterFormComponent.setFormControls(cysPass);
                             this.educationLevels = educationLevels.sort(
                                 (a, b) => a.rank - b.rank
                             );
@@ -173,7 +173,7 @@ export class SchoolClassComponent implements OnInit {
         );
     }
 
-    loadSchoolClasses = (cys: CurriculumYearPerson) => {
+    loadSchoolClasses = (cys: SchoolSoftFilter) => {
         this.schoolClassesSvc
             .getByEducationLevelandYear(
                 cys.educationLevelId,

@@ -16,9 +16,9 @@ import {StudentDisciplinesService} from '@/students/services/student-disciplines
 import {ActivatedRoute} from '@angular/router';
 import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
-import {DateMonthYearFilterFormComponent} from '@/shared/components/date-month-year-filter-form/date-month-year-filter-form.component';
 import {DateMonthYear} from '@/shared/models/date-month-year';
 import {DatePipe} from '@angular/common';
+import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
 
 @Component({
     selector: 'app-student-discipline',
@@ -35,8 +35,8 @@ export class StudentDisciplineComponent implements OnInit, AfterViewInit {
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
 
-    @ViewChild(DateMonthYearFilterFormComponent)
-    dmyFormComponent: DateMonthYearFilterFormComponent;
+    @ViewChild(SchoolSoftFilterFormComponent)
+    ssFilterFormComponent: SchoolSoftFilterFormComponent;
 
     firstLoad: boolean = true;
 
@@ -73,7 +73,7 @@ export class StudentDisciplineComponent implements OnInit, AfterViewInit {
         dmy.dateFrom = dateFrom;
         dmy.dateTo = dateTo;
 
-        this.dmyFormComponent.setFormControls(dmy);
+        this.ssFilterFormComponent.setFormControls(dmy);
 
         this.searchByDate(dmy);
     };

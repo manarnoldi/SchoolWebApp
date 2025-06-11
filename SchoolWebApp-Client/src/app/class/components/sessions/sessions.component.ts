@@ -13,8 +13,8 @@ import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 import {SessionFormComponent} from './session-form/session-form.component';
-import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
-import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
+import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
+import {SchoolSoftFilterFormComponent} from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
 
 @Component({
     selector: 'app-sessions',
@@ -25,8 +25,8 @@ export class SessionsComponent implements OnInit {
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
     @ViewChild(SessionFormComponent) sessionForm: SessionFormComponent;
-    @ViewChild(CurriculumYearFilterFormComponent)
-    cyfFormComponent: CurriculumYearFilterFormComponent;
+    @ViewChild(SchoolSoftFilterFormComponent)
+    ssFilterFormComponent: SchoolSoftFilterFormComponent;
     tblShowViewButton: true;
     isAuthLoading: boolean;
 
@@ -93,10 +93,10 @@ export class SessionsComponent implements OnInit {
                 this.sessionTypes = sessionTypes;
                 const topCurriculum = this.curricula[0];
                 const topYear = this.academicYears[0];
-                let cysPass = new CurriculumYearPerson();
+                let cysPass = new SchoolSoftFilter();
                 cysPass.academicYearId = parseInt(topYear.id);
                 cysPass.curriculumId = parseInt(topCurriculum.id);
-                this.cyfFormComponent.setFormControls(cysPass);
+                this.ssFilterFormComponent.setFormControls(cysPass);
 
                 this.searchClicked(cysPass);
                 this.isAuthLoading = false;
@@ -116,7 +116,7 @@ export class SessionsComponent implements OnInit {
         this.sessions = [];
     };
 
-    searchClicked = (cys: CurriculumYearPerson) => {
+    searchClicked = (cys: SchoolSoftFilter) => {
         this.sessionSvc
             .getByCurriculumYear(cys.curriculumId, cys.academicYearId)
             .subscribe({

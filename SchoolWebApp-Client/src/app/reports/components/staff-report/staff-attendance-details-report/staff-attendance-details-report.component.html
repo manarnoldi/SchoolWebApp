@@ -1,1 +1,13 @@
-<p>staff-attendance-details-report works!</p>
+<div class="card my-1">
+    <app-school-soft-filter-form [staffDetails]="staffDetails" [months]="months"
+        [years]="years" [showStaffCategory]="true" [staffCategories]="staffCategories"
+        [showStaffDetails]="true" [showMonth]="true" [showYear]="true" [showPersonStatus]="true"
+        (statusChangedEvent)="statusChanged($event)"
+        (monthChangedEvent)="monthChangedChanged($event)"
+        (staffDetailsChangedEvent)="staffDetailsChanged($event)"
+        (staffCategoryChangedEvent)="staffCategoryChanged($event)"
+        (yearChangedEvent)="yearChanged($event)"
+        (searchItemEvent)="searchForDataMethod($event)"></app-school-soft-filter-form>
+</div>
+<app-staff-attendance-table [staffAttendances]="staffAttendances"
+    [showEditDeleteControls]="false"></app-staff-attendance-table>

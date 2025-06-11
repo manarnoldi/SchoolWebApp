@@ -10,7 +10,6 @@ import {StaffDetailsViewComponent} from './components/staff-details/staff-detail
 import {StaffAssignmentsComponent} from './components/staff-assignments/staff-assignments.component';
 import { StaffAttendanceComponent } from './components/staff-assignments/staff-attendance/staff-attendance.component';
 import { StaffAttendanceFormComponent } from './components/staff-assignments/staff-attendance/staff-attendance-form/staff-attendance-form.component';
-import { StaffAttendanceTableComponent } from './components/staff-assignments/staff-attendance/staff-attendance-table/staff-attendance-table.component';
 import { StaffDisciplineComponent } from './components/staff-assignments/staff-discipline/staff-discipline.component';
 import { StaffDisciplineFormComponent } from './components/staff-assignments/staff-discipline/staff-discipline-form/staff-discipline-form.component';
 import { StaffDisciplineTableComponent } from './components/staff-assignments/staff-discipline/staff-discipline-table/staff-discipline-table.component';
@@ -29,7 +28,6 @@ import { StaffsAttendancesComponent } from './components/staffs-attendances/staf
         StaffAssignmentsComponent,
         StaffAttendanceComponent,
         StaffAttendanceFormComponent,
-        StaffAttendanceTableComponent,
         StaffDisciplineComponent,
         StaffDisciplineFormComponent,
         StaffDisciplineTableComponent,

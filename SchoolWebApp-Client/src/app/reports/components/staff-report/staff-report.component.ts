@@ -8,7 +8,7 @@ import {Component} from '@angular/core';
     styleUrl: './staff-report.component.scss'
 })
 export class StaffReportComponent {
-    currentReport: number = 0;
+    currentReport: ReportName = null;
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Dashboard'},
         {link: ['/reports/staff'], title: 'Reports: Staff'}
@@ -16,10 +16,10 @@ export class StaffReportComponent {
     dashboardTitle = 'Reports: Staff';
 
     searchItem = (rn: ReportName) => {
-        this.currentReport = rn.id;
+        this.currentReport = rn;
     };
 
     reportNameChanged = (rn: ReportName) => {
-        this.currentReport = 0;
+        this.currentReport = null;
     };
 }

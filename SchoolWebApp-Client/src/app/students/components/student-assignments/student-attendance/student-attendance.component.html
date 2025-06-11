@@ -19,13 +19,12 @@
 
 <div class="row g-0">
     <div class="col-9">
-        <app-date-month-year-filter-form [showMonth]="true" [months]="months" [years]="years"
-            [showSchoolClass]="true"
+        <app-school-soft-filter-form [showMonth]="true" [months]="months" [years]="years"
+            [showStudentClass]="true"
             (monthChangedEvent)="monthChanged($event)" [studentClasses]="studentClasses"
             (yearChangedEvent)="yearChanged($event)"
-            (schoolClassChangedEvent)="schoolClassChanged($event)"
-            [showYear]="true" (schoolClassChangedEvent)="schoolClassChanged($event)"
-            (searchItemEvent)="searchStudentAttendances($event)"></app-date-month-year-filter-form>
+            [showYear]="true" (studentClassChangedEvent)="schoolClassChanged($event)"
+            (searchItemEvent)="searchStudentAttendances($event)"></app-school-soft-filter-form>
     </div>
     <div class="col-3">
         <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right my-1"

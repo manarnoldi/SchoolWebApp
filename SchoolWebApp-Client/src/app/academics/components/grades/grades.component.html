@@ -31,10 +31,10 @@
     <div class="container-fluid px-1">
         <div class="row g-0">
             <div class="col-6">
-                <app-curriculum-year-filter-form
+                <app-school-soft-filter-form
                     [showCurriculum]="true" (searchItemEvent)="searchClicked($event)"
                     (curriculumChangedEvent)="curriculumChanged($event)"
-                    [curricula]="curricula"></app-curriculum-year-filter-form>
+                    [curricula]="curricula"></app-school-soft-filter-form>
             </div>
             <div class="col-6">
                 <app-table-button modelName="grade"

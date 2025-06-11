@@ -9,10 +9,10 @@ import {EducationLevelService} from '@/school/services/education-level.service';
 import Swal from 'sweetalert2';
 import {LearningLevel} from '@/class/models/learning-level';
 import {LearningLevelsService} from '@/class/services/learning-levels.service';
-import {CurriculumYearPerson} from '@/shared/models/curriculum-year-person';
+import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
 import {CurriculumService} from '@/academics/services/curriculum.service';
 import {Curriculum} from '@/academics/models/curriculum';
-import {CurriculumYearFilterFormComponent} from '@/shared/components/curriculum-year-filter-form/curriculum-year-filter-form.component';
+import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
 
 @Component({
     selector: 'app-learning-levels',
@@ -24,8 +24,8 @@ export class LearningLevelsComponent implements OnInit {
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
     @ViewChild(LearningLevelsFormComponent)
     learningLevelForm: LearningLevelsFormComponent;
-    @ViewChild(CurriculumYearFilterFormComponent)
-    cyfFormComponent: CurriculumYearFilterFormComponent;
+    @ViewChild(SchoolSoftFilterFormComponent)
+    ssFilterFormComponent: SchoolSoftFilterFormComponent;
     tblShowViewButton: true;
     isAuthLoading: boolean;
 
@@ -83,11 +83,11 @@ export class LearningLevelsComponent implements OnInit {
                 this.curricula = curricula.sort((a, b) => a.rank - b.rank);
                 const topCurriculum = this.curricula[0];
 
-                let cysPass = new CurriculumYearPerson();
+                let cysPass = new SchoolSoftFilter();
                 cysPass.curriculumId = parseInt(topCurriculum.id);
 
-                this.cyfFormComponent.setFormControls(cysPass);
-                this.cyfFormComponent.onSubmit();
+                this.ssFilterFormComponent.setFormControls(cysPass);
+                this.ssFilterFormComponent.onSubmit();
 
                 this.isAuthLoading = false;
                 this.learningLevelForm.editMode = false;
@@ -102,7 +102,7 @@ export class LearningLevelsComponent implements OnInit {
         this.learningLevels = [];
     };
 
-    searchClicked = (cys: CurriculumYearPerson) => {
+    searchClicked = (cys: SchoolSoftFilter) => {
         let searchStr = `/learningLevels/byCurriculumId?curriculumId=${cys.curriculumId ?? ''}`;
         this.learningLevelSvc.get(searchStr).subscribe({
             next: (learningLevels) => {

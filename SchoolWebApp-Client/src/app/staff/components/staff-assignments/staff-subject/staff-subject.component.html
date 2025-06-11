@@ -21,10 +21,10 @@
 
 <div class="row g-0">
     <div class="col-6">
-        <app-curriculum-year-filter-form [academicYears]="academicYears"
+        <app-school-soft-filter-form [academicYears]="academicYears"
             (searchItemEvent)="searchForSubjects($event)"
             (academicYearChangedEvent)="academicYearChanged($event)"
-            [showAcademicYear]="true"></app-curriculum-year-filter-form>
+            [showAcademicYear]="true"></app-school-soft-filter-form>
     </div>
     <div class="col-6">
         <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right my-1"

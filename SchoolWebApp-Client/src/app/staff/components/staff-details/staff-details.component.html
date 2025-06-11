@@ -15,13 +15,13 @@
                 </div>
             </ng-content>
             <div class="col-10">
-                <app-curriculum-year-filter-form [showStaffCategory]="true"
+                <app-school-soft-filter-form [showStaffCategory]="true"
                     [staffCategories]="staffCats" [showPersonStatus]="true"
                     [employmentTypes]="empTypes" (searchItemEvent)="searchClicked($event)"
                     (employmentTypeChangedEvent)="employmentTypeChanged($event)"
                     (staffCategoryChangedEvent)="staffCategoryChanged($event)"
                     (statusChangedEvent)="statusChanged($event)"
-                    [showEmploymentType]="true"></app-curriculum-year-filter-form>
+                    [showEmploymentType]="true"></app-school-soft-filter-form>
             </div>
             <div class="col-1">
                 <a
