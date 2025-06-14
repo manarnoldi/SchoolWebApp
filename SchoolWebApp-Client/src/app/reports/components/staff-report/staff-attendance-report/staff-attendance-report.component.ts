@@ -122,7 +122,7 @@ export class StaffAttendanceReportComponent implements OnInit {
                         .toUpperCase() +
                     ' ' +
                     this.currentRptYear.toLocaleUpperCase();
-                this.staffAttendsRptSvc.loadImageAsBase64(
+                this.staffAttendsRptSvc.generateReport(
                     school[0],
                     this.staffAttendancesRpt,
                     reportTitle
