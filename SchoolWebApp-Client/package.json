@@ -54,6 +54,7 @@
         "luxon": "^3.4.4",
         "ngx-spinner": "^17.0.0",
         "ngx-toastr": "^18.0.0",
+        "pdfmake": "^0.2.20",
         "process": "0.11.10",
         "rxjs": "7.8.1",
         "summernote": "./summernote",

@@ -1,6 +1,7 @@
 import {StaffAttendancesReport} from '@/reports/models/staff-attendances-report';
 import {StaffAttendancesReportService} from '@/reports/services/staff-attendances-report.service';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
+import {SchoolDetailsService} from '@/school/services/school-details.service';
 import {EmploymentType} from '@/settings/models/employment-type';
 import {StaffCategory} from '@/settings/models/staff-category';
 import {StaffCategoriesService} from '@/settings/services/staff-categories.service';
@@ -21,11 +22,16 @@ export class StaffAttendanceReportComponent implements OnInit {
     months: number[];
     years: number[];
 
+    currentRptMonth: number;
+    currentRptYear: string;
+    currentRptStaffCategory: string;
+
     constructor(
         private toastr: ToastrService,
         private staffCategoriesSvc: StaffCategoriesService,
         private acadYearsSvc: AcademicYearsService,
-        private staffAttendsRptSvc: StaffAttendancesReportService
+        private staffAttendsRptSvc: StaffAttendancesReportService,
+        private schoolSvc: SchoolDetailsService
     ) {}
 
     ngOnInit(): void {
@@ -55,14 +61,21 @@ export class StaffAttendanceReportComponent implements OnInit {
     };
 
     yearChanged = (selectedDate: Date) => {
-        this.staffAttendancesRpt = [];
+        this.resetControlls();
     };
 
     monthChangedChanged = (employTypeId: number) => {
-        this.staffAttendancesRpt = [];
+        this.resetControlls();
     };
     staffCategoryChanged = (sCategoryId: number) => {
+        this.resetControlls();
+    };
+
+    resetControlls = () => {
         this.staffAttendancesRpt = [];
+        this.currentRptMonth = 0;
+        this.currentRptYear = '';
+        this.currentRptStaffCategory = '';
     };
 
     searchForDataMethod = (saSearch: DateMonthYear) => {
@@ -85,11 +98,39 @@ export class StaffAttendanceReportComponent implements OnInit {
             )
             .subscribe({
                 next: (staffAttendsRpt) => {
+                    this.currentRptMonth = saSearch.month;
+                    this.currentRptYear = saSearch.year.toString();
+                    this.currentRptStaffCategory = this.staffCategories.find(
+                        (s) => s.id == saSearch.staffCategoryId.toString()
+                    ).name;
                     this.staffAttendancesRpt = staffAttendsRpt;
                 },
                 error: (err) => {
                     this.toastr.error(err.error);
                 }
             });
+    };
+
+    printReport = () => {
+        this.schoolSvc.get('/schooldetails').subscribe({
+            next: (school) => {
+                let reportTitle =
+                    this.currentRptStaffCategory.toLocaleUpperCase() +
+                    ' STAFF ATTENDANCE REPORT FOR ' +
+                    new Date(0, this.currentRptMonth - 1)
+                        .toLocaleString('default', {month: 'long'})
+                        .toUpperCase() +
+                    ' ' +
+                    this.currentRptYear.toLocaleUpperCase();
+                this.staffAttendsRptSvc.loadImageAsBase64(
+                    school[0],
+                    this.staffAttendancesRpt,
+                    reportTitle
+                );
+            },
+            error: (err) => {
+                this.toastr.error(err.error);
+            }
+        });
     };
 }

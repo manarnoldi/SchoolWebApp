@@ -99,7 +99,7 @@ export class StaffAttendanceDetailsReportComponent implements OnInit {
         this.ssFilterFormComponent.schoolSoftFilterForm
             .get('staffDetailsId')
             .reset();
-        
+
         this.staffDetailsSvc
             .getBySearchDetails(this.statusId, null, this.sCategoryId)
             .subscribe({
@@ -120,6 +120,12 @@ export class StaffAttendanceDetailsReportComponent implements OnInit {
         this.staffAttendances = [];
         if (!saSearch.staffCategoryId || saSearch.staffCategoryId == null) {
             this.toastr.error('Select staff category before clicking search!');
+            return;
+        } else if (
+            !saSearch.staffDetailsId ||
+            !saSearch.staffDetailsId == null
+        ) {
+            this.toastr.error('Select staff first before clicking search!');
             return;
         } else if (!saSearch.month || saSearch.month == null) {
             this.toastr.error('Select month before clicking search!');

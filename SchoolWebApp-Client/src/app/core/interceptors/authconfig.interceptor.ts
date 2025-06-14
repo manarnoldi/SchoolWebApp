@@ -12,12 +12,17 @@ export class AuthInterceptor implements HttpInterceptor {
 
     intercept(req: HttpRequest<any>, next: HttpHandler) {
         const authToken = this.authService.getToken();
+        if (req.url.startsWith('/assets/') || req.url.startsWith('assets/')) {
+            // Do not modify
+            return next.handle(req);
+        }
         req = req.clone({
             setHeaders: {
                 Authorization: 'Bearer ' + authToken
             },
             url: `${this.baseUrl}${req.url}`
         });
+
         return next.handle(req).pipe(
             catchError((error) => {
                 if (error.status === 401 || error.status === 0) {

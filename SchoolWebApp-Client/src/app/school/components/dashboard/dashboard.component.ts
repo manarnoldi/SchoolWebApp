@@ -7,7 +7,7 @@ import {Component} from '@angular/core';
     styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent {
-    dashboardTitle = "School Web App Dashboard";
+    dashboardTitle = "ShuleNova Dashboard";
     breadcrumbs: BreadCrumb[] = [
         { link: ['/'], title: 'Home' },
         { link: ['/'], title: 'Dashboard' }
