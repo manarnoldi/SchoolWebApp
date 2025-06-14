@@ -18,13 +18,8 @@
                             class="py-11 text-center {{ item['day' + day]=== 'P'?'bg-success-subtle':item['day' + day]=== 'A'?'bg-danger-subtle':'bg-secondary-subtle'  }}">{{
                             item['day' + day] }}</td>
                     </ng-container>
-                    <td class="py-11">
-                        <a
-                            (click)="viewItem(item.staffDetailId)"
-                            class="view pe-auto"
-                            title
-                            data-bs-toggle="tooltip"
-                            data-bs-original-title="View"><i class="fas fa-eye pe-auto"></i></a>
+                    <td class="py-11"><i (click)="viewItem(item.staffDetailId)"
+                            class="fas fa-print"></i>
                     </td>
                 </tr>
             </tbody>

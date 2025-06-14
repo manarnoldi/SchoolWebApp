@@ -5,6 +5,7 @@ using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Reports.Staff;
 using SchoolWebApp.Core.DTOs.Staff.StaffAttendance;
 using SchoolWebApp.Core.DTOs.Students.StudentAttendance;
+using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories;
@@ -185,19 +186,20 @@ namespace SchoolWebApp.API.Controllers.Staff
         /// <param name="month">The month of the staff attendances to be retrieved</param>
         /// <param name="year">The staff details Id to be retrieved</param>
         /// <param name="staffCategoryId">The staff category Id of the staff attendances to be retrieved</param>
+        /// <param name="status">The staff status whose staff attendances to be retrieved</param>
         /// <returns>A list of sumarized staff attendance</returns>
-        [HttpGet("getAttendanceReport/{month}/{year}/{staffCategoryId}")]
+        [HttpGet("getAttendanceReport/{month}/{year}/{staffCategoryId}/{status}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StaffAttendanceReportDto>))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]       
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAttendanceReport(int month, int year, int staffCategoryId)
+        public async Task<IActionResult> GetAttendanceReport(int month, int year, int staffCategoryId, Status status)
         {
             try
             {
                 if (month <= 0) return BadRequest(month);
                 if (year <= 0) return BadRequest(year);
                 if (staffCategoryId <= 0) return BadRequest(staffCategoryId);
-                var _items = await _unitOfWork.StaffAttendances.GetStaffAttendanceReport(month, year, staffCategoryId);
+                var _items = await _unitOfWork.StaffAttendances.GetStaffAttendanceReport(month, year, staffCategoryId, status);
                 return Ok(_items);
             }
             catch (Exception ex)

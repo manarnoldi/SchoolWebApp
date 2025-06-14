@@ -20,14 +20,30 @@ export class ReportsService {
         };
     };
 
-    public getFooter = () => {
+    public getFooter = (pageOrientation: string) => {
         return (currentPage: number, pageCount: number) => ({
-            margin: [-20, 10, -20, 0], // negative to cancel your left/right page margin of 20
-            layout: 'headerLineOnly',
-            table: {
-                widths: ['*', '*'],
-                body: [
-                    [
+            margin: [20, 10], // [left, top] adjust as needed
+            stack: [
+                // 1️⃣ Canvas line
+                {
+                    canvas: [
+                        {
+                            type: 'line',
+                            x1: 0,
+                            y1: 0,
+                            x2:
+                                pageOrientation.toLowerCase() == 'landscape'
+                                    ? 800
+                                    : 515,
+                            y2: 0, // width depends on page size (A4 landscape: ~800, portrait: ~515)
+                            lineWidth: 1,
+                            lineColor: '#002D62'
+                        }
+                    ]
+                },
+                // 2️⃣ Footer content (columns)
+                {
+                    columns: [
                         {
                             text: 'This is a system generated document.',
                             alignment: 'left',
@@ -41,8 +57,8 @@ export class ReportsService {
                             color: '#002D62'
                         }
                     ]
-                ]
-            }
+                }
+            ]
         });
     };
 

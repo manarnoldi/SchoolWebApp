@@ -1,13 +1,33 @@
 <div class="card my-1">
-    <app-school-soft-filter-form [staffDetails]="staffDetails" [months]="months"
-        [years]="years" [showStaffCategory]="true" [staffCategories]="staffCategories"
-        [showStaffDetails]="true" [showMonth]="true" [showYear]="true" [showPersonStatus]="true"
-        (statusChangedEvent)="statusChanged($event)"
-        (monthChangedEvent)="monthChangedChanged($event)"
-        (staffDetailsChangedEvent)="staffDetailsChanged($event)"
-        (staffCategoryChangedEvent)="staffCategoryChanged($event)"
-        (yearChangedEvent)="yearChanged($event)"
-        (searchItemEvent)="searchForDataMethod($event)"></app-school-soft-filter-form>
+    <div class="row g-0">
+        <div class="col-11">
+            <app-school-soft-filter-form [months]="months"
+                [years]="years" [showStaffCategory]="true" [staffCategories]="staffCategories"
+                [showMonth]="true" [showYear]="true" [showPersonStatus]="true"
+                (statusChangedEvent)="statusChanged($event)"
+                (monthChangedEvent)="monthChangedChanged($event)"
+                (staffCategoryChangedEvent)="staffCategoryChanged($event)"
+                (yearChangedEvent)="yearChanged($event)"
+                (searchItemEvent)="searchForDataMethod($event)"></app-school-soft-filter-form>
+        </div>
+        <div class="col-1">
+            <button type="button" class="btn btn-sm btn-flat btn-danger btn-block float-right m-1"
+                [disabled]="selectedCount <= 0"
+                (click)="printReport()">
+                <i class="fas fa-print"></i>
+                Print
+            </button>
+        </div>
+    </div>
+
 </div>
-<app-staff-attendance-table [staffAttendances]="staffAttendances"
-    [showEditDeleteControls]="false"></app-staff-attendance-table>
+<div class="row g-0">
+    <div class="col-3">
+        <app-staff-min-table [staff]="staffDetails" [showCheckBoxes]="true"
+            (staffClickedEvent)="staffDetailsChanged($event)"></app-staff-min-table>
+    </div>
+    <div class="col-9">
+        <app-staff-attendance-table [staffAttendances]="staffAttendances"
+            [showEditDeleteControls]="false"></app-staff-attendance-table>
+    </div>
+</div>

@@ -1,11 +1,11 @@
+import {Status} from '@/core/enums/status';
 import {StaffAttendancesReport} from '@/reports/models/staff-attendances-report';
 import {StaffAttendancesReportService} from '@/reports/services/staff-attendances-report.service';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {SchoolDetailsService} from '@/school/services/school-details.service';
-import {EmploymentType} from '@/settings/models/employment-type';
 import {StaffCategory} from '@/settings/models/staff-category';
 import {StaffCategoriesService} from '@/settings/services/staff-categories.service';
-import {DateMonthYear} from '@/shared/models/date-month-year';
+import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
 import {Component, OnInit} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
@@ -24,6 +24,7 @@ export class StaffAttendanceReportComponent implements OnInit {
 
     currentRptMonth: number;
     currentRptYear: string;
+    currentRptStatus: Status;
     currentRptStaffCategory: string;
 
     constructor(
@@ -60,6 +61,10 @@ export class StaffAttendanceReportComponent implements OnInit {
         });
     };
 
+    statusChanged = (status: Status) => {
+        this.resetControlls();
+    };
+
     yearChanged = (selectedDate: Date) => {
         this.resetControlls();
     };
@@ -78,10 +83,15 @@ export class StaffAttendanceReportComponent implements OnInit {
         this.currentRptStaffCategory = '';
     };
 
-    searchForDataMethod = (saSearch: DateMonthYear) => {
+    searchForDataMethod = (saSearch: SchoolSoftFilter) => {
         this.staffAttendancesRpt = [];
         if (!saSearch.staffCategoryId || saSearch.staffCategoryId == null) {
             this.toastr.error('Select staff category before clicking search!');
+            return;
+        } else if (
+            saSearch.status == null
+        ) {
+            this.toastr.error('Select staff status before clicking search!');
             return;
         } else if (!saSearch.month || saSearch.month == null) {
             this.toastr.error('Select month before clicking search!');
@@ -94,12 +104,14 @@ export class StaffAttendanceReportComponent implements OnInit {
             .getStaffAttendancesReport(
                 saSearch.month,
                 saSearch.year,
-                saSearch.staffCategoryId
+                saSearch.staffCategoryId,
+                saSearch.status
             )
             .subscribe({
                 next: (staffAttendsRpt) => {
                     this.currentRptMonth = saSearch.month;
                     this.currentRptYear = saSearch.year.toString();
+                    this.currentRptStatus = saSearch.status;
                     this.currentRptStaffCategory = this.staffCategories.find(
                         (s) => s.id == saSearch.staffCategoryId.toString()
                     ).name;
@@ -115,6 +127,7 @@ export class StaffAttendanceReportComponent implements OnInit {
         this.schoolSvc.get('/schooldetails').subscribe({
             next: (school) => {
                 let reportTitle =
+                    Status[this.currentRptStatus].toUpperCase() + ' ' +
                     this.currentRptStaffCategory.toLocaleUpperCase() +
                     ' STAFF ATTENDANCE REPORT FOR ' +
                     new Date(0, this.currentRptMonth - 1)

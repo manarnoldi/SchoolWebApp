@@ -14,9 +14,9 @@ import Swal from 'sweetalert2';
 import {StaffAttendanceFormComponent} from './staff-attendance-form/staff-attendance-form.component';
 import {StaffDetails} from '@/staff/models/staff-details';
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
-import {DateMonthYear} from '@/shared/models/date-month-year';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
+import { SchoolSoftFilter } from '@/shared/models/school-soft-filter';
 
 @Component({
     selector: 'app-staff-attendance',
@@ -56,7 +56,7 @@ export class StaffAttendanceComponent implements OnInit, AfterViewInit {
 
     ngOnInit(): void {}
 
-    searchStaffAttendances = (dmy: DateMonthYear) => {
+    searchStaffAttendances = (dmy: SchoolSoftFilter) => {
         if (!dmy.month || dmy.month < 1 || dmy.month > 12) {
             this.toastr.error('The month selected is not valid/correct!');
             return;
@@ -117,7 +117,7 @@ export class StaffAttendanceComponent implements OnInit, AfterViewInit {
                 const topMonth = this.today.getMonth() + 1;
                 const topYear = this.years[0];
 
-                let dmy = new DateMonthYear();
+                let dmy = new SchoolSoftFilter();
                 dmy.month = topMonth;
                 dmy.year = topYear;
 

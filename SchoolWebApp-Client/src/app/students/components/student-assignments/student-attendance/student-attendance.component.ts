@@ -10,10 +10,10 @@ import {SchoolClassesService} from '@/class/services/school-classes.service';
 import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 import {SchoolClass} from '@/class/models/school-class';
-import {DateMonthYear} from '@/shared/models/date-month-year';
 import {StudentClass} from '@/students/models/student-class';
 import {StudentClassService} from '@/students/services/student-class.service';
 import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
+import { SchoolSoftFilter } from '@/shared/models/school-soft-filter';
 
 @Component({
     selector: 'app-student-attendance',
@@ -85,7 +85,7 @@ export class StudentAttendanceComponent implements OnInit {
     //     });
     // };
 
-    searchStudentAttendances = (dmy: DateMonthYear) => {
+    searchStudentAttendances = (dmy: SchoolSoftFilter) => {
         if (!dmy.studentClassId) {
             this.toastr.error(
                 'The student class selected is not valid/correct!'
@@ -185,7 +185,7 @@ export class StudentAttendanceComponent implements OnInit {
                         topStudClass.schoolClass?.academicYear?.startDate
                     ).getFullYear();
 
-                    let dmy = new DateMonthYear();
+                    let dmy = new SchoolSoftFilter();
                     dmy.month = topMonth;
                     dmy.year = topYear;
                     dmy.studentClassId = parseInt(topStudClass.id);

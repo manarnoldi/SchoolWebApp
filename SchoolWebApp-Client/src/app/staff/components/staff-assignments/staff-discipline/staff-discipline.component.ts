@@ -16,9 +16,9 @@ import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 import {OccurenceType} from '@/settings/models/occurence-type';
 import {Outcome} from '@/settings/models/outcome';
-import {DateMonthYear} from '@/shared/models/date-month-year';
 import {DatePipe} from '@angular/common';
 import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
+import { SchoolSoftFilter } from '@/shared/models/school-soft-filter';
 
 @Component({
     selector: 'app-staff-discipline',
@@ -63,7 +63,7 @@ export class StaffDisciplineComponent implements OnInit, AfterViewInit {
         this.staffDisciplines = [];
     };
 
-    searchByDate = (dmy: DateMonthYear) => {
+    searchByDate = (dmy: SchoolSoftFilter) => {
         this.route.queryParams.subscribe((params) => {
             this.staffId = params['id'];
             this.staffDisciplinesSvc
@@ -107,7 +107,7 @@ export class StaffDisciplineComponent implements OnInit, AfterViewInit {
         const dateFrom = new Date(today.getFullYear(), 0, 1);
         const dateTo = new Date(today.getFullYear(), 11, 31);
 
-        let dmy = new DateMonthYear();
+        let dmy = new SchoolSoftFilter();
         dmy.dateFrom = dateFrom;
         dmy.dateTo = dateTo;
 

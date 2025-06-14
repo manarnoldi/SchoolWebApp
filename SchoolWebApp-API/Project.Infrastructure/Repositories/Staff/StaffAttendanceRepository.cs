@@ -6,6 +6,7 @@ using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Reports.Staff;
 using SchoolWebApp.Core.DTOs.Staff.StaffAttendance;
 using SchoolWebApp.Core.DTOs.Staff.StaffDetails;
+using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories.Staff;
@@ -112,11 +113,11 @@ namespace SchoolWebApp.Infrastructure.Repositories.Staff
             return years;
         }
 
-        public async Task<List<StaffAttendanceReportDto>> GetStaffAttendanceReport(int month, int year, int staffCategoryId)
+        public async Task<List<StaffAttendanceReportDto>> GetStaffAttendanceReport(int month, int year, int staffCategoryId, Status status)
         {
             // Get all staff in the selected category
             var allStaffInCategory = await _dbContext.StaffDetails
-                .Where(s => s.StaffCategoryId == staffCategoryId && s.Status == Core.Entities.Enums.Status.Active)
+                .Where(s => s.StaffCategoryId == staffCategoryId && s.Status == status)
                 .ToListAsync();
 
             // Fetch all attendance for the specified month/year

@@ -1,5 +1,6 @@
 ﻿using Project.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.DTOs.Reports.Staff;
+using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Staff;
 
 namespace SchoolWebApp.Core.Interfaces.IRepositories.Staff
@@ -11,6 +12,6 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.Staff
         Task<List<StaffAttendance>> GetByMonthYearStaffId(int month, int year, int staffId);
         Task<List<int>> GetDistinctMonths();
         Task<List<int>> GetDistinctYears();
-        Task<List<StaffAttendanceReportDto>> GetStaffAttendanceReport(int month, int year, int staffCategoryId);
+        Task<List<StaffAttendanceReportDto>> GetStaffAttendanceReport(int month, int year, int staffCategoryId, Status status);
     }
 }

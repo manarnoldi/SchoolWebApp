@@ -1,0 +1,50 @@
+<div class="card mb-1">
+    <app-table-heading
+        tableTitle="{{tableTitle}} - {{staff?.length}} items"></app-table-heading>
+    <div class="card-body table-responsive p-0">
+        <table class="table table-sm table-striped table-hover text-nowrap">
+            <thead>
+                <tr>
+                    <th *ngIf="showCheckBoxes">
+                        <div class="icheck-success m-0 p-0">
+                            <input #checkAllStaff type="checkbox" id="checkAllStaff"
+                                (change)="checkAllClicked($event)" [checked]="checkBoxDisabled"
+                                [attr.disabled]="checkBoxDisabled? 'disabled' : null">
+                            <label class="form-check-label" for="checkAllStaff"></label>
+                        </div>
+                    </th>
+                    <ng-container *ngFor="let header of tableHeaders">
+                        <th *ngIf="header.showOthers">
+                            {{ header.name }}
+                        </th>
+                    </ng-container>
+                </tr>
+            </thead>
+            <tbody>
+                <tr
+                    *ngFor="let item of staff | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                    <th *ngIf="showCheckBoxes">
+                        <div class="icheck-success m-0 p-0">
+                            <input type="checkbox" id="staff-id-{{item.id}}"
+                                (change)="itemClicked($event)"
+                                [(ngModel)]="item.isSelected" [disabled]="checkBoxDisabled">
+                            <label class="form-check-label"
+                                for="staff-id-{{item.id}}"></label>
+                        </div>
+                    </th>
+                    <td>{{ item.upi }}</td>
+                    <td>
+                        <a href="javascript:void(0)" (click)="staffClicked(item.id)">
+                            {{ item.fullName }}
+                        </a>
+                    </td>
+                    <td *ngIf="showOthers">{{ item.staffCategory?.name }}</td>
+                    <td *ngIf="showOthers">{{ statusValues[item.status] }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <app-table-paging
+            [collectionSize]="staff.length" (pageChangedEvent)="pageChanged($event)"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"></app-table-paging>
+    </div>
+</div>

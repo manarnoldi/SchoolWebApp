@@ -3,7 +3,7 @@ import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {StaffCategory} from '@/settings/models/staff-category';
 import {StaffCategoriesService} from '@/settings/services/staff-categories.service';
 import {SchoolSoftFilterFormComponent} from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
-import {DateMonthYear} from '@/shared/models/date-month-year';
+import { SchoolSoftFilter } from '@/shared/models/school-soft-filter';
 import {StaffAttendance} from '@/staff/models/staff-attendance';
 import {StaffDetails} from '@/staff/models/staff-details';
 import {StaffAttendancesService} from '@/staff/services/staff-attendances.service';
@@ -116,7 +116,11 @@ export class StaffAttendanceDetailsReportComponent implements OnInit {
         this.staffAttendances = [];
     };
 
-    searchForDataMethod = (saSearch: DateMonthYear) => {
+    get selectedCount(): number {
+        return this.staffDetails.filter((i) => i.isSelected).length;
+    }
+
+    searchForDataMethod = (saSearch: SchoolSoftFilter) => {
         this.staffAttendances = [];
         if (!saSearch.staffCategoryId || saSearch.staffCategoryId == null) {
             this.toastr.error('Select staff category before clicking search!');
@@ -148,5 +152,28 @@ export class StaffAttendanceDetailsReportComponent implements OnInit {
                     this.toastr.error(err.error);
                 }
             });
+    };
+
+    printReport = () => {
+        // this.schoolSvc.get('/schooldetails').subscribe({
+        //     next: (school) => {
+        //         let reportTitle =
+        //             this.currentRptStaffCategory.toLocaleUpperCase() +
+        //             ' STAFF ATTENDANCE REPORT FOR ' +
+        //             new Date(0, this.currentRptMonth - 1)
+        //                 .toLocaleString('default', {month: 'long'})
+        //                 .toUpperCase() +
+        //             ' ' +
+        //             this.currentRptYear.toLocaleUpperCase();
+        //         this.staffAttendsRptSvc.generateReport(
+        //             school[0],
+        //             this.staffAttendancesRpt,
+        //             reportTitle
+        //         );
+        //     },
+        //     error: (err) => {
+        //         this.toastr.error(err.error);
+        //     }
+        // });
     };
 }

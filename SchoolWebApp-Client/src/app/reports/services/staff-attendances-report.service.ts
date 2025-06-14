@@ -8,6 +8,7 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import {AuthService} from '@/core/services/auth.service';
 import {ReportsService} from './reports.service';
+import {Status} from '@/core/enums/status';
 (pdfMake as any).vfs = pdfFonts;
 
 @Injectable({
@@ -25,9 +26,10 @@ export class StaffAttendancesReportService extends ResourceService<StaffAttendan
     public getStaffAttendancesReport = (
         month: number,
         year: number,
-        staffCategoryId: number
+        staffCategoryId: number,
+        status: Status
     ): Observable<StaffAttendancesReport[]> => {
-        let searchUrl = `/staffAttendances/getAttendanceReport/${month}/${year}/${staffCategoryId}`;
+        let searchUrl = `/staffAttendances/getAttendanceReport/${month}/${year}/${staffCategoryId}/${status}`;
         return this.get(searchUrl).pipe(
             map((staffAttendances) => staffAttendances)
         );
@@ -79,7 +81,7 @@ export class StaffAttendancesReportService extends ResourceService<StaffAttendan
                             watermark: this.reportSvc.getWatermark(
                                 'ShuleNova - ' + schoolDetails?.name
                             ),
-                            footer: this.reportSvc.getFooter(),
+                            footer: this.reportSvc.getFooter('landscape'),
                             images: {
                                 systemLogo: base64data,
                                 schoolLogo: schoolDetails.logoAsBase64
