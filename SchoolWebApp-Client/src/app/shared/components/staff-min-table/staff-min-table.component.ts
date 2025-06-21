@@ -40,10 +40,10 @@ export class StaffMinTableComponent implements OnInit {
         );
 
         this.tableHeaders = [
-            {name: 'Staff no', showOthers: false},
-            {name: 'Full name', showOthers: false},
-            {name: 'Staff category', showOthers: this.showOthers},
-            {name: 'Status', showOthers: this.showOthers}
+            {name: 'Staff no', showColumn: true},
+            {name: 'Full name', showColumn: true},
+            {name: 'Staff category', showColumn: this.showOthers},
+            {name: 'Status', showColumn: this.showOthers}
         ];
     }
 

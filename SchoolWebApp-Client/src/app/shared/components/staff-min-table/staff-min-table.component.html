@@ -14,7 +14,7 @@
                         </div>
                     </th>
                     <ng-container *ngFor="let header of tableHeaders">
-                        <th *ngIf="header.showOthers">
+                        <th *ngIf="header.showColumn">
                             {{ header.name }}
                         </th>
                     </ng-container>

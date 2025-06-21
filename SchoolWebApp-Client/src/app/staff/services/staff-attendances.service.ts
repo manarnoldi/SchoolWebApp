@@ -24,6 +24,18 @@ export class StaffAttendancesService extends ResourceService<StaffAttendance> {
             .pipe(map((result) => result));
     }
 
+    searchStaffAttendancesObservable = (
+        staffId: number,
+        currentRptMonth: number,
+        currentRptYear: number
+    ): Observable<StaffAttendance[]> => {
+        return this.getByMonthYearStaffId(
+            currentRptMonth,
+            currentRptYear,
+            staffId
+        );
+    };
+
     getByMonthYearStaffId(
         month: number,
         year: number,

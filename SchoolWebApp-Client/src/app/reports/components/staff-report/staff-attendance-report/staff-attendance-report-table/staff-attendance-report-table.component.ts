@@ -1,5 +1,5 @@
 import {StaffAttendancesReport} from '@/reports/models/staff-attendances-report';
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 @Component({
@@ -10,6 +10,8 @@ import {Subscription} from 'rxjs';
 export class StaffAttendanceReportTableComponent {
     @Input() tableTitle: string = 'Staff attendance report';
     @Input() staffAttendancesRpt: StaffAttendancesReport[] = [];
+
+    @Output() printItemEvent = new EventEmitter<number>();
 
     tableHeaders: string[] = [
         'Staff No',
@@ -30,4 +32,8 @@ export class StaffAttendanceReportTableComponent {
     page = 1;
     pageSize = 20;
     viewItem = (staffId: number) => {};
+
+    printItem = (staffId: number) => {
+        this.printItemEvent.emit(staffId);
+    };
 }

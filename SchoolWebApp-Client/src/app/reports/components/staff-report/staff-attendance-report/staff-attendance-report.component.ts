@@ -1,11 +1,13 @@
 import {Status} from '@/core/enums/status';
 import {StaffAttendancesReport} from '@/reports/models/staff-attendances-report';
+import {StaffAttendancesReportDetailsService} from '@/reports/services/staff-attendances-report-details.service';
 import {StaffAttendancesReportService} from '@/reports/services/staff-attendances-report.service';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {SchoolDetailsService} from '@/school/services/school-details.service';
 import {StaffCategory} from '@/settings/models/staff-category';
 import {StaffCategoriesService} from '@/settings/services/staff-categories.service';
 import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
+import {StaffAttendancesService} from '@/staff/services/staff-attendances.service';
 import {Component, OnInit} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
@@ -32,6 +34,8 @@ export class StaffAttendanceReportComponent implements OnInit {
         private staffCategoriesSvc: StaffCategoriesService,
         private acadYearsSvc: AcademicYearsService,
         private staffAttendsRptSvc: StaffAttendancesReportService,
+        private staffAttendancesSvc: StaffAttendancesService,
+        private saRDSvc: StaffAttendancesReportDetailsService,
         private schoolSvc: SchoolDetailsService
     ) {}
 
@@ -88,9 +92,7 @@ export class StaffAttendanceReportComponent implements OnInit {
         if (!saSearch.staffCategoryId || saSearch.staffCategoryId == null) {
             this.toastr.error('Select staff category before clicking search!');
             return;
-        } else if (
-            saSearch.status == null
-        ) {
+        } else if (saSearch.status == null) {
             this.toastr.error('Select staff status before clicking search!');
             return;
         } else if (!saSearch.month || saSearch.month == null) {
@@ -123,11 +125,46 @@ export class StaffAttendanceReportComponent implements OnInit {
             });
     };
 
+    printIndividualReport = (staffId: number) => {
+        let schDetailsReq = this.schoolSvc.get('/schooldetails');
+        let staffAttendReq =
+            this.staffAttendancesSvc.searchStaffAttendancesObservable(
+                staffId,
+                this.currentRptMonth,
+                parseInt(this.currentRptYear)
+            );
+
+        forkJoin([schDetailsReq, staffAttendReq]).subscribe({
+            next: ([school, attends]) => {
+                const reportTitle =
+                    Status[this.currentRptStatus].toUpperCase() +
+                    ' ' +
+                    this.currentRptStaffCategory.toLocaleUpperCase() +
+                    ' STAFF ATTENDANCE REPORT FOR ' +
+                    new Date(0, this.currentRptMonth - 1)
+                        .toLocaleString('default', {
+                            month: 'long'
+                        })
+                        .toUpperCase() +
+                    ' ' +
+                    this.currentRptYear.toUpperCase();
+                const staffAttends = [];
+                staffAttends.push(attends);
+
+                this.saRDSvc.printByBatch(staffAttends, school[0], reportTitle);
+            },
+            error: (err) => {
+                this.toastr.error(err.error);
+            }
+        });
+    };
+
     printReport = () => {
         this.schoolSvc.get('/schooldetails').subscribe({
             next: (school) => {
                 let reportTitle =
-                    Status[this.currentRptStatus].toUpperCase() + ' ' +
+                    Status[this.currentRptStatus].toUpperCase() +
+                    ' ' +
                     this.currentRptStaffCategory.toLocaleUpperCase() +
                     ' STAFF ATTENDANCE REPORT FOR ' +
                     new Date(0, this.currentRptMonth - 1)

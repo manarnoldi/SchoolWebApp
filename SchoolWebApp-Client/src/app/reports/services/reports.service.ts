@@ -34,7 +34,7 @@ export class ReportsService {
                             x2:
                                 pageOrientation.toLowerCase() == 'landscape'
                                     ? 800
-                                    : 515,
+                                    : 555,
                             y2: 0, // width depends on page size (A4 landscape: ~800, portrait: ~515)
                             lineWidth: 1,
                             lineColor: '#002D62'

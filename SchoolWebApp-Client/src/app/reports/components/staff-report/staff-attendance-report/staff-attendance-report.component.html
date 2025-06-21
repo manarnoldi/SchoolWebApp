@@ -19,5 +19,5 @@
         </div>
     </div>
 </div>
-<app-staff-attendance-report-table [tableTitle]="'Staff attendances report'"
+<app-staff-attendance-report-table [tableTitle]="'Staff attendances report'" (printItemEvent)="printIndividualReport($event)"
     [staffAttendancesRpt]="staffAttendancesRpt"></app-staff-attendance-report-table>

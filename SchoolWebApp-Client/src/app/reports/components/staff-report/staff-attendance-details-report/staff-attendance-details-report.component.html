@@ -5,7 +5,7 @@
                 [years]="years" [showStaffCategory]="true" [staffCategories]="staffCategories"
                 [showMonth]="true" [showYear]="true" [showPersonStatus]="true"
                 (statusChangedEvent)="statusChanged($event)"
-                (monthChangedEvent)="monthChangedChanged($event)"
+                (monthChangedEvent)="monthChanged($event)"
                 (staffCategoryChangedEvent)="staffCategoryChanged($event)"
                 (yearChangedEvent)="yearChanged($event)"
                 (searchItemEvent)="searchForDataMethod($event)"></app-school-soft-filter-form>
@@ -15,7 +15,7 @@
                 [disabled]="selectedCount <= 0"
                 (click)="printReport()">
                 <i class="fas fa-print"></i>
-                Print
+                {{ selectedCount === 1? 'Preview':'Print' }}
             </button>
         </div>
     </div>
@@ -24,10 +24,10 @@
 <div class="row g-0">
     <div class="col-3">
         <app-staff-min-table [staff]="staffDetails" [showCheckBoxes]="true"
-            (staffClickedEvent)="staffDetailsChanged($event)"></app-staff-min-table>
+            (staffClickedEvent)="staffClicked($event)"></app-staff-min-table>
     </div>
     <div class="col-9">
-        <app-staff-attendance-table [staffAttendances]="staffAttendances"
+        <app-staff-attendance-table [staffAttendances]="staffAttendances" *ngIf="staffAttendances"
             [showEditDeleteControls]="false"></app-staff-attendance-table>
     </div>
 </div>
