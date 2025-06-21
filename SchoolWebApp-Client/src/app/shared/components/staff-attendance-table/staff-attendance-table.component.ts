@@ -9,7 +9,7 @@ export class StaffAttendanceTableComponent implements OnInit {
     @Input() tableTitle: string = 'Staff attendance list';
     @Input() staffAttendances: StaffAttendance[] = [];
     @Input() showLoginControls: Boolean = false;
-    @Input() showEditDeleteControls: Boolean = false;
+    @Input() showEditDeleteControls: Boolean = true;
 
     @Output() editItemEvent = new EventEmitter<number>();
     @Output() deleteItemEvent = new EventEmitter<number>();

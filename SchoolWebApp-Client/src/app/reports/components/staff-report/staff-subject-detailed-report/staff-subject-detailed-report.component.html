@@ -1,13 +1,13 @@
 <div class="card my-1">
     <div class="row g-0">
         <div class="col-11">
-            <app-school-soft-filter-form [months]="months"
-                [years]="years" [showStaffCategory]="true" [staffCategories]="staffCategories"
-                [showMonth]="true" [showYear]="true" [showPersonStatus]="true"
+            <app-school-soft-filter-form
+                [academicYears]="academicYears" [showStaffCategory]="true"
+                [staffCategories]="staffCategories"
+                [showAcademicYear]="true" [showPersonStatus]="true"
                 (statusChangedEvent)="statusChanged($event)"
-                (monthChangedEvent)="monthChanged($event)"
                 (staffCategoryChangedEvent)="staffCategoryChanged($event)"
-                (yearChangedEvent)="yearChanged($event)"
+                (academicYearChangedEvent)="academicYearChanged($event)"
                 (searchItemEvent)="searchForDataMethod($event)"></app-school-soft-filter-form>
         </div>
         <div class="col-1">
@@ -26,7 +26,7 @@
             (staffClickedEvent)="staffClicked($event)"></app-staff-min-table>
     </div>
     <div class="col-9">
-        <app-staff-attendance-table [staffAttendances]="staffAttendances" *ngIf="staffAttendances"
-            [showEditDeleteControls]="false"></app-staff-attendance-table>
+        <app-staff-subject-table [academicYears]="academicYears" [staffSubjects]="staffSubjects"
+            *ngIf="staffSubjects" [showEditDeleteControls]="false"></app-staff-subject-table>
     </div>
 </div>

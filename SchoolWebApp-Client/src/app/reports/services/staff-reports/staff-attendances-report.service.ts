@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {StaffAttendancesReport} from '../models/staff-attendances-report';
+import {StaffAttendancesReport} from '../../models/staff-attendances-report';
 import {ResourceService} from '@/core/services/resource.service';
 import {HttpClient} from '@angular/common/http';
 import {map, Observable} from 'rxjs';
@@ -7,7 +7,7 @@ import {SchoolDetails} from '@/school/models/school-details';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import {AuthService} from '@/core/services/auth.service';
-import {ReportsService} from './reports.service';
+import {ReportsService} from '../reports.service';
 import {Status} from '@/core/enums/status';
 (pdfMake as any).vfs = pdfFonts;
 

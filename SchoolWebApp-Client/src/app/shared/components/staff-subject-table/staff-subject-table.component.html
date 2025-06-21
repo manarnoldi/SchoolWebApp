@@ -8,6 +8,7 @@
                     <th *ngFor="let header of tableHeaders">
                         {{ header }}
                     </th>
+                    <th *ngIf="showEditDeleteControls">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,7 +25,7 @@
                     </td>
                     <td>{{ item.schoolClass?.name }}</td>
                     <td>{{ item.subject?.name}}</td>
-                    <app-table-action
+                    <app-table-action  *ngIf="showEditDeleteControls"
                         (editItemEvent)="editItem(item.id)"
                         (deleteItemEvent)="deleteItem(item.id)"
                         (viewItemEvent)="viewItem(item.id)"

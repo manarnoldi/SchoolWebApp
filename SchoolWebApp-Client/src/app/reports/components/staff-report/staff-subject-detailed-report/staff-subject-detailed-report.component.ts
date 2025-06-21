@@ -1,39 +1,40 @@
 import {Status} from '@/core/enums/status';
-import {StaffAttendancesReportDetailsService} from '@/reports/services/staff-reports/staff-attendances-report-details.service';
+import {StaffSubjectDetailedReportService} from '@/reports/services/staff-reports/staff-subject-detailed-report.service';
+import {AcademicYear} from '@/school/models/academic-year';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {SchoolDetailsService} from '@/school/services/school-details.service';
 import {StaffCategory} from '@/settings/models/staff-category';
 import {StaffCategoriesService} from '@/settings/services/staff-categories.service';
 import {SchoolSoftFilterFormComponent} from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
 import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
-import {StaffAttendance} from '@/staff/models/staff-attendance';
 import {StaffDetails} from '@/staff/models/staff-details';
-import {StaffAttendancesService} from '@/staff/services/staff-attendances.service';
+import {StaffSubject} from '@/staff/models/staff-subject';
 import {StaffDetailsService} from '@/staff/services/staff-details.service';
+import {StaffSubjectsService} from '@/staff/services/staff-subjects.service';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
 
 @Component({
-    selector: 'app-staff-attendance-details-report',
-    templateUrl: './staff-attendance-details-report.component.html',
-    styleUrl: './staff-attendance-details-report.component.scss'
+    selector: 'app-staff-subject-detailed-report',
+    templateUrl: './staff-subject-detailed-report.component.html',
+    styleUrl: './staff-subject-detailed-report.component.scss'
 })
-export class StaffAttendanceDetailsReportComponent implements OnInit {
+export class StaffSubjectDetailedReportComponent implements OnInit {
     @ViewChild(SchoolSoftFilterFormComponent)
     ssFilterFormComponent: SchoolSoftFilterFormComponent;
 
-    staffAttendances: StaffAttendance[] = [];
     staffCategories: StaffCategory[] = [];
     staffDetails: StaffDetails[] = [];
-    months: number[];
-    years: number[];
+
+    staffSubjects: StaffSubject[];
+
+    academicYears: AcademicYear[];
 
     sCategoryId: number;
     statusId: number;
 
-    currentRptMonth: number;
-    currentRptYear: string;
+    currentRptYearId: number;
     currentRptStatus: Status;
     currentRptStaffCategory: string;
 
@@ -41,9 +42,9 @@ export class StaffAttendanceDetailsReportComponent implements OnInit {
         private toastr: ToastrService,
         private staffDetailsSvc: StaffDetailsService,
         private acadYearsSvc: AcademicYearsService,
-        private staffAttendancesRptDetailsSvc: StaffAttendancesReportDetailsService,
-        private staffAttendancesSvc: StaffAttendancesService,
+        private staffSubjectsSvc: StaffSubjectsService,
         private staffCategoriesSvc: StaffCategoriesService,
+        private staffSubjectDetailsRptSvc: StaffSubjectDetailedReportService,
         private schoolSvc: SchoolDetailsService
     ) {}
 
@@ -58,14 +59,9 @@ export class StaffAttendanceDetailsReportComponent implements OnInit {
         forkJoin([staffCatReq, acadYearReq]).subscribe({
             next: ([staffCategories, academicYears]) => {
                 this.staffCategories = staffCategories;
-                this.years = [
-                    ...new Set(
-                        academicYears.map((yr) =>
-                            new Date(yr.startDate).getFullYear()
-                        )
-                    )
-                ].sort((a, b) => b - a);
-                this.months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+                this.academicYears = academicYears.sort(
+                    (a, b) => b.rank - a.rank
+                );
             },
             error: (err) => {
                 this.toastr.error(err.error);
@@ -73,39 +69,31 @@ export class StaffAttendanceDetailsReportComponent implements OnInit {
         });
     };
 
-    yearChanged = (year: number) => {
-        this.staffAttendances = [];
+    academicYearChanged = (academicYearChanged: number) => {
+        this.currentRptYearId = academicYearChanged;
+        this.staffSubjects = [];
         this.staffDetails = [];
-        this.currentRptYear = year.toString();
-    };
-
-    monthChanged = (month: number) => {
-        this.staffAttendances = [];
-        this.staffDetails = [];
-        this.currentRptMonth = month;
     };
 
     statusChanged = (status: Status) => {
-        this.staffAttendances = [];
+        this.staffSubjects = [];
         this.staffDetails = [];
     };
 
     staffCategoryChanged = (sCategoryId: number) => {
-        this.staffAttendances = [];
+        this.staffSubjects = [];
         this.staffDetails = [];
     };
 
     staffClicked = (staffId: number) => {
-        this.staffAttendances = [];
-        this.staffAttendancesSvc
-            .searchStaffAttendancesObservable(
-                staffId,
-                this.currentRptMonth,
-                parseInt(this.currentRptYear)
-            )
+        this.staffSubjects = [];
+        this.staffSubjectsSvc
+            .getByStaffYearId(staffId, this.currentRptYearId)
             .subscribe({
-                next: (staffAttends) => {
-                    this.staffAttendances = staffAttends;
+                next: (staffSubjects) => {
+                    this.staffSubjects = staffSubjects.sort(
+                        (a, b) => a.schoolClass?.rank - b.schoolClass?.rank
+                    );
                 },
                 error: (err) => {
                     this.toastr.error(err.error);
@@ -118,7 +106,7 @@ export class StaffAttendanceDetailsReportComponent implements OnInit {
     }
 
     searchForDataMethod = (saSearch: SchoolSoftFilter) => {
-        this.staffAttendances = [];
+        this.staffSubjects = [];
         if (!saSearch.staffCategoryId || saSearch.staffCategoryId == null) {
             this.toastr.error('Select staff category before clicking search!');
             return;
@@ -127,18 +115,15 @@ export class StaffAttendanceDetailsReportComponent implements OnInit {
                 'Select staff status first before clicking search!'
             );
             return;
-        } else if (!saSearch.month || saSearch.month == null) {
-            this.toastr.error('Select month before clicking search!');
-            return;
-        } else if (!saSearch.year || saSearch.year == null) {
-            this.toastr.error('Select year before clicking search!');
+        } else if (
+            !saSearch.academicYearId ||
+            saSearch.academicYearId == null
+        ) {
+            this.toastr.error('Select academic year before clicking search!');
             return;
         }
 
-        this.currentRptMonth = this.months.find(
-            (m) => m == this.currentRptMonth
-        );
-        this.currentRptYear = saSearch.year.toString();
+        this.currentRptYearId = saSearch.academicYearId;
         this.currentRptStatus = saSearch.status;
         this.currentRptStaffCategory = this.staffCategories.find(
             (s) => s.id == saSearch.staffCategoryId.toString()
@@ -160,32 +145,22 @@ export class StaffAttendanceDetailsReportComponent implements OnInit {
         this.schoolSvc.get('/schooldetails').subscribe({
             next: (school) => {
                 const reportTitle =
-                    Status[this.currentRptStatus].toUpperCase() +
-                    ' ' +
-                    this.currentRptStaffCategory.toLocaleUpperCase() +
-                    ' STAFF ATTENDANCE REPORT FOR ' +
-                    new Date(0, this.currentRptMonth - 1)
-                        .toLocaleString('default', {
-                            month: 'long'
-                        })
-                        .toUpperCase() +
-                    ' ' +
-                    this.currentRptYear.toUpperCase();
-
-                const staffAttendRequests = this.staffDetails
+                    'STAFF SUBJECT ALLOCATION REPORT FOR ' +
+                    this.academicYears
+                        .find((i) => i.id == this.currentRptYearId.toString())
+                        .name.toUpperCase();
+                const staffSubjectRequests = this.staffDetails
                     .filter((s) => s.isSelected)
                     .map((s) =>
-                        this.staffAttendancesSvc.searchStaffAttendancesObservable(
+                        this.staffSubjectsSvc.getByStaffYearId(
                             parseInt(s.id),
-                            this.currentRptMonth,
-                            parseInt(this.currentRptYear)
+                            this.currentRptYearId
                         )
                     );
-
-                forkJoin(staffAttendRequests).subscribe({
-                    next: (staffAttendances) => {
-                        this.staffAttendancesRptDetailsSvc.printByBatch(
-                            staffAttendances,
+                forkJoin(staffSubjectRequests).subscribe({
+                    next: (staffSubjects) => {
+                        this.staffSubjectDetailsRptSvc.printByBatch(
+                            staffSubjects.filter((s) => s.length > 0),
                             school[0],
                             reportTitle
                         );

@@ -1,7 +1,7 @@
 import {AuthService} from '@/core/services/auth.service';
 import {Injectable} from '@angular/core';
-import {ReportsService} from './reports.service';
-import {StaffAttendancesReport} from '../models/staff-attendances-report';
+import {ReportsService} from '../reports.service';
+import {StaffAttendancesReport} from '../../models/staff-attendances-report';
 import {ResourceService} from '@/core/services/resource.service';
 import {HttpClient} from '@angular/common/http';
 import {SchoolDetails} from '@/school/models/school-details';
@@ -13,6 +13,7 @@ import {DatePipe} from '@angular/common';
 import {concatMap, forkJoin, from, map, Observable, of, switchMap} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
 (pdfMake as any).vfs = pdfFonts;
+
 @Injectable({
     providedIn: 'root'
 })
@@ -27,12 +28,6 @@ export class StaffAttendancesReportDetailsService extends ResourceService<StaffA
         super(http, StaffAttendancesReport);
     }
 
-    printGenerate = (rpt: any) => {
-        const pdfDocGenerator = pdfMake.createPdf(rpt);
-        pdfDocGenerator.open();
-    };
-
-    // Add this helper in your component or service:
     readBlobAsBase64(blob: Blob): Observable<string> {
         return new Observable<string>((observer) => {
             const reader = new FileReader();
@@ -54,7 +49,6 @@ export class StaffAttendancesReportDetailsService extends ResourceService<StaffA
         const total = staffAttendances.length;
         const batches = Math.ceil(total / batchSize);
 
-        // Process batches sequentially
         from(Array.from({length: batches}, (_, i) => i))
             .pipe(
                 concatMap((batchIndex) => {
@@ -68,7 +62,6 @@ export class StaffAttendancesReportDetailsService extends ResourceService<StaffA
 
                     return forkJoin(batchDocObservables).pipe(
                         concatMap((docDefs) => {
-                            // Merge the content arrays
                             const combinedContent = docDefs.flatMap(
                                 (def, index) => {
                                     if (index === 0) {
@@ -114,8 +107,7 @@ export class StaffAttendancesReportDetailsService extends ResourceService<StaffA
                 }
             });
     };
-
-    // Your main method:
+    
     generateReport = (
         schoolDetails: SchoolDetails,
         attends: StaffAttendance[],
@@ -262,161 +254,4 @@ export class StaffAttendancesReportDetailsService extends ResourceService<StaffA
             );
     };
 
-    // generateReport = (
-    //     schoolDetails: SchoolDetails,
-    //     attends: StaffAttendance[],
-    //     reportTitle: string,
-    //     printAction: string
-    // ): Observable<any> => {
-    //     this.reportSvc
-    //         .loadImageAsBase64('assets/img/shule-nova-logo-only.png')
-    //         .subscribe({
-    //             next: (blob) => {
-    //                 const reader = new FileReader();
-    //                 reader.onloadend = () => {
-    //                     const base64data: string = reader.result as string;
-    //                     const dayHeaders = [
-    //                         {text: 'Date', style: 'tableHeader'},
-    //                         {text: 'Month', style: 'tableHeader'},
-    //                         {text: 'Year', style: 'tableHeader'},
-    //                         {text: 'Present', style: 'tableHeader'},
-    //                         {text: 'Remarks', style: 'tableHeader'}
-    //                     ];
-    //                     const tableWidths = ['auto', '*', '*', '*', 'auto'];
-    //                     const tableBody = [
-    //                         [...dayHeaders],
-    //                         ...attends.map((attend) => [
-    //                             {
-    //                                 text: this.datePipe.transform(
-    //                                     attend.date,
-    //                                     'dd/MM/yyyy - EEEE'
-    //                                 ),
-    //                                 noWrap: true
-    //                             },
-    //                             {
-    //                                 text: this.datePipe.transform(
-    //                                     attend.date,
-    //                                     'MMMM'
-    //                                 ),
-    //                                 noWrap: true
-    //                             },
-    //                             {
-    //                                 text: this.datePipe.transform(
-    //                                     attend.date,
-    //                                     'yyyy'
-    //                                 ),
-    //                                 noWrap: true
-    //                             },
-
-    //                             {
-    //                                 text:
-    //                                     attend.present === null
-    //                                         ? ''
-    //                                         : attend.present
-    //                                           ? 'Present'
-    //                                           : 'Absent',
-    //                                 noWrap: true
-    //                             },
-    //                             {
-    //                                 text: attend.remarks,
-    //                                 noWrap: false
-    //                             }
-    //                         ])
-    //                     ];
-
-    //                     const docDefinition = {
-    //                         pageOrientation: 'portrait',
-    //                         pageMargins: [20, 20, 20, 40],
-    //                         pageSize: 'A4',
-    //                         info: {
-    //                             title: '',
-    //                             author: '',
-    //                             subject: ''
-    //                         },
-    //                         watermark: this.reportSvc.getWatermark(
-    //                             'ShuleNova - ' + schoolDetails?.name
-    //                         ),
-    //                         footer: this.reportSvc.getFooter('portrait'),
-    //                         images: {
-    //                             systemLogo: base64data,
-    //                             schoolLogo: schoolDetails.logoAsBase64
-    //                         },
-    //                         styles: {
-    //                             tableHeader: this.reportSvc.getHEADER_STYLE()
-    //                         },
-    //                         content: [
-    //                             {...this.reportSvc.getDIVIDER()},
-    //                             this.reportSvc.getReportHeader(schoolDetails),
-    //                             {
-    //                                 ...this.reportSvc.getDIVIDER(),
-    //                                 marginBottom: 1
-    //                             },
-    //                             this.reportSvc.getReportTitle(reportTitle),
-    //                             {
-    //                                 ...this.reportSvc.getDIVIDER(),
-    //                                 marginBottom: 1
-    //                             },
-    //                             {
-    //                                 columns: [
-    //                                     [
-    //                                         {
-    //                                             text:
-    //                                                 'Staff No: ' +
-    //                                                 attends[0].staffDetails
-    //                                                     ?.upi,
-    //                                             alignment: 'left'
-    //                                         }
-    //                                     ],
-    //                                     [
-    //                                         {
-    //                                             text:
-    //                                                 'Staff Name: ' +
-    //                                                 attends[0].staffDetails
-    //                                                     ?.fullName,
-    //                                             alignment: 'right'
-    //                                         }
-    //                                     ]
-    //                                 ],
-    //                                 bold: true,
-    //                                 color: '#002D62',
-    //                                 marginBottom: 1
-    //                             },
-    //                             {
-    //                                 ...this.reportSvc.getDIVIDER(),
-    //                                 marginBottom: 1
-    //                             },
-    //                             {
-    //                                 layout: this.reportSvc.getTableLayout(),
-    //                                 table: {
-    //                                     headerRows: 1,
-    //                                     widths: tableWidths,
-    //                                     body: tableBody
-    //                                 },
-    //                                 marginBottom: 1,
-    //                                 color: '#002D62',
-    //                                 fontSize: 10
-    //                             },
-    //                             {...this.reportSvc.getDIVIDER()},
-    //                             this.reportSvc.getPrintDetails(
-    //                                 this.userSvc?.currentUser?.firstName +
-    //                                     ' ' +
-    //                                     this.userSvc?.currentUser?.lastName,
-    //                                 new Date().toLocaleString('en-GB')
-    //                             )
-    //                         ]
-    //                     };
-    //                     return of(docDefinition);
-    //                     // if (printAction.toLowerCase() == 'preview') {
-    //                     //     pdfMake.createPdf(docDefinition).open();
-    //                     // } else {
-    //                     //     pdfMake.createPdf(docDefinition).print();
-    //                     // }
-    //                 };
-    //                 reader.readAsDataURL(blob);
-    //             },
-    //             error: (err) => {
-    //                 console.log(err);
-    //             }
-    //         });
-    // };
 }

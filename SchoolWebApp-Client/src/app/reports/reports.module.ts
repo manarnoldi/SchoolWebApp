@@ -10,6 +10,7 @@ import { ReportsLoaderComponent } from './components/shared/reports-loader/repor
 import { StaffAttendanceReportComponent } from './components/staff-report/staff-attendance-report/staff-attendance-report.component';
 import { StaffAttendanceReportTableComponent } from './components/staff-report/staff-attendance-report/staff-attendance-report-table/staff-attendance-report-table.component';
 import { StaffAttendanceDetailsReportComponent } from './components/staff-report/staff-attendance-details-report/staff-attendance-details-report.component';
+import { StaffSubjectDetailedReportComponent } from './components/staff-report/staff-subject-detailed-report/staff-subject-detailed-report.component';
 
 @NgModule({
     declarations: [
@@ -21,7 +22,8 @@ import { StaffAttendanceDetailsReportComponent } from './components/staff-report
         ReportsLoaderComponent,
         StaffAttendanceReportComponent,
         StaffAttendanceReportTableComponent,
-        StaffAttendanceDetailsReportComponent
+        StaffAttendanceDetailsReportComponent,
+        StaffSubjectDetailedReportComponent
     ],
     imports: [CoreModule, SharedModule]
 })

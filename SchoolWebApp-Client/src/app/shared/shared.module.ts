@@ -25,6 +25,7 @@ import {StaffsAttendancesTableComponent} from './components/staffs-attendances-t
 import {StaffAttendanceTableComponent} from './components/staff-attendance-table/staff-attendance-table.component';
 import { SchoolSoftFilterFormComponent } from './components/school-soft-filter-form/school-soft-filter-form.component';
 import { StaffMinTableComponent } from './components/staff-min-table/staff-min-table.component';
+import { StaffSubjectTableComponent } from './components/staff-subject-table/staff-subject-table.component';
 
 @NgModule({
     declarations: [
@@ -49,6 +50,7 @@ import { StaffMinTableComponent } from './components/staff-min-table/staff-min-t
         StaffsAttendancesSearchFormComponent,
         StaffsAttendancesTableComponent,
         StaffAttendanceTableComponent,
+        StaffSubjectTableComponent,
         SchoolSoftFilterFormComponent,
         StaffMinTableComponent
     ],
@@ -77,6 +79,7 @@ import { StaffMinTableComponent } from './components/staff-min-table/staff-min-t
         StaffsAttendancesSearchFormComponent,
         StaffsAttendancesTableComponent,
         StaffAttendanceTableComponent,
+        StaffSubjectTableComponent,
         StaffMinTableComponent,
         CommonModule,
         NgbModule,

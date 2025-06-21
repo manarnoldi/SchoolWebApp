@@ -11,6 +11,7 @@ export class StaffSubjectTableComponent implements OnInit {
     @Input() tableTitle: string = 'Staff subject assigments';
     @Input() staffSubjects: StaffSubject[] = [];
     @Input() showLoginControls: Boolean = false;
+    @Input() showEditDeleteControls: Boolean = true;
 
     @Input() academicYears: AcademicYear[];
 
@@ -38,8 +39,7 @@ export class StaffSubjectTableComponent implements OnInit {
         'Staff number',
         'Year',
         'Class name',
-        'Subject',
-        'Action'
+        'Subject'
     ];
 
     deleteItem = (id: number) => {

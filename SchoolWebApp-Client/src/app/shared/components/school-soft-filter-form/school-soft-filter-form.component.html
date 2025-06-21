@@ -5,7 +5,7 @@
                 <select class="form-select form-select-sm" aria-label="Academic year"
                     (change)="academicYearChanged()"
                     formControlName="academicYearId" id="academicYearId">
-                    <option [ngValue]="null" selected>-Year-</option>
+                    <option [ngValue]="null" selected>-Academic year-</option>
                     <option [ngValue]="academicYear.id" *ngFor="let academicYear of
                                     academicYears">{{academicYear.name}}</option>
                 </select>

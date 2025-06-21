@@ -22,5 +22,10 @@
                 <app-staff-attendance-details-report></app-staff-attendance-details-report>
             </div>
         </div>
+        <div class="row g-0 card-details-box border-danger mt-1 p-1" *ngIf="currentReport?.code === 'STAFF003'">
+            <div class="col-md-12">
+                <app-staff-subject-detailed-report></app-staff-subject-detailed-report>
+            </div>
+        </div>
     </div>
 </section>
