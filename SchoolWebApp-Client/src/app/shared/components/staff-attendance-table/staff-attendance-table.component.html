@@ -26,7 +26,7 @@
                     <td>{{ item.date | date: 'dd/MM/yyyy - EEEE' }}</td>
                     <td>{{ item.present === null? '': item.present ? 'Present': 'Absent' }}</td>
                     <td>{{ item.remarks }}</td>
-                    <app-table-action *ngIf="showEditDeleteControls"
+                    <app-table-action *ngIf="showEditDeleteControls && item.id > 0"
                         (editItemEvent)="editItem(item.id)"
                         (deleteItemEvent)="deleteItem(item.id)"></app-table-action>
                 </tr>

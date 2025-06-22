@@ -15,8 +15,8 @@ import {StaffAttendanceFormComponent} from './staff-attendance-form/staff-attend
 import {StaffDetails} from '@/staff/models/staff-details';
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
-import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
-import { SchoolSoftFilter } from '@/shared/models/school-soft-filter';
+import {SchoolSoftFilterFormComponent} from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
+import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
 
 @Component({
     selector: 'app-staff-attendance',
@@ -166,7 +166,18 @@ export class StaffAttendanceComponent implements OnInit, AfterViewInit {
                     .delete('/staffAttendances', id)
                     .subscribe(
                         (res) => {
-                            this.loadStaffAttendances();
+                            const topMonth =
+                                this.ssFilterFormComponent.schoolSoftFilterForm.get(
+                                    'month'
+                                ).value;
+                            const topYear =
+                                this.ssFilterFormComponent.schoolSoftFilterForm.get(
+                                    'year'
+                                ).value;
+                            let dmy = new SchoolSoftFilter();
+                            dmy.month = topMonth;
+                            dmy.year = topYear;
+                            this.searchStaffAttendances(dmy);
                             this.toastr.success('Record deleted successfully!');
                         },
                         (err) => {
@@ -207,7 +218,19 @@ export class StaffAttendanceComponent implements OnInit, AfterViewInit {
                             'Staff attendance saved successfully'
                         );
                         this.staffAttendanceFormComponent.closeButton.nativeElement.click();
-                        this.loadStaffAttendances();
+
+                        const topMonth =
+                            this.ssFilterFormComponent.schoolSoftFilterForm.get(
+                                'month'
+                            ).value;
+                        const topYear =
+                            this.ssFilterFormComponent.schoolSoftFilterForm.get(
+                                'year'
+                            ).value;
+                        let dmy = new SchoolSoftFilter();
+                        dmy.month = topMonth;
+                        dmy.year = topYear;
+                        this.searchStaffAttendances(dmy);
                     },
                     (err) => {
                         this.toastr.error(err.error?.message);
