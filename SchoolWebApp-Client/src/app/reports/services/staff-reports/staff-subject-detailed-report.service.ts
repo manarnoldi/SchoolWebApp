@@ -5,13 +5,12 @@ import {StaffAttendancesReport} from '../../models/staff-attendances-report';
 import {ResourceService} from '@/core/services/resource.service';
 import {HttpClient} from '@angular/common/http';
 import {SchoolDetails} from '@/school/models/school-details';
+import {concatMap, from, map, Observable, of, switchMap} from 'rxjs';
+import {ToastrService} from 'ngx-toastr';
+import { StaffSubject } from '@/staff/models/staff-subject';
 
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import {DatePipe} from '@angular/common';
-import {concatMap, forkJoin, from, map, Observable, of, switchMap} from 'rxjs';
-import {ToastrService} from 'ngx-toastr';
-import {StaffSubject} from '@/staff/models/staff-subject';
 (pdfMake as any).vfs = pdfFonts;
 
 @Injectable({
@@ -25,18 +24,6 @@ export class StaffSubjectDetailedReportService extends ResourceService<StaffSubj
         private reportSvc: ReportsService
     ) {
         super(http, StaffAttendancesReport);
-    }
-
-    readBlobAsBase64(blob: Blob): Observable<string> {
-        return new Observable<string>((observer) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                observer.next(reader.result as string);
-                observer.complete();
-            };
-            reader.onerror = (err) => observer.error(err);
-            reader.readAsDataURL(blob);
-        });
     }
 
     printByBatch = (
@@ -56,45 +43,16 @@ export class StaffSubjectDetailedReportService extends ResourceService<StaffSubj
                     const batch = staffSubjects.slice(start, end);
 
                     const batchDocObservables = batch.map((staffSubjects) =>
-                        this.generateReport(school, staffSubjects, reportTitle)
+                        this.generateReport(
+                            school,
+                            staffSubjects.sort(
+                                (a, b) =>
+                                    a.schoolClass.rank - b.schoolClass.rank
+                            ),
+                            reportTitle
+                        )
                     );
-
-                    return forkJoin(batchDocObservables).pipe(
-                        concatMap((docDefs) => {
-                            const combinedContent = docDefs.flatMap(
-                                (def, index) => {
-                                    if (index === 0) {
-                                        return def.content;
-                                    } else {
-                                        return [
-                                            {
-                                                text: '',
-                                                pageBreak: 'before'
-                                            },
-                                            ...def.content
-                                        ];
-                                    }
-                                }
-                            );
-                            const firstDoc = docDefs[0];
-                            const mergedDocDef = {
-                                content: combinedContent,
-                                pageOrientation: firstDoc.pageOrientation,
-                                pageMargins: firstDoc.pageMargins,
-                                pageSize: firstDoc.pageSize,
-                                info: firstDoc.info,
-                                watermark: firstDoc.watermark,
-                                footer: firstDoc.footer,
-                                images: firstDoc.images,
-                                styles: firstDoc.styles
-                            };
-                            return new Observable<void>((observer) => {
-                                pdfMake.createPdf(mergedDocDef).print();
-                                observer.next();
-                                observer.complete();
-                            });
-                        })
-                    );
+                    return this.reportSvc.printBatchDocs(batchDocObservables);
                 })
             )
             .subscribe({
@@ -106,7 +64,6 @@ export class StaffSubjectDetailedReportService extends ResourceService<StaffSubj
                 }
             });
     };
-
     generateReport = (
         schoolDetails: SchoolDetails,
         staffSubjects: StaffSubject[],
@@ -115,7 +72,7 @@ export class StaffSubjectDetailedReportService extends ResourceService<StaffSubj
         return this.reportSvc
             .loadImageAsBase64('assets/img/shule-nova-logo-only.png')
             .pipe(
-                switchMap((blob) => this.readBlobAsBase64(blob)),
+                switchMap((blob) => this.reportSvc.readBlobAsBase64(blob)),
                 map((base64data: string) => {
                     const dayHeaders = [
                         {text: 'Class name', style: 'tableHeader'},
@@ -185,7 +142,8 @@ export class StaffSubjectDetailedReportService extends ResourceService<StaffSubj
                                         {
                                             text:
                                                 'Staff No: ' +
-                                                staffSubjects[0].staffDetails?.upi,
+                                                staffSubjects[0].staffDetails
+                                                    ?.upi,
                                             alignment: 'left'
                                         }
                                     ],

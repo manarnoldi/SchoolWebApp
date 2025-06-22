@@ -28,18 +28,6 @@ export class StaffAttendancesReportDetailsService extends ResourceService<StaffA
         super(http, StaffAttendancesReport);
     }
 
-    readBlobAsBase64(blob: Blob): Observable<string> {
-        return new Observable<string>((observer) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                observer.next(reader.result as string);
-                observer.complete();
-            };
-            reader.onerror = (err) => observer.error(err);
-            reader.readAsDataURL(blob);
-        });
-    }
-
     printByBatch = (
         staffAttendances: StaffAttendance[][],
         school: SchoolDetails,
@@ -56,46 +44,18 @@ export class StaffAttendancesReportDetailsService extends ResourceService<StaffA
                     const end = start + batchSize;
                     const batch = staffAttendances.slice(start, end);
 
-                    const batchDocObservables = batch.map((att) =>
-                        this.generateReport(school, att, reportTitle)
+                    const batchDocObservables = batch.map((staffAttendances) =>
+                        this.generateReport(
+                            school,
+                            staffAttendances.sort(
+                                (a, b) =>
+                                    new Date(a.date).getTime() -
+                                    new Date(b.date).getTime()
+                            ),
+                            reportTitle
+                        )
                     );
-
-                    return forkJoin(batchDocObservables).pipe(
-                        concatMap((docDefs) => {
-                            const combinedContent = docDefs.flatMap(
-                                (def, index) => {
-                                    if (index === 0) {
-                                        return def.content;
-                                    } else {
-                                        return [
-                                            {
-                                                text: '',
-                                                pageBreak: 'before'
-                                            },
-                                            ...def.content
-                                        ];
-                                    }
-                                }
-                            );
-                            const firstDoc = docDefs[0];
-                            const mergedDocDef = {
-                                content: combinedContent,
-                                pageOrientation: firstDoc.pageOrientation,
-                                pageMargins: firstDoc.pageMargins,
-                                pageSize: firstDoc.pageSize,
-                                info: firstDoc.info,
-                                watermark: firstDoc.watermark,
-                                footer: firstDoc.footer,
-                                images: firstDoc.images,
-                                styles: firstDoc.styles
-                            };
-                            return new Observable<void>((observer) => {
-                                pdfMake.createPdf(mergedDocDef).print();
-                                observer.next();
-                                observer.complete();
-                            });
-                        })
-                    );
+                    return this.reportSvc.printBatchDocs(batchDocObservables);
                 })
             )
             .subscribe({
@@ -107,7 +67,7 @@ export class StaffAttendancesReportDetailsService extends ResourceService<StaffA
                 }
             });
     };
-    
+
     generateReport = (
         schoolDetails: SchoolDetails,
         attends: StaffAttendance[],
@@ -116,7 +76,7 @@ export class StaffAttendancesReportDetailsService extends ResourceService<StaffA
         return this.reportSvc
             .loadImageAsBase64('assets/img/shule-nova-logo-only.png')
             .pipe(
-                switchMap((blob) => this.readBlobAsBase64(blob)),
+                switchMap((blob) => this.reportSvc.readBlobAsBase64(blob)),
                 map((base64data: string) => {
                     const dayHeaders = [
                         {text: 'Date', style: 'tableHeader'},
@@ -253,5 +213,4 @@ export class StaffAttendancesReportDetailsService extends ResourceService<StaffA
                 })
             );
     };
-
 }

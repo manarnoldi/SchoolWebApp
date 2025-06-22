@@ -1,13 +1,17 @@
 import {SchoolDetails} from '@/school/models/school-details';
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {map, Observable} from 'rxjs';
+import {concatMap, forkJoin, map, Observable} from 'rxjs';
+
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+(pdfMake as any).vfs = pdfFonts;
 
 @Injectable({
     providedIn: 'root'
 })
 export class ReportsService {
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) { }
 
     public getWatermark = (waterMarkTitle: string) => {
         return {
@@ -101,7 +105,7 @@ export class ReportsService {
     public getReportHeader = (schoolDetails: SchoolDetails) => {
         return {
             columns: [
-                {image: 'schoolLogo', width: 70},
+                { image: 'schoolLogo', width: 70 },
                 [
                     {
                         text: schoolDetails?.name?.toUpperCase(),
@@ -126,7 +130,7 @@ export class ReportsService {
                         marginBottom: 2
                     }
                 ],
-                {image: 'systemLogo', width: 70, alignment: 'right'}
+                { image: 'systemLogo', width: 70, alignment: 'right' }
             ],
             color: '#002D62'
         };
@@ -172,7 +176,58 @@ export class ReportsService {
 
     public loadImageAsBase64(imgUrl: string): Observable<Blob> {
         return this.http
-            .get(imgUrl, {responseType: 'blob'})
+            .get(imgUrl, { responseType: 'blob' })
             .pipe(map((blob) => blob));
     }
+
+    public readBlobAsBase64(blob: Blob): Observable<string> {
+        return new Observable<string>((observer) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                observer.next(reader.result as string);
+                observer.complete();
+            };
+            reader.onerror = (err) => observer.error(err);
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    printBatchDocs = (batchDocObservables: Observable<any>[]) => {
+        return forkJoin(batchDocObservables).pipe(
+            concatMap((docDefs) => {
+                const combinedContent = docDefs.flatMap((def, index) => {
+                    if (index === 0) {
+                        return def.content;
+                    } else {
+                        return [
+                            {
+                                text: '',
+                                pageBreak: 'before'
+                            },
+                            ...def.content
+                        ];
+                    }
+                });
+
+                const firstDoc = docDefs[0];
+                const mergedDocDef = {
+                    content: combinedContent,
+                    pageOrientation: firstDoc.pageOrientation,
+                    pageMargins: firstDoc.pageMargins,
+                    pageSize: firstDoc.pageSize,
+                    info: firstDoc.info,
+                    watermark: firstDoc.watermark,
+                    footer: firstDoc.footer,
+                    images: firstDoc.images,
+                    styles: firstDoc.styles
+                };
+
+                return new Observable<void>((observer) => {
+                    pdfMake.createPdf(mergedDocDef).print();
+                    observer.next();
+                    observer.complete();
+                });
+            })
+        );
+    };
 }
