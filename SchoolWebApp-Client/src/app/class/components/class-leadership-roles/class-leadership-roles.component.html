@@ -36,6 +36,17 @@
                                 for="{{personType}}"> {{personType}}</label>&nbsp;
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="rank" class="form-label">Rank: <span
+                                    class="requiredField">*</span></label>
+                            <input id="rank" placeholder="Learning level rank" type="number"
+                                class="form-control" formControlName="rank" [ngClass]="{
+                            'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
+                            }" />
+                            <div class="invalid-feedback">Learning level rank is required</div>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <label>Description:</label>
                         <textarea placeholder="Enter class leadership role description"
@@ -85,6 +96,7 @@
                                     *ngFor="let item of classLeadershipRoles| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
                                     <td>{{ item.name }}</td>
                                     <td>{{ personTypes[item.personType] }}</td>
+                                    <td>{{ item.rank }}</td>
                                     <td>{{ item.description }}</td>
                                     <app-table-action
                                         (editItemEvent)="editItem(item.id)"

@@ -10,5 +10,6 @@ namespace SchoolWebApp.Core.Entities.Shared
 
         [StringLength(500)]
         public string? Description { get; set; }
+        public int Rank { get; set; }
     }
 }

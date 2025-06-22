@@ -25,7 +25,13 @@ export class ClassLeadershipRolesComponent implements OnInit {
     buttonTitle: string = 'Add class leadership role';
     tableModel: string = 'classLeadershipRole';
     tableTitle: string = 'Class leadership roles list';
-    tableHeaders: string[] = ['Name', 'Person type', 'Description', 'Action'];
+    tableHeaders: string[] = [
+        'Name',
+        'Person type',
+        'Rank',
+        'Description',
+        'Action'
+    ];
 
     editMode = false;
     classLeadershipRole: ClassLeadershipRole;
@@ -93,6 +99,7 @@ export class ClassLeadershipRolesComponent implements OnInit {
                     this.classLeadershipRole.id = classLeadershipRoleId;
                     this.classLeadershipRoleForm.setValue({
                         name: this.classLeadershipRole.name,
+                        rank: this.classLeadershipRole.rank ?? 0,
                         description: this.classLeadershipRole.description,
                         personType:
                             this.personTypes[
@@ -170,6 +177,7 @@ export class ClassLeadershipRolesComponent implements OnInit {
     refreshItems() {
         this.classLeadershipRoleForm = this.formBuilder.group({
             name: ['', [Validators.required]],
+            rank: [0, [Validators.required]],
             description: [''],
             personType: [this.personTypes[0], [Validators.required]]
         });
@@ -180,6 +188,9 @@ export class ClassLeadershipRolesComponent implements OnInit {
                 this.classLeadershipRoles = res.slice(
                     (this.page - 1) * this.pageSize,
                     (this.page - 1) * this.pageSize + this.pageSize
+                );
+                this.classLeadershipRoles = this.classLeadershipRoles.sort(
+                    (a, b) => a.rank - b.rank
                 );
                 this.isAuthLoading = false;
                 this.editMode = false;
