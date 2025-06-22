@@ -4,9 +4,16 @@
 <hr>
 <section class="content">
     <div class="container-fluid px-1">
-        <div class="row g-0 card-details-box border-warning mt-1">
+        <div class="row g-0 card-details-box border-info mt-1 p-1">
             <div class="col-md-6">
-                <app-reports-loader [reportTitle]="'class'"></app-reports-loader>
+                <app-reports-loader [reportTitle]="'class'"
+                    (reportNameChangedEvent)="reportNameChanged($event)"
+                    (searchItemEvent)="searchItem($event)"></app-reports-loader>
+            </div>
+        </div>
+        <div class="row g-0 card-details-box border-danger mt-1 p-1" *ngIf="currentReport?.code === 'CLASS001'">
+            <div class="col-md-12">
+                <app-class-lists-report></app-class-lists-report>
             </div>
         </div>
     </div>

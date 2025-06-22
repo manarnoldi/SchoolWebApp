@@ -1,5 +1,13 @@
 import {SchoolClass} from '@/class/models/school-class';
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    EventEmitter,
+    Input,
+    OnInit,
+    Output,
+    ViewChild
+} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 @Component({
@@ -12,6 +20,8 @@ export class SchoolClassMinimumTableComponent {
     @Input() disabled: boolean = false;
     @Input() minimumTable: Boolean = false;
     @ViewChild('checkAllClasses', {static: false}) checkAll: ElementRef;
+
+    @Output() schoolClassClickedEvent =new EventEmitter<number>();
 
     page = 1;
     pageSize = 10;
@@ -35,7 +45,11 @@ export class SchoolClassMinimumTableComponent {
     pageChanged = (page: number) => {
         this.page = page;
     };
-    
+
+    schoolClassClicked = (schoolClassId: number) => {
+        this.schoolClassClickedEvent.emit(schoolClassId);
+    };
+
     itemClicked = (inputCheckItem: any) => {
         if (this.schoolClasses.some((s) => !s.isSelected)) {
             this.checkAll.nativeElement.checked = false;

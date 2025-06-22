@@ -137,8 +137,8 @@ export class ClassLeadershipRolesComponent implements OnInit {
                 let app = new ClassLeadershipRole(
                     this.classLeadershipRoleForm.value
                 );
-                let personTypeNum = PersonType['Teacher'];
-                app.personType = personTypeNum;
+                // let personTypeNum = this.personTypes[app.personType];
+                // app.personType = personTypeNum;
                 if (this.editMode) app.id = this.classLeadershipRole.id;
                 let reqToProcess = this.editMode
                     ? this.classLeadershipRoleSvc.update(

@@ -44,7 +44,7 @@
                 </select>
             </div>
         </ng-content>
-        
+
         <ng-content *ngIf="showEmploymentType">
             <div class="col py-1 px-0">
                 <select class="form-select form-select-sm" aria-label="Employment type"
@@ -65,6 +65,17 @@
                     <option [ngValue]="null" selected>-Learning mode-</option>
                     <option [ngValue]="learningMode.id" *ngFor="let learningMode of
                                     learningModes">{{learningMode.name}}</option>
+                </select>
+            </div>
+        </ng-content>
+        <ng-content *ngIf="showSchoolClass">
+            <div class="col py-1 px-1">
+                <select class="form-select form-select-sm" aria-label="School class "
+                    (change)="schoolClassChanged()"
+                    formControlName="schoolClassId" id="schoolClassId">
+                    <option [ngValue]="null" selected>-Class-</option>
+                    <option [ngValue]="schoolClass.id" *ngFor="let schoolClass of
+                                schoolClasses">{{schoolClass.name}}</option>
                 </select>
             </div>
         </ng-content>

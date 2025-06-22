@@ -18,7 +18,6 @@ import {StudentFormerSchoolComponent} from './components/student-assignments/stu
 import {StudentFormerSchoolFormComponent} from './components/student-assignments/student-former-school/student-former-school-form/student-former-school-form.component';
 import {StudentClassFormComponent} from './components/student-assignments/student-class/student-class-form/student-class-form.component';
 import {StudentClassTableComponent} from './components/student-assignments/student-class/student-class-table/student-class-table.component';
-import {StudentsMinTableComponent} from './components/students-details/students-min-table/students-min-table.component';
 import {StudentParentsExistingFormComponent} from './components/student-assignments/student-parents/student-parents-existing-form/student-parents-existing-form.component';
 import {StudentParentsTableComponent} from './components/student-assignments/student-parents/student-parents-table/student-parents-table.component';
 import {ParentsListComponent} from './components/parents/parents-list/parents-list.component';
@@ -38,10 +37,11 @@ import { StudentsSubjectsComponent } from './components/students-subjects/studen
 import { StudentsSubjectsTableComponent } from './components/students-subjects/students-subjects-table/students-subjects-table.component';
 import { StudentsSubjectsAddFormComponent } from './components/students-subjects/students-subjects-add-form/students-subjects-add-form.component';
 import { StudentsSubjectsSearchFormComponent } from './components/students-subjects/students-subjects-search-form/students-subjects-search-form.component';
-import { StudentClassMinTableComponent } from './components/student-assignments/student-class/student-class-min-table/student-class-min-table.component';
+import { StudentClassMinTableComponent } from '../shared/components/student-class-min-table/student-class-min-table.component';
 import { StudentsAttendancesComponent } from './components/students-attendances/students-attendances.component';
 import { StudentsAttendancesTableComponent } from './components/students-attendances/students-attendances-table/students-attendances-table.component';
 import { StudentsAttendancesSearchFormComponent } from './components/students-attendances/students-attendances-search-form/students-attendances-search-form.component';
+import { StudentsMinTableComponent } from './components/students-details/students-min-table/students-min-table.component';
 
 @NgModule({
     declarations: [
@@ -61,7 +61,6 @@ import { StudentsAttendancesSearchFormComponent } from './components/students-at
         StudentFormerSchoolTableComponent,
         StudentClassFormComponent,
         StudentClassTableComponent,
-        StudentsMinTableComponent,
         StudentParentsExistingFormComponent,
         StudentParentsTableComponent,
         ParentsListComponent,
@@ -79,10 +78,10 @@ import { StudentsAttendancesSearchFormComponent } from './components/students-at
         StudentsSubjectsTableComponent,
         StudentsSubjectsAddFormComponent,
         StudentsSubjectsSearchFormComponent,
-        StudentClassMinTableComponent,
         StudentsAttendancesComponent,
         StudentsAttendancesTableComponent,
-        StudentsAttendancesSearchFormComponent
+        StudentsAttendancesSearchFormComponent,
+        StudentsMinTableComponent
     ],
     imports: [AcademicsModule, DataTablesModule, CoreModule, SharedModule]
 })

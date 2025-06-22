@@ -62,7 +62,7 @@ export class StudentClassMinTableComponent implements OnInit {
 
         this.tableHeaders = [
             {name: 'Admission no', min: false},
-            {name: 'Full', min: false},
+            {name: 'Full name', min: false},
             {name: 'Admission date', min: this.showMinimum},
             {name: 'Learning mode', min: this.showMinimum},
             {name: 'Status', min: false}

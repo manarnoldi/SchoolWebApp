@@ -1,6 +1,6 @@
 <div class="card mb-0">
     <app-table-heading [editControls]="false"
-        tableTitle="Class Mini Table"></app-table-heading>
+        [tableTitle]="'School Classes Mini Table - ('+ schoolClasses.length +')'"></app-table-heading>
     <div class="card-body table-responsive p-0">
         <table class="table table-striped table-hover text-nowrap">
             <thead>
@@ -23,13 +23,14 @@
                 <tr
                     *ngFor="let item of schoolClasses| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
                     <th>
-                        <div class="icheck-success">
+                        <div class="icheck-success m-0 p-0">
                             <input type="checkbox" id="{{item.id}}" (change)="itemClicked($event)"
                                 [(ngModel)]="item.isSelected" [disabled]="disabled">
                             <label class="form-check-label" for="{{item.id}}"></label>
                         </div>
                     </th>
-                    <td>{{ item.name }}</td>
+                    <td><a href="javascript:void(0)" (click)="schoolClassClicked(item.id)">{{
+                            item.name }}</a></td>
                     <td *ngIf="!minimumTable">{{ item.academicYear?.name }}</td>
                     <td *ngIf="!minimumTable">{{ item.learningLevel?.name }}</td>
                     <td *ngIf="!minimumTable">{{ item.schoolStream?.name }}</td>

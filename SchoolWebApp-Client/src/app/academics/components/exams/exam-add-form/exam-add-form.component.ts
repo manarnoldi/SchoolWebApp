@@ -260,8 +260,9 @@ export class ExamAddFormComponent implements OnInit {
     };
 
     curriculumYearChanged = (cy: CurriculumYear) => {
-        let sessionsReq = this.sessionSvc.get(
-            `/sessions/byCurriculumYearId/${cy.curriculumId}/${cy.academicYearId}`
+        let sessionsReq = this.sessionSvc.getByCurriculumYear(
+            cy.curriculumId,
+            cy.academicYearId
         );
 
         forkJoin([sessionsReq]).subscribe(
@@ -315,11 +316,9 @@ export class ExamAddFormComponent implements OnInit {
                 '/' +
                 acadYearId
         );
-        let schoolClassReq = this.schoolClassesSvc.get(
-            '/schoolClasses/byEducationLevelYearId/' +
-                eduLevelId +
-                '/' +
-                acadYearId
+        let schoolClassReq = this.schoolClassesSvc.getByEducationLevelandYear(
+            eduLevelId,
+            acadYearId
         );
 
         forkJoin([educationLevelSubjectsReq, schoolClassReq]).subscribe({

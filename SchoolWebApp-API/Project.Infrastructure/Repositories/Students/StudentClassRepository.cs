@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Project.Infrastructure.Data;
 using Project.Infrastructure.Repositories;
+using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories.Students;
@@ -34,10 +35,10 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
             return studentAssigned;
         }
 
-        public async Task<List<StudentClass>> GetBySchoolClassId(int schoolClassId)
+        public async Task<List<StudentClass>> GetBySchoolClassId(int schoolClassId, Status status)
         {
             var studentClasses = await _dbContext.StudentClasses
-                .Where(e => e.SchoolClassId == schoolClassId)
+                .Where(e => e.SchoolClassId == schoolClassId && e.Student.Status == status)
                 .Include(f => f.Student)
                 .Include(f => f.SchoolClass)
                 .ToListAsync();
@@ -49,7 +50,7 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
             var staffSubjects = await _dbContext.StudentClasses
                 .Where(e => e.StudentId == studentId && e.SchoolClass.AcademicYearId == yearId)
                 .Include(f => f.Student)
-                .Include(f => f.SchoolClass)
+                .Include(f => f.SchoolClass)                
                 .ToListAsync();
             return staffSubjects;
         }

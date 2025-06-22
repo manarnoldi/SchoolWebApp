@@ -1,0 +1,43 @@
+<div class="card my-1">
+    <div class="row g-0">
+        <div class="col-8">
+            <app-school-soft-filter-form
+                [academicYears]="academicYears"
+                [showPersonStatus]="true"
+                [showAcademicYear]="true"
+                (statusChangedEvent)="statusChanged($event)"
+                (academicYearChangedEvent)="academicYearChanged($event)"
+                (searchItemEvent)="searchForDataMethod($event)"></app-school-soft-filter-form>
+        </div>
+        <div class="col-4">
+            <button type="button" class="btn btn-sm btn-flat btn-danger float-right m-1"
+                (click)="printReport()" [disabled]="selectedCount <= 0">
+                <i class="fas fa-print"></i> {{ selectedCount === 1? 'Preview List':'Print List' }}
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row g-0">
+    <div class="col-4">
+        <app-school-class-minimum-table [schoolClasses]="schoolClasses"
+            (schoolClassClickedEvent)="schoolClassClicked($event)"
+            [minimumTable]="true"></app-school-class-minimum-table>
+    </div>
+    <div class="col-8">
+        <app-student-class-min-table [studentClasses]="studentClasses" [showCheckBoxes]="false"
+            *ngIf="studentClasses" [tableTitle]="'Students class list table '"
+            [showMinimum]="true"></app-student-class-min-table>
+
+        <div class="card mt-1" *ngIf="studentClasses && schoolClassLeaders.length > 0">
+            <div class="card-header">
+                <h5 class="mb-0">Class Leaders</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item" *ngFor="let g of schoolClassLeaders; let i = index">
+                    {{ g.person?.fullName }}
+                    <span class="badge bg-success ms-2">[{{ g.classLeadershipRole?.name }}]</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

@@ -1,4 +1,5 @@
 import { Curriculum } from '@/academics/models/curriculum';
+import { SchoolClass } from '@/class/models/school-class';
 import { Status } from '@/core/enums/status';
 import { AcademicYear } from '@/school/models/academic-year';
 import { EducationLevel } from '@/school/models/educationLevel';
@@ -28,6 +29,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
     @Input() months: number[] = [];
     @Input() years: number[] = [];
     @Input() studentClasses: StudentClass[] = [];
+    @Input() schoolClasses: SchoolClass[] = [];
     @Input() staffDetails: StaffDetails[] = [];
 
     @Input() showCurriculum: boolean = false;
@@ -37,6 +39,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
     @Input() showLearningMode: boolean = false;
     @Input() showPersonStatus: boolean = false;
     @Input() showStaffCategory: boolean = false;
+    @Input() showSchoolClass: boolean = false;
 
     @Input() showMonth: boolean = false;
     @Input() showYear: boolean = false;
@@ -60,6 +63,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
     @Output() dateFromChangedEvent = new EventEmitter<number>();
     @Output() dateToChangedEvent = new EventEmitter<number>();
     @Output() studentClassChangedEvent = new EventEmitter<number>();
+    @Output() schoolClassChangedEvent = new EventEmitter<number>();
     @Output() staffDetailsChangedEvent = new EventEmitter<number>();
 
     schoolSoftFilterForm: FormGroup;
@@ -104,6 +108,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
             learningModeId: cysSearch.learningModeId ?? null,
             status: cysSearch.status ?? null,
             studentClassId: cysSearch.studentClassId ?? null,
+            schoolClassId: cysSearch.schoolClassId ?? null,
             staffDetailsId: cysSearch.staffDetailsId ?? null,
             month: cysSearch.month ?? null,
             year: cysSearch.year ?? null,
@@ -126,6 +131,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
             learningModeId: [null],
             status: [null],
             studentClassId: [null],
+            schoolClassId: [null],
             staffDetailsId: [null],
             month: [null],
             year: [null],
@@ -199,6 +205,12 @@ export class SchoolSoftFilterFormComponent implements OnInit {
         let studentClassId =
             this.schoolSoftFilterForm.get('studentClassId').value;
         this.studentClassChangedEvent.emit(studentClassId);
+    };
+
+    schoolClassChanged = () => {
+        let schoolClassId =
+            this.schoolSoftFilterForm.get('schoolClassId').value;
+        this.studentClassChangedEvent.emit(schoolClassId);
     };
 
     staffDetailsChanged = () => {

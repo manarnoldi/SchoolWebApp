@@ -7,6 +7,7 @@ using SchoolWebApp.Core.DTOs.Staff.StaffSubject;
 using SchoolWebApp.Core.DTOs.Students.FormerSchool;
 using SchoolWebApp.Core.DTOs.Students.StudentClass;
 using SchoolWebApp.Core.Entities.Class;
+using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
@@ -107,17 +108,17 @@ namespace SchoolWebApp.API.Controllers.Students
         /// </summary>
         /// <param name="schoolClassId">The school class Id to be retrieved</param>
         /// <returns></returns>
-        [HttpGet("bySchoolClassId/{schoolClassId}")]
+        [HttpGet("bySchoolClassId/{schoolClassId}/{status}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentClassDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetBySchoolClassId(int schoolClassId)
+        public async Task<IActionResult> GetBySchoolClassId(int schoolClassId, Status status = Status.Active)
         {
             try
             {
                 if (schoolClassId <= 0) return BadRequest(schoolClassId);
-                var _item = await _unitOfWork.StudentClasses.GetBySchoolClassId(schoolClassId);
+                var _item = await _unitOfWork.StudentClasses.GetBySchoolClassId(schoolClassId, status);
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<List<StudentClassDto>>(_item);
                 return Ok(_itemDto);

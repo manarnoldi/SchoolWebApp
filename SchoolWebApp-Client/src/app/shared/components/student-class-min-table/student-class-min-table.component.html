@@ -1,0 +1,54 @@
+
+<div class="card mb-1">
+    <app-table-heading [tableTitle]="tableTitle + '('+ studentClasses.length +')'"></app-table-heading>
+    <div class="card-body table-responsive p-0">
+        <table class="table table-sm table-striped table-hover text-nowrap">
+            <thead>
+                <tr>
+                    <th *ngIf="showCheckBoxes">
+                        <div class="icheck-success m-0 p-0">
+                            <input #checkAllStudents type="checkbox" id="checkAllStudents"
+                                (change)="checkAllClicked($event)" [checked]="disabled"
+                                [attr.disabled]="disabled? 'disabled' : null">
+                            <label class="form-check-label" for="checkAllStudents"></label>
+                        </div>
+                    </th>
+                    <ng-container *ngFor="let header of tableHeaders">
+                        <th *ngIf="!header.min">
+                            {{ header.name }}
+                        </th>
+                    </ng-container>
+                </tr>
+            </thead>
+            <tbody>
+                <tr
+                    *ngFor="let item of studentClasses | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                    <th *ngIf="showCheckBoxes">
+                        <div class="icheck-success m-0 p-0">
+                            <input type="checkbox" id="stud-id-{{item.id}}"
+                                (change)="itemClicked($event)"
+                                [(ngModel)]="item.isSelected" [disabled]="disabled">
+                            <label class="form-check-label"
+                                for="stud-id-{{item.id}}"></label>
+                        </div>
+                    </th>
+                    <td>{{ item.student?.upi }}</td>
+                    <td>{{ item.student?.fullName }}</td>
+                    <td *ngIf="!showMinimum">{{ item.student?.admissionDate | date:
+                        'dd/MM/yyyy' }}</td>
+                    <td *ngIf="!showMinimum">
+                        <div *ngFor="let lm of learningModes">
+                            <div *ngIf="lm.id === item.student?.learningModeId">
+                                {{ lm.name }}
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ statusValues[item.student?.status] }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <app-table-paging (pageChangedEvent)="pageChanged($event)"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"
+            [collectionSize]="studentClasses.length"></app-table-paging>
+    </div>
+</div>

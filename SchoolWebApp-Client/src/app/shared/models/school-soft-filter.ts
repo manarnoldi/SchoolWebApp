@@ -1,4 +1,4 @@
-import { Status } from "@/core/enums/status";
+import {Status} from '@/core/enums/status';
 
 export class SchoolSoftFilter {
     public curriculumId?: number;
@@ -14,6 +14,7 @@ export class SchoolSoftFilter {
     public year?: number;
 
     public studentClassId?: number;
+    public schoolClassId?: number;
     public staffDetailsId?: number;
     public status?: Status;
 
