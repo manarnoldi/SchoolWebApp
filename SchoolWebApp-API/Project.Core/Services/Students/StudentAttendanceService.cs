@@ -49,18 +49,18 @@ namespace SchoolWebApp.Core.Services.Students
             // Prepare the final report
             var studentAttendRpt = new List<StudentAttendanceReportDto>();
 
-            foreach (var student in students)
+            foreach (var studentClass in studentClasses)
             {
                 var attendanceDto = new StudentAttendanceReportDto
                 {
-                    StudentId = student.Id,
-                    Student = _mapper.Map<StudentDto>(student),
+                    StudentId = studentClass.Student.Id,
+                    StudentClassId = studentClass.Id,
+                    Student = _mapper.Map<StudentDto>(studentClass.Student),
                     Month = month,
-                    //Year = int.Parse(schoolClass.AcademicYear.Name)
-                    Year = 2025
+                    Year = int.Parse(schoolClass.AcademicYear.Name)
                 };
 
-                if (groupedByStudent.TryGetValue(student.Id, out var attendanceRecords))
+                if (groupedByStudent.TryGetValue(studentClass.Student.Id, out var attendanceRecords))
                 {
                     foreach (var record in attendanceRecords)
                     {

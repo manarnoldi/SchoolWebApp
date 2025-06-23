@@ -14,6 +14,7 @@ export class StudentAttendanceTableComponent {
     @Input() schoolClasses: SchoolClass[] = [];
     @Input() student: StudentDetails;
     @Input() showLoginControls: Boolean = false;
+    @Input() showEditDeleteControls: Boolean = true;
 
     @Output() editItemEvent = new EventEmitter<number>();
     @Output() deleteItemEvent = new EventEmitter<number>();
@@ -29,8 +30,7 @@ export class StudentAttendanceTableComponent {
         'Year',
         'Date',
         'Present?',
-        'Remarks',
-        'Action'
+        'Remarks'
     ];
 
      pageSizeChanged = (pageSize: number) => {

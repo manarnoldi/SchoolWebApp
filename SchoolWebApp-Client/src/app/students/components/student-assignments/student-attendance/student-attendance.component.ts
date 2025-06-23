@@ -12,8 +12,10 @@ import Swal from 'sweetalert2';
 import {SchoolClass} from '@/class/models/school-class';
 import {StudentClass} from '@/students/models/student-class';
 import {StudentClassService} from '@/students/services/student-class.service';
-import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
-import { SchoolSoftFilter } from '@/shared/models/school-soft-filter';
+import {SchoolSoftFilterFormComponent} from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
+import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
+import {AcademicYearsService} from '@/school/services/academic-years.service';
+import {AcademicYear} from '@/school/models/academic-year';
 
 @Component({
     selector: 'app-student-attendance',
@@ -30,6 +32,7 @@ export class StudentAttendanceComponent implements OnInit {
     @ViewChild(SchoolSoftFilterFormComponent)
     ssFilterFormComponent: SchoolSoftFilterFormComponent;
 
+    isDoneLoading = false;
     today = new Date();
     studentId: number = 0;
     studentAttendance: StudentAttendance;
@@ -37,7 +40,7 @@ export class StudentAttendanceComponent implements OnInit {
     schoolClasses: SchoolClass[] = [];
     studentClasses: StudentClass[];
     months: number[];
-    years: number[];
+    academicYears: AcademicYear[] = [];
 
     firstLoad: boolean = true;
 
@@ -46,6 +49,7 @@ export class StudentAttendanceComponent implements OnInit {
         private studentAttendancesSvc: StudentAttendancesService,
         private schoolClassesSvc: SchoolClassesService,
         private studentClassesSvc: StudentClassService,
+        private academicYearsSvc: AcademicYearsService,
         private route: ActivatedRoute
     ) {}
 
@@ -57,33 +61,9 @@ export class StudentAttendanceComponent implements OnInit {
         this.studentAttendances = [];
     };
 
-    yearChanged = (year: number) => {
-        this.studentAttendances = [];
-    };
-
     schoolClassChanged = (sci: number) => {
         this.studentAttendances = [];
     };
-
-    // loadStudentAttendances = () => {
-    //     this.route.queryParams.subscribe((params) => {
-    //         this.studentId = params['id'];
-    //         let attendanceByStudentIdReq = this.studentAttendancesSvc.get(
-    //             '/studentAttendances/byStudentId/' + this.studentId.toString()
-    //         );
-    //         let schoolClassesReq = this.schoolClassesSvc.get('/schoolClasses');
-
-    //         forkJoin([attendanceByStudentIdReq, schoolClassesReq]).subscribe(
-    //             ([studentAttendances, schoolClasses]) => {
-    //                 this.studentAttendances = studentAttendances;
-    //                 this.schoolClasses = schoolClasses;
-    //             },
-    //             (err) => {
-    //                 this.toastr.error(err.error);
-    //             }
-    //         );
-    //     });
-    // };
 
     searchStudentAttendances = (dmy: SchoolSoftFilter) => {
         if (!dmy.studentClassId) {
@@ -94,19 +74,12 @@ export class StudentAttendanceComponent implements OnInit {
         } else if (!dmy.month || dmy.month < 1 || dmy.month > 12) {
             this.toastr.error('The month selected is not valid/correct!');
             return;
-        } else if (!dmy.year) {
-            this.toastr.error('The year selected is not valid/correct!');
-            return;
         }
 
         this.route.queryParams.subscribe((params) => {
             this.studentId = params['id'];
             this.studentAttendancesSvc
-                .getByMonthYearSchoolClassId(
-                    dmy.month,
-                    dmy.year,
-                    dmy.studentClassId
-                )
+                .getByMonthSchoolClassId(dmy.month, dmy.studentClassId)
                 .subscribe({
                     next: (studAttends) => {
                         this.studentAttendances = studAttends.sort(
@@ -114,15 +87,19 @@ export class StudentAttendanceComponent implements OnInit {
                                 new Date(a?.date ?? '').getTime() -
                                 new Date(b?.date ?? '').getTime()
                         );
+                        if (this.firstLoad) {
+                            this.ssFilterFormComponent.setFormControls(dmy);
+                        }
                         if (
                             this.studentAttendances.length <= 0 &&
                             !this.firstLoad
                         ) {
                             this.toastr.info(
-                                'No student attendance record/s found for the search parameters!'
+                                'No staff attendance record/s found for the search parameters!'
                             );
                         }
                         this.firstLoad = false;
+                        this.isDoneLoading = true;
                     },
                     error: (err) => {
                         this.toastr.error(err.error);
@@ -131,66 +108,28 @@ export class StudentAttendanceComponent implements OnInit {
         });
     };
 
-    // schoolClassChanged = (acadYearId: number) => {
-    //     if (!acadYearId) {
-    //         this.toastr.error(
-    //             'The academic year selected is not valid/correct!'
-    //         );
-    //         return;
-    //     }
-
-    //     this.schoolClassesSvc
-    //         .get('/schoolClasses/byAcademicYearId/1')
-    //         .subscribe({
-    //             next: (schoolClasses) => {
-    //                 this.schoolClasses = schoolClasses.sort((a, b) => a.rank - b.rank);;
-    //             },
-    //             error: (err) => {
-    //                 this.toastr.error(err.error);
-    //             }
-    //         });
-    // };
-
     loadStudentAttendances = () => {
         this.route.queryParams.subscribe((params) => {
             this.studentId = params['id'];
-            let monthsReq = this.studentAttendancesSvc.getDistinctMonths();
-            let yearsReq = this.studentAttendancesSvc.getDistinctYears();
-            let schoolClassesReq = this.schoolClassesSvc.get('/schoolClasses');
             let studentClassesReq = this.studentClassesSvc.get(
                 '/studentClasses/byStudentId/' + this.studentId
             );
 
-            forkJoin([
-                monthsReq,
-                yearsReq,
-                schoolClassesReq,
-                studentClassesReq
-            ]).subscribe({
-                next: ([months, years, schoolClasses, studentClasses]) => {
-                    this.months = months;
-                    this.years = years;
-                    this.schoolClasses = schoolClasses.sort(
-                        (a, b) => a.rank - b.rank
-                    );
+            forkJoin([studentClassesReq]).subscribe({
+                next: ([studentClasses]) => {
+                    this.months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
                     this.studentClasses = studentClasses.sort(
                         (a, b) =>
                             b.schoolClass?.academicYear.rank -
                             a.schoolClass?.academicYear.rank
                     );
 
-                    const topMonth = this.today.getMonth() + 1;                    
+                    const topMonth = this.today.getMonth() + 1;
                     const topStudClass = this.studentClasses[0];
-                    const topYear = new Date(
-                        topStudClass.schoolClass?.academicYear?.startDate
-                    ).getFullYear();
 
                     let dmy = new SchoolSoftFilter();
                     dmy.month = topMonth;
-                    dmy.year = topYear;
                     dmy.studentClassId = parseInt(topStudClass.id);
-
-                    this.ssFilterFormComponent.setFormControls(dmy);
 
                     this.searchStudentAttendances(dmy);
                 },

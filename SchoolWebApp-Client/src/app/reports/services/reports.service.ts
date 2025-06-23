@@ -223,7 +223,7 @@ export class ReportsService {
                 };
 
                 return new Observable<void>((observer) => {
-                    pdfMake.createPdf(mergedDocDef).print();
+                    pdfMake.createPdf(mergedDocDef).open();
                     observer.next();
                     observer.complete();
                 });

@@ -168,23 +168,21 @@ namespace SchoolWebApp.API.Controllers.Students
         /// A method for retrieving student attendances by month, year, studentClassId.
         /// </summary>
         /// <param name="month">The month of the student attendances to be retrieved</param>
-        /// <param name="year">The year of the student attendances to be retrieved</param>
         /// <param name="studentClassId">The student class Id of the student attendances to be retrieved</param>
         /// <returns></returns>
-        [HttpGet("byMonthYearStudentClassId/{month}/{year}/{studentClassId}")]
+        [HttpGet("byMonthStudentClassId/{month}/{studentClassId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentAttendanceDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetByMonthYearStudentClassId(int month, int year, int studentClassId)
+        public async Task<IActionResult> GetByMonthYearStudentClassId(int month, int studentClassId)
         {
             try
             {
                 if (month <= 0) return BadRequest(month);
-                if (year <= 0) return BadRequest(year);
                 if (studentClassId <= 0) return BadRequest(studentClassId);
 
-                var _item = await _unitOfWork.StudentAttendances.GetByMonthYearStudentClassId(month, year, studentClassId);
+                var _item = await _unitOfWork.StudentAttendances.GetByMonthStudentClassId(month, studentClassId);
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<List<StudentAttendanceDto>>(_item);
                 return Ok(_itemDto);

@@ -4,6 +4,7 @@ import { StudentDetails } from "@/students/models/student-details";
 export class StudentAttendancesReport extends ResourceModel<StudentAttendancesReport> {
     public studentId?: number;
     public student?: StudentDetails;
+    public StudentClassId?: number;
     public month?: number;
     public year?: number;
     public day1?: string;

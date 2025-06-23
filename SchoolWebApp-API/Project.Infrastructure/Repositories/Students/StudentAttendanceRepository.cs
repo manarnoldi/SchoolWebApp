@@ -68,14 +68,62 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
             return years;
         }
 
-        public async Task<List<StudentAttendance>> GetByMonthYearStudentClassId(int month, int year, int studentClassId)
+        public async Task<List<StudentAttendance>> GetByMonthStudentClassId(int month, int studentClassId)
         {
-            var studentAttendances = await _dbContext.StudentAttendances
-              .Where(a => a.StudentClassId == studentClassId && a.Date.Month == month && a.Date.Year == year)
-               .Include(s => s.StudentClass)
-              .ToListAsync();
+            var studentClass = await _dbContext.StudentClasses
+                .Where(s =>s.Id == studentClassId)
+                .Include(s => s.SchoolClass)
+                .ThenInclude(s => s.AcademicYear)
+                .FirstOrDefaultAsync();
 
-            return studentAttendances;
+            // Get the first and last day of the month
+            var startDate = new DateTime(studentClass.SchoolClass.AcademicYear.StartDate.Year, month, 1);
+            var endDate = startDate.AddMonths(1).AddDays(-1); // Last day of the month
+
+            // Generate a list of all dates in the given month
+            var allDatesInMonth = Enumerable.Range(0, (endDate - startDate).Days + 1)
+                                            .Select(offset => startDate.AddDays(offset))
+                                            .ToList();
+            
+
+            // Fetch the attendance data for the student member in the given month and year
+            var studentAttendances = await _dbContext.StudentAttendances
+             .Where(a => a.StudentClassId == studentClassId && a.Date.Month == month)
+              .Include(s => s.StudentClass)
+             .ToListAsync();
+
+            // Fetch the student details (it will be reused for each missing attendance record)
+            var studentDetails = await _dbContext.Students
+                .Where(s => s.Id == studentClass.StudentId)
+                .FirstOrDefaultAsync();
+
+            // Initialize a list to store final results
+            var result = new List<StudentAttendance>();
+
+            // Loop through all dates in the month and ensure every day is included
+            foreach (var date in allDatesInMonth)
+            {
+                var attendance = studentAttendances
+                    .FirstOrDefault(a => a.Date.Date == date.Date);
+
+                // If attendance record exists, add it; otherwise, add a default one (no attendance)
+                if (attendance != null)
+                {
+                    result.Add(attendance);
+                }
+                else
+                {
+                    result.Add(new StudentAttendance
+                    {
+                        StudentClassId = studentClassId,
+                        Date = date,
+                        Present = null, // No attendance record; set to false or null
+                        StudentClass = studentClass // Include the staff details here
+                    });
+                }
+            }
+
+            return result;
         }
 
         public async Task<List<StudentAttendanceReportDto>> GetStudentAttendanceReport(int month, int schoolClassId, Status status)

@@ -12,7 +12,7 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.Students
         Task<List<StudentAttendance>> GetByStudentClassId(int studentClassId);
         Task<List<StudentAttendance>> GetByStudentId(int studentId);
         Task<StudentAttendance> GetByStudentClassAttendanceDate(int studentClassId, DateOnly attendanceDate);
-        Task<List<StudentAttendance>> GetByMonthYearStudentClassId(int month, int year, int studentClassId);
+        Task<List<StudentAttendance>> GetByMonthStudentClassId(int month, int studentClassId);
         Task<List<StudentAttendanceReportDto>> GetStudentAttendanceReport(int month, int schoolClassId, Status status);
         Task<List<int>> GetDistinctMonths();
         Task<List<int>> GetDistinctYears();

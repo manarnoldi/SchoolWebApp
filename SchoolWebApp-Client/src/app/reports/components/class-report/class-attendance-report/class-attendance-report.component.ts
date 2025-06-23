@@ -2,13 +2,15 @@ import {SchoolClass} from '@/class/models/school-class';
 import {SchoolClassesService} from '@/class/services/school-classes.service';
 import {Status} from '@/core/enums/status';
 import {StudentAttendancesReport} from '@/reports/models/student-attendance-report';
+import {StudentsAttendanceReportDetailsService} from '@/reports/services/class-reports/students-attendance-report-details.service';
 import {StudentsAttendanceReportService} from '@/reports/services/class-reports/students-attendance-report.service';
 import {AcademicYear} from '@/school/models/academic-year';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {SchoolDetailsService} from '@/school/services/school-details.service';
+import {SchoolSoftFilterFormComponent} from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
 import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
 import {StudentAttendancesService} from '@/students/services/student-attendances.service';
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
 
@@ -18,6 +20,9 @@ import {forkJoin} from 'rxjs';
     styleUrl: './class-attendance-report.component.scss'
 })
 export class ClassAttendanceReportComponent implements OnInit {
+    @ViewChild(SchoolSoftFilterFormComponent)
+    ssFilterFormComponent: SchoolSoftFilterFormComponent;
+
     studentAttendancesRpt: StudentAttendancesReport[] = [];
     schoolClasses: SchoolClass[] = [];
 
@@ -35,7 +40,7 @@ export class ClassAttendanceReportComponent implements OnInit {
         private acadYearsSvc: AcademicYearsService,
         private studentAttendsRptSvc: StudentsAttendanceReportService,
         private studentAttendancesSvc: StudentAttendancesService,
-        private saRSvc: StudentsAttendanceReportService,
+        private saRSvc: StudentsAttendanceReportDetailsService,
         private schoolSvc: SchoolDetailsService
     ) {}
 
@@ -68,6 +73,9 @@ export class ClassAttendanceReportComponent implements OnInit {
                 this.schoolClasses = schoolClasses.sort(
                     (a, b) => a.rank - b.rank
                 );
+                this.ssFilterFormComponent.schoolSoftFilterForm
+                    .get('schoolClassId')
+                    .reset();
             },
             error: (err) => {
                 this.toastr.error(err.error);
@@ -123,9 +131,7 @@ export class ClassAttendanceReportComponent implements OnInit {
                     this.studentAttendancesRpt = studentAttendsRpt;
 
                     if (studentAttendsRpt.length <= 0) {
-                        this.toastr.info(
-                            'No student assigned to the class!'
-                        );
+                        this.toastr.info('No student assigned to the class!');
                     }
                 },
                 error: (err) => {
@@ -134,22 +140,21 @@ export class ClassAttendanceReportComponent implements OnInit {
             });
     };
 
-    printIndividualReport = (staffId: number) => {
+    printIndividualReport = (studentClassId: number) => {
         let schDetailsReq = this.schoolSvc.get('/schooldetails');
         let studentAttendReq =
             this.studentAttendancesSvc.searchStudentAttendancesObservable(
-                staffId,
-                this.currentRptMonth,
-                parseInt(this.currentRptYear)
+                studentClassId,
+                this.currentRptMonth
             );
 
         forkJoin([schDetailsReq, studentAttendReq]).subscribe({
             next: ([school, attends]) => {
                 const reportTitle =
                     Status[this.currentRptStatus].toUpperCase() +
-                    ' ' +
-                    this.currentRptSchoolClass.toLocaleUpperCase() +
                     ' STUDENT ATTENDANCE REPORT FOR ' +
+                    this.currentRptSchoolClass.toLocaleUpperCase() +
+                    ' ' +
                     new Date(0, this.currentRptMonth - 1)
                         .toLocaleString('default', {
                             month: 'long'
@@ -160,7 +165,7 @@ export class ClassAttendanceReportComponent implements OnInit {
                 const staffAttends = [];
                 staffAttends.push(attends);
 
-                // this.saRSvc.printByBatch(staffAttends, school[0], reportTitle);
+                this.saRSvc.printByBatch(staffAttends, school[0], reportTitle);
             },
             error: (err) => {
                 this.toastr.error(err.error);

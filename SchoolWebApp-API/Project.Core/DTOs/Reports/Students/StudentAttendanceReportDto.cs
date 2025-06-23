@@ -12,6 +12,7 @@ namespace SchoolWebApp.Core.DTOs.Reports.Students
     {
         public int StudentId { get; set; }
         public StudentDto? Student { get; set; }
+        public int StudentClassId {  get; set; }        
         public int Month { get; set; }
         public int Year { get; set; }
         public string? Day1 { get; set; }

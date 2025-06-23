@@ -25,14 +25,12 @@ export class StudentAttendancesService extends ResourceService<StudentAttendance
     }
 
     searchStudentAttendancesObservable = (
-        schoolClassId: number,
-        currentRptMonth: number,
-        currentRptYear: number
+        studentClassId: number,
+        currentRptMonth: number
     ): Observable<StudentAttendance[]> => {
-        return this.getByMonthYearSchoolClassId(
+        return this.getByMonthSchoolClassId(
             currentRptMonth,
-            currentRptYear,
-            schoolClassId
+            studentClassId
         );
     };
 
@@ -47,12 +45,11 @@ export class StudentAttendancesService extends ResourceService<StudentAttendance
     //     );
     // }
 
-    getByMonthYearSchoolClassId(
+    getByMonthSchoolClassId(
         month: number,
-        year: number,
-        schoolClassId: number
+        studentClassId: number
     ): Observable<StudentAttendance[]> {
-        let searchStr = `/studentAttendances/byMonthYearStudentClassId/${month}/${year}/${schoolClassId}`;
+        let searchStr = `/studentAttendances/byMonthStudentClassId/${month}/${studentClassId}`;
         return this.get(searchStr).pipe(
             map((studentAttendance) => studentAttendance)
         );

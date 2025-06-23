@@ -19,11 +19,10 @@
 
 <div class="row g-0">
     <div class="col-9">
-        <app-school-soft-filter-form [showMonth]="true" [months]="months" [years]="years"
+        <app-school-soft-filter-form [showMonth]="true" [months]="months"
             [showStudentClass]="true"
             (monthChangedEvent)="monthChanged($event)" [studentClasses]="studentClasses"
-            (yearChangedEvent)="yearChanged($event)"
-            [showYear]="true" (studentClassChangedEvent)="schoolClassChanged($event)"
+            (studentClassChangedEvent)="schoolClassChanged($event)"
             (searchItemEvent)="searchStudentAttendances($event)"></app-school-soft-filter-form>
     </div>
     <div class="col-3">
@@ -32,8 +31,8 @@
     </div>
 </div>
 
-<app-student-attendance-table [tableTitle]="'Student attendance list'"
-    [schoolClasses]="schoolClasses" *ngIf="schoolClasses && studentAttendances"
+<app-student-attendance-table [tableTitle]="'Student attendance list'" *ngIf="isDoneLoading"
+    [schoolClasses]="schoolClasses"
     [studentAttendances]="studentAttendances" [showLoginControls]="false"
     (editItemEvent)="editItem($event)" (viewItemEvent)="editItem($event)"
     (deleteItemEvent)="deleteItem($event)"
