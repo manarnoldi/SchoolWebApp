@@ -1,0 +1,33 @@
+<div class="card mb-0">
+    <app-table-heading [editControls]="false" [backColor]="'bg-success-subtle'"
+        tableTitle="{{tableTitle}}"></app-table-heading>
+    <div class="card-body table-responsive p-0">
+        <table class="table table-striped table-hover text-nowrap">
+            <thead>
+                <tr>
+                    <th *ngFor="let header of tableHeaders">{{header}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr
+                    *ngFor="let item of studentAttendancesRpt | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                    <td class="py-11">{{ item.student?.upi }}</td>
+                    <td class="py-11">{{ item.student?.fullName }}</td>
+                    <ng-container *ngFor="let day of days">
+                        <td
+                            class="py-11 text-center {{ item['day' + day]=== 'P'?'bg-success-subtle':item['day' + day]=== 'A'?'bg-danger-subtle':'bg-secondary-subtle'  }}">{{
+                            item['day' + day] }}</td>
+                    </ng-container>
+                    <td class="py-11">
+                        <a href="javascript:void(0)" (click)="printItem(item.student?.id)">
+                            <i class="fas fa-print"></i>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <app-table-paging (pageChangedEvent)="pageChanged($event)"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"
+            [collectionSize]="studentAttendancesRpt.length"></app-table-paging>
+    </div>
+</div>

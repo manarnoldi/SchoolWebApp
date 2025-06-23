@@ -24,6 +24,29 @@ export class StudentAttendancesService extends ResourceService<StudentAttendance
             .pipe(map((result) => result));
     }
 
+    searchStudentAttendancesObservable = (
+        schoolClassId: number,
+        currentRptMonth: number,
+        currentRptYear: number
+    ): Observable<StudentAttendance[]> => {
+        return this.getByMonthYearSchoolClassId(
+            currentRptMonth,
+            currentRptYear,
+            schoolClassId
+        );
+    };
+
+    // getByMonthYearStudentId(
+    //     month: number,
+    //     year: number,
+    //     staffId: number
+    // ): Observable<StaffAttendance[]> {
+    //     let searchStr = `/staffAttendances/byMonthYearStaffId/${month}/${year}/${staffId}`;
+    //     return this.get(searchStr).pipe(
+    //         map((staffAttendances) => staffAttendances)
+    //     );
+    // }
+
     getByMonthYearSchoolClassId(
         month: number,
         year: number,

@@ -2,12 +2,16 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
+using SchoolWebApp.Core.DTOs.Reports.Staff;
+using SchoolWebApp.Core.DTOs.Reports.Students;
 using SchoolWebApp.Core.DTOs.Staff.StaffAttendance;
 using SchoolWebApp.Core.DTOs.Students.Student;
 using SchoolWebApp.Core.DTOs.Students.StudentAttendance;
+using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories;
+using SchoolWebApp.Core.Interfaces.IServices;
 
 namespace SchoolWebApp.API.Controllers.Students
 {
@@ -19,11 +23,13 @@ namespace SchoolWebApp.API.Controllers.Students
         private readonly ILogger<StudentAttendancesController> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public StudentAttendancesController(ILogger<StudentAttendancesController> logger, IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly IStudentAttendanceService _studentAttendanceService;
+        public StudentAttendancesController(ILogger<StudentAttendancesController> logger, IUnitOfWork unitOfWork, IMapper mapper, IStudentAttendanceService studentAttendanceService)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _studentAttendanceService = studentAttendanceService;
         }
 
         // GET: api/studentAttendances
@@ -234,6 +240,34 @@ namespace SchoolWebApp.API.Controllers.Students
             }
         }
 
+        // GET api/studentAttendances/getAttendanceReport/5/2025/1
+        /// <summary>
+        /// A method for retrieving student attendances report
+        /// </summary>
+        /// <returns> A distinct list of years</returns>
+        /// <param name="month">The month of the student attendances to be retrieved</param>
+        /// <param name="schoolClassId">The student's school class Id of the student attendances to be retrieved</param>
+        /// <param name="status">The student status whose student attendances to be retrieved</param>
+        /// <returns>A list of sumarized student attendance</returns>
+        [HttpGet("getAttendanceReport/{month}/{schoolClassId}/{status}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentAttendanceReportDto>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetAttendanceReport(int month, int schoolClassId, Status status)
+        {
+            try
+            {
+                if (month <= 0) return BadRequest(month);
+                if (schoolClassId <= 0) return BadRequest(schoolClassId);
+                var _items = await _studentAttendanceService.GetStudentAttendanceReport(month, schoolClassId, status);
+                return Ok(_items);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the student attendances distinct years.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
 
         // GET api/studentAttendances/5
         /// <summary>

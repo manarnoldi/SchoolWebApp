@@ -1,0 +1,25 @@
+<div class="card my-1">
+    <div class="row g-0">
+        <div class="col-11">
+            <app-school-soft-filter-form [schoolClasses]="schoolClasses" [months]="months"
+                [academicYears]="academicYears" [showPersonStatus]="true"
+                [showSchoolClass]="true" [showMonth]="true" [showAcademicYear]="true"
+                (statusChangedEvent)="statusChanged($event)"
+                (monthChangedEvent)="monthChangedChanged($event)"
+                (academicYearChangedEvent)="academicYearChanged($event)"
+                (schoolClassesChangedEvent)="schoolClassChanged($event)"
+                (searchItemEvent)="searchForDataMethod($event)"></app-school-soft-filter-form>
+        </div>
+        <div class="col-1">
+            <button type="button" class="btn btn-sm btn-flat btn-danger btn-block float-right m-1"
+                [disabled]="studentAttendancesRpt.length <= 0"
+                (click)="printReport()">
+                <i class="fas fa-print"></i>
+                Print
+            </button>
+        </div>
+    </div>
+</div>
+<app-class-attendance-report-table [tableTitle]="'Student attendances report'"
+    (printItemEvent)="printIndividualReport($event)"
+    [studentAttendancesRpt]="studentAttendancesRpt"></app-class-attendance-report-table>

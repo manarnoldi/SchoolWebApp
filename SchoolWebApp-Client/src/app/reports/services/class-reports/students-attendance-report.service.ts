@@ -1,44 +1,43 @@
-import {Injectable} from '@angular/core';
-import {StaffAttendancesReport} from '../../models/staff-attendances-report';
-import {ResourceService} from '@/core/services/resource.service';
-import {HttpClient} from '@angular/common/http';
-import {map, Observable} from 'rxjs';
-import {SchoolDetails} from '@/school/models/school-details';
-import {AuthService} from '@/core/services/auth.service';
-import {ReportsService} from '../reports.service';
+import { AuthService } from '@/core/services/auth.service';
+import { ResourceService } from '@/core/services/resource.service';
+import { StudentAttendancesReport } from '@/reports/models/student-attendance-report';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { ReportsService } from '../reports.service';
 import { Status } from '@/core/enums/status';
+import { map, Observable } from 'rxjs';
+import { SchoolDetails } from '@/school/models/school-details';
 
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 (pdfMake as any).vfs = pdfFonts;
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
-export class StaffAttendancesReportService extends ResourceService<StaffAttendancesReport> {
+export class StudentsAttendanceReportService extends ResourceService<StudentAttendancesReport> {
     constructor(
         private http: HttpClient,
         private userSvc: AuthService,
         private reportSvc: ReportsService
     ) {
-        super(http, StaffAttendancesReport);
+        super(http, StudentAttendancesReport);
     }
 
-    public getStaffAttendancesReport = (
+    public getStudentAttendancesReport = (
         month: number,
-        year: number,
-        staffCategoryId: number,
+        schoolClassId: number,
         status: Status
-    ): Observable<StaffAttendancesReport[]> => {
-        let searchUrl = `/staffAttendances/getAttendanceReport/${month}/${year}/${staffCategoryId}/${status}`;
+    ): Observable<StudentAttendancesReport[]> => {
+        let searchUrl = `/studentAttendances/getAttendanceReport/${month}/${schoolClassId}/${status}`;
         return this.get(searchUrl).pipe(
-            map((staffAttendances) => staffAttendances)
+            map((studentAttendances) => studentAttendances)
         );
     };
 
     generateReport = (
         schoolDetails: SchoolDetails,
-        attends: StaffAttendancesReport[],
+        attends: StudentAttendancesReport[],
         reportTitle: string
     ) => {
         this.reportSvc
@@ -55,12 +54,12 @@ export class StaffAttendancesReportService extends ResourceService<StaffAttendan
                         const tableWidths = ['auto', ...Array(31).fill('*')];
                         const tableBody = [
                             [
-                                {text: 'Staff Full Name', style: 'tableHeader'},
+                                {text: 'Student Full Name', style: 'tableHeader'},
                                 ...dayHeaders
                             ],
                             ...attends.map((attend) => [
                                 {
-                                    text: attend.staffDetail.fullName,
+                                    text: attend.student.fullName,
                                     noWrap: true
                                 },
                                 ...Array.from(

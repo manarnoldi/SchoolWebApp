@@ -24,13 +24,9 @@
             [minimumTable]="true"></app-school-class-minimum-table>
     </div>
     <div class="col-8">
-        <app-student-class-min-table [studentClasses]="studentClasses" [showCheckBoxes]="false"
-            *ngIf="studentClasses" [tableTitle]="'Students class list table '"
-            [showMinimum]="true"></app-student-class-min-table>
-
-        <div class="card mt-1" *ngIf="studentClasses && schoolClassLeaders.length > 0">
-            <div class="card-header">
-                <h5 class="mb-0">Class Leaders</h5>
+        <div class="card mb-0" *ngIf="studentClasses && schoolClassLeaders.length > 0">
+            <div class="card-header bg-info p-1 ps-2">
+                <h3 class="card-title">Class Leaders</h3>
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item" *ngFor="let g of schoolClassLeaders; let i = index">
@@ -39,5 +35,8 @@
                 </li>
             </ul>
         </div>
+        <app-student-class-min-table [studentClasses]="studentClasses" [showCheckBoxes]="false"
+            *ngIf="studentClasses" [tableTitle]="'Students class list table '"
+            [showMinimum]="true"></app-student-class-min-table>
     </div>
 </div>

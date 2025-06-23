@@ -19,6 +19,7 @@ import {forkJoin} from 'rxjs';
 import {StudentsAttendancesTableComponent} from './students-attendances-table/students-attendances-table.component';
 import Swal from 'sweetalert2';
 import {StudentAttendance} from '@/students/models/student-attendance';
+import {Status} from '@/core/enums/status';
 
 @Component({
     selector: 'app-students-attendances',
@@ -199,9 +200,7 @@ export class StudentsAttendancesComponent implements OnInit {
         else {
             this.attendanceDate = saSearch.attendanceDate;
             this.studentClassesSvc
-                .get(
-                    '/studentClasses/bySchoolClassId/' + saSearch.schoolClassId
-                )
+                .getBySchoolClassId(saSearch.schoolClassId, Status.Active)
                 .subscribe({
                     next: (studentClasses) => {
                         if (studentClasses.length <= 0) {

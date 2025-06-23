@@ -5,6 +5,8 @@ using SchoolWebApp.Core.Interfaces.IRepositories.School;
 using SchoolWebApp.Core.Interfaces.IRepositories.Settings;
 using SchoolWebApp.Core.Interfaces.IRepositories.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories.Students;
+using SchoolWebApp.Core.Interfaces.IServices;
+using SchoolWebApp.Core.Services.Students;
 using SchoolWebApp.Infrastructure.Repositories;
 using SchoolWebApp.Infrastructure.Repositories.Academics;
 using SchoolWebApp.Infrastructure.Repositories.Class;
@@ -86,6 +88,11 @@ namespace Project.API.Extensions
             services.AddTransient<ISessionTypesRepository, SessionTypesRepository>();
             services.AddTransient<IStaffCategoryRepository, StaffCategoryRepository>();
             #endregion
+
+            #region Services Dependency Injection
+            services.AddScoped<IStudentAttendanceService, StudentAttendanceService>();
+            #endregion
+
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             return services;
         }

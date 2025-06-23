@@ -1,98 +1,45 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Project.Infrastructure.Data;
-using Project.Infrastructure.Repositories;
-using SchoolWebApp.Core.DTOs.Reports.Staff;
+using Microsoft.Extensions.Logging;
 using SchoolWebApp.Core.DTOs.Reports.Students;
-using SchoolWebApp.Core.DTOs.Staff.StaffDetails;
 using SchoolWebApp.Core.DTOs.Students.Student;
 using SchoolWebApp.Core.Entities.Enums;
-using SchoolWebApp.Core.Entities.Staff;
-using SchoolWebApp.Core.Entities.Students;
-using SchoolWebApp.Core.Interfaces.IRepositories.Students;
+using SchoolWebApp.Core.Interfaces.IRepositories;
+using SchoolWebApp.Core.Interfaces.IServices;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace SchoolWebApp.Infrastructure.Repositories.Students
+namespace SchoolWebApp.Core.Services.Students
 {
-    public class StudentAttendanceRepository : BaseRepository<StudentAttendance>, IStudentAttendanceRepository
+    public class StudentAttendanceService: IStudentAttendanceService
     {
+        private readonly ILogger<IStudentAttendanceService> _logger;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public StudentAttendanceRepository(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext)
+
+        public StudentAttendanceService(ILogger<StudentAttendanceService> logger, IUnitOfWork unitOfWork, IMapper mapper)
         {
+            _logger = logger;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
-        }
-
-        public async Task<List<StudentAttendance>> GetByStudentClassId(int studentClassId)
-        {
-            var studentAttendances = await _dbContext.StudentAttendances
-                .Include(s => s.StudentClass)
-                .Where(e => e.StudentClassId == studentClassId).ToListAsync();
-            return studentAttendances;
-        }
-
-        public async Task<List<StudentAttendance>> GetByStudentId(int studentId)
-        {
-            var studentAttendances = await _dbContext.StudentAttendances
-                .Include(s => s.StudentClass)
-                .Where(e => e.StudentClass.StudentId == studentId).ToListAsync();
-            return studentAttendances;
-        }
-
-        public async Task<StudentAttendance> GetByStudentClassAttendanceDate(int studentClassId, DateOnly attendanceDate)
-        {
-            var studentAttendance = await _dbContext.StudentAttendances
-                .Include(s => s.StudentClass)
-                .Where(s => s.StudentClassId == studentClassId && DateOnly.FromDateTime(s.Date) == attendanceDate)
-                .FirstOrDefaultAsync();
-
-            return studentAttendance;
-        }
-
-        public async Task<List<int>> GetDistinctMonths()
-        {
-            var months = await _dbContext.StudentAttendances
-                .Select(s => s.Date.Month)
-                .Distinct()
-                .OrderBy(m => m)
-                .ToListAsync();
-            return months;
-        }
-
-        public async Task<List<int>> GetDistinctYears()
-        {
-            var years = await _dbContext.StudentAttendances
-                .Select(s => s.Date.Year)
-                .Distinct()
-                .OrderByDescending(m => m)
-                .ToListAsync();
-            return years;
-        }
-
-        public async Task<List<StudentAttendance>> GetByMonthYearStudentClassId(int month, int year, int studentClassId)
-        {
-            var studentAttendances = await _dbContext.StudentAttendances
-              .Where(a => a.StudentClassId == studentClassId && a.Date.Month == month && a.Date.Year == year)
-               .Include(s => s.StudentClass)
-              .ToListAsync();
-
-            return studentAttendances;
         }
 
         public async Task<List<StudentAttendanceReportDto>> GetStudentAttendanceReport(int month, int schoolClassId, Status status)
         {
-            var schoolClass = await _dbContext.SchoolClasses.FindAsync(schoolClassId);
-            // Get all students in the selected school class
-            var students = await _dbContext.StudentClasses
-                .Where(s => s.SchoolClassId == schoolClassId && s.Student.Status == status)
-                .Select(sc => sc.Student)
-                .ToListAsync();
+            var schoolClass = await _unitOfWork.SchoolClasses.GetById(schoolClassId,includeProperties:"AcademicYear");
+
+            var studentClasses = await _unitOfWork.StudentClasses
+                .Find(s => s.SchoolClassId == schoolClassId && s.Student.Status == status,includeProperties: "Student");
+
+            var students = studentClasses.Select(sc => sc.Student);
 
             // Fetch all attendance for the specified month/year
-            var studentAttends = await _dbContext
+            var studentAttends = await _unitOfWork
                 .StudentAttendances
-                .Where(a => a.Date.Month == month && a.StudentClass.SchoolClassId == schoolClassId)
-                .Include(a => a.StudentClass.Student)
-                .ToListAsync();
+                .Find(a => a.Date.Month == month && a.StudentClass.SchoolClassId == schoolClassId, includeProperties: "StudentClass.Student");
 
             // Group attendance by Student ID
             var groupedByStudent = studentAttends
@@ -162,6 +109,5 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
 
             return studentAttendRpt;
         }
-
     }
 }
