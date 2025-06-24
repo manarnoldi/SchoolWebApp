@@ -21,5 +21,10 @@
                 <app-class-attendance-report></app-class-attendance-report>
             </div>
         </div>
+        <div class="row g-0 card-details-box border-danger mt-1 p-1" *ngIf="currentReport?.code === 'CLASS003'">
+            <div class="col-md-12">
+                <app-class-attendance-details-report></app-class-attendance-details-report>
+            </div>
+        </div>
     </div>
 </section>

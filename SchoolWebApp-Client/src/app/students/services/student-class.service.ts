@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import {StudentClass} from '../models/student-class';
 import {HttpClient} from '@angular/common/http';
 import {map, Observable} from 'rxjs';
-import { Status } from '@/core/enums/status';
+import {Status} from '@/core/enums/status';
 
 @Injectable({
     providedIn: 'root'
@@ -11,6 +11,13 @@ import { Status } from '@/core/enums/status';
 export class StudentClassService extends ResourceService<StudentClass> {
     constructor(private http: HttpClient) {
         super(http, StudentClass);
+    }
+
+    getByStudentId(studentId: number): Observable<StudentClass[]> {
+        let searchStr = `/studentClasses/byStudentId/${studentId}`;
+        return this.get(searchStr).pipe(
+            map((studentClasses) => studentClasses)
+        );
     }
 
     getByStudentYearId(

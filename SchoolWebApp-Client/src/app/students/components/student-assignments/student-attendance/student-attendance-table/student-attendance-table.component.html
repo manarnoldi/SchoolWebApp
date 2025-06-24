@@ -5,37 +5,35 @@
         <table class="table table-striped table-hover text-nowrap">
             <thead>
                 <tr>
-                    <th *ngFor="let header of tableHeaders">
+                    <!-- <th *ngFor="let header of tableHeaders">
                         {{ header }}
-                    </th>
+                    </th> -->
+                    <th> Student Full Name </th>
+                    <th> Adm no </th>
+                    <th *ngIf="showMinimum"> Class name </th>
+                    <th *ngIf="!showMinimum"> Class </th>
+                    <th *ngIf="!showMinimum"> Stream </th>
+                    <th *ngIf="!showMinimum"> Year </th>
+                    <th> Date </th>
+                    <th> Present? </th>
+                    <th> Remarks </th>
                     <th *ngIf="showEditDeleteControls">Action</th>
                 </tr>
             </thead>
             <tbody>
                 <tr
                     *ngFor="let item of studentAttendances | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
-                    <td>{{ student?.fullName }}</td>
-                    <td>{{ student?.upi }}</td>
-                    <td>
-                        <span *ngFor="let schoolClass of schoolClasses">
-                            <span *ngIf="schoolClass.id === item.studentClass?.schoolClassId">
-                                {{ schoolClass?.learningLevel?.name }}
-                            </span>
-                        </span>
+                    <td>{{ item.studentClass?.student?.fullName }}</td>
+                    <td>{{ item.studentClass?.student?.upi }}</td>
+                    <td>{{ item.studentClass?.schoolClass?.name }}</td>
+                    <td *ngIf="!showMinimum">
+                        {{item.studentClass?.schoolClass?.learningLevel?.name}}
                     </td>
-                    <td>
-                        <span *ngFor="let schoolClass of schoolClasses">
-                            <span *ngIf="schoolClass.id === item.studentClass?.schoolClassId">
-                                {{ schoolClass?.schoolStream?.name }}
-                            </span>
-                        </span>
+                    <td *ngIf="!showMinimum">
+                        {{item.studentClass?.schoolClass?.schoolStream?.name}}
                     </td>
-                    <td>
-                        <span *ngFor="let schoolClass of schoolClasses">
-                            <span *ngIf="schoolClass.id === item.studentClass?.schoolClassId">
-                                {{ schoolClass?.academicYear?.name }}
-                            </span>
-                        </span>
+                    <td *ngIf="!showMinimum">
+                        {{item.studentClass?.schoolClass?.academicYear?.name}}
                     </td>
                     <td>{{ item.date | date: 'dd/MM/yyyy - EEEE' }}</td>
                     <td>{{ item.present === null? '': item.present ? 'Present': 'Absent' }}</td>

@@ -28,24 +28,13 @@ export class StudentAttendancesService extends ResourceService<StudentAttendance
         studentClassId: number,
         currentRptMonth: number
     ): Observable<StudentAttendance[]> => {
-        return this.getByMonthSchoolClassId(
+        return this.getByMonthStudentClassId(
             currentRptMonth,
             studentClassId
         );
     };
 
-    // getByMonthYearStudentId(
-    //     month: number,
-    //     year: number,
-    //     staffId: number
-    // ): Observable<StaffAttendance[]> {
-    //     let searchStr = `/staffAttendances/byMonthYearStaffId/${month}/${year}/${staffId}`;
-    //     return this.get(searchStr).pipe(
-    //         map((staffAttendances) => staffAttendances)
-    //     );
-    // }
-
-    getByMonthSchoolClassId(
+    getByMonthStudentClassId(
         month: number,
         studentClassId: number
     ): Observable<StudentAttendance[]> {

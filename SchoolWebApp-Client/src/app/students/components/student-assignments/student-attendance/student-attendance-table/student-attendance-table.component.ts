@@ -9,12 +9,10 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
     styleUrl: './student-attendance-table.component.scss'
 })
 export class StudentAttendanceTableComponent {
-    @Input() tableTitle: string = 'Student attendance list';
+    @Input() tableTitle: string = 'Student attendance list ';
     @Input() studentAttendances: StudentAttendance[] = [];
-    @Input() schoolClasses: SchoolClass[] = [];
-    @Input() student: StudentDetails;
-    @Input() showLoginControls: Boolean = false;
     @Input() showEditDeleteControls: Boolean = true;
+    @Input() showMinimum = false;
 
     @Output() editItemEvent = new EventEmitter<number>();
     @Output() deleteItemEvent = new EventEmitter<number>();
@@ -22,16 +20,16 @@ export class StudentAttendanceTableComponent {
     page = 1;
     pageSize = 10;
 
-    tableHeaders: string[] = [
-        'Student Full Name',
-        'Adm no',
-        'Class',
-        'Stream',
-        'Year',
-        'Date',
-        'Present?',
-        'Remarks'
-    ];
+    // tableHeaders: string[] = [
+    //     'Student Full Name',
+    //     'Adm no',
+    //     'Class',
+    //     'Stream',
+    //     'Year',
+    //     'Date',
+    //     'Present?',
+    //     'Remarks'
+    // ];
 
      pageSizeChanged = (pageSize: number) => {
         this.pageSize = pageSize;

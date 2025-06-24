@@ -1,6 +1,7 @@
 
 <div class="card mb-1">
-    <app-table-heading [tableTitle]="tableTitle + '('+ studentClasses.length +')'"></app-table-heading>
+    <app-table-heading
+        [tableTitle]="tableTitle + '('+ studentClasses.length +')'"></app-table-heading>
     <div class="card-body table-responsive p-0">
         <table class="table table-sm table-striped table-hover text-nowrap">
             <thead>
@@ -18,6 +19,7 @@
                             {{ header.name }}
                         </th>
                     </ng-container>
+                    <th *ngIf="showStatus">Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,7 +35,11 @@
                         </div>
                     </th>
                     <td>{{ item.student?.upi }}</td>
-                    <td>{{ item.student?.fullName }}</td>
+                    <td>
+                        <a href="javascript:void(0)" (click)="studentClassClicked(item.id)">
+                            {{item.student?.fullName }}
+                        </a>
+                    </td>
                     <td *ngIf="!showMinimum">{{ item.student?.admissionDate | date:
                         'dd/MM/yyyy' }}</td>
                     <td *ngIf="!showMinimum">
@@ -43,7 +49,7 @@
                             </div>
                         </div>
                     </td>
-                    <td>{{ statusValues[item.student?.status] }}</td>
+                    <td *ngIf="showStatus">{{ statusValues[item.student?.status] }}</td>
                 </tr>
             </tbody>
         </table>

@@ -71,10 +71,13 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
         public async Task<List<StudentAttendance>> GetByMonthStudentClassId(int month, int studentClassId)
         {
             var studentClass = await _dbContext.StudentClasses
-                .Where(s =>s.Id == studentClassId)
-                .Include(s => s.SchoolClass)
-                .ThenInclude(s => s.AcademicYear)
-                .FirstOrDefaultAsync();
+    .Include(s => s.SchoolClass)
+        .ThenInclude(sc => sc.AcademicYear)
+    .Include(s => s.SchoolClass)
+        .ThenInclude(sc => sc.LearningLevel)
+    .Include(s => s.SchoolClass)
+        .ThenInclude(sc => sc.SchoolStream)
+    .SingleOrDefaultAsync(s => s.Id == studentClassId);
 
             // Get the first and last day of the month
             var startDate = new DateTime(studentClass.SchoolClass.AcademicYear.StartDate.Year, month, 1);
@@ -84,7 +87,7 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
             var allDatesInMonth = Enumerable.Range(0, (endDate - startDate).Days + 1)
                                             .Select(offset => startDate.AddDays(offset))
                                             .ToList();
-            
+
 
             // Fetch the attendance data for the student member in the given month and year
             var studentAttendances = await _dbContext.StudentAttendances

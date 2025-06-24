@@ -32,8 +32,6 @@
 </div>
 
 <app-student-attendance-table [tableTitle]="'Student attendance list'" *ngIf="isDoneLoading"
-    [schoolClasses]="schoolClasses"
-    [studentAttendances]="studentAttendances" [showLoginControls]="false"
+    [studentAttendances]="studentAttendances"
     (editItemEvent)="editItem($event)" (viewItemEvent)="editItem($event)"
-    (deleteItemEvent)="deleteItem($event)"
-    [student]="student"></app-student-attendance-table>
+    (deleteItemEvent)="deleteItem($event)"></app-student-attendance-table>

@@ -20,14 +20,17 @@ import {ToastrService} from 'ngx-toastr';
 })
 export class StudentClassMinTableComponent implements OnInit {
     @Input() studentClasses: StudentClass[] = [];
-    @Input() tableTitle: string = 'Parent students list';
+    @Input() tableTitle: string = 'Students list';
     @Input() showCheckBoxes: boolean = false;
     @Input() disabled: Boolean = false;
     @Input() showMinimum: Boolean = false;
+    @Input() showStatus: Boolean = true;
 
     @Output() viewItemEvent = new EventEmitter<number>();
     @Output() editItemEvent = new EventEmitter<number>();
     @Output() deleteItemEvent = new EventEmitter<number>();
+
+     @Output() studentClassClickedEvent = new EventEmitter<number>();
 
     @ViewChild('checkAllStudents', {static: false}) checkAll: ElementRef;
 
@@ -61,11 +64,10 @@ export class StudentClassMinTableComponent implements OnInit {
         );
 
         this.tableHeaders = [
-            {name: 'Admission no', min: false},
+            {name: 'Adm no', min: false},
             {name: 'Full name', min: false},
             {name: 'Admission date', min: this.showMinimum},
-            {name: 'Learning mode', min: this.showMinimum},
-            {name: 'Status', min: false}
+            {name: 'Learning mode', min: this.showMinimum}
         ];
     }
 
@@ -108,4 +110,9 @@ export class StudentClassMinTableComponent implements OnInit {
             this.checkAll.nativeElement.checked = true;
         }
     };
+
+    studentClassClicked = (studentClassId: number) => {
+        this.studentClassClickedEvent.emit(studentClassId);
+    };
+
 }

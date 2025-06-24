@@ -159,9 +159,7 @@ export class ClassAttendanceReportComponent implements OnInit {
                         .toLocaleString('default', {
                             month: 'long'
                         })
-                        .toUpperCase() +
-                    ' ' +
-                    this.currentRptYear.toUpperCase();
+                        .toUpperCase() 
                 const staffAttends = [];
                 staffAttends.push(attends);
 

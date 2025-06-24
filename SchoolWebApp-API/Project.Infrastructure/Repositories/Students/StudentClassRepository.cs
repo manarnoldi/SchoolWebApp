@@ -21,6 +21,8 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
                 .Include(f => f.Student)
                 .Include(f => f.SchoolClass)
                 .Include(f => f.SchoolClass.AcademicYear)
+                .Include(f => f.SchoolClass.LearningLevel)
+                .Include(f => f.SchoolClass.SchoolStream)
                 .ToListAsync();
             return studentClasses;
         }

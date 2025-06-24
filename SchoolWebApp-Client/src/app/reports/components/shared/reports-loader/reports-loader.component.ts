@@ -66,6 +66,15 @@ export class ReportsLoaderComponent implements OnInit {
                     rank: 2
                 })
             );
+            this.reportNames.push(
+                new ReportName({
+                    id: 6,
+                    title: 'Class attendance report - details',
+                    category: 'class',
+                    code: 'CLASS003',
+                    rank: 3
+                })
+            );
         } else if (this.reportTitle.toLowerCase() == 'academics') {
             this.reportNames.push(
                 new ReportName({

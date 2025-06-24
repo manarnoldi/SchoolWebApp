@@ -31,17 +31,13 @@ import {StudentSubjectsTableComponent} from './components/student-assignments/st
 import {StudentSubjectsLoadFormComponent} from './components/student-assignments/student-subjects/student-subjects-load-form/student-subjects-load-form.component';
 import {AcademicsModule} from '@/academics/academics.module';
 import { StudentAttendanceFormComponent } from './components/student-assignments/student-attendance/student-attendance-form/student-attendance-form.component';
-import { StudentAttendanceTableComponent } from './components/student-assignments/student-attendance/student-attendance-table/student-attendance-table.component';
-import { StudentClassesComponent } from '../shared/components/student-classes/student-classes.component';
 import { StudentsSubjectsComponent } from './components/students-subjects/students-subjects.component';
 import { StudentsSubjectsTableComponent } from './components/students-subjects/students-subjects-table/students-subjects-table.component';
 import { StudentsSubjectsAddFormComponent } from './components/students-subjects/students-subjects-add-form/students-subjects-add-form.component';
 import { StudentsSubjectsSearchFormComponent } from './components/students-subjects/students-subjects-search-form/students-subjects-search-form.component';
-import { StudentClassMinTableComponent } from '../shared/components/student-class-min-table/student-class-min-table.component';
 import { StudentsAttendancesComponent } from './components/students-attendances/students-attendances.component';
 import { StudentsAttendancesTableComponent } from './components/students-attendances/students-attendances-table/students-attendances-table.component';
 import { StudentsAttendancesSearchFormComponent } from './components/students-attendances/students-attendances-search-form/students-attendances-search-form.component';
-import { StudentsMinTableComponent } from './components/students-details/students-min-table/students-min-table.component';
 
 @NgModule({
     declarations: [
@@ -73,15 +69,13 @@ import { StudentsMinTableComponent } from './components/students-details/student
         StudentSubjectsTableComponent,
         StudentSubjectsLoadFormComponent,
         StudentAttendanceFormComponent,
-        StudentAttendanceTableComponent,
         StudentsSubjectsComponent,
         StudentsSubjectsTableComponent,
         StudentsSubjectsAddFormComponent,
         StudentsSubjectsSearchFormComponent,
         StudentsAttendancesComponent,
         StudentsAttendancesTableComponent,
-        StudentsAttendancesSearchFormComponent,
-        StudentsMinTableComponent
+        StudentsAttendancesSearchFormComponent
     ],
     imports: [AcademicsModule, DataTablesModule, CoreModule, SharedModule]
 })

@@ -6,7 +6,6 @@ import {StudentAttendance} from '@/students/models/student-attendance';
 import {ToastrService} from 'ngx-toastr';
 import {StudentAttendancesService} from '@/students/services/student-attendances.service';
 import {ActivatedRoute} from '@angular/router';
-import {SchoolClassesService} from '@/class/services/school-classes.service';
 import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 import {SchoolClass} from '@/class/models/school-class';
@@ -14,7 +13,6 @@ import {StudentClass} from '@/students/models/student-class';
 import {StudentClassService} from '@/students/services/student-class.service';
 import {SchoolSoftFilterFormComponent} from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
 import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
-import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {AcademicYear} from '@/school/models/academic-year';
 
 @Component({
@@ -37,7 +35,6 @@ export class StudentAttendanceComponent implements OnInit {
     studentId: number = 0;
     studentAttendance: StudentAttendance;
     studentAttendances: StudentAttendance[] = [];
-    schoolClasses: SchoolClass[] = [];
     studentClasses: StudentClass[];
     months: number[];
     academicYears: AcademicYear[] = [];
@@ -47,9 +44,7 @@ export class StudentAttendanceComponent implements OnInit {
     constructor(
         private toastr: ToastrService,
         private studentAttendancesSvc: StudentAttendancesService,
-        private schoolClassesSvc: SchoolClassesService,
         private studentClassesSvc: StudentClassService,
-        private academicYearsSvc: AcademicYearsService,
         private route: ActivatedRoute
     ) {}
 
@@ -79,7 +74,7 @@ export class StudentAttendanceComponent implements OnInit {
         this.route.queryParams.subscribe((params) => {
             this.studentId = params['id'];
             this.studentAttendancesSvc
-                .getByMonthSchoolClassId(dmy.month, dmy.studentClassId)
+                .getByMonthStudentClassId(dmy.month, dmy.studentClassId)
                 .subscribe({
                     next: (studAttends) => {
                         this.studentAttendances = studAttends.sort(
@@ -87,6 +82,7 @@ export class StudentAttendanceComponent implements OnInit {
                                 new Date(a?.date ?? '').getTime() -
                                 new Date(b?.date ?? '').getTime()
                         );
+
                         if (this.firstLoad) {
                             this.ssFilterFormComponent.setFormControls(dmy);
                         }

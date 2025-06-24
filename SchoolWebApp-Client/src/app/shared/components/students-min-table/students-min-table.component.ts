@@ -29,6 +29,8 @@ export class StudentsMinTableComponent implements OnInit {
     @Output() editItemEvent = new EventEmitter<number>();
     @Output() deleteItemEvent = new EventEmitter<number>();
 
+    @Output() studentClickedEvent = new EventEmitter<number>();
+
     @ViewChild('checkAllStudents', {static: false}) checkAll: ElementRef;
 
     tableHeaders = [];
@@ -99,6 +101,10 @@ export class StudentsMinTableComponent implements OnInit {
                 c.isSelected = false;
             });
         }
+    };
+
+    studentClicked = (studentId: number) => {
+        this.studentClickedEvent.emit(studentId);
     };
 
     itemClicked = (inputCheckItem: any) => {

@@ -35,7 +35,9 @@
                                 </div>
                             </th>
                             <td>{{ item.upi }}</td>
-                            <td>{{ item.fullName }}</td>
+                            <td><a href="javascript:void(0)" (click)="studentClicked(item.id)">
+                                    {{ item.fullName }}
+                                </a></td>
                             <td *ngIf="!showMinimum">{{ item.admissionDate | date: 'dd/MM/yyyy'
                                 }}</td>
                             <td *ngIf="!showMinimum">

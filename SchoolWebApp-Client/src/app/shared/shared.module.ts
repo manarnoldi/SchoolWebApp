@@ -26,9 +26,10 @@ import {StaffAttendanceTableComponent} from './components/staff-attendance-table
 import { SchoolSoftFilterFormComponent } from './components/school-soft-filter-form/school-soft-filter-form.component';
 import { StaffMinTableComponent } from './components/staff-min-table/staff-min-table.component';
 import { StaffSubjectTableComponent } from './components/staff-subject-table/staff-subject-table.component';
-import { StudentsMinTableComponent } from '@/students/components/students-details/students-min-table/students-min-table.component';
+import { StudentsMinTableComponent } from '@/shared/components/students-min-table/students-min-table.component';
 import { StudentClassMinTableComponent } from './components/student-class-min-table/student-class-min-table.component';
 import { SchoolClassMinTableComponent } from './components/school-class-min-table/school-class-min-table.component';
+import { StudentAttendanceTableComponent } from '../students/components/student-assignments/student-attendance/student-attendance-table/student-attendance-table.component';
 
 @NgModule({
     declarations: [
@@ -57,7 +58,9 @@ import { SchoolClassMinTableComponent } from './components/school-class-min-tabl
         SchoolSoftFilterFormComponent,
         StaffMinTableComponent,
         StudentClassMinTableComponent,
-        SchoolClassMinTableComponent
+        SchoolClassMinTableComponent,
+        StudentsMinTableComponent,
+        StudentAttendanceTableComponent
     ],
 
     imports: [CommonModule, NgbModule, CoreModule],
@@ -87,6 +90,8 @@ import { SchoolClassMinTableComponent } from './components/school-class-min-tabl
         StaffSubjectTableComponent,
         StaffMinTableComponent,
         StudentClassMinTableComponent,
+        StudentsMinTableComponent,
+        StudentAttendanceTableComponent,
         CommonModule,
         NgbModule,
         CoreModule
