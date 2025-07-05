@@ -1,30 +1,39 @@
-import { Curriculum } from '@/academics/models/curriculum';
-import { SchoolClass } from '@/class/models/school-class';
-import { Status } from '@/core/enums/status';
-import { AcademicYear } from '@/school/models/academic-year';
-import { EducationLevel } from '@/school/models/educationLevel';
-import { LearningMode } from '@/school/models/learning-mode';
-import { EmploymentType } from '@/settings/models/employment-type';
-import { StaffCategory } from '@/settings/models/staff-category';
-import { SchoolSoftFilter } from '@/shared/models/school-soft-filter';
-import { StaffDetails } from '@/staff/models/staff-details';
-import { StudentClass } from '@/students/models/student-class';
-import { formatDate } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import {Curriculum} from '@/academics/models/curriculum';
+import { Exam } from '@/academics/models/exam';
+import { ExamType } from '@/academics/models/exam-type';
+import { Subject } from '@/academics/models/subject';
+import {SchoolClass} from '@/class/models/school-class';
+import {Status} from '@/core/enums/status';
+import {AcademicYear} from '@/school/models/academic-year';
+import {EducationLevel} from '@/school/models/educationLevel';
+import {LearningMode} from '@/school/models/learning-mode';
+import {EmploymentType} from '@/settings/models/employment-type';
+import {StaffCategory} from '@/settings/models/staff-category';
+import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
+import {StaffDetails} from '@/staff/models/staff-details';
+import {StudentClass} from '@/students/models/student-class';
+import {formatDate} from '@angular/common';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {FormGroup, FormBuilder} from '@angular/forms';
+import {Session} from 'protractor';
 
 @Component({
-  selector: 'app-school-soft-filter-form',
-  templateUrl: './school-soft-filter-form.component.html',
-  styleUrl: './school-soft-filter-form.component.scss'
+    selector: 'app-school-soft-filter-form',
+    templateUrl: './school-soft-filter-form.component.html',
+    styleUrl: './school-soft-filter-form.component.scss'
 })
 export class SchoolSoftFilterFormComponent implements OnInit {
     @Input() curricula: Curriculum[] = [];
     @Input() educationLevels: EducationLevel[] = [];
     @Input() academicYears: AcademicYear[] = [];
+    @Input() sessions: Session[] = [];
     @Input() staffCategories: StaffCategory[] = [];
     @Input() employmentTypes: EmploymentType[] = [];
     @Input() learningModes: LearningMode[] = [];
+
+    @Input() subjects: Subject[] = [];
+    @Input() examTypes: ExamType[] = [];
+    @Input() exams: Exam[] = [];
 
     @Input() months: number[] = [];
     @Input() years: number[] = [];
@@ -35,11 +44,16 @@ export class SchoolSoftFilterFormComponent implements OnInit {
     @Input() showCurriculum: boolean = false;
     @Input() showEducationLevel: boolean = false;
     @Input() showAcademicYear: boolean = false;
+    @Input() showSession: boolean = false;
     @Input() showEmploymentType: boolean = false;
     @Input() showLearningMode: boolean = false;
     @Input() showPersonStatus: boolean = false;
     @Input() showStaffCategory: boolean = false;
     @Input() showSchoolClass: boolean = false;
+
+    @Input() showSubject: boolean = false;
+    @Input() showExamType: boolean = false;
+    @Input() showExam: boolean = false;
 
     @Input() showMonth: boolean = false;
     @Input() showYear: boolean = false;
@@ -53,10 +67,15 @@ export class SchoolSoftFilterFormComponent implements OnInit {
     @Output() curriculumChangedEvent = new EventEmitter<number>();
     @Output() educationLevelChangedEvent = new EventEmitter<number>();
     @Output() academicYearChangedEvent = new EventEmitter<number>();
+    @Output() sessionChangedEvent = new EventEmitter<number>();
     @Output() staffCategoryChangedEvent = new EventEmitter<number>();
     @Output() employmentTypeChangedEvent = new EventEmitter<number>();
     @Output() learningModeChangedEvent = new EventEmitter<number>();
     @Output() statusChangedEvent = new EventEmitter<number>();
+
+    @Output() subjectChangedEvent = new EventEmitter<number>();
+    @Output() examTypeChangedEvent = new EventEmitter<number>();
+    @Output() examNameChangedEvent = new EventEmitter<number>();
 
     @Output() monthChangedEvent = new EventEmitter<number>();
     @Output() yearChangedEvent = new EventEmitter<Date>();
@@ -103,6 +122,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
             curriculumId: cysSearch.curriculumId ?? null,
             educationLevelId: cysSearch.educationLevelId ?? null,
             academicYearId: cysSearch.academicYearId ?? null,
+            sessionId: cysSearch.sessionId ?? null,
             staffCategoryId: cysSearch.staffCategoryId ?? null,
             employmentTypeId: cysSearch.employmentTypeId ?? null,
             learningModeId: cysSearch.learningModeId ?? null,
@@ -117,7 +137,10 @@ export class SchoolSoftFilterFormComponent implements OnInit {
                 : null,
             dateTo: cysSearch.dateTo
                 ? formatDate(cysSearch.dateTo, 'yyyy-MM-dd', 'en')
-                : null
+                : null,
+            subjectId: cysSearch.subjectId ?? null,
+            examTypeId: cysSearch.examTypeId ?? null,
+            examId: cysSearch.examId ?? null,
         });
     };
 
@@ -126,6 +149,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
             curriculumId: [null],
             educationLevelId: [null],
             academicYearId: [null],
+            sessionId: [null],
             staffCategoryId: [null],
             employmentTypeId: [null],
             learningModeId: [null],
@@ -136,13 +160,15 @@ export class SchoolSoftFilterFormComponent implements OnInit {
             month: [null],
             year: [null],
             dateFrom: [null],
-            dateTo: [null]
+            dateTo: [null],
+            subjectId:[null],
+            examTypeId:[null],
+            examId:[null]
         });
     };
 
     curriculumChanged = () => {
-        let curriculumId =
-            this.schoolSoftFilterForm.get('curriculumId').value;
+        let curriculumId = this.schoolSoftFilterForm.get('curriculumId').value;
         this.curriculumChangedEvent.emit(curriculumId);
     };
 
@@ -156,6 +182,30 @@ export class SchoolSoftFilterFormComponent implements OnInit {
         let academicYearId =
             this.schoolSoftFilterForm.get('academicYearId').value;
         this.academicYearChangedEvent.emit(academicYearId);
+    };
+
+    sessionChanged = () => {
+        let sessionId =
+            this.schoolSoftFilterForm.get('sessionId').value;
+        this.sessionChangedEvent.emit(sessionId);
+    };
+
+    subjectChanged = () => {
+        let subjectId =
+            this.schoolSoftFilterForm.get('subjectId').value;
+        this.subjectChangedEvent.emit(subjectId);
+    };
+
+    examTypeChanged = () => {
+        let examTypeId =
+            this.schoolSoftFilterForm.get('examTypeId').value;
+        this.examTypeChangedEvent.emit(examTypeId);
+    };
+
+    examChanged = () => {
+        let examId =
+            this.schoolSoftFilterForm.get('examId').value;
+        this.examNameChangedEvent.emit(examId);
     };
 
     staffCategoryChanged = () => {
@@ -210,7 +260,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
     schoolClassChanged = () => {
         let schoolClassId =
             this.schoolSoftFilterForm.get('schoolClassId').value;
-        this.studentClassChangedEvent.emit(schoolClassId);
+        this.schoolClassChangedEvent.emit(schoolClassId);
     };
 
     staffDetailsChanged = () => {
@@ -220,10 +270,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
     };
 
     onSubmit = () => {
-        this.cysSearch = new SchoolSoftFilter(
-            this.schoolSoftFilterForm.value
-        );
+        this.cysSearch = new SchoolSoftFilter(this.schoolSoftFilterForm.value);
         this.searchItemEvent.emit(this.cysSearch);
     };
-
 }

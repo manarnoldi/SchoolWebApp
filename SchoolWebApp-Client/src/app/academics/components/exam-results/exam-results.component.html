@@ -5,23 +5,39 @@
 <section class="content">
     <div class="container-fluid px-1">
         <div class="card my-1">
-            <app-exam-list-search-form [subjects]="subjects"
-                [schoolClasses]="schoolClasses" *ngIf="isLoading"
-                (clearListEvent)="clearList()"
-                (educationLevelYearChangedEvent)="educationLevelYearChanged($event)"
-                [sessions]="sessions" [curricula]="curricula" (examTypeChangedEvent)="examTypeChanged($event)"
-                (examChangedEvent)="examChanged($event)"
-                (searchItemEvent)="onButtonSearchClick($event)" [examTypes]="examTypes" [exams]="exams"
-                [academicYears]="academicYears" [educationLevels]="educationLevels" [showExamName]="true"
-                (curriculumYearChangedEvent)="curriculumYearChanged($event)"></app-exam-list-search-form>
+            <app-school-soft-filter-form [showAcademicYear]="true" [showCurriculum]="true"
+                [showSession]="true" [showSchoolClass]="true"
+                [showSubject]="true" [showExamType]="true"
+                [showExam]="true" [showEducationLevel]="true" [academicYears]="academicYears"
+                [curricula]="curricula"
+                [sessions]="sessions" [schoolClasses]="schoolClasses"
+                [subjects]="subjects" [examTypes]="examTypes"
+                [exams]="exams" [educationLevels]="educationLevels"
+                (subjectChangedEvent)="subjectChanged($event)"
+                (schoolClassChangedEvent)="schoolClassChanged($event)"
+                (sessionChangedEvent)="sessionChanged($event)"
+                (academicYearChangedEvent)="academicYearChanged($event)"
+                (curriculumChangedEvent)="curriculumChanged($event)"
+                (examTypeChangedEvent)="examTypeChanged($event)"
+                (examNameChangedEvent)="examChanged($event)"
+                (educationLevelChangedEvent)="educationLevelChanged($event)"
+                (searchItemEvent)="onButtonSearchClick($event)"></app-school-soft-filter-form>
         </div>
-        <app-exam-results-table [tableTitle]="'Examination results'" (deleteItemEvent)="deleteExamResult($event)"
+        <app-exam-results-table [tableTitle]="'Examination results'"
+            (deleteItemEvent)="deleteExamResult($event)" [isReport]="false"
             [examResults]="examResults" *ngIf="isLoading"></app-exam-results-table>
 
         <div class="row m-0">
             <div class="col-12 p-0">
+                <button type="button"
+                    class="btn btn-sm btn-flat btn-danger btn-block float-right m-1"
+                    *ngIf="showMissingMarksReportButton"
+                    [disabled]="missingMarksPresent <= 0"
+                    (click)="printReportClicked()">
+                    <i class="fas fa-print"></i> Print Missing Marks Report
+                </button>
                 <a
-                    (click)="submitExamResults($event)"
+                    (click)="submitExamResults()"
                     class="btn btn-sm btn-flat btn-success float-right mt-1">
                     <i class="fas fa-plus-save"></i> Submit Exam Results
                 </a>

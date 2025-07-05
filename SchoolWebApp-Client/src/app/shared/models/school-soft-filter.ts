@@ -4,6 +4,7 @@ export class SchoolSoftFilter {
     public curriculumId?: number;
     public educationLevelId?: number;
     public academicYearId?: number;
+    public sessionId?: number;
     public staffCategoryId?: number;
     public employmentTypeId?: number;
     public learningModeId?: number;
@@ -17,6 +18,10 @@ export class SchoolSoftFilter {
     public schoolClassId?: number;
     public staffDetailsId?: number;
     public status?: Status;
+
+    public subjectId?: number;
+    public examTypeId?: number;
+    public examId?: number;
 
     constructor(model?: SchoolSoftFilter) {
         Object.assign(this, model);

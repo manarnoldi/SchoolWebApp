@@ -38,11 +38,18 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label>Abbreviation</label>
                                 <input id="abbreviation" placeholder="Abbreviation" type="text"
                                     class="form-control" formControlName="abbreviation" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Rank</label>
+                                <input id="rank" placeholder="rank" type="number"
+                                    class="form-control" formControlName="rank" />
                             </div>
                         </div>
                     </div>
@@ -110,6 +117,7 @@
                                 <tr *ngFor="let item of examTypes;index as i">
                                     <td>{{ item.name }}</td>
                                     <td>{{ item.abbreviation }}</td>
+                                    <td>{{ item.rank }}</td>
                                     <td><span i18n>{ item.featured , select, true {YES} false
                                             {NO}}</span></td>
                                     <td>{{ item.description }}</td>

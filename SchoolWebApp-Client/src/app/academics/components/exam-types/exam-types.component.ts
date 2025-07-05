@@ -27,6 +27,7 @@ export class ExamTypesComponent implements OnInit {
     tableHeaders: string[] = [
         'Name',
         'Abbreviation',
+        'Rank',
         'Featured',
         'Description',
         'Action'
@@ -61,6 +62,7 @@ export class ExamTypesComponent implements OnInit {
         this.examTypeForm = this.formBuilder.group({
             name: ['', [Validators.required]],
             abbreviation: [''],
+            rank: [0],
             featured: [false],
             description: ['']
         });
@@ -89,6 +91,7 @@ export class ExamTypesComponent implements OnInit {
                 this.examTypeForm.setValue({
                     name: this.examType.name,
                     abbreviation: this.examType.abbreviation,
+                    rank: this.examType.rank,
                     featured: this.examType.featured,
                     description: this.examType.description
                 });

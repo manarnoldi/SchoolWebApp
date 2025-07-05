@@ -5,23 +5,31 @@
         <table class="table table-striped table-hover text-nowrap">
             <thead>
                 <tr>
-                    <th class="py-1 " *ngFor="let header of tableHeaders">{{header}}</th>
+                    <ng-content *ngFor="let header of tableHeaders">
+                        <th class="py-1 " *ngIf="header.show">{{header.name}}</th>
+                    </ng-content>
                 </tr>
             </thead>
             <tbody>
                 <tr
                     *ngFor="let item of examResults | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i">
+                    <td class="py-1" *ngIf="isReport">
+                        {{item.studentSubject?.studentClass?.name}}
+                    </td>
+                    <td class="py-1" *ngIf="isReport">
+                        {{item.studentSubject?.subject?.name}}
+                    </td>
                     <td class="py-1 ">
                         {{item.studentSubject?.studentClass?.student?.upi}}
                     </td>
                     <td class="py-1 ">
                         {{item.studentSubject?.studentClass?.student?.fullName}}
                     </td>
-                    <td class="py-1 ">
+                    <td class="py-1 " *ngIf="!isReport">
                         {{item.studentSubject?.subject?.name}}
                     </td>
                     <td class="py-1 ">
-                        {{item.studentSubject?.subject?.name}}
+                        {{item.exam?.examType?.name}}
                     </td>
                     <td class="py-1 ">{{ item.exam?.name }}</td>
                     <td class="py-1 ">
@@ -34,7 +42,7 @@
                     </td>
                     <td class="py-1 ">{{ item.exam?.examMark }}</td>
                     <td class="py-1 ">{{ item.exam?.contributingMark }}</td>
-                    <app-table-action *ngIf="item.id" [tblShowEditButton]="false"
+                    <app-table-action *ngIf="item.id && !isReport" [tblShowEditButton]="false"
                         (deleteItemEvent)="deleteItem(item)"></app-table-action>
                 </tr>
             </tbody>

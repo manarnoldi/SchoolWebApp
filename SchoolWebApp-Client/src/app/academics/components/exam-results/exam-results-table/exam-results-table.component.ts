@@ -12,6 +12,7 @@ export class ExamResultsTableComponent {
     @Input() tableTitle: string = 'Examination results';
     @Input() examResults: ExamResult[] = [];
     @Input() exams: Exam[] = [];
+    @Input() isReport: boolean = false;
 
     @Output() deleteItemEvent = new EventEmitter<ExamResult>();
 
@@ -53,15 +54,17 @@ export class ExamResultsTableComponent {
         this.page = page;
     };
 
-    tableHeaders: string[] = [
-        'Adm #',
-        'Student name',
-        'Subject name',
-        'Exam Type',
-        'Exam Name',
-        'Score',
-        'Out of',
-        'Contributing',
-        'Action'
+    tableHeaders: any[] = [
+        {name: 'Class', show: this.isReport},
+        {name: 'Subject', show: this.isReport},
+        {name: 'Adm #', show: true},
+        {name: 'Student name', show: true},
+        {name: 'Subject name', show: !this.isReport},
+        {name: 'Exam Type', show: true},
+        {name: 'Exam Name', show: true},
+        {name: 'Score', show: true},
+        {name: 'Out of', show: true},
+        {name: 'Contributing', show: true},
+        {name: 'Action', show: !this.isReport}
     ];
 }

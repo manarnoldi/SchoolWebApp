@@ -5,12 +5,13 @@
                 <select class="form-select form-select-sm" aria-label="Academic year"
                     (change)="academicYearChanged()"
                     formControlName="academicYearId" id="academicYearId">
-                    <option [ngValue]="null" selected>-Academic year-</option>
+                    <option [ngValue]="null" selected>-Year-</option>
                     <option [ngValue]="academicYear.id" *ngFor="let academicYear of
                                     academicYears">{{academicYear.name}}</option>
                 </select>
             </div>
         </ng-content>
+         
         <ng-content *ngIf="showCurriculum">
             <div class="col py-1 px-1">
                 <select class="form-select form-select-sm" aria-label="Curriculum"
@@ -22,12 +23,23 @@
                 </select>
             </div>
         </ng-content>
-        <ng-content *ngIf="showEducationLevel">
+        <ng-content *ngIf="showSession">
             <div class="col py-1 px-0">
+                <select class="form-select form-select-sm" aria-label="session"
+                    (change)="sessionChanged()"
+                    formControlName="sessionId" id="sessionId">
+                    <option [ngValue]="null" selected>-Session-</option>
+                    <option [ngValue]="session.id" *ngFor="let session of
+                                    sessions">{{session.sessionName}}</option>
+                </select>
+            </div>
+        </ng-content>
+        <ng-content *ngIf="showEducationLevel">
+            <div class="col py-1 px-1">
                 <select class="form-select form-select-sm" aria-label="educationLevel"
                     (change)="educationLevelChanged()"
                     formControlName="educationLevelId" id="educationLevelId">
-                    <option [ngValue]="null" selected>-Education level-</option>
+                    <option [ngValue]="null" selected>-Level-</option>
                     <option [ngValue]="educationLevel.id" *ngFor="let educationLevel of
                                 educationLevels">{{educationLevel.name}}</option>
                 </select>
@@ -69,7 +81,7 @@
             </div>
         </ng-content>
         <ng-content *ngIf="showSchoolClass">
-            <div class="col py-1 px-1">
+            <div class="col py-1 px-0">
                 <select class="form-select form-select-sm" aria-label="School class "
                     (change)="schoolClassChanged()"
                     formControlName="schoolClassId" id="schoolClassId">
@@ -109,6 +121,39 @@
                     <option [ngValue]="null" selected>-Student class-</option>
                     <option [ngValue]="studentClass.id" *ngFor="let studentClass of
                                 studentClasses">{{studentClass.schoolClass?.name}}</option>
+                </select>
+            </div>
+        </ng-content>
+        <ng-content *ngIf="showSubject">
+            <div class="col py-1 px-1">
+                <select class="form-select form-select-sm" aria-label="Subject"
+                    (change)="subjectChanged()"
+                    formControlName="subjectId" id="subjectId">
+                    <option [ngValue]="null" selected>-Subject-</option>
+                    <option [ngValue]="subject.id" *ngFor="let subject of
+                                subjects">{{subject?.name}}</option>
+                </select>
+            </div>
+        </ng-content>
+        <ng-content *ngIf="showExamType">
+            <div class="col py-1 px-0">
+                <select class="form-select form-select-sm" aria-label="Exam type"
+                    (change)="examTypeChanged()"
+                    formControlName="examTypeId" id="examTypeId">
+                    <option [ngValue]="null" selected>-Exam type-</option>
+                    <option [ngValue]="examType.id" *ngFor="let examType of
+                                examTypes">{{examType?.name}}</option>
+                </select>
+            </div>
+        </ng-content>
+        <ng-content *ngIf="showExam">
+            <div class="col py-1 px-1">
+                <select class="form-select form-select-sm" aria-label="Exam"
+                    (change)="examChanged()"
+                    formControlName="examId" id="examId">
+                    <option [ngValue]="null" selected>-Exam-</option>
+                    <option [ngValue]="exam.id" *ngFor="let exam of
+                                exams">{{exam?.name}}</option>
                 </select>
             </div>
         </ng-content>

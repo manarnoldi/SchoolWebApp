@@ -17,6 +17,7 @@ import {EducationLevelService} from '@/school/services/education-level.service';
 import {StudentDetailsService} from '@/students/services/student-details.service';
 import {ToastrService} from 'ngx-toastr';
 import {CurriculumService} from './curriculum.service';
+import { SchoolSoftFilter } from '@/shared/models/school-soft-filter';
 
 @Injectable({
     providedIn: 'root'
@@ -51,10 +52,12 @@ export class ExamsService extends ResourceService<Exam> {
         ]).pipe(map((results) => results));
     };
 
-    getExamsBySearch = (es: ExamSearch): Observable<Exam[]> => {
+    getExamsBySearch = (
+        ssf: SchoolSoftFilter
+    ): Observable<Exam[]> => {
         return this.get(
-            `/exams/examSearch?academicYearId=${es.academicYearId}&curriculumId=${es.curriculumId}&sessionId=
-              ${es.sessionId}&schoolClassId=${es.schoolClassId ?? ''}&subjectId=${es.subjectId ?? ''}&examTypeId=${es.examTypeId ?? ''}`
+            `/exams/examSearch?academicYearId=${ssf.academicYearId}&curriculumId=${ssf.curriculumId}&sessionId=
+              ${ssf.sessionId}&schoolClassId=${ssf.schoolClassId ?? ''}&subjectId=${ssf.subjectId ?? ''}&examTypeId=${ssf.examTypeId ?? ''}`
         ).pipe(map((exams) => exams));
     };
 
