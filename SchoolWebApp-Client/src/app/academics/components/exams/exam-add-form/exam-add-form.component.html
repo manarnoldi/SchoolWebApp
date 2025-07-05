@@ -21,7 +21,7 @@
                             <h4 class="mb-1">Manage School Examinations</h4>
                         </div>
                         <div class="card-body p-1">
-                            <div class="row">
+                            <div class="row g-0">
                                 <div class="col-md-4">
                                     <div class="card-details-box border-success disabled">
                                         <div class="row">
@@ -131,7 +131,7 @@
                                             *ngIf="isLoading"></app-school-class-minimum-table>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-4 px-1">
                                     <app-subjects-min-table [subjects]="subjects"
                                         [minimumTable]="true" [disabled]="editMode"
                                         *ngIf="isLoading"></app-subjects-min-table>

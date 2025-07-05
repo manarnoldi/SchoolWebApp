@@ -2,6 +2,7 @@ import {Curriculum} from '@/academics/models/curriculum';
 import {CurriculumService} from '@/academics/services/curriculum.service';
 import {SchoolClass} from '@/class/models/school-class';
 import {SchoolClassesService} from '@/class/services/school-classes.service';
+import { Status } from '@/core/enums/status';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {AcademicYear} from '@/school/models/academic-year';
 import {EducationLevel} from '@/school/models/educationLevel';
@@ -115,7 +116,7 @@ export class StudentsSubjectsComponent implements OnInit {
         this.studentClasses = [];
         this.studentSubjects = [];
         this.studentClassesSvc
-            .get('/studentClasses/bySchoolClassId/' + schoolClassId)
+            .getBySchoolClassId(schoolClassId, Status.Active)
             .subscribe({
                 next: (studentClasses) => {
                     this.studentClasses = studentClasses.sort((a, b) =>

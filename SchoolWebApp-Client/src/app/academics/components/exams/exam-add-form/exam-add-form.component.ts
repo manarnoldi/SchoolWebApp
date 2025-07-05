@@ -105,7 +105,7 @@ export class ExamAddFormComponent implements OnInit {
                 ]) => {
                     this.curricula = curricula.sort((a, b) => a.rank - b.rank);
                     this.academicYears = academicYears.sort(
-                        (a, b) => a.rank - b.rank
+                        (a, b) => b.rank - a.rank
                     );
                     this.examTypes = examTypes;
                     this.educationLevels = educationLevels.sort(

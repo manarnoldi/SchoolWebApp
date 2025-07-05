@@ -4,6 +4,7 @@ import {CurriculumService} from '@/academics/services/curriculum.service';
 import {EducationLevelSubjectService} from '@/academics/services/education-level-subject.service';
 import {SchoolClass} from '@/class/models/school-class';
 import {SchoolClassesService} from '@/class/services/school-classes.service';
+import {Status} from '@/core/enums/status';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {AcademicYear} from '@/school/models/academic-year';
 import {EducationLevel} from '@/school/models/educationLevel';
@@ -111,7 +112,7 @@ export class StudentsSubjectsAddFormComponent implements OnInit {
         }
 
         this.studentClassSvc
-            .get('/studentClasses/bySchoolClassId/' + schoolClassId)
+            .getBySchoolClassId(schoolClassId, Status.Active)
             .subscribe({
                 next: (studentClasses) => {
                     this.studentClasses = studentClasses;
@@ -139,7 +140,7 @@ export class StudentsSubjectsAddFormComponent implements OnInit {
         }
 
         this.educationLevelSvc
-            .get('/educationLevels/byCurriculumId/' + curriculumId)
+            .educationLevelsByCurriculum(curriculumId)
             .subscribe({
                 next: (eduLevels) => {
                     this.educationLevels = eduLevels.sort(
@@ -175,11 +176,9 @@ export class StudentsSubjectsAddFormComponent implements OnInit {
                 '/' +
                 acadYearId
         );
-        let schoolClassReq = this.schoolClassesSvc.get(
-            '/schoolClasses/byEducationLevelYearId/' +
-                eduLevelId +
-                '/' +
-                acadYearId
+        let schoolClassReq = this.schoolClassesSvc.getByEducationLevelandYear(
+            eduLevelId,
+            acadYearId
         );
 
         forkJoin([educationLevelSubjectsReq, schoolClassReq]).subscribe({
