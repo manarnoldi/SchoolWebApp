@@ -1,12 +1,9 @@
 import {Curriculum} from '@/academics/models/curriculum';
-import {CurriculumYear} from '@/academics/models/curriculum-year';
 import {Exam} from '@/academics/models/exam';
 import {ExamResult} from '@/academics/models/exam-result';
-import {ExamSearch} from '@/academics/models/exam-search';
 import {ExamType} from '@/academics/models/exam-type';
 import {Subject} from '@/academics/models/subject';
 import {CurriculumService} from '@/academics/services/curriculum.service';
-import {EducationLevelSubjectService} from '@/academics/services/education-level-subject.service';
 import {ExamResultsService} from '@/academics/services/exam-results.service';
 import {ExamTypesService} from '@/academics/services/exam-types.service';
 import {ExamsService} from '@/academics/services/exams.service';
@@ -21,9 +18,7 @@ import {EducationLevel} from '@/school/models/educationLevel';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {EducationLevelService} from '@/school/services/education-level.service';
 import {SchoolSoftFilterFormComponent} from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
-import {EducationLevelYear} from '@/shared/models/education-level-year';
 import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
-import {StudentSubjectsService} from '@/students/services/student-subjects.service';
 import {
     Component,
     EventEmitter,

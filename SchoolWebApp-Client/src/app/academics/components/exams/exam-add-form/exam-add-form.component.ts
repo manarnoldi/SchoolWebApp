@@ -1,7 +1,5 @@
 import {Curriculum} from '@/academics/models/curriculum';
-import {CurriculumYear} from '@/academics/models/curriculum-year';
 import {Exam} from '@/academics/models/exam';
-import {ExamSearch} from '@/academics/models/exam-search';
 import {ExamType} from '@/academics/models/exam-type';
 import {Subject} from '@/academics/models/subject';
 import {CurriculumService} from '@/academics/services/curriculum.service';
@@ -259,10 +257,10 @@ export class ExamAddFormComponent implements OnInit {
         });
     };
 
-    curriculumYearChanged = (cy: CurriculumYear) => {
+    curriculumYearChanged = (curriculumId: number ,academicYearId: number) => {
         let sessionsReq = this.sessionSvc.getByCurriculumYear(
-            cy.curriculumId,
-            cy.academicYearId
+            curriculumId,
+            academicYearId
         );
 
         forkJoin([sessionsReq]).subscribe(
@@ -280,22 +278,18 @@ export class ExamAddFormComponent implements OnInit {
         this.schoolClasses = [];
         this.sessions = [];
         this.examsAddForm.get('educationLevelId').reset();
-        let curriculumYearId = this.examsAddForm.get('curriculumId').value;
+        let curriculumId = this.examsAddForm.get('curriculumId').value;
         let academicYearId = this.examsAddForm.get('academicYearId').value;
 
         if (
-            !curriculumYearId ||
-            curriculumYearId == null ||
+            !curriculumId ||
+            curriculumId == null ||
             !academicYearId ||
             academicYearId == null
         ) {
             return;
         }
-        const curriculumYear = new CurriculumYear(
-            curriculumYearId,
-            academicYearId
-        );
-        this.curriculumYearChanged(curriculumYear);
+        this.curriculumYearChanged(curriculumId,academicYearId);
     };
 
     educationLevelChanged = () => {
