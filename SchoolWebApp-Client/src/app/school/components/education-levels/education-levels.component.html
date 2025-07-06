@@ -56,6 +56,7 @@
                     <tbody>
                         <tr
                             *ngFor="let item of educationLevels| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                            <td>{{ item.id }}</td>
                             <td>{{ item.name }}</td>
                             <td>{{ item.rank }}</td>
                             <td>{{ item.abbr }}</td>

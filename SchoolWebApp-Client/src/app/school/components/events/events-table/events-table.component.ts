@@ -20,7 +20,8 @@ export class EventsTableComponent {
 
     tableTitle: string = ' Events list';
     tableHeaders: string[] = [
-        'Academic year',
+        'Ref#',
+        'Year',
         'Session',
         'Event name',
         'Event location',

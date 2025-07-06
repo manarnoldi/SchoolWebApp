@@ -27,7 +27,7 @@ export class EducationLevelTypesComponent implements OnInit {
 
     dashboardTitle = 'Settings:  Education level types';
     tableTitle: string = ' Education level types list';
-    tableHeaders: string[] = ['Name', 'Abbreviation', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Abbreviation', 'Description', 'Action'];
 
     educationLevelType: EducationLevelType;
     educationLevelTypes: EducationLevelType[] = [];

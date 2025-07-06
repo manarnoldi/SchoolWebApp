@@ -40,6 +40,7 @@ export class EducationLevelsComponent implements OnInit {
     dashboardTitle = 'School: Education Levels';
     tableTitle: string = ' Education levels list';
     tableHeaders: string[] = [
+        'Ref#',
         'Name',
         'Rank',
         'Abbreviation',

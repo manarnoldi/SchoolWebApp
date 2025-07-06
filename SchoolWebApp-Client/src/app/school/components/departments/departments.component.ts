@@ -34,6 +34,7 @@ export class DepartmentsComponent implements OnInit {
     dashboardTitle = 'School: Departments';
     tableTitle: string = ' Departments list';
     tableHeaders: string[] = [
+        'Ref#',
         'Code',
         'Name',
         'Description',

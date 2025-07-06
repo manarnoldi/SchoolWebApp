@@ -4,10 +4,10 @@
 <hr />
 
 <section class="content">
-    <div class="container-fluid">
+    <div class="container-fluid px-1">
         <form [formGroup]="schoolDetailsForm" (ngSubmit)="onSubmit()">
-            <div class="row p-1" align="right" *ngIf="canAddEdit">
-                <div class="col-md-12">
+            <div class="row g-0" align="right" *ngIf="canAddEdit">
+                <div class="col-md-12 pe-1">
                     <a (click)="editSchoolDetails()" class="edit" title data-toggle="tooltip"
                         role="button"
                         data-original-title="Edit school details"> <i class="fas fa-edit"></i> {{
@@ -15,7 +15,7 @@
                 </div>
             </div>
             <div class="row g-0">
-                <div class="col-md-5">
+                <div class="col-md-5 pe-1">
                     <div class="card card-success card-outline">
                         <div class="card-body box-profile p-0">
                             <div class="text-center">
@@ -93,7 +93,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-7">
+                <div class="col-md-7 pe-1">
                     <div class="card card-success card-outline">
                         <div class="card-body p-0">
                             <div class="col-md-12">

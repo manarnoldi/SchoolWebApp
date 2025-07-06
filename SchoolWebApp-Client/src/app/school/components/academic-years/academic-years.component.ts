@@ -26,6 +26,7 @@ export class AcademicYearsComponent implements OnInit {
     dashboardTitle = 'Settings: Academic years';
     tableTitle: string = 'Academic years list';
     tableHeaders: string[] = [
+        'Ref#',
         'Name',
         'Abbreviation',
         'Rank',

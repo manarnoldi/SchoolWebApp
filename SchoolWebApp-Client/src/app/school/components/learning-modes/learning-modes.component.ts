@@ -24,7 +24,7 @@ export class LearningModesComponent implements OnInit {
     buttonTitle: string = 'Add learning mode';
     tableModel: string = 'learningMode';
     tableTitle: string = 'Learning modes list';
-    tableHeaders: string[] = ['Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Description', 'Action'];
 
     editMode = false;
     learningMode: LearningMode;
