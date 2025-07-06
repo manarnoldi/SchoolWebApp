@@ -25,7 +25,7 @@ export class StaffCategoriesComponent implements OnInit {
     buttonTitle: string = 'Add staff category';
     tableModel: string = 'staffCategory';
     tableTitle: string = 'Staff categories list';
-    tableHeaders: string[] = ['Name', 'Code', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Code', 'Description', 'Action'];
 
     editMode = false;
     staffCategory: StaffCategory;

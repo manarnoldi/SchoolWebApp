@@ -24,7 +24,7 @@ export class NationalitiesComponent implements OnInit {
     buttonTitle: string = 'Add nationality';
     tableModel: string = 'nationality';
     tableTitle: string = 'Nationalities list';
-    tableHeaders: string[] = ['Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Description', 'Action'];
 
     editMode = false;
     nationality: Nationality;

@@ -24,7 +24,7 @@ export class OccurenceTypesComponent implements OnInit {
 
     dashboardTitle = 'Settings: Occurence types';
     tableTitle: string = 'Occurence types list';
-    tableHeaders: string[] = ['Name', 'Abbreviation', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Abbreviation', 'Description', 'Action'];
 
     occurenceType: OccurenceType;
     occurenceTypes: OccurenceType[] = [];

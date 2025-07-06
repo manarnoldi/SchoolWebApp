@@ -24,7 +24,7 @@ export class GenderComponent implements OnInit {
     buttonTitle: string = 'Add gender';
     tableModel: string = 'gender';
     tableTitle: string = 'Gender list';
-    tableHeaders: string[] = ['Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Description', 'Action'];
 
     editMode = false;
     gender: Gender;

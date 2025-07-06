@@ -24,7 +24,7 @@ export class EmploymentTypesComponent implements OnInit {
     buttonTitle: string = 'Add employment type';
     tableModel: string = 'employmentType';
     tableTitle: string = 'Employment Types list';
-    tableHeaders: string[] = ['Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Description', 'Action'];
 
     editMode = false;
     employmentType: EmploymentType;

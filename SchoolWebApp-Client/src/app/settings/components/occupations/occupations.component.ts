@@ -24,7 +24,7 @@ export class OccupationsComponent implements OnInit {
     buttonTitle: string = 'Add occupation';
     tableModel: string = 'occupation';
     tableTitle: string = 'Occupations list';
-    tableHeaders: string[] = ['Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Description', 'Action'];
 
     editMode = false;
     occupation: Occupation;

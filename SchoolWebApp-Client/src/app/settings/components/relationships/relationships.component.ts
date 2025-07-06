@@ -24,7 +24,7 @@ export class RelationshipsComponent implements OnInit {
     buttonTitle: string = 'Add relationship';
     tableModel: string = 'relationship';
     tableTitle: string = 'Relationships list';
-    tableHeaders: string[] = ['Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Description', 'Action'];
 
     editMode = false;
     relationship: Relationship;

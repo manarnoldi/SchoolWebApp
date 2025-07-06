@@ -24,7 +24,7 @@ export class OutcomesComponent implements OnInit {
     buttonTitle: string = 'Add outcome';
     tableModel: string = 'outcome';
     tableTitle: string = 'Outcomes list';
-    tableHeaders: string[] = ['Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Description', 'Action'];
 
     editMode = false;
     outcome: Outcome;

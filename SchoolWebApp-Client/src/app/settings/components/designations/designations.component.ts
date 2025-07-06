@@ -24,7 +24,7 @@ export class DesignationsComponent implements OnInit {
     buttonTitle: string = 'Add designation';
     tableModel: string = 'designation';
     tableTitle: string = 'Designations list';
-    tableHeaders: string[] = ['Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Description', 'Action'];
 
     editMode = false;
     designation: Designation;

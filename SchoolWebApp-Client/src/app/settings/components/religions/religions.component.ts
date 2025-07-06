@@ -24,7 +24,7 @@ export class ReligionsComponent implements OnInit {
     buttonTitle: string = 'Add religion';
     tableModel: string = 'religion';
     tableTitle: string = 'Religions list';
-    tableHeaders: string[] = ['Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Description', 'Action'];
 
     editMode = false;
     religion: Religion;

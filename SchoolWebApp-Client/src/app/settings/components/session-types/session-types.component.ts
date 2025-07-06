@@ -24,7 +24,7 @@ export class SessionTypesComponent implements OnInit {
     buttonTitle: string = 'Add session type';
     tableModel: string = 'sessionType';
     tableTitle: string = 'Session types list';
-    tableHeaders: string[] = ['Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Description', 'Action'];
 
     editMode = false;
     sessionType: SessionType;
