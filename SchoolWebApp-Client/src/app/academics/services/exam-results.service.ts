@@ -29,7 +29,10 @@ export class ExamResultsService extends ResourceService<ExamResult> {
         );
     };
 
-    loadExamResults = (exam: Exam): Observable<ExamResult[]> => {
+    loadExamResults = (
+        exam: Exam,
+        missingMarksReport: boolean
+    ): Observable<ExamResult[]> => {
         return this.getExamResultsByExamId(parseInt(exam.id)).pipe(
             concatMap((examResults) =>
                 this.studentSubjectsSvc
@@ -54,7 +57,14 @@ export class ExamResultsService extends ResourceService<ExamResult> {
                                 er.studentSubject = s;
                                 er.score = erResult ? erResult.score : null;
                                 er.id = erResult ? erResult.id : null;
-                                retRes.push(er);
+
+                                if (missingMarksReport) {
+                                    if (!erResult || !erResult.id) {
+                                        retRes.push(er);
+                                    }
+                                } else {
+                                    retRes.push(er);
+                                }
                             });
                             return retRes;
                         })

@@ -6,7 +6,14 @@
     <div class="container-fluid px-1">
         <div class="row g-0 card-details-box border-primary mt-1">
             <div class="col-md-6">
-                <app-reports-loader [reportTitle]="'academics'"></app-reports-loader>
+                <app-reports-loader [reportTitle]="'academics'"
+                    (reportNameChangedEvent)="reportNameChanged($event)"
+                    (searchItemEvent)="searchItem($event)"></app-reports-loader>
+            </div>
+        </div>
+        <div class="row g-0 card-details-box border-danger mt-1 p-1" *ngIf="currentReport?.code === 'ACADEMICS001'">
+            <div class="col-md-12">
+                <app-missing-marks-report></app-missing-marks-report>
             </div>
         </div>
     </div>

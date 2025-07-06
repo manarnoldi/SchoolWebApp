@@ -17,8 +17,9 @@ namespace SchoolWebApp.Infrastructure.Repositories.Academics
             var examsResults = await _dbContext.ExamResults
                 .Where(e => e.ExamId == examId)
                 .Include(e => e.StudentSubject.StudentClass.Student)
+                .Include(e => e.StudentSubject.StudentClass.SchoolClass)
                 .Include(e => e.Exam.Subject)
-                .Include(e => e.Exam.ExamType)
+                .Include(e => e.Exam.ExamName)
                 .ToListAsync();
             return examsResults;
         }

@@ -23,13 +23,15 @@ import {AcademicYearsSelectorFormComponent} from './components/academic-years-se
 import {StaffsAttendancesSearchFormComponent} from './components/staffs-attendances-search-form/staffs-attendances-search-form.component';
 import {StaffsAttendancesTableComponent} from './components/staffs-attendances-table/staffs-attendances-table.component';
 import {StaffAttendanceTableComponent} from './components/staff-attendance-table/staff-attendance-table.component';
-import { SchoolSoftFilterFormComponent } from './components/school-soft-filter-form/school-soft-filter-form.component';
-import { StaffMinTableComponent } from './components/staff-min-table/staff-min-table.component';
-import { StaffSubjectTableComponent } from './components/staff-subject-table/staff-subject-table.component';
-import { StudentsMinTableComponent } from '@/shared/components/students-min-table/students-min-table.component';
-import { StudentClassMinTableComponent } from './components/student-class-min-table/student-class-min-table.component';
-import { SchoolClassMinTableComponent } from './components/school-class-min-table/school-class-min-table.component';
-import { StudentAttendanceTableComponent } from '../students/components/student-assignments/student-attendance/student-attendance-table/student-attendance-table.component';
+import {SchoolSoftFilterFormComponent} from './components/school-soft-filter-form/school-soft-filter-form.component';
+import {StaffMinTableComponent} from './components/staff-min-table/staff-min-table.component';
+import {StaffSubjectTableComponent} from './components/staff-subject-table/staff-subject-table.component';
+import {StudentsMinTableComponent} from '@/shared/components/students-min-table/students-min-table.component';
+import {StudentClassMinTableComponent} from './components/student-class-min-table/student-class-min-table.component';
+import {SchoolClassMinTableComponent} from './components/school-class-min-table/school-class-min-table.component';
+import {StudentAttendanceTableComponent} from '../students/components/student-assignments/student-attendance/student-attendance-table/student-attendance-table.component';
+import {ExamResultsComponent} from '@/academics/components/exam-results/exam-results.component';
+import {ExamResultsTableComponent} from '@/academics/components/exam-results/exam-results-table/exam-results-table.component';
 
 @NgModule({
     declarations: [
@@ -60,7 +62,9 @@ import { StudentAttendanceTableComponent } from '../students/components/student-
         StudentClassMinTableComponent,
         SchoolClassMinTableComponent,
         StudentsMinTableComponent,
-        StudentAttendanceTableComponent
+        StudentAttendanceTableComponent,
+        ExamResultsComponent,
+        ExamResultsTableComponent
     ],
 
     imports: [CommonModule, NgbModule, CoreModule],
@@ -92,6 +96,8 @@ import { StudentAttendanceTableComponent } from '../students/components/student-
         StudentClassMinTableComponent,
         StudentsMinTableComponent,
         StudentAttendanceTableComponent,
+        ExamResultsComponent,
+        ExamResultsTableComponent,
         CommonModule,
         NgbModule,
         CoreModule

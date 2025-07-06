@@ -150,7 +150,7 @@ namespace SchoolWebApp.API.Controllers.Academics
                 if (curriculumId <= 0) return BadRequest(curriculumId);
                 if (sessionId <= 0) return BadRequest(sessionId);
                 if (schoolClassId <= 0) return BadRequest(schoolClassId);
-                var _item = await _unitOfWork.Exams.SearchForExam(academicYearId, curriculumId, sessionId, schoolClassId, subjectId, examTypeId, examName);
+                var _item = await _unitOfWork.Exams.SearchForExam(academicYearId, curriculumId, sessionId, schoolClassId, subjectId, examTypeId);
                 //if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<List<ExamDto>>(_item);
                 return Ok(_itemDto);
@@ -206,7 +206,7 @@ namespace SchoolWebApp.API.Controllers.Academics
         {
             if (ModelState.IsValid)
             {
-                if (await _unitOfWork.Exams.ItemExistsAsync(s => s.Name == model.Name && s.ExamTypeId == model.ExamTypeId && s.SchoolClassId == model.SchoolClassId
+                if (await _unitOfWork.Exams.ItemExistsAsync(s => s.Name == model.Name && s.ExamNameId == model.ExamNameId && s.SchoolClassId == model.SchoolClassId
                 && s.SessionId == model.SessionId && s.SubjectId == model.SubjectId))
                     return Conflict(new { message = $"The exam details submitted already exist." });
                 try

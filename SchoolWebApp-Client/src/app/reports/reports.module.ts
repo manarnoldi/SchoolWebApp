@@ -15,6 +15,7 @@ import { ClassListsReportComponent } from './components/class-report/class-lists
 import { ClassAttendanceReportComponent } from './components/class-report/class-attendance-report/class-attendance-report.component';
 import { ClassAttendanceReportTableComponent } from './components/class-report/class-attendance-report/class-attendance-report-table/class-attendance-report-table.component';
 import { ClassAttendanceDetailsReportComponent } from './components/class-report/class-attendance-details-report/class-attendance-details-report.component';
+import { MissingMarksReportComponent } from './components/academics-report/missing-marks-report/missing-marks-report.component';
 
 @NgModule({
     declarations: [
@@ -31,7 +32,8 @@ import { ClassAttendanceDetailsReportComponent } from './components/class-report
         ClassListsReportComponent,
         ClassAttendanceReportComponent,
         ClassAttendanceReportTableComponent,
-        ClassAttendanceDetailsReportComponent
+        ClassAttendanceDetailsReportComponent,
+        MissingMarksReportComponent
     ],
     imports: [CoreModule, SharedModule]
 })

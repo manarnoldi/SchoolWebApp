@@ -13,6 +13,6 @@ namespace SchoolWebApp.Core.Entities.Academics
         [Required(ErrorMessage = "Select if exam type is currently featured")]
         public bool Featured { get; set; }
 
-        public List<Exam> Exams { get; set; } = new();
+        public List<ExamName> ExamNames { get; set; } = new();
     }
 }

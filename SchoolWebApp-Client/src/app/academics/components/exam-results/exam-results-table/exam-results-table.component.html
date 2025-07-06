@@ -5,16 +5,27 @@
         <table class="table table-striped table-hover text-nowrap">
             <thead>
                 <tr>
-                    <ng-content *ngFor="let header of tableHeaders">
+                    <th class="py-1" *ngIf="isReport">Class</th>
+                    <th class="py-1" *ngIf="isReport">Subject</th>
+                    <th class="py-1">Adm #</th>
+                    <th class="py-1">Student name</th>
+                    <th class="py-1" *ngIf="!isReport">Subject name</th>
+                    <th class="py-1">Exam Type</th>
+                    <th class="py-1">Exam Name</th>
+                    <th class="py-1">Score</th>
+                    <th class="py-1">Out of</th>
+                    <th class="py-1">Contributing</th>
+                    <th class="py-1" *ngIf="!isReport">Action</th>
+                    <!-- <ng-content *ngFor="let header of tableHeaders">
                         <th class="py-1 " *ngIf="header.show">{{header.name}}</th>
-                    </ng-content>
+                    </ng-content> -->
                 </tr>
             </thead>
             <tbody>
                 <tr
                     *ngFor="let item of examResults | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i">
                     <td class="py-1" *ngIf="isReport">
-                        {{item.studentSubject?.studentClass?.name}}
+                        {{item.exam?.schoolClass?.name}}
                     </td>
                     <td class="py-1" *ngIf="isReport">
                         {{item.studentSubject?.subject?.name}}
@@ -35,6 +46,7 @@
                     <td class="py-1 ">
                         <input class="form-control form-control-sm p-0 w-auto"
                             type="number"
+                            [attr.disabled]="isReport===true ? 'disabled':null"
                             [id]="'score_' + item.studentId + '_' + i"
                             (change)="validateNumber($event, i,item.exam?.examMark)"
                             (blur)="validateNumber($event, i,item.exam?.examMark)"

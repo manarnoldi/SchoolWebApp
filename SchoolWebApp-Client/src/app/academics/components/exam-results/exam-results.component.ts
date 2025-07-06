@@ -40,7 +40,7 @@ export class ExamResultsComponent implements OnInit {
     @ViewChild(SchoolSoftFilterFormComponent)
     ssFilterFormComponent: SchoolSoftFilterFormComponent;
 
-    @Input() showMissingMarksReportButton: boolean = false;
+    @Input() isMissingMarksReport: boolean = false;
     @Output() printReportClickedEvent = new EventEmitter<ExamResult[]>();
 
     examResults: ExamResult[] = [];
@@ -273,6 +273,10 @@ export class ExamResultsComponent implements OnInit {
         });
     };
 
+    loadExamMissingMarks = () => {
+        
+    };
+
     examChanged = (examNameId: number) => {
         this.examResults = [];
     };
@@ -298,7 +302,8 @@ export class ExamResultsComponent implements OnInit {
                                 .loadExamResults(
                                     this.exams.find(
                                         (e) => e.id == examR.examId.toString()
-                                    )
+                                    ),
+                                    false
                                 )
                                 .subscribe({
                                     next: (examRes) => {
@@ -342,7 +347,8 @@ export class ExamResultsComponent implements OnInit {
         else {
             this.examResultsSvc
                 .loadExamResults(
-                    this.exams.find((e) => e.id == ssf.examId.toString())
+                    this.exams.find((e) => e.id == ssf.examId.toString()),
+                    this.isMissingMarksReport
                 )
                 .subscribe({
                     next: (examRes) => {
@@ -358,7 +364,7 @@ export class ExamResultsComponent implements OnInit {
     submitExamResults = () => {
         let examId =
             this.ssFilterFormComponent.schoolSoftFilterForm.get('examId').value;
-        
+
         if (!this.examResults || this.examResults.length <= 0) {
             this.toastr.error(
                 'There are no exam results on the list. Do the selections and load the results.'
@@ -391,7 +397,8 @@ export class ExamResultsComponent implements OnInit {
                                 .loadExamResults(
                                     this.exams.find(
                                         (e) => e.id == examId.toString()
-                                    )
+                                    ),
+                                    false
                                 )
                                 .subscribe({
                                     next: (examRes) => {

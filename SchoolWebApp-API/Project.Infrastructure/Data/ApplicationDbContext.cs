@@ -29,6 +29,7 @@ namespace Project.Infrastructure.Data
         public DbSet<Exam> Exams { get; set; }
         public DbSet<ExamResult> ExamResults { get; set; }
         public DbSet<ExamType> ExamTypes { get; set; }
+        public DbSet<ExamName> ExamNames { get; set; }
         public DbSet<Grade> Grades { get; set; }
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<SubjectGroup> SubjectGroups { get; set; }

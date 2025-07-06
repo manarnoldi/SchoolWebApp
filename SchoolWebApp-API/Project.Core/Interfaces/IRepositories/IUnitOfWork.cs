@@ -43,6 +43,7 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
         IAcademicYearRepository AcademicYears { get; }
         ICurriculumRepository Curricula { get; }
         IExamTypeRepository ExamTypes { get; }
+        IExamNameRepository ExamNames { get; }
         IExamRepository Exams { get; }
         IExamResultRepository ExamResults { get; }
         IGradeRepository Grades { get; }

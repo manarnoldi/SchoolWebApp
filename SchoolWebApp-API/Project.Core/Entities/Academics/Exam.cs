@@ -21,8 +21,8 @@ namespace SchoolWebApp.Core.Entities.Academics
 
         public string? OtherDetails { get; set; }
 
-        public int ExamTypeId { get; set; }
-        public ExamType? ExamType { get; set; }
+        public int ExamNameId { get; set; }
+        public ExamName? ExamName { get; set; }
         public int SchoolClassId { get; set; }
         public SchoolClass? SchoolClass { get; set; }
         public int SessionId { get; set; }
