@@ -37,7 +37,7 @@ namespace SchoolWebApp.API.Controllers.Academics
         {
             try
             {
-                return Ok(_mapper.Map<List<ExamNameDto>>(await _unitOfWork.ExamNames.GetAll()));
+                return Ok(_mapper.Map<List<ExamNameDto>>(await _unitOfWork.ExamNames.Find(includeProperties: "ExamType")));
             }
             catch (Exception ex)
             {
@@ -87,7 +87,7 @@ namespace SchoolWebApp.API.Controllers.Academics
             try
             {
                 if (id <= 0) return BadRequest(id);
-                var _item = await _unitOfWork.ExamNames.GetById(id);
+                var _item = await _unitOfWork.ExamNames.GetById(id, includeProperties: "ExamType");
 
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<ExamNameDto>(_item);

@@ -1,50 +1,53 @@
+import {ExamName} from '@/academics/models/exam-name';
 import {ExamType} from '@/academics/models/exam-type';
+import {ExamNamesService} from '@/academics/services/exam-names.service';
 import {ExamTypesService} from '@/academics/services/exam-types.service';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
-    selector: 'app-exam-types',
-    templateUrl: './exam-types.component.html',
-    styleUrl: './exam-types.component.scss'
+    selector: 'app-exam-names',
+    templateUrl: './exam-names.component.html',
+    styleUrl: './exam-names.component.scss'
 })
-export class ExamTypesComponent implements OnInit {
+export class ExamNamesComponent implements OnInit {
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
 
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Home'},
-        {link: ['/settings/examTypes'], title: 'Settings: Exam types'}
+        {link: ['/settings/examNames'], title: 'Settings: Exam names'}
     ];
 
-    dashboardTitle = 'Settings:  Exam types';
-    tableTitle: string = ' Exam types list';
+    dashboardTitle = 'Settings:  Exam names';
+    tableTitle: string = ' Exam names list';
     tableHeaders: string[] = [
         'Name',
-        'Abbreviation',
+        'Exam type',
         'Rank',
-        'Featured',
         'Description',
         'Action'
     ];
 
-    examType: ExamType;
+    examName: ExamName;
     examTypes: ExamType[] = [];
+    examNames: ExamName[] = [];
     tblShowViewButton: true;
     editMode = false;
     isAuthLoading: boolean;
     page = 1;
     pageSize = 10;
-    tableModel: string = 'examType';
+    tableModel: string = 'examName';
 
-    examTypeForm: FormGroup;
+    examNameForm: FormGroup;
 
     constructor(
+        private examNamesSvc: ExamNamesService,
         private examTypesSvc: ExamTypesService,
         private toastr: ToastrService,
         private formBuilder: FormBuilder
@@ -55,23 +58,24 @@ export class ExamTypesComponent implements OnInit {
     }
 
     get f() {
-        return this.examTypeForm.controls;
+        return this.examNameForm.controls;
     }
 
     refreshItems() {
-        this.examTypeForm = this.formBuilder.group({
+        this.examNameForm = this.formBuilder.group({
             name: ['', [Validators.required]],
-            abbreviation: [''],
+            examTypeId: [null, [Validators.required]],
             rank: [0],
-            featured: [false],
             description: ['']
         });
 
         let examTypesRequest = this.examTypesSvc.get('/examTypes');
+        let examNamesRequest = this.examNamesSvc.get('/examNames');
 
-        forkJoin([examTypesRequest]).subscribe(
-            (res) => {
-                this.examTypes = res[0].slice(
+        forkJoin([examTypesRequest, examNamesRequest]).subscribe(
+            ([examTypes, examNames]) => {
+                this.examTypes = examTypes.sort((a, b) => a.rank - b.rank);
+                this.examNames = examNames.slice(
                     (this.page - 1) * this.pageSize,
                     (this.page - 1) * this.pageSize + this.pageSize
                 );
@@ -85,15 +89,14 @@ export class ExamTypesComponent implements OnInit {
     }
 
     editItem(id: number) {
-        this.examTypesSvc.getById(id, '/examTypes').subscribe(
+        this.examNamesSvc.getById(id, '/examNames').subscribe(
             (res) => {
-                this.examType = new ExamType(res);
-                this.examTypeForm.setValue({
-                    name: this.examType.name,
-                    abbreviation: this.examType.abbreviation,
-                    rank: this.examType.rank,
-                    featured: this.examType.featured,
-                    description: this.examType.description
+                this.examName = new ExamName(res);
+                this.examNameForm.setValue({
+                    name: this.examName.name,
+                    examTypeId: this.examName.examTypeId,
+                    rank: this.examName.rank,
+                    description: this.examName.description
                 });
                 this.editMode = true;
                 this.tableButton.onClick();
@@ -117,7 +120,7 @@ export class ExamTypesComponent implements OnInit {
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.value) {
-                this.examTypesSvc.delete('/examTypes', id).subscribe(
+                this.examNamesSvc.delete('/examNames', id).subscribe(
                     (res) => {
                         this.refreshItems();
                         this.toastr.success('Record deleted successfully!');
@@ -132,7 +135,7 @@ export class ExamTypesComponent implements OnInit {
     }
 
     onSubmit() {
-        if (this.examTypeForm.invalid) {
+        if (this.examNameForm.invalid) {
             return;
         }
 
@@ -151,16 +154,16 @@ export class ExamTypesComponent implements OnInit {
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.value) {
-                let itemToBeSaved = new ExamType(this.examTypeForm.value);
+                let itemToBeSaved = new ExamName(this.examNameForm.value);
                 if (this.editMode) {
-                    itemToBeSaved.id = this.examType.id;
+                    itemToBeSaved.id = this.examName.id;
                 }
 
                 let reqToProcess = this.editMode
-                    ? this.examTypesSvc.update('/examTypes', itemToBeSaved)
-                    : this.examTypesSvc.create('/examTypes', itemToBeSaved);
+                    ? this.examNamesSvc.update('/examNames', itemToBeSaved)
+                    : this.examNamesSvc.create('/examNames', itemToBeSaved);
 
-                let replyMsg = `Exam type type ${
+                let replyMsg = `Exam name ${
                     this.editMode ? 'updated' : 'created'
                 } successfully!`;
 
@@ -169,7 +172,7 @@ export class ExamTypesComponent implements OnInit {
                         this.editMode = false;
                         this.toastr.success(replyMsg);
                         this.refreshItems();
-                        this.examTypeForm.reset();
+                        this.examNameForm.reset();
                         this.closeButton.nativeElement.click();
                     },
                     (err) => {
@@ -182,7 +185,7 @@ export class ExamTypesComponent implements OnInit {
     }
 
     resetForm() {
-        this.examTypeForm.reset();
+        this.examNameForm.reset();
     }
 
     pageSizeChanged = (pageSize: number) => {

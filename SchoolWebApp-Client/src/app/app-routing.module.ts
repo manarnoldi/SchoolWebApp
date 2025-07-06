@@ -69,6 +69,7 @@ import { SchoolReportComponent } from './reports/components/school-report/school
 import { ClassReportComponent } from './reports/components/class-report/class-report.component';
 import { StaffReportComponent } from './reports/components/staff-report/staff-report.component';
 import { AcademicsReportComponent } from './reports/components/academics-report/academics-report.component';
+import { ExamNamesComponent } from './academics/components/exam-names/exam-names.component';
 
 const routes: Routes = [
     {
@@ -170,6 +171,7 @@ const routes: Routes = [
         children: [
             {path: 'curricula', component: CurriculumComponent},
             {path: 'examTypes', component: ExamTypesComponent},
+            {path: 'examNames', component: ExamNamesComponent},
             {path: 'subjectGroups', component: SubjectGroupsComponent},
             {path: 'subjects', component: SubjectsComponent},
             {

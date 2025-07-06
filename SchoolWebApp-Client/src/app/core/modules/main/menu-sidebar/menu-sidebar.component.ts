@@ -196,6 +196,11 @@ export const MENU = [
                 path: ['/academics/examTypes']
             },
             {
+                name: 'Exam Names',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/academics/examNames']
+            },
+            {
                 name: 'Exams',
                 iconClasses: 'fas fa-bullseye',
                 path: ['/academics/exams']
