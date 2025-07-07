@@ -142,7 +142,7 @@ namespace SchoolWebApp.API.Controllers.Academics
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ExamsSearch(int academicYearId, int curriculumId, int sessionId, int schoolClassId,
-            int? subjectId = null, int? examTypeId = null, string? examName = null)
+            int? subjectId = null, int? examTypeId = null, int? examNameId = null)
         {
             try
             {
@@ -150,7 +150,7 @@ namespace SchoolWebApp.API.Controllers.Academics
                 if (curriculumId <= 0) return BadRequest(curriculumId);
                 if (sessionId <= 0) return BadRequest(sessionId);
                 if (schoolClassId <= 0) return BadRequest(schoolClassId);
-                var _item = await _unitOfWork.Exams.SearchForExam(academicYearId, curriculumId, sessionId, schoolClassId, subjectId, examTypeId);
+                var _item = await _unitOfWork.Exams.SearchForExam(academicYearId, curriculumId, sessionId, schoolClassId, subjectId, examTypeId, examNameId);
                 //if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<List<ExamDto>>(_item);
                 return Ok(_itemDto);
@@ -178,7 +178,7 @@ namespace SchoolWebApp.API.Controllers.Academics
             try
             {
                 if (id <= 0) return BadRequest(id);
-                var _item = await _unitOfWork.Exams.GetById(id, includeProperties: "ExamType,SchoolClass,Session,Subject");
+                var _item = await _unitOfWork.Exams.GetById(id, includeProperties: "ExamName,SchoolClass,Session,Subject");
 
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<ExamDto>(_item);

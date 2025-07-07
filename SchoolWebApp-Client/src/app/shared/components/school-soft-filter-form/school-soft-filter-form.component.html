@@ -146,8 +146,19 @@
                 </select>
             </div>
         </ng-content>
-        <ng-content *ngIf="showExam">
+        <ng-content *ngIf="showExamName">
             <div class="col py-1 px-1">
+                <select class="form-select form-select-sm" aria-label="ExamName"
+                    (change)="examNameChanged()"
+                    formControlName="examNameId" id="examNameId">
+                    <option [ngValue]="null" selected>-Exam name-</option>
+                    <option [ngValue]="examName.id" *ngFor="let examName of
+                                examNames">{{examName?.name}}</option>
+                </select>
+            </div>
+        </ng-content>
+        <ng-content *ngIf="showExam">
+            <div class="col py-1 px-0">
                 <select class="form-select form-select-sm" aria-label="Exam"
                     (change)="examChanged()"
                     formControlName="examId" id="examId">

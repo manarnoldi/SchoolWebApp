@@ -26,12 +26,13 @@ export class ExamTableComponent implements OnInit {
     ngOnInit(): void {}
 
     tableHeaders: string[] = [
+        'Ref#',
         'Curriculum',
         'Year',
         'Session',
         'Class',
-        'Exam Type',
         'Subject',
+        'Exam Type',        
         'Exam Name',
         'Exam Mark',
         'Contributing',

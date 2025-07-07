@@ -21,6 +21,7 @@ export class SchoolSoftFilter {
 
     public subjectId?: number;
     public examTypeId?: number;
+    public examNameId?: number;
     public examId?: number;
 
     constructor(model?: SchoolSoftFilter) {

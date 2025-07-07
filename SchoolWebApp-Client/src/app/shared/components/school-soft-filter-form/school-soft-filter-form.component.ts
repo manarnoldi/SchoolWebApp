@@ -1,5 +1,6 @@
 import {Curriculum} from '@/academics/models/curriculum';
 import { Exam } from '@/academics/models/exam';
+import { ExamName } from '@/academics/models/exam-name';
 import { ExamType } from '@/academics/models/exam-type';
 import { Subject } from '@/academics/models/subject';
 import {SchoolClass} from '@/class/models/school-class';
@@ -33,6 +34,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
 
     @Input() subjects: Subject[] = [];
     @Input() examTypes: ExamType[] = [];
+    @Input() examNames: ExamName[] = [];
     @Input() exams: Exam[] = [];
 
     @Input() months: number[] = [];
@@ -53,6 +55,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
 
     @Input() showSubject: boolean = false;
     @Input() showExamType: boolean = false;
+    @Input() showExamName: boolean = false;
     @Input() showExam: boolean = false;
 
     @Input() showMonth: boolean = false;
@@ -76,6 +79,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
     @Output() subjectChangedEvent = new EventEmitter<number>();
     @Output() examTypeChangedEvent = new EventEmitter<number>();
     @Output() examNameChangedEvent = new EventEmitter<number>();
+    @Output() examChangedEvent = new EventEmitter<number>();
 
     @Output() monthChangedEvent = new EventEmitter<number>();
     @Output() yearChangedEvent = new EventEmitter<Date>();
@@ -140,6 +144,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
                 : null,
             subjectId: cysSearch.subjectId ?? null,
             examTypeId: cysSearch.examTypeId ?? null,
+            examNameId: cysSearch.examNameId ?? null,
             examId: cysSearch.examId ?? null,
         });
     };
@@ -163,6 +168,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
             dateTo: [null],
             subjectId:[null],
             examTypeId:[null],
+            examNameId:[null],
             examId:[null]
         });
     };
@@ -202,10 +208,17 @@ export class SchoolSoftFilterFormComponent implements OnInit {
         this.examTypeChangedEvent.emit(examTypeId);
     };
 
+     examNameChanged = () => {
+        let examNameId =
+            this.schoolSoftFilterForm.get('examNameId').value;
+        this.examNameChangedEvent.emit(examNameId);
+    };
+
+    
     examChanged = () => {
         let examId =
             this.schoolSoftFilterForm.get('examId').value;
-        this.examNameChangedEvent.emit(examId);
+        this.examChangedEvent.emit(examId);
     };
 
     staffCategoryChanged = () => {

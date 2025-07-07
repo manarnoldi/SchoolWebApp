@@ -11,6 +11,7 @@
             <tbody>
                 <tr
                     *ngFor="let item of exams| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                    <td>{{ item.id }}</td>
                     <td>
                         <span *ngFor="let curriculum of curricula">
                             <span *ngIf="curriculum.id === item.session?.curriculumId">
@@ -27,9 +28,9 @@
                     </td>
                     <td>{{ item.session?.sessionName }}</td>
                     <td>{{ item.schoolClass?.name }}</td>
-                    <td>{{ item.examType?.name }}</td>
                     <td>{{ item.subject?.name }}</td>
-                    <td>{{ item.name }}</td>
+                    <td>{{ item.examName?.examType?.name }}</td>
+                    <td>{{ item.examName?.name }}</td>
                     <td>{{ item.examMark }}</td>
                     <td>{{ item.contributingMark }}</td>
                     <td>

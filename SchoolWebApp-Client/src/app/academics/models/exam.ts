@@ -3,6 +3,7 @@ import {ExamType} from './exam-type';
 import {SchoolClass} from '@/class/models/school-class';
 import {Session} from '@/class/models/session';
 import {Subject} from './subject';
+import {ExamName} from './exam-name';
 
 export class Exam extends ResourceModel<Exam> {
     public name?: string;
@@ -11,6 +12,9 @@ export class Exam extends ResourceModel<Exam> {
 
     public examTypeId?: number;
     public examType?: ExamType;
+
+    public examNameId?: number;
+    public examName?: ExamName;
 
     public schoolClassId?: number;
     public schoolClass?: SchoolClass;

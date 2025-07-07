@@ -31,7 +31,7 @@ namespace SchoolWebApp.Infrastructure.Repositories.Academics
         }
 
         public async Task<List<Exam>> SearchForExam(int academicYearId, int curriculumId, int sessionId,
-            int schoolClassId, int? subjectId, int? examNameId)
+            int schoolClassId, int? subjectId, int? examTypeId, int? examNameId)
         {
             var query = _dbContext.Exams
                 .Where(c => c.SchoolClass.AcademicYearId == academicYearId
@@ -39,15 +39,18 @@ namespace SchoolWebApp.Infrastructure.Repositories.Academics
                 && c.SessionId == sessionId
                 && c.SchoolClassId == schoolClassId)
                 .Include(e => e.ExamName)
+                .Include(e => e.ExamName.ExamType)
                 .Include(e => e.SchoolClass)
                 .Include(e => e.Session)
                 .Include(e => e.Subject)
                 .AsQueryable();
-
-            if (examNameId != null)
-                query = query.Where(s => s.ExamNameId == examNameId);
+            
             if (subjectId != null)
                 query = query.Where(s => s.SubjectId == subjectId);
+            if (examTypeId != null)
+                query = query.Where(s => s.ExamName.ExamtypeId == examTypeId);
+            if (examNameId != null)
+                query = query.Where(s => s.ExamNameId == examNameId);
 
             var exams = await query.ToListAsync();
             return exams;

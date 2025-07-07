@@ -7,6 +7,7 @@ using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.Entities.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.DTOs.Academics.ExamName;
+using SchoolWebApp.Core.DTOs.Class.Session;
 
 namespace SchoolWebApp.API.Controllers.Academics
 {
@@ -67,6 +68,34 @@ namespace SchoolWebApp.API.Controllers.Academics
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while retrieving paginated exam names.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/examNames/byExamTypeId/5
+        /// <summary>
+        /// A method for retrieving exam names by exam type Id.
+        /// </summary>
+        /// <param name="examTypeId">The examTypeId to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("byExamTypeId/{examTypeId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ExamNameDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetExamNamesByExamTypeId(int examTypeId)
+        {
+            try
+            {
+                if (examTypeId <= 0) return BadRequest(examTypeId);
+                var _item = await _unitOfWork.ExamNames.GetByExamTypeId(examTypeId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<ExamNameDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the exam names by exam type id.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }

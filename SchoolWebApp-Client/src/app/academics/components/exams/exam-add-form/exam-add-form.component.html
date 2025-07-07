@@ -144,7 +144,7 @@
                                                     <label for="examTypeId" class="form-label">Exam
                                                         type: <span
                                                             class="requiredField">*</span></label>
-                                                    <select class="form-select form-select-sm"
+                                                    <select class="form-select form-select-sm" (change)="examTypeChanged()"
                                                         [attr.disabled]="editMode? 'disabled' : null"
                                                         aria-label="Exam type" [ngClass]="{
                                                             'is-invalid': (f.examTypeId.dirty ||
@@ -164,16 +164,23 @@
                                             </div>
                                             <div class="col-md-12">
                                                 <div class="form-group">
-                                                    <label for="name">Exam name:
-                                                        <span class="requiredField">*</span></label>
-                                                    <input placeholder="Enter exam name" id="name"
-                                                        type="text"
+                                                    <label for="examNameId" class="form-label">Exam
+                                                        name: <span
+                                                            class="requiredField">*</span></label>
+                                                    <select class="form-select form-select-sm"
                                                         [attr.disabled]="editMode? 'disabled' : null"
-                                                        class="form-control form-control-sm"
-                                                        formControlName="name"
-                                                        [ngClass]="{ 'is-invalid':
-                                                                (f.name.dirty || f.name.touched) &&
-                                                                f.name.invalid }" />
+                                                        aria-label="Exam name" [ngClass]="{
+                                                            'is-invalid': (f.examNameId.dirty ||
+                                                            f.examNameId.touched) && f.examNameId.invalid }"
+                                                        formControlName="examNameId"
+                                                        id="examNameId">
+                                                        <option [ngValue]="null" selected>-Select
+                                                            Exam
+                                                            name-</option>
+                                                        <option [ngValue]="examName.id"
+                                                            *ngFor="let examName of
+                                                                        examNames">{{examName.name}}</option>
+                                                    </select>
                                                     <div class="invalid-feedback"> Exam name is
                                                         required</div>
                                                 </div>

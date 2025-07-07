@@ -1,9 +1,11 @@
 import {Curriculum} from '@/academics/models/curriculum';
 import {Exam} from '@/academics/models/exam';
+import {ExamName} from '@/academics/models/exam-name';
 import {ExamType} from '@/academics/models/exam-type';
 import {Subject} from '@/academics/models/subject';
 import {CurriculumService} from '@/academics/services/curriculum.service';
 import {EducationLevelSubjectService} from '@/academics/services/education-level-subject.service';
+import {ExamNamesService} from '@/academics/services/exam-names.service';
 import {ExamTypesService} from '@/academics/services/exam-types.service';
 import {ExamsService} from '@/academics/services/exams.service';
 import {SubjectsService} from '@/academics/services/subjects.service';
@@ -34,6 +36,7 @@ export class ExamAddFormComponent implements OnInit {
     academicYears: AcademicYear[] = [];
     curricula: Curriculum[] = [];
     examTypes: ExamType[] = [];
+    examNames: ExamName[] = [];
     sessions: Session[] = [];
     subjects: Subject[] = [];
     educationLevels: EducationLevel[] = [];
@@ -61,6 +64,7 @@ export class ExamAddFormComponent implements OnInit {
         private academicYearsSvc: AcademicYearsService,
         private examTypesSvc: ExamTypesService,
         private examsSvc: ExamsService,
+        private examNamesSvc: ExamNamesService,
         private subjectsSvc: SubjectsService,
         private router: Router,
         private route: ActivatedRoute,
@@ -125,19 +129,29 @@ export class ExamAddFormComponent implements OnInit {
                             '/schoolClasses'
                         );
                         let sessionsReq = this.sessionSvc.get('/sessions');
+                        let examNameReq = this.examNamesSvc.getByExamTypeId(
+                            exam?.examName?.examTypeId
+                        );
 
                         forkJoin([
                             subjectsReq,
                             schoolClassReq,
-                            sessionsReq
+                            sessionsReq,
+                            examNameReq
                         ]).subscribe({
-                            next: ([subject, schoolClass, sessions]) => {
+                            next: ([
+                                subject,
+                                schoolClass,
+                                sessions,
+                                examNames
+                            ]) => {
                                 subject.isSelected = true;
                                 schoolClass.isSelected = true;
                                 this.subjects.push(subject);
                                 this.schoolClasses.push(schoolClass);
                                 this.setFormControls(exam);
                                 this.sessions = sessions;
+                                this.examNames = examNames;
                                 this.isLoading = true;
                             },
                             error: (err) => {
@@ -176,9 +190,8 @@ export class ExamAddFormComponent implements OnInit {
                 });
                 if (this.editMode) {
                     totalContrMark =
-                        totalContrMark -
-                        prevContributingMark +
-                        currentContributingMark;
+                        totalContrMark +
+                        currentContributingMark - prevContributingMark;
                 } else {
                     totalContrMark += currentContributingMark;
                 }
@@ -186,7 +199,7 @@ export class ExamAddFormComponent implements OnInit {
                     contributingMarksError = `
                         Exam: ${examToBeSaved.name} of type: ${this.examTypes.find((E) => E.id == examToBeSaved.examTypeId.toString()).name}, 
                         Class: ${this.schoolClasses.find((E) => E.id == examToBeSaved.schoolClassId.toString()).name}, 
-                        Subject: ${this.subjects.find((s) => (s.id = examToBeSaved.subjectId.toString())).name}, 
+                        Subject: ${this.subjects.find((s) => s.id == examToBeSaved.subjectId.toString()).name}, 
                         Curriculum: ${this.sessions.find((c) => c.id == examToBeSaved.sessionId.toString()).curriculum?.name}, 
                         Year: ${this.sessions.find((c) => c.id == examToBeSaved.sessionId.toString()).academicYear?.name}, 
                         Session: ${this.sessions.find((c) => c.id == examToBeSaved.sessionId.toString()).sessionName}, 
@@ -208,7 +221,8 @@ export class ExamAddFormComponent implements OnInit {
             sessionId: exam?.session?.id ?? null,
             curriculumId: exam?.session?.curriculumId ?? null,
             educationLevelId: this.eduLevelId ?? null,
-            examTypeId: exam?.examType.id ?? null,
+            examTypeId: exam?.examName?.examTypeId ?? null,
+            examNameId: exam?.examNameId ?? null,
             examMark: exam?.examMark ?? null,
             contributingMark: exam?.contributingMark ?? null,
             name: exam?.name ?? null,
@@ -238,9 +252,10 @@ export class ExamAddFormComponent implements OnInit {
             curriculumId: [null, Validators.required],
             educationLevelId: [null, Validators.required],
             examTypeId: [null, Validators.required],
+            examNameId: [null, Validators.required],
             examMark: ['', Validators.required],
             contributingMark: ['', Validators.required],
-            name: ['', Validators.required],
+            name: [''],
             otherDetails: [''],
             examStartDate: [
                 new Date().toISOString().substring(0, 10),
@@ -257,7 +272,7 @@ export class ExamAddFormComponent implements OnInit {
         });
     };
 
-    curriculumYearChanged = (curriculumId: number ,academicYearId: number) => {
+    curriculumYearChanged = (curriculumId: number, academicYearId: number) => {
         let sessionsReq = this.sessionSvc.getByCurriculumYear(
             curriculumId,
             academicYearId
@@ -289,7 +304,7 @@ export class ExamAddFormComponent implements OnInit {
         ) {
             return;
         }
-        this.curriculumYearChanged(curriculumId,academicYearId);
+        this.curriculumYearChanged(curriculumId, academicYearId);
     };
 
     educationLevelChanged = () => {
@@ -334,6 +349,29 @@ export class ExamAddFormComponent implements OnInit {
     get f() {
         return this.examsAddForm.controls;
     }
+
+    examTypeChanged = () => {
+        this.examNames = [];
+        this.examsAddForm.get('examNameId').reset();
+
+        if (
+            !this.examsAddForm.get('examTypeId').value ||
+            !this.examsAddForm.get('examTypeId').value
+        ) {
+            return;
+        }
+
+        this.examNamesSvc
+            .getByExamTypeId(this.examsAddForm.get('examTypeId').value)
+            .subscribe({
+                next: (examNames) => {
+                    this.examNames = examNames.sort((a, b) => a.rank - b.rank);
+                },
+                error: (err) => {
+                    this.toastr.error(err.error);
+                }
+            });
+    };
 
     updateExam = (exam: Exam, educationLevelId: number) => {
         this.examsSvc.getById(parseInt(exam.id), '/exams').subscribe({
@@ -422,7 +460,10 @@ export class ExamAddFormComponent implements OnInit {
                 let curriculumId = this.examsAddForm.get('curriculumId').value;
                 let sessionId = this.examsAddForm.get('sessionId').value;
                 let examTypeId = this.examsAddForm.get('examTypeId').value;
-                let examName = this.examsAddForm.get('name').value;
+                let examNameId = this.examsAddForm.get('examNameId').value;
+                let examName = this.examNames.find(
+                    (e) => e.id === examNameId
+                ).name;
                 let contributingMark =
                     this.examsAddForm.get('contributingMark').value;
                 let examStartDate =
@@ -440,6 +481,7 @@ export class ExamAddFormComponent implements OnInit {
                     this.exam.examStartDate = examStartDate;
                     this.exam.examEndDate = examEndDate;
                     this.exam.examMarkEntryEndDate = examMarkEntryEndDate;
+                    this.exam.examTypeId = examTypeId;
                     this.exam.otherDetails = otherDetails;
                     this.updateExam(this.exam, educationLevelId);
                     return;
@@ -449,16 +491,7 @@ export class ExamAddFormComponent implements OnInit {
                 let validateContributingMarkReq = [];
 
                 let reqToProcess = [];
-                let toSaveItem = new Exam();
-                toSaveItem.contributingMark = contributingMark;
-                toSaveItem.examEndDate = examEndDate;
-                toSaveItem.examMark = examMark;
-                toSaveItem.examStartDate = examStartDate;
-                toSaveItem.examMarkEntryEndDate = examMarkEntryEndDate;
-                toSaveItem.examTypeId = examTypeId;
-                toSaveItem.name = examName;
-                toSaveItem.otherDetails = otherDetails;
-                toSaveItem.sessionId = sessionId;
+
                 this.contributingMarksError = [];
                 this.subjects
                     .filter((s) => s.isSelected)
@@ -466,12 +499,24 @@ export class ExamAddFormComponent implements OnInit {
                         this.schoolClasses
                             .filter((s) => s.isSelected)
                             .forEach((sc) => {
+                                const toSaveItem = new Exam();
+                                toSaveItem.contributingMark = contributingMark;
+                                toSaveItem.examEndDate = examEndDate;
+                                toSaveItem.examMark = examMark;
+                                toSaveItem.examStartDate = examStartDate;
+                                toSaveItem.examMarkEntryEndDate =
+                                    examMarkEntryEndDate;
+                                toSaveItem.examTypeId = examTypeId;
+                                toSaveItem.examNameId = examNameId;
+                                toSaveItem.name = examName;
+                                toSaveItem.otherDetails = otherDetails;
+                                toSaveItem.sessionId = sessionId;
                                 toSaveItem.subjectId = parseInt(s.id);
                                 toSaveItem.schoolClassId = parseInt(sc.id);
                                 recordExistsReq.push(
                                     this.examsSvc.get(
                                         `/exams/examSearch?academicYearId=${academicYearId}&curriculumId=${curriculumId}&sessionId=
-                    ${sessionId}&schoolClassId=${sc.id ?? ''}&subjectId=${s.id ?? ''}&examTypeId=${examTypeId ?? ''}&examName=${examName ?? ''}`
+                    ${sessionId}&schoolClassId=${sc.id ?? ''}&subjectId=${s.id ?? ''}&examTypeId=${examTypeId ?? ''}&examNameId=${examNameId ?? ''}`
                                     )
                                 );
                                 validateContributingMarkReq.push(
@@ -501,7 +546,7 @@ export class ExamAddFormComponent implements OnInit {
                         if (errorInContrMarkFound) {
                             this.toastr.error(
                                 'Exam type contribution marks greater than 100%!<br>' +
-                                    contributingMarksResults.toString(),
+                                    contributingMarksResults.join(''),
                                 'Contribution marks exceeded 100% error!',
                                 {
                                     disableTimeOut: true,
@@ -520,7 +565,7 @@ export class ExamAddFormComponent implements OnInit {
                                 existsResults.forEach((element) => {
                                     if (element.length > 0) {
                                         itemExists = true;
-                                        itemExistsError += `Exam: ${examName} of type: ${element[0]?.examType?.name} 
+                                        itemExistsError += `Exam: ${element[0]?.examName?.name} of type: ${element[0]?.examName?.examType?.name} 
                                         ,Class: ${element[0]?.schoolClass?.name}, Subject:${element[0]?.subject?.name} 
                                         ,Curiculum: ${this.curricula.find((c) => c.id == curriculumId).name}, Year: 
                                         ${this.academicYears.find((y) => y.id == academicYearId).name}

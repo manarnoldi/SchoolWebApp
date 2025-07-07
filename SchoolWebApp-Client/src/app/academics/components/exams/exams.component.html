@@ -29,12 +29,6 @@
                 (examTypeChangedEvent)="examTypeChanged($event)"
                 (searchItemEvent)="onButtonSearchClick($event)">
             </app-school-soft-filter-form>
-            <!-- <app-exam-list-search-form [subjects]="subjects"
-                [schoolClasses]="schoolClasses" (examTypeChangedEvent)="examTypeChanged()"
-                (clearListEvent)="clearList()"
-                [sessions]="sessions" [curricula]="curricula"
-                (searchItemEvent)="onButtonSearchClick($event)" [examTypes]="examTypes"
-                [academicYears]="academicYears" [educationLevels]="educationLevels"></app-exam-list-search-form> -->
         </div>
         <app-exam-table [tableTitle]="'Examinations list'" *ngIf="isLoading"
             [exams]="exams" [curricula]="curricula" [eduLevelId]="educationLevelId"
