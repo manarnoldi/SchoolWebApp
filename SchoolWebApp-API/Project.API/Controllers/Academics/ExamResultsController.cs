@@ -217,18 +217,22 @@ namespace SchoolWebApp.API.Controllers.Academics
                 {
                     foreach (var item in model)
                     {
-                        var existingExamResult = await _unitOfWork.ExamResults.GetByStudentSubjectExamId(item.StudentSubjectId, item.ExamId);
+                        if(item.Score != null)
+                        {
+                            var existingExamResult = await _unitOfWork.ExamResults.GetByStudentSubjectExamId(item.StudentSubjectId, item.ExamId);
 
-                        if (existingExamResult != null)
-                        {
-                            existingExamResult.Score = item.Score;
-                            _unitOfWork.ExamResults.Update(existingExamResult);
+                            if (existingExamResult != null)
+                            {
+                                existingExamResult.Score = (float) item.Score;
+                                _unitOfWork.ExamResults.Update(existingExamResult);
+                            }
+                            else
+                            {
+                                var _item = _mapper.Map<ExamResult>(item);
+                                _unitOfWork.ExamResults.Create(_item);
+                            }
                         }
-                        else
-                        {
-                            var _item = _mapper.Map<ExamResult>(item);
-                            _unitOfWork.ExamResults.Create(_item);
-                        }
+                        
                     }
                     await _unitOfWork.SaveChangesAsync();
                     return Ok("Exam results updated successfully");

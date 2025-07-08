@@ -15,7 +15,8 @@ export class ExamsService extends ResourceService<Exam> {
 
     getExamsBySearch = (ssf: SchoolSoftFilter): Observable<Exam[]> => {
         let url = `/exams/examSearch?academicYearId=${ssf.academicYearId}&curriculumId=${ssf.curriculumId}&sessionId=
-              ${ssf.sessionId}&schoolClassId=${ssf.schoolClassId ?? ''}&subjectId=${ssf.subjectId ?? ''}&examTypeId=${ssf.examTypeId ?? ''}`;
+              ${ssf.sessionId}&schoolClassId=${ssf.schoolClassId ?? ''}&subjectId=${ssf.subjectId ?? ''}&examTypeId=
+              ${ssf.examTypeId ?? ''}&examNameId=${ssf.examNameId ?? ''}`;
         return this.get(url).pipe(map((exams) => exams));
     };
 }

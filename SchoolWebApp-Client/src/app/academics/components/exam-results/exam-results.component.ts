@@ -1,9 +1,11 @@
 import {Curriculum} from '@/academics/models/curriculum';
 import {Exam} from '@/academics/models/exam';
+import {ExamName} from '@/academics/models/exam-name';
 import {ExamResult} from '@/academics/models/exam-result';
 import {ExamType} from '@/academics/models/exam-type';
 import {Subject} from '@/academics/models/subject';
 import {CurriculumService} from '@/academics/services/curriculum.service';
+import {ExamNamesService} from '@/academics/services/exam-names.service';
 import {ExamResultsService} from '@/academics/services/exam-results.service';
 import {ExamTypesService} from '@/academics/services/exam-types.service';
 import {ExamsService} from '@/academics/services/exams.service';
@@ -45,8 +47,12 @@ export class ExamResultsComponent implements OnInit {
 
     examResults: ExamResult[] = [];
     examTypes: ExamType[] = [];
+    examNames: ExamName[] = [];
     subjects: Subject[] = [];
     exams: Exam[] = [];
+
+    currentExam: Exam;
+
     schoolClasses: SchoolClass[] = [];
     sessions: Session[] = [];
     curricula: Curriculum[] = [];
@@ -70,6 +76,7 @@ export class ExamResultsComponent implements OnInit {
         private educLevelsSvc: EducationLevelService,
         private examsSvc: ExamsService,
         private examTypesSvc: ExamTypesService,
+        private examNamesSvc: ExamNamesService,
         private examResultsSvc: ExamResultsService
     ) {}
 
@@ -102,6 +109,7 @@ export class ExamResultsComponent implements OnInit {
 
     academicYearChanged = (acadYearId: number) => {
         this.examResults = [];
+        this.currentExam = null;
         if (acadYearId) {
             this.curriculumYearChanged();
         }
@@ -109,6 +117,7 @@ export class ExamResultsComponent implements OnInit {
 
     curriculumChanged = (curriculumId: number) => {
         this.examResults = [];
+        this.currentExam = null;
         if (curriculumId) {
             this.curriculumYearChanged();
         }
@@ -118,16 +127,8 @@ export class ExamResultsComponent implements OnInit {
         this.schoolClasses = [];
         this.subjects = [];
         this.examResults = [];
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('schoolClassId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('subjectId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('examTypeId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm.get('examId').reset();
+        this.currentExam = null;
+        this.resetFormControls(false,false, true, true, true, true);
 
         let acadYearId =
             this.ssFilterFormComponent.schoolSoftFilterForm.get(
@@ -163,23 +164,8 @@ export class ExamResultsComponent implements OnInit {
         this.sessions = [];
         this.educationLevels = [];
         this.examResults = [];
-
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('sessionId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('educationLevelId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('schoolClassId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('subjectId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('examTypeId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm.get('examId').reset();
+        this.currentExam = null;
+        this.resetFormControls(true, true, true, true, true, true);
 
         let curriculumId =
             this.ssFilterFormComponent.schoolSoftFilterForm.get(
@@ -213,39 +199,21 @@ export class ExamResultsComponent implements OnInit {
     };
 
     sessionChanged = (sessionId: number) => {
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('educationLevelId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('schoolClassId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('subjectId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('examTypeId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm.get('examId').reset();
+        this.resetFormControls(false, true, true, true, true, true);
         this.examResults = [];
+        this.currentExam = null;
     };
 
     schoolClassChanged = (schoolClassId: number) => {
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('subjectId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('examTypeId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm.get('examId').reset();
+        this.resetFormControls(false, false, false, true, true, true);
         this.examResults = [];
+        this.currentExam = null;
     };
 
     subjectChanged = (subjectId: number) => {
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('examTypeId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm.get('examId').reset();
+        this.resetFormControls(false, false, false, false, true, true);
         this.examResults = [];
+        this.currentExam = null;
     };
 
     printReportClicked = () => {
@@ -257,15 +225,12 @@ export class ExamResultsComponent implements OnInit {
     examTypeChanged = (examTypeId: number) => {
         this.exams = [];
         this.examResults = [];
-        this.ssFilterFormComponent.schoolSoftFilterForm.get('examId').reset();
+        this.currentExam = null;
+        this.resetFormControls(false, false, false, false, false, true);
 
-        let ssfSearch = new SchoolSoftFilter(
-            this.ssFilterFormComponent.schoolSoftFilterForm.value
-        );
-
-        this.examsSvc.getExamsBySearch(ssfSearch).subscribe({
-            next: (exams) => {
-                this.exams = exams;
+        this.examNamesSvc.getByExamTypeId(examTypeId).subscribe({
+            next: (examNames) => {
+                this.examNames = examNames;
             },
             error: (err) => {
                 this.toastr.error(err.error);
@@ -273,11 +238,10 @@ export class ExamResultsComponent implements OnInit {
         });
     };
 
-    loadExamMissingMarks = () => {
-        
-    };
+    loadExamMissingMarks = () => {};
 
-    examChanged = (examNameId: number) => {
+    examNameChanged = (examNameId: number) => {
+        this.currentExam = null;
         this.examResults = [];
     };
 
@@ -299,12 +263,7 @@ export class ExamResultsComponent implements OnInit {
                     .subscribe(
                         (res) => {
                             this.examResultsSvc
-                                .loadExamResults(
-                                    this.exams.find(
-                                        (e) => e.id == examR.examId.toString()
-                                    ),
-                                    false
-                                )
+                                .loadExamResults(this.currentExam, false)
                                 .subscribe({
                                     next: (examRes) => {
                                         this.examResults = examRes;
@@ -342,29 +301,41 @@ export class ExamResultsComponent implements OnInit {
             this.toastr.info('Select subject before searching!');
         else if (!ssf.examTypeId)
             this.toastr.info('Select exam type before searching!');
-        else if (!ssf.examId)
+        else if (!ssf.examNameId)
             this.toastr.info('Select exam name before searching!');
         else {
-            this.examResultsSvc
-                .loadExamResults(
-                    this.exams.find((e) => e.id == ssf.examId.toString()),
-                    this.isMissingMarksReport
-                )
-                .subscribe({
-                    next: (examRes) => {
-                        this.examResults = examRes;
-                    },
-                    error: (err) => {
-                        this.toastr.error(err.error);
+            this.examsSvc.getExamsBySearch(ssf).subscribe({
+                next: (exams) => {
+                    if (!exams || exams.length <= 0) {
+                        this.toastr.error(
+                            'There are no exams registered under the selections!'
+                        );
+                        return;
                     }
-                });
+
+                    this.currentExam = exams[0];
+                    this.examResultsSvc
+                        .loadExamResults(
+                            this.currentExam,
+                            this.isMissingMarksReport
+                        )
+                        .subscribe({
+                            next: (examRes) => {
+                                this.examResults = examRes;
+                            },
+                            error: (err) => {
+                                this.toastr.error(err.error);
+                            }
+                        });
+                },
+                error: (err) => {
+                    this.toastr.error(err.error);
+                }
+            });
         }
     };
 
     submitExamResults = () => {
-        let examId =
-            this.ssFilterFormComponent.schoolSoftFilterForm.get('examId').value;
-
         if (!this.examResults || this.examResults.length <= 0) {
             this.toastr.error(
                 'There are no exam results on the list. Do the selections and load the results.'
@@ -394,12 +365,7 @@ export class ExamResultsComponent implements OnInit {
                     .subscribe({
                         next: (res) => {
                             this.examResultsSvc
-                                .loadExamResults(
-                                    this.exams.find(
-                                        (e) => e.id == examId.toString()
-                                    ),
-                                    false
-                                )
+                                .loadExamResults(this.currentExam, false)
                                 .subscribe({
                                     next: (examRes) => {
                                         this.examResults = examRes;
@@ -419,5 +385,39 @@ export class ExamResultsComponent implements OnInit {
             } else if (result.dismiss === Swal.DismissReason.cancel) {
             }
         });
+    };
+
+    resetFormControls = (
+        sessionIdReset: boolean,
+        educationLevelIdReset: boolean,
+        schoolClassIdReset: boolean,
+        subjectIdReset: boolean,
+        examTypeIdReset: boolean,
+        examNameIdReset: boolean
+    ) => {
+        if (sessionIdReset)
+            this.ssFilterFormComponent.schoolSoftFilterForm
+                .get('sessionId')
+                .reset();
+        if (educationLevelIdReset)
+            this.ssFilterFormComponent.schoolSoftFilterForm
+                .get('educationLevelId')
+                .reset();
+        if (schoolClassIdReset)
+            this.ssFilterFormComponent.schoolSoftFilterForm
+                .get('schoolClassId')
+                .reset();
+        if (subjectIdReset)
+            this.ssFilterFormComponent.schoolSoftFilterForm
+                .get('subjectId')
+                .reset();
+        if (examTypeIdReset)
+            this.ssFilterFormComponent.schoolSoftFilterForm
+                .get('examTypeId')
+                .reset();
+        if (examNameIdReset)
+            this.ssFilterFormComponent.schoolSoftFilterForm
+                .get('examNameId')
+                .reset();
     };
 }

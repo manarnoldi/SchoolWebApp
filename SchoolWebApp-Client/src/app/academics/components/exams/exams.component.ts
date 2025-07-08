@@ -142,27 +142,20 @@ export class ExamsComponent implements OnInit, AfterViewChecked {
                                             b.session?.academicYear?.name
                                         )
                                     );
-                                    this.ssFilterFormComponent.schoolSoftFilterForm
-                                        .get('curriculumId')
-                                        .setValue(exam.session?.curriculumId);
-                                    this.ssFilterFormComponent.schoolSoftFilterForm
-                                        .get('educationLevelId')
-                                        .setValue(this.educationLevelId);
-                                    this.ssFilterFormComponent.schoolSoftFilterForm
-                                        .get('academicYearId')
-                                        .setValue(exam.session?.academicYearId);
-                                    this.ssFilterFormComponent.schoolSoftFilterForm
-                                        .get('sessionId')
-                                        .setValue(exam.sessionId);
-                                    this.ssFilterFormComponent.schoolSoftFilterForm
-                                        .get('schoolClassId')
-                                        .setValue(exam.schoolClassId);
-                                    this.ssFilterFormComponent.schoolSoftFilterForm
-                                        .get('subjectId')
-                                        .setValue(exam.subjectId);
-                                    this.ssFilterFormComponent.schoolSoftFilterForm
-                                        .get('examTypeId')
-                                        .setValue(exam.examName.examTypeId);
+                                    this.ssFilterFormComponent.schoolSoftFilterForm.patchValue(
+                                        {
+                                            curriculumId:
+                                                exam.session?.curriculumId,
+                                            educationLevelId:
+                                                this.educationLevelId,
+                                            academicYearId:
+                                                exam.session?.academicYearId,
+                                            sessionId: exam.sessionId,
+                                            schoolClassId: exam.schoolClassId,
+                                            subjectId: exam.subjectId,
+                                            examTypeId: exam.examName.examTypeId
+                                        }
+                                    );
                                 },
                                 error: (err) => {
                                     this.toastr.error(err.error);
@@ -229,19 +222,7 @@ export class ExamsComponent implements OnInit, AfterViewChecked {
         this.schoolClasses = [];
         this.subjects = [];
         this.exams = [];
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('schoolClassId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('subjectId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('examTypeId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('examNameId')
-            .reset();
-
+        this.resetFormControls(false, false, true, true, true, true);
         let acadYearId =
             this.ssFilterFormComponent.schoolSoftFilterForm.get(
                 'academicYearId'
@@ -276,25 +257,7 @@ export class ExamsComponent implements OnInit, AfterViewChecked {
         this.sessions = [];
         this.educationLevels = [];
         this.exams = [];
-
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('sessionId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('educationLevelId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('schoolClassId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('subjectId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('examTypeId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('examNameId')
-            .reset();
+        this.resetFormControls(false, false, true, true, true, true);
 
         let curriculumId =
             this.ssFilterFormComponent.schoolSoftFilterForm.get(
@@ -330,45 +293,17 @@ export class ExamsComponent implements OnInit, AfterViewChecked {
     };
 
     sessionChanged = (sessionId: number) => {
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('educationLevelId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('schoolClassId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('subjectId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('examTypeId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('examNameId')
-            .reset();
+        this.resetFormControls(false,true,true,true,true,true);
         this.exams = [];
     };
 
     schoolClassChanged = (schoolClassId: number) => {
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('subjectId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('examTypeId')
-            .reset();
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('examNameId')
-            .reset();
+        this.resetFormControls(false,false,false,true,true,true);
         this.exams = [];
     };
 
     subjectChanged = (subjectId: number) => {
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('examTypeId')
-            .reset();
-
-        this.ssFilterFormComponent.schoolSoftFilterForm
-            .get('examNameId')
-            .reset();
+        this.resetFormControls(false,false,false,false,true,true);
         this.exams = [];
     };
 
@@ -437,4 +372,38 @@ export class ExamsComponent implements OnInit, AfterViewChecked {
             }
         });
     }
+
+    resetFormControls = (
+        sessionIdReset: boolean,
+        educationLevelIdReset: boolean,
+        schoolClassIdReset: boolean,
+        subjectIdReset: boolean,
+        examTypeIdReset: boolean,
+        examNameIdReset: boolean
+    ) => {
+        if (sessionIdReset)
+            this.ssFilterFormComponent.schoolSoftFilterForm
+                .get('sessionId')
+                .reset();
+        if (educationLevelIdReset)
+            this.ssFilterFormComponent.schoolSoftFilterForm
+                .get('educationLevelId')
+                .reset();
+        if (schoolClassIdReset)
+            this.ssFilterFormComponent.schoolSoftFilterForm
+                .get('schoolClassId')
+                .reset();
+        if (subjectIdReset)
+            this.ssFilterFormComponent.schoolSoftFilterForm
+                .get('subjectId')
+                .reset();
+        if (examTypeIdReset)
+            this.ssFilterFormComponent.schoolSoftFilterForm
+                .get('examTypeId')
+                .reset();
+        if (examNameIdReset)
+            this.ssFilterFormComponent.schoolSoftFilterForm
+                .get('examNameId')
+                .reset();
+    };
 }

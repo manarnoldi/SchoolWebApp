@@ -6,9 +6,7 @@ namespace SchoolWebApp.Core.DTOs.Academics.ExamResult
 {
     public class CreateExamResultDto
     {
-        [Required(ErrorMessage = "Enter the examination score")]
-        [Display(Name = "Examination score")]
-        public float Score { get; set; }
+        public float? Score { get; set; }
 
         public int StudentSubjectId { get; set; }
         public StudentSubjectDto? StudentSubject { get; set; }
