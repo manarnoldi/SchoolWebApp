@@ -21,14 +21,7 @@ import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {EducationLevelService} from '@/school/services/education-level.service';
 import {SchoolSoftFilterFormComponent} from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
 import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
-import {
-    Component,
-    EventEmitter,
-    Input,
-    OnInit,
-    Output,
-    ViewChild
-} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
@@ -42,14 +35,10 @@ export class ExamResultsComponent implements OnInit {
     @ViewChild(SchoolSoftFilterFormComponent)
     ssFilterFormComponent: SchoolSoftFilterFormComponent;
 
-    @Input() isMissingMarksReport: boolean = false;
-    @Output() printReportClickedEvent = new EventEmitter<ExamResult[]>();
-
     examResults: ExamResult[] = [];
     examTypes: ExamType[] = [];
     examNames: ExamName[] = [];
     subjects: Subject[] = [];
-    exams: Exam[] = [];
 
     currentExam: Exam;
 
@@ -128,7 +117,7 @@ export class ExamResultsComponent implements OnInit {
         this.subjects = [];
         this.examResults = [];
         this.currentExam = null;
-        this.resetFormControls(false,false, true, true, true, true);
+        this.resetFormControls(false, false, true, true, true, true);
 
         let acadYearId =
             this.ssFilterFormComponent.schoolSoftFilterForm.get(
@@ -216,14 +205,7 @@ export class ExamResultsComponent implements OnInit {
         this.currentExam = null;
     };
 
-    printReportClicked = () => {
-        this.printReportClickedEvent.emit(
-            this.examResults.filter((er) => !er.id)
-        );
-    };
-
     examTypeChanged = (examTypeId: number) => {
-        this.exams = [];
         this.examResults = [];
         this.currentExam = null;
         this.resetFormControls(false, false, false, false, false, true);
@@ -237,8 +219,6 @@ export class ExamResultsComponent implements OnInit {
             }
         });
     };
-
-    loadExamMissingMarks = () => {};
 
     examNameChanged = (examNameId: number) => {
         this.currentExam = null;
@@ -315,10 +295,7 @@ export class ExamResultsComponent implements OnInit {
 
                     this.currentExam = exams[0];
                     this.examResultsSvc
-                        .loadExamResults(
-                            this.currentExam,
-                            this.isMissingMarksReport
-                        )
+                        .loadExamResults(this.currentExam, false)
                         .subscribe({
                             next: (examRes) => {
                                 this.examResults = examRes;

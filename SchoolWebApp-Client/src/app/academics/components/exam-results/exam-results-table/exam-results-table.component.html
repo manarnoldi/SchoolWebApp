@@ -5,6 +5,7 @@
         <table class="table table-striped table-hover text-nowrap">
             <thead>
                 <tr>
+                    <th class="py-1" *ngIf="isReport">#</th>
                     <th class="py-1" *ngIf="!isReport">Ref#</th>
                     <th class="py-1" *ngIf="isReport">Class</th>
                     <th class="py-1" *ngIf="isReport">Subject</th>
@@ -13,7 +14,7 @@
                     <th class="py-1" *ngIf="!isReport">Subject name</th>
                     <th class="py-1">Exam Type</th>
                     <th class="py-1">Exam Name</th>
-                    <th class="py-1">Score</th>
+                    <th class="py-1" *ngIf="!isReport">Score</th>
                     <th class="py-1">Out of</th>
                     <th class="py-1">Contributing</th>
                     <th class="py-1" *ngIf="!isReport">Action</th>
@@ -25,6 +26,7 @@
             <tbody>
                 <tr
                     *ngFor="let item of examResults | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i">
+                    <td *ngIf="isReport">{{i+1}}. </td>
                     <td class="py-1 " *ngIf="!isReport">{{ item.id }}</td>
                     <td class="py-1" *ngIf="isReport">
                         {{item.exam?.schoolClass?.name}}
@@ -45,7 +47,7 @@
                         {{item.exam?.examName?.examType?.name}}
                     </td>
                     <td class="py-1 ">{{ item.exam?.name }}</td>
-                    <td class="py-1 ">
+                    <td class="py-1 " *ngIf="!isReport">
                         <input class="form-control form-control-sm p-0 w-auto"
                             type="number"
                             [attr.disabled]="isReport===true ? 'disabled':null"
@@ -61,8 +63,8 @@
                 </tr>
             </tbody>
         </table>
-        <app-table-paging (pageChangedEvent)="pageChanged($event)"
+        <app-table-paging (pageChangedEvent)="pageChanged($event)" [pageSize]="pageSize"
             (pageSizeChangedEvent)="pageSizeChanged($event)"
-            [collectionSize]="exams.length"></app-table-paging>
+            [collectionSize]="examResults.length"></app-table-paging>
     </div>
 </div>

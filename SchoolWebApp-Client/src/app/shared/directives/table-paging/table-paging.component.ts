@@ -8,8 +8,7 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 export class TablePagingComponent  {
     constructor() {}
     page: number = 1;
-    pageSize: number = 10;
-
+    @Input() pageSize: number = 10;
     @Input() collectionSize = 0;
     @Output() pageChangedEvent = new EventEmitter<number>();
     @Output() pageSizeChangedEvent = new EventEmitter<number>();

@@ -1,4 +1,4 @@
-<app-dashboard-header *ngIf="!isMissingMarksReport"
+<app-dashboard-header
     [title]="dashboardTitle"
     [breadcrumbs]="breadcrumbs"></app-dashboard-header>
 <hr>
@@ -6,8 +6,8 @@
     <div class="container-fluid px-1">
         <div class="card my-1">
             <app-school-soft-filter-form [showAcademicYear]="true" [showCurriculum]="true"
-                [showSession]="true" [showSchoolClass]="!isMissingMarksReport"
-                [showSubject]="!isMissingMarksReport" [showExamType]="true"
+                [showSession]="true" [showSchoolClass]="true"
+                [showSubject]="true" [showExamType]="true"
                 [showExamName]="true" [showEducationLevel]="true" [academicYears]="academicYears"
                 [curricula]="curricula"
                 [sessions]="sessions" [schoolClasses]="schoolClasses"
@@ -24,20 +24,12 @@
                 (searchItemEvent)="onButtonSearchClick($event)"></app-school-soft-filter-form>
         </div>
         <app-exam-results-table [tableTitle]="'Examination results'"
-            (deleteItemEvent)="deleteExamResult($event)" [isReport]="isMissingMarksReport"
+            (deleteItemEvent)="deleteExamResult($event)"
             [examResults]="examResults" *ngIf="isLoading"></app-exam-results-table>
 
         <div class="row m-0">
             <div class="col-12 p-0">
-                <button type="button"
-                    class="btn btn-sm btn-flat btn-danger float-right mt-1"
-                    *ngIf="isMissingMarksReport"
-                    [disabled]="missingMarksPresent <= 0"
-                    (click)="printReportClicked()">
-                    <i class="fas fa-print"></i> Print Missing Marks Report
-                </button>
                 <a
-                    *ngIf="!isMissingMarksReport"
                     (click)="submitExamResults()"
                     class="btn btn-sm btn-flat btn-success float-right mt-1">
                     <i class="fas fa-plus-save"></i> Submit Exam Results

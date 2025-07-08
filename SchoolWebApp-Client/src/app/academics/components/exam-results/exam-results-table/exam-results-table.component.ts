@@ -11,13 +11,13 @@ import {ToastrService} from 'ngx-toastr';
 export class ExamResultsTableComponent {
     @Input() tableTitle: string = 'Examination results';
     @Input() examResults: ExamResult[] = [];
-    @Input() exams: Exam[] = [];
+    @Input() pageSize: number = 10;
+    // @Input() exams: Exam[] = [];
     @Input() isReport: boolean = false;
 
     @Output() deleteItemEvent = new EventEmitter<ExamResult>();
 
     page = 1;
-    pageSize = 10;
 
     constructor(private toarst: ToastrService) {}
 

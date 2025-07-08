@@ -141,7 +141,7 @@ namespace SchoolWebApp.API.Controllers.Academics
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ExamDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ExamsSearch(int academicYearId, int curriculumId, int sessionId, int schoolClassId,
+        public async Task<IActionResult> ExamsSearch(int academicYearId, int curriculumId, int sessionId, int? schoolClassId = null,
             int? subjectId = null, int? examTypeId = null, int? examNameId = null)
         {
             try
