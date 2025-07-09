@@ -32,6 +32,7 @@ import {SchoolClassMinTableComponent} from './components/school-class-min-table/
 import {StudentAttendanceTableComponent} from '../students/components/student-assignments/student-attendance/student-attendance-table/student-attendance-table.component';
 import {ExamResultsComponent} from '@/academics/components/exam-results/exam-results.component';
 import {ExamResultsTableComponent} from '@/academics/components/exam-results/exam-results-table/exam-results-table.component';
+import { DataTablesModule } from 'angular-datatables';
 
 @NgModule({
     declarations: [
@@ -67,7 +68,7 @@ import {ExamResultsTableComponent} from '@/academics/components/exam-results/exa
         ExamResultsTableComponent
     ],
 
-    imports: [CommonModule, NgbModule, CoreModule],
+    imports: [CommonModule, NgbModule, CoreModule,DataTablesModule],
     exports: [
         ButtonComponent,
         DashboardHeaderComponent,
@@ -98,6 +99,7 @@ import {ExamResultsTableComponent} from '@/academics/components/exam-results/exa
         StudentAttendanceTableComponent,
         ExamResultsComponent,
         ExamResultsTableComponent,
+        DataTablesModule,
         CommonModule,
         NgbModule,
         CoreModule

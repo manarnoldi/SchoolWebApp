@@ -10,8 +10,10 @@ import {ExamTypesService} from '@/academics/services/exam-types.service';
 import {ExamsService} from '@/academics/services/exams.service';
 import {Session} from '@/class/models/session';
 import {SessionsService} from '@/class/services/sessions.service';
+import {MissingMarksReportService} from '@/reports/services/academicsReports/missing-marks-report.service';
 import {AcademicYear} from '@/school/models/academic-year';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
+import {SchoolDetailsService} from '@/school/services/school-details.service';
 import {SchoolSoftFilterFormComponent} from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
 import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
 import {Component, OnInit, ViewChild} from '@angular/core';
@@ -42,7 +44,9 @@ export class MissingMarksReportComponent implements OnInit {
         private examsSvc: ExamsService,
         private examTypesSvc: ExamTypesService,
         private examNamesSvc: ExamNamesService,
-        private examResultsSvc: ExamResultsService
+        private examResultsSvc: ExamResultsService,
+        private schoolSvc: SchoolDetailsService,
+        private missingMarksRptSvc: MissingMarksReportService
     ) {}
 
     ngOnInit(): void {
@@ -192,7 +196,54 @@ export class MissingMarksReportComponent implements OnInit {
         }
     };
 
-    printReport = () => {};
+    printReport = () => {
+        this.schoolSvc.get('/schooldetails').subscribe({
+            next: (school) => {
+                const examTypeId =
+                    this.ssFilterFormComponent.schoolSoftFilterForm.get(
+                        'examTypeId'
+                    ).value;
+                const examNameId =
+                    this.ssFilterFormComponent.schoolSoftFilterForm.get(
+                        'examNameId'
+                    ).value;
+                const sessionId =
+                    this.ssFilterFormComponent.schoolSoftFilterForm.get(
+                        'sessionId'
+                    ).value;
+                const academicYearId =
+                    this.ssFilterFormComponent.schoolSoftFilterForm.get(
+                        'academicYearId'
+                    ).value;
+
+                let reportTitle =
+                    'MISSING MARKS REPORT FOR ' +
+                    this.examTypes
+                        .find((et) => et.id == examTypeId)
+                        .name.toUpperCase() +
+                    ': ' +
+                    this.examNames
+                        .find((et) => et.id == examNameId)
+                        .name.toUpperCase() +
+                    ' ' +
+                    this.sessions
+                        .find((et) => et.id == sessionId)
+                        .sessionName.toUpperCase() +
+                    ' ' +
+                    this.academicYears
+                        .find((et) => et.id == academicYearId)
+                        .name.toUpperCase();
+                this.missingMarksRptSvc.generateReport(
+                    school[0],
+                    this.missingMarksResults,
+                    reportTitle
+                );
+            },
+            error: (err) => {
+                this.toastr.error(err.error);
+            }
+        });
+    };
 
     resetFormControls = (
         sessionIdReset: boolean,
