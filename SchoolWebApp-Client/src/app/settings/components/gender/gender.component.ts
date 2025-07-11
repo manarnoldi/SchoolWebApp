@@ -24,7 +24,7 @@ export class GenderComponent implements OnInit {
     buttonTitle: string = 'Add gender';
     tableModel: string = 'gender';
     tableTitle: string = 'Gender list';
-    tableHeaders: string[] = ['Ref#', 'Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name','Rank', 'Description', 'Action'];
 
     editMode = false;
     gender: Gender;
@@ -77,6 +77,7 @@ export class GenderComponent implements OnInit {
                 this.gender = new Gender(res);
                 this.genderForm.setValue({
                     name: this.gender.name,
+                    rank: this.gender.rank,
                     description: this.gender.description
                 });
                 this.editMode = true;
@@ -117,6 +118,7 @@ export class GenderComponent implements OnInit {
             if (result.value) {
                 if (this.editMode) {
                     this.gender.name = this.genderForm.get('name').value;
+                    this.gender.rank = this.genderForm.get('rank').value;
                     this.gender.description =
                         this.genderForm.get('description').value;
                 }
@@ -155,6 +157,7 @@ export class GenderComponent implements OnInit {
     refreshItems() {
         this.genderForm = this.formBuilder.group({
             name: ['', [Validators.required]],
+            rank: [0, [Validators.required]],
             description: ['']
         });
 
