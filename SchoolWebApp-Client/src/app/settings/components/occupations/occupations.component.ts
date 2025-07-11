@@ -24,7 +24,7 @@ export class OccupationsComponent implements OnInit {
     buttonTitle: string = 'Add occupation';
     tableModel: string = 'occupation';
     tableTitle: string = 'Occupations list';
-    tableHeaders: string[] = ['Ref#', 'Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Rank', 'Description', 'Action'];
 
     editMode = false;
     occupation: Occupation;
@@ -77,6 +77,7 @@ export class OccupationsComponent implements OnInit {
                 this.occupation = new Occupation(res);
                 this.occupationForm.setValue({
                     name: this.occupation.name,
+                    rank: this.occupation.rank,
                     description: this.occupation.description
                 });
                 this.editMode = true;
@@ -110,6 +111,8 @@ export class OccupationsComponent implements OnInit {
                 if (this.editMode) {
                     this.occupation.name =
                         this.occupationForm.get('name').value;
+                    this.occupation.rank =
+                        this.occupationForm.get('rank').value;
                     this.occupation.description =
                         this.occupationForm.get('description').value;
                 }
@@ -151,6 +154,7 @@ export class OccupationsComponent implements OnInit {
     refreshItems() {
         this.occupationForm = this.formBuilder.group({
             name: ['', [Validators.required]],
+            rank: [0, [Validators.required]],
             description: ['']
         });
 

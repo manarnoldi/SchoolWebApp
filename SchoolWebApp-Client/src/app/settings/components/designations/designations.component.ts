@@ -156,7 +156,7 @@ export class DesignationsComponent implements OnInit {
     refreshItems() {
         this.designationForm = this.formBuilder.group({
             name: ['', [Validators.required]],
-            rank: [0],
+            rank: [0, [Validators.required]],
             description: ['']
         });
 
