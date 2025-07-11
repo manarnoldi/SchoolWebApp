@@ -27,6 +27,15 @@
                         <div class="invalid-feedback"> Nationality name is required</div>
                     </div>
                     <div class="form-group">
+                        <label for="rank">Rank: <span
+                                class="requiredField">*</span></label>
+                        <input id="rank" placeholder="Rank" type="number"
+                            class="form-control" formControlName="rank" [ngClass]="{
+                            'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
+                            }" />
+                        <div class="invalid-feedback">Rank is required</div>
+                    </div>
+                    <div class="form-group">
                         <label>Description:</label>
                         <textarea placeholder="Enter nationality description" id="description"
                             class="form-control" rows="3" formControlName="description"></textarea>

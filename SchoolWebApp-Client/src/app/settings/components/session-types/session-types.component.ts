@@ -24,7 +24,7 @@ export class SessionTypesComponent implements OnInit {
     buttonTitle: string = 'Add session type';
     tableModel: string = 'sessionType';
     tableTitle: string = 'Session types list';
-    tableHeaders: string[] = ['Ref#', 'Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Rank', 'Description', 'Action'];
 
     editMode = false;
     sessionType: SessionType;
@@ -77,6 +77,7 @@ export class SessionTypesComponent implements OnInit {
                 this.sessionType = new SessionType(res);
                 this.sessionTypeForm.setValue({
                     name: this.sessionType.name,
+                    rank: this.sessionType.rank,
                     description: this.sessionType.description
                 });
                 this.editMode = true;
@@ -110,6 +111,8 @@ export class SessionTypesComponent implements OnInit {
                 if (this.editMode) {
                     this.sessionType.name =
                         this.sessionTypeForm.get('name').value;
+                    this.sessionType.rank =
+                        this.sessionTypeForm.get('rank').value;
                     this.sessionType.description =
                         this.sessionTypeForm.get('description').value;
                 }
@@ -151,6 +154,7 @@ export class SessionTypesComponent implements OnInit {
     refreshItems() {
         this.sessionTypeForm = this.formBuilder.group({
             name: ['', [Validators.required]],
+            rank: [0, [Validators.required]],
             description: ['']
         });
 

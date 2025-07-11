@@ -24,7 +24,7 @@ export class OutcomesComponent implements OnInit {
     buttonTitle: string = 'Add outcome';
     tableModel: string = 'outcome';
     tableTitle: string = 'Outcomes list';
-    tableHeaders: string[] = ['Ref#', 'Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Rank', 'Description', 'Action'];
 
     editMode = false;
     outcome: Outcome;
@@ -77,6 +77,7 @@ export class OutcomesComponent implements OnInit {
                 this.outcome = new Outcome(res);
                 this.outcomeForm.setValue({
                     name: this.outcome.name,
+                    rank: this.outcome.rank,
                     description: this.outcome.description
                 });
                 this.editMode = true;
@@ -109,6 +110,7 @@ export class OutcomesComponent implements OnInit {
             if (result.value) {
                 if (this.editMode) {
                     this.outcome.name = this.outcomeForm.get('name').value;
+                    this.outcome.rank = this.outcomeForm.get('rank').value;
                     this.outcome.description =
                         this.outcomeForm.get('description').value;
                 }
@@ -147,6 +149,7 @@ export class OutcomesComponent implements OnInit {
     refreshItems() {
         this.outcomeForm = this.formBuilder.group({
             name: ['', [Validators.required]],
+            rank: [0, [Validators.required]],
             description: ['']
         });
 

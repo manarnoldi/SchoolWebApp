@@ -25,7 +25,14 @@ export class StaffCategoriesComponent implements OnInit {
     buttonTitle: string = 'Add staff category';
     tableModel: string = 'staffCategory';
     tableTitle: string = 'Staff categories list';
-    tableHeaders: string[] = ['Ref#', 'Name', 'Code', 'Description', 'Action'];
+    tableHeaders: string[] = [
+        'Ref#',
+        'Name',
+        'Code',
+        'Rank',
+        'Description',
+        'Action'
+    ];
 
     editMode = false;
     staffCategory: StaffCategory;
@@ -84,6 +91,7 @@ export class StaffCategoriesComponent implements OnInit {
                 this.staffCategoryForm.setValue({
                     code: this.staffCategory.code,
                     name: this.staffCategory.name,
+                    rank: this.staffCategory.rank,
                     description: this.staffCategory.description
                 });
                 this.editMode = true;
@@ -119,6 +127,8 @@ export class StaffCategoriesComponent implements OnInit {
                         this.staffCategoryForm.get('name').value;
                     this.staffCategory.code =
                         this.staffCategoryForm.get('code').value;
+                    this.staffCategory.rank =
+                        this.staffCategoryForm.get('rank').value;
                     this.staffCategory.description =
                         this.staffCategoryForm.get('description').value;
                 }
@@ -161,6 +171,7 @@ export class StaffCategoriesComponent implements OnInit {
         this.staffCategoryForm = this.formBuilder.group({
             name: ['', [Validators.required]],
             code: ['', [Validators.required]],
+            rank: [0, [Validators.required]],
             description: ['']
         });
 

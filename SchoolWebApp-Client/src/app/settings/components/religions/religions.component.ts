@@ -24,7 +24,7 @@ export class ReligionsComponent implements OnInit {
     buttonTitle: string = 'Add religion';
     tableModel: string = 'religion';
     tableTitle: string = 'Religions list';
-    tableHeaders: string[] = ['Ref#', 'Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Rank', 'Description', 'Action'];
 
     editMode = false;
     religion: Religion;
@@ -79,6 +79,7 @@ export class ReligionsComponent implements OnInit {
                 this.religion = new Religion(res);
                 this.religionForm.setValue({
                     name: this.religion.name,
+                    rank: this.religion.rank,
                     description: this.religion.description
                 });
                 this.editMode = true;
@@ -111,6 +112,7 @@ export class ReligionsComponent implements OnInit {
             if (result.value) {
                 if (this.editMode) {
                     this.religion.name = this.religionForm.get('name').value;
+                    this.religion.rank = this.religionForm.get('rank').value;
                     this.religion.description =
                         this.religionForm.get('description').value;
                 }
@@ -149,6 +151,7 @@ export class ReligionsComponent implements OnInit {
     refreshItems() {
         this.religionForm = this.formBuilder.group({
             name: ['', [Validators.required]],
+            rank: [0, [Validators.required]],
             description: ['']
         });
 

@@ -24,7 +24,7 @@ export class OccurenceTypesComponent implements OnInit {
 
     dashboardTitle = 'Settings: Occurence types';
     tableTitle: string = 'Occurence types list';
-    tableHeaders: string[] = ['Ref#', 'Name', 'Abbreviation', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Abbreviation', 'Rank','Description', 'Action'];
 
     occurenceType: OccurenceType;
     occurenceTypes: OccurenceType[] = [];
@@ -64,6 +64,7 @@ export class OccurenceTypesComponent implements OnInit {
         this.occurenceTypeForm = this.formBuilder.group({
             name: ['', [Validators.required]],
             abbreviation: [''],
+            rank: [0, [Validators.required]],
             description: ['']
         });
 
@@ -92,6 +93,7 @@ export class OccurenceTypesComponent implements OnInit {
                 this.occurenceTypeForm.setValue({
                     name: this.occurenceType.name,
                     abbreviation: this.occurenceType.abbreviation,
+                    rank: this.occurenceType.rank,
                     description: this.occurenceType.description
                 });
                 this.editMode = true;
@@ -155,6 +157,8 @@ export class OccurenceTypesComponent implements OnInit {
                         this.occurenceTypeForm.get('name').value;
                     this.occurenceType.abbreviation =
                         this.occurenceTypeForm.get('abbreviation').value;
+                    this.occurenceType.rank =
+                        this.occurenceTypeForm.get('rank').value;
                     this.occurenceType.description =
                         this.occurenceTypeForm.get('description').value;
                 }

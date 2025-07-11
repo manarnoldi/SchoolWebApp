@@ -10,6 +10,6 @@ import { OccurenceType } from '../models/occurence-type';
   
 export class OutcomesService extends ResourceService<Outcome> {
   constructor(private http: HttpClient) {
-      super(http, OccurenceType);
+      super(http, Outcome);
   }
 }

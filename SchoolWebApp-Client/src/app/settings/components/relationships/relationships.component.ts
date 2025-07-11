@@ -24,7 +24,7 @@ export class RelationshipsComponent implements OnInit {
     buttonTitle: string = 'Add relationship';
     tableModel: string = 'relationship';
     tableTitle: string = 'Relationships list';
-    tableHeaders: string[] = ['Ref#', 'Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Rank', 'Description', 'Action'];
 
     editMode = false;
     relationship: Relationship;
@@ -79,6 +79,7 @@ export class RelationshipsComponent implements OnInit {
                 this.relationship = new Relationship(res);
                 this.relationshipForm.setValue({
                     name: this.relationship.name,
+                    rank: this.relationship.rank,
                     description: this.relationship.description
                 });
                 this.editMode = true;
@@ -112,6 +113,8 @@ export class RelationshipsComponent implements OnInit {
                 if (this.editMode) {
                     this.relationship.name =
                         this.relationshipForm.get('name').value;
+                    this.relationship.rank =
+                        this.relationshipForm.get('rank').value;
                     this.relationship.description =
                         this.relationshipForm.get('description').value;
                 }
@@ -153,6 +156,7 @@ export class RelationshipsComponent implements OnInit {
     refreshItems() {
         this.relationshipForm = this.formBuilder.group({
             name: ['', [Validators.required]],
+            rank: [0, [Validators.required]],
             description: ['']
         });
 

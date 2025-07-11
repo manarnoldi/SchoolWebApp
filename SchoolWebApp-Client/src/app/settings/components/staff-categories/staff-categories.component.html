@@ -41,6 +41,19 @@
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="rank">Rank: <span
+                                        class="requiredField">*</span></label>
+                                <input id="rank" placeholder="Rank" type="number"
+                                    class="form-control" formControlName="rank" [ngClass]="{
+                            'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
+                            }" />
+                                <div class="invalid-feedback">Rank is required</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label>Description:</label>
@@ -91,6 +104,7 @@
                             <td>{{ item.id }}</td>
                             <td>{{ item.name }}</td>
                             <td>{{ item.code }}</td>
+                            <td>{{ item.rank }}</td>
                             <td>{{ item.description }}</td>
                             <app-table-action
                                 (editItemEvent)="editItem(item.id)"

@@ -24,7 +24,7 @@ export class NationalitiesComponent implements OnInit {
     buttonTitle: string = 'Add nationality';
     tableModel: string = 'nationality';
     tableTitle: string = 'Nationalities list';
-    tableHeaders: string[] = ['Ref#', 'Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Rank', 'Description', 'Action'];
 
     editMode = false;
     nationality: Nationality;
@@ -78,6 +78,7 @@ export class NationalitiesComponent implements OnInit {
                 this.nationality = new Nationality(res);
                 this.nationalityForm.setValue({
                     name: this.nationality.name,
+                    rank: this.nationality.rank,
                     description: this.nationality.description
                 });
                 this.editMode = true;
@@ -111,6 +112,8 @@ export class NationalitiesComponent implements OnInit {
                 if (this.editMode) {
                     this.nationality.name =
                         this.nationalityForm.get('name').value;
+                    this.nationality.rank =
+                        this.nationalityForm.get('rank').value;
                     this.nationality.description =
                         this.nationalityForm.get('description').value;
                 }
@@ -152,6 +155,7 @@ export class NationalitiesComponent implements OnInit {
     refreshItems() {
         this.nationalityForm = this.formBuilder.group({
             name: ['', [Validators.required]],
+            rank: [0, [Validators.required]],
             description: ['']
         });
 
