@@ -1,11 +1,14 @@
 ﻿using Azure;
+using Bogus;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using SchoolWebApp.Core.Constants;
+using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Identity;
 using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Entities.Settings;
+using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Entities.Students;
 
 namespace Project.Infrastructure.Data
@@ -102,8 +105,118 @@ namespace Project.Infrastructure.Data
                 ModifiedBy = "admin"
             });
 
-            var hasher = new PasswordHasher<AppUser>();
+            
+            //Add staff category
+            modelBuilder.Entity<StaffCategory>().HasData(new StaffCategory
+            {
+                Id = 1,
+                Name = "Non-teaching",
+                Code = "SC001",
+                Description = "",
+                Rank = 1,
+                Created = DateTime.Now,
+                CreatedBy = "admin",
+                Modified = DateTime.Now,
+                ModifiedBy = "admin"
+            });
 
+            //Add designation
+            modelBuilder.Entity<Designation>().HasData(new Designation
+            {
+                Id = 1,
+                Name = "Supplier",
+                Description = "",
+                Rank = 1,
+                Created = DateTime.Now,
+                CreatedBy = "admin",
+                Modified = DateTime.Now,
+                ModifiedBy = "admin"
+            });
+
+            //Add employment type
+            modelBuilder.Entity<EmploymentType>().HasData(new EmploymentType
+            {
+                Id = 1,
+                Name = "Contract",
+                Description = "",
+                Rank = 1,
+                Created = DateTime.Now,
+                CreatedBy = "admin",
+                Modified = DateTime.Now,
+                ModifiedBy = "admin"
+            });
+
+            //Add nationality
+            modelBuilder.Entity<Nationality>().HasData(new Nationality
+            {
+                Id = 1,
+                Name = "Kenyan",
+                Description = "",
+                Rank = 1,
+                Created = DateTime.Now,
+                CreatedBy = "admin",
+                Modified = DateTime.Now,
+                ModifiedBy = "admin"
+            });
+
+            //Add religion
+            modelBuilder.Entity<Religion>().HasData(new Religion
+            {
+                Id = 1,
+                Name = "Christian",
+                Description = "",
+                Rank = 1,
+                Created = DateTime.Now,
+                CreatedBy = "admin",
+                Modified = DateTime.Now,
+                ModifiedBy = "admin"
+            });
+
+            //Add gender
+            modelBuilder.Entity<Gender>().HasData(new Gender
+            {
+                Id = 1,
+                Name = "Male",
+                Description = "",
+                Rank = 1,
+                Created = DateTime.Now,
+                CreatedBy = "admin",
+                Modified = DateTime.Now,
+                ModifiedBy = "admin"
+            });
+
+            //Add person
+            modelBuilder.Entity<StaffDetails>().HasData(new StaffDetails
+            {
+                Id = 1,
+                IdNumber = "Admin",
+                NhifNo = "Admin",
+                NssfNo = "Admin",
+                KraPinNo = "Admin",
+                EmploymentDate = DateTime.Now,
+                EndofEmploymentDate = DateTime.Now,
+                CurrentlyEmployed = true,
+                StaffCategoryId = 1,
+                DesignationId = 1,
+                EmploymentTypeId = 1,
+                FullName = "Admin",
+                UPI = "Admin",
+                DateOfBirth = DateTime.Now,
+                Address = "Admin",
+                PhoneNumber = "+254724920000",
+                Email = Authorization.default_email,
+                Status = Status.Active,
+                OtherDetails = "Admin",
+                NationalityId = 1,
+                ReligionId = 1,
+                GenderId = 1,
+                Created = DateTime.Now,
+                CreatedBy = "admin",
+                Modified = DateTime.Now,
+                ModifiedBy = "admin"
+            });
+
+            var hasher = new PasswordHasher<AppUser>();
             //Seed Default User
             var defaultUser = new AppUser
             {
@@ -120,7 +233,7 @@ namespace Project.Infrastructure.Data
                 Created = DateTime.Now,
                 CreatedBy = "admin",
                 Modified = DateTime.Now,
-                PersonId =5,
+                PersonId = 1,
                 ModifiedBy = "admin"
             };
             defaultUser.PasswordHash = hasher.HashPassword(defaultUser, Authorization.default_password);

@@ -176,12 +176,9 @@ export class MissingMarksReportComponent implements OnInit {
                                 (a, b) =>
                                     a.exam?.schoolClass.rank -
                                         b.exam?.schoolClass.rank ||
-                                    a.studentSubject?.subject.rank -
-                                        b.studentSubject?.subject.rank ||
-                                    a.studentSubject.studentClass.student.upi.localeCompare(
-                                        b.studentSubject.studentClass.student
-                                            .upi
-                                    )
+                                    a.exam?.subject.rank -
+                                        b.exam?.subject.rank ||
+                                    a.student.upi.localeCompare(b.student.upi)
                             );
                         },
                         error: (err) => {

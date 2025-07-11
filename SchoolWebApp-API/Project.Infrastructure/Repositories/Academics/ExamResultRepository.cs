@@ -16,8 +16,8 @@ namespace SchoolWebApp.Infrastructure.Repositories.Academics
         {
             var examsResults = await _dbContext.ExamResults
                 .Where(e => e.ExamId == examId)
-                .Include(e => e.StudentSubject.StudentClass.Student)
-                .Include(e => e.StudentSubject.StudentClass.SchoolClass)
+                .Include(e => e.Student)
+                .Include(e => e.Exam.SchoolClass)
                 .Include(e => e.Exam.Subject)
                 .Include(e => e.Exam.ExamName)
                 .ToListAsync();
@@ -33,22 +33,23 @@ namespace SchoolWebApp.Infrastructure.Repositories.Academics
         //    return examsResults;
         //}
 
-        public async Task<ExamResult> GetByStudentSubjectExamId(int studentSubjectId, int examId)
+        public async Task<ExamResult> GetByStudentSubjectExamId(int studentId, int subjectId, int examId)
         {
             var examsResults = await _dbContext.ExamResults
-                .Where(e => e.StudentSubjectId == studentSubjectId && e.ExamId == examId)
-                .Include(e => e.StudentSubject)
+                .Where(e => e.StudentId == studentId && e.Exam.SubjectId == subjectId && e.ExamId == examId)
+                .Include(e => e.Student)
                 .Include(e => e.Exam)
+                .Include(e => e.Exam.Subject)
                 .FirstOrDefaultAsync();
             return examsResults;
         }
 
-        public async Task<List<ExamResult>> GetByStudentSubjectId(int studentSubjectId)
+        public async Task<List<ExamResult>> GetByStudentSubjectId(int studentId, int subjectId)
         {
             var examsResults = await _dbContext.ExamResults
-                .Where(e => e.StudentSubjectId == studentSubjectId)
-                .Include(e => e.StudentSubject)
-                .Include(e => e.Exam)
+                  .Where(e => e.StudentId == studentId && e.Exam.SubjectId == subjectId)
+                .Include(e => e.Student)
+                .Include(e => e.Exam.Subject)
                 .ToListAsync();
             return examsResults;
         }

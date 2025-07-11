@@ -6,8 +6,8 @@ import {StudentSubject} from '@/students/models/student-subject';
 export class ExamResult extends ResourceModel<ExamResult> {
     public score?: number;
 
-    public studentSubjectId?: number;
-    public studentSubject?: StudentSubject;
+    public studentId?: number;
+    public student?: StudentDetails;
 
     public examId?: number;
     public exam?: Exam;

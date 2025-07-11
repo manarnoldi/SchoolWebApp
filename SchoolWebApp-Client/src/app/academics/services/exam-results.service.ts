@@ -20,11 +20,7 @@ export class ExamResultsService extends ResourceService<ExamResult> {
     getExamResultsByExamId = (examId: number): Observable<ExamResult[]> => {
         return this.get('/examResults/byExamId/' + examId).pipe(
             map((es) =>
-                es.sort((a, b) =>
-                    a.studentSubject?.studentClass?.student?.upi.localeCompare(
-                        b.studentSubject?.studentClass?.student?.upi
-                    )
-                )
+                es.sort((a, b) => a.student?.upi.localeCompare(b.student?.upi))
             )
         );
     };
@@ -35,6 +31,11 @@ export class ExamResultsService extends ResourceService<ExamResult> {
     ): Observable<ExamResult[]> => {
         return this.getExamResultsByExamId(parseInt(exam.id)).pipe(
             concatMap((examResults) =>
+
+
+
+
+                
                 this.studentSubjectsSvc
                     .getStudentSubjectsBySchoolClassSubjectId(
                         exam?.schoolClassId,
@@ -48,13 +49,12 @@ export class ExamResultsService extends ResourceService<ExamResult> {
                                 let erResult = examResults.find(
                                     (r) =>
                                         r.examId == parseInt(exam.id) &&
-                                        r.studentSubjectId == parseInt(s.id)
+                                        r.studentId == parseInt(s.id)
                                 );
 
                                 er.examId = parseInt(exam.id);
                                 er.exam = exam;
-                                er.studentSubjectId = parseInt(s.id);
-                                er.studentSubject = s;
+                                er.studentId = parseInt(s.id);
                                 er.score = erResult ? erResult.score : null;
                                 er.id = erResult ? erResult.id : null;
 

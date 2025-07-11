@@ -9,6 +9,7 @@ import {Component} from '@angular/core';
 })
 export class AcademicsReportComponent {
     currentReport: ReportName = null;
+    showSubReport: boolean = false;
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Dashboard'},
         {link: ['/reports/academics'], title: 'Reports: Academics'}
@@ -20,6 +21,15 @@ export class AcademicsReportComponent {
     };
 
     reportNameChanged = (rn: ReportName) => {
+        if (rn.code === 'ACADEMICS002') {
+            this.showSubReport = true;
+        } else {
+            this.showSubReport = false;
+        }
+        this.currentReport = null;
+    };
+
+    subReportNameChanged = (rn: ReportName) => {
         this.currentReport = null;
     };
 }

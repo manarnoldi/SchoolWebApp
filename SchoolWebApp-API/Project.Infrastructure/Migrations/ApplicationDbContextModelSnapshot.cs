@@ -399,12 +399,17 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Property<float>("Score")
                         .HasColumnType("float");
 
-                    b.Property<int>("StudentSubjectId")
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StudentSubjectId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ExamId");
+
+                    b.HasIndex("StudentId");
 
                     b.HasIndex("StudentSubjectId");
 
@@ -901,9 +906,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "717d9b15-a428-440c-b26b-08d3bbb68b02",
-                            Created = new DateTime(2025, 7, 6, 7, 49, 2, 801, DateTimeKind.Local).AddTicks(6980),
+                            Created = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1163),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2025, 7, 6, 7, 49, 2, 801, DateTimeKind.Local).AddTicks(7005),
+                            Modified = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1194),
                             ModifiedBy = "admin",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
@@ -911,9 +916,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "95ed2407-3e58-4af2-88a4-1c4e96473f68",
-                            Created = new DateTime(2025, 7, 6, 7, 49, 2, 801, DateTimeKind.Local).AddTicks(7106),
+                            Created = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1252),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2025, 7, 6, 7, 49, 2, 801, DateTimeKind.Local).AddTicks(7113),
+                            Modified = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1253),
                             ModifiedBy = "admin",
                             Name = "HeadTeacher",
                             NormalizedName = "HEADTEACHER"
@@ -921,9 +926,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "48c50c3a-9958-453b-b649-4e21af131322",
-                            Created = new DateTime(2025, 7, 6, 7, 49, 2, 801, DateTimeKind.Local).AddTicks(7154),
+                            Created = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1278),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2025, 7, 6, 7, 49, 2, 801, DateTimeKind.Local).AddTicks(7155),
+                            Modified = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1280),
                             ModifiedBy = "admin",
                             Name = "Teacher",
                             NormalizedName = "TEACHER"
@@ -931,9 +936,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "448df289-142c-4959-a912-60733515e1b4",
-                            Created = new DateTime(2025, 7, 6, 7, 49, 2, 801, DateTimeKind.Local).AddTicks(7191),
+                            Created = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1303),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2025, 7, 6, 7, 49, 2, 801, DateTimeKind.Local).AddTicks(7192),
+                            Modified = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1305),
                             ModifiedBy = "admin",
                             Name = "Student",
                             NormalizedName = "STUDENT"
@@ -941,9 +946,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "269f0cf3-405e-4163-83f3-1b63ebebd62e",
-                            Created = new DateTime(2025, 7, 6, 7, 49, 2, 801, DateTimeKind.Local).AddTicks(7241),
+                            Created = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1328),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2025, 7, 6, 7, 49, 2, 801, DateTimeKind.Local).AddTicks(7242),
+                            Modified = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1329),
                             ModifiedBy = "admin",
                             Name = "Parent",
                             NormalizedName = "PARENT"
@@ -951,9 +956,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "cd12b44b-103b-48df-8887-a2bf42e0651e",
-                            Created = new DateTime(2025, 7, 6, 7, 49, 2, 801, DateTimeKind.Local).AddTicks(7280),
+                            Created = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1362),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2025, 7, 6, 7, 49, 2, 801, DateTimeKind.Local).AddTicks(7294),
+                            Modified = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1364),
                             ModifiedBy = "admin",
                             Name = "Accounts",
                             NormalizedName = "ACCOUNTS"
@@ -961,9 +966,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = "97942bee-ef12-4425-8225-4f293d0f36dd",
-                            Created = new DateTime(2025, 7, 6, 7, 49, 2, 801, DateTimeKind.Local).AddTicks(7340),
+                            Created = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1388),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2025, 7, 6, 7, 49, 2, 801, DateTimeKind.Local).AddTicks(7342),
+                            Modified = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1389),
                             ModifiedBy = "admin",
                             Name = "Visitor",
                             NormalizedName = "VISITOR"
@@ -1065,23 +1070,23 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = "7e67d486-af3e-49f1-a109-a2b864b8e0ec",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4820e21a-2c2b-4ea1-8c1c-d5be57a75bee",
-                            Created = new DateTime(2025, 7, 6, 7, 49, 2, 801, DateTimeKind.Local).AddTicks(7453),
+                            ConcurrencyStamp = "04961cbc-0f9e-4b02-9526-3949c3a455ef",
+                            Created = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1796),
                             CreatedBy = "admin",
                             Email = "admin@kodetek.co.ke",
                             EmailConfirmed = true,
                             FirstName = "SchoolSoft",
                             LastName = "Administrator",
                             LockoutEnabled = false,
-                            Modified = new DateTime(2025, 7, 6, 7, 49, 2, 801, DateTimeKind.Local).AddTicks(7456),
+                            Modified = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1799),
                             ModifiedBy = "admin",
                             NormalizedEmail = "ADMIN@KODETEK.CO.KE",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAPIkZpIWefgZf7+WDBLQ+pKLTgM+DdCTXqFJEND84ifCGON6c8ohAAFAiIgVsoIdQ==",
-                            PersonId = 5,
+                            PasswordHash = "AQAAAAIAAYagAAAAEMw47RgNQZLTaA6zNazGz5cBdlmp7bud1BgsdDxgeuQhRQHmZ7Xr0KFnFL64KQhNgQ==",
+                            PersonId = 1,
                             PhoneNumber = "+254724920000",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "221061b1-7e68-4072-9a1a-5c0540174d16",
+                            SecurityStamp = "12f91409-4782-4288-a3fb-d960a506bf03",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -1529,6 +1534,19 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Designations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Created = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1473),
+                            CreatedBy = "admin",
+                            Description = "",
+                            Modified = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1474),
+                            ModifiedBy = "admin",
+                            Name = "Supplier",
+                            Rank = 1
+                        });
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Settings.EmploymentType", b =>
@@ -1566,6 +1584,19 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("EmploymentTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Created = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1509),
+                            CreatedBy = "admin",
+                            Description = "",
+                            Modified = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1510),
+                            ModifiedBy = "admin",
+                            Name = "Contract",
+                            Rank = 1
+                        });
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Settings.Gender", b =>
@@ -1603,6 +1634,19 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Genders");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Created = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1607),
+                            CreatedBy = "admin",
+                            Description = "",
+                            Modified = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1608),
+                            ModifiedBy = "admin",
+                            Name = "Male",
+                            Rank = 1
+                        });
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Settings.Nationality", b =>
@@ -1640,6 +1684,19 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Nationalities");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Created = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1549),
+                            CreatedBy = "admin",
+                            Description = "",
+                            Modified = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1550),
+                            ModifiedBy = "admin",
+                            Name = "Kenyan",
+                            Rank = 1
+                        });
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Settings.Occupation", b =>
@@ -1828,6 +1885,19 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Religions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Created = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1583),
+                            CreatedBy = "admin",
+                            Description = "",
+                            Modified = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1584),
+                            ModifiedBy = "admin",
+                            Name = "Christian",
+                            Rank = 1
+                        });
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Settings.SessionType", b =>
@@ -1906,6 +1976,20 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("StaffCategories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "SC001",
+                            Created = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1436),
+                            CreatedBy = "admin",
+                            Description = "",
+                            Modified = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1439),
+                            ModifiedBy = "admin",
+                            Name = "Non-teaching",
+                            Rank = 1
+                        });
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Shared.Discipline", b =>
@@ -2425,6 +2509,37 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasIndex("StaffCategoryId");
 
                     b.HasDiscriminator().HasValue("StaffDetails");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Address = "Admin",
+                            Created = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1684),
+                            CreatedBy = "admin",
+                            DateOfBirth = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1670),
+                            Email = "admin@kodetek.co.ke",
+                            FullName = "Admin",
+                            GenderId = 1,
+                            Modified = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1689),
+                            ModifiedBy = "admin",
+                            NationalityId = 1,
+                            OtherDetails = "Admin",
+                            PhoneNumber = "+254724920000",
+                            ReligionId = 1,
+                            Status = 0,
+                            UPI = "Admin",
+                            CurrentlyEmployed = true,
+                            DesignationId = 1,
+                            EmploymentDate = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1666),
+                            EmploymentTypeId = 1,
+                            EndofEmploymentDate = new DateTime(2025, 7, 11, 5, 37, 36, 287, DateTimeKind.Local).AddTicks(1667),
+                            IdNumber = "Admin",
+                            KraPinNo = "Admin",
+                            NhifNo = "Admin",
+                            NssfNo = "Admin",
+                            StaffCategoryId = 1
+                        });
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Students.Parent", b =>
@@ -2587,14 +2702,18 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasForeignKey("ExamId")
                         .IsRequired();
 
-                    b.HasOne("SchoolWebApp.Core.Entities.Students.StudentSubject", "StudentSubject")
-                        .WithMany("ExamResults")
-                        .HasForeignKey("StudentSubjectId")
+                    b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
                         .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Students.StudentSubject", null)
+                        .WithMany("ExamResults")
+                        .HasForeignKey("StudentSubjectId");
 
                     b.Navigation("Exam");
 
-                    b.Navigation("StudentSubject");
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Academics.Grade", b =>

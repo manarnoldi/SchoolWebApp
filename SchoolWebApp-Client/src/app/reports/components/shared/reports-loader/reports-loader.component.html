@@ -8,6 +8,15 @@
                                     reportNames">{{reportName.title}}</option>
             </select>
         </div>
+        <div class="col px-1" *ngIf="showSubreport">
+            <select class="form-select form-select-sm" aria-label="Sub report name"
+                formControlName="subReportName" id="subReportName"
+                (change)="subReportNameChanged()">
+                <option [ngValue]="null" selected>-Sub report name-</option>
+                <option [ngValue]="subReportName" *ngFor="let subReportName of
+                                    subReports">{{subReportName.title}}</option>
+            </select>
+        </div>
         <div class="col ps-1">
             <button type="submit" [disabled]="reportLoaderForm.invalid"
                 class="btn btn-sm btn-flat btn-warning">

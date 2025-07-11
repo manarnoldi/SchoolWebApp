@@ -24,7 +24,7 @@ export class DesignationsComponent implements OnInit {
     buttonTitle: string = 'Add designation';
     tableModel: string = 'designation';
     tableTitle: string = 'Designations list';
-    tableHeaders: string[] = ['Ref#', 'Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Rank', 'Description', 'Action'];
 
     editMode = false;
     designation: Designation;
@@ -79,6 +79,7 @@ export class DesignationsComponent implements OnInit {
                 this.designation = new Designation(res);
                 this.designationForm.setValue({
                     name: this.designation.name,
+                    rank: this.designation.rank,
                     description: this.designation.description
                 });
                 this.editMode = true;
@@ -114,6 +115,8 @@ export class DesignationsComponent implements OnInit {
                         this.designationForm.get('name').value;
                     this.designation.description =
                         this.designationForm.get('description').value;
+                    this.designation.rank =
+                        this.designationForm.get('rank').value;
                 }
 
                 let reqToProcess = this.editMode
@@ -153,6 +156,7 @@ export class DesignationsComponent implements OnInit {
     refreshItems() {
         this.designationForm = this.formBuilder.group({
             name: ['', [Validators.required]],
+            rank: [0],
             description: ['']
         });
 
@@ -163,6 +167,7 @@ export class DesignationsComponent implements OnInit {
                     (this.page - 1) * this.pageSize,
                     (this.page - 1) * this.pageSize + this.pageSize
                 );
+                this.designations.sort((a, b) => a.rank - b.rank);
                 this.isAuthLoading = false;
                 this.editMode = false;
             },

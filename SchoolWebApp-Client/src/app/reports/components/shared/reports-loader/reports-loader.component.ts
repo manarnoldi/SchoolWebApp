@@ -9,16 +9,109 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 })
 export class ReportsLoaderComponent implements OnInit {
     @Input() reportTitle: string = '';
+    @Input() showSubreport: boolean = false;
     @Output() searchItemEvent = new EventEmitter<ReportName>();
     @Output() reportNameChangedEvent = new EventEmitter<ReportName>();
+    @Output() subReportNameChangedEvent = new EventEmitter<ReportName>();
 
     reportLoaderForm: FormGroup;
     reportNames: ReportName[] = [];
+    subReports: ReportName[] = [];
 
     constructor(private formBuilder: FormBuilder) {}
 
     ngOnInit(): void {
         this.reportNames = [];
+        this.subReports = [];
+
+        this.subReports.push(
+            new ReportName({
+                id: 100,
+                title: 'Broadsheet Marks report - Per stream',
+                category: 'academics-subreport',
+                code: 'ACADSUB100',
+                rank: 1
+            })
+        );
+        this.subReports.push(
+            new ReportName({
+                id: 200,
+                title: 'Broadsheet Marks report - Per class',
+                category: 'academics-subreport',
+                code: 'ACADSUB200',
+                rank: 2
+            })
+        );
+
+        this.subReports.push(
+            new ReportName({
+                id: 300,
+                title: 'Broadsheet Grades report - Per stream',
+                category: 'academics-subreport',
+                code: 'ACADSUB300',
+                rank: 3
+            })
+        );
+
+        this.subReports.push(
+            new ReportName({
+                id: 400,
+                title: 'Broadsheet Grades report - Per class',
+                category: 'academics-subreport',
+                code: 'ACADSUB400',
+                rank: 4
+            })
+        );
+
+        this.subReports.push(
+            new ReportName({
+                id: 500,
+                title: 'Broadsheet Points report - Per stream',
+                category: 'academics-subreport',
+                code: 'ACADSUB500',
+                rank: 5
+            })
+        );
+
+        this.subReports.push(
+            new ReportName({
+                id: 600,
+                title: 'Broadsheet Points report - Per Class',
+                category: 'academics-subreport',
+                code: 'ACADSUB600',
+                rank: 6
+            })
+        );
+
+        this.subReports.push(
+            new ReportName({
+                id: 700,
+                title: 'Subject summary report',
+                category: 'academics-subreport',
+                code: 'ACADSUB700',
+                rank: 7
+            })
+        );
+        this.subReports.push(
+            new ReportName({
+                id: 800,
+                title: 'School summary report',
+                category: 'academics-subreport',
+                code: 'ACADSUB800',
+                rank: 8
+            })
+        );
+
+        this.subReports.push(
+            new ReportName({
+                id: 900,
+                title: 'Learners progress report',
+                category: 'academics-subreport',
+                code: 'ACADSUB900',
+                rank: 9
+            })
+        );
+
         if (this.reportTitle.toLowerCase() == 'staff') {
             this.reportNames.push(
                 new ReportName({
@@ -109,16 +202,27 @@ export class ReportsLoaderComponent implements OnInit {
 
     refreshItems = () => {
         this.reportLoaderForm = this.formBuilder.group({
-            reportName: [null, [Validators.required]]
+            reportName: [null, [Validators.required]],
+            subReportName: [null]
         });
     };
 
     reportNameChanged = () => {
+        this.reportLoaderForm.get('subReportName').reset();
+
         let reportName = new ReportName(
             this.reportLoaderForm.get('reportName').value
         );
         this.reportNameChangedEvent.emit(reportName);
     };
+
+    subReportNameChanged = () => {
+        let subReportName = new ReportName(
+            this.reportLoaderForm.get('subReportName').value
+        );
+        this.subReportNameChangedEvent.emit(subReportName);
+    };
+
     onSubmit = () => {
         let reportName = new ReportName(
             this.reportLoaderForm.get('reportName').value

@@ -334,7 +334,7 @@ export class ExamResultsComponent implements OnInit {
             if (result.value) {
                 this.examResults.map((e) => {
                     e.exam = null;
-                    e.studentSubject = null;
+                    e.student = null;
                     e.id = e.id == null ? '0' : e.id;
                 });
                 this.examResultsSvc

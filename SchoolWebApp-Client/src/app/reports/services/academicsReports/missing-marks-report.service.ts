@@ -63,17 +63,15 @@ export class MissingMarksReportService {
                                     noWrap: true
                                 },
                                 {
-                                    text: mmR.studentSubject?.subject?.name,
+                                    text: mmR.exam?.subject?.name,
                                     noWrap: false
                                 },
                                 {
-                                    text: mmR.studentSubject?.studentClass
-                                        ?.student?.upi,
+                                    text: mmR.student?.upi,
                                     noWrap: true
                                 },
                                 {
-                                    text: mmR.studentSubject?.studentClass
-                                        ?.student?.fullName,
+                                    text: mmR.student?.fullName,
                                     noWrap: false
                                 },
                                 {

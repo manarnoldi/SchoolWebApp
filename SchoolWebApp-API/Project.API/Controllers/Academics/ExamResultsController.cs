@@ -103,23 +103,25 @@ namespace SchoolWebApp.API.Controllers.Academics
             }
         }
 
-        // GET api/examResults/byStudentSubjectId/5
+        // GET api/examResults/byStudentSubjectId/5/5
         /// <summary>
         /// A method for retrieving exam results by student subject Id.
         /// </summary>
-        /// <param name="id">The exam result student subject Id whose exam results are to be retrieved</param>
+        /// <param name="studentId">The exam result student Id whose exam results are to be retrieved</param>
+        /// <param name="subjectId">The exam result subject Id whose exam results are to be retrieved</param>
         /// <returns></returns>
-        [HttpGet("byStudentSubjectId/{studentSubjectId}")]
+        [HttpGet("byStudentSubjectId/{studentId}/{subjectId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ExamResultDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetExamResultsByStudentSubjectId(int studentSubjectId)
+        public async Task<IActionResult> GetExamResultsByStudentSubjectId(int studentId, int subjectId)
         {
             try
             {
-                if (studentSubjectId <= 0) return BadRequest(studentSubjectId);
-                var _item = await _unitOfWork.ExamResults.GetByStudentSubjectId(studentSubjectId);
+                if (studentId <= 0) return BadRequest(studentId);
+                if (subjectId <= 0) return BadRequest(subjectId);
+                var _item = await _unitOfWork.ExamResults.GetByStudentSubjectId(studentId, subjectId);
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<List<ExamResultDto>>(_item);
                 return Ok(_itemDto);
@@ -174,8 +176,8 @@ namespace SchoolWebApp.API.Controllers.Academics
         {
             if (ModelState.IsValid)
             {
-                if (!await _unitOfWork.StudentSubjects.ItemExistsAsync(s => s.Id == model.StudentSubjectId))
-                    return Conflict(new { message = $"The student subject details submitted does not exist." });
+                if (!await _unitOfWork.StudentSubjects.ItemExistsAsync(s => s.Id == model.StudentId))
+                    return Conflict(new { message = $"The student details submitted does not exist." });
                 if (!await _unitOfWork.Exams.ItemExistsAsync(s => s.Id == model.ExamId))
                     return Conflict(new { message = $"The exam details submitted do not exist." });
                 try
@@ -217,13 +219,13 @@ namespace SchoolWebApp.API.Controllers.Academics
                 {
                     foreach (var item in model)
                     {
-                        if(item.Score != null)
+                        if (item.Score != null)
                         {
-                            var existingExamResult = await _unitOfWork.ExamResults.GetByStudentSubjectExamId(item.StudentSubjectId, item.ExamId);
+                            var existingExamResult = await _unitOfWork.ExamResults.GetByStudentSubjectExamId(item.StudentId, item.Exam.SubjectId, item.ExamId);
 
                             if (existingExamResult != null)
                             {
-                                existingExamResult.Score = (float) item.Score;
+                                existingExamResult.Score = (float)item.Score;
                                 _unitOfWork.ExamResults.Update(existingExamResult);
                             }
                             else
@@ -232,7 +234,7 @@ namespace SchoolWebApp.API.Controllers.Academics
                                 _unitOfWork.ExamResults.Create(_item);
                             }
                         }
-                        
+
                     }
                     await _unitOfWork.SaveChangesAsync();
                     return Ok("Exam results updated successfully");
