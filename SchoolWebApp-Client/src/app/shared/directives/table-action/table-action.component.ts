@@ -1,4 +1,12 @@
-import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    EventEmitter,
+    Input,
+    OnInit,
+    Output,
+    ViewChild
+} from '@angular/core';
 
 @Component({
     selector: 'app-table-action',
@@ -9,8 +17,8 @@ export class TableActionComponent implements OnInit {
     @Input() tblShowViewButton = false;
     @Input() tblShowEditButton = true;
     @Input() tblShowDeleteButton = true;
-    @Input() tblClass = "";
-    
+    @Input() tblClass = '';
+
     @Output() editItemEvent = new EventEmitter<number>();
     @Output() deleteItemEvent = new EventEmitter<number>();
     @Output() viewItemEvent = new EventEmitter<number>();
@@ -32,8 +40,10 @@ export class TableActionComponent implements OnInit {
     clickButton() {
         this.buttonToBeClicked.nativeElement.click();
     }
-    
-    constructor() {}
+
+    constructor(private elRef: ElementRef) {
+        this.elRef.nativeElement.classList.add('p-0');
+    }
 
     ngOnInit(): void {}
 }

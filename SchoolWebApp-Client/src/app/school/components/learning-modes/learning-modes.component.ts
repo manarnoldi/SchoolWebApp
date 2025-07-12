@@ -24,7 +24,7 @@ export class LearningModesComponent implements OnInit {
     buttonTitle: string = 'Add learning mode';
     tableModel: string = 'learningMode';
     tableTitle: string = 'Learning modes list';
-    tableHeaders: string[] = ['Ref#', 'Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Rank', 'Description', 'Action'];
 
     editMode = false;
     learningMode: LearningMode;
@@ -77,6 +77,7 @@ export class LearningModesComponent implements OnInit {
                 this.learningMode = new LearningMode(res);
                 this.learningModeForm.setValue({
                     name: this.learningMode.name,
+                    rank: this.learningMode.rank,
                     description: this.learningMode.description
                 });
                 this.editMode = true;
@@ -110,6 +111,8 @@ export class LearningModesComponent implements OnInit {
                 if (this.editMode) {
                     this.learningMode.name =
                         this.learningModeForm.get('name').value;
+                    this.learningMode.rank =
+                        this.learningModeForm.get('rank').value;
                     this.learningMode.description =
                         this.learningModeForm.get('description').value;
                 }
@@ -151,6 +154,7 @@ export class LearningModesComponent implements OnInit {
     refreshItems() {
         this.learningModeForm = this.formBuilder.group({
             name: ['', [Validators.required]],
+            rank: [0, [Validators.required]],
             description: ['']
         });
 

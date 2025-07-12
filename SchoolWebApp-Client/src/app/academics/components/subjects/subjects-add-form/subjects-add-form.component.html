@@ -1,6 +1,6 @@
 <form [formGroup]="subjectForm" (ngSubmit)="onSubmit()" novalidate>
-    <div class="modal-body">
-        <div class="card-details-box border-info">
+    <div class="modal-body p-1">
+        <div class="card-details-box border-info mb-1">
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
@@ -22,7 +22,8 @@
                     <div class="form-group">
                         <label for="departmentId" class="form-label">Department name: <span
                                 class="requiredField">*</span></label>
-                        <select class="form-select form-select-sm" aria-label="Select department name"
+                        <select class="form-select form-select-sm"
+                            aria-label="Select department name"
                             formControlName="departmentId" id="departmentId" [ngClass]="{
                                 'is-invalid': (f.departmentId.dirty || f.departmentId.touched) && f.departmentId.invalid
                                 }">
@@ -41,7 +42,8 @@
                         <label for="name">Subject name: <span
                                 class="requiredField">*</span></label>
                         <input id="name" placeholder="Enter subject name" type="text"
-                            class="form-control" formControlName="name" [ngClass]="{
+                            class="form-control form-control-sm" formControlName="name"
+                            [ngClass]="{
                             'is-invalid': (f.name.dirty || f.name.touched) && f.name.invalid
                             }" />
                         <div class="invalid-feedback">Subject name is required</div>
@@ -52,7 +54,8 @@
                         <label for="code">Subject code: <span
                                 class="requiredField">*</span></label>
                         <input id="code" placeholder="Enter subject code" type="text"
-                            class="form-control" formControlName="code" [ngClass]="{
+                            class="form-control form-control-sm" formControlName="code"
+                            [ngClass]="{
                                 'is-invalid': (f.code.dirty || f.code.touched) && f.code.invalid
                                 }" />
                         <div class="invalid-feedback">Subject code is required</div>
@@ -65,7 +68,8 @@
                         <label for="abbr">Subject abbreviation: <span
                                 class="requiredField">*</span></label>
                         <input id="abbr" placeholder="Enter subject abbreviation" type="text"
-                            class="form-control" formControlName="abbr" [ngClass]="{
+                            class="form-control form-control-sm" formControlName="abbr"
+                            [ngClass]="{
                                 'is-invalid': (f.abbr.dirty || f.abbr.touched) && f.abbr.invalid
                                 }" />
                         <div class="invalid-feedback">Subject abbreviation is required</div>
@@ -76,7 +80,8 @@
                         <label for="numOfLessons">Number of lessons/Week: <span
                                 class="requiredField">*</span></label>
                         <input id="numOfLessons" placeholder="Enter points" type="number"
-                            class="form-control" formControlName="numOfLessons" [ngClass]="{
+                            class="form-control form-control-sm" formControlName="numOfLessons"
+                            [ngClass]="{
                                 'is-invalid': (f.numOfLessons.dirty || f.numOfLessons.touched) && f.numOfLessons.invalid
                                 }" />
                         <div class="invalid-feedback">Number of lessons is required</div>
@@ -89,9 +94,8 @@
                         <label for="staffDetailsId" class="form-label">Head of subject
                             (HOS):</label>
                         <ng-select labelForId="staffDetailsId" [items]="staffs" bindLabel="fullName"
-                            formControlName="staffDetailsId"
-                            [ngClass]="{ 'is-invalid': (f.staffDetailsId.dirty || f.staffDetailsId.touched) && f.staffDetailsId.invalid }"
-                            placeholder="Select existing STAFF">
+                            formControlName="staffDetailsId" placeholder="Select existing STAFF"
+                            class="ng-select-sm">
                             <ng-template ng-label-tmp let-item="item">
                                 <span>{{ item.fullName + ' - [' + item.upi + ']'}}</span>
                             </ng-template>
@@ -100,7 +104,6 @@
                                 <span>{{ item.fullName + ' - [' + item.upi + ']'}}</span>
                             </ng-template>
                         </ng-select>
-                        <div class="invalid-feedback">Head of institution is required</div>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -121,7 +124,8 @@
                         <label for="rank" class="form-label">Rank: <span
                                 class="requiredField">*</span></label>
                         <input id="rank" placeholder="rank" type="number"
-                            class="form-control" formControlName="rank" [ngClass]="{
+                            class="form-control form-control-sm" formControlName="rank"
+                            [ngClass]="{
                             'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
                             }" />
                         <div class="invalid-feedback">Rank is required</div>
@@ -133,17 +137,18 @@
                     <div class="form-group">
                         <label>Description</label>
                         <textarea placeholder="Subject description" id="description"
-                            class="form-control" rows="2" formControlName="description"></textarea>
+                            class="form-control form-control-sm" rows="2"
+                            formControlName="description"></textarea>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="modal-footer">
-            <button type="submit" [disabled]="subjectForm.invalid" class="btn
+        <div class="modal-footer p-1">
+            <button type="submit" [disabled]="subjectForm.invalid" class="btn btn-sm
                 btn-success"> <i class="fas fa-save"></i>
                 {{ editMode ? 'Update' : 'Save' }}
             </button>
-            <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
+            <button type="button" class="btn btn-sm btn-warning" data-bs-dismiss="modal"
                 #closeButton (click)="closeSubjectForm()">
                 <i class="fas fa-times"></i> Close
             </button>

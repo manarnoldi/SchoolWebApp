@@ -40,6 +40,7 @@ export class LearningLevelsComponent implements OnInit {
     dashboardTitle = 'Class: Learning Levels';
     tableTitle: string = ' Learning levels list';
     tableHeaders: string[] = [
+        'Ref#',
         'Name',
         'Education level',
         'Rank',
@@ -79,7 +80,7 @@ export class LearningLevelsComponent implements OnInit {
 
         forkJoin([curriculaReq, educationLevelReq]).subscribe(
             ([curricula, educationLevels]) => {
-                this.educationLevels = educationLevels;
+                this.educationLevels = educationLevels.sort((a, b) => a.rank - b.rank);
                 this.curricula = curricula.sort((a, b) => a.rank - b.rank);
                 const topCurriculum = this.curricula[0];
 

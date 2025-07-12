@@ -11,6 +11,7 @@ namespace SchoolWebApp.Core.Entities.School
         public required string Name { get; set; }
         [StringLength(255)]
         public string? Abbr { get; set; }
+        public int Rank { get; set; }
         public string? Description { get; set; }
 
         public List<EducationLevel> EducationLevels { get; set; } = new();

@@ -40,6 +40,7 @@ export class GradesComponent implements OnInit {
     dashboardTitle = 'Academics: Grades';
     tableTitle: string = ' Grades list';
     tableHeaders: string[] = [
+        'Ref#',
         'Name',
         'Abbreviation',
         'Rank',

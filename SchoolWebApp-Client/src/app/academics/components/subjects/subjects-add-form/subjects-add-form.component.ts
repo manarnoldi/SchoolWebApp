@@ -49,7 +49,7 @@ export class SubjectsAddFormComponent implements OnInit {
             optional: [false, [Validators.required]],
             subjectGroupId: [null, [Validators.required]],
             departmentId: [null, [Validators.required]],
-            staffDetailsId: [null, [Validators.required]]
+            staffDetailsId: [null]
         });
     };
 
@@ -96,8 +96,10 @@ export class SubjectsAddFormComponent implements OnInit {
         let subjectId = this.subject?.id;
         this.subject = new Subject(this.subjectForm.value);
         if (this.editMode) this.subject.id = subjectId;
-        this.subject.staffDetailsId =
-            this.subjectForm.get('staffDetailsId').value.id;
+        this.subject.staffDetailsId = this.subjectForm.get('staffDetailsId')
+            .value
+            ? this.subjectForm.get('staffDetailsId').value.id
+            : null;
         this.addItemEvent.emit(this.subject);
     };
 }

@@ -3,15 +3,17 @@
         *ngIf="tblShowViewButton "
         (click)="viewItem($event)"
         class="view"
-        title=""
+        title
         data-bs-toggle="tooltip"
         data-bs-original-title="View"><i class="fas fa-eye"></i></a>
-    <span *ngIf="(tblShowViewButton && tblShowEditButton) ||(tblShowViewButton && tblShowDeleteButton)"> | </span>
+    <span
+        *ngIf="(tblShowViewButton && tblShowEditButton) ||(tblShowViewButton && tblShowDeleteButton)">
+        | </span>
     <a
         *ngIf="tblShowEditButton"
         (click)="editItem($event)"
         class="edit"
-        title=""
+        title
         data-bs-toggle="tooltip"
         data-bs-original-title="Edit"><i class="fas fa-edit"></i></a>
     <span *ngIf="tblShowEditButton && tblShowDeleteButton"> | </span>
@@ -19,7 +21,7 @@
         *ngIf="tblShowDeleteButton"
         (click)="deleteItem($event)"
         class="delete"
-        title=""
+        title
         data-bs-toggle="tooltip"
         data-bs-original-title="Delete"><i class="fas
             fa-trash-alt"></i></a>

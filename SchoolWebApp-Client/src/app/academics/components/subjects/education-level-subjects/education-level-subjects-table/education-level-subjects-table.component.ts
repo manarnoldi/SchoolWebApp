@@ -21,6 +21,7 @@ export class EducationLevelSubjectsTableComponent implements OnInit {
     ngOnInit(): void {}
 
     tableHeaders: string[] = [
+        'Ref#',
         'Academic Year',
         'Education Level',
         'Subject',

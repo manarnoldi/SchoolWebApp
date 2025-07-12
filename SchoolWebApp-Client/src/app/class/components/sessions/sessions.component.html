@@ -12,7 +12,7 @@
     data-bs-keyboard="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-success opacity-50">
+            <div class="modal-header bg-success opacity-50 p-2">
                 <h5 class="modal-title" id="SessionFormModalLabel">
                     Session details
                 </h5>
@@ -59,6 +59,7 @@
                     <tbody>
                         <tr
                             *ngFor="let item of sessions | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                            <td>{{ i+1 }}</td>
                             <td>{{ item.academicYear?.name }}</td>
                             <td>{{ item.sessionName }}</td>
                             <td>{{ item.abbreviation }}</td>

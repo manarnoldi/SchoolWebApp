@@ -18,6 +18,7 @@
             [ngClass]="item.status === statusT.Terminated ? 'bg-danger-subtle': 
                         item.status === statusT.Suspended ? 'bg-warning-subtle':
                         item.status === statusT.Alumni ? 'bg-success-subtle':''">
+              <td>{{ item.id }}</td>
               <td>{{ item.upi }}</td>
               <td>{{ item.fullName }}</td>
               <td>{{ item.admissionDate | date: 'dd/MM/yyyy' }}</td>
@@ -50,7 +51,7 @@
                   [queryParams]='{id: item.id, action: showType}'
                   class="view" title="Manage student" data-toggle="tooltip"
                   data-original-title="Manage student">
-                  <i class="fas fa-wrench"></i> Manage student</a>
+                  <i class="fas fa-wrench"></i> Manage</a>
               </td>
             </tr>
           </tbody>

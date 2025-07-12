@@ -33,7 +33,7 @@
                                 <div class="form-group" *ngIf="!readonly">
                                     <label for="staffImage" class="form-label">Select staff
                                         image:</label>
-                                    <input class="form-control-file" type="file" id="staffImage"
+                                    <input class="form-control form-control-sm-file" type="file" id="staffImage"
                                         formControlName="staffImage"
                                         (change)="onFileChange($event)">
                                 </div>
@@ -41,7 +41,7 @@
                                     <label for="fullName">Full name: <span
                                             class="requiredField">*</span></label>
                                     <input placeholder="Enter full name" id="fullName" type="text"
-                                        class="form-control" formControlName="fullName"
+                                        class="form-control form-control-sm" formControlName="fullName"
                                         [readonly]="readonly" [ngClass]="{ 'is-invalid':
                                             (f.fullName.dirty || f.fullName.touched) &&
                                             f.fullName.invalid }" />
@@ -137,7 +137,7 @@
                                             <label for="upi">Employment/TSC number: <span
                                                 class="requiredField">*</span></label>
                                             <input placeholder="Enter TSC number" id="upi"
-                                                type="text" class="form-control"
+                                                type="text" class="form-control form-control-sm"
                                                 formControlName="upi" [readonly]="readonly" [ngClass]="{
                                                     'is-invalid': (f.upi.dirty ||
                                                     f.upi.touched) && f.upi.invalid }"/>
@@ -146,7 +146,7 @@
                                         <div class="form-group">
                                             <label for="idNumber">ID number:</label>
                                             <input placeholder="Enter ID number" id="idNumber"
-                                                type="text" class="form-control"
+                                                type="text" class="form-control form-control-sm"
                                                 formControlName="idNumber" [readonly]="readonly" />
                                         </div>
                                         <div class="form-group">
@@ -154,25 +154,25 @@
                                             <input placeholder="Enter date of birth date"
                                                 id="dateOfBirth" type="date"
                                                 max="{{currentDate | date:'yyyy-MM-dd'}}"
-                                                class="form-control" formControlName="dateOfBirth"
+                                                class="form-control form-control-sm" formControlName="dateOfBirth"
                                                 [readonly]="readonly" />
                                         </div>
                                         <div class="form-group">
                                             <label for="nhifNo">NHIF number:</label>
                                             <input placeholder="Enter NHIF number" id="nhifNo"
-                                                type="text" class="form-control"
+                                                type="text" class="form-control form-control-sm"
                                                 formControlName="nhifNo" [readonly]="readonly" />
                                         </div>
                                         <div class="form-group">
                                             <label for="nssfNo">NSSF number:</label>
                                             <input placeholder="Enter NSSF number" id="nssfNo"
-                                                type="text" class="form-control"
+                                                type="text" class="form-control form-control-sm"
                                                 formControlName="nssfNo" [readonly]="readonly" />
                                         </div>
                                         <div class="form-group">
                                             <label for="kraPinNo">KRA pin number:</label>
                                             <input placeholder="Enter KRA pin number" id="kraPinNo"
-                                                type="text" class="form-control"
+                                                type="text" class="form-control form-control-sm"
                                                 formControlName="kraPinNo" [readonly]="readonly" />
                                         </div>
                                     </div>
@@ -183,7 +183,7 @@
                                         <div class="form-group">
                                             <label for="employmentDate">Employment date:</label>
                                             <input placeholder="Enter employment date" type="date"
-                                                id="employmentDate" class="form-control"
+                                                id="employmentDate" class="form-control form-control-sm"
                                                 [readonly]="readonly"
                                                 formControlName="employmentDate" />
                                         </div>
@@ -192,7 +192,7 @@
                                                 date:</label>
                                             <input placeholder="Enter end of employment date"
                                                 id="endofEmploymentDate" type="date"
-                                                [readonly]="readonly" class="form-control"
+                                                [readonly]="readonly" class="form-control form-control-sm"
                                                 formControlName="endofEmploymentDate" />
                                         </div>
                                         <div class="form-group">
@@ -275,7 +275,7 @@
                                             <label for="address" class="form-label">Staff
                                                 address:</label>
                                             <textarea placeholder="Enter staff address"
-                                                [readonly]="readonly" class="form-control"
+                                                [readonly]="readonly" class="form-control form-control-sm"
                                                 id="address"
                                                 rows="3" formControlName="address"></textarea>
                                         </div>
@@ -283,14 +283,14 @@
                                             <label for="phoneNumber">Staff phone number:</label>
                                             <input placeholder="Enter staff phone number"
                                                 id="phoneNumber" [readonly]="readonly"
-                                                type="text" class="form-control"
+                                                type="text" class="form-control form-control-sm"
                                                 formControlName="phoneNumber" />
                                         </div>
                                         <div class="form-group">
                                             <label for="email" class="form-label">Email
                                                 address:</label>
                                             <input placeholder="Enter school email" type="email"
-                                                class="form-control" id="email"
+                                                class="form-control form-control-sm" id="email"
                                                 formControlName="email"
                                                 [readonly]="readonly"
                                                 [ngClass]="{ 'is-invalid': (f.email.dirty ||
@@ -303,7 +303,7 @@
                                                 details:</label>
                                             <textarea placeholder="Enter staff other details"
                                                 [readonly]="readonly"
-                                                class="form-control" id="otherDetails" rows="3"
+                                                class="form-control form-control-sm" id="otherDetails" rows="3"
                                                 formControlName="otherDetails"></textarea>
                                         </div>
                                     </div>

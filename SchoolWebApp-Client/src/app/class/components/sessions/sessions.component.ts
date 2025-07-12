@@ -41,6 +41,7 @@ export class SessionsComponent implements OnInit {
     dashboardTitle = 'School: Sessions';
     tableTitle: string = ' Sessions list';
     tableHeaders: string[] = [
+        'Ref#',
         'Academic Year',
         'Name',
         'Abbreviation',

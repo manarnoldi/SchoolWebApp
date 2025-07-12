@@ -4,7 +4,7 @@
             <div class="form-group mb-1" >
                 <label *ngIf="!includesLoad" for="academicYearId" class="form-label">Academic year: <span
                         class="requiredField">*</span></label>
-                <select (change)="controlsUpdated()"  class="form-control"
+                <select (change)="controlsUpdated()"  class="form-select form-select-sm"
                     aria-label="Select academic year"
                     [attr.disabled]="action==='view' ? 'disabled':null"
                     formControlName="academicYearId" id="academicYearId"
@@ -23,7 +23,7 @@
             <div class="form-group mb-1">
                 <label *ngIf="!includesLoad" for="learningLevelId" class="form-label">Class/Learning level: <span
                         class="requiredField">*</span></label>
-                <select (change)="controlsUpdated()"  class="form-control" [ngClass]="includesLoad ? 'form-control-sm': ''"
+                <select (change)="controlsUpdated()"  class="form-select form-select-sm" [ngClass]="includesLoad ? 'form-control-sm': ''"
                     [attr.disabled]="action==='view' ? 'disabled':null"
                     aria-label="Select learning level"
                     formControlName="learningLevelId" id="learningLevelId"
@@ -41,7 +41,7 @@
             <div class="form-group mb-1">
                 <label *ngIf="!includesLoad" for="schoolStreamId" class="form-label">Stream: <span
                         class="requiredField">*</span></label>
-                <select (change)="controlsUpdated()" class="form-control" [ngClass]="includesLoad ? 'form-control-sm': ''" aria-label="Select stream"
+                <select (change)="controlsUpdated()" class="form-select form-select-sm" [ngClass]="includesLoad ? 'form-control-sm': ''" aria-label="Select stream"
                     formControlName="schoolStreamId" id="schoolStreamId"
                     [attr.disabled]="action==='view' ? 'disabled':null"
                     [ngClass]="{ 'is-invalid': (f.controls.schoolStreamId.dirty || f.controls.schoolStreamId.touched) && f.controls.schoolStreamId.invalid,

@@ -11,7 +11,7 @@ namespace SchoolWebApp.Core.Entities.Academics
         public required string Name { get; set; }
         public required string Abbreviation { get; set; }
         public string? Description { get; set; }
-
+        public int Rank { get; set; }
         public int CurriculumId { get; set; }
         public Curriculum? Curriculum { get; set; }
 

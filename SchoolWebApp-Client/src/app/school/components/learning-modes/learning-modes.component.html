@@ -7,7 +7,7 @@
     data-keyboard="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-success opacity-50">
+            <div class="modal-header bg-success opacity-50 p-2">
                 <h5 class="modal-title" id="{{tableModel}}FormModalLabel">
                     {{tableModel | titlecase }} Details - {{ editMode ? 'Edit' : 'Add' }}
                 </h5>
@@ -25,6 +25,15 @@
                             [ngClass]="{ 'is-invalid': (f.name.dirty ||
                             f.name.touched) && f.name.invalid }" />
                         <div class="invalid-feedback"> learning mode name is required</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="rank">Rank: <span
+                                class="requiredField">*</span></label>
+                        <input id="rank" placeholder="Rank" type="number"
+                            class="form-control" formControlName="rank" [ngClass]="{
+                            'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
+                            }" />
+                        <div class="invalid-feedback">Rank is required</div>
                     </div>
                     <div class="form-group">
                         <label>Description:</label>

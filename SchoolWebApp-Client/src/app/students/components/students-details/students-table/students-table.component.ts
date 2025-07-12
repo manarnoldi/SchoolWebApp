@@ -31,7 +31,8 @@ export class StudentsTableComponent implements AfterViewInit, OnDestroy {
     dtTrigger: Subject<any> = new Subject();
 
     tableHeaders: string[] = [
-        'Admission no',
+        'Ref#',
+        'Adm#',
         'Full name',
         'Admission date',
         'Learning mode',
@@ -51,9 +52,10 @@ export class StudentsTableComponent implements AfterViewInit, OnDestroy {
         this.dtOptions = {
             scrollX: true,
             columnDefs: [
-                {width: 250, targets: 1},
-                {width: 150, targets: 0},
-                {width: 170, targets: 7}
+                {width: 250, targets: 2},
+                {width: 70, targets: 1},
+                {width: 170, targets: 8},
+                {width: 50, targets: 0}
             ]
         };
     }

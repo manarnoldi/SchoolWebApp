@@ -132,7 +132,7 @@ export class StaffDetailsComponent implements OnInit {
                         linkMain.split('/')[linkMain.split('/').length - 1];
 
                     cysPass.status = params['status']
-                        ? params['status']
+                        ? parseInt(params['status'])
                         : Status.Active;
                     cysPass.employmentTypeId = params['employmentTypeId']
                         ? parseInt(params['employmentTypeId'])

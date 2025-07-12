@@ -13,7 +13,7 @@
     data-bs-keyboard="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-success opacity-50">
+            <div class="modal-header bg-success opacity-50 p-2">
                 <h5 class="modal-title" id="{{tableModel}}FormModalLabel">
                     {{tableModel | titlecase }} details - {{ editMode ? 'Edit' : 'Add' }}
                 </h5>
@@ -84,45 +84,42 @@
     </div>
 </div>
 <section class="content">
-    <div class="container-fluid">
-        <div class="row">
+    <div class="container-fluid px-1">
+        <div class="row g-0">
             <div class="col-12">
                 <app-table-button modelName="schoolStream"
                     buttonTitle="Add school stream"></app-table-button>
             </div>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <app-table-heading tableTitle="{{tableTitle}}"></app-table-heading>
-                    <div class="card-body table-responsive p-0">
-                        <table class="table table-striped table-hover text-nowrap">
-                            <thead>
-                                <tr>
-                                    <th *ngFor="let header of tableHeaders">
-                                        {{ header }}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr
-                                    *ngFor="let item of schoolStreams | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
-                                    <td>{{ item.name }}</td>
-                                    <td>{{ item.abbreviation }}</td>
-                                    <td>{{ item.rank }}</td>
-                                    <td>{{ item.description }}</td>
-                                    <app-table-action
-                                        (editItemEvent)="editItem(item.id)"
-                                        (deleteItemEvent)="deleteItem(item.id)"></app-table-action>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <app-table-paging
-                            [collectionSize]="schoolStreams.length"
-                            (pageChangedEvent)="pageChanged($event)"
-                            (pageSizeChangedEvent)="pageSizeChanged($event)"></app-table-paging>
-                    </div>
-                </div>
+        <div class="card">
+            <app-table-heading tableTitle="{{tableTitle}}"></app-table-heading>
+            <div class="card-body table-responsive p-0">
+                <table class="table table-striped table-hover text-nowrap">
+                    <thead>
+                        <tr>
+                            <th *ngFor="let header of tableHeaders">
+                                {{ header }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            *ngFor="let item of schoolStreams | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                            <td>{{ item.id }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.abbreviation }}</td>
+                            <td>{{ item.rank }}</td>
+                            <td>{{ item.description }}</td>
+                            <app-table-action
+                                (editItemEvent)="editItem(item.id)"
+                                (deleteItemEvent)="deleteItem(item.id)"></app-table-action>
+                        </tr>
+                    </tbody>
+                </table>
+                <app-table-paging
+                    [collectionSize]="schoolStreams.length"
+                    (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"></app-table-paging>
             </div>
         </div>
     </div>

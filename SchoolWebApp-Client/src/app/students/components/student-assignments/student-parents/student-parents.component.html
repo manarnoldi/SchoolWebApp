@@ -4,7 +4,7 @@
     data-bs-keyboard="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-success opacity-50">
+            <div class="modal-header bg-success opacity-50 p-2">
                 <h5 class="modal-title" id="studentParentFormModalLabel">
                     Record student parents
                 </h5>
@@ -22,11 +22,11 @@
     <div class="col-8">
 
     </div>
-    <div class="col-2">
+    <div class="col-2 mt-1">
         <app-table-button btnClasses="btn btn-sm btn-flat btn-warning float-right mb-1"
             modelName="studentParent" buttonTitle="Add existing parent"></app-table-button>
     </div>
-    <div class="col-2">
+    <div class="col-2 mt-1">
         <a
             [routerLink]="['/students/parents/add']"
             [queryParams]="{sId: studentId}"

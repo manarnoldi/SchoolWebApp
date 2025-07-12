@@ -27,6 +27,7 @@ export class ExamNamesComponent implements OnInit {
     dashboardTitle = 'Settings:  Exam names';
     tableTitle: string = ' Exam names list';
     tableHeaders: string[] = [
+        'Ref#',
         'Name',
         'Exam type',
         'Rank',

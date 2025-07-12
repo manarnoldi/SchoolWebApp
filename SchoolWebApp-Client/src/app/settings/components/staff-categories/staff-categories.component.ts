@@ -29,6 +29,7 @@ export class StaffCategoriesComponent implements OnInit {
         'Ref#',
         'Name',
         'Code',
+        'For teaching?',
         'Rank',
         'Description',
         'Action'
@@ -92,6 +93,7 @@ export class StaffCategoriesComponent implements OnInit {
                     code: this.staffCategory.code,
                     name: this.staffCategory.name,
                     rank: this.staffCategory.rank,
+                    forTeaching: this.staffCategory.forTeaching,
                     description: this.staffCategory.description
                 });
                 this.editMode = true;
@@ -129,6 +131,8 @@ export class StaffCategoriesComponent implements OnInit {
                         this.staffCategoryForm.get('code').value;
                     this.staffCategory.rank =
                         this.staffCategoryForm.get('rank').value;
+                    this.staffCategory.forTeaching =
+                        this.staffCategoryForm.get('forTeaching').value;
                     this.staffCategory.description =
                         this.staffCategoryForm.get('description').value;
                 }
@@ -172,6 +176,7 @@ export class StaffCategoriesComponent implements OnInit {
             name: ['', [Validators.required]],
             code: ['', [Validators.required]],
             rank: [0, [Validators.required]],
+            forTeaching: [false],
             description: ['']
         });
 
@@ -181,6 +186,7 @@ export class StaffCategoriesComponent implements OnInit {
                     (this.page - 1) * this.pageSize,
                     (this.page - 1) * this.pageSize + this.pageSize
                 );
+                this.staffCategories.sort((a, b) => a.rank - b.rank);
                 this.isAuthLoading = false;
                 this.editMode = false;
             },

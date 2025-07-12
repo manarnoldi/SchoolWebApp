@@ -31,6 +31,7 @@ export class StaffDisciplineTableComponent implements OnInit {
     ngOnInit(): void {}
 
     tableHeaders: string[] = [
+        'Ref#',
         'Staff Full Name',
         'From Date',
         'To Date',

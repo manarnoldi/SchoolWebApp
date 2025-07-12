@@ -1,0 +1,6 @@
+::ng-deep .ng-select.ng-select-sm .ng-select-container {
+  min-height: calc(1.5em + 0.5rem + 2px); /* approximate Bootstrap form-select-sm height */
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem; /* equivalent to .form-select-sm */
+  line-height: 1.5;
+}

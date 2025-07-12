@@ -19,6 +19,7 @@ export class StudentDisciplineTableComponent {
     pageSize = 10;
 
     tableHeaders: string[] = [
+        'Ref#',
         'Student Full Name',
         'From Date',
         'To Date',

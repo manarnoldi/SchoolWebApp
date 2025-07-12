@@ -4,7 +4,7 @@
     data-bs-keyboard="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-success opacity-50">
+            <div class="modal-header bg-success opacity-50 p-2">
                 <h5 class="modal-title" id="studentSubjectFormModalLabel">
                     Manage student subjects
                 </h5>
@@ -17,20 +17,17 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row g-0">
     <div class="col-6">
-        <app-student-subjects-load-form [student]="student" 
-            *ngIf="student" (studentClassChanged)="studentClassChanged($event)"></app-student-subjects-load-form>
+        <app-student-subjects-load-form [student]="student"
+            *ngIf="student"
+            (studentClassChanged)="studentClassChanged($event)"></app-student-subjects-load-form>
     </div>
     <div class="col-6">
-        <app-table-button btnClasses="btn btn-flat btn-sm btn-success float-right mb-1"
+        <app-table-button btnClasses="btn btn-flat btn-sm btn-success float-right my-1"
             modelName="studentSubject" buttonTitle="Manage student subjects"></app-table-button>
     </div>
 </div>
-<div class="row">
-    <div class="col-12">
-        <app-student-subjects-table [tableTitle]="'Student subjects list'"
-            [studentSubjects]="studentSubjects" *ngIf="studentSubjects"
-            (deleteItemEvent)="deleteItem($event)"></app-student-subjects-table>
-    </div>
-</div>
+<app-student-subjects-table [tableTitle]="'Student subjects list'"
+    [studentSubjects]="studentSubjects" *ngIf="studentSubjects"
+    (deleteItemEvent)="deleteItem($event)"></app-student-subjects-table>

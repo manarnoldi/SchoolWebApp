@@ -2,63 +2,6 @@
     <div class="modal-body">
         <div class="card-details-box border-info">
             <div class="row">
-                <div class="col-md-8">
-                    <div class="form-group">
-                        <label for="name">Education level name: <span
-                                class="requiredField">*</span></label>
-                        <input id="name" placeholder="Education level name" type="text"
-                            class="form-control" formControlName="name" [ngClass]="{
-                            'is-invalid': (f.name.dirty || f.name.touched) && f.name.invalid
-                            }" />
-                        <div class="invalid-feedback">Education level name is required</div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="rank">Rank: <span
-                                class="requiredField">*</span></label>
-                        <input id="rank" placeholder="Rank" type="number"
-                            class="form-control" formControlName="rank" [ngClass]="{
-                            'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
-                            }" />
-                        <div class="invalid-feedback">Education level rank is required</div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label>Description</label>
-                        <textarea placeholder="Education level description" id="description"
-                            class="form-control" rows="2" formControlName="description"></textarea>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="abbr">Abbreviation: <span
-                                class="requiredField">*</span></label>
-                        <input id="abbr" placeholder="Enter abbreviation" type="text"
-                            class="form-control" formControlName="abbr" [ngClass]="{
-                            'is-invalid': (f.abbr.dirty || f.abbr.touched) && f.abbr.invalid
-                            }" />
-                        <div class="invalid-feedback"> Abbreviation is required</div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="numOfYears">Number of years: <span
-                                class="requiredField">*</span></label>
-                        <input id="numOfYears" placeholder="Enter number of years" type="number"
-                            class="form-control" formControlName="numOfYears" [ngClass]="{
-                            'is-invalid': (f.numOfYears.dirty || f.numOfYears.touched) && f.numOfYears.invalid
-                            }" />
-                        <div class="invalid-feedback"> Number of years is required</div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="curriculumId" class="form-label">Curriculum: <span
@@ -80,7 +23,8 @@
                         <label for="educationLevelTypeId" class="form-label">Education level type:
                             <span
                                 class="requiredField">*</span></label>
-                        <select class="form-select form-select-sm" aria-label="Select education level type"
+                        <select class="form-select form-select-sm"
+                            aria-label="Select education level type"
                             formControlName="educationLevelTypeId" id="educationLevelTypeId"
                             [ngClass]="{
                                 'is-invalid': (f.educationLevelTypeId.dirty || f.educationLevelTypeId.touched) && f.educationLevelTypeId.invalid
@@ -95,6 +39,64 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label for="name">Education level name: <span
+                                class="requiredField">*</span></label>
+                        <input id="name" placeholder="Education level name" type="text"
+                            class="form-control form-control-sm" formControlName="name" [ngClass]="{
+                            'is-invalid': (f.name.dirty || f.name.touched) && f.name.invalid
+                            }" />
+                        <div class="invalid-feedback">Education level name is required</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="rank">Rank: <span
+                                class="requiredField">*</span></label>
+                        <input id="rank" placeholder="Rank" type="number"
+                            class="form-control form-control-sm" formControlName="rank" [ngClass]="{
+                            'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
+                            }" />
+                        <div class="invalid-feedback">Education level rank is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea placeholder="Education level description" id="description"
+                            class="form-control form-control-sm" rows="2" formControlName="description"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="abbr">Abbreviation: <span
+                                class="requiredField">*</span></label>
+                        <input id="abbr" placeholder="Enter abbreviation" type="text"
+                            class="form-control form-control-sm" formControlName="abbr" [ngClass]="{
+                            'is-invalid': (f.abbr.dirty || f.abbr.touched) && f.abbr.invalid
+                            }" />
+                        <div class="invalid-feedback"> Abbreviation is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="numOfYears">Number of years: <span
+                                class="requiredField">*</span></label>
+                        <input id="numOfYears" placeholder="Enter number of years" type="number"
+                            class="form-control form-control-sm" formControlName="numOfYears" [ngClass]="{
+                            'is-invalid': (f.numOfYears.dirty || f.numOfYears.touched) && f.numOfYears.invalid
+                            }" />
+                        <div class="invalid-feedback"> Number of years is required</div>
+                    </div>
+                </div>
+            </div>
+
         </div>
         <div class="modal-footer">
             <button type="submit" [disabled]="educationLevelForm.invalid" class="btn

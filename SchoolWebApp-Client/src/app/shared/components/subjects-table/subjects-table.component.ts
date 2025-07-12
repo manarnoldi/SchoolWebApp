@@ -35,6 +35,7 @@ export class SubjectsTableComponent implements OnInit {
     ngOnInit(): void {}
 
     tableHeaders: string[] = [
+        'Ref#',
         'Name',
         'Code',
         'Abbr',

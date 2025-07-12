@@ -35,7 +35,7 @@
                                 <div class="form-group" *ngIf="!readonly">
                                     <label for="studentImage" class="form-label">Select student
                                         image:</label>
-                                    <input class="form-control-file" type="file" id="studentImage"
+                                    <input class="form-control form-control-sm" type="file" id="studentImage"
                                         formControlName="studentImage"
                                         (change)="onFileChange($event)">
                                 </div>
@@ -46,7 +46,7 @@
                                                     class="requiredField">*</span></label>
                                             <input placeholder="Enter full name" id="fullName"
                                                 type="text"
-                                                class="form-control" formControlName="fullName"
+                                                class="form-control form-control-sm" formControlName="fullName"
                                                 [readonly]="readonly" [ngClass]="{ 'is-invalid':
                                                     (f.fullName.dirty || f.fullName.touched) &&
                                                     f.fullName.invalid }" />
@@ -61,7 +61,7 @@
                                             <label for="upi">Admission number: <span
                                                     class="requiredField">*</span></label>
                                             <input placeholder="Enter admission number" id="upi"
-                                                type="text" class="form-control"
+                                                type="text" class="form-control form-control-sm"
                                                 formControlName="upi" [readonly]="readonly"
                                                 [ngClass]="{
                                                     'is-invalid': (f.upi.dirty ||
@@ -143,7 +143,7 @@
                                             <input placeholder="Enter date of birth date"
                                                 id="dateOfBirth" type="date"
                                                 max="{{currentDate | date:'yyyy-MM-dd'}}"
-                                                class="form-control" formControlName="dateOfBirth"
+                                                class="form-control form-control-sm" formControlName="dateOfBirth"
                                                 [readonly]="readonly" />
                                         </div>
                                     </div>
@@ -152,12 +152,12 @@
                                             <label for="email" class="form-label">Email
                                                 address:</label>
                                             <input placeholder="Enter school email" type="email"
-                                                class="form-control" id="email"
+                                                class="form-control form-control-sm" id="email"
                                                 formControlName="email"
                                                 [readonly]="readonly"
                                                 [ngClass]="{ 'is-invalid': (f.email.dirty ||
                                                             f.email.touched) && f.email.invalid }" />
-                                            <div class="invalid-feedback"> Staff email is
+                                            <div class="invalid-feedback"> Student email is
                                                 invalid</div>
                                         </div>
                                     </div>
@@ -193,7 +193,7 @@
                                             <label for="applicationDate">Application date:</label>
                                             <input placeholder="Enter application date"
                                                 id="applicationDate" type="date"
-                                                [readonly]="readonly" class="form-control"
+                                                [readonly]="readonly" class="form-control form-control-sm"
                                                 formControlName="applicationDate" />
                                         </div>
                                     </div>
@@ -201,7 +201,7 @@
                                         <div class="form-group">
                                             <label for="admissionDate">Admission date:</label>
                                             <input placeholder="Enter admission date" type="date"
-                                                id="admissionDate" class="form-control"
+                                                id="admissionDate" class="form-control form-control-sm"
                                                 [readonly]="readonly"
                                                 formControlName="admissionDate" />
                                         </div>
@@ -229,10 +229,10 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="phoneNumber">Staff phone number:</label>
-                                            <input placeholder="Enter staff phone number"
+                                            <label for="phoneNumber">Student phone number:</label>
+                                            <input placeholder="Enter Student phone number"
                                                 id="phoneNumber" [readonly]="readonly"
-                                                type="text" class="form-control"
+                                                type="text" class="form-control form-control-sm"
                                                 formControlName="phoneNumber" />
                                         </div>
                                     </div>
@@ -240,10 +240,10 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="address" class="form-label">Staff
+                                            <label for="address" class="form-label">Student
                                                 address:</label>
-                                            <textarea placeholder="Enter staff address"
-                                                [readonly]="readonly" class="form-control"
+                                            <textarea placeholder="Enter Student address"
+                                                [readonly]="readonly" class="form-control form-control-sm"
                                                 id="address"
                                                 rows="2" formControlName="address"></textarea>
                                         </div>
@@ -255,7 +255,7 @@
                                             <label for="healthConcerns" class="form-label">Health
                                                 concerns:</label>
                                             <textarea placeholder="Enter student health concerns"
-                                                [readonly]="readonly" class="form-control"
+                                                [readonly]="readonly" class="form-control form-control-sm"
                                                 id="healthConcerns" rows="2"
                                                 formControlName="healthConcerns"></textarea>
                                         </div>
@@ -266,8 +266,8 @@
                                         <div class="form-group">
                                             <label for="otherDetails" class="form-label">Other
                                                 details:</label>
-                                            <textarea placeholder="Enter staff other details"
-                                                [readonly]="readonly" class="form-control"
+                                            <textarea placeholder="Enter Student other details"
+                                                [readonly]="readonly" class="form-control form-control-sm"
                                                 id="otherDetails" rows="2"
                                                 formControlName="otherDetails"></textarea>
                                         </div>

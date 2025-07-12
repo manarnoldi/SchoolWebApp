@@ -26,6 +26,7 @@ export class ClassLeadershipRolesComponent implements OnInit {
     tableModel: string = 'classLeadershipRole';
     tableTitle: string = 'Class leadership roles list';
     tableHeaders: string[] = [
+        'Ref#',
         'Name',
         'Person type',
         'Rank',

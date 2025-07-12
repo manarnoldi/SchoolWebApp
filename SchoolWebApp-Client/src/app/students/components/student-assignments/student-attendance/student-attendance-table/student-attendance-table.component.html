@@ -8,6 +8,7 @@
                     <!-- <th *ngFor="let header of tableHeaders">
                         {{ header }}
                     </th> -->
+                    <th>Ref# </th>
                     <th> Student Full Name </th>
                     <th> Adm no </th>
                     <th *ngIf="showMinimum"> Class name </th>
@@ -23,6 +24,7 @@
             <tbody>
                 <tr
                     *ngFor="let item of studentAttendances | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                    <td>{{ item.id }}</td>
                     <td>{{ item.studentClass?.student?.fullName }}</td>
                     <td>{{ item.studentClass?.student?.upi }}</td>
                     <td>{{ item.studentClass?.schoolClass?.name }}</td>

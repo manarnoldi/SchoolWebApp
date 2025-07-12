@@ -27,7 +27,7 @@ export class EducationLevelTypesComponent implements OnInit {
 
     dashboardTitle = 'Settings:  Education level types';
     tableTitle: string = ' Education level types list';
-    tableHeaders: string[] = ['Ref#', 'Name', 'Abbreviation', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Abbreviation', 'Rank','Description', 'Action'];
 
     educationLevelType: EducationLevelType;
     educationLevelTypes: EducationLevelType[] = [];
@@ -66,6 +66,7 @@ export class EducationLevelTypesComponent implements OnInit {
     refreshItems() {
         this.educationLevelTypeForm = this.formBuilder.group({
             name: ['', [Validators.required]],
+            rank: [0, [Validators.required]],
             abbr: [''],
             description: ['']
         });
@@ -94,6 +95,7 @@ export class EducationLevelTypesComponent implements OnInit {
                     this.educationLevelType = new EducationLevelType(res);
                     this.educationLevelTypeForm.setValue({
                         name: this.educationLevelType.name,
+                        rank: this.educationLevelType.rank,
                         abbr: this.educationLevelType.abbr,
                         description: this.educationLevelType.description
                     });
@@ -158,6 +160,8 @@ export class EducationLevelTypesComponent implements OnInit {
                 if (this.editMode) {
                     this.educationLevelType.name =
                         this.educationLevelTypeForm.get('name').value;
+                    this.educationLevelType.rank =
+                        this.educationLevelTypeForm.get('rank').value;
                     this.educationLevelType.abbr =
                         this.educationLevelTypeForm.get('abbr').value;
                     this.educationLevelType.description =

@@ -13,7 +13,7 @@
     data-bs-keyboard="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-success opacity-50">
+            <div class="modal-header bg-success opacity-50 p-2">
                 <h5 class="modal-title" id="{{tableModel}}FormModalLabel">
                     Exam type details - {{ editMode ? 'Edit' : 'Add' }}
                 </h5>
@@ -23,62 +23,67 @@
                 </button>
             </div>
             <form [formGroup]="examTypeForm" (ngSubmit)="onSubmit()" novalidate>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="name">Exam type: <span
-                                        class="requiredField">*</span></label>
-                                <input id="name" placeholder="Exam type name" type="text"
-                                    class="form-control" formControlName="name" [ngClass]="{
+                <div class="modal-body p-1">
+                    <div class="card-details-box border-info mb-1">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="name">Exam type: <span
+                                            class="requiredField">*</span></label>
+                                    <input id="name" placeholder="Exam type name" type="text"
+                                        class="form-control form-control-sm" formControlName="name"
+                                        [ngClass]="{
                                     'is-invalid': (f.name.dirty || f.name.touched) && f.name.invalid
                                     }" />
-                                <div class="invalid-feedback"> Exam type name is required</div>
+                                    <div class="invalid-feedback"> Exam type name is required</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Abbreviation</label>
-                                <input id="abbreviation" placeholder="Abbreviation" type="text"
-                                    class="form-control" formControlName="abbreviation" />
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Abbreviation</label>
+                                    <input id="abbreviation" placeholder="Abbreviation" type="text"
+                                        class="form-control form-control-sm"
+                                        formControlName="abbreviation" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Rank</label>
+                                    <input id="rank" placeholder="rank" type="number"
+                                        class="form-control form-control-sm"
+                                        formControlName="rank" />
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Rank</label>
-                                <input id="rank" placeholder="rank" type="number"
-                                    class="form-control" formControlName="rank" />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <div class="custom-control custom-switch
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch
                                     custom-switch-off-danger custom-switch-on-success">
-                                    <input type="checkbox" class="custom-control-input"
-                                        id="featured" formControlName="featured">
-                                    <label class="custom-control-label"
-                                        for="featured">Is this exam in this school?</label>
+                                        <input type="checkbox" class="custom-control-input"
+                                            id="featured" formControlName="featured">
+                                        <label class="custom-control-label"
+                                            for="featured">Is this exam in this school?</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea placeholder="Education level type description"
+                                        id="description"
+                                        class="form-control form-control-sm" rows="2"
+                                        formControlName="description"></textarea>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label>Description</label>
-                                <textarea placeholder="Education level type description"
-                                    id="description"
-                                    class="form-control" rows="2"
-                                    formControlName="description"></textarea>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer p-1">
                     <button type="submit" [disabled]="examTypeForm.invalid" class="btn
                         btn-success"> <i class="fas fa-save"></i>
                         {{ editMode ? 'Update' : 'Save' }}
@@ -93,46 +98,43 @@
     </div>
 </div>
 <section class="content">
-    <div class="container-fluid">
-        <div class="row">
+    <div class="container-fluid px-1">
+        <div class="row g-0">
             <div class="col-12">
                 <app-table-button modelName="{{tableModel}}"
                     buttonTitle="Add exam type"></app-table-button>
             </div>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <app-table-heading tableTitle="{{tableTitle}}"></app-table-heading>
-                    <div class="card-body table-responsive p-0">
-                        <table class="table table-striped table-hover text-nowrap">
-                            <thead>
-                                <tr>
-                                    <th *ngFor="let header of tableHeaders">
-                                        {{ header }}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let item of examTypes;index as i">
-                                    <td>{{ item.name }}</td>
-                                    <td>{{ item.abbreviation }}</td>
-                                    <td>{{ item.rank }}</td>
-                                    <td><span i18n>{ item.featured , select, true {YES} false
-                                            {NO}}</span></td>
-                                    <td>{{ item.description }}</td>
-                                    <app-table-action
-                                        (editItemEvent)="editItem(item.id)"
-                                        (deleteItemEvent)="deleteItem(item.id)"></app-table-action>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <app-table-paging
-                            [collectionSize]="examTypes.length"
-                            (pageChangedEvent)="pageChanged($event)"
-                            (pageSizeChangedEvent)="pageSizeChanged($event)"></app-table-paging>
-                    </div>
-                </div>
+        <div class="card">
+            <app-table-heading tableTitle="{{tableTitle}}"></app-table-heading>
+            <div class="card-body table-responsive p-0">
+                <table class="table table-striped table-hover text-nowrap">
+                    <thead>
+                        <tr>
+                            <th *ngFor="let header of tableHeaders">
+                                {{ header }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of examTypes;index as i">
+                            <td>{{ item.id }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.abbreviation }}</td>
+                            <td>{{ item.rank }}</td>
+                            <td><span i18n>{ item.featured , select, true {YES} false
+                                    {NO}}</span></td>
+                            <td>{{ item.description }}</td>
+                            <app-table-action
+                                (editItemEvent)="editItem(item.id)"
+                                (deleteItemEvent)="deleteItem(item.id)"></app-table-action>
+                        </tr>
+                    </tbody>
+                </table>
+                <app-table-paging
+                    [collectionSize]="examTypes.length"
+                    (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"></app-table-paging>
             </div>
         </div>
     </div>

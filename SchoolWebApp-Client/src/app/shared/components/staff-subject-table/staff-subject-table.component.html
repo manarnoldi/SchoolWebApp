@@ -14,6 +14,7 @@
             <tbody>
                 <tr
                     *ngFor="let item of staffSubjects | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                    <td>{{ item.id }}</td>
                     <td>{{ item.staffDetails?.fullName }}</td>
                     <td>{{ item.staffDetails?.upi }}</td>
                     <td>

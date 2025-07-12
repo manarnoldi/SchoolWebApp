@@ -7,7 +7,7 @@
     data-ds-keyboard="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-success opacity-50">
+            <div class="modal-header bg-success opacity-50 p-2">
                 <h5 class="modal-title" id="{{tableModel}}FormModalLabel">
                     Class leadership role - {{ editMode ? 'Edit' : 'Add' }}
                 </h5>
@@ -21,7 +21,7 @@
                     <div class="form-group">
                         <label for="name">Name: <span class="requiredField">*</span></label>
                         <input placeholder="Enter class leadership role name" id="name" type="text"
-                            class="form-control" formControlName="name"
+                            class="form-control form-control-sm" formControlName="name"
                             [ngClass]="{ 'is-invalid': (f.name.dirty ||
                             f.name.touched) && f.name.invalid }" />
                         <div class="invalid-feedback"> Class leadership role name is required</div>
@@ -41,7 +41,8 @@
                             <label for="rank" class="form-label">Rank: <span
                                     class="requiredField">*</span></label>
                             <input id="rank" placeholder="Learning level rank" type="number"
-                                class="form-control" formControlName="rank" [ngClass]="{
+                                class="form-control form-control-sm" formControlName="rank"
+                                [ngClass]="{
                             'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
                             }" />
                             <div class="invalid-feedback">Learning level rank is required</div>
@@ -51,7 +52,8 @@
                         <label>Description:</label>
                         <textarea placeholder="Enter class leadership role description"
                             id="description"
-                            class="form-control" rows="3" formControlName="description"></textarea>
+                            class="form-control form-control-sm" rows="2"
+                            formControlName="description"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -70,46 +72,43 @@
 </div>
 
 <section class="content">
-    <div class="container-fluid">
-        <div class="row">
+    <div class="container-fluid px-1">
+        <div class="row g-0">
             <div class="col-12">
                 <app-table-button modelName="classLeadershipRole"
                     buttonTitle="Add class leadership role"></app-table-button>
             </div>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <app-table-heading [editControls]="true"
-                        tableTitle="{{tableTitle}}"></app-table-heading>
-                    <div class="card-body table-responsive p-0">
-                        <table class="table table-striped table-hover text-nowrap">
-                            <thead>
-                                <tr>
-                                    <th *ngFor="let header of tableHeaders">
-                                        {{ header }}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr
-                                    *ngFor="let item of classLeadershipRoles| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
-                                    <td>{{ item.name }}</td>
-                                    <td>{{ personTypes[item.personType] }}</td>
-                                    <td>{{ item.rank }}</td>
-                                    <td>{{ item.description }}</td>
-                                    <app-table-action
-                                        (editItemEvent)="editItem(item.id)"
-                                        (deleteItemEvent)="deleteItem(item.id)"></app-table-action>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <app-table-paging
-                            [collectionSize]="collectionSize"
-                            (pageChangedEvent)="pageChanged($event)"
-                            (pageSizeChangedEvent)="pageSizeChanged($event)"></app-table-paging>
-                    </div>
-                </div>
+        <div class="card">
+            <app-table-heading [editControls]="false"
+                tableTitle="{{tableTitle}}"></app-table-heading>
+            <div class="card-body table-responsive p-0">
+                <table class="table table-striped table-hover text-nowrap">
+                    <thead>
+                        <tr>
+                            <th *ngFor="let header of tableHeaders">
+                                {{ header }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            *ngFor="let item of classLeadershipRoles| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                            <td>{{ item.id }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ personTypes[item.personType] }}</td>
+                            <td>{{ item.rank }}</td>
+                            <td>{{ item.description }}</td>
+                            <app-table-action class="p-0"
+                                (editItemEvent)="editItem(item.id)"
+                                (deleteItemEvent)="deleteItem(item.id)"></app-table-action>
+                        </tr>
+                    </tbody>
+                </table>
+                <app-table-paging
+                    [collectionSize]="collectionSize"
+                    (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"></app-table-paging>
             </div>
         </div>
     </div>

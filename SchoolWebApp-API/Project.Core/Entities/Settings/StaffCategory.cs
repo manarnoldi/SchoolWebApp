@@ -3,9 +3,10 @@ using SchoolWebApp.Core.Entities.Staff;
 
 namespace SchoolWebApp.Core.Entities.Settings
 {
-    public  class StaffCategory: SettingsBase
+    public class StaffCategory : SettingsBase
     {
-        public required string Code{ get; set; }
+        public required string Code { get; set; }
+        public bool ForTeaching { get; set; }
         public List<StaffDetails> StaffDetails { get; set; } = new();
     }
 }

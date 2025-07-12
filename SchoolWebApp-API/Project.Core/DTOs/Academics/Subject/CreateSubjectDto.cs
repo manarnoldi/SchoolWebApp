@@ -31,7 +31,7 @@ namespace SchoolWebApp.Core.DTOs.Academics.Subject
         public SubjectGroupDto? SubjectGroup { get; set; }
         public int DepartmentId { get; set; }
         public DepartmentDto? Department { get; set; }
-        public int StaffDetailsId { get; set; }
+        public int? StaffDetailsId { get; set; }
         public StaffDetailDto? StaffDetails { get; set; }
     }
 }

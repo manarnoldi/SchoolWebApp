@@ -10,7 +10,7 @@
 <img id="system-logo" src="assets/img/shule-nova-logo.png" style="display:none">
 
 <ng-template #childModal let-modal>
-    <div class="modal-header bg-success opacity-50">
+    <div class="modal-header bg-success opacity-50 p-2">
         <h4 class="modal-title" id="modal-basic-title">{{'Idle mode detected' | titlecase }}</h4>
         <button type="button" class="btn-close" aria-label="Close"
             (click)="modal.close('resume')"></button>
@@ -32,7 +32,7 @@
     data-bs-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-md">
         <div class="modal-content">
-            <div class="modal-header bg-success opacity-50">
+            <div class="modal-header bg-success opacity-50 p-2">
                 <h5 class="modal-title" id="childModalFormModalLabel">
                     {{'Idle mode detected' | titlecase }}
                 </h5>

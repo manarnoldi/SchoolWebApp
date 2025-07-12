@@ -1,6 +1,7 @@
 <div class="row">
     <div class="col-lg-3 col-6 px-1">
-        <a [routerLink]="['/students/details']" class="nounderline"
+        <a [routerLink]="['/students/details']"
+            [ngClass]="{ 'nounderline': true, 'disabled-link': studentCount <= 0 }"
             [queryParams]="{status: status.Active, source:'dashboard'}">
             <div class="small-box bg-info opacity-60 mb-1 ">
                 <div class="inner pt-1">
@@ -14,10 +15,11 @@
         </a>
     </div>
     <div class="col-lg-3 col-6 px-0">
-        <a [routerLink]="['/students/parents']" [queryParams]='{active: true}' class="nounderline">
+        <a [routerLink]="['/students/parents']" [queryParams]='{active: true}'
+            [ngClass]="{ 'nounderline': true, 'disabled-link': parentsCount <= 0 }">
             <div class="small-box bg-success opacity-60 mb-1">
                 <div class="inner pt-1">
-                    <h4 class="mb-1" >{{parentsCount}}</h4>
+                    <h4 class="mb-1">{{parentsCount}}</h4>
                     <div>Parents</div>
                 </div>
                 <div class="icon">
@@ -27,12 +29,15 @@
         </a>
     </div>
     <div class="col-lg-3 col-6 px-1">
-        <a [routerLink]="['/staff/details']"
-            [queryParams]="{status: status.Active, staffCategoryId: teachingStaffCategoryId, source:'dashboard'}"
-            class="nounderline">
+        <a
+            [routerLink]="teachingStaffCategoryId > 0 ? ['/staff/details'] : null"
+            [queryParams]="{ status: status.Active, staffCategoryId: teachingStaffCategoryId, source: 'dashboard' }"
+            (click)="onStaffLinkClick($event, true)"
+            [ngClass]="{ 'nounderline': true, 'disabled-link': teachingStaffCategoryId <= 0 || teachingStaffCount <= 0 }">
+
             <div class="small-box bg-warning opacity-60 mb-1">
                 <div class="inner pt-1">
-                    <h4 class="mb-1">{{teachingStaffCount}}</h4>
+                    <h4 class="mb-1">{{ teachingStaffCount }}</h4>
                     <div>Teaching Staff</div>
                 </div>
                 <div class="icon">
@@ -42,9 +47,10 @@
         </a>
     </div>
     <div class="col-lg-3 col-6 pl-0 pr-1">
-        <a [routerLink]="['/staff/details']"
+        <a [routerLink]="nonTeachingStaffCategoryId > 0 ? ['/staff/details']: null"
             [queryParams]="{status: status.Active, staffCategoryId: nonTeachingStaffCategoryId, source:'dashboard'}"
-            class="nounderline">
+            (click)="onStaffLinkClick($event, true)"
+            [ngClass]="{ 'nounderline': true, 'disabled-link': nonTeachingStaffCategoryId <= 0 || nonTeachingStaffCount <= 0 }">
             <div class="small-box bg-danger opacity-60 mb-1">
                 <div class="inner pt-1">
                     <h4 class="mb-1">{{nonTeachingStaffCount}}</h4>

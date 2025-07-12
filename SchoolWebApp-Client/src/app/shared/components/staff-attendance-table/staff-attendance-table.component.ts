@@ -22,6 +22,7 @@ export class StaffAttendanceTableComponent implements OnInit {
     ngOnInit(): void {}
 
     tableHeaders: string[] = [
+        'Ref#',
         'Staff No',
         'Staff Full Name',
         'Month',

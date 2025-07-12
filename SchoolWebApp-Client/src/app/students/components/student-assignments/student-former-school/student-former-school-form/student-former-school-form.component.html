@@ -47,7 +47,7 @@
                         <label for="schoolName">Former school name: <span
                                 class="requiredField">*</span></label>
                         <input id="schoolName" placeholder="Enter former school name" type="text"
-                            class="form-control" formControlName="schoolName" [ngClass]="{
+                            class="form-control form-control-sm" formControlName="schoolName" [ngClass]="{
                             'is-invalid': (f.schoolName.dirty || f.schoolName.touched) && f.schoolName.invalid
                             }" [readOnly]="action==='view'" />
                         <div class="invalid-feedback">Former school name is required</div>
@@ -58,7 +58,7 @@
                         <label for="classDetails">Class details: <span
                                 class="requiredField">*</span></label>
                         <input id="classDetails" placeholder="Enter class details" type="text"
-                            class="form-control" formControlName="classDetails" [ngClass]="{
+                            class="form-control form-control-sm" formControlName="classDetails" [ngClass]="{
                             'is-invalid': (f.classDetails.dirty || f.classDetails.touched) && f.classDetails.invalid
                             }" [readOnly]="action==='view'" />
                         <div class="invalid-feedback">Class details is required</div>
@@ -70,7 +70,7 @@
                     <div class="form-group">
                         <label for="score">Last exam score: </label>
                         <input id="score" placeholder="Enter last exam score" type="text"
-                            class="form-control" formControlName="score"
+                            class="form-control form-control-sm" formControlName="score"
                             [readOnly]="action==='view'" />
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                     <div class="form-group">
                         <label for="position">Last exam position: </label>
                         <input id="position" placeholder="Enter last exam position" type="text"
-                            class="form-control" formControlName="position"
+                            class="form-control form-control-sm" formControlName="position"
                             [readOnly]="action==='view'" />
                     </div>
                 </div>
@@ -89,7 +89,7 @@
                         <label for="description">Results description:</label>
                         <textarea placeholder="Enter description" id="description"
                             [readOnly]="action==='view'"
-                            class="form-control" rows="2" formControlName="description"></textarea>
+                            class="form-control form-control-sm" rows="2" formControlName="description"></textarea>
                     </div>
                 </div>
             </div>

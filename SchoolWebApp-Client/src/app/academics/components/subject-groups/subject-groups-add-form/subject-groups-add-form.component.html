@@ -1,34 +1,16 @@
 <form [formGroup]="subjectGroupForm" (ngSubmit)="onSubmit()" novalidate>
-    <div class="modal-body">
-        <div class="card-details-box border-info">
+    <div class="modal-body p-1">
+        <div class="card-details-box border-info mb-1">
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
                         <label for="name">Subject group name: <span
                                 class="requiredField">*</span></label>
                         <input id="name" placeholder="Subject group name" type="text"
-                            class="form-control" formControlName="name" [ngClass]="{
+                            class="form-control form-control-sm" formControlName="name" [ngClass]="{
                             'is-invalid': (f.name.dirty || f.name.touched) && f.name.invalid
                             }" />
                         <div class="invalid-feedback">Subject group name is required</div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label for="abbreviation">Abbreviation: </label>
-                        <input id="abbreviation" placeholder="Enter abbreviation" type="text"
-                            class="form-control" formControlName="abbreviation" />
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label>Description</label>
-                        <textarea placeholder="Subject group description" id="description"
-                            class="form-control" rows="2" formControlName="description"></textarea>
                     </div>
                 </div>
             </div>
@@ -50,8 +32,38 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="abbreviation">Abbreviation: </label>
+                        <input id="abbreviation" placeholder="Enter abbreviation" type="text"
+                            class="form-control form-control-sm" formControlName="abbreviation" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="rank">Rank: <span
+                                class="requiredField">*</span></label>
+                        <input id="rank" placeholder="Rank" type="number"
+                            class="form-control form-control-sm" formControlName="rank" [ngClass]="{
+                            'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
+                            }" />
+                        <div class="invalid-feedback">Rank is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea placeholder="Subject group description" id="description"
+                            class="form-control form-control-sm" rows="2" formControlName="description"></textarea>
+                    </div>
+                </div>
+            </div>
+            
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer p-1">
             <button type="submit" [disabled]="subjectGroupForm.invalid" class="btn
                 btn-success"> <i class="fas fa-save"></i>
                 {{ editMode ? 'Update' : 'Save' }}

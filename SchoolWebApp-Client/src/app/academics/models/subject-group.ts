@@ -3,6 +3,7 @@ import { Curriculum } from "./curriculum";
 
 export class SubjectGroup extends ResourceModel<SubjectGroup> {
     public name?: string;
+    public rank?: number;
     public description?: string;
     public abbreviation?: string;
 

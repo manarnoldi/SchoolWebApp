@@ -62,12 +62,16 @@ export class StudentAttendanceComponent implements OnInit {
 
     searchStudentAttendances = (dmy: SchoolSoftFilter) => {
         if (!dmy.studentClassId) {
-            this.toastr.error(
-                'The student class selected is not valid/correct!'
-            );
+            if (!this.firstLoad) {
+                this.toastr.error(
+                    'The student class selected is not valid/correct!'
+                );
+            }
             return;
         } else if (!dmy.month || dmy.month < 1 || dmy.month > 12) {
-            this.toastr.error('The month selected is not valid/correct!');
+            if (!this.firstLoad) {
+                this.toastr.error('The month selected is not valid/correct!');
+            }
             return;
         }
 
@@ -125,7 +129,9 @@ export class StudentAttendanceComponent implements OnInit {
 
                     let dmy = new SchoolSoftFilter();
                     dmy.month = topMonth;
-                    dmy.studentClassId = parseInt(topStudClass.id);
+                    dmy.studentClassId = topStudClass
+                        ? parseInt(topStudClass.id)
+                        : null;
 
                     this.searchStudentAttendances(dmy);
                 },

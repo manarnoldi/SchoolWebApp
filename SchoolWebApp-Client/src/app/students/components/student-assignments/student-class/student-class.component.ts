@@ -8,12 +8,7 @@ import {AcademicYear} from '@/school/models/academic-year';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {StudentDetails} from '@/students/models/student-details';
 import {StudentDetailsService} from '@/students/services/student-details.service';
-import {
-    AfterViewInit,
-    Component,
-    Input,
-    ViewChild
-} from '@angular/core';
+import {AfterViewInit, Component, Input, ViewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
@@ -25,7 +20,7 @@ import Swal from 'sweetalert2';
 import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
 import {SchoolClass} from '@/class/models/school-class';
 import {SchoolClassesService} from '@/class/services/school-classes.service';
-import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
+import {SchoolSoftFilterFormComponent} from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
 
 @Component({
     selector: 'app-student-class',
@@ -97,7 +92,11 @@ export class StudentClassComponent implements AfterViewInit {
 
     searchForClasses = (cyf: SchoolSoftFilter) => {
         if (!cyf.academicYearId) {
-            this.toastr.error('Select academic year before clicking search!');
+            if (!this.firstLoad) {
+                this.toastr.error(
+                    'Select academic year before clicking search!'
+                );
+            }
             return;
         }
         this.route.queryParams.subscribe((params) => {

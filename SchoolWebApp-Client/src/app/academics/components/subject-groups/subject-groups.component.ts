@@ -34,8 +34,10 @@ export class SubjectGroupsComponent implements OnInit {
     dashboardTitle = 'Academics: Subject groups';
     tableTitle: string = ' Subject groups list';
     tableHeaders: string[] = [
+        'Ref#',
         'Name',
         'Abbreviation',
+        'Rank',
         'Curriculum',
         'Description',
         'Action'

@@ -12,7 +12,7 @@
     data-bs-keyboard="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-success opacity-50">
+            <div class="modal-header bg-success opacity-50 p-2 p-2">
                 <h5 class="modal-title" id="SubjectFormModalLabel">
                     Subject details
                 </h5>
@@ -29,22 +29,18 @@
     </div>
 </div>
 <section class="content">
-    <div class="container-fluid">
-        <div class="row">
+    <div class="container-fluid px-1">
+        <div class="row g-0">
             <div class="col-12">
                 <app-table-button modelName="subject"
                     buttonTitle="Add subject"></app-table-button>
             </div>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <app-subjects-table [tableTitle]="'Subjects list'"
-                    (pageChangedEvent)="pageChanged($event)"
-                    (pageSizeChangedEvent)="pageSizeChanged($event)"
-                    [subjects]="subjects" [showLoginControls]="false"
-                    (editItemEvent)="editItem($event)" *ngIf="subjects"
-                    (deleteItemEvent)="deleteItem($event)"></app-subjects-table>
-            </div>
-        </div>
+        <app-subjects-table [tableTitle]="'Subjects list'"
+            (pageChangedEvent)="pageChanged($event)"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"
+            [subjects]="subjects" [showLoginControls]="false"
+            (editItemEvent)="editItem($event)" *ngIf="subjects"
+            (deleteItemEvent)="deleteItem($event)"></app-subjects-table>
     </div>
 </section>

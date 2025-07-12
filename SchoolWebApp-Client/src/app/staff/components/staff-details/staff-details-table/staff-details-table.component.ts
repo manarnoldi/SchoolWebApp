@@ -32,6 +32,7 @@ export class StaffDetailsTableComponent implements AfterViewInit, OnDestroy {
     dtTrigger: Subject<any> = new Subject();
 
     tableHeaders: string[] = [
+        'Ref#',
         'Full name',
         'Staff category',
         'Designation',
@@ -47,8 +48,9 @@ export class StaffDetailsTableComponent implements AfterViewInit, OnDestroy {
         this.dtOptions = {
             scrollX: true,
             columnDefs: [
-                {width: 150, targets: 7},
-                {width: 250, targets: 0}
+                {width: 150, targets: 8},
+                {width: 250, targets: 1},
+                {width: 50, targets: 0}
             ]
             // rowCallback: (row: Node, data: any, index: number) => {
             //     if (data) {

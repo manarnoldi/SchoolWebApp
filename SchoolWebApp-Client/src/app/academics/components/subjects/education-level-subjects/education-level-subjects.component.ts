@@ -10,11 +10,11 @@ import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {forkJoin} from 'rxjs';
 import {EducationLevelSubjectService} from '@/academics/services/education-level-subject.service';
 import Swal from 'sweetalert2';
-import {EducationLevelYear} from '@/shared/models/education-level-year';
 import {Subject} from '@/academics/models/subject';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {SubjectsService} from '@/academics/services/subjects.service';
-import {AcademicYearsSelectorFormComponent} from '@/shared/components/academic-years-selector-form/academic-years-selector-form.component';
+import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
+import {SchoolSoftFilterFormComponent} from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
 
 @Component({
     selector: 'app-education-level-subjects',
@@ -24,8 +24,9 @@ import {AcademicYearsSelectorFormComponent} from '@/shared/components/academic-y
 export class EducationLevelSubjectsComponent implements OnInit {
     @ViewChild(EducationLevelSubjectsFormComponent)
     educationLevelSubjectsFormComponent: EducationLevelSubjectsFormComponent;
-    @ViewChild(AcademicYearsSelectorFormComponent)
-    academicYearsSelectorFormComponent: AcademicYearsSelectorFormComponent;
+
+    @ViewChild(SchoolSoftFilterFormComponent)
+    ssFFC: SchoolSoftFilterFormComponent;
 
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
@@ -60,6 +61,14 @@ export class EducationLevelSubjectsComponent implements OnInit {
         this.loadInitials();
     }
 
+    academicYearChanged = ($academicYearId: number) => {
+        this.educationLevelSubjects = [];
+    };
+
+    educationLevelChanged = (educationLevelId: number) => {
+        this.educationLevelSubjects = [];
+    };
+
     checkInputAll(check: boolean = false) {
         if (
             this.educationLevelSubjectsFormComponent &&
@@ -79,8 +88,21 @@ export class EducationLevelSubjectsComponent implements OnInit {
                 this.educationLevels = educationLevels.sort(
                     (a, b) => a.rank - b.rank
                 );
-                this.academicYears = academicYears;
-                this.subjects = subjects;
+                this.academicYears = academicYears.sort(
+                    (a, b) => b.rank - a.rank
+                );
+                this.subjects = subjects.sort((a, b) => a.rank - b.rank);
+
+                const topEduLevel = this.educationLevels[0];
+                const topAcadYear = this.academicYears[0];
+
+                let cysPass = new SchoolSoftFilter();
+                cysPass.educationLevelId = parseInt(topEduLevel.id);
+                cysPass.academicYearId = parseInt(topAcadYear.id);
+
+                this.ssFFC.setFormControls(cysPass);
+                this.ssFFC.onSubmit();
+
                 this.isLoading = false;
             },
             error: (err) => {
@@ -89,14 +111,14 @@ export class EducationLevelSubjectsComponent implements OnInit {
         });
     };
 
-    loadByEducationLevelYear = (ly: EducationLevelYear) => {
-        if (!ly.academicYearId) {
+    loadByEducationLevelYear = (ssf: SchoolSoftFilter) => {
+        if (!ssf.academicYearId) {
             this.toastr.error(
                 'Select academic year first before clicking search'
             );
             return;
         }
-        if (!ly.educationLevelId) {
+        if (!ssf.educationLevelId) {
             this.toastr.error(
                 'Select education level first before clicking search'
             );
@@ -104,7 +126,7 @@ export class EducationLevelSubjectsComponent implements OnInit {
         }
 
         let educationLevelSubjectsReq = this.educationLevelSubjectSvc.get(
-            `/educationLevelSubjects/byEducationLevelYearId/${ly.educationLevelId}/${ly.academicYearId}`
+            `/educationLevelSubjects/byEducationLevelYearId/${ssf.educationLevelId}/${ssf.academicYearId}`
         );
 
         forkJoin([educationLevelSubjectsReq]).subscribe(
@@ -125,7 +147,7 @@ export class EducationLevelSubjectsComponent implements OnInit {
         this.subjects.forEach((s) => (s.isSelected = false));
     };
 
-    academicYearEduLevelChangedInForm = (ly: EducationLevelYear) => {
+    academicYearEduLevelChangedInForm = (ly: SchoolSoftFilter) => {
         this.subjects.forEach((s) => (s.isSelected = false));
         this.checkInputAll(false);
         if (!ly.academicYearId) {
@@ -184,7 +206,7 @@ export class EducationLevelSubjectsComponent implements OnInit {
                     this.educationLevelSubjectsFormComponent.editMode = true;
                     this.educationLevelSubjectsFormComponent.educationLevelSubject =
                         this.educationLevelSubject;
-                    let ely = new EducationLevelYear();
+                    let ely = new SchoolSoftFilter();
                     ely.academicYearId =
                         this.educationLevelSubject.academicYearId;
                     ely.educationLevelId =
@@ -211,7 +233,7 @@ export class EducationLevelSubjectsComponent implements OnInit {
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.value) {
-                let eduLvlYear = new EducationLevelYear();
+                let eduLvlYear = new SchoolSoftFilter();
                 eduLvlYear.educationLevelId = this.educationLevelSubjects.find(
                     (s) => s.id == id.toString()
                 ).educationLevelId;
@@ -263,7 +285,7 @@ export class EducationLevelSubjectsComponent implements OnInit {
                                 parseInt(ls.id)
                             )
                         );
-                    }                    
+                    }
                 });
                 if (deleteSubjectIdsReq.length <= 0) {
                     this.recordsUpdated(educationLevelSubjects);
@@ -322,10 +344,10 @@ export class EducationLevelSubjectsComponent implements OnInit {
         this.educationLevelSubjectsFormComponent.editMode = false;
         this.educationLevelSubjectsFormComponent.closeButton.nativeElement.click();
 
-        let ey = new EducationLevelYear();
+        let ey = new SchoolSoftFilter();
         ey.educationLevelId = educationLevelSubjects[0].educationLevelId;
         ey.academicYearId = educationLevelSubjects[0].academicYearId;
-        this.academicYearsSelectorFormComponent.setFormControls(ey);
+        this.ssFFC.setFormControls(ey);
         this.educationLevelSubjectsFormComponent.subjects.forEach(
             (s) => (s.isSelected = false)
         );

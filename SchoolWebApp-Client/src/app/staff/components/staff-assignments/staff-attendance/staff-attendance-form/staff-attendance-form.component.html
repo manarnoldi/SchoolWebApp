@@ -9,7 +9,7 @@
                         <label for="date">Attendance date: <span
                                 class="requiredField">*</span></label>
                         <input placeholder="Enter attendance date"
-                            id="date" type="date" class="form-control"
+                            id="date" type="date" class="form-control form-control-sm"
                             formControlName="date" [ngClass]="{
                                 'is-invalid': (f.date.dirty || f.date.touched) && f.date.invalid
                                 }" />
@@ -33,7 +33,7 @@
                     <div class="form-group">
                         <label for="remarks">Attendance remarks</label>
                         <textarea placeholder="Attendance remarks" id="remarks"
-                            class="form-control" rows="2" formControlName="remarks"></textarea>
+                            class="form-control form-control-sm" rows="2" formControlName="remarks"></textarea>
                     </div>
                 </div>
             </div>

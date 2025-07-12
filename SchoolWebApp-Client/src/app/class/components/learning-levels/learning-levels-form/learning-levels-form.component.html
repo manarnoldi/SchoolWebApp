@@ -7,7 +7,7 @@
                         <label for="name">Learning level name: <span
                                 class="requiredField">*</span></label>
                         <input id="name" placeholder="Learning level name" type="text"
-                            class="form-control" formControlName="name" [ngClass]="{
+                            class="form-control form-control-sm" formControlName="name" [ngClass]="{
                             'is-invalid': (f.name.dirty || f.name.touched) && f.name.invalid
                             }" />
                         <div class="invalid-feedback">Learning level name is required</div>
@@ -19,7 +19,7 @@
                     <div class="form-group">
                         <label for="description">Description</label>
                         <textarea placeholder="Learning level description" id="description"
-                            class="form-control" rows="2" formControlName="description"></textarea>
+                            class="form-control form-control-sm" rows="2" formControlName="description"></textarea>
                     </div>
                 </div>
             </div>
@@ -47,7 +47,7 @@
                         <label for="rank" class="form-label">Rank: <span
                                 class="requiredField">*</span></label>
                         <input id="rank" placeholder="Learning level rank" type="number"
-                            class="form-control" formControlName="rank" [ngClass]="{
+                            class="form-control form-control-sm" formControlName="rank" [ngClass]="{
                             'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
                             }" />
                         <div class="invalid-feedback">Learning level rank is required</div>

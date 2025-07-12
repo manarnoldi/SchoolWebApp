@@ -24,7 +24,7 @@ export class CurriculumComponent implements OnInit {
 
     dashboardTitle = 'Settings:  Curricula';
     tableTitle: string = ' Curricula list';
-    tableHeaders: string[] = ['Name', 'Code', 'Rank', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Code', 'Rank', 'Description', 'Action'];
 
     curriculum: Curriculum;
     curricula: Curriculum[] = [];

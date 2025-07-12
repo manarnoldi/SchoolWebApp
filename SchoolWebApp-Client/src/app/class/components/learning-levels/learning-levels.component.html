@@ -12,7 +12,7 @@
     data-bs-keyboard="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-success opacity-50">
+            <div class="modal-header bg-success opacity-50 p-2">
                 <h5 class="modal-title" id="LearningLevelFormModalLabel">
                     Learning level details
                 </h5>
@@ -56,6 +56,7 @@
                     <tbody>
                         <tr
                             *ngFor="let item of learningLevels| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                            <td>{{ item.id }}</td>
                             <td>{{ item.name }}</td>
                             <td>{{ item.educationLevel?.name }}</td>
                             <td>{{ item.rank }}</td>

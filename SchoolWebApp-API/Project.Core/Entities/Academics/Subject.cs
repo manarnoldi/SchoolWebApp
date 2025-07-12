@@ -33,7 +33,7 @@ namespace SchoolWebApp.Core.Entities.Academics
         public int DepartmentId { get; set; }
         public Department? Department { get; set; }
 
-        public int StaffDetailsId { get; set; }
+        public int? StaffDetailsId { get; set; }
         public StaffDetails? StaffDetails { get; set; }
 
         public List<StudentSubject> StudentSubjects { get; set; } = new();

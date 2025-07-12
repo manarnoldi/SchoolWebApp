@@ -35,6 +35,7 @@ export class StaffSubjectTableComponent implements OnInit {
     };
 
     tableHeaders: string[] = [
+        'Ref#',
         'Staff full name',
         'Staff number',
         'Year',

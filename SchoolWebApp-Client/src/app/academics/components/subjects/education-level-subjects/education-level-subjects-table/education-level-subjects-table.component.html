@@ -1,4 +1,4 @@
-<div class="card mb-1">
+<div class="card">
     <app-table-heading
         tableTitle="{{tableTitle}}"></app-table-heading>
     <div class="card-body table-responsive p-0">
@@ -13,6 +13,7 @@
             <tbody>
                 <tr
                     *ngFor="let item of educationLevelSubjects | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                    <td>{{ item.id }}</td>
                     <td>{{ item.academicYear?.name }}</td>
                     <td>{{ item.educationLevel?.name }}</td>
                     <td>{{ item.subject?.name }}</td>

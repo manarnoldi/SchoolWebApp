@@ -54,6 +54,7 @@ export class SchoolClassComponent implements OnInit {
     dashboardTitle = 'School: Classes';
     tableTitle: string = ' Classes list';
     tableHeaders: string[] = [
+        'Ref#',
         'Academic year',
         'Class',
         'Stream',
@@ -62,7 +63,7 @@ export class SchoolClassComponent implements OnInit {
         'Class Leaders',
         'Description',
         'Action',
-        'Manage Leadership'
+        'Leadership'
     ];
 
     schoolClass: SchoolClass;

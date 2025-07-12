@@ -56,6 +56,7 @@ export class StudentSubjectsTableComponent implements OnInit {
     };
 
     tableHeaders: string[] = [
+        'Ref#',
         'Student Full Name',
         'Class',
         'Stream',

@@ -11,6 +11,7 @@ namespace SchoolWebApp.Core.Entities.School
         [Display(Name = "Learning mode")]
         [StringLength(255)]
         public required string Name { get; set; }
+        public int Rank { get; set; }
 
         [StringLength(255)]
         public string? Description { get; set; }

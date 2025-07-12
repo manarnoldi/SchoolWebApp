@@ -25,6 +25,7 @@ export class SchoolStreamsComponent implements OnInit {
     dashboardTitle = 'Settings: School streams';
     tableTitle: string = 'School streams list';
     tableHeaders: string[] = [
+        'Ref#',
         'Name',
         'Abbreviation',
         'Rank',

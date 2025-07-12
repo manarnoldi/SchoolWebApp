@@ -1,4 +1,4 @@
-import { Status } from '@/core/enums/status';
+import {Status} from '@/core/enums/status';
 import {StaffCategoriesService} from '@/settings/services/staff-categories.service';
 import {StaffDetailsService} from '@/staff/services/staff-details.service';
 import {ParentsService} from '@/students/services/parents.service';
@@ -30,15 +30,31 @@ export class DashboardSummaryComponent implements OnInit {
         private StaffCategoriesSvc: StaffCategoriesService
     ) {}
 
+    onStaffLinkClick(event: MouseEvent, teaching: boolean): void {
+        if (teaching) {
+            if (this.teachingStaffCategoryId > 0) {
+                event.preventDefault();
+            }
+        } else {
+            if (this.nonTeachingStaffCategoryId > 0) {
+                event.preventDefault();
+            }
+        }
+    }
+
     ngOnInit(): void {
         this.StaffCategoriesSvc.get('/staffCategories').subscribe({
             next: (staffCats) => {
-                this.teachingStaffCategoryId = parseInt(
-                    staffCats.find((s) => s.code == 'STAFFCAT001').id
-                );
-                this.nonTeachingStaffCategoryId = parseInt(
-                    staffCats.find((s) => s.code == 'STAFFCAT002').id
-                );
+                this.teachingStaffCategoryId = staffCats.find(
+                    (s) => s.forTeaching == true
+                )
+                    ? parseInt(staffCats.find((s) => s.forTeaching).id)
+                    : 0;
+                this.nonTeachingStaffCategoryId = staffCats.find(
+                    (s) => s.forTeaching == false
+                )
+                    ? parseInt(staffCats.find((s) => !s.forTeaching).id)
+                    : 0;
 
                 let requests = [];
                 requests.push(

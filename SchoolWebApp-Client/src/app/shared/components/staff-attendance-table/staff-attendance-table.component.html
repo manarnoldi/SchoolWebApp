@@ -19,6 +19,7 @@
             <tbody>
                 <tr
                     *ngFor="let item of staffAttendances | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                    <td>{{ item.present === null? '': item.id }}</td>
                     <td>{{ item.staffDetails?.upi }}</td>
                     <td>{{ item.staffDetails?.fullName }}</td>
                     <td>{{ item.date | date: 'MMMM' }}</td>

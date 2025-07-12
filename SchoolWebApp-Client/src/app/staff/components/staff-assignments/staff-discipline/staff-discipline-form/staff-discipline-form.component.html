@@ -9,7 +9,7 @@
                         <label for="occurenceStartDate">Occurence start date: <span
                                 class="requiredField">*</span></label>
                         <input placeholder="Enter occurence start date" [readOnly]="action==='view'"
-                            id="occurenceStartDate" type="date" class="form-control"
+                            id="occurenceStartDate" type="date" class="form-control form-control-sm"
                             formControlName="occurenceStartDate" [ngClass]="{
                                 'is-invalid': (f.occurenceStartDate.dirty || f.occurenceStartDate.touched) && f.occurenceStartDate.invalid
                                 }" />
@@ -21,7 +21,7 @@
                         <label for="occurenceEndDate">Occurence end date: <span
                                 class="requiredField">*</span></label>
                         <input placeholder="Enter occurence end date" [readOnly]="action==='view'"
-                            id="occurenceEndDate" type="date" class="form-control"
+                            id="occurenceEndDate" type="date" class="form-control form-control-sm"
                             formControlName="occurenceEndDate" [ngClass]="{
                                 'is-invalid': (f.occurenceEndDate.dirty || f.occurenceEndDate.touched) && f.occurenceEndDate.invalid
                                 }" />
@@ -34,7 +34,7 @@
                     <div class="form-group">
                         <label for="occurenceDetails">Occurence details</label>
                         <textarea placeholder="Enter occurence details" id="occurenceDetails"
-                            class="form-control" rows="2" [readOnly]="action==='view'"
+                            class="form-control form-control-sm" rows="2" [readOnly]="action==='view'"
                             formControlName="occurenceDetails"></textarea>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                         <label for="outcomeDetails">Outcome details</label>
                         <textarea [readOnly]="action==='view'" placeholder="Enter outcome details"
                             id="outcomeDetails"
-                            class="form-control" rows="2"
+                            class="form-control form-control-sm" rows="2"
                             formControlName="outcomeDetails"></textarea>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 <div class="card mb-1">
-    <app-table-heading [editControls]="true"
+    <app-table-heading [editControls]="false"
         tableTitle="{{tableTitle}}"></app-table-heading>
     <div class="card-body table-responsive p-0">
         <table class="table table-striped table-hover text-nowrap">
@@ -12,6 +12,7 @@
                             <label class="form-check-label" for="checkAll"></label>
                         </div> -->
                     </th>
+                    <th>Ref#</th>
                     <th>Name</th>
                     <th>Code</th>
                     <th *ngIf="showAllCols">Abbr</th>
@@ -36,6 +37,7 @@
                             <label class="form-check-label" for="{{item.id}}"></label>
                         </div>
                     </th>
+                    <td>{{ item.id }}</td>
                     <td>{{ item.name }}</td>
                     <td>{{ item.code }}</td>
                     <td *ngIf="showAllCols">{{ item.abbr }}</td>

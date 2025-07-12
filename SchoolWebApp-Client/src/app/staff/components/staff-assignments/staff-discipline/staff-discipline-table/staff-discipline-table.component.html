@@ -13,6 +13,7 @@
             <tbody>
                 <tr
                     *ngFor="let item of staffDisciplines | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                    <td>{{ item.id }}</td>
                     <td>{{ item.staffDetails?.fullName }}</td>
                     <td>{{ item.occurenceStartDate | date: 'dd/MM/yyyy' }}</td>
                     <td>{{ item.occurenceEndDate | date: 'dd/MM/yyyy' }}</td>

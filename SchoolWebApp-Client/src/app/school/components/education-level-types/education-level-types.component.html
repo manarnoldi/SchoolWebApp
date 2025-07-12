@@ -13,7 +13,7 @@
     data-bs-keyboard="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-success opacity-50">
+            <div class="modal-header bg-success opacity-50 p-2">
                 <h5 class="modal-title" id="{{tableModel}}FormModalLabel">
                     {{tableModel | titlecase }} details - {{ editMode ? 'Edit' : 'Add' }}
                 </h5>
@@ -44,6 +44,19 @@
                                 <label>Abbreviation</label>
                                 <input id="abbr" placeholder="Abbreviation" type="text"
                                     class="form-control" formControlName="abbr" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="rank">Rank: <span
+                                        class="requiredField">*</span></label>
+                                <input id="rank" placeholder="Rank" type="number"
+                                    class="form-control" formControlName="rank" [ngClass]="{
+                            'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
+                            }" />
+                                <div class="invalid-feedback">Rank is required</div>
                             </div>
                         </div>
                     </div>
@@ -98,6 +111,7 @@
                             <td>{{ item.id }}</td>
                             <td>{{ item.name }}</td>
                             <td>{{ item.abbr }}</td>
+                            <td>{{ item.rank }}</td>
                             <td>{{ item.description }}</td>
                             <app-table-action
                                 (editItemEvent)="editItem(item.id)"

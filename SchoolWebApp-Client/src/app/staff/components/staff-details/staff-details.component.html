@@ -6,7 +6,7 @@
     <div class="container-fluid px-1">
         <div class="row g-0">
             <ng-content *ngIf="querySource==='dashboard'">
-                <div class="col-1">
+                <div class="col">
                     <a
                         class="btn btn-flat btn-sm btn-warning float-left my-1"
                         [routerLink]="['/']"
@@ -23,7 +23,7 @@
                     (statusChangedEvent)="statusChanged($event)"
                     [showEmploymentType]="true"></app-school-soft-filter-form>
             </div>
-            <div class="col-1">
+            <div class="col">
                 <a
                     [routerLink]="['/staff/details/add']"
                     [routerLinkActive]="'active'"

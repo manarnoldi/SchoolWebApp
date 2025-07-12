@@ -29,6 +29,7 @@ export class SubjectGroupsAddFormComponent implements OnInit {
         this.subjectGroupForm = this.formBuilder.group({
             name: ['', [Validators.required]],
             abbreviation: [''],
+            rank: [0],
             description: [''],
             curriculumId: [null, [Validators.required]]
         });
@@ -37,6 +38,7 @@ export class SubjectGroupsAddFormComponent implements OnInit {
     setFormControls = (subjectGroup: SubjectGroup) => {
         this.subjectGroupForm.setValue({
             name: subjectGroup?.name,
+            rank: subjectGroup?.rank,
             abbreviation: subjectGroup?.abbreviation,
             description: subjectGroup?.description,
             curriculumId: subjectGroup?.curriculumId

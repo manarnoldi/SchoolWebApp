@@ -235,6 +235,12 @@ table.table.dataTable tr.bg-success-subtle > td {
   background-color: #d1e7dd !important;
   color: #0f5132 !important;
 }
+
+.disabled-link {
+  pointer-events: none; /* or remove this if you still want the hover/click effect but no routing */
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 // .truncate-multiline {
 //   display: -webkit-box;
 //   -webkit-line-clamp: 2; /* or 2 lines */

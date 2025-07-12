@@ -75,7 +75,7 @@ export class EducationLevelsComponent implements OnInit {
 
         forkJoin([curriculaReq, educationLevelTypeReq]).subscribe(
             ([curricular, educationLevelTypes]) => {
-                this.educationLevelTypes = educationLevelTypes;
+                this.educationLevelTypes = educationLevelTypes.sort((a, b) => a.rank - b.rank);
                 this.curricula = curricular.sort((a, b) => a.rank - b.rank);
                 const topCurriculum = this.curricula[0];
 
