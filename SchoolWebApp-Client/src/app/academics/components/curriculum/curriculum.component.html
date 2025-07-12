@@ -31,7 +31,7 @@
                                     <label for="name">Curriculum name: <span
                                             class="requiredField">*</span></label>
                                     <input id="name" placeholder="Curriculum name" type="text"
-                                        class="form-control" formControlName="name" [ngClass]="{
+                                        class="form-control form-control-sm" formControlName="name" [ngClass]="{
                                     'is-invalid': (f.name.dirty || f.name.touched) && f.name.invalid
                                     }" />
                                     <div class="invalid-feedback"> Curriculum name is required</div>
@@ -43,7 +43,7 @@
                                 <div class="form-group">
                                     <label>Code</label>
                                     <input id="code" placeholder="Curriculum code" type="text"
-                                        class="form-control" formControlName="code" />
+                                        class="form-control form-control-sm" formControlName="code" />
                                 </div>
                             </div>
                         </div>
@@ -53,7 +53,7 @@
                                     <label for="rank" class="form-label">Rank: <span
                                             class="requiredField">*</span></label>
                                     <input id="rank" placeholder="rank" type="number"
-                                        class="form-control" formControlName="rank" [ngClass]="{
+                                        class="form-control form-control-sm" formControlName="rank" [ngClass]="{
                                     'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
                                     }" />
                                     <div class="invalid-feedback">Rank is required</div>
@@ -65,7 +65,7 @@
                                 <div class="form-group">
                                     <label>Description</label>
                                     <textarea placeholder="Curriculum description" id="description"
-                                        class="form-control" rows="2"
+                                        class="form-control form-control-sm" rows="2"
                                         formControlName="description"></textarea>
                                 </div>
                             </div>
@@ -107,7 +107,7 @@
                     </thead>
                     <tbody>
                         <tr *ngFor="let item of curricula;index as i">
-                            <td>{{ i+1 }}</td>
+                            <td>{{ item.id }}</td>
                             <td>{{ item.name }}</td>
                             <td>{{ item.code }}</td>
                             <td>{{ item.rank }}</td>

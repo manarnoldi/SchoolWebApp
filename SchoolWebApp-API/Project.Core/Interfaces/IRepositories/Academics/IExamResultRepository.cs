@@ -8,7 +8,7 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.Academics
         //Task<List<ExamResult>> GetByStudentId(int studentId);
         Task<List<ExamResult>> GetByStudentSubjectId(int student, int SubjectId);
         Task<List<ExamResult>> GetByExamId(int examId);
-        Task<ExamResult> GetByStudentSubjectExamId(int studentId, int subjectId, int examId);
+        Task<ExamResult> GetByStudentExamId(int studentId, int examId);
        
         
     }

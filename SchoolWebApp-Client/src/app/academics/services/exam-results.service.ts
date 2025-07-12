@@ -31,11 +31,6 @@ export class ExamResultsService extends ResourceService<ExamResult> {
     ): Observable<ExamResult[]> => {
         return this.getExamResultsByExamId(parseInt(exam.id)).pipe(
             concatMap((examResults) =>
-
-
-
-
-                
                 this.studentSubjectsSvc
                     .getStudentSubjectsBySchoolClassSubjectId(
                         exam?.schoolClassId,
@@ -49,12 +44,13 @@ export class ExamResultsService extends ResourceService<ExamResult> {
                                 let erResult = examResults.find(
                                     (r) =>
                                         r.examId == parseInt(exam.id) &&
-                                        r.studentId == parseInt(s.id)
+                                        r.studentId == s.studentClass?.studentId
                                 );
 
                                 er.examId = parseInt(exam.id);
                                 er.exam = exam;
-                                er.studentId = parseInt(s.id);
+                                er.studentId = s.studentClass?.studentId;
+                                er.student = s.studentClass?.student;
                                 er.score = erResult ? erResult.score : null;
                                 er.id = erResult ? erResult.id : null;
 

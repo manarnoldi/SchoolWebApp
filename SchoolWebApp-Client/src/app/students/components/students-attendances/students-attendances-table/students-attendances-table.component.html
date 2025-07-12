@@ -24,6 +24,7 @@
             <tbody>
                 <tr
                     *ngFor="let item of studentClasses| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                    <td class="py-11">{{ item.id }}</td>
                     <td class="py-11">{{ item.student?.upi }}</td>
                     <td class="py-11">{{ item.student?.fullName }}</td>
                     <td class="py-11">{{ currentDate| date: 'dd-MMM-yyyy' }}</td>
@@ -57,7 +58,8 @@
                 </tr>
             </tbody>
         </table>
-        <app-table-paging
+        <app-table-paging (pageChangedEvent)="pageChanged($event)" [pageSize]="pageSize"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"
             [collectionSize]="studentClasses.length"></app-table-paging>
     </div>
 </div>

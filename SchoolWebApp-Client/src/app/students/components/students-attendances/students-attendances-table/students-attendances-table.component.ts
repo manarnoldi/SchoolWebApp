@@ -24,7 +24,7 @@ export class StudentsAttendancesTableComponent implements OnInit {
 
     @ViewChild('checkAllStudents', {static: false}) checkAll: ElementRef;
 
-    tableHeaders: string[] = ['Adm No', 'Student Full Name', 'Date'];
+    tableHeaders: string[] = ['Ref#', 'Adm#', 'Student Full Name', 'Date'];
 
     page = 1;
     pageSize = 20;
@@ -69,5 +69,13 @@ export class StudentsAttendancesTableComponent implements OnInit {
 
     deleteItem = (id: number) => {
         this.deleteItemEvent.emit(id);
+    };
+
+    pageSizeChanged = (pageSize: number) => {
+        this.pageSize = pageSize;
+    };
+
+    pageChanged = (page: number) => {
+        this.page = page;
     };
 }

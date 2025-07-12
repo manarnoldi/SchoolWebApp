@@ -11,7 +11,7 @@ import {ToastrService} from 'ngx-toastr';
 export class ExamResultsTableComponent {
     @Input() tableTitle: string = 'Examination results';
     @Input() examResults: ExamResult[] = [];
-    @Input() pageSize: number = 10;
+    @Input() pageSize: number = 20;
     // @Input() exams: Exam[] = [];
     @Input() isReport: boolean = false;
 

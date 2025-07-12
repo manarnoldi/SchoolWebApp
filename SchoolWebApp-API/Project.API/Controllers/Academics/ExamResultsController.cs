@@ -176,7 +176,7 @@ namespace SchoolWebApp.API.Controllers.Academics
         {
             if (ModelState.IsValid)
             {
-                if (!await _unitOfWork.StudentSubjects.ItemExistsAsync(s => s.Id == model.StudentId))
+                if (!await _unitOfWork.Students.ItemExistsAsync(s => s.Id == model.StudentId))
                     return Conflict(new { message = $"The student details submitted does not exist." });
                 if (!await _unitOfWork.Exams.ItemExistsAsync(s => s.Id == model.ExamId))
                     return Conflict(new { message = $"The exam details submitted do not exist." });
@@ -221,7 +221,7 @@ namespace SchoolWebApp.API.Controllers.Academics
                     {
                         if (item.Score != null)
                         {
-                            var existingExamResult = await _unitOfWork.ExamResults.GetByStudentSubjectExamId(item.StudentId, item.Exam.SubjectId, item.ExamId);
+                            var existingExamResult = await _unitOfWork.ExamResults.GetByStudentExamId(item.StudentId, item.ExamId);
 
                             if (existingExamResult != null)
                             {

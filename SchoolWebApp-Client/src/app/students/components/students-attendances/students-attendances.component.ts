@@ -256,6 +256,11 @@ export class StudentsAttendancesComponent implements OnInit {
                                             };
                                         }
                                     }
+                                    studentClasses.sort((a, b) =>
+                                        a.student.upi.localeCompare(
+                                            b.student.upi
+                                        )
+                                    );
                                     this.studentClasses = studentClasses;
                                     this.studentsAttendancesTableComponent.studentClasses =
                                         studentClasses;

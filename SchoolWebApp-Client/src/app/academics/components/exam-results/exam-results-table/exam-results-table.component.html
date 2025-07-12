@@ -32,16 +32,16 @@
                         {{item.exam?.schoolClass?.name}}
                     </td>
                     <td class="py-1" *ngIf="isReport">
-                        {{item.studentSubject?.subject?.name}}
+                        {{item.exam?.subject?.name}}
                     </td>
                     <td class="py-1 ">
-                        {{item.studentSubject?.studentClass?.student?.upi}}
+                        {{item.student?.upi}}
                     </td>
                     <td class="py-1 ">
-                        {{item.studentSubject?.studentClass?.student?.fullName}}
+                        {{item.student?.fullName}}
                     </td>
                     <td class="py-1 " *ngIf="!isReport">
-                        {{item.studentSubject?.subject?.name}}
+                        {{item.exam?.subject?.name}}
                     </td>
                     <td class="py-1 ">
                         {{item.exam?.examName?.examType?.name}}

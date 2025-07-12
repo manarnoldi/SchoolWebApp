@@ -299,6 +299,11 @@ export class ExamResultsComponent implements OnInit {
                         .subscribe({
                             next: (examRes) => {
                                 this.examResults = examRes;
+                                if (this.examResults.length <= 0) {
+                                    this.toastr.info(
+                                        'No record found with the selection!'
+                                    );
+                                }
                             },
                             error: (err) => {
                                 this.toastr.error(err.error);

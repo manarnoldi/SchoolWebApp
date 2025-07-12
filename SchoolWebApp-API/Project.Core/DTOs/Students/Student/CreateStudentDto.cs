@@ -6,10 +6,10 @@ namespace SchoolWebApp.Core.DTOs.Students.Student
     public class CreateStudentDto: PersonDto
     {
         [Display(Name = "Addmission date")]
-        public DateTime AdmissionDate { get; set; }
+        public DateTime? AdmissionDate { get; set; }
 
         [Display(Name = "Application date")]
-        public DateTime ApplicationDate { get; set; }
+        public DateTime? ApplicationDate { get; set; }
 
         [Display(Name = "Health concerns")]
         [StringLength(500)]

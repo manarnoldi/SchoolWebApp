@@ -33,10 +33,10 @@ namespace SchoolWebApp.Infrastructure.Repositories.Academics
         //    return examsResults;
         //}
 
-        public async Task<ExamResult> GetByStudentSubjectExamId(int studentId, int subjectId, int examId)
+        public async Task<ExamResult> GetByStudentExamId(int studentId, int examId)
         {
             var examsResults = await _dbContext.ExamResults
-                .Where(e => e.StudentId == studentId && e.Exam.SubjectId == subjectId && e.ExamId == examId)
+                .Where(e => e.StudentId == studentId && e.ExamId == examId)
                 .Include(e => e.Student)
                 .Include(e => e.Exam)
                 .Include(e => e.Exam.Subject)
