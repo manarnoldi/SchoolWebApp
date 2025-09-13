@@ -7,5 +7,6 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.Academics
     public interface IGradeRepository : IBaseRepository<Grade>
     {
         Task<List<Grade>> GetByCurriculumId(int? curriculumId);
+        Task<Grade> GetByScore(float score);
     }
 }

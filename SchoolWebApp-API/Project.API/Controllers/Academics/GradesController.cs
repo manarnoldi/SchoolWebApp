@@ -96,6 +96,33 @@ namespace SchoolWebApp.API.Controllers.Academics
             }
         }
 
+        // GET api/grades/byScore
+        /// <summary>
+        /// A method for retrieving a grade by score.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("byScore")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GradeDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetGradesByScore(float score)
+        {
+            try
+            {
+                if (score < 0) return BadRequest(score);
+                var _item = await _unitOfWork.Grades.GetByScore(score);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<GradeDto>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the grade by score.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         // GET api/grades/5
         /// <summary>
         /// A method for retrieving a grade record by Id.

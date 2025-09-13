@@ -9,6 +9,8 @@ namespace SchoolWebApp.Core.DTOs.Students.StudentSubjects
         public StudentClassDto? StudentClass { get; set; }
         public int SubjectId { get; set; }
         public SubjectDto? Subject { get; set; }
+        public string? SubjectName { get; set; }
+        public string? SubjectCode { get; set; }
         public string? Description { get; set; }
     }
 }

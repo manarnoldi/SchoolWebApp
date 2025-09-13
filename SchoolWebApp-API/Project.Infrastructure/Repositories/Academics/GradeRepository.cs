@@ -24,5 +24,14 @@ namespace SchoolWebApp.Infrastructure.Repositories.Academics
             var grades = await query.ToListAsync();
             return grades;
         }
+
+        public async Task<Grade> GetByScore(float score)
+        {
+            var query = await _dbContext.Grades
+                .Include(e => e.Curriculum)
+                .Where(g => score >= g.MinScore && score <= g.MaxScore)
+                .FirstOrDefaultAsync();
+            return query;
+        }
     }
 }

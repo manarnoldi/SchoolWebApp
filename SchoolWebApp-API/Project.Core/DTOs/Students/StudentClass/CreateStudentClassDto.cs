@@ -10,5 +10,8 @@ namespace SchoolWebApp.Core.DTOs.Students.StudentClass
         public StudentDto? Student { get; set; }
         public int SchoolClassId { get; set; }
         public SchoolClassDto? SchoolClass { get; set; }
+
+        public string? FullName { get; set; }
+        public string? UPI { get; set; }
     }
 }

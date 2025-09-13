@@ -9,6 +9,7 @@ using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.DTOs.Academics.ExamResult;
 using SchoolWebApp.Core.DTOs.Students.StudentSubjects;
 using SchoolWebApp.Core.Entities.Students;
+using SchoolWebApp.Core.DTOs.Reports.Academics;
 
 namespace SchoolWebApp.API.Controllers.Academics
 {
@@ -157,6 +158,71 @@ namespace SchoolWebApp.API.Controllers.Academics
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An error occurred while retrieving the exam results by exam id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/examResults/getStudentPerformance/5/5/5/5
+        /// <summary>
+        /// A method for retrieving student performance.
+        /// </summary>
+        /// <param name="sessionId">The exam result session Id whose exam results are to be retrieved</param>
+        /// <param name="schoolClassId">The exam result school class Id whose exam results are to be retrieved</param>
+        /// <param name="examNameId">The exam result exam name Id whose exam results are to be retrieved</param>
+        /// <param name="studentId">The exam result student Id whose exam results are to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("getStudentPerformance/{sessionId}/{schoolClassId}/{examNameId}/{studentId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentPerformanceDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetStudentExamPerformance(int sessionId, int schoolClassId, int examNameId, int studentId)
+        {
+            try
+            {
+                if (sessionId <= 0) return BadRequest(sessionId);
+                if (schoolClassId <= 0) return BadRequest(schoolClassId);
+                if (examNameId <= 0) return BadRequest(examNameId);
+                if (studentId <= 0) return BadRequest(studentId);
+                var _item = await _unitOfWork.ExamResults.GetStudentPerformace(sessionId, schoolClassId, examNameId, studentId);
+                if (_item == null) return NotFound();
+                return Ok(_item);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the exam results for a student.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/examResults/getBroadSheet/5/5/5
+        /// <summary>
+        /// A method for retrieving broadsheet.
+        /// </summary>
+        /// <param name="sessionId">The exam result session Id whose exam results are to be retrieved</param>
+        /// <param name="schoolClassId">The exam result school class Id whose exam results are to be retrieved</param>
+        /// <param name="examTypeId">The exam result exam type Id whose exam results are to be retrieved</param>
+        /// <param name="examNameId">The exam result exam name Id whose exam results are to be retrieved</param>
+        /// <returns></returns>
+        [HttpGet("getBroadSheet/{sessionId}/{schoolClassId}/{examTypeId}/{examNameId?}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<RankedStudentExamTypePerformanceDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetBroadSheet(int sessionId, int schoolClassId, int examTypeId, int? examNameId)
+        {
+            try
+            {
+                if (sessionId <= 0) return BadRequest(sessionId);
+                if (schoolClassId <= 0) return BadRequest(schoolClassId);
+                if (examNameId <= 0) return BadRequest(examNameId);
+                var _item = await _unitOfWork.ExamResults.GetClassExamTypeRanking(sessionId, schoolClassId, examTypeId, examNameId);
+                if (_item == null) return NotFound();
+                return Ok(_item);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the exam results.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
