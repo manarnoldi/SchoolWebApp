@@ -38,7 +38,7 @@ export class DepartmentsAddFormComponent implements OnInit {
             name: ['', [Validators.required]],
             code: ['', [Validators.required]],
             description: [''],
-            staffDetailsId: [null, [Validators.required]]
+            staffDetailsId: [null]
         });
     };
 
@@ -47,13 +47,7 @@ export class DepartmentsAddFormComponent implements OnInit {
             name: department?.name,
             code: department?.code,
             description: department?.description,
-            staffDetailsId: 0
-        });
-        var staffDId = this.staffDetails.find(
-            (s) => s.id == department?.staffDetailsId.toString()
-        );
-        this.departmentForm.patchValue({
-            staffDetailsId: staffDId
+            staffDetailsId: department?.staffDetailsId
         });
     };
 

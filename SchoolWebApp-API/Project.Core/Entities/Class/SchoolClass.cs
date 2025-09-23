@@ -1,4 +1,5 @@
 ﻿using SchoolWebApp.Core.Entities.Academics;
+using SchoolWebApp.Core.Entities.CBE.Exams;
 using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Entities.Shared;
 using SchoolWebApp.Core.Entities.Staff;

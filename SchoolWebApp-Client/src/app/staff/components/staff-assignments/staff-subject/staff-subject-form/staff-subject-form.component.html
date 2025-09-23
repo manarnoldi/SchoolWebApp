@@ -22,7 +22,7 @@
                         <label for="schoolClassId" class="form-label">Class:</label>
                         <input type="text" class="form-control form-control-sm form-control form-control-sm-sm" disabled
                             *ngIf="action!=='add'" value="{{schoolClassName}}" />
-                        <select *ngIf="action==='add'"
+                        <select *ngIf="action==='add'" (change)="classChanged()"
                             [attr.disabled]="action!=='add' ? 'disabled':null"
                             class="form-select form-select-sm"
                             aria-label="Select class" formControlName="schoolClassId"

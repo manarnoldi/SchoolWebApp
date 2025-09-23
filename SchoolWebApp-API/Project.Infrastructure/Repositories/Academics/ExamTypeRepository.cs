@@ -1,6 +1,6 @@
 ﻿using Project.Infrastructure.Data;
 using Project.Infrastructure.Repositories;
-using SchoolWebApp.Core.Entities.Academics;
+using SchoolWebApp.Core.Entities.CBE.Exams;
 using SchoolWebApp.Core.Interfaces.IRepositories.Academics;
 
 namespace SchoolWebApp.Infrastructure.Repositories.Academics

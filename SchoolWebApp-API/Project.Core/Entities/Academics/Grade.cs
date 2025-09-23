@@ -1,4 +1,5 @@
-﻿using SchoolWebApp.Core.Entities.Shared;
+﻿using SchoolWebApp.Core.Entities.CBE.Assessments;
+using SchoolWebApp.Core.Entities.Shared;
 using System.ComponentModel.DataAnnotations;
 
 namespace SchoolWebApp.Core.Entities.Academics
@@ -34,5 +35,7 @@ namespace SchoolWebApp.Core.Entities.Academics
         public int Rank { get; set; }
         public int CurriculumId { get; set; }
         public Curriculum? Curriculum { get; set; }
+
+        public List<Assessment> Assessments { get; set; } = new();
     }
 }

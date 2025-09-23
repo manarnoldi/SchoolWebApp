@@ -37,6 +37,7 @@ export class StaffSubjectFormComponent implements OnInit {
     @Output() addItemEvent = new EventEmitter<StaffSubject>();
     @Output() errorEvent = new EventEmitter<string>();
     @Output() yearChangedEvent = new EventEmitter<number>();
+    @Output() classChangedEvent = new EventEmitter<number>();
 
     staffSubjectForm: FormGroup;
 
@@ -78,13 +79,27 @@ export class StaffSubjectFormComponent implements OnInit {
     resetFormControls() {
         this.action = 'add';
         this.staffSubjectForm.reset();
+        this.subjects = [];
         this.staffSubjectForm.get('staffDetailsId').setValue(this.staff?.id);
     }
 
     yearChanged = () => {
         this.staffSubjectForm.get('schoolClassId').reset();
+        this.staffSubjectForm.get('subjectId').reset();
         let academicYearId = this.staffSubjectForm.get('academicYearId').value;
         this.yearChangedEvent.emit(academicYearId);
+    };
+
+    classChanged = () => {
+        this.staffSubjectForm.get('subjectId').reset();
+        let schoolClassId = this.staffSubjectForm.get('schoolClassId').value;
+        let schoolClass = this.schoolClasses.find(
+            (sc) => sc.id == schoolClassId
+        );
+
+        this.classChangedEvent.emit(
+            schoolClass?.learningLevel?.educationLevelId
+        );
     };
 
     onSubmit = () => {

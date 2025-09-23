@@ -3,6 +3,11 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using SchoolWebApp.Core.Entities.Academics;
+using SchoolWebApp.Core.Entities.CBE.Assessments;
+using SchoolWebApp.Core.Entities.CBE.Cocurriculum;
+using SchoolWebApp.Core.Entities.CBE.Exams;
+using SchoolWebApp.Core.Entities.CBE.Responsibilities;
+using SchoolWebApp.Core.Entities.CBE.Values;
 using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Entities.Identity;
 using SchoolWebApp.Core.Entities.School;
@@ -26,14 +31,49 @@ namespace Project.Infrastructure.Data
         #region Academics
         public DbSet<AcademicYear> AcademicYears { get; set; }
         public DbSet<Curriculum> Curricula { get; set; }
-        public DbSet<Exam> Exams { get; set; }
-        public DbSet<ExamResult> ExamResults { get; set; }
-        public DbSet<ExamType> ExamTypes { get; set; }
-        public DbSet<ExamName> ExamNames { get; set; }
         public DbSet<Grade> Grades { get; set; }
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<SubjectGroup> SubjectGroups { get; set; }
         public DbSet<EducationLevelSubject> EducationLevelSubjects { get; set; }
+        #endregion
+
+        #region CBC Assessments
+        public DbSet<Competency> Competencies { get; set; }
+        public DbSet<AssessmentType> AssessmentTypes { get; set; }
+        public DbSet<Assessment> Assessments { get; set; }
+        public DbSet<BroadOutcome> BroadOutcomes { get; set; }
+        public DbSet<LearningOutcome> LearningOutcomes { get; set; }
+        public DbSet<Strand> Strands { get; set; }
+        public DbSet<SubStrand> SubStrands { get; set; }
+        #endregion
+
+        #region CBC Exams
+        public DbSet<Exam> Exams { get; set; }
+        public DbSet<ExamResult> ExamResults { get; set; }
+        public DbSet<ExamType> ExamTypes { get; set; }
+        #endregion
+
+        #region CBC CoCurriculum
+        public DbSet<CoCurriculumActivity> CoCurriculumActivities { get; set; }
+        public DbSet<CoCurriculumScoreType> CoCurriculumScoreTypes { get; set; }
+        public DbSet<CoCurriculumScore> CoCurriculumScores { get; set; }
+        public DbSet<StudentCoCurriculumActivity> StudentCoCurriculumActivities { get; set; }
+        public DbSet<StudentCoCurriculumScore> StudentCoCurriculumScores { get; set; }
+
+        #endregion
+
+        #region CBC Values
+        public DbSet<Value> Values { get; set; }
+        public DbSet<ValueScore> ValueScores { get; set; }
+        public DbSet<StudentValueScore> StudentValueScores { get; set; }
+
+        #endregion
+
+        #region CBC Responsibilities
+        public DbSet<Responsibility> Responsibilities { get; set; }
+        public DbSet<SocialSkill> SocialSkills { get; set; }
+        public DbSet<ResponsibilitySocialSkill> ResponsibilitySocialSkills { get; set; }
+        public DbSet<StudentResponsibility> StudentResponsibilities { get; set; }
         #endregion
 
         #region Class

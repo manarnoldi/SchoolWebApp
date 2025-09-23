@@ -27,6 +27,8 @@ export class StaffAssignmentsComponent implements OnInit {
     occurenceTypes: OccurenceType[] = [];
     subjects: Subject[] = [];
 
+    teachingStaff: boolean = false;
+
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Home'},
         {
@@ -74,6 +76,7 @@ export class StaffAssignmentsComponent implements OnInit {
             forkJoin([staffByIdReq, outcomesReq, occurenceTypesReq,subjectsReq]).subscribe(
                 ([staff, outcomes, occurenceTypes, subjects]) => {
                     this.staff = staff;
+                    this.teachingStaff = this.staff.staffCategory?.forTeaching;
                     this.outcomes = outcomes;
                     this.occurenceTypes = occurenceTypes;
                     this.subjects = subjects;

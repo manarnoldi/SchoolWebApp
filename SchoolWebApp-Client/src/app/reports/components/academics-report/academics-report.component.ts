@@ -26,10 +26,12 @@ export class AcademicsReportComponent {
         } else {
             this.showSubReport = false;
         }
-        this.currentReport = null;
+        this.currentReport = rn;
     };
 
     subReportNameChanged = (rn: ReportName) => {
-        this.currentReport = null;
+        if (this.currentReport) {
+            this.currentReport.subReport = rn;
+        }
     };
 }

@@ -18,5 +18,11 @@
                 <app-missing-marks-report></app-missing-marks-report>
             </div>
         </div>
+        <div class="row g-0 card-details-box border-danger mt-1 p-1"
+            *ngIf="currentReport?.subReport?.code === 'ACADSUB100'">
+            <div class="col-md-12">
+                <app-broadsheet></app-broadsheet>
+            </div>
+        </div>
     </div>
 </section>

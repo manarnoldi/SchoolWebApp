@@ -221,23 +221,13 @@ export class ParentAddFormComponent implements OnInit {
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.value) {
-                if (this.editMode) {
-                    this.parent = Object.assign(
-                        this.parent,
-                        this.parentForm.value
-                    );
-                    let birthDate = this.parentForm.get('dateOfBirth').value;
+                let toSubmitDetails = new Parent(this.parentForm.value);
 
-                    this.parent.dateOfBirth = !birthDate
-                        ? null
-                        : new Date(birthDate);
-                }
+                if (this.editMode) toSubmitDetails.id = this.parent.id;
+
                 let reqToProcess = this.editMode
-                    ? this.parentsSvc.update('/parents', this.parent)
-                    : this.parentsSvc.create(
-                          '/parents',
-                          new Parent(this.parentForm.value)
-                      );
+                    ? this.parentsSvc.update('/parents', toSubmitDetails)
+                    : this.parentsSvc.create('/parents', toSubmitDetails);
 
                 let replyMsg = `Parent ${
                     this.editMode ? 'updated' : 'created'

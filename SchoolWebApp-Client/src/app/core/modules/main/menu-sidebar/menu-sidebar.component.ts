@@ -47,6 +47,21 @@ export const MENU = [
                 path: ['/school/details']
             },
             {
+                name: 'Curricula',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/school/curricula']
+            },
+            {
+                name: 'Academic years',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/school/academicYears']
+            },
+            {
+                name: 'Sessions',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/school/sessions']
+            },
+            {
                 name: 'Departments',
                 iconClasses: 'fas fa-bullseye',
                 path: ['/school/departments']
@@ -66,11 +81,7 @@ export const MENU = [
                 iconClasses: 'fas fa-bullseye',
                 path: ['/school/educationLevels']
             },
-            {
-                name: 'Academic years',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/school/academicYears']
-            },
+
             {
                 name: 'Learning modes',
                 iconClasses: 'fas fa-bullseye',
@@ -96,11 +107,6 @@ export const MENU = [
                 name: 'Classes',
                 iconClasses: 'fas fa-bullseye',
                 path: ['/class/classes']
-            },
-            {
-                name: 'Sessions',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/class/sessions']
             },
             {
                 name: 'Leaderships Roles',
@@ -179,12 +185,7 @@ export const MENU = [
                 name: 'Edu-Level Subjects',
                 iconClasses: 'fas fa-bullseye',
                 path: ['/academics/educationLevelSubjects']
-            },
-            {
-                name: 'Curricula',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/academics/curricula']
-            },
+            },            
             {
                 name: 'Grading System',
                 iconClasses: 'fas fa-bullseye',

@@ -16,6 +16,8 @@ import { ClassAttendanceReportComponent } from './components/class-report/class-
 import { ClassAttendanceReportTableComponent } from './components/class-report/class-attendance-report/class-attendance-report-table/class-attendance-report-table.component';
 import { ClassAttendanceDetailsReportComponent } from './components/class-report/class-attendance-details-report/class-attendance-details-report.component';
 import { MissingMarksReportComponent } from './components/academics-report/missing-marks-report/missing-marks-report.component';
+import { ResultsAnalysisComponent } from './components/academics-report/results-analysis/results-analysis.component';
+import { BroadsheetComponent } from "./components/academics-report/results-analysis/broadsheet/broadsheet.component";
 
 @NgModule({
     declarations: [
@@ -33,7 +35,9 @@ import { MissingMarksReportComponent } from './components/academics-report/missi
         ClassAttendanceReportComponent,
         ClassAttendanceReportTableComponent,
         ClassAttendanceDetailsReportComponent,
-        MissingMarksReportComponent
+        MissingMarksReportComponent,
+        ResultsAnalysisComponent,
+        BroadsheetComponent
     ],
     imports: [CoreModule, SharedModule]
 })

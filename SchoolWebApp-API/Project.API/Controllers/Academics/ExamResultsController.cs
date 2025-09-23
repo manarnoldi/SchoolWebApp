@@ -1,15 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SchoolWebApp.Core.DTOs.Academics.Subject;
 using SchoolWebApp.Core.DTOs;
-using SchoolWebApp.Core.Entities.Academics;
-using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.DTOs.Academics.ExamResult;
-using SchoolWebApp.Core.DTOs.Students.StudentSubjects;
-using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.DTOs.Reports.Academics;
+using SchoolWebApp.Core.Entities.CBE.Exams;
+using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.Academics
 {
@@ -216,7 +212,7 @@ namespace SchoolWebApp.API.Controllers.Academics
                 if (sessionId <= 0) return BadRequest(sessionId);
                 if (schoolClassId <= 0) return BadRequest(schoolClassId);
                 if (examNameId <= 0) return BadRequest(examNameId);
-                var _item = await _unitOfWork.ExamResults.GetClassExamTypeRanking(sessionId, schoolClassId, examTypeId, examNameId);
+                var _item = await _unitOfWork.ExamResults.GetClassExamTypeRanking(sessionId, schoolClassId, examTypeId);
                 if (_item == null) return NotFound();
                 return Ok(_item);
             }

@@ -1,0 +1,22 @@
+﻿using SchoolWebApp.Core.Entities.Academics;
+using SchoolWebApp.Core.Entities.Class;
+using SchoolWebApp.Core.Entities.Shared;
+using SchoolWebApp.Core.Entities.Students;
+
+namespace SchoolWebApp.Core.Entities.CBE.Assessments
+{
+    public class Assessment: Base
+    {
+        public int StudentId { get; set; }
+        public Student? Student { get; set; } = null;
+        public int LearningOutcomeId { get; set; }
+        public LearningOutcome? LearningOutcome { get; set; } = null;
+        public int GradeId { get; set; }
+        public Grade? Grade { get; set; } = null;
+        public int SessionId { get; set; }
+        public Session? Session { get; set; } = null;
+        public int AssessmentTypeId { get; set; }
+        public AssessmentType? AssessmentType { get; set; } = null;
+        public string? Description { get; set; } = null;
+    }
+}

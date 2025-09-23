@@ -254,6 +254,8 @@ export class StudentsSubjectsAddFormComponent implements OnInit {
                             );
                             this.subjects = [];
                             this.studentClasses = [];
+                            this.studentSubjectsAddForm.get('educationLevelId').reset();
+                            this.studentSubjectsAddForm.get('schoolClassId').reset();
                         },
                         error: (err) => {
                             this.toastr.error(err.error?.message);

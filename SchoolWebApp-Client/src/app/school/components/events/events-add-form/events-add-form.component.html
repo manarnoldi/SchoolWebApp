@@ -1,6 +1,6 @@
 <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" novalidate>
-    <div class="modal-body">
-        <div class="card-details-box border-info">
+    <div class="modal-body p-1">
+        <div class="card-details-box border-info mb-1">
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
@@ -41,7 +41,7 @@
                         <label for="eventName">Event name: <span
                                 class="requiredField">*</span></label>
                         <input id="eventName" placeholder="Enter event name" type="text"
-                            class="form-control" formControlName="eventName" [ngClass]="{
+                            class="form-control form-control-sm" formControlName="eventName" [ngClass]="{
                                 'is-invalid': (f.eventName.dirty || f.eventName.touched) && f.eventName.invalid
                                 }" />
                         <div class="invalid-feedback">Event name is required</div>
@@ -54,7 +54,7 @@
                         <label for="eventLocation">Event location: <span
                                 class="requiredField">*</span></label>
                         <input id="eventLocation" placeholder="Enter event location" type="text"
-                            class="form-control" formControlName="eventLocation" [ngClass]="{
+                            class="form-control form-control-sm" formControlName="eventLocation" [ngClass]="{
                             'is-invalid': (f.eventLocation.dirty || f.eventLocation.touched) && f.eventLocation.invalid
                             }" />
                         <div class="invalid-feedback">Enter event location is required</div>
@@ -66,14 +66,14 @@
                     <div class="form-group">
                         <label for="startDate">Event start date:</label>
                         <input placeholder="Enter event start date" id="startDate" type="date"
-                            class="form-control" formControlName="startDate" />
+                            class="form-control form-control-sm" formControlName="startDate" />
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="endDate">Event end date:</label>
                         <input placeholder="Enter event end date" id="endDate" type="date"
-                            class="form-control" formControlName="endDate" />
+                            class="form-control form-control-sm" formControlName="endDate" />
                     </div>
                 </div>
             </div>
@@ -82,12 +82,12 @@
                     <div class="form-group">
                         <label>Description:</label>
                         <textarea placeholder="Enter description" id="description"
-                            class="form-control" rows="3" formControlName="description"></textarea>
+                            class="form-control form-control-sm" rows="3" formControlName="description"></textarea>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer p-1">
             <button type="submit" [disabled]="eventForm.invalid" class="btn
                 btn-success"> <i class="fas fa-save"></i>
                 {{ editMode ? 'Update' : 'Save' }}

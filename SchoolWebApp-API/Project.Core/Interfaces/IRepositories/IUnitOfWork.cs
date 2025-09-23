@@ -42,14 +42,32 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
         #region Academics
         IAcademicYearRepository AcademicYears { get; }
         ICurriculumRepository Curricula { get; }
-        IExamTypeRepository ExamTypes { get; }
-        IExamNameRepository ExamNames { get; }
-        IExamRepository Exams { get; }
-        IExamResultRepository ExamResults { get; }
         IGradeRepository Grades { get; }
         ISubjectGroupRepository SubjectGroups { get; }
         ISubjectRepository Subjects { get; }
         IEducationLevelSubjectRepository EducationLevelSubjects { get; }
+        #endregion
+
+        #region CBC Assessments
+
+        #endregion
+
+        #region CBC Exams
+        IExamTypeRepository ExamTypes { get; }
+        IExamRepository Exams { get; }
+        IExamResultRepository ExamResults { get; }
+        #endregion
+
+        #region CBC CoCurriculum
+        #endregion
+
+        #region CBC Values
+        #endregion
+
+        #region CBC Assessments
+        #endregion
+
+        #region CBC Responsibilities
         #endregion
 
         #region Class

@@ -1,5 +1,4 @@
-﻿using SchoolWebApp.Core.DTOs.Academics.ExamName;
-using SchoolWebApp.Core.DTOs.Academics.ExamType;
+﻿using SchoolWebApp.Core.DTOs.Academics.ExamType;
 using SchoolWebApp.Core.DTOs.Academics.Subject;
 using SchoolWebApp.Core.DTOs.Class.SchoolClass;
 using SchoolWebApp.Core.DTOs.Class.Session;
@@ -22,8 +21,8 @@ namespace SchoolWebApp.Core.DTOs.Academics.Exam
         public DateOnly ExamMarkEntryEndDate { get; set; }
         public string? OtherDetails { get; set; }
 
-        public int ExamNameId { get; set; }
-        public ExamNameDto? ExamName { get; set; }
+        public int ExamTypeId { get; set; }
+        public ExamTypeDto? ExamType { get; set; }
         public int SchoolClassId { get; set; }
         public SchoolClassDto? SchoolClass { get; set; }
         public int SessionId { get; set; }

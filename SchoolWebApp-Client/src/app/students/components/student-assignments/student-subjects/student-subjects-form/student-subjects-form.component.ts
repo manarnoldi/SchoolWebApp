@@ -1,4 +1,5 @@
 import {Subject} from '@/academics/models/subject';
+import {EducationLevelSubjectService} from '@/academics/services/education-level-subject.service';
 import {AcademicYear} from '@/school/models/academic-year';
 import {StudentClass} from '@/students/models/student-class';
 import {StudentDetails} from '@/students/models/student-details';
@@ -28,7 +29,7 @@ export class StudentSubjectsFormComponent implements OnInit {
     @Input() student: StudentDetails;
     @Input() academicYears: AcademicYear[] = [];
     @Input() studentClasses: StudentClass[] = [];
-    @Input() subjects: Subject[] = [];
+    subjects: Subject[] = [];
 
     showSubjectsTbl: boolean = false;
     action: string = 'add';
@@ -42,6 +43,7 @@ export class StudentSubjectsFormComponent implements OnInit {
     constructor(
         private formBuilder: FormBuilder,
         private studentSubjectsSvc: StudentSubjectsService,
+        private educationLevelSubjectsSvc: EducationLevelSubjectService,
         private toastr: ToastrService
     ) {}
 
@@ -102,27 +104,54 @@ export class StudentSubjectsFormComponent implements OnInit {
 
     studentClassChanged = (studentClassId: number) => {
         if (studentClassId == null) {
-            return
+            this.showSubjectsTbl = false;
+            return;
         }
-        this.showSubjectsTbl = true;
-        this.studentClassId = studentClassId;
-        this.subjects.forEach((s) => (s.isSelected = false));
-        this.studentSubjectsSvc
-            .get('/studentSubjects/byStudentClassId/' + this.studentClassId)
+
+        let selectedStudentClass = this.studentClasses.find(
+            (sc) => sc.id == studentClassId.toString()
+        );
+
+        this.educationLevelSubjectsSvc
+            .getByEducationLevelId(
+                selectedStudentClass.schoolClass?.learningLevel
+                    ?.educationLevelId
+            )
             .subscribe(
-                (studentSubjects) => {
-                    this.subjects.forEach((s) => {
-                        if (
-                            studentSubjects.some(
-                                (ss) => ss.subjectId.toString() == s.id
+                (eduLvlSubjects) => {
+                    this.subjects = [];
+                    eduLvlSubjects.forEach((s) => {
+                        this.subjects.push(s.subject);
+                        this.showSubjectsTbl = true;
+                        this.studentClassId = studentClassId;
+                        this.subjects.forEach((s) => (s.isSelected = false));
+                        this.studentSubjectsSvc
+                            .get(
+                                '/studentSubjects/byStudentClassId/' +
+                                    this.studentClassId
                             )
-                        ) {
-                            s.isOriginallySelected = true;
-                            s.isSelected = true;
-                        } else {
-                            s.isOriginallySelected = false;
-                            s.isSelected = false;
-                        }
+                            .subscribe(
+                                (studentSubjects) => {
+                                    this.subjects.forEach((s) => {
+                                        if (
+                                            studentSubjects.some(
+                                                (ss) =>
+                                                    ss.subjectId.toString() ==
+                                                    s.id
+                                            )
+                                        ) {
+                                            s.isOriginallySelected = true;
+                                            s.isSelected = true;
+                                        } else {
+                                            s.isOriginallySelected = false;
+                                            s.isSelected = false;
+                                        }
+                                    });
+                                },
+                                (err) => {
+                                    this.toastr.error(err.message);
+                                }
+                            );
                     });
                 },
                 (err) => {

@@ -1,5 +1,11 @@
 import {StaffDetails} from '@/staff/models/staff-details';
-import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    Input,
+    OnInit,
+    ViewChild
+} from '@angular/core';
 import {StaffSubjectFormComponent} from './staff-subject-form/staff-subject-form.component';
 import {TableButtonComponent} from '@/shared/directives/table-button/table-button.component';
 import {StaffSubject} from '@/staff/models/staff-subject';
@@ -14,7 +20,9 @@ import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
 import {SchoolClassesService} from '@/class/services/school-classes.service';
 import {SchoolClass} from '@/class/models/school-class';
-import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
+import {SchoolSoftFilterFormComponent} from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
+import {EducationLevel} from '@/school/models/educationLevel';
+import {EducationLevelSubjectService} from '@/academics/services/education-level-subject.service';
 
 @Component({
     selector: 'app-staff-subject',
@@ -24,7 +32,7 @@ import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-f
 export class StaffSubjectComponent implements OnInit, AfterViewInit {
     @Input() statuses;
     @Input() staff: StaffDetails;
-    @Input() subjects: Subject[];
+    subjects: Subject[] = [];
     @ViewChild(StaffSubjectFormComponent)
     staffSubjectFormComponent: StaffSubjectFormComponent;
     @ViewChild('closebutton') closeButton;
@@ -45,15 +53,14 @@ export class StaffSubjectComponent implements OnInit, AfterViewInit {
         private staffSubjectsSvc: StaffSubjectsService,
         private route: ActivatedRoute,
         private academicYearsSvc: AcademicYearsService,
-        private schoolClassesSvc: SchoolClassesService
+        private schoolClassesSvc: SchoolClassesService,
+        private educationLevelSubjectsSvc: EducationLevelSubjectService
     ) {}
     ngAfterViewInit(): void {
         this.loadStaffSubjects();
     }
 
-    ngOnInit(): void {
-        
-    }
+    ngOnInit(): void {}
 
     academicYearChanged = (yearId: number) => {
         this.staffSubjects = [];
@@ -61,6 +68,8 @@ export class StaffSubjectComponent implements OnInit, AfterViewInit {
 
     yearChanged = (yearId: number) => {
         this.schoolClasses = [];
+        this.subjects = [];
+
         if (!yearId || yearId <= 0) {
             this.toastr.error('Select year first!');
             return;
@@ -75,6 +84,27 @@ export class StaffSubjectComponent implements OnInit, AfterViewInit {
                 this.toastr.error(err.error);
             }
         });
+    };
+
+    classChanged = (educationLevelId: number) => {
+        this.subjects = [];
+        if (!educationLevelId || educationLevelId <= 0) {
+            this.toastr.error('Select student class first!');
+            return;
+        }
+        this.educationLevelSubjectsSvc
+            .getByEducationLevelId(educationLevelId)
+            .subscribe({
+                next: (educationLevelSubjects) => {
+                    educationLevelSubjects.forEach((s) => {
+                        this.subjects.push(new Subject(s.subject));
+                    });
+                    this.subjects.sort((a, b) => a.rank - b.rank);
+                },
+                error: (err) => {
+                    this.toastr.error(err.error);
+                }
+            });
     };
 
     searchForSubjects = (cyf: SchoolSoftFilter) => {
@@ -137,6 +167,7 @@ export class StaffSubjectComponent implements OnInit, AfterViewInit {
                 this.staffSubjectFormComponent.setFormControls(
                     this.staffSubject
                 );
+                this.subjects.push(new Subject(this.staffSubject.subject));
                 this.staffSubjectFormComponent.action = action;
                 this.staffSubjectFormComponent.staffSubject = this.staffSubject;
                 this.tableButton.onClick();
@@ -175,43 +206,72 @@ export class StaffSubjectComponent implements OnInit, AfterViewInit {
     }
 
     AddStaffSubject = (staffSubject: StaffSubject) => {
-        Swal.fire({
-            title: `${this.staffSubjectFormComponent.action == 'edit' ? 'Update' : 'Add'} Staff subject record?`,
-            text: `Confirm if you want to ${
-                this.staffSubjectFormComponent.action == 'edit'
-                    ? 'update'
-                    : 'add'
-            } staff subject.`,
-            width: 400,
-            position: 'top',
-            padding: '1em',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: `${this.staffSubjectFormComponent.action == 'edit' ? 'Update' : 'Add'}`,
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.value) {
-                let app = new StaffSubject(staffSubject);
-                if (this.staffSubjectFormComponent.action == 'edit')
-                    app.id = staffSubject.id;
-                let reqToProcess =
-                    this.staffSubjectFormComponent.action == 'edit'
-                        ? this.staffSubjectsSvc.update('/staffSubjects', app)
-                        : this.staffSubjectsSvc.create('/staffSubjects', app);
-
-                forkJoin([reqToProcess]).subscribe(
-                    (res) => {
-                        this.staffSubjectFormComponent.action = 'add';
-                        this.toastr.success('Staff subject saved successfully');
-                        this.staffSubjectFormComponent.closeButton.nativeElement.click();
-                        this.loadStaffSubjects();
-                    },
-                    (err) => {
-                        this.toastr.error(err.error?.message);
+        this.staffSubjectsSvc
+            .checkIfSubjectAssigned(
+                staffSubject.subjectId,
+                staffSubject.schoolClassId
+            )
+            .subscribe(
+                (res) => {
+                    if (res && this.staffSubjectFormComponent.action == 'add') {
+                        this.toastr.error(
+                            'Subject already assigned to a teacher!'
+                        );
+                        return;
                     }
-                );
-            } else if (result.dismiss === Swal.DismissReason.cancel) {
-            }
-        });
+                    Swal.fire({
+                        title: `${this.staffSubjectFormComponent.action == 'edit' ? 'Update' : 'Add'} Staff subject record?`,
+                        text: `Confirm if you want to ${
+                            this.staffSubjectFormComponent.action == 'edit'
+                                ? 'update'
+                                : 'add'
+                        } staff subject.`,
+                        width: 400,
+                        position: 'top',
+                        padding: '1em',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: `${this.staffSubjectFormComponent.action == 'edit' ? 'Update' : 'Add'}`,
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.value) {
+                            let app = new StaffSubject(staffSubject);
+                            if (this.staffSubjectFormComponent.action == 'edit')
+                                app.id = staffSubject.id;
+                            let reqToProcess =
+                                this.staffSubjectFormComponent.action == 'edit'
+                                    ? this.staffSubjectsSvc.update(
+                                          '/staffSubjects',
+                                          app
+                                      )
+                                    : this.staffSubjectsSvc.create(
+                                          '/staffSubjects',
+                                          app
+                                      );
+
+                            forkJoin([reqToProcess]).subscribe(
+                                (res) => {
+                                    this.staffSubjectFormComponent.action =
+                                        'add';
+                                    this.toastr.success(
+                                        'Staff subject saved successfully'
+                                    );
+                                    this.staffSubjectFormComponent.closeButton.nativeElement.click();
+                                    this.loadStaffSubjects();
+                                },
+                                (err) => {
+                                    this.toastr.error(err.error?.message);
+                                }
+                            );
+                        } else if (
+                            result.dismiss === Swal.DismissReason.cancel
+                        ) {
+                        }
+                    });
+                },
+                (err) => {
+                    this.toastr.error(err.error?.message);
+                }
+            );
     };
 }

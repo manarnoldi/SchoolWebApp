@@ -19,7 +19,7 @@ namespace SchoolWebApp.Core.Entities.School
         public required string Code { get; set; }
         public string? Description { get; set; }
 
-        public int StaffDetailsId { get; set; }
+        public int? StaffDetailsId { get; set; }
         public StaffDetails? StaffDetails { get; set; }
 
         public List<Subject> Subjects { get; set; } = new();

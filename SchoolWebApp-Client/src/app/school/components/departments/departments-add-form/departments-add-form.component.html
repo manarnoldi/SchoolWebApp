@@ -1,13 +1,14 @@
 <form [formGroup]="departmentForm" (ngSubmit)="onSubmit()" novalidate>
-    <div class="modal-body">
-        <div class="card-details-box border-info">            
+    <div class="modal-body p-1">
+        <div class="card-details-box border-info">
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
                         <label for="code">Department code: <span
                                 class="requiredField">*</span></label>
                         <input id="code" placeholder="Enter department code" type="text"
-                            class="form-control" formControlName="code" [ngClass]="{
+                            class="form-control form-control-sm" formControlName="code"
+                            [ngClass]="{
                                 'is-invalid': (f.code.dirty || f.code.touched) && f.code.invalid
                                 }" />
                         <div class="invalid-feedback">Department code is required</div>
@@ -20,7 +21,8 @@
                         <label for="name">Department name: <span
                                 class="requiredField">*</span></label>
                         <input id="name" placeholder="Enter department name" type="text"
-                            class="form-control" formControlName="name" [ngClass]="{
+                            class="form-control form-control-sm" formControlName="name"
+                            [ngClass]="{
                             'is-invalid': (f.name.dirty || f.name.touched) && f.name.invalid
                             }" />
                         <div class="invalid-feedback">Department name is required</div>
@@ -43,7 +45,6 @@
                                 <span>{{ item.fullName}}</span>
                             </ng-template>
                         </ng-select>
-                        <div class="invalid-feedback"> Head of department is required</div>
                     </div>
                 </div>
             </div>
@@ -65,26 +66,27 @@
                     </div>
                 </div>
             </div> -->
-            
+
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
                         <label>Description:</label>
                         <textarea placeholder="Enter description" id="description"
-                            class="form-control" rows="3" formControlName="description"></textarea>
+                            class="form-control form-control-sm" rows="2"
+                            formControlName="description"></textarea>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="modal-footer">
-            <button type="submit" [disabled]="departmentForm.invalid" class="btn
+    </div>
+    <div class="modal-footer p-1">
+        <button type="submit" [disabled]="departmentForm.invalid" class="btn
                 btn-success"> <i class="fas fa-save"></i>
-                {{ editMode ? 'Update' : 'Save' }}
-            </button>
-            <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
-                #closeButton (click)="closeDepartmentForm()">
-                <i class="fas fa-times"></i> Close
-            </button>
-        </div>
+            {{ editMode ? 'Update' : 'Save' }}
+        </button>
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
+            #closeButton (click)="closeDepartmentForm()">
+            <i class="fas fa-times"></i> Close
+        </button>
     </div>
 </form>

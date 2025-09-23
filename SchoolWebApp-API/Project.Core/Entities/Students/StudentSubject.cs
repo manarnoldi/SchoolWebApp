@@ -1,4 +1,5 @@
 ﻿using SchoolWebApp.Core.Entities.Academics;
+using SchoolWebApp.Core.Entities.CBE.Exams;
 using SchoolWebApp.Core.Entities.Shared;
 
 namespace SchoolWebApp.Core.Entities.Students

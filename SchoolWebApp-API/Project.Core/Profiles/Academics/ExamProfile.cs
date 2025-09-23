@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using SchoolWebApp.Core.DTOs.Academics.Exam;
-using SchoolWebApp.Core.Entities.Academics;
+using SchoolWebApp.Core.Entities.CBE.Exams;
 
 namespace SchoolWebApp.Core.Profiles.Academics
 {

@@ -1,6 +1,6 @@
 <form [formGroup]="educationLevelForm" (ngSubmit)="onSubmit()" novalidate>
-    <div class="modal-body">
-        <div class="card-details-box border-info">
+    <div class="modal-body p-1">
+        <div class="card-details-box border-info mb-1">
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
@@ -98,7 +98,7 @@
             </div>
 
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer p-1">
             <button type="submit" [disabled]="educationLevelForm.invalid" class="btn
                 btn-success"> <i class="fas fa-save"></i>
                 {{ editMode ? 'Update' : 'Save' }}

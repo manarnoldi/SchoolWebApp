@@ -43,7 +43,7 @@
                                             type="button" role="tab" aria-controls="discipline"
                                             aria-selected="false">Discipline details</button>
                                     </li>
-                                    <li class="nav-item" role="presentation">
+                                    <li class="nav-item" role="presentation" *ngIf="teachingStaff">
                                         <button
                                             class="nav-link {{activeNav==='subjects'? 'active':''}}"
                                             id="subjects-tab"
@@ -77,13 +77,13 @@
                                                 [occurenceTypes]="occurenceTypes"></app-staff-discipline>
                                         </div>
                                     </div>
-                                    <div
+                                    <div  *ngIf="teachingStaff"
                                         class="tab-pane fade {{activeNav==='subjects'? 'show active':''}}"
                                         id="subjects" role="tabpanel"
                                         aria-labelledby="subjects-tab">
                                         <div class="border border-info rounded p-1 pt-0">
                                             <app-staff-subject [statuses]="statuses"
-                                                [staff]="staff" [subjects]="subjects"></app-staff-subject>
+                                                [staff]="staff" ></app-staff-subject>
                                         </div>
                                     </div>
                                 </div>

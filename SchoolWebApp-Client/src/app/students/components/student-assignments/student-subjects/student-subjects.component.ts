@@ -14,6 +14,8 @@ import {Subject} from '@/academics/models/subject';
 import {SubjectsService} from '@/academics/services/subjects.service';
 import {StudentClass} from '@/students/models/student-class';
 import {StudentSubjectsLoadFormComponent} from './student-subjects-load-form/student-subjects-load-form.component';
+import { EducationLevel } from '@/school/models/educationLevel';
+import { EducationLevelSubjectService } from '@/academics/services/education-level-subject.service';
 
 @Component({
     selector: 'app-student-subjects',
@@ -44,7 +46,8 @@ export class StudentSubjectsComponent implements OnInit {
         private studentSubjectsSvc: StudentSubjectsService,
         private route: ActivatedRoute,
         private studentClassesSvc: StudentClassService,
-        private subjectsSvc: SubjectsService
+        private subjectsSvc: SubjectsService,
+        private educationLevelSubjectsSvc: EducationLevelSubjectService
     ) {}
 
     ngOnInit(): void {

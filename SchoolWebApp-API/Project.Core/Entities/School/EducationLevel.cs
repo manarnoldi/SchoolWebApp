@@ -1,4 +1,5 @@
 ﻿using SchoolWebApp.Core.Entities.Academics;
+using SchoolWebApp.Core.Entities.CBE.Assessments;
 using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Entities.Shared;
 using System.ComponentModel.DataAnnotations;
@@ -25,5 +26,6 @@ namespace SchoolWebApp.Core.Entities.School
 
         public List<LearningLevel> LearningLevels { get; set; } = new();
         public List<EducationLevelSubject> educationLevelSubjects { get; set; } = new();
+        public List<BroadOutcome> BroadOutcomes { get; set; } = new();
     }
 }

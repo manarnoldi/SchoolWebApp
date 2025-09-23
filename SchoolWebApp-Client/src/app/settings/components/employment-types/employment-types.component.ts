@@ -24,7 +24,7 @@ export class EmploymentTypesComponent implements OnInit {
     buttonTitle: string = 'Add employment type';
     tableModel: string = 'employmentType';
     tableTitle: string = 'Employment Types list';
-    tableHeaders: string[] = ['Ref#', 'Name', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Rank', 'Description', 'Action'];
 
     editMode = false;
     employmentType: EmploymentType;
@@ -80,6 +80,7 @@ export class EmploymentTypesComponent implements OnInit {
                 this.employmentType = new EmploymentType(res);
                 this.employmentTypeForm.setValue({
                     name: this.employmentType.name,
+                    rank: this.employmentType.rank,
                     description: this.employmentType.description
                 });
                 this.editMode = true;
@@ -113,6 +114,8 @@ export class EmploymentTypesComponent implements OnInit {
                 if (this.editMode) {
                     this.employmentType.name =
                         this.employmentTypeForm.get('name').value;
+                    this.employmentType.rank =
+                        this.employmentTypeForm.get('rank').value;
                     this.employmentType.description =
                         this.employmentTypeForm.get('description').value;
                 }
@@ -154,6 +157,7 @@ export class EmploymentTypesComponent implements OnInit {
     refreshItems() {
         this.employmentTypeForm = this.formBuilder.group({
             name: ['', [Validators.required]],
+            rank: [0, [Validators.required]],
             description: ['']
         });
 
@@ -163,6 +167,7 @@ export class EmploymentTypesComponent implements OnInit {
                     (this.page - 1) * this.pageSize,
                     (this.page - 1) * this.pageSize + this.pageSize
                 );
+                this.employmentTypes.sort((a, b) => a.rank - b.rank);
                 this.isAuthLoading = false;
                 this.editMode = false;
             },

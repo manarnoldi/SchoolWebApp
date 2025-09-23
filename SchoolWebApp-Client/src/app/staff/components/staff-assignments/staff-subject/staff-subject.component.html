@@ -11,7 +11,7 @@
             </div>
             <app-staff-subject-form [staffSubject]="staffSubject" [statuses]="statuses"
                 [subjects]="subjects" [schoolClasses]="schoolClasses"
-                (yearChangedEvent)="yearChanged($event)"
+                (yearChangedEvent)="yearChanged($event)" (classChangedEvent)="classChanged($event)"
                 [staff]="staff" [academicYears]="academicYears"
                 (addItemEvent)="AddStaffSubject($event)"
                 *ngIf="staff && academicYears"></app-staff-subject-form>

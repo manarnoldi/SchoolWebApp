@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Academics.Exam;
-using SchoolWebApp.Core.Entities.Academics;
+using SchoolWebApp.Core.Entities.CBE.Exams;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.Academics
@@ -142,7 +142,7 @@ namespace SchoolWebApp.API.Controllers.Academics
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ExamsSearch(int academicYearId, int curriculumId, int sessionId, int? schoolClassId = null,
-            int? subjectId = null, int? examTypeId = null, int? examNameId = null)
+            int? subjectId = null, int? examTypeId = null)
         {
             try
             {
@@ -150,7 +150,7 @@ namespace SchoolWebApp.API.Controllers.Academics
                 if (curriculumId <= 0) return BadRequest(curriculumId);
                 if (sessionId <= 0) return BadRequest(sessionId);
                 if (schoolClassId <= 0) return BadRequest(schoolClassId);
-                var _item = await _unitOfWork.Exams.SearchForExam(academicYearId, curriculumId, sessionId, schoolClassId, subjectId, examTypeId, examNameId);
+                var _item = await _unitOfWork.Exams.SearchForExam(academicYearId, curriculumId, sessionId, schoolClassId, subjectId, examTypeId);
                 //if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<List<ExamDto>>(_item);
                 return Ok(_itemDto);
@@ -206,7 +206,7 @@ namespace SchoolWebApp.API.Controllers.Academics
         {
             if (ModelState.IsValid)
             {
-                if (await _unitOfWork.Exams.ItemExistsAsync(s => s.Name == model.Name && s.ExamNameId == model.ExamNameId && s.SchoolClassId == model.SchoolClassId
+                if (await _unitOfWork.Exams.ItemExistsAsync(s => s.ExamTypeId == model.ExamTypeId && s.SchoolClassId == model.SchoolClassId
                 && s.SessionId == model.SessionId && s.SubjectId == model.SubjectId))
                     return Conflict(new { message = $"The exam details submitted already exist." });
                 try

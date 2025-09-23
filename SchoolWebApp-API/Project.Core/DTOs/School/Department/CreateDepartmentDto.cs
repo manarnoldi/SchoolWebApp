@@ -16,7 +16,7 @@ namespace SchoolWebApp.Core.DTOs.School.Department
         public required string Code { get; set; }
         public string? Description { get; set; }
 
-        public int StaffDetailsId { get; set; }
+        public int? StaffDetailsId { get; set; }
         public StaffDetailDto? StaffDetails { get; set; }
     }
 }

@@ -1,8 +1,11 @@
 ﻿using SchoolWebApp.Core.Entities.Academics;
+using SchoolWebApp.Core.Entities.CBE.Values;
+using SchoolWebApp.Core.Entities.CBE.Assessments;
 using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Entities.Settings;
 using SchoolWebApp.Core.Entities.Shared;
 using System.ComponentModel.DataAnnotations;
+using SchoolWebApp.Core.Entities.CBE.Exams;
 
 namespace SchoolWebApp.Core.Entities.Class
 {
@@ -39,5 +42,7 @@ namespace SchoolWebApp.Core.Entities.Class
 
         public List<Exam> Exams { get; set; } = new();
         public List<Event> Events { get; set; } = new();
+        public List<StudentValueScore> StudentValues { get; set; } = new();
+        public List<Assessment> Assessments { get; set; } = new();
     }
 }

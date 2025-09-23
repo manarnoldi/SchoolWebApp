@@ -19,4 +19,14 @@ export class StaffSubjectsService extends ResourceService<StaffSubject> {
         let searchStr = `/staffSubjects/byStaffYearId/${staffId}/${yearId}`;
         return this.get(searchStr).pipe(map((staffSubjects) => staffSubjects));
     }
+
+    
+
+    checkIfSubjectAssigned(
+        subjectId: number,
+        schoolClassId: number
+    ): Observable<boolean> {
+        let searchStr = `/staffSubjects/checkIfExists/${schoolClassId}/${subjectId}`;
+        return this.checkIfExists(searchStr).pipe(map((res) => res as boolean));
+    }
 }

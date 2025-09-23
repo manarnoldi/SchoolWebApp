@@ -2,7 +2,7 @@
 {
     public class StudentPerformanceDto
     {
-        public int ExamNameId { get; set; }
+        public int ExamTypeId { get; set; }
         public int StudentId { get; set; }
         public int SessionId { get; set; }
         public int ClassId { get; set; }

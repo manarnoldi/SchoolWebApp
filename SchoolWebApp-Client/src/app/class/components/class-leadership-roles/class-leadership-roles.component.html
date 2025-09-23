@@ -9,7 +9,7 @@
         <div class="modal-content">
             <div class="modal-header bg-success opacity-50 p-2">
                 <h5 class="modal-title" id="{{tableModel}}FormModalLabel">
-                    Class leadership role - {{ editMode ? 'Edit' : 'Add' }}
+                    Class leadership roles - {{ editMode ? 'Edit' : 'Add' }}
                 </h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"
                     #closebutton>
@@ -17,46 +17,50 @@
                 </button>
             </div>
             <form [formGroup]="classLeadershipRoleForm" (ngSubmit)="onSubmit()" novalidate>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="name">Name: <span class="requiredField">*</span></label>
-                        <input placeholder="Enter class leadership role name" id="name" type="text"
-                            class="form-control form-control-sm" formControlName="name"
-                            [ngClass]="{ 'is-invalid': (f.name.dirty ||
-                            f.name.touched) && f.name.invalid }" />
-                        <div class="invalid-feedback"> Class leadership role name is required</div>
-                    </div>
-                    <div class="form-group clearfix">
-                        <label class="form-label">Person type: &nbsp;</label>
-                        <div class="icheck-success d-inline"
-                            *ngFor="let personType of personTypes">
-                            <input type="radio" formControlName="personType" id="{{personType}}"
-                                value="{{personType}}">
-                            <label class="form-check-label"
-                                for="{{personType}}"> {{personType}}</label>&nbsp;
-                        </div>
-                    </div>
-                    <div class="row">
+                <div class="modal-body p-1">
+                    <div class="card-details-box border-info mb-1">
                         <div class="form-group">
-                            <label for="rank" class="form-label">Rank: <span
-                                    class="requiredField">*</span></label>
-                            <input id="rank" placeholder="Learning level rank" type="number"
-                                class="form-control form-control-sm" formControlName="rank"
-                                [ngClass]="{
+                            <label for="name">Name: <span class="requiredField">*</span></label>
+                            <input placeholder="Enter class leadership role name" id="name"
+                                type="text"
+                                class="form-control form-control-sm" formControlName="name"
+                                [ngClass]="{ 'is-invalid': (f.name.dirty ||
+                            f.name.touched) && f.name.invalid }" />
+                            <div class="invalid-feedback"> Class leadership role name is
+                                required</div>
+                        </div>
+                        <div class="form-group clearfix">
+                            <label class="form-label">Person type: &nbsp;</label>
+                            <div class="icheck-success d-inline"
+                                *ngFor="let personType of personTypes">
+                                <input type="radio" formControlName="personType" id="{{personType}}"
+                                    value="{{personType}}">
+                                <label class="form-check-label"
+                                    for="{{personType}}"> {{personType}}</label>&nbsp;
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="rank" class="form-label">Rank: <span
+                                        class="requiredField">*</span></label>
+                                <input id="rank" placeholder="Learning level rank" type="number"
+                                    class="form-control form-control-sm" formControlName="rank"
+                                    [ngClass]="{
                             'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
                             }" />
-                            <div class="invalid-feedback">Learning level rank is required</div>
+                                <div class="invalid-feedback">Learning level rank is required</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description:</label>
+                            <textarea placeholder="Enter class leadership role description"
+                                id="description"
+                                class="form-control form-control-sm" rows="2"
+                                formControlName="description"></textarea>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Description:</label>
-                        <textarea placeholder="Enter class leadership role description"
-                            id="description"
-                            class="form-control form-control-sm" rows="2"
-                            formControlName="description"></textarea>
-                    </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer p-1">
                     <button type="submit" [disabled]="classLeadershipRoleForm.invalid" class="btn
                         btn-success"> <i class="fas fa-save"></i>
                         {{ editMode ? 'Update' : 'Save' }}

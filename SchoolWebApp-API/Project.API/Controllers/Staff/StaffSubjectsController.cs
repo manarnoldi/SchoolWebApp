@@ -213,6 +213,36 @@ namespace SchoolWebApp.API.Controllers.Staff
             }
         }
 
+        //GET api/staffSubjects/checkIfExists/5/5
+        /// <summary>
+        /// A method that checks for if a class has been assigned to a teacher. Check is done through school class id and subject id.
+        /// </summary>
+        /// <param name="schoolClassId">The school class id to be used for searching</param>
+        /// <param name="subjectId">The subject id to be used for searching</param>
+        /// <returns></returns>
+        [HttpGet("checkIfExists/{schoolClassId}/{subjectId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CheckIfItemExists(int schoolClassId, int subjectId)
+        {
+            try
+            {
+                if (schoolClassId <= 0) return BadRequest(schoolClassId);
+                if (subjectId <= 0) return BadRequest(subjectId);
+                if (await _unitOfWork.StaffSubjects.ItemExistsAsync(s => s.SchoolClassId == schoolClassId
+            && s.SubjectId == subjectId))
+                    return Ok(true);
+                else return Ok(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while checking if a subject is already assigned to another teacher.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+
+        }
+
         // POST api/staffSubjects
         /// <summary>
         /// A method for creating a staff subject record.

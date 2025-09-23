@@ -4,6 +4,7 @@ export class ReportName {
     public category?: string;
     public code?: string;
     public rank?: number;
+    public subReport?: ReportName;
 
     constructor(rn?: ReportName) {
         if (rn) {

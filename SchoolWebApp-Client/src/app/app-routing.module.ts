@@ -92,12 +92,15 @@ const routes: Routes = [
         canActivateChild: [AuthGuard],
         children: [
             {path: 'learningModes', component: LearningModesComponent},
-            {path: 'details', component: SchoolDetailsComponent},
+            { path: 'details', component: SchoolDetailsComponent },
+            {path: 'curricula', component: CurriculumComponent},
+            { path: 'academicYears', component: AcademicYearsComponent },
+            {path: 'sessions', component: SessionsComponent},
             {
                 path: 'educationLevelTypes',
                 component: EducationLevelTypesComponent
             },
-            {path: 'academicYears', component: AcademicYearsComponent},
+            
             {path: 'educationLevels', component: EducationLevelsComponent},
             {path: 'departments', component: DepartmentsComponent},
             {path: 'events', component: EventsComponent}
@@ -113,7 +116,7 @@ const routes: Routes = [
             {path: 'streams', component: SchoolStreamsComponent},
             {path: 'classes/manage', component: ClassDetailsComponent},
             {path: 'classes', component: SchoolClassComponent},
-            {path: 'sessions', component: SessionsComponent},
+            
             {path: 'leadership-roles', component: ClassLeadershipRolesComponent}
         ]
     },
@@ -169,7 +172,7 @@ const routes: Routes = [
         canActivate: [AuthGuard],
         canActivateChild: [AuthGuard],
         children: [
-            {path: 'curricula', component: CurriculumComponent},
+            
             {path: 'examTypes', component: ExamTypesComponent},
             {path: 'examNames', component: ExamNamesComponent},
             {path: 'subjectGroups', component: SubjectGroupsComponent},
