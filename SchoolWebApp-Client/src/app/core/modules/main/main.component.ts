@@ -18,7 +18,6 @@ export class MainComponent implements OnInit {
         private renderer: Renderer2,
         private store: Store<AppState>
     ) {
-        console.log("I reached here!");
     }
 
     ngOnInit() {

@@ -1,11 +1,7 @@
-﻿using AutoMapper;
-using Microsoft.Extensions.Logging;
-using SchoolWebApp.Core.DTOs.CBE.Assessments.Assessment;
+﻿using Microsoft.Extensions.Logging;
 using SchoolWebApp.Core.Entities.CBE.Assessments;
 using SchoolWebApp.Core.Interfaces.IRepositories;
-using SchoolWebApp.Core.Interfaces.IServices;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.Assessments;
-using SchoolWebApp.Core.Services.Students;
 
 namespace SchoolWebApp.Core.Services.CBE.Assessments
 {

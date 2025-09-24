@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Repositories\CBE\Assessments\AssessmentRepository.cs" />
+    <Compile Remove="Repositories\CBE\Assessments\AssessmentTypeRepository.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Bogus" Version="35.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.1" />
@@ -23,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Repositories\CBE\Assessments\" />
     <Folder Include="Repositories\CBE\Exams\" />
     <Folder Include="Repositories\CBE\Cocurricular\" />
     <Folder Include="Repositories\CBE\Values\" />

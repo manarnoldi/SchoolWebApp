@@ -1,18 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SchoolWebApp.API.Controllers.Settings;
 using SchoolWebApp.Core.DTOs;
-using SchoolWebApp.Core.DTOs.CBE.Assessments.Assessment;
 using SchoolWebApp.Core.DTOs.CBE.Assessments.AssessmentType;
-using SchoolWebApp.Core.DTOs.Settings.Gender;
 using SchoolWebApp.Core.Entities.CBE.Assessments;
-using SchoolWebApp.Core.Entities.Settings;
-using SchoolWebApp.Core.Entities.Students;
-using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.Assessments;
-using SchoolWebApp.Infrastructure.Repositories;
 
 namespace SchoolWebApp.API.Controllers.CBE.Assessments
 {

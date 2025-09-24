@@ -7,6 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Interfaces\IRepositories\CBE\Assessments\IAssessmentRepository.cs" />
+    <Compile Remove="Interfaces\IRepositories\CBE\Assessments\IAssessmentTypeRepository.cs" />
+    <Compile Remove="Interfaces\IRepositories\CBE\Assessments\IBroadOutcomeRepository.cs" />
+    <Compile Remove="Interfaces\IRepositories\CBE\Assessments\ICompetencyRepository.cs" />
+    <Compile Remove="Interfaces\IRepositories\CBE\Assessments\ILearningOutcomeRepository.cs" />
+    <Compile Remove="Interfaces\IRepositories\CBE\Assessments\IStrandRepository.cs" />
+    <Compile Remove="Interfaces\IRepositories\CBE\Assessments\ISubStrandRepository.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.0" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
@@ -19,6 +29,7 @@
     <Folder Include="DTOs\CBE\Values\" />
     <Folder Include="DTOs\CBE\Responsibilities\" />
     <Folder Include="Entities\Report\" />
+    <Folder Include="Interfaces\IRepositories\CBE\Assessments\" />
     <Folder Include="Interfaces\IRepositories\CBE\Exams\" />
     <Folder Include="Interfaces\IRepositories\CBE\Cocurricular\" />
     <Folder Include="Interfaces\IRepositories\CBE\Values\" />

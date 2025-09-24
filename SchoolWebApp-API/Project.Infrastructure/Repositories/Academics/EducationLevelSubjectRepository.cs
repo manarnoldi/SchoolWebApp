@@ -2,7 +2,6 @@
 using Project.Infrastructure.Data;
 using Project.Infrastructure.Repositories;
 using SchoolWebApp.Core.Entities.Academics;
-using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories.Academics;
 
 namespace SchoolWebApp.Infrastructure.Repositories.Academics

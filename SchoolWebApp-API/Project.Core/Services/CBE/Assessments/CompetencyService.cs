@@ -6,18 +6,19 @@ using SchoolWebApp.Core.Interfaces.IServices.CBE.Assessments;
 
 namespace SchoolWebApp.Core.Services.CBE.Assessments
 {
-    public class AssessmentTypeService : GenericService<AssessmentType>, IAssessmentTypeService
+    public class CompetencyService : GenericService<Competency>, ICompetencyService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly ILogger<AssessmentTypeService> _logger;
+        private readonly ILogger<CompetencyService> _logger;
 
-        public AssessmentTypeService(ILogger<AssessmentTypeService> logger, IUnitOfWork unitOfWork, IMapper mapper)
+        public CompetencyService(ILogger<CompetencyService> logger, IUnitOfWork unitOfWork, IMapper mapper)
         : base(unitOfWork)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _logger = logger;
-        }    
+        }
+    
     }
 }

@@ -4,6 +4,7 @@ using Project.Core.Interfaces.IRepositories;
 using Project.Infrastructure.Data;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.Entities.Shared;
+using System.Collections;
 using System.Linq.Expressions;
 
 namespace Project.Infrastructure.Repositories
@@ -62,7 +63,6 @@ namespace Project.Infrastructure.Repositories
             var data = await _dbContext.Set<T>()
                 .AsNoTracking()
                 .ToListAsync();
-
             return data;
         }
 
