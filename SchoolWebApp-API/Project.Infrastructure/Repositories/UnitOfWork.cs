@@ -1,4 +1,7 @@
-﻿using Project.Infrastructure.Data;
+﻿using Project.Core.Interfaces.IRepositories;
+using Project.Infrastructure.Data;
+using Project.Infrastructure.Repositories;
+using SchoolWebApp.Core.Entities.Shared;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.Interfaces.IRepositories.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories.Class;
@@ -12,6 +15,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _context;
+        private readonly Dictionary<Type, object> _repositories = new();
 
         #region Academics
         public IAcademicYearRepository AcademicYears { get; }
@@ -202,6 +206,18 @@ namespace SchoolWebApp.Infrastructure.Repositories
         public async Task<int> SaveChangesAsync()
         {
             return await _context.SaveChangesAsync();
+        }
+
+        // Generic repo accessor
+        public IBaseRepository<T> Repository<T>() where T : Base
+        {
+            if (!_repositories.ContainsKey(typeof(T)))
+            {
+                var repo = new BaseRepository<T>(_context);
+                _repositories.Add(typeof(T), repo);
+            }
+
+            return (IBaseRepository<T>)_repositories[typeof(T)];
         }
 
         public void Dispose()

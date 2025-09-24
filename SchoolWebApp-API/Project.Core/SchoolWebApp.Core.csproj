@@ -14,7 +14,27 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="DTOs\CBE\Cocurriculum\" />
+    <Folder Include="DTOs\CBE\Exams\" />
+    <Folder Include="DTOs\CBE\Values\" />
+    <Folder Include="DTOs\CBE\Responsibilities\" />
     <Folder Include="Entities\Report\" />
+    <Folder Include="Interfaces\IRepositories\CBE\Exams\" />
+    <Folder Include="Interfaces\IRepositories\CBE\Cocurricular\" />
+    <Folder Include="Interfaces\IRepositories\CBE\Values\" />
+    <Folder Include="Interfaces\IRepositories\CBE\Responsibilities\" />
+    <Folder Include="Interfaces\IServices\CBE\Cocurricular\" />
+    <Folder Include="Interfaces\IServices\CBE\Exams\" />
+    <Folder Include="Interfaces\IServices\CBE\Responsibilities\" />
+    <Folder Include="Interfaces\IServices\CBE\Values\" />
+    <Folder Include="Profiles\CBE\Cocurriculum\" />
+    <Folder Include="Profiles\CBE\Exams\" />
+    <Folder Include="Profiles\CBE\Values\" />
+    <Folder Include="Profiles\CBE\Responsibilities\" />
+    <Folder Include="Services\CBE\Cocurricular\" />
+    <Folder Include="Services\CBE\Exams\" />
+    <Folder Include="Services\CBE\Responsibilities\" />
+    <Folder Include="Services\CBE\Values\" />
   </ItemGroup>
 
 </Project>

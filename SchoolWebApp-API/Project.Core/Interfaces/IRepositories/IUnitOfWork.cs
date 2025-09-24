@@ -1,4 +1,6 @@
-﻿using SchoolWebApp.Core.Interfaces.IRepositories.Academics;
+﻿using Project.Core.Interfaces.IRepositories;
+using SchoolWebApp.Core.Entities.Shared;
+using SchoolWebApp.Core.Interfaces.IRepositories.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories.Class;
 using SchoolWebApp.Core.Interfaces.IRepositories.School;
 using SchoolWebApp.Core.Interfaces.IRepositories.Settings;
@@ -49,7 +51,6 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
         #endregion
 
         #region CBC Assessments
-
         #endregion
 
         #region CBC Exams
@@ -62,9 +63,6 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
         #endregion
 
         #region CBC Values
-        #endregion
-
-        #region CBC Assessments
         #endregion
 
         #region CBC Responsibilities
@@ -91,6 +89,9 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
         ISessionTypesRepository SessionTypes { get; }
         IStaffCategoryRepository StaffCategories { get; }
         #endregion
+
+        // new generic repo accessor
+        IBaseRepository<T> Repository<T>() where T : Base;
 
         Task<int> SaveChangesAsync();
     }

@@ -1,5 +1,4 @@
-﻿using SchoolWebApp.Core.Entities.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SchoolWebApp.Core.DTOs.Academics.AcademicYear
 {

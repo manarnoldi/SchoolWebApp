@@ -112,6 +112,7 @@ export class StudentAttendanceFormComponent implements OnInit {
                 this.studentAttendanceForm.value
             );
         }
+        this.studentAttendance.present = this.studentAttendance.present === null ? false : this.studentAttendance.present;
         this.addItemEvent.emit(this.studentAttendance);
     };
 

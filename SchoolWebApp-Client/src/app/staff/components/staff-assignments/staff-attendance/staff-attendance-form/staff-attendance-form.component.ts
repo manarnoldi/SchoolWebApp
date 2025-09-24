@@ -96,6 +96,10 @@ export class StaffAttendanceFormComponent implements OnInit {
                 this.staffAttendanceForm.value
             );
         }
+        this.staffAttendance.present =
+            this.staffAttendance.present === null
+                ? false
+                : this.staffAttendance.present;
         this.addItemEvent.emit(this.staffAttendance);
     };
 }

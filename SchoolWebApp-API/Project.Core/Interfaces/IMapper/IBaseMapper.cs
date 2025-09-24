@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Project.Core.Interfaces.IMapper
+﻿namespace Project.Core.Interfaces.IMapper
 {
     public interface IBaseMapper<TSource, TDestination>
     {

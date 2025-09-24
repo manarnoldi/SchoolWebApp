@@ -190,26 +190,166 @@ export const MENU = [
                 name: 'Grading System',
                 iconClasses: 'fas fa-bullseye',
                 path: ['/academics/grades']
+            }
+            // {
+            //     name: 'Exam Types',
+            //     iconClasses: 'fas fa-bullseye',
+            //     path: ['/academics/examTypes']
+            // },
+            // {
+            //     name: 'Exam Names',
+            //     iconClasses: 'fas fa-bullseye',
+            //     path: ['/academics/examNames']
+            // },
+            // {
+            //     name: 'Exams',
+            //     iconClasses: 'fas fa-bullseye',
+            //     path: ['/academics/exams']
+            // },
+            // {
+            //     name: 'Exam Results',
+            //     iconClasses: 'fas fa-bullseye',
+            //     path: ['/academics/examResults']
+            // }
+        ]
+    },
+    {
+        name: 'CBE Assessments',
+        iconClasses: 'fas fa-book-reader',
+        children: [
+            {
+                name: 'Competencies',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/cbe-assessments/competencies']
             },
+            {
+                name: 'Strands',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/cbe-assessments/strands']
+            },
+            {
+                name: 'Sub-Strands',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/cbe-assessments/sub-strands']
+            },            
+            {
+                name: 'Broad Outcomes',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/cbe-assessments/broad-outcomes']
+            },
+            {
+                name: 'Learning Outcomes',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/cbe-assessments/learning-outcomes']
+            },
+            {
+                name: 'Assessment Types',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/cbe-assessments/assessment-types']
+            },
+            {
+                name: 'Assessments',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/cbe-assessments/assessments']
+            }
+        ]
+    },
+    {
+        name: 'CBE Exams',
+        iconClasses: 'fas fa-book-reader',
+        children: [
             {
                 name: 'Exam Types',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/academics/examTypes']
-            },
-            {
-                name: 'Exam Names',
-                iconClasses: 'fas fa-bullseye',
-                path: ['/academics/examNames']
+                path: ['/cbe-exams/exam-types']
             },
             {
                 name: 'Exams',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/academics/exams']
+                path: ['/cbe-exams/exams']
             },
             {
                 name: 'Exam Results',
                 iconClasses: 'fas fa-bullseye',
-                path: ['/academics/examResults']
+                path: ['/cbe-exams/exam-results']
+            }
+        ]
+    },
+    {
+        name: 'CBE Co-curricular',
+        iconClasses: 'fas fa-book-reader',
+        children: [
+            {
+                name: 'Activities Register',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/cbe-cocurriculum/activities']
+            },
+            {
+                name: 'Score Types',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/cbe-cocurriculum/score-types']
+            },
+            {
+                name: 'Scores Setup',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/cbe-cocurriculum/scores-setup']
+            },
+            {
+                name: 'Student Assignments',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/cbe-cocurriculum/student-assignments']
+            },
+            {
+                name: 'Student Scores',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/cbe-cocurriculum/student-scores']
+            }
+        ]
+    },
+    {
+        name: 'CBE Responsibilities',
+        iconClasses: 'fas fa-book-reader',
+        children: [
+            {
+                name: 'Responsibilities Register',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/cbe-responsibilities/responsibilities']
+            },
+            {
+                name: 'Social Skills Register',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/cbe-responsibilities/social-skills']
+            },
+            {
+                name: 'Responsibility Social Skills',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/cbe-responsibilities/responsibility-social-skills']
+            },
+            {
+                name: 'Student Assignments',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/cbe-responsibilities/student-assignments']
+            }
+        ]
+    },
+     {
+        name: 'CBE Values',
+        iconClasses: 'fas fa-book-reader',
+        children: [
+            {
+                name: 'Values Register',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/cbe-values/values-register']
+            },
+            {
+                name: 'Values Scores',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/cbe-values/values-scores']
+            },
+            {
+                name: 'Student Assignments',
+                iconClasses: 'fas fa-bullseye',
+                path: ['/cbe-values/student-assignments']
             }
         ]
     },

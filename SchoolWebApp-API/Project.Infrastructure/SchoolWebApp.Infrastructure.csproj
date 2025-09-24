@@ -22,4 +22,11 @@
     <ProjectReference Include="..\Project.Core\SchoolWebApp.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Repositories\CBE\Exams\" />
+    <Folder Include="Repositories\CBE\Cocurricular\" />
+    <Folder Include="Repositories\CBE\Values\" />
+    <Folder Include="Repositories\CBE\Responsibilities\" />
+  </ItemGroup>
+
 </Project>
