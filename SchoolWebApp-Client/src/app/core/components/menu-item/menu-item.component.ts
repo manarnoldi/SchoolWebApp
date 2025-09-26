@@ -20,18 +20,20 @@ export class MenuItemComponent implements OnInit {
     constructor(private router: Router) {}
 
     ngOnInit(): void {
-        if (
-            this.menuItem &&
-            this.menuItem.children &&
-            this.menuItem.children.length > 0
-        ) {
+        if (this.menuItem?.children?.length > 0) {
             this.isExpandable = true;
         }
+
+        // initial active check
         this.calculateIsActive(this.router.url);
+
+        // recalc on every navigation
         this.router.events
             .pipe(filter((event) => event instanceof NavigationEnd))
             .subscribe((event: NavigationEnd) => {
-                this.calculateIsActive(event.url);
+                this.calculateIsActive(
+                    (event as NavigationEnd).urlAfterRedirects
+                );
             });
     }
 
@@ -40,28 +42,37 @@ export class MenuItemComponent implements OnInit {
             this.toggleMenu();
             return;
         }
-        this.router.navigate(this.menuItem.path);
+        if (this.menuItem.path) {
+            this.router.navigate(this.menuItem.path);
+        }
     }
 
     public toggleMenu() {
         this.isMenuExtended = !this.isMenuExtended;
     }
 
-    public calculateIsActive(url: string) {
+    private calculateIsActive(url: string) {
         this.isMainActive = false;
         this.isOneOfChildrenActive = false;
+
         if (this.isExpandable) {
-            this.menuItem.children.forEach((item) => {
-                if (url.includes(item.path[0])) {
-                    this.isOneOfChildrenActive = true;
-                    this.isMenuExtended = true;
-                }
-            });
-        } else if (this.menuItem.path[0] === url) {
+            if (this.hasActiveChild(this.menuItem, url)) {
+                this.isOneOfChildrenActive = true;
+                this.isMenuExtended = true;
+            }
+        } else if (this.menuItem.path && this.menuItem.path[0] === url) {
             this.isMainActive = true;
         }
-        if (!this.isMainActive && !this.isOneOfChildrenActive) {
-            this.isMenuExtended = false;
+    }
+
+    private hasActiveChild(item: any, url: string): boolean {
+        if (!item.children) {
+            return false;
         }
+        return item.children.some(
+            (child: any) =>
+                (child.path && url.startsWith(child.path[0])) ||
+                this.hasActiveChild(child, url)
+        );
     }
 }

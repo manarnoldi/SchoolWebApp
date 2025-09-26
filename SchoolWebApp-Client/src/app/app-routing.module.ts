@@ -70,6 +70,9 @@ import { ClassReportComponent } from './reports/components/class-report/class-re
 import { StaffReportComponent } from './reports/components/staff-report/staff-report.component';
 import { AcademicsReportComponent } from './reports/components/academics-report/academics-report.component';
 import { ExamNamesComponent } from './academics/components/exam-names/exam-names.component';
+import { CbeComponent } from './cbe/cbe.component';
+import { AssessmentTypesComponent } from './cbe/assessments/components/assessment-types/assessment-types.component';
+import { CompetenciesComponent } from './cbe/assessments/components/competencies/competencies.component';
 
 const routes: Routes = [
     {
@@ -185,6 +188,17 @@ const routes: Routes = [
             {path: 'exams', component: ExamsComponent},
             {path: 'exams/add', component: ExamAddFormComponent},
             {path: 'examResults', component: ExamResultsComponent}
+        ]
+    },
+     {
+        path: 'cbe',
+        component: CbeComponent,
+        canActivate: [AuthGuard],
+        canActivateChild: [AuthGuard],
+        children: [
+            
+            {path: 'assessments/assessment-types', component: AssessmentTypesComponent},
+            {path: 'assessments/competencies', component: CompetenciesComponent}
         ]
     },
     {

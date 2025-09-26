@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using SchoolWebApp.Core.Constants;
 using SchoolWebApp.Core.Entities.CBE.Assessments;
+using SchoolWebApp.Core.Entities.CBE.Responsibilities;
 using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Identity;
 using SchoolWebApp.Core.Entities.School;
@@ -35,6 +36,10 @@ namespace Project.Infrastructure.Data
                 .HasMany(e => e.Competencies)
                 .WithMany(e => e.SpecificOutcomes)
                 .UsingEntity(j => j.ToTable("SpecificOutcomeCompetencies"));
+            modelBuilder.Entity<Responsibility>()
+                .HasMany(e => e.SocialSkills)
+                .WithMany(e => e.Responsibilities)
+                .UsingEntity(j => j.ToTable("ResponsibilitySocialSkills"));
         }
 
         public static void SeedData(ModelBuilder modelBuilder)

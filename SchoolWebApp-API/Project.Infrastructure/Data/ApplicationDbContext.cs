@@ -73,7 +73,6 @@ namespace Project.Infrastructure.Data
         #region CBC Responsibilities
         public DbSet<Responsibility> Responsibilities { get; set; }
         public DbSet<SocialSkill> SocialSkills { get; set; }
-        public DbSet<ResponsibilitySocialSkill> ResponsibilitySocialSkills { get; set; }
         public DbSet<StudentResponsibility> StudentResponsibilities { get; set; }
         #endregion
 

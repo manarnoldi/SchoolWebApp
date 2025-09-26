@@ -1,24 +1,26 @@
 <a
-    (click)="handleMainMenuAction()"
-    class="nav-link"
-    [ngClass]="{active: isMainActive || isOneOfChildrenActive}">
-    <i class="nav-icon {{ menuItem.iconClasses }}"></i>
-    <p>{{ menuItem.name }}
-        <i
-            *ngIf="isExpandable && menuItem.children.length > 0"
-            class="right fas fa-angle-right"
-            [@rotate]="isMenuExtended"></i>
-    </p>
+  (click)="handleMainMenuAction()"
+  class="nav-link"
+  [ngClass]="{active: isMainActive || isOneOfChildrenActive}">
+  <i class="nav-icon {{ menuItem.iconClasses }}"></i>
+  <p>
+    {{ menuItem.name }}
+    <i
+      *ngIf="isExpandable && menuItem.children?.length > 0"
+      class="right fas fa-angle-right"
+      [@rotate]="isMenuExtended">
+    </i>
+  </p>
 </a>
-<ul class="nav nav-treeview" *ngFor="let item of menuItem.children" [@openClose]="isMenuExtended"
+
+<!-- recursive rendering for children -->
+<ul class="nav nav-treeview"
+    *ngIf="menuItem.children?.length > 0"
+    [@openClose]="isMenuExtended"
     [style.background-color]="'#2f4f4f'">
-    <li class="nav-item">
-        <a
-            [routerLink]="item.path"
-            [routerLinkActive]="'active'"
-            class="nav-link">
-            <i class="nav-icon {{ item.iconClasses }}"></i>
-            <p>{{ item.name }}</p>
-        </a>
-    </li>
+  <app-menu-item
+    *ngFor="let child of menuItem.children"
+    [menuItem]="child">
+  </app-menu-item>
 </ul>
+
