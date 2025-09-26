@@ -17,31 +17,34 @@
                 </button>
             </div>
             <form [formGroup]="outcomeForm" (ngSubmit)="onSubmit()" novalidate>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="name">Name: <span class="requiredField">*</span></label>
-                        <input placeholder="Enter outcome name" id="name" type="text"
-                            class="form-control" formControlName="name"
-                            [ngClass]="{ 'is-invalid': (f.name.dirty ||
+                <div class="modal-body p-1">
+                    <div class="card-details-box border-info mb-1">
+                        <div class="form-group">
+                            <label for="name">Name: <span class="requiredField">*</span></label>
+                            <input placeholder="Enter outcome name" id="name" type="text"
+                                class="form-control form-control-sm" formControlName="name"
+                                [ngClass]="{ 'is-invalid': (f.name.dirty ||
                             f.name.touched) && f.name.invalid }" />
-                        <div class="invalid-feedback"> Outcome name is required</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="rank">Rank: <span
-                                class="requiredField">*</span></label>
-                        <input id="rank" placeholder="Rank" type="number"
-                            class="form-control" formControlName="rank" [ngClass]="{
+                            <div class="invalid-feedback"> Outcome name is required</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="rank">Rank: <span
+                                    class="requiredField">*</span></label>
+                            <input id="rank" placeholder="Rank" type="number"
+                                class="form-control form-control-sm" formControlName="rank" [ngClass]="{
                             'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
                             }" />
-                        <div class="invalid-feedback">Rank is required</div>
-                    </div>
-                    <div class="form-group">
-                        <label>Description:</label>
-                        <textarea placeholder="Enter outcome description" id="description"
-                            class="form-control" rows="3" formControlName="description"></textarea>
+                            <div class="invalid-feedback">Rank is required</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description:</label>
+                            <textarea placeholder="Enter outcome description" id="description"
+                                class="form-control form-control-sm" rows="2"
+                                formControlName="description"></textarea>
+                        </div>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer p-1">
                     <button type="submit" [disabled]="outcomeForm.invalid" class="btn
                         btn-success"> <i class="fas fa-save"></i>
                         {{ editMode ? 'Update' : 'Save' }}
