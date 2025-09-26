@@ -1,1 +1,78 @@
-<p>competencies works!</p>
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr />
+<div class="modal fade" id="{{tableModel}}FormModal" tabindex="-1"
+    attr.aria-labelledby="{{tableModel}}ModalLabel" aria-hidden="true" data-bs-backdrop="static"
+    data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success opacity-50 p-2">
+                <h5 class="modal-title" id="{{tableModel}}FormModalLabel">
+                    {{tableModel | titlecase }} Details - {{ editMode ? 'Edit' : 'Add' }}
+                </h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"
+                    #closebutton>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="competencyForm" (ngSubmit)="onSubmit()" novalidate>
+                <div class="modal-body p-1">
+                    <div class="card-details-box border-info mb-1">
+                        <div class="form-group">
+                            <label for="name">Name: <span class="requiredField">*</span></label>
+                            <input placeholder="Enter Competency type name" id="name" type="text"
+                                class="form-control form-control-sm" formControlName="name"
+                                [ngClass]="{ 'is-invalid': (f.name.dirty ||
+                            f.name.touched) && f.name.invalid }" />
+                            <div class="invalid-feedback"> Assessment type name is required</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="rank">Rank: <span
+                                    class="requiredField">*</span></label>
+                            <input id="rank" placeholder="Rank" type="number"
+                                class="form-control form-control-sm" formControlName="rank" [ngClass]="{
+                            'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
+                            }" />
+                            <div class="invalid-feedback">Rank is required</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description:</label>
+                            <textarea placeholder="Enter Competency type description"
+                                id="description"
+                                class="form-control form-control-sm" rows="2"
+                                formControlName="description"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer p-1">
+                    <button type="submit" [disabled]="competencyForm.invalid" class="btn
+                        btn-success"> <i class="fas fa-save"></i>
+                        {{ editMode ? 'Update' : 'Save' }}
+                    </button>
+                    <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
+                        (click)="resetForm()">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid px-1">
+        <app-settings-table
+            [buttonTitle]="buttonTitle"
+            [tblModel]="tableModel"
+            [tblName]="tableTitle"
+            [tblHeaders]="tableHeaders"
+            [tblItems]="competencies"
+            [tblShowView]="tblShowViewButton"
+            (pageChangedEvent)="pageChanged($event)"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"
+            (editItemEvent)="editItem($event)"
+            (deleteItemEvent)="deleteItem($event)"
+            #settingsTable></app-settings-table>
+    </div>
+</section>
