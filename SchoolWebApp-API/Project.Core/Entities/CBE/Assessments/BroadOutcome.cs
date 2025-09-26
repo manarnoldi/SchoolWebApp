@@ -1,4 +1,5 @@
-﻿using SchoolWebApp.Core.Entities.School;
+﻿using SchoolWebApp.Core.Entities.Academics;
+using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Entities.Shared;
 
 namespace SchoolWebApp.Core.Entities.CBE.Assessments
@@ -7,6 +8,10 @@ namespace SchoolWebApp.Core.Entities.CBE.Assessments
     {
         public int EducationLevelId { get; set; }
         public EducationLevel? EducationLevel { get; set; } = null;
-        public List<LearningOutcome> LearningOutcomes { get; set; } = new();
+
+        public int SubjectId { get; set; }
+        public Subject? Subject { get; set; } = null;
+
+        public List<SpecificOutcome> SpecificOutcomes { get; set; } = new();
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using SchoolWebApp.Core.Constants;
+using SchoolWebApp.Core.Entities.CBE.Assessments;
 using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Identity;
 using SchoolWebApp.Core.Entities.School;
@@ -29,6 +30,11 @@ namespace Project.Infrastructure.Data
                 .HasMany(e => e.Parents)
                 .WithMany(e => e.Students)
                 .UsingEntity<StudentParent>();
+
+            modelBuilder.Entity<SpecificOutcome>()
+                .HasMany(e => e.Competencies)
+                .WithMany(e => e.SpecificOutcomes)
+                .UsingEntity(j => j.ToTable("SpecificOutcomeCompetencies"));
         }
 
         public static void SeedData(ModelBuilder modelBuilder)
@@ -105,7 +111,7 @@ namespace Project.Infrastructure.Data
                 ModifiedBy = "admin"
             });
 
-            
+
             //Add staff category
             modelBuilder.Entity<StaffCategory>().HasData(new StaffCategory
             {

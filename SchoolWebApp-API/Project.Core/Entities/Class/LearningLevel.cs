@@ -1,4 +1,5 @@
-﻿using SchoolWebApp.Core.Entities.School;
+﻿using SchoolWebApp.Core.Entities.CBE.Assessments;
+using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Entities.Shared;
 
 namespace SchoolWebApp.Core.Entities.Class
@@ -12,5 +13,6 @@ namespace SchoolWebApp.Core.Entities.Class
         public EducationLevel? EducationLevel { get; set; }
 
         public List<SchoolClass> SchoolClasses { get; set; } = new();
+        public List<SpecificOutcome> SpecificOutcomes { get; set; } = new();
     }
 }

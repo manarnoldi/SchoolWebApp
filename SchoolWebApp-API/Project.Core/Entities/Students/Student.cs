@@ -33,7 +33,7 @@ namespace SchoolWebApp.Core.Entities.Students
         public List<StudentClass> StudentClasses{ get; set; } = new();
         public List<StudentValueScore> StudentValues { get; set; } = new();
         public List<StudentCoCurriculumActivity> StudentCoCurriculumActivities { get; set; } = new();
-        public List<Assessment> Assessments { get; set; } = new();
+        public List<StudentAssessment> StudentAssessments { get; set; } = new();
         public List<ExamResult> ExamResults { get; set; } = new();
         public List<StudentResponsibility> StudentResponsibilities { get; set; } = new();
 

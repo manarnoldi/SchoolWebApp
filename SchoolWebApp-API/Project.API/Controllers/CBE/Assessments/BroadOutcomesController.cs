@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.CBE.Assessments.BroadOutcome;
-using SchoolWebApp.Core.DTOs.Class.LearningLevel;
 using SchoolWebApp.Core.Entities.CBE.Assessments;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.Assessments;
 
@@ -32,7 +31,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
         {
             try
             {
-                var BroadOutcomes = await _modelSvc.GetAll();
+                var BroadOutcomes = await _modelSvc.Find(includeProperties: "EducationLevel,Subject");
                 var BroadOutcomesDtos = _mapper.Map<List<BroadOutcomeDto>>(BroadOutcomes);
                 return Ok(BroadOutcomesDtos);
             }
@@ -51,7 +50,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
         {
             try
             {
-                var paginatedData = await _modelSvc.GetPaginatedData(pageNumber ?? 1, pageSize ?? 10);
+                var paginatedData = await _modelSvc.GetPaginatedData(pageNumber ?? 1, pageSize ?? 10,includeProperties: "EducationLevel,Subject");
                 var mappedData = _mapper.Map<List<BroadOutcomeDto>>(paginatedData.Data);
                 return Ok(new PaginatedDto<BroadOutcomeDto>(mappedData.ToList(), paginatedData.TotalCount));
             }
@@ -73,7 +72,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             try
             {
                 if (id <= 0) return BadRequest(id);
-                var _item = await _modelSvc.GetById(id);
+                var _item = await _modelSvc.GetById(id, includeProperties: "EducationLevel,Subject");
 
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<BroadOutcomeDto>(_item);
@@ -184,6 +183,48 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An error occurred while retrieving the broad outcomes by education level id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET: api/broadoutcomes/bySubjectId/5
+        [HttpGet("bySubjectId/{subjectId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BroadOutcomeDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetBySubjectId(int subjectId)
+        {
+            try
+            {
+                var _item = await _modelSvc.GetBySubjectId(subjectId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<BroadOutcomeDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the broad outcomes by subject id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET: api/broadoutcomes/byEducationLevelIdSubjectId/5/5
+        [HttpGet("byEducationLevelIdSubjectId/{eduLevelId}/{subjectId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BroadOutcomeDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetByEducationLevelIdSubjectId(int eduLevelId, int subjectId)
+        {
+            try
+            {
+                var _item = await _modelSvc.GetByEducationLevelIdSubjectId(eduLevelId, subjectId);
+                if (_item == null) return NotFound();
+                var _itemDto = _mapper.Map<List<BroadOutcomeDto>>(_item);
+                return Ok(_itemDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving the broad outcomes by education level Id, subject id.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }

@@ -31,7 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\CBE\Exams\" />
     <Folder Include="Controllers\CBE\Cocurricular\" />
     <Folder Include="Controllers\CBE\Values\" />
     <Folder Include="Controllers\CBE\Responsibilities\" />

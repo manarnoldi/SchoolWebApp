@@ -5,8 +5,8 @@ namespace SchoolWebApp.Core.Entities.CBE.Assessments
 {
     public class Strand : SettingsBase
     {
-        public int EducationLevelSubjectId { get; set; }
-        public EducationLevelSubject? EducationLevelSubject { get; set; } = null;
+        public int SubjectId { get; set; }
+        public Subject? Subject { get; set; } = null;
 
         public List<SubStrand> SubStrands { get; set; } = new();
     }

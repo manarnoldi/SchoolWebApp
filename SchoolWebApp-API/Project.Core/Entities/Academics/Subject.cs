@@ -1,4 +1,5 @@
-﻿using SchoolWebApp.Core.Entities.CBE.Exams;
+﻿using SchoolWebApp.Core.Entities.CBE.Assessments;
+using SchoolWebApp.Core.Entities.CBE.Exams;
 using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Entities.Shared;
 using SchoolWebApp.Core.Entities.Staff;
@@ -41,5 +42,7 @@ namespace SchoolWebApp.Core.Entities.Academics
         public List<StaffSubject> StaffSubjects { get; set; } = new();
         public List<Exam> Exams { get; set; } = new();
         public List<EducationLevelSubject> educationLevelSubjects { get; set; } = new();
+        public List<BroadOutcome> BroadOutcomes { get; set; } = new();
+        public List<Strand> Strands { get; set; } = new();
     }
 }

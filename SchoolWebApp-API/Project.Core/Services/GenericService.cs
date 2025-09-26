@@ -28,9 +28,9 @@ namespace SchoolWebApp.Core.Services
             return await _repository.GetPaginatedData(pageNumber, pageSize, includeProperties);
         }
 
-        public virtual async Task<T?> GetById(int id)
+        public virtual async Task<T?> GetById(int id, string includeProperties = "")
         {
-            return await _repository.GetById(id);
+            return await _repository.GetById(id, includeProperties);
         }
 
         public void Create(T entity)

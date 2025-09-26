@@ -5,12 +5,14 @@ using SchoolWebApp.Core.Entities.Students;
 
 namespace SchoolWebApp.Core.Entities.CBE.Assessments
 {
-    public class Assessment: Base
+    public class StudentAssessment : Base
     {
         public int StudentId { get; set; }
         public Student? Student { get; set; } = null;
-        public int LearningOutcomeId { get; set; }
-        public LearningOutcome? LearningOutcome { get; set; } = null;
+        public int SchoolClassId { get; set; }
+        public SchoolClass? SchoolClass { get; set; } = null;
+        public int SpecificOutcomeId { get; set; }
+        public SpecificOutcome? SpecificOutcome { get; set; } = null;
         public int GradeId { get; set; }
         public Grade? Grade { get; set; } = null;
         public int SessionId { get; set; }

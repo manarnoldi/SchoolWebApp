@@ -36,6 +36,6 @@ namespace SchoolWebApp.Core.Entities.Academics
         public int CurriculumId { get; set; }
         public Curriculum? Curriculum { get; set; }
 
-        public List<Assessment> Assessments { get; set; } = new();
+        public List<StudentAssessment> StudentAssessments { get; set; } = new();
     }
 }

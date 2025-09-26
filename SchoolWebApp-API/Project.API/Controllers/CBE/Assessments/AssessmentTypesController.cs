@@ -143,6 +143,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             return BadRequest(ModelState);
         }
 
+        // DELETE: api/assessmenttypes/5
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

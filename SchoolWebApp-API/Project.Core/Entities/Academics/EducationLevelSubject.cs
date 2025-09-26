@@ -1,5 +1,4 @@
-﻿using SchoolWebApp.Core.Entities.CBE.Assessments;
-using SchoolWebApp.Core.Entities.School;
+﻿using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Entities.Shared;
 
 namespace SchoolWebApp.Core.Entities.Academics
@@ -12,8 +11,6 @@ namespace SchoolWebApp.Core.Entities.Academics
         public int SubjectId { get; set; }
         public Subject? Subject { get; set; }
         public int AcademicYearId { get; set; }
-        public AcademicYear? AcademicYear { get; set; }
-
-        public List<Strand> Strands { get; set; } = new();
+        public AcademicYear? AcademicYear { get; set; }        
     }
 }

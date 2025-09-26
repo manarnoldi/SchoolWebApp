@@ -1,6 +1,6 @@
 ﻿namespace SchoolWebApp.Core.DTOs.CBE.Assessments.Assessment
 {
-    public class AssessmentDto: CreateAssessmentDto
+    public class StudentAssessmentDto: CreateStudentAssessmentDto
     {
        public int Id { get; set; }
     }

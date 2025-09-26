@@ -4,6 +4,6 @@ namespace SchoolWebApp.Core.Interfaces.IServices.CBE.Assessments
 {
     public interface IStrandService: IGenericService<Strand>
     {
-        Task<List<Strand>> GetStrandsByEducationLevelSubject(int eduLevelSubjectId);
+        Task<List<Strand>> GetBySubjectId(int subjectId);
     }
 }

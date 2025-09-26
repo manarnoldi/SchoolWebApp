@@ -11,8 +11,7 @@ namespace SchoolWebApp.Core.Interfaces.IServices
            string includeProperties = "");
         Task<PaginatedDto<T>> GetPaginatedData(int pageNumber, int pageSize, string? includeProperties = "");
         Task<IEnumerable<T>> GetAll();
-        Task<T?> GetById(int id);
-
+        Task<T?> GetById(int id, string includeProperties = "");
         Task<bool> ItemExistsAsync(Expression<Func<T, bool>> expression);
         Task<bool> IsExists<Tvalue>(string key, Tvalue value);
         Task<bool> IsExistsForUpdate<Tid>(Tid id, string key, string value);

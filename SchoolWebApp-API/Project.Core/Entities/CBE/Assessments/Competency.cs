@@ -4,6 +4,6 @@ namespace SchoolWebApp.Core.Entities.CBE.Assessments
 {
     public class Competency: SettingsBase   
     {
-        public List<LearningOutcome> LearningOutcomes { get; set; } = new();
+        public List<SpecificOutcome> SpecificOutcomes { get; set; } = new();
     }
 }

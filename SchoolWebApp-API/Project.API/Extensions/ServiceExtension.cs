@@ -100,10 +100,11 @@ namespace Project.API.Extensions
 
             #region Services: CBE Assessments
             services.AddScoped<IAssessmentTypeService, AssessmentTypeService>();
-            services.AddScoped<IAssessmentService, AssessmentService>();
+            services.AddScoped<IStudentAssessmentService, StudentAssessmentService>();
             services.AddScoped<IBroadOutcomeService, BroadOutcomeService>();
             services.AddScoped<ICompetencyService, CompetencyService>();
-            services.AddScoped<ILearningOutcomeService, LearningOutcomeService>();
+            services.AddScoped<IGeneralOutcomeService, GeneralOutcomeService>();
+            services.AddScoped<ISpecificOutcomeService, SpecificOutcomeService>();
             services.AddScoped<IStrandService, StrandService>();
             services.AddScoped<ISubStrandService, SubStrandService>();
             #endregion

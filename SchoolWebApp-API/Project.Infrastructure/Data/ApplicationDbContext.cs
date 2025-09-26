@@ -39,12 +39,13 @@ namespace Project.Infrastructure.Data
 
         #region CBC Assessments
         public DbSet<Competency> Competencies { get; set; }
-        public DbSet<AssessmentType> AssessmentTypes { get; set; }
-        public DbSet<Assessment> Assessments { get; set; }
+        public DbSet<GeneralOutcome> GeneralOutcomes { get; set; }
         public DbSet<BroadOutcome> BroadOutcomes { get; set; }
-        public DbSet<LearningOutcome> LearningOutcomes { get; set; }
+        public DbSet<SpecificOutcome> SpecificOutcomes { get; set; }
         public DbSet<Strand> Strands { get; set; }
         public DbSet<SubStrand> SubStrands { get; set; }
+        public DbSet<AssessmentType> AssessmentTypes { get; set; }
+        public DbSet<StudentAssessment> StudentAssessments { get; set; }        
         #endregion
 
         #region CBC Exams

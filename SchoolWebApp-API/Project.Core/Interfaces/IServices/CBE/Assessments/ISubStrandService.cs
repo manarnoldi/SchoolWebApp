@@ -4,5 +4,6 @@ namespace SchoolWebApp.Core.Interfaces.IServices.CBE.Assessments
 {
     public interface ISubStrandService : IGenericService<SubStrand>
     {
+        Task<List<SubStrand>> GetByStrandId(int strandId);
     }
 }
