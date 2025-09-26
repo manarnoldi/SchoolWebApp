@@ -1,9 +1,9 @@
 ﻿using SchoolWebApp.Core.DTOs.Academics.Grade;
-using SchoolWebApp.Core.DTOs.Academics.Subject;
 using SchoolWebApp.Core.DTOs.CBE.Assessments.AssessmentType;
 using SchoolWebApp.Core.DTOs.CBE.Assessments.SpecificOutcome;
 using SchoolWebApp.Core.DTOs.Class.SchoolClass;
 using SchoolWebApp.Core.DTOs.Class.Session;
+using SchoolWebApp.Core.DTOs.Staff.StaffDetails;
 using SchoolWebApp.Core.DTOs.Students.Student;
 
 namespace SchoolWebApp.Core.DTOs.CBE.Assessments.Assessment
@@ -22,6 +22,9 @@ namespace SchoolWebApp.Core.DTOs.CBE.Assessments.Assessment
         public SessionDto? Session { get; set; }
         public int AssessmentTypeId { get; set; }
         public AssessmentTypeDto? AssessmentType { get; set; }
+        public DateTime? AssessmentDate { get; set; }
+        public int StaffDetailsId { get; set; }
+        public StaffDetailDto? StaffDetails { get; set; }
         public string? Description { get; set; } = null;
     }
 }

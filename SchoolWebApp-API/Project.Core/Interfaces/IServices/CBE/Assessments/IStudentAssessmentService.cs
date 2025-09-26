@@ -5,7 +5,8 @@ namespace SchoolWebApp.Core.Interfaces.IServices.CBE.Assessments
     public interface IStudentAssessmentService : IGenericService<StudentAssessment>
     {
         Task<List<StudentAssessment>> GetByStudentId(int studentId);
-        Task<List<StudentAssessment>> GetBySessionId(int sessionId);
+        Task<List<StudentAssessment>> GetBySessionIdAndParams(int sessionId, int? studentId, int? schoolClassId, int? assessmentTypeid,
+            int? specificOutcomeId);
         Task<List<StudentAssessment>> GetByAssessmentTypeId(int asessmentTypeId);
         Task<List<StudentAssessment>> GetBySpecificOutcomeId(int specificOutcomeId);
         Task<List<StudentAssessment>> GetByGradeId(int gradeId);

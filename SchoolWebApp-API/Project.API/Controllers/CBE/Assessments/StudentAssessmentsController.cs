@@ -31,7 +31,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
         {
             try
             {
-                var studentAssessments = await _modelSvc.GetAll();
+                var studentAssessments = await _modelSvc.Find(includeProperties: "AssessmentType,Grade,Session,SpecificOutcome,SchoolClass");
                 var studentAssessmentsDtos = _mapper.Map<List<StudentAssessmentDto>>(studentAssessments);
                 return Ok(studentAssessmentsDtos);
             }
@@ -50,7 +50,8 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
         {
             try
             {
-                var paginatedData = await _modelSvc.GetPaginatedData(pageNumber ?? 1, pageSize ?? 10);
+                var paginatedData = await _modelSvc.GetPaginatedData(pageNumber ?? 1, pageSize ?? 10,
+                    includeProperties: "AssessmentType,Grade,Session,SpecificOutcome,SchoolClass");
                 var mappedData = _mapper.Map<List<StudentAssessmentDto>>(paginatedData.Data);
                 return Ok(new PaginatedDto<StudentAssessmentDto>(mappedData.ToList(), paginatedData.TotalCount));
             }
@@ -72,7 +73,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             try
             {
                 if (id <= 0) return BadRequest(id);
-                var _item = await _modelSvc.GetById(id);
+                var _item = await _modelSvc.GetById(id, includeProperties: "AssessmentType,Grade,Session,SpecificOutcome,SchoolClass");
 
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<StudentAssessmentDto>(_item);
@@ -95,9 +96,9 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
         {
             if (ModelState.IsValid)
             {
-                if (await _modelSvc.ItemExistsAsync(st => st.StudentId == model.StudentId && 
+                if (await _modelSvc.ItemExistsAsync(st => st.StudentId == model.StudentId &&
                 st.SpecificOutcomeId == model.SpecificOutcomeId && st.GradeId == model.GradeId &&
-                st.SessionId == model.SessionId && st.AssessmentTypeId == model.AssessmentTypeId && 
+                st.SessionId == model.SessionId && st.AssessmentTypeId == model.AssessmentTypeId &&
                 st.SchoolClassId == model.SchoolClassId))
                     return Conflict(new { message = $"The student assessment specified already exists" });
                 try
@@ -169,80 +170,17 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             }
         }
 
-        // GET: api/studentAssessments/byStudentId/5
-        [HttpGet("byStudentId/{studentId}")]
+        //GET api/studentAssessments/bySessionIdAndParams/5?studentId=1&schoolClassId=1&assessmentTypeid=1&specificOutcomeId=1
+        [HttpGet("bySessionIdAndParams/{sessionId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentAssessmentDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetByStudentId(int studentId)
+        public async Task<IActionResult> GetBySessionIdAndParams(int sessionId, int? studentId, int? schoolClassId, int? assessmentTypeid,
+            int? specificOutcomeId)
         {
             try
             {
-                var _item = await _modelSvc.GetByStudentId(studentId);
-                if (_item == null) return NotFound();
-                var _itemDto = _mapper.Map<List<StudentAssessmentDto>>(_item);
-                return Ok(_itemDto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"An error occurred while retrieving the student assessments by student id.");
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        // GET: api/studentAssessments/bySpecificOutcomeId/5
-        [HttpGet("bySpecificOutcomeId/{specificOutcomeId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentAssessmentDto>))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetBySpecificOutcomeId(int specificOutcomeId)
-        {
-            try
-            {
-                var _item = await _modelSvc.GetBySpecificOutcomeId(specificOutcomeId);
-                if (_item == null) return NotFound();
-                var _itemDto = _mapper.Map<List<StudentAssessmentDto>>(_item);
-                return Ok(_itemDto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"An error occurred while retrieving the student assessments by specific outcome id.");
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        // GET: api/studentAssessments/byGradeId/5
-        [HttpGet("byGradeId/{gradeId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentAssessmentDto>))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetGradeId(int gradeId)
-        {
-            try
-            {
-                var _item = await _modelSvc.GetByGradeId(gradeId);
-                if (_item == null) return NotFound();
-                var _itemDto = _mapper.Map<List<StudentAssessmentDto>>(_item);
-                return Ok(_itemDto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"An error occurred while retrieving the student assessments by grade id.");
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-
-        // GET: api/studentAssessments/bySessionId/5
-        [HttpGet("bySessionId/{sessionId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentAssessmentDto>))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetBySessionId(int sessionId)
-        {
-            try
-            {
-                var _item = await _modelSvc.GetBySessionId(sessionId);
+                var _item = await _modelSvc.GetBySessionIdAndParams(sessionId, studentId, schoolClassId, assessmentTypeid, specificOutcomeId);
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<List<StudentAssessmentDto>>(_item);
                 return Ok(_itemDto);
@@ -250,48 +188,6 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An error occurred while retrieving the student assessments by session id.");
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        // GET: api/studentAssessments/byAssessmentTypeId/5
-        [HttpGet("byAssessmentTypeId/{assessmentTypeId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentAssessmentDto>))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetByAssessmentTypeId(int assessmentTypeId)
-        {
-            try
-            {
-                var _item = await _modelSvc.GetByAssessmentTypeId(assessmentTypeId);
-                if (_item == null) return NotFound();
-                var _itemDto = _mapper.Map<List<StudentAssessmentDto>>(_item);
-                return Ok(_itemDto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"An error occurred while retrieving the student assessments by assessment type id.");
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        // GET: api/studentAssessments/bySchoolClassId/5
-        [HttpGet("bySchoolClassId/{schoolClassId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentAssessmentDto>))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetBySchoolClassId(int schoolClassId)
-        {
-            try
-            {
-                var _item = await _modelSvc.GetBySchoolClassId(schoolClassId);
-                if (_item == null) return NotFound();
-                var _itemDto = _mapper.Map<List<StudentAssessmentDto>>(_item);
-                return Ok(_itemDto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"An error occurred while retrieving the student assessments by school class id.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
