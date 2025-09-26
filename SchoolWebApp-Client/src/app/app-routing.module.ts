@@ -73,6 +73,7 @@ import { ExamNamesComponent } from './academics/components/exam-names/exam-names
 import { CbeComponent } from './cbe/cbe.component';
 import { AssessmentTypesComponent } from './cbe/assessments/components/assessment-types/assessment-types.component';
 import { CompetenciesComponent } from './cbe/assessments/components/competencies/competencies.component';
+import { GeneralOutcomesComponent } from './cbe/assessments/components/general-outcomes/general-outcomes.component';
 
 const routes: Routes = [
     {
@@ -198,7 +199,8 @@ const routes: Routes = [
         children: [
             
             {path: 'assessments/assessment-types', component: AssessmentTypesComponent},
-            {path: 'assessments/competencies', component: CompetenciesComponent}
+            {path: 'assessments/competencies', component: CompetenciesComponent},
+            {path: 'assessments/general-outcomes', component: GeneralOutcomesComponent}
         ]
     },
     {

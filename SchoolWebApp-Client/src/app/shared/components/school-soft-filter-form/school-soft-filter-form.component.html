@@ -34,6 +34,17 @@
                 </select>
             </div>
         </ng-content>
+        <ng-content *ngIf="showEducationLevelType">
+            <div class="col py-1 px-0">
+                <select class="form-select form-select-sm" aria-label="educationLevelType"
+                    (change)="educationLevelTypeChanged()"
+                    formControlName="educationLevelTypeId" id="educationLevelTypeId">
+                    <option [ngValue]="null" selected>-Level type-</option>
+                    <option [ngValue]="level.id" *ngFor="let level of
+                                educationLevelTypes">{{level.name}}</option>
+                </select>
+            </div>
+        </ng-content>
         <ng-content *ngIf="showEducationLevel">
             <div class="col py-1 px-1">
                 <select class="form-select form-select-sm" aria-label="educationLevel"

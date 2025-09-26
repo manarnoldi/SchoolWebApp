@@ -4,6 +4,6 @@ namespace SchoolWebApp.Core.Interfaces.IServices.CBE.Assessments
 {
     public interface IGeneralOutcomeService : IGenericService<GeneralOutcome>
     {
-        Task<List<GeneralOutcome>> GetByEducationLevelTypeId(int eduLevelTypeId);
+        Task<List<GeneralOutcome>> GetByEducationLevelTypeId(int? eduLevelTypeId);
     }
 }

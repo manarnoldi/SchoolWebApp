@@ -4,6 +4,8 @@ import { CompetenciesComponent } from './assessments/components/competencies/com
 import { AssessmentTypesComponent } from './assessments/components/assessment-types/assessment-types.component';
 import { SharedModule } from '@/shared/shared.module';
 import { CbeComponent } from './cbe.component';
+import { GeneralOutcomesComponent } from './assessments/components/general-outcomes/general-outcomes.component';
+import { GeneralOutcomeAddFormComponent } from './assessments/components/general-outcomes/general-outcome-add-form/general-outcome-add-form.component';
 
 
 
@@ -11,7 +13,9 @@ import { CbeComponent } from './cbe.component';
   declarations: [
     CbeComponent,
     CompetenciesComponent,
-    AssessmentTypesComponent
+    AssessmentTypesComponent,
+    GeneralOutcomesComponent,
+    GeneralOutcomeAddFormComponent
   ],
   imports: [
     CommonModule, SharedModule

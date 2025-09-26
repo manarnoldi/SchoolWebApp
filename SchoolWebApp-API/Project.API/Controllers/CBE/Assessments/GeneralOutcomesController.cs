@@ -166,12 +166,12 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             }
         }
 
-        // GET: api/generaloutcomes/byEducationLevelTypeId/5
-        [HttpGet("byEducationLevelTypeId/{educationLevelTypeId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GeneralOutcomeDto))]
+        // GET: api/generaloutcomes/byEducationLevelTypeId?educationLevelTypeId=5
+        [HttpGet("byEducationLevelTypeId")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<GeneralOutcomeDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetByEducationLevelTypeId(int educationLevelTypeId)
+        public async Task<IActionResult> GetByEducationLevelTypeId(int? educationLevelTypeId)
         {
             try
             {
