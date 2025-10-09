@@ -19,4 +19,6 @@ export class EducationLevelService extends ResourceService<EducationLevel> {
             `/educationLevels/byCurriculumId?curriculumId=${curriculumId ?? ''}`
         ).pipe(map((educationLevels) => educationLevels));
     };
+
+    
 }

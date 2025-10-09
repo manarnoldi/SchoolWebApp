@@ -12,7 +12,7 @@ namespace SchoolWebApp.Core.Entities.Class
         public int EducationLevelId { get; set; }
         public EducationLevel? EducationLevel { get; set; }
 
-        public List<SchoolClass> SchoolClasses { get; set; } = new();
         public List<SpecificOutcome> SpecificOutcomes { get; set; } = new();
+        public List<SchoolClass> SchoolClasses { get; set; } = new();        
     }
 }

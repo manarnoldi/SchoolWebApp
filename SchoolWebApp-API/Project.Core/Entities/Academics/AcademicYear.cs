@@ -1,4 +1,5 @@
-﻿using SchoolWebApp.Core.Entities.CBE.Responsibilities;
+﻿using SchoolWebApp.Core.Entities.CBE.Assessments;
+using SchoolWebApp.Core.Entities.CBE.Responsibilities;
 using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Shared;
@@ -36,5 +37,6 @@ namespace SchoolWebApp.Core.Entities.Academics
         public List<Session> Sessions { get; set; } = new();
         public List<EducationLevelSubject> educationLevelSubjects { get; set; } = new();
         public List<StudentResponsibility> StudentResponsibilities { get; set; } = new();
+        public List<Strand> Strands { get; set; } = new();
     }
 }

@@ -171,37 +171,16 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             }
         }
 
-        // GET: api/specificoutcomes/byLearningLevelId/5
-        [HttpGet("byLearningLevelId/{learningLevelId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<SpecificOutcomeDto>))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetByLearningLevelId(int learningLevelId)
-        {
-            try
-            {
-                var _item = await _modelSvc.GetByLearningLevelId(learningLevelId);
-                if (_item == null) return NotFound();
-                var _itemDto = _mapper.Map<List<SpecificOutcomeDto>>(_item);
-                return Ok(_itemDto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"An error occurred while retrieving the specific outcomes by learning level id.");
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        // GET: api/specificoutcomes/bySubStrandId/5?learningLevelId=3
+        // GET: api/specificoutcomes/bySubStrandId/5
         [HttpGet("bySubStrandId/{subStrandId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<SpecificOutcomeDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetBySubStrandId(int subStrandId, int? learningLevelId)
+        public async Task<IActionResult> GetBySubStrandId(int subStrandId)
         {
             try
             {
-                var _item = await _modelSvc.GetBySubStrandId(subStrandId, learningLevelId);
+                var _item = await _modelSvc.GetBySubStrandId(subStrandId);
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<List<SpecificOutcomeDto>>(_item);
                 return Ok(_itemDto);
@@ -215,16 +194,16 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
 
         
 
-        // GET: api/specificoutcomes/byBroadOutcomeId/5?learningLevelId=3
+        // GET: api/specificoutcomes/byBroadOutcomeId/5
         [HttpGet("byBroadOutcomeId/{broadOutcomeId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SpecificOutcomeDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetBroadOutcomeId(int broadOutcomeId, int? learningLevelId)
+        public async Task<IActionResult> GetBroadOutcomeId(int broadOutcomeId)
         {
             try
             {
-                var _item = await _modelSvc.GetByBroadOutcomeId(broadOutcomeId, learningLevelId);
+                var _item = await _modelSvc.GetByBroadOutcomeId(broadOutcomeId);
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<List<SpecificOutcomeDto>>(_item);
                 return Ok(_itemDto);
@@ -236,16 +215,16 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             }
         }
 
-        // GET: api/specificoutcomes/byGeneralOutcomeId/5?learningLevelId=3
+        // GET: api/specificoutcomes/byGeneralOutcomeId/5
         [HttpGet("byGeneralOutcomeId/{generalOutcomeId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SpecificOutcomeDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetGeneralOutcomeId(int generalOutcomeId, int? learningLevelId)
+        public async Task<IActionResult> GetGeneralOutcomeId(int generalOutcomeId)
         {
             try
             {
-                var _item = await _modelSvc.GetByGeneralOutcomeId(generalOutcomeId, learningLevelId);
+                var _item = await _modelSvc.GetByGeneralOutcomeId(generalOutcomeId);
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<List<SpecificOutcomeDto>>(_item);
                 return Ok(_itemDto);

@@ -16,6 +16,14 @@ export class EducationLevelSubjectService extends ResourceService<EducationLevel
         educationLevelId: number
     ): Observable<EducationLevelSubject[]> {
         let searchStr = `/educationLevelSubjects/byEducationLevelId/${educationLevelId}`;
-        return this.get(searchStr).pipe(map((staffSubjects) => staffSubjects));
+        return this.get(searchStr).pipe(map((eduLvlSubjects) => eduLvlSubjects));
+    }
+
+    getByEducationLevelAndAcademicYear(
+        educationLevelId: number,
+        academicYearId: number
+    ): Observable<EducationLevelSubject[]> {
+        let searchStr = `/educationLevelSubjects/byEducationLevelYearId/${educationLevelId}/${academicYearId}`;
+        return this.get(searchStr).pipe(map((eduLvlSubjects) => eduLvlSubjects));
     }
 }

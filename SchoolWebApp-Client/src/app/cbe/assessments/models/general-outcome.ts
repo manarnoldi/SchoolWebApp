@@ -1,4 +1,3 @@
-import { Curriculum } from '@/academics/models/curriculum';
 import {ResourceModel} from '@/core/models/ResourceModel';
 import { EducationLevelType } from '@/school/models/education-level-types';
 

@@ -56,6 +56,17 @@
                 </select>
             </div>
         </ng-content>
+        <ng-content *ngIf="showLearningLevel">
+            <div class="col py-1 px-0">
+                <select class="form-select form-select-sm" aria-label="learningLevel"
+                    (change)="learningLevelChanged()"
+                    formControlName="learningLevelId" id="learningLevelId">
+                    <option [ngValue]="null" selected>-Level-</option>
+                    <option [ngValue]="learningLevel.id" *ngFor="let learningLevel of
+                                learningLevels">{{learningLevel.name}}</option>
+                </select>
+            </div>
+        </ng-content>
         <ng-content *ngIf="showStaffCategory">
             <div class="col py-1 px-1">
                 <select class="form-select form-select-sm" aria-label="Staff category"

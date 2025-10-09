@@ -1,5 +1,4 @@
-﻿using LinqKit;
-using SchoolWebApp.Core.Entities.CBE.Assessments;
+﻿using SchoolWebApp.Core.Entities.CBE.Assessments;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.Assessments;
 
@@ -15,43 +14,24 @@ namespace SchoolWebApp.Core.Services.CBE.Assessments
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<List<SpecificOutcome>> GetByBroadOutcomeId(int broadOutcomeId, int? learningLevelId)
+        public async Task<List<SpecificOutcome>> GetByBroadOutcomeId(int broadOutcomeId)
         {
-            var filter = PredicateBuilder.New<SpecificOutcome>(a => a.BroadOutcomeId == broadOutcomeId);
-            if (learningLevelId != null)
-                filter = filter.And(a => a.LearningLevelId == learningLevelId);
-
             var outcomes = await _unitOfWork.Repository<SpecificOutcome>()
-                .Find(filter, includeProperties: "SubStrand,BroadOutcome,LearningLevel,GeneralOutcome");
+                .Find(a => a.BroadOutcomeId == broadOutcomeId, includeProperties: "SubStrand,BroadOutcome,GeneralOutcome");
             return outcomes.ToList();
         }
 
-        public async Task<List<SpecificOutcome>> GetByGeneralOutcomeId(int generalOutcomeId, int? learningLevelId)
+        public async Task<List<SpecificOutcome>> GetByGeneralOutcomeId(int generalOutcomeId)
         {
-            var filter = PredicateBuilder.New<SpecificOutcome>(a => a.GeneralOutcomeId == generalOutcomeId);
-            if (learningLevelId != null)
-                filter = filter.And(a => a.LearningLevelId == learningLevelId);
-
             var outcomes = await _unitOfWork.Repository<SpecificOutcome>()
-                .Find(filter, includeProperties: "SubStrand,BroadOutcome,LearningLevel,GeneralOutcome");
+                .Find(a => a.GeneralOutcomeId == generalOutcomeId, includeProperties: "SubStrand,BroadOutcome,GeneralOutcome");
             return outcomes.ToList();
         }
 
-        public async Task<List<SpecificOutcome>> GetByLearningLevelId(int learningLevelId)
+        public async Task<List<SpecificOutcome>> GetBySubStrandId(int subStrandId)
         {
             var outcomes = await _unitOfWork.Repository<SpecificOutcome>()
-                .Find(a => a.LearningLevelId == learningLevelId, includeProperties: "SubStrand,BroadOutcome,LearningLevel,GeneralOutcome");
-            return outcomes.ToList();
-        }
-
-        public async Task<List<SpecificOutcome>> GetBySubStrandId(int subStrandId, int? learningLevelId)
-        {
-            var filter = PredicateBuilder.New<SpecificOutcome>(a => a.SubStrandId == subStrandId);
-            if (learningLevelId != null)
-                filter = filter.And(a => a.LearningLevelId == learningLevelId);
-
-            var outcomes = await _unitOfWork.Repository<SpecificOutcome>()
-                .Find(filter, includeProperties: "SubStrand,BroadOutcome,LearningLevel,GeneralOutcome");
+                .Find(a => a.SubStrandId == subStrandId, includeProperties: "SubStrand,BroadOutcome,GeneralOutcome");
             return outcomes.ToList();
         }
 
@@ -111,8 +91,8 @@ namespace SchoolWebApp.Core.Services.CBE.Assessments
 
             if (!specificOutcomeCompetencyExists)
                 throw new InvalidOperationException($"The specific outcome and competency combination does not exist.");
-            
-            var specificOutcome = await this.GetById(specificOutcomeId,includeProperties:"Competencies");
+
+            var specificOutcome = await this.GetById(specificOutcomeId, includeProperties: "Competencies");
             if (specificOutcome == null || competency == null)
                 throw new InvalidOperationException("Either specific outcome or competency cannot be found in the database.");
             specificOutcome.Competencies.Remove(competency);

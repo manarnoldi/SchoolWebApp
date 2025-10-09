@@ -31,7 +31,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
         {
             try
             {
-                var strands = await _modelSvc.Find(includeProperties: "Subject");
+                var strands = await _modelSvc.Find(includeProperties: "Subject,LearningLevel,AcademicYear");
                 var strandsDtos = _mapper.Map<List<StrandDto>>(strands);
                 return Ok(strandsDtos);
             }
@@ -50,7 +50,8 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
         {
             try
             {
-                var paginatedData = await _modelSvc.GetPaginatedData(pageNumber ?? 1, pageSize ?? 10, includeProperties: "Subject");
+                var paginatedData = await _modelSvc.GetPaginatedData(pageNumber ?? 1, pageSize ?? 10,
+                    includeProperties: "Subject,LearningLevel,AcademicYear");
                 var mappedData = _mapper.Map<List<StrandDto>>(paginatedData.Data);
                 return Ok(new PaginatedDto<StrandDto>(mappedData.ToList(), paginatedData.TotalCount));
             }
@@ -72,7 +73,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             try
             {
                 if (id <= 0) return BadRequest(id);
-                var _item = await _modelSvc.GetById(id,includeProperties: "Subject");
+                var _item = await _modelSvc.GetById(id, includeProperties: "Subject,LearningLevel,AcademicYear");
 
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<StrandDto>(_item);
@@ -95,7 +96,10 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
         {
             if (ModelState.IsValid)
             {
-                if (await _modelSvc.IsExists("Name", model.Name))
+                var itemExist = await _modelSvc.ItemExistsAsync(m => m.Name == model.Name && m.LearningLevelId == model.LearningLevelId
+                && m.SubjectId == model.SubjectId && m.AcademicYearId == model.AcademicYearId);
+
+                if (itemExist)
                     return Conflict(new { message = $"The strand name - '{model.Name}' already exists" });
                 try
                 {
@@ -166,16 +170,16 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             }
         }
 
-        // GET: api/strands/bySubjectId/5
-        [HttpGet("bySubjectId/{subjectId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StrandDto))]
+        //GET api/strands/bySubjectId?subjectId=1&learningLvlId=1&academicYearId=1
+        [HttpGet("bySubjectId")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StrandDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetBySubjectId(int subjectId)
+        public async Task<IActionResult> GetBySubjectId(int? subjectId, int? learningLvlId, int? academicYearId)
         {
             try
             {
-                var _item = await _modelSvc.GetBySubjectId(subjectId);
+                var _item = await _modelSvc.GetBySubjectId(subjectId, learningLvlId, academicYearId);
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<List<StrandDto>>(_item);
                 return Ok(_itemDto);

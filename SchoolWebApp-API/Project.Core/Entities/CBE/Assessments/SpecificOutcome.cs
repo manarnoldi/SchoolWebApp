@@ -8,9 +8,6 @@ namespace SchoolWebApp.Core.Entities.CBE.Assessments
         public int SubStrandId { get; set; }
         public SubStrand? SubStrand { get; set; } = null;
 
-        public int LearningLevelId { get; set; }
-        public LearningLevel? LearningLevel { get; set; } = null;
-
         public int BroadOutcomeId { get; set; }
         public BroadOutcome? BroadOutcome { get; set; } = null;
 

@@ -3,6 +3,7 @@ import { Exam } from '@/academics/models/exam';
 import { ExamName } from '@/academics/models/exam-name';
 import { ExamType } from '@/academics/models/exam-type';
 import { Subject } from '@/academics/models/subject';
+import { LearningLevel } from '@/class/models/learning-level';
 import {SchoolClass} from '@/class/models/school-class';
 import {Status} from '@/core/enums/status';
 import {AcademicYear} from '@/school/models/academic-year';
@@ -28,6 +29,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
     @Input() curricula: Curriculum[] = [];
     @Input() educationLevelTypes: EducationLevelType[] = [];
     @Input() educationLevels: EducationLevel[] = [];
+    @Input() learningLevels: LearningLevel[] = [];
     @Input() academicYears: AcademicYear[] = [];
     @Input() sessions: Session[] = [];
     @Input() staffCategories: StaffCategory[] = [];
@@ -48,6 +50,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
     @Input() showCurriculum: boolean = false;
     @Input() showEducationLevelType: boolean = false;
     @Input() showEducationLevel: boolean = false;
+    @Input() showLearningLevel: boolean = false;
     @Input() showAcademicYear: boolean = false;
     @Input() showSession: boolean = false;
     @Input() showEmploymentType: boolean = false;
@@ -73,6 +76,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
     @Output() curriculumChangedEvent = new EventEmitter<number>();
     @Output() educationLevelTypeChangedEvent = new EventEmitter<number>();
     @Output() educationLevelChangedEvent = new EventEmitter<number>();
+    @Output() learningLevelChangedEvent = new EventEmitter<number>();
     @Output() academicYearChangedEvent = new EventEmitter<number>();
     @Output() sessionChangedEvent = new EventEmitter<number>();
     @Output() staffCategoryChangedEvent = new EventEmitter<number>();
@@ -130,6 +134,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
             curriculumId: cysSearch.curriculumId ?? null,
             educationLevelTypeId: cysSearch.educationLevelTypeId ?? null,
             educationLevelId: cysSearch.educationLevelId ?? null,
+            learningLevelId: cysSearch.learningLevelId ?? null,
             academicYearId: cysSearch.academicYearId ?? null,
             sessionId: cysSearch.sessionId ?? null,
             staffCategoryId: cysSearch.staffCategoryId ?? null,
@@ -159,6 +164,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
             curriculumId: [null],
             educationLevelTypeId: [null],
             educationLevelId: [null],
+            learningLevelId: [null],
             academicYearId: [null],
             sessionId: [null],
             staffCategoryId: [null],
@@ -188,6 +194,12 @@ export class SchoolSoftFilterFormComponent implements OnInit {
         let educationLevelId =
             this.schoolSoftFilterForm.get('educationLevelId').value;
         this.educationLevelChangedEvent.emit(educationLevelId);
+    };
+
+    learningLevelChanged = () => {
+        let learningLevelId =
+            this.schoolSoftFilterForm.get('learningLevelId').value;
+        this.learningLevelChangedEvent.emit(learningLevelId);
     };
 
     educationLevelTypeChanged = () => {
