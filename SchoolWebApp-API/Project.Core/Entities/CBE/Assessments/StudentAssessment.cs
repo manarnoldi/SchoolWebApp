@@ -13,8 +13,12 @@ namespace SchoolWebApp.Core.Entities.CBE.Assessments
         public Student? Student { get; set; } = null;
         public int SchoolClassId { get; set; }
         public SchoolClass? SchoolClass { get; set; } = null;
-        public int SpecificOutcomeId { get; set; }
+        public int? SpecificOutcomeId { get; set; }
         public SpecificOutcome? SpecificOutcome { get; set; } = null;
+        public int? SubStrandId { get; set; }
+        public SubStrand? SubStrand { get; set; } = null;
+        public int? StrandId { get; set; }
+        public Strand? Strand { get; set; } = null;
         public int GradeId { get; set; }
         public Grade? Grade { get; set; } = null;
         public int SessionId { get; set; }

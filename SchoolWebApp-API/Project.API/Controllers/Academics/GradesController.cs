@@ -44,6 +44,24 @@ namespace SchoolWebApp.API.Controllers.Academics
             }
         }
 
+        // GET: api/grades/byCategory/{category}
+        [HttpGet("byCategory/{category}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<GradeDto>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetByCategory(string category)
+        {
+            try
+            {
+                var grades = await _unitOfWork.Grades.Find(g => g.Category == category, includeProperties: "Curriculum");
+                return Ok(_mapper.Map<List<GradeDto>>(grades));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving grades by category.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         // GET: api/grades/paginated
         /// <summary>
         /// A method for retrieving a list of paginated grades

@@ -8,7 +8,15 @@ using SchoolWebApp.Core.Interfaces.IRepositories.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories.Students;
 using SchoolWebApp.Core.Interfaces.IServices;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.Assessments;
+using SchoolWebApp.Core.Interfaces.IServices.CBE.Cocurriculum;
+using SchoolWebApp.Core.Interfaces.IServices.CBE.CommunityService;
+using SchoolWebApp.Core.Interfaces.IServices.CBE.Responsibilities;
+using SchoolWebApp.Core.Interfaces.IServices.CBE.Values;
 using SchoolWebApp.Core.Services.CBE.Assessments;
+using SchoolWebApp.Core.Services.CBE.Cocurriculum;
+using SchoolWebApp.Core.Services.CBE.CommunityService;
+using SchoolWebApp.Core.Services.CBE.Responsibilities;
+using SchoolWebApp.Core.Services.CBE.Values;
 using SchoolWebApp.Core.Services.Students;
 using SchoolWebApp.Infrastructure.Repositories;
 using SchoolWebApp.Infrastructure.Repositories.Academics;
@@ -99,6 +107,7 @@ namespace Project.API.Extensions
             #endregion
 
             #region Services: CBE Assessments
+            services.AddScoped<IThemeService, ThemeService>();
             services.AddScoped<IAssessmentTypeService, AssessmentTypeService>();
             services.AddScoped<IStudentAssessmentService, StudentAssessmentService>();
             services.AddScoped<IBroadOutcomeService, BroadOutcomeService>();
@@ -107,6 +116,38 @@ namespace Project.API.Extensions
             services.AddScoped<ISpecificOutcomeService, SpecificOutcomeService>();
             services.AddScoped<IStrandService, StrandService>();
             services.AddScoped<ISubStrandService, SubStrandService>();
+            #endregion
+
+            #region Services: CBE Values
+            services.AddScoped<IValueService, ValueService>();
+            services.AddScoped<IValueScoreService, ValueScoreService>();
+            services.AddScoped<IStudentValueScoreService, StudentValueScoreService>();
+            #endregion
+
+            #region Services: CBE Responsibilities
+            services.AddScoped<IResponsibilityService, ResponsibilityService>();
+            // SocialSkill merged into Responsibility with Category field
+            services.AddScoped<IStudentResponsibilityService, StudentResponsibilityService>();
+            #endregion
+
+            #region Services: CBE Cocurriculum
+            services.AddScoped<ICoCurriculumActivityService, CoCurriculumActivityService>();
+            services.AddScoped<ICoCurriculumScoreTypeService, CoCurriculumScoreTypeService>();
+            services.AddScoped<ICoCurriculumScoreService, CoCurriculumScoreService>();
+            services.AddScoped<IStudentCoCurriculumActivityService, StudentCoCurriculumActivityService>();
+            services.AddScoped<IStudentCoCurriculumScoreService, StudentCoCurriculumScoreService>();
+            #endregion
+
+            #region Services: CBE CommunityService
+            services.AddScoped<ICommunityServiceActivityService, CommunityServiceActivityService>();
+            services.AddScoped<IStudentCommunityServiceActivityService, StudentCommunityServiceActivityService>();
+            #endregion
+
+            #region Services: CBE Assessments (additional)
+            services.AddScoped<IKeyQuestionService, KeyQuestionService>();
+            services.AddScoped<ILearningExperienceService, LearningExperienceService>();
+            services.AddScoped<IPCIService, PCIService>();
+            services.AddScoped<ILessonAllocationService, LessonAllocationService>();
             #endregion
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

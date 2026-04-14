@@ -66,14 +66,16 @@
                     <div class="form-group">
                         <label for="startDate">Event start date:</label>
                         <input placeholder="Enter event start date" id="startDate" type="date"
-                            class="form-control form-control-sm" formControlName="startDate" />
+                            class="form-control form-control-sm" formControlName="startDate"
+                            (change)="onStartDateChange()" />
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="endDate">Event end date:</label>
                         <input placeholder="Enter event end date" id="endDate" type="date"
-                            class="form-control form-control-sm" formControlName="endDate" />
+                            class="form-control form-control-sm" formControlName="endDate"
+                            [min]="minEndDate" />
                     </div>
                 </div>
             </div>

@@ -21,12 +21,10 @@ namespace SchoolWebApp.Core.Services.CBE.Assessments
                 filter = filter.And(a => a.SubjectId == subjectId);
             if (learningLvlId != null)
                 filter = filter.And(a => a.LearningLevelId == learningLvlId);
-            if (academicYearId != null)
-                filter = filter.And(a => a.AcademicYearId == academicYearId);
 
             var strands = await _unitOfWork.Repository<Strand>()
-                .Find(subjectId == null && learningLvlId == null && academicYearId == null ? null : filter, 
-                includeProperties: "Subject,LearningLevel,AcademicYear");
+                .Find(subjectId == null && learningLvlId == null ? null : filter,
+                includeProperties: "Subject,LearningLevel,Curriculum,Theme");
             return strands.ToList();
         }
     }

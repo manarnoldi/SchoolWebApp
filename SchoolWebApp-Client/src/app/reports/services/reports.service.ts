@@ -223,9 +223,12 @@ export class ReportsService {
                 };
 
                 return new Observable<void>((observer) => {
-                    pdfMake.createPdf(mergedDocDef).open();
-                    observer.next();
-                    observer.complete();
+                    pdfMake.createPdf(mergedDocDef).getBlob((blob) => {
+                        const url = URL.createObjectURL(blob);
+                        window.open(url, '_blank');
+                        observer.next();
+                        observer.complete();
+                    });
                 });
             })
         );

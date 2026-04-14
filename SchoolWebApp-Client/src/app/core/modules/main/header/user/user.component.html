@@ -2,7 +2,7 @@
     <div slot="button">
         <a class="nav-link">
             <pf-image
-                [src]="user.picture"
+                [src]="user?.picture"
                 fallbackSrc="assets/img/default-profile.png"
                 class="user-image-small"
                 width="25"
@@ -15,7 +15,7 @@
     <div slot="menu">
         <li class="user-header bg-primary">
             <pf-image
-                [src]="user.picture"
+                [src]="user?.picture"
                 fallbackSrc="assets/img/default-profile.png"
                 class="user-image-big"
                 alt="User Image"
@@ -23,33 +23,22 @@
                 height="90"
                 rounded="true"
             />
-
             <p>
-                <span>{{ user.email }}</span>
+                <span>{{ user?.firstName }} {{ user?.lastName }}</span>
+                <small>{{ user?.email }}</small>
             </p>
         </li>
-        <!-- Menu Body -->
-        <li class="user-body">
-            <div class="row">
-                <div class="col-4 text-center">
-                    <a [routerLink]="['/']">Followers</a>
-                </div>
-                <div class="col-4 text-center">
-                    <a [routerLink]="['/']">Sales</a>
-                </div>
-                <div class="col-4 text-center">
-                    <a [routerLink]="['/']">Friends</a>
-                </div>
+        <li class="user-body" *ngIf="user?.roles?.length > 0">
+            <div class="text-center">
+                <span class="badge bg-info me-1" *ngFor="let role of user?.roles">{{ role }}</span>
             </div>
-            <!-- /.row -->
         </li>
-        <!-- Menu Footer-->
         <li class="user-footer">
             <a [routerLink]="['/profile']" class="btn btn-default btn-flat">
-                Profile
+                <i class="fas fa-user mr-1"></i> Profile
             </a>
-            <a (click)="logout()" class="btn btn-default btn-flat float-right">
-                Sign out
+            <a (click)="logout()" class="btn btn-default btn-flat float-right" role="button">
+                <i class="fas fa-sign-out-alt mr-1"></i> Sign out
             </a>
         </li>
     </div>

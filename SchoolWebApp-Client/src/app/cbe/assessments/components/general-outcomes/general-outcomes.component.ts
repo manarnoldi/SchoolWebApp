@@ -33,7 +33,8 @@ export class GeneralOutcomesComponent implements OnInit {
     tableModel: string = 'generalOutcome';
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Dashboard'},
-        {link: ['/class/generalOutcomes'], title: 'Class: General Outcome'}
+        {link: ['/settings/dropdowns'], title: 'Dropdowns'},
+        {link: ['/cbe/assessments/general-outcomes'], title: 'General Outcomes'}
     ];
     dashboardTitle = 'Class: General Outcome';
     tableTitle: string = ' General Outcomes list';

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.Entities.Identity;
@@ -5,38 +6,19 @@ using SchoolWebApp.Core.Services;
 
 namespace SchoolWebApp.API.Controllers
 {
-    /// <summary>
-    /// This is a class for authenticating users. It generates a bearer token and sends it back to the requestor.
-    /// </summary>
     [ApiController]
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
-        /// <summary>
-        /// This is a field for storing injected user manager
-        /// </summary>
         private readonly UserManager<AppUser> _userManager;
-        /// <summary>
-        /// This is a field for storing injected JwtService
-        /// </summary>
         private readonly JwtService _jwtService;
 
-        /// <summary>
-        /// This is the constructor that injects the user manager and Jwt service
-        /// </summary>
-        /// <param name="userManager">The user manager parameter</param>
-        /// <param name="jwtService">The Jwt service parameter</param>
         public AuthController(UserManager<AppUser> userManager, JwtService jwtService)
         {
             _userManager = userManager;
             _jwtService = jwtService;
         }
 
-        /// <summary>
-        /// This method generates a token.
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
         //POST: api/auth/login
         [HttpPost("login")]
         public async Task<ActionResult<AuthenticationResponse>> CreateBearerToken(AuthenticationRequest request)
@@ -54,6 +36,31 @@ namespace SchoolWebApp.API.Controllers
             var token = _jwtService.CreateToken(user, await _userManager.GetRolesAsync(user));
 
             return Ok(token);
+        }
+
+        //POST: api/auth/change-password
+        [HttpPost("change-password")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDTO model)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var userId = User.FindFirst("userid")?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return NotFound(new { message = "User not found." });
+
+            var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description).ToList();
+                return BadRequest(new { message = string.Join(" ", errors) });
+            }
+
+            return Ok(new { message = "Password changed successfully." });
         }
     }
 }

@@ -2,8 +2,77 @@
 <hr class="my-1">
 <section class="content">
     <div class="container-fluid">
+        <!-- Welcome Banner -->
+        <div class="row mb-1">
+            <div class="col-12 px-1">
+                <div class="card bg-gradient-primary mb-0">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-auto" *ngIf="schoolLogo">
+                                <img [src]="schoolLogo" alt="School Logo"
+                                    style="height: 50px; width: auto; border-radius: 6px; background: #fff; padding: 3px;">
+                            </div>
+                            <div class="col">
+                                <h5 class="mb-0 text-white">{{ greeting }}, {{ user?.firstName ||
+                                    'User'
+                                    }}!</h5>
+                                <small class="text-white-50" *ngIf="schoolName">{{ schoolName
+                                    }}<span
+                                        *ngIf="schoolMotto"> &mdash; <em>{{ schoolMotto
+                                            }}</em></span></small>
+                            </div>
+                            <div class="col-auto text-right">
+                                <div class="text-white-50" style="font-size: 0.85rem;">
+                                    <i class="far fa-calendar-alt mr-1"></i> {{ currentDate }}
+                                </div>
+                                <div class="text-white" style="font-size: 0.85rem;"
+                                    *ngIf="activeAcademicYear">
+                                    <i class="fas fa-graduation-cap mr-1"></i> Academic Year:
+                                    <strong>{{
+                                        activeAcademicYear }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr class="mb-1 mx-n2">
+        <!-- Quick Links -->
+        <div class="row mb-1" *ngIf="quickLinks.length > 0">
+            <div class="col-12 px-1">
+                <div class="card card-outline card-success mb-0">
+                    <div class="card-header py-1">
+                        <h3 class="card-title"><i class="fas fa-th mr-1"></i> Quick Access</h3>
+                    </div>
+                    <div class="card-body py-2">
+                        <div class="row">
+                            <div class="col-auto mb-1" *ngFor="let link of quickLinks">
+                                <a [routerLink]="[link.link]" [queryParams]="link.queryParams"
+                                    class="btn btn-sm btn-outline-secondary quick-link-btn">
+                                    <span class="quick-link-icon {{link.color}}">
+                                        <i class="{{link.icon}}"></i>
+                                    </span>
+                                    {{ link.label }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr class="mb-1 mx-n2">
+        <!-- Summary Cards -->
         <app-dashboard-summary></app-dashboard-summary>
         <hr class="mb-1 mx-n2">
+        <!-- Exam Performance Summary -->
+        <div class="row">
+            <div class="col-12 px-1">
+                <app-dashboard-exam-summary></app-dashboard-exam-summary>
+            </div>
+        </div>
+        <hr class="mb-1 mx-n2">
+        <!-- Todo and Events -->
         <div class="row">
             <div class="col-6 px-1">
                 <app-todolists></app-todolists>

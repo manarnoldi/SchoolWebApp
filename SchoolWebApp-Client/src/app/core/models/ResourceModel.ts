@@ -1,5 +1,5 @@
 export abstract class ResourceModel<T> {
-    public id?: string;
+    public id?: any;
 
     constructor(model?: Partial<T>) {
         if (model) {

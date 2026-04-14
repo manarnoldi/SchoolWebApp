@@ -37,6 +37,7 @@ import { StudentsSubjectsSearchFormComponent } from './components/students-subje
 import { StudentsAttendancesComponent } from './components/students-attendances/students-attendances.component';
 import { StudentsAttendancesTableComponent } from './components/students-attendances/students-attendances-table/students-attendances-table.component';
 import { StudentsAttendancesSearchFormComponent } from './components/students-attendances/students-attendances-search-form/students-attendances-search-form.component';
+import { StudentPromotionComponent } from './components/student-promotion/student-promotion.component';
 
 @NgModule({
     declarations: [
@@ -74,7 +75,8 @@ import { StudentsAttendancesSearchFormComponent } from './components/students-at
         StudentsSubjectsSearchFormComponent,
         StudentsAttendancesComponent,
         StudentsAttendancesTableComponent,
-        StudentsAttendancesSearchFormComponent
+        StudentsAttendancesSearchFormComponent,
+        StudentPromotionComponent
     ],
     imports: [AcademicsModule, CoreModule, SharedModule]
 })

@@ -20,6 +20,7 @@ import {LearningLevelsService} from '@/class/services/learning-levels.service';
 import {EducationLevel} from '@/school/models/educationLevel';
 import {EducationLevelService} from '@/school/services/education-level.service';
 import {EducationLevelSubjectService} from '@/academics/services/education-level-subject.service';
+import {ThemeService} from '../../services/theme.service';
 
 @Component({
     selector: 'app-strands',
@@ -42,16 +43,18 @@ export class StrandsComponent implements OnInit {
     tableModel: string = 'strand';
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Dashboard'},
-        {link: ['/class/strands'], title: 'Class: Strand'}
+        {link: ['/settings/dropdowns'], title: 'Dropdowns'},
+        {link: ['/cbe/assessments/strands'], title: 'Strands'}
     ];
-    dashboardTitle = 'Class: Strand';
+    dashboardTitle = 'CBE Assessments: Strands';
     tableTitle: string = ' Strands list';
     tableHeaders: string[] = [
         'Ref#',
-        'Year',
         'Curriculum',
-        'Lerning Level',
+        'Learning Level',
         'Subject',
+        'Theme',
+        'Code',
         'Strand Name',
         'Description',
         'Rank',
@@ -61,6 +64,7 @@ export class StrandsComponent implements OnInit {
     strand: Strand;
     strands: Strand[] = [];
     subjects: Subject[] = [];
+    themes: any[] = [];
 
     curricula: Curriculum[] = [];
     academicYears: AcademicYear[] = [];
@@ -79,7 +83,8 @@ export class StrandsComponent implements OnInit {
         private learninglevelSvc: LearningLevelsService,
         private educationlevelSvc: EducationLevelService,
         private educationlevelSubjectsSvc: EducationLevelSubjectService,
-        private academicYearSvc: AcademicYearsService
+        private academicYearSvc: AcademicYearsService,
+        private themeSvc: ThemeService
     ) {}
 
     pageSizeChanged = (pageSize: number) => {
@@ -124,6 +129,7 @@ export class StrandsComponent implements OnInit {
         ]).subscribe({
             next: ([curricula, academicYears, educationLevels]) => {
                 this.curricula = curricula.sort((a, b) => a.rank - b.rank);
+
                 this.academicYears = academicYears.sort(
                     (a, b) => a.rank - b.rank
                 );
@@ -131,7 +137,9 @@ export class StrandsComponent implements OnInit {
                     (a, b) => a.rank - b.rank
                 );
 
-                let topAcademicYear = this.academicYears[0];
+                let topAcademicYear = this.academicYears.find(
+                    (y) => y.status == true
+                );
                 let topCurriculum = this.curricula[0];
 
                 this.learninglevelSvc
@@ -171,14 +179,6 @@ export class StrandsComponent implements OnInit {
             }
         });
     }
-
-    getCurriculumByEducationLevelId = (eduLevelId: number): Curriculum => {
-        var eduLevel = this.educationLevels.find(
-            (el) => parseInt(el.id) === eduLevelId
-        );
-        if (!eduLevel) return null;
-        return eduLevel.curriculum;
-    };
 
     academicYearAddFormChanged = (acadYearId: number) => {
         this.subjects = this.learningLevels = [];
@@ -294,8 +294,7 @@ export class StrandsComponent implements OnInit {
     };
 
     searchClicked = (cys: SchoolSoftFilter) => {
-        let searchStr = `/strands/bySubjectId?academicYearId=${cys.academicYearId ?? ''}&learningLvlId=${cys.learningLevelId ?? ''}
-        &subjectId=${cys.subjectId ?? ''}`;
+        let searchStr = `/strands/bySubjectId?academicYearId=${cys.academicYearId ?? ''}&learningLvlId=${cys.learningLevelId ?? ''}&subjectId=${cys.subjectId ?? ''}`;
         this.strandSvc.get(searchStr).subscribe({
             next: (strands) => {
                 this.strands = strands.sort((a, b) => a.rank - b.rank);
@@ -309,6 +308,13 @@ export class StrandsComponent implements OnInit {
             },
             error: (err) => this.toastr.error(err.error)
         });
+        // Load themes for the form dropdown
+        if (cys.subjectId && cys.learningLevelId) {
+            this.themeSvc.get(`/themes/bySubjectId?subjectId=${cys.subjectId}&learningLvlId=${cys.learningLevelId}`).subscribe({
+                next: (themes) => { this.themes = themes.sort((a, b) => a.rank - b.rank); },
+                error: () => { this.themes = []; }
+            });
+        }
     };
 
     editItem(id: number) {
@@ -329,29 +335,16 @@ export class StrandsComponent implements OnInit {
 
                 forkJoin([learningLevelreq, subjectreq]).subscribe({
                     next: ([learningLevel, subject]) => {
-                        this.strand.academicYear = this.academicYears.find(
-                            (ay) =>
-                                ay.id == this.strand.academicYearId.toString()
-                        );
                         this.learningLevels = [];
                         this.learningLevels.push(learningLevel);
                         this.strand.learningLevel = learningLevel;
                         this.subjects = [];
                         this.subjects.push(subject);
                         this.strand.subject = subject;
-                        this.curricula = [];
-                        this.curricula.push(
-                            this.getCurriculumByEducationLevelId(
-                                this.strand.learningLevel?.educationLevelId
-                            )
-                        );
-                        this.strand.curriculum =
-                            this.getCurriculumByEducationLevelId(
-                                this.strand.learningLevel?.educationLevelId
-                            );
-                        this.strand.curriculumId = parseInt(
-                            this.strand.curriculum.id
-                        );
+                        if (this.strand.curriculum) {
+                            this.curricula = [];
+                            this.curricula.push(this.strand.curriculum);
+                        }
                         this.strandFormComp.setFormControls(this.strand);
                         this.strandFormComp.editMode = true;
                         this.strandFormComp.strand = this.strand;
@@ -361,7 +354,7 @@ export class StrandsComponent implements OnInit {
                 });
             },
             (err) => {
-                this.toastr.error(err);
+                this.toastr.error(err.error?.message || err.message || 'An error occurred.');
             }
         );
     }
@@ -383,16 +376,33 @@ export class StrandsComponent implements OnInit {
                     .delete('/strands', parseInt(strand.id))
                     .subscribe(
                         (res) => {
+                            let acadYearId =
+                                this.ssFFormComp.schoolSoftFilterForm.get(
+                                    'academicYearId'
+                                ).value;
+                            let currId =
+                                this.ssFFormComp.schoolSoftFilterForm.get(
+                                    'curriculumId'
+                                ).value;
+                            let llId =
+                                this.ssFFormComp.schoolSoftFilterForm.get(
+                                    'learningLevelId'
+                                ).value;
+                            let subjId =
+                                this.ssFFormComp.schoolSoftFilterForm.get(
+                                    'subjectId'
+                                ).value;
+
                             this.searchStrands(
-                                strand.academicYearId,
-                                strand.curriculumId,
-                                strand.learningLevelId,
-                                strand.subjectId
+                                acadYearId,
+                                currId,
+                                llId,
+                                subjId
                             );
                             this.toastr.success('Record deleted successfully!');
                         },
                         (err) => {
-                            this.toastr.error(err);
+                            this.toastr.error(err.error?.message || err.message || 'An error occurred.');
                         }
                     );
             } else if (result.dismiss === Swal.DismissReason.cancel) {

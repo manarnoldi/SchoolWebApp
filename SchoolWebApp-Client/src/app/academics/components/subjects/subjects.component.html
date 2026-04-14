@@ -1,7 +1,9 @@
 <app-dashboard-header
     [title]="dashboardTitle"
     [breadcrumbs]="breadcrumbs"></app-dashboard-header>
-<hr>
+<hr class="mb-1">
+<a *ngIf="querySource==='dashboard'" class="btn btn-flat btn-sm btn-info mb-1 mr-1" [routerLink]="['/']"><i class="fas fa-angle-double-left"></i> Dashboard</a>
+<a class="btn btn-flat btn-sm btn-warning mb-1" [routerLink]="['/settings/dropdowns']" [queryParams]="{category: 'Academics'}"><i class="fas fa-angle-double-left"></i> Back to Dropdowns</a>
 <div
     class="modal fade"
     id="subjectFormModal"

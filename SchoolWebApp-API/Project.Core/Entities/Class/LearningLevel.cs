@@ -9,10 +9,12 @@ namespace SchoolWebApp.Core.Entities.Class
         public required string Name { get; set; }
         public int Rank { get; set; }
         public string? Description { get; set; }
+
         public int EducationLevelId { get; set; }
         public EducationLevel? EducationLevel { get; set; }
 
-        public List<SpecificOutcome> SpecificOutcomes { get; set; } = new();
-        public List<SchoolClass> SchoolClasses { get; set; } = new();        
+        public List<SchoolClass> SchoolClasses { get; set; } = new();
+        public List<SubStrand> SubStrands { get; set; } = new();
+        public List<LessonAllocation> LessonAllocations { get; set; } = new();
     }
 }

@@ -47,6 +47,7 @@ export class SubjectsAddFormComponent implements OnInit {
             numOfLessons: [0, [Validators.required]],
             description: [''],
             optional: [false, [Validators.required]],
+            examinable: [true],
             subjectGroupId: [null, [Validators.required]],
             departmentId: [null, [Validators.required]],
             staffDetailsId: [null]
@@ -62,6 +63,7 @@ export class SubjectsAddFormComponent implements OnInit {
             numOfLessons: subject?.numOfLessons,
             description: subject?.description,
             optional: subject?.optional,
+            examinable: subject?.examinable ?? true,
             subjectGroupId: subject?.subjectGroupId,
             departmentId: subject?.departmentId,
             staffDetailsId: subject?.staffDetails

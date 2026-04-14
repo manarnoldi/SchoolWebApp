@@ -1,17 +1,14 @@
 using Microsoft.AspNetCore.Identity;
-using SchoolWebApp.Core.Entities.Shared;
 using System.ComponentModel.DataAnnotations;
 
 namespace SchoolWebApp.Core.Entities.Identity
 {
-    public class AppUser : IdentityUser
+    public class AppUser : IdentityUser<int>
     {
         [Required]
         public required string FirstName { get; set; }
         [Required]
         public required string LastName { get; set; }
-        public int PersonId { get; set; }
-        public Person? Person { get; set; }
         public DateTime? Created { get; set; }
 
         [StringLength(255)]

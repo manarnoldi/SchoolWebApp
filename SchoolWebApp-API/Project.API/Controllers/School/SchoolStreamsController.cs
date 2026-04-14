@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.School.SchoolStream;
@@ -10,6 +11,7 @@ namespace SchoolWebApp.API.Controllers.School
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class SchoolStreamsController : ControllerBase
     {
         private readonly ILogger<SchoolStreamsController> _logger;

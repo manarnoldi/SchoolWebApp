@@ -8,9 +8,9 @@ namespace SchoolWebApp.Core.Profiles.CBE.Assessments
     {
         public BroadOutcomeProfile()
         {
-            CreateMap<BroadOutcome, BroadOutcomeDto>();
-            CreateMap<BroadOutcomeDto, BroadOutcome>();
-            CreateMap<CreateBroadOutcomeDto, BroadOutcome>();
+            CreateMap<SubjectOutcome, BroadOutcomeDto>();
+            CreateMap<BroadOutcomeDto, SubjectOutcome>();
+            CreateMap<CreateBroadOutcomeDto, SubjectOutcome>();
             CreateMap<CreateBroadOutcomeDto, BroadOutcomeDto>(); 
         }
     }

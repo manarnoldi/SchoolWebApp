@@ -1,7 +1,8 @@
 <app-dashboard-header
     [title]="dashboardTitle"
     [breadcrumbs]="breadcrumbs"></app-dashboard-header>
-<hr>
+<hr class="mb-1">
+<a class="btn btn-flat btn-sm btn-warning mb-1" [routerLink]="['/settings/dropdowns']" [queryParams]="{category: 'Academics'}"><i class="fas fa-angle-double-left"></i> Back to Dropdowns</a>
 <div class="modal fade" id="educationLevelSubjectFormModal" tabindex="-1"
     attr.aria-labelledby="educationLevelSubjectItemModalLabel" aria-hidden="true"
     data-bs-backdrop="static"
@@ -31,8 +32,13 @@
                     (educationLevelChangedEvent)="educationLevelChanged($event)"
                     (searchItemEvent)="loadByEducationLevelYear($event)"></app-school-soft-filter-form>
             </div>
-            <div class="col-4">
-                <app-table-button btnClasses="btn btn-sm btn-flat btn-success float-right mt-1"
+            <div class="col-4 d-flex justify-content-end align-items-center mt-1 gap-1">
+                <button class="btn btn-sm btn-flat btn-info" (click)="showCopyModal = true"
+                    *ngIf="educationLevelSubjects.length > 0"
+                    [disabled]="isCopying">
+                    <i class="fas fa-copy"></i> Copy to Year
+                </button>
+                <app-table-button btnClasses="btn btn-sm btn-flat btn-success"
                     modelName="educationLevelSubject"
                     buttonTitle="Add Edu-Level Subjects"></app-table-button>
             </div>
@@ -44,3 +50,38 @@
             (deleteItemEvent)="deleteItem($event)"></app-education-level-subjects-table>
     </div>
 </section>
+
+<!-- Copy to Year Modal -->
+<div class="modal-backdrop fade show" *ngIf="showCopyModal" (click)="showCopyModal = false"></div>
+<div class="modal fade show d-block" *ngIf="showCopyModal" tabindex="-1">
+    <div class="modal-dialog modal-sm" style="margin-top: 80px;">
+        <div class="modal-content">
+            <div class="modal-header bg-info p-2">
+                <h5 class="modal-title text-white"><i class="fas fa-copy mr-1"></i> Copy Subjects to Year</h5>
+                <button type="button" class="close text-white" (click)="showCopyModal = false">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-2">
+                <p class="mb-1" style="font-size:0.85rem;">
+                    Copy <strong>{{ educationLevelSubjects.length }}</strong> subject(s) from the current selection to another academic year.
+                </p>
+                <div class="form-group">
+                    <label class="form-label mb-0" style="font-size:0.85rem;">Target Academic Year <span class="requiredField">*</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="copyTargetYearId">
+                        <option [ngValue]="null" hidden disabled>Select target year</option>
+                        <option [ngValue]="y.id" *ngFor="let y of academicYears">{{ y.name }}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer p-1">
+                <button class="btn btn-sm btn-secondary" (click)="showCopyModal = false">Cancel</button>
+                <button class="btn btn-sm btn-info" (click)="copyToYear()"
+                    [disabled]="!copyTargetYearId || isCopying">
+                    <i class="fas" [ngClass]="isCopying ? 'fa-spinner fa-spin' : 'fa-copy'"></i>
+                    {{ isCopying ? 'Copying...' : 'Copy' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

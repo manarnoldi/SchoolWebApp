@@ -6,6 +6,7 @@ namespace SchoolWebApp.Core.DTOs.Academics.ExamResult
     public class CreateExamResultDto
     {
         public float? Score { get; set; }
+        public string? Description { get; set; }
 
         public int StudentId { get; set; }
         public StudentDto? Student { get; set; }

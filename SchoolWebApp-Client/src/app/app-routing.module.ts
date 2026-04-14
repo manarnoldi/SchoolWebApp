@@ -23,6 +23,8 @@ import {RelationshipsComponent} from './settings/components/relationships/relati
 import {ReligionsComponent} from './settings/components/religions/religions.component';
 import {SessionTypesComponent} from './settings/components/session-types/session-types.component';
 import {StaffCategoriesComponent} from './settings/components/staff-categories/staff-categories.component';
+import {GlobalSettingsComponent} from './settings/components/global-settings/global-settings.component';
+import {DropdownManagementComponent} from './settings/components/dropdown-management/dropdown-management.component';
 import {LearningModesComponent} from './school/components/learning-modes/learning-modes.component';
 import {SchoolComponent} from './school/school.component';
 import {SchoolDetailsComponent} from './school/components/school-details/school-details.component';
@@ -41,6 +43,7 @@ import {SubjectGroupsComponent} from './academics/components/subject-groups/subj
 import {GradesComponent} from './academics/components/grades/grades.component';
 import {DepartmentsComponent} from './school/components/departments/departments.component';
 import {EventsComponent} from './school/components/events/events.component';
+import {BulkStaffSubjectsComponent} from './school/components/bulk-staff-subjects/bulk-staff-subjects.component';
 import {LearningLevelsComponent} from './class/components/learning-levels/learning-levels.component';
 import {SchoolClassComponent} from './class/components/school-class/school-class.component';
 import {SchoolStreamsComponent} from './class/components/school-streams/school-streams.component';
@@ -63,18 +66,61 @@ import {ExamResultsComponent} from './academics/components/exam-results/exam-res
 import {StudentsSubjectsComponent} from './students/components/students-subjects/students-subjects.component';
 import {StudentsSubjectsAddFormComponent} from './students/components/students-subjects/students-subjects-add-form/students-subjects-add-form.component';
 import {StudentsAttendancesComponent} from './students/components/students-attendances/students-attendances.component';
+import {StudentPromotionComponent} from './students/components/student-promotion/student-promotion.component';
 import {StaffsAttendancesComponent} from './staff/components/staffs-attendances/staffs-attendances.component';
 import { ReportsComponent } from './reports/reports.component';
 import { SchoolReportComponent } from './reports/components/school-report/school-report.component';
 import { ClassReportComponent } from './reports/components/class-report/class-report.component';
 import { StaffReportComponent } from './reports/components/staff-report/staff-report.component';
 import { AcademicsReportComponent } from './reports/components/academics-report/academics-report.component';
+import { StaffAttendancePageComponent } from './reports/components/pages/staff-attendance-page.component';
+import { StaffAttendanceDetailsPageComponent } from './reports/components/pages/staff-attendance-details-page.component';
+import { StaffSubjectPageComponent } from './reports/components/pages/staff-subject-page.component';
+import { ClassListPageComponent } from './reports/components/pages/class-list-page.component';
+import { ClassAttendancePageComponent } from './reports/components/pages/class-attendance-page.component';
+import { ClassAttendanceDetailsPageComponent } from './reports/components/pages/class-attendance-details-page.component';
+import { MissingMarksPageComponent } from './reports/components/pages/missing-marks-page.component';
+import { ResultsAnalysisPageComponent } from './reports/components/pages/results-analysis-page.component';
+import { ReportFormsPageComponent } from './reports/components/pages/report-forms-page.component';
+import { AssessmentReportComponent } from './reports/components/academics-report/assessment-report/assessment-report.component';
 import { ExamNamesComponent } from './academics/components/exam-names/exam-names.component';
 import { CbeComponent } from './cbe/cbe.component';
 import { AssessmentTypesComponent } from './cbe/assessments/components/assessment-types/assessment-types.component';
 import { CompetenciesComponent } from './cbe/assessments/components/competencies/competencies.component';
 import { GeneralOutcomesComponent } from './cbe/assessments/components/general-outcomes/general-outcomes.component';
 import { StrandsComponent } from './cbe/assessments/components/strands/strands.component';
+import { ThemesComponent as CbeThemesComponent } from './cbe/assessments/components/themes/themes.component';
+import { ValuesComponent } from './cbe/values/components/values/values.component';
+import { ValueScoresComponent } from './cbe/values/components/value-scores/value-scores.component';
+import { ResponsibilitiesComponent } from './cbe/responsibilities/components/responsibilities/responsibilities.component';
+// SocialSkill merged into Responsibility
+import { ActivitiesComponent } from './cbe/cocurriculum/components/activities/activities.component';
+import { ScoreTypesComponent } from './cbe/cocurriculum/components/score-types/score-types.component';
+import { CommunityServiceActivitiesComponent } from './cbe/community-service/components/activities/activities.component';
+import { SubStrandsComponent } from './cbe/assessments/components/sub-strands/sub-strands.component';
+import { BroadOutcomesComponent } from './cbe/assessments/components/broad-outcomes/broad-outcomes.component';
+import { SpecificOutcomesComponent } from './cbe/assessments/components/specific-outcomes/specific-outcomes.component';
+import { KeyQuestionsComponent } from './cbe/assessments/components/key-questions/key-questions.component';
+import { LearningExperiencesComponent } from './cbe/assessments/components/learning-experiences/learning-experiences.component';
+import { LessonAllocationsComponent } from './cbe/assessments/components/lesson-allocations/lesson-allocations.component';
+import { PCIsComponent } from './cbe/assessments/components/pcis/pcis.component';
+import { StudentAssessmentsComponent } from './cbe/assessments/components/student-assessments/student-assessments.component';
+import { ExamTypesComponent as CbeExamTypesComponent } from './cbe/exams/components/exam-types/exam-types.component';
+import { ExamsComponent as CbeExamsComponent } from './cbe/exams/components/exams/exams.component';
+import { ExamResultsComponent as CbeExamResultsComponent } from './cbe/exams/components/exam-results/exam-results.component';
+import { ExamResultsClasswiseComponent as CbeExamResultsClasswiseComponent } from './cbe/exams/components/exam-results-classwise/exam-results-classwise.component';
+import { ExamResultsBulkComponent } from './cbe/exams/components/exam-results-bulk/exam-results-bulk.component';
+import { StudentResponsibilitiesComponent } from './cbe/responsibilities/components/student-responsibilities/student-responsibilities.component';
+import { StudentValueScoresComponent } from './cbe/values/components/student-value-scores/student-value-scores.component';
+import { CommunityServiceStudentAssignmentsComponent } from './cbe/community-service/components/student-assignments/student-assignments.component';
+import { ScoresSetupComponent } from './cbe/cocurriculum/components/scores-setup/scores-setup.component';
+import { StudentCoCurriculumAssignmentsComponent } from './cbe/cocurriculum/components/student-assignments/student-assignments.component';
+import { StudentCoCurriculumScoresComponent } from './cbe/cocurriculum/components/student-scores/student-scores.component';
+import { SecurityComponent } from './security/security.component';
+import { UsersComponent } from './security/components/users/users.component';
+import { RolesComponent as SecurityRolesComponent } from './security/components/roles/roles.component';
+import { UserRolesComponent } from './security/components/user-roles/user-roles.component';
+import { MenuPermissionsComponent } from './security/components/menu-permissions/menu-permissions.component';
 
 const routes: Routes = [
     {
@@ -108,7 +154,8 @@ const routes: Routes = [
             
             {path: 'educationLevels', component: EducationLevelsComponent},
             {path: 'departments', component: DepartmentsComponent},
-            {path: 'events', component: EventsComponent}
+            {path: 'events', component: EventsComponent},
+            {path: 'bulk-staff-subjects', component: BulkStaffSubjectsComponent}
         ]
     },
     {
@@ -133,7 +180,7 @@ const routes: Routes = [
         children: [
             {path: 'details', component: StaffDetailsComponent},
             {path: 'details/add', component: StaffDetailsFormComponent},
-            {path: 'manage', component: StaffDetailsComponent},
+            {path: 'manage', redirectTo: 'details', pathMatch: 'full'},
             {path: 'manage/add', component: StaffAssignmentsComponent},
             {path: 'staff-attendances', component: StaffsAttendancesComponent}
         ]
@@ -156,7 +203,7 @@ const routes: Routes = [
         children: [
             {path: 'details', component: StudentsDetailsComponent},
             {path: 'details/add', component: StudentsAddFormComponent},
-            {path: 'manage', component: StudentsDetailsComponent},
+            {path: 'manage', redirectTo: 'details', pathMatch: 'full'},
             {path: 'manage/add', component: StudentAssignmentsComponent},
             {path: 'parents', component: ParentsListComponent},
             {path: 'parents/add', component: ParentAddFormComponent},
@@ -168,7 +215,8 @@ const routes: Routes = [
             {
                 path: 'students-attendances',
                 component: StudentsAttendancesComponent
-            }
+            },
+            {path: 'promotion', component: StudentPromotionComponent}
         ]
     },
     {
@@ -187,8 +235,8 @@ const routes: Routes = [
                 component: EducationLevelSubjectsComponent
             },
             {path: 'grades', component: GradesComponent},
-            {path: 'exams', component: ExamsComponent},
-            {path: 'exams/add', component: ExamAddFormComponent},
+            {path: 'exams', redirectTo: '/cbe/exams/exams', pathMatch: 'full'},
+            {path: 'exams/add', redirectTo: '/cbe/exams/exams', pathMatch: 'full'},
             {path: 'examResults', component: ExamResultsComponent}
         ]
     },
@@ -202,7 +250,33 @@ const routes: Routes = [
             {path: 'assessments/assessment-types', component: AssessmentTypesComponent},
             {path: 'assessments/competencies', component: CompetenciesComponent},
             {path: 'assessments/general-outcomes', component: GeneralOutcomesComponent},
-            {path: 'assessments/strands', component: StrandsComponent}
+            {path: 'assessments/strands', component: StrandsComponent},
+            {path: 'assessments/themes', component: CbeThemesComponent},
+            {path: 'values/values-register', component: ValuesComponent},
+            {path: 'values/values-scores', component: ValueScoresComponent},
+            {path: 'responsibilities/responsibilities', component: ResponsibilitiesComponent},
+            {path: 'cocurriculum/activities', component: ActivitiesComponent},
+            {path: 'cocurriculum/score-types', component: ScoreTypesComponent},
+            {path: 'community-service/activities', component: CommunityServiceActivitiesComponent},
+            {path: 'assessments/sub-strands', component: SubStrandsComponent},
+            {path: 'assessments/broad-outcomes', component: BroadOutcomesComponent},
+            {path: 'assessments/specific-outcomes', component: SpecificOutcomesComponent},
+            {path: 'assessments/key-questions', component: KeyQuestionsComponent},
+            {path: 'assessments/learning-experiences', component: LearningExperiencesComponent},
+            {path: 'assessments/lesson-allocations', component: LessonAllocationsComponent},
+            {path: 'assessments/pcis', component: PCIsComponent},
+            {path: 'assessments/assessments', component: StudentAssessmentsComponent},
+            {path: 'exams/exam-types', component: CbeExamTypesComponent},
+            {path: 'exams/exams', component: CbeExamsComponent},
+            {path: 'exams/exam-results', component: CbeExamResultsComponent},
+            {path: 'exams/exam-results-classwise', component: CbeExamResultsClasswiseComponent},
+            {path: 'exams/exam-results-bulk', component: ExamResultsBulkComponent},
+            {path: 'values/student-assignments', component: StudentValueScoresComponent},
+            {path: 'responsibilities/student-assignments', component: StudentResponsibilitiesComponent},
+            {path: 'community-service/student-assignments', component: CommunityServiceStudentAssignmentsComponent},
+            {path: 'cocurriculum/scores-setup', component: ScoresSetupComponent},
+            {path: 'cocurriculum/student-assignments', component: StudentCoCurriculumAssignmentsComponent},
+            {path: 'cocurriculum/student-scores', component: StudentCoCurriculumScoresComponent}
         ]
     },
     {
@@ -221,7 +295,9 @@ const routes: Routes = [
             {path: 'relationships', component: RelationshipsComponent},
             {path: 'religions', component: ReligionsComponent},
             {path: 'sessionTypes', component: SessionTypesComponent},
-            {path: 'staffCategories', component: StaffCategoriesComponent}
+            {path: 'staffCategories', component: StaffCategoriesComponent},
+            {path: 'global-settings', component: GlobalSettingsComponent},
+            {path: 'dropdowns', component: DropdownManagementComponent}
         ]
     },
     {
@@ -233,7 +309,30 @@ const routes: Routes = [
             {path: 'school', component: SchoolReportComponent},
             {path: 'class', component: ClassReportComponent},
             {path: 'staff', component: StaffReportComponent},
-            {path: 'academics', component: AcademicsReportComponent}
+            {path: 'academics', component: AcademicsReportComponent},
+            {path: 'staff/attendance', component: StaffAttendancePageComponent},
+            {path: 'staff/attendance-details', component: StaffAttendanceDetailsPageComponent},
+            {path: 'staff/subject-allocation', component: StaffSubjectPageComponent},
+            {path: 'class/class-list', component: ClassListPageComponent},
+            {path: 'class/attendance', component: ClassAttendancePageComponent},
+            {path: 'class/attendance-details', component: ClassAttendanceDetailsPageComponent},
+            {path: 'academics/missing-marks', component: MissingMarksPageComponent},
+            {path: 'academics/results-analysis', component: ResultsAnalysisPageComponent},
+            {path: 'academics/exam-results', component: ResultsAnalysisPageComponent},
+            {path: 'academics/report-forms', component: ReportFormsPageComponent},
+            {path: 'academics/assessment-report', component: AssessmentReportComponent}
+        ]
+    },
+    {
+        path: 'security',
+        component: SecurityComponent,
+        canActivate: [AuthGuard],
+        canActivateChild: [AuthGuard],
+        children: [
+            {path: 'users', component: UsersComponent},
+            {path: 'roles', component: SecurityRolesComponent},
+            {path: 'user-roles', component: UserRolesComponent},
+            {path: 'menu-permissions', component: MenuPermissionsComponent}
         ]
     },
     {

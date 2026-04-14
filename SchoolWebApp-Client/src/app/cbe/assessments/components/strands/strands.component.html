@@ -1,7 +1,8 @@
 <app-dashboard-header
     [title]="dashboardTitle"
     [breadcrumbs]="breadcrumbs"></app-dashboard-header>
-<hr>
+<hr class="mb-1">
+<a class="btn btn-flat btn-sm btn-warning mb-1" [routerLink]="['/settings/dropdowns']" [queryParams]="{category: 'CBE Settings'}"><i class="fas fa-angle-double-left"></i> Back to Dropdowns</a>
 <div
     class="modal fade"
     id="strandFormModal"
@@ -26,7 +27,8 @@
                 [strand]="strand"
                 [curriculum]="selectedCurriculum"
                 [academicYears]="academicYears"
-                [subjects]="subjects" (errorEvent)="errorEvent($event)"
+                [subjects]="subjects" [themes]="themes"
+                (errorEvent)="errorEvent($event)"
                 (learningLevelChangedEvent)="learningLevelAddFormChanged($event)"
                 (curriculumChangedEvent)="curriculumAddFormChanged($event)"
                 (academicYearChangedEvent)="academicYearAddFormChanged($event)"
@@ -70,12 +72,13 @@
                         <tr
                             *ngFor="let item of strands| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
                             <td>{{ item.id }}</td>
-                            <td>{{ item.academicYear?.name }}</td>
-                            <td>{{ getCurriculumByEducationLevelId(item.learningLevel?.educationLevelId)?.name }}</td>
+                            <td>{{ item.curriculum?.name }}</td>
                             <td>{{ item.learningLevel?.name }}</td>
-                             <td>{{ item.subject?.name }}</td>
-                            <td>{{ item.name }}</td>       
-                            <td>{{ item.description }}</td>                    
+                            <td>{{ item.subject?.name }}</td>
+                            <td>{{ item.theme?.name }}</td>
+                            <td>{{ item.code }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.description }}</td>
                             <td>{{ item.rank }}</td>                            
                             <app-table-action
                                 (editItemEvent)="editItem(item.id)"

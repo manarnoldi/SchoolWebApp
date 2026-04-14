@@ -13,6 +13,7 @@ namespace SchoolWebApp.Core.Entities.CBE.Responsibilities
         public Student? Student { get; set; }
 
         public int ResponsibilitySocialSkillId { get; set; }
+        public Responsibility? ResponsibilitySocialSkill { get; set; }
 
         public string? Description { get; set; } = null;
     }

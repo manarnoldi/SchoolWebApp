@@ -11,5 +11,6 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.Students
         Task<List<StudentSubject>> GetByStudentId(int studentId);
         Task<StudentSubject> GetByStudentClassSubjectId(int studentClassId, int subjectId);
         Task<List<StudentSubject>> GetBySchoolClassSubjectId(int schoolClassId, int subjectId);
+        Task<List<StudentSubject>> GetSubjectsBySchoolClassId(int schoolClassId);
     }
 }

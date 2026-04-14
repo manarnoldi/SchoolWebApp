@@ -25,9 +25,26 @@
 
 // @import "~ngx-spinner/animations/ball-circus.css";
 
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
 body {
-    //width: 100vw;
-    // height: 100vh;
+    min-height: 100vh;
+}
+
+.content-wrapper {
+    min-height: calc(100vh - 57px - 30px) !important; // header height - footer height
+}
+
+.main-footer {
+    padding: 0.25rem 1rem !important;
+    margin-left: 250px !important;
+}
+
+.sidebar-collapse .main-footer {
+    margin-left: 4.6rem !important;
 }
 
 // ::-webkit-scrollbar {

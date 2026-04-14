@@ -5,6 +5,7 @@ import {ResourceModel} from '@/core/models/ResourceModel';
 import { AcademicYear } from '@/school/models/academic-year';
 export class Strand extends ResourceModel<Strand> {
     public name?: string;
+    public code?: string;
     public description?: string
     public rank?: number;
 
@@ -20,7 +21,9 @@ export class Strand extends ResourceModel<Strand> {
     public subjectId?: number;
     public subject?: Subject;
 
-    
+    public themeId?: number;
+    public theme?: any;
+
     constructor(model?: Partial<Strand>) {
         super(model);
     }

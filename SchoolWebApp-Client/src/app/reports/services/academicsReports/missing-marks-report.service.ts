@@ -36,9 +36,7 @@ export class MissingMarksReportService {
                             {text: 'Adm#', style: 'tableHeader'},
                             {text: 'Student name', style: 'tableHeader'},
                             {text: 'Exam Type', style: 'tableHeader'},
-                            {text: 'Exam Name', style: 'tableHeader'},
-                            {text: 'Out of', style: 'tableHeader'},
-                            {text: 'Contr', style: 'tableHeader'}
+                            {text: 'Out of', style: 'tableHeader'}
                         ];
                         const tableWidths = [
                             'auto',
@@ -46,9 +44,7 @@ export class MissingMarksReportService {
                             '*',
                             'auto',
                             '*',
-                            'auto',
-                            '*',
-                            'auto',
+                            100,
                             'auto'
                         ];
                         const tableBody = [
@@ -75,19 +71,11 @@ export class MissingMarksReportService {
                                     noWrap: false
                                 },
                                 {
-                                    text: mmR.exam?.examName?.examType?.name,
-                                    noWrap: false
-                                },
-                                {
-                                    text: mmR.exam?.examName?.name,
-                                    noWrap: false
-                                },
-                                {
-                                    text: mmR.exam?.examMark,
+                                    text: mmR.exam?.examType?.name,
                                     noWrap: true
                                 },
                                 {
-                                    text: mmR.exam?.contributingMark,
+                                    text: mmR.exam?.examMark,
                                     noWrap: true
                                 }
                             ])
@@ -149,7 +137,10 @@ export class MissingMarksReportService {
                             ]
                         };
 
-                        pdfMake.createPdf(docDefinition).open();
+                        pdfMake.createPdf(docDefinition).getBlob((blob) => {
+                            const url = URL.createObjectURL(blob);
+                            window.open(url, '_blank');
+                        });
                     };
 
                     reader.readAsDataURL(blob);

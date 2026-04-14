@@ -35,12 +35,14 @@ export class GradesComponent implements OnInit {
     tableModel: string = 'grade';
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Home'},
-        {link: ['/academics/grades'], title: 'Academics: Grades'}
+        {link: ['/settings/dropdowns'], title: 'Dropdowns'},
+        {link: ['/academics/grades'], title: 'Grading System'}
     ];
     dashboardTitle = 'Academics: Grades';
     tableTitle: string = ' Grades list';
     tableHeaders: string[] = [
         'Ref#',
+        'Category',
         'Name',
         'Abbreviation',
         'Rank',

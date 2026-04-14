@@ -1,0 +1,866 @@
+import {Component, OnInit} from '@angular/core';
+import {BreadCrumb} from '@/core/models/bread-crumb';
+import {ToastrService} from 'ngx-toastr';
+import {forkJoin} from 'rxjs';
+import {CurriculumService} from '@/academics/services/curriculum.service';
+import {AcademicYearsService} from '@/school/services/academic-years.service';
+import {SessionsService} from '@/class/services/sessions.service';
+import {SchoolClassesService} from '@/class/services/school-classes.service';
+import {LearningLevelsService} from '@/class/services/learning-levels.service';
+import {EducationLevelService} from '@/school/services/education-level.service';
+import {GradesService} from '@/academics/services/grades.service';
+import {SchoolDetailsService} from '@/school/services/school-details.service';
+import {ExamService} from '@/cbe/exams/services/exam.service';
+import {ExamTypeService} from '@/cbe/exams/services/exam-type.service';
+import {ExamResultService} from '@/cbe/exams/services/exam-result.service';
+import {StudentClassService} from '@/students/services/student-class.service';
+import {StudentSubjectsService} from '@/students/services/student-subjects.service';
+import {StudentValueScoreService} from '@/cbe/values/services/student-value-score.service';
+import {StudentCoCurriculumActivityService} from '@/cbe/cocurriculum/services/student-co-curriculum-activity.service';
+import {StudentCoCurriculumScoreService} from '@/cbe/cocurriculum/services/student-co-curriculum-score.service';
+import {StudentResponsibilityService} from '@/cbe/responsibilities/services/student-responsibility.service';
+import {StudentCommunityServiceActivityService} from '@/cbe/community-service/services/student-community-service-activity.service';
+import {ValueService} from '@/cbe/values/services/value.service';
+import {ValueScoreService} from '@/cbe/values/services/value-score.service';
+import {ResponsibilityService} from '@/cbe/responsibilities/services/responsibility.service';
+import {CoCurriculumScoreService} from '@/cbe/cocurriculum/services/co-curriculum-score.service';
+import {AuthService} from '@/core/services/auth.service';
+import {ReportsService} from '@/reports/services/reports.service';
+import {GlobalSettingService} from '@/settings/services/global-setting.service';
+import {Status} from '@/core/enums/status';
+
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+(pdfMake as any).vfs = pdfFonts;
+
+@Component({
+    selector: 'app-report-form',
+    templateUrl: './report-form.component.html',
+    styleUrl: './report-form.component.scss'
+})
+export class ReportFormComponent implements OnInit {
+    breadcrumbs: BreadCrumb[] = [
+        {link: ['/'], title: 'Dashboard'},
+        {link: ['/reports/academics/report-forms'], title: 'Academics: Report Forms'}
+    ];
+    dashboardTitle = 'Academics: Report Forms';
+
+    curricula: any[] = [];
+    academicYears: any[] = [];
+    sessions: any[] = [];
+    schoolClasses: any[] = [];
+    students: any[] = [];
+    examTypes: any[] = [];
+    grades: any[] = [];
+    allGrades: any[] = [];
+    gradingCategory: string = '4-Point';
+    gradingCategories: string[] = ['4-Point', '8-Point'];
+    selectedGradingCategory: string = '4-Point';
+    values: any[] = [];
+    valueScores: any[] = [];
+    allCoCurriculumScores: any[] = [];
+    responsibilities: any[] = [];
+    socialSkills: any[] = [];
+    rankingMethod: string = 'mean_points';
+    learningLevels: any[] = [];
+    educationLevels: any[] = [];
+
+    // Global settings
+    displayMode: string = 'marks_grades'; // marks, grades, points_grades, marks_grades
+    showValues: boolean = true;
+    showCoCurricular: boolean = true;
+    showResponsibilities: boolean = true;
+    showCommunityService: boolean = true;
+    showPosition: boolean = false;
+
+    filterCurriculumId: any = null;
+    filterAcademicYearId: any = null;
+    filterSessionId: any = null;
+    filterSchoolClassId: any = null;
+
+    isGenerating: boolean = false;
+    isLoading: boolean = false;
+    studentsLoaded: boolean = false;
+
+    studentRows: {
+        studentId: number;
+        upi: string;
+        fullName: string;
+        selected: boolean;
+        student: any;
+    }[] = [];
+
+    constructor(
+        private toastr: ToastrService,
+        private curriculaSvc: CurriculumService,
+        private academicYearSvc: AcademicYearsService,
+        private sessionsSvc: SessionsService,
+        private schoolClassesSvc: SchoolClassesService,
+        private learningLevelSvc: LearningLevelsService,
+        private educationLevelSvc: EducationLevelService,
+        private gradesSvc: GradesService,
+        private schoolSvc: SchoolDetailsService,
+        private examSvc: ExamService,
+        private examTypeSvc: ExamTypeService,
+        private examResultSvc: ExamResultService,
+        private studentClassSvc: StudentClassService,
+        private studentSubjectsSvc: StudentSubjectsService,
+        private studentValueScoreSvc: StudentValueScoreService,
+        private studentCoCurrActivitySvc: StudentCoCurriculumActivityService,
+        private studentCoCurrScoreSvc: StudentCoCurriculumScoreService,
+        private studentResponsibilitySvc: StudentResponsibilityService,
+        private studentCommServiceSvc: StudentCommunityServiceActivityService,
+        private valueSvc: ValueService,
+        private valueScoreSvc: ValueScoreService,
+        private responsibilitySvc: ResponsibilityService,
+        private coCurrScoreSvc: CoCurriculumScoreService,
+        private userSvc: AuthService,
+        private reportSvc: ReportsService,
+        private globalSettingSvc: GlobalSettingService
+    ) {}
+
+    ngOnInit(): void {
+        forkJoin([
+            this.curriculaSvc.get('/curricula'),
+            this.academicYearSvc.get('/academicYears'),
+            this.examTypeSvc.get('/examTypes'),
+            this.gradesSvc.get('/grades'),
+            this.valueSvc.get('/values'),
+            this.valueScoreSvc.get('/valueScores'),
+            this.responsibilitySvc.get('/responsibilities'),
+            this.globalSettingSvc.getByModule('ReportForm'),
+            this.coCurrScoreSvc.get('/coCurriculumScores'),
+            this.globalSettingSvc.getByKey('Grading', 'ExamResults'),
+            this.globalSettingSvc.getByKey('Grading', 'RankingMethod')
+        ]).subscribe({
+            next: ([curricula, academicYears, examTypes, allGrades, values, valueScores, responsibilities, reportSettings, coCurrScores, gradingSetting, rankingSetting]) => {
+                this.curricula = curricula.sort((a, b) => a.rank - b.rank);
+                this.academicYears = academicYears.sort((a, b) => b.rank - a.rank);
+                this.examTypes = examTypes.filter((et) => et.internal).sort((a, b) => a.rank - b.rank);
+                let settingResponse = gradingSetting as any;
+                this.gradingCategory = settingResponse?.settingValue || '4-Point';
+                this.selectedGradingCategory = this.gradingCategory;
+                this.allGrades = allGrades;
+                this.grades = allGrades.filter(g => g.category === this.gradingCategory).sort((a, b) => a.rank - b.rank);
+                this.values = values.sort((a, b) => a.rank - b.rank);
+                this.valueScores = valueScores.sort((a, b) => a.rank - b.rank);
+                let allResp = responsibilities.sort((a, b) => a.rank - b.rank);
+                this.responsibilities = allResp.filter((r) => r.category === 'Responsibility');
+                this.socialSkills = allResp.filter((r) => r.category === 'Social Skill');
+                this.allCoCurriculumScores = coCurrScores.sort((a, b) => a.rank - b.rank);
+                this.rankingMethod = (rankingSetting as any)?.settingValue || 'mean_points';
+
+                // Apply global settings
+                (reportSettings as any[]).forEach((s) => {
+                    if (s.settingKey === 'DisplayMode') this.displayMode = s.settingValue;
+                    if (s.settingKey === 'ShowValues') this.showValues = s.settingValue === 'true';
+                    if (s.settingKey === 'ShowCoCurricular') this.showCoCurricular = s.settingValue === 'true';
+                    if (s.settingKey === 'ShowResponsibilities') this.showResponsibilities = s.settingValue === 'true';
+                    if (s.settingKey === 'ShowCommunityService') this.showCommunityService = s.settingValue === 'true';
+                    if (s.settingKey === 'ShowPosition') this.showPosition = s.settingValue === 'true';
+                });
+            },
+            error: (err) => this.toastr.error(err.error)
+        });
+    }
+
+    onGradingCategoryChange = () => {
+        this.grades = this.allGrades.filter(g => g.category === this.selectedGradingCategory).sort((a, b) => a.rank - b.rank);
+    };
+
+    onCurriculumChange = () => {
+        this.sessions = this.schoolClasses = [];
+        this.filterAcademicYearId = this.filterSessionId = this.filterSchoolClassId = null;
+        this.studentsLoaded = false;
+        if (!this.filterCurriculumId) return;
+        forkJoin([
+            this.learningLevelSvc.getLearningLevelsByCurriculum(this.filterCurriculumId),
+            this.educationLevelSvc.get(`/educationLevels/byCurriculumId?curriculumId=${this.filterCurriculumId}`)
+        ]).subscribe({
+            next: ([levels, edLevels]) => {
+                this.learningLevels = levels.sort((a, b) => a.rank - b.rank);
+                this.educationLevels = edLevels.sort((a, b) => a.rank - b.rank);
+            },
+            error: (err) => this.toastr.error(err.error)
+        });
+    };
+
+    onAcademicYearChange = () => {
+        this.sessions = this.schoolClasses = [];
+        this.filterSessionId = this.filterSchoolClassId = null;
+        this.studentsLoaded = false;
+        if (!this.filterAcademicYearId || !this.filterCurriculumId) return;
+        forkJoin([
+            this.sessionsSvc.get(`/sessions/byCurriculumYearId?curriculumId=${this.filterCurriculumId}&academicYearId=${this.filterAcademicYearId}`),
+            this.schoolClassesSvc.get(`/schoolClasses/byAcademicYearId/${this.filterAcademicYearId}`)
+        ]).subscribe({
+            next: ([sessions, schoolClasses]) => {
+                this.sessions = sessions.sort((a, b) => a.rank - b.rank);
+                let currLLIds = this.learningLevels.map((ll) => +ll.id);
+                this.schoolClasses = schoolClasses.filter((sc) => currLLIds.includes(+sc.learningLevelId));
+            },
+            error: (err) => this.toastr.error(err.error)
+        });
+    };
+
+    onClassChange = () => {
+        this.studentsLoaded = false;
+    };
+
+    loadStudents = () => {
+        if (!this.filterSessionId || !this.filterSchoolClassId) {
+            this.toastr.info('Please select Session and Class.');
+            return;
+        }
+        this.isLoading = true;
+        this.studentsLoaded = false;
+        this.studentClassSvc.getBySchoolClassId(this.filterSchoolClassId, Status.Active).subscribe({
+            next: (studentClasses) => {
+                this.studentRows = studentClasses
+                    .map((sc) => sc.student)
+                    .filter(Boolean)
+                    .sort((a, b) => (a.fullName || '').localeCompare(b.fullName || ''))
+                    .map((s) => ({
+                        studentId: +s.id,
+                        upi: s.upi || '',
+                        fullName: s.fullName || '',
+                        selected: false,
+                        student: s
+                    }));
+                this.studentsLoaded = true;
+                this.isLoading = false;
+            },
+            error: (err) => { this.isLoading = false; this.toastr.error(err.error); }
+        });
+    };
+
+    toggleSelectAll = () => {
+        let all = this.allSelected();
+        this.studentRows.forEach((r) => r.selected = !all);
+    };
+
+    allSelected = (): boolean => {
+        return this.studentRows.length > 0 && this.studentRows.every((r) => r.selected);
+    };
+
+    getSelectedCount = (): number => {
+        return this.studentRows.filter((r) => r.selected).length;
+    };
+
+    previewStudent = (row: any, mode: string = 'preview') => {
+        this.generateReportForStudent(row.student, null, mode);
+    };
+
+    printSelected = (mode: string = 'preview') => {
+        let selected = this.studentRows.filter((r) => r.selected);
+        if (selected.length === 0) {
+            this.toastr.info('Please select at least one student.');
+            return;
+        }
+        this.isGenerating = true;
+        let idx = 0;
+        let generateNext = () => {
+            if (idx >= selected.length) {
+                this.isGenerating = false;
+                this.toastr.success(`${selected.length} report(s) generated.`);
+                return;
+            }
+            this.generateReportForStudent(selected[idx].student, () => {
+                idx++;
+                generateNext();
+            }, mode);
+        };
+        generateNext();
+    };
+
+    sectionBox = (title: string, content: any, color: string): any => {
+        return {
+            layout: {
+                hLineWidth: (i) => (i === 0 || i === 2) ? 0.8 : 0,
+                vLineWidth: (i, node) => (i === 0 || i === node.table.widths.length) ? 0.8 : 0,
+                hLineColor: () => color,
+                vLineColor: () => color,
+                paddingLeft: () => 5,
+                paddingRight: () => 5,
+                paddingTop: () => 2,
+                paddingBottom: () => 2
+            },
+            table: {
+                widths: ['*'],
+                body: [
+                    [{text: title, bold: true, fontSize: 8, color: color}],
+                    [typeof content === 'string' ? {text: content || 'None', fontSize: 8} : (content || {text: 'None', fontSize: 8})]
+                ]
+            },
+            marginBottom: 4
+        };
+    };
+
+    getGradeForPercent = (percent: number): any => {
+        return this.grades.find((g) => percent >= g.minScore && percent <= g.maxScore);
+    };
+
+    generateReportForStudent = (student: any, callback?: () => void, mode: string = 'preview') => {
+        this.isGenerating = true;
+
+        let session = this.sessions.find((s) => s.id == this.filterSessionId);
+        let schoolClass = this.schoolClasses.find((sc) => sc.id == this.filterSchoolClassId);
+        let year = this.academicYears.find((y) => y.id == this.filterAcademicYearId);
+        let studentId = +student.id;
+
+        let examRequests = this.examTypes.map((et) =>
+            this.examSvc.get(`/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}&schoolClassId=${this.filterSchoolClassId}&examTypeId=${et.id}`)
+        );
+
+        forkJoin([
+            ...examRequests,
+            this.studentValueScoreSvc.get(`/studentValueScores/bySessionId/${this.filterSessionId}`),
+            this.studentCoCurrActivitySvc.get(`/studentCoCurriculumActivities/byStudentId/${studentId}`),
+            this.studentResponsibilitySvc.get(`/studentResponsibilities/byStudentId/${studentId}`),
+            this.studentCommServiceSvc.get(`/studentCommunityServiceActivities/byStudentId/${studentId}`),
+            this.schoolSvc.get('/schooldetails'),
+            this.globalSettingSvc.getByModule('ReportForm'),
+            this.schoolClassesSvc.get(`/schoolClassLeaders/bySchoolClassId/${this.filterSchoolClassId}`),
+            this.studentSubjectsSvc.get(`/studentSubjects/byStudentId/${studentId}`)
+        ]).subscribe({
+            next: (results) => {
+                let examsByType = results.slice(0, this.examTypes.length);
+                let valueScores = results[this.examTypes.length] as any[];
+                let coCurrActivities = results[this.examTypes.length + 1] as any[];
+                let studentResponsibilities = results[this.examTypes.length + 2] as any[];
+                let communityService = results[this.examTypes.length + 3] as any[];
+                let schoolDetails = results[this.examTypes.length + 4] as any[];
+                let freshSettings = results[this.examTypes.length + 5] as any[];
+                let classLeaders = results[this.examTypes.length + 6] as any[];
+                let studentSubjects = results[this.examTypes.length + 7] as any[];
+
+                // Build a set of subject IDs the student is allocated to
+                let allocatedSubjectIds = new Set(
+                    (studentSubjects || []).map((ss: any) => +ss.subjectId)
+                );
+
+                // Find class leaders with Teacher personType
+                let teacherLeaders = (classLeaders || []).filter(
+                    (cl) => cl.classLeadershipRole?.personType === 1 || cl.classLeadershipRole?.personType === 'Teacher'
+                );
+                let classLeadersText = teacherLeaders
+                    .map((cl) => `${cl.person?.fullName || ''} [${cl.classLeadershipRole?.name || ''}]`)
+                    .filter(Boolean)
+                    .join(', ') || '';
+
+                // Apply fresh settings
+                (freshSettings || []).forEach((s) => {
+                    if (s.settingKey === 'DisplayMode') this.displayMode = s.settingValue;
+                    if (s.settingKey === 'ShowValues') this.showValues = s.settingValue === 'true';
+                    if (s.settingKey === 'ShowCoCurricular') this.showCoCurricular = s.settingValue === 'true';
+                    if (s.settingKey === 'ShowResponsibilities') this.showResponsibilities = s.settingValue === 'true';
+                    if (s.settingKey === 'ShowCommunityService') this.showCommunityService = s.settingValue === 'true';
+                    if (s.settingKey === 'ShowPosition') this.showPosition = s.settingValue === 'true';
+                });
+
+                // Get unique subjects from exams - filtered to only those the student is allocated to
+                let subjectMap = new Map<string, {name: string, abbr: string, rank: number}>();
+                (examsByType as any[][]).forEach((exams) => {
+                    exams.forEach((e) => {
+                        if (!e.subject) return;
+                        // Skip if this subject isn't allocated to the student
+                        if (allocatedSubjectIds.size > 0 && !allocatedSubjectIds.has(+e.subjectId)) return;
+                        if (!subjectMap.has(e.subject.abbr || e.subject.name)) {
+                            subjectMap.set(e.subject.abbr || e.subject.name, {
+                                name: e.subject.name, abbr: e.subject.abbr, rank: e.subject.rank || 0
+                            });
+                        }
+                    });
+                });
+                let subjects = [...subjectMap.entries()].sort((a, b) => a[1].rank - b[1].rank);
+
+                // For each subject and exam type, get the student's result
+                let resultRequests: any[] = [];
+                (examsByType as any[][]).forEach((exams) => {
+                    exams.forEach((exam) => {
+                        resultRequests.push(this.examResultSvc.get(`/examResults/byExamId/${exam.id}`));
+                    });
+                });
+
+                if (resultRequests.length === 0) {
+                    this.buildAndPrintReport(student, session, schoolClass, year, subjects, [], valueScores, coCurrActivities, studentResponsibilities, communityService, schoolDetails[0], classLeadersText, callback, mode, {positionsByType: {}, overall: {position: 0, totalStudents: 0}});
+                    return;
+                }
+
+                forkJoin(resultRequests).subscribe({
+                    next: (allResults) => {
+                        // Build subject scores map: subject -> examType -> {score, examMark, grade}
+                        let subjectScores: any = {};
+                        let resultIdx = 0;
+                        (examsByType as any[][]).forEach((exams, typeIdx) => {
+                            exams.forEach((exam) => {
+                                let results = allResults[resultIdx] as any[];
+                                let studentResult = results.find((r) => r.studentId == studentId);
+                                let key = exam.subject?.abbr || exam.subject?.name;
+                                if (!subjectScores[key]) subjectScores[key] = {};
+                                if (studentResult) {
+                                    let pct = exam.examMark > 0 ? (studentResult.score / exam.examMark) * 100 : 0;
+                                    let grade = this.getGradeForPercent(pct);
+                                    subjectScores[key][this.examTypes[typeIdx].id] = {
+                                        score: studentResult.score,
+                                        examMark: exam.examMark,
+                                        grade: grade?.abbr || '',
+                                        points: grade?.points || 0
+                                    };
+                                }
+                                resultIdx++;
+                            });
+                        });
+
+                        // Compute per-exam-type positions and overall position
+                        let usePoints = this.rankingMethod === 'mean_points';
+                        let studentTotalsByType: any = {}; // {examTypeId: {studentId: total}}
+                        let studentOverallTotals: any = {}; // {studentId: total}
+                        let resultIdx2 = 0;
+                        (examsByType as any[][]).forEach((exams, typeIdx) => {
+                            let etId = this.examTypes[typeIdx].id;
+                            if (!studentTotalsByType[etId]) studentTotalsByType[etId] = {};
+                            exams.forEach((exam) => {
+                                let results = allResults[resultIdx2] as any[];
+                                let examObj = exam as any;
+                                results.forEach((r) => {
+                                    let val = r.score || 0;
+                                    if (usePoints) {
+                                        let percent = examObj.examMark > 0 ? (val / examObj.examMark) * 100 : 0;
+                                        let grade = this.grades.find((g) => percent >= g.minScore && percent <= g.maxScore);
+                                        val = grade ? grade.points : 0;
+                                    }
+                                    if (!studentTotalsByType[etId][r.studentId]) studentTotalsByType[etId][r.studentId] = 0;
+                                    studentTotalsByType[etId][r.studentId] += val;
+                                    if (!studentOverallTotals[r.studentId]) studentOverallTotals[r.studentId] = 0;
+                                    studentOverallTotals[r.studentId] += val;
+                                });
+                                resultIdx2++;
+                            });
+                        });
+
+                        // Helper to compute rank with ties
+                        let computeRank = (totals: any, targetId: number) => {
+                            let sorted = Object.entries(totals).sort((a: any, b: any) => b[1] - a[1]);
+                            let total = sorted.length;
+                            let pos = 0;
+                            for (let i = 0; i < sorted.length; i++) {
+                                if (+sorted[i][0] == targetId) {
+                                    pos = i + 1;
+                                    if (i > 0 && sorted[i][1] === sorted[i - 1][1]) {
+                                        for (let j = i - 1; j >= 0; j--) {
+                                            if (sorted[j][1] === sorted[i][1]) pos = j + 1;
+                                            else break;
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                            return {position: pos, totalStudents: total};
+                        };
+
+                        // Per exam type positions
+                        let positionsByType: any = {};
+                        this.examTypes.forEach((et) => {
+                            if (studentTotalsByType[et.id]) {
+                                positionsByType[et.id] = computeRank(studentTotalsByType[et.id], studentId);
+                            } else {
+                                positionsByType[et.id] = {position: 0, totalStudents: 0};
+                            }
+                        });
+
+                        // Overall position
+                        let overallPosition = computeRank(studentOverallTotals, studentId);
+
+                        let positionData = {positionsByType, overall: overallPosition};
+
+                        this.buildAndPrintReport(student, session, schoolClass, year, subjects, subjectScores, valueScores, coCurrActivities, studentResponsibilities, communityService, schoolDetails[0], classLeadersText, callback, mode, positionData);
+                    },
+                    error: (err) => { this.isGenerating = false; this.toastr.error(err.error); }
+                });
+            },
+            error: (err) => { this.isGenerating = false; this.toastr.error(err.error); }
+        });
+    };
+
+    buildAndPrintReport = (student, session, schoolClass, year, subjects, subjectScores, valueScores, coCurrActivities, studentResponsibilities, communityService, school, classLeadersText: string, callback?: () => void, mode: string = 'preview', positionData?: any) => {
+        this.reportSvc.loadImageAsBase64('assets/img/shule-nova-logo-only.png').subscribe({
+            next: (blob) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const base64data: string = reader.result as string;
+
+                    // Grading key table
+                    let gradingKey = this.grades.map((g) => [
+                        {text: `${g.name} (${g.abbr}) ${g.points}`, alignment: 'center', fontSize: 7},
+                        {text: `${g.minScore}%-${g.maxScore}%`, alignment: 'center', fontSize: 7}
+                    ]);
+                    let gradingKeyTable = {
+                        layout: 'lightHorizontalLines',
+                        table: {
+                            widths: this.grades.map(() => '*'),
+                            body: [
+                                this.grades.map((g) => ({text: `${g.name}\n(${g.abbr}) ${g.points}`, alignment: 'center', fontSize: 7, bold: true})),
+                                this.grades.map((g) => ({text: `${g.minScore}%-${g.maxScore}%`, alignment: 'center', fontSize: 7}))
+                            ]
+                        },
+                        marginBottom: 5
+                    };
+
+                    // Subject scores table - dynamic based on displayMode
+                    let isTwoCol = this.displayMode === 'marks_grades' || this.displayMode === 'points_grades';
+                    let subjectHeaders: any[] = [
+                        {text: 'LEARNING AREAS', style: 'tableHeader', rowSpan: isTwoCol ? 2 : 1},
+                    ];
+                    let subHeaders: any[] = isTwoCol ? [{text: ''}] : null;
+                    this.examTypes.forEach((et) => {
+                        if (isTwoCol) {
+                            subjectHeaders.push({text: et.abbreviation || et.name, style: 'tableHeader', colSpan: 2, alignment: 'center'});
+                            subjectHeaders.push({text: ''});
+                            if (this.displayMode === 'marks_grades') {
+                                subHeaders.push({text: 'MKS', alignment: 'center', bold: true, fontSize: 7});
+                                subHeaders.push({text: 'GRD', alignment: 'center', bold: true, fontSize: 7});
+                            } else {
+                                subHeaders.push({text: 'PTS', alignment: 'center', bold: true, fontSize: 7});
+                                subHeaders.push({text: 'GRD', alignment: 'center', bold: true, fontSize: 7});
+                            }
+                        } else {
+                            subjectHeaders.push({text: et.abbreviation || et.name, style: 'tableHeader', alignment: 'center'});
+                        }
+                    });
+
+                    let subjectBody: any[] = isTwoCol ? [subjectHeaders, subHeaders] : [subjectHeaders];
+                    let totalsByType: any = {};
+                    let countsByType: any = {};
+                    let outOfByType: any = {};
+                    this.examTypes.forEach((et) => { totalsByType[et.id] = 0; countsByType[et.id] = 0; outOfByType[et.id] = 0; });
+
+                    subjects.forEach(([key, subj]) => {
+                        let row: any[] = [{text: subj.name, fontSize: 8}];
+                        this.examTypes.forEach((et) => {
+                            let entry = subjectScores[key]?.[et.id];
+                            if (entry) {
+                                let pctStr = entry.examMark > 0 ? Math.round((entry.score / entry.examMark) * 100) + '%' : entry.score;
+                                if (this.displayMode === 'marks') {
+                                    row.push({text: pctStr, alignment: 'center', fontSize: 8});
+                                } else if (this.displayMode === 'grades') {
+                                    row.push({text: entry.grade, alignment: 'center', fontSize: 8});
+                                } else if (this.displayMode === 'points_grades') {
+                                    row.push({text: entry.points, alignment: 'center', fontSize: 8});
+                                    row.push({text: entry.grade, alignment: 'center', fontSize: 8});
+                                } else {
+                                    row.push({text: pctStr, alignment: 'center', fontSize: 8});
+                                    row.push({text: entry.grade, alignment: 'center', fontSize: 8});
+                                }
+                                totalsByType[et.id] += entry.score;
+                                outOfByType[et.id] += entry.examMark || 0;
+                                countsByType[et.id]++;
+                            } else {
+                                row.push({text: '-', alignment: 'center', fontSize: 8});
+                                if (isTwoCol) row.push({text: '', alignment: 'center', fontSize: 8});
+                            }
+                        });
+                        subjectBody.push(row);
+                    });
+
+                    // Total Score row (e.g., 440/600)
+                    let totalRow: any[] = [{text: 'Total Score', bold: true, fontSize: 8}];
+                    this.examTypes.forEach((et) => {
+                        let totalText = countsByType[et.id] > 0
+                            ? `${Math.round(totalsByType[et.id])}/${outOfByType[et.id]}`
+                            : '-';
+                        if (isTwoCol) {
+                            totalRow.push({text: totalText, alignment: 'center', bold: true, fontSize: 8, colSpan: 2});
+                            totalRow.push({text: ''});
+                        } else {
+                            totalRow.push({text: totalText, alignment: 'center', bold: true, fontSize: 8});
+                        }
+                    });
+                    subjectBody.push(totalRow);
+
+                    // Average row
+                    let avgRow: any[] = [{text: 'Average Score', bold: true, fontSize: 8}];
+                    this.examTypes.forEach((et) => {
+                        let avg = countsByType[et.id] > 0 ? Math.round(totalsByType[et.id] / countsByType[et.id]) : 0;
+                        let grade = this.getGradeForPercent(avg);
+                        let avgStr = avg > 0 ? avg + '%' : '-';
+                        if (this.displayMode === 'marks') {
+                            avgRow.push({text: avgStr, alignment: 'center', bold: true, fontSize: 8});
+                        } else if (this.displayMode === 'grades') {
+                            avgRow.push({text: grade?.abbr || '-', alignment: 'center', bold: true, fontSize: 8});
+                        } else {
+                            avgRow.push({text: avgStr, alignment: 'center', bold: true, fontSize: 8});
+                            avgRow.push({text: grade?.abbr || '', alignment: 'center', bold: true, fontSize: 8});
+                        }
+                    });
+                    subjectBody.push(avgRow);
+
+                    // Position row (combined position/total, e.g. 4/13)
+                    if (this.showPosition && positionData) {
+                        let posRow: any[] = [{text: 'Position', bold: true, fontSize: 8}];
+                        this.examTypes.forEach((et) => {
+                            let etPos = positionData.positionsByType?.[et.id];
+                            let posText = etPos && etPos.position > 0 && etPos.totalStudents > 0
+                                ? `${etPos.position}/${etPos.totalStudents}`
+                                : '-';
+                            if (isTwoCol) {
+                                posRow.push({text: posText, alignment: 'center', bold: true, fontSize: 8, colSpan: 2});
+                                posRow.push({text: ''});
+                            } else {
+                                posRow.push({text: posText, alignment: 'center', bold: true, fontSize: 8});
+                            }
+                        });
+                        subjectBody.push(posRow);
+
+                        // Overall position row
+                        if (positionData.overall && positionData.overall.totalStudents > 0) {
+                            let overallRow: any[] = [{text: 'Overall Position', bold: true, fontSize: 8, fillColor: '#fff3cd'}];
+                            let colCount = isTwoCol ? this.examTypes.length * 2 : this.examTypes.length;
+                            overallRow.push({
+                                text: `${positionData.overall.position}/${positionData.overall.totalStudents}`,
+                                alignment: 'center', bold: true, fontSize: 8, colSpan: colCount, fillColor: '#fff3cd'
+                            });
+                            for (let c = 1; c < colCount; c++) overallRow.push({text: ''});
+                            subjectBody.push(overallRow);
+                        }
+                    }
+
+                    let subjectWidths: any[] = ['*'];
+                    this.examTypes.forEach(() => {
+                        if (isTwoCol) { subjectWidths.push(30, 30); }
+                        else { subjectWidths.push(40); }
+                    });
+
+                    // Values section - only show values that have a rating
+                    let studentValues = (valueScores as any[]).filter((vs) => vs.studentId == +student.id);
+                    let valuesRichText: any[] = [];
+                    let ratedCount = 0;
+                    this.values.forEach((v) => {
+                        let sv = studentValues.find((s) => s.valueId == +v.id);
+                        if (!sv) return;
+                        let score = this.valueScores.find((vs) => vs.id == sv.valueScoreId);
+                        if (!score) return;
+                        if (ratedCount > 0) valuesRichText.push({text: ', ', fontSize: 8});
+                        valuesRichText.push({text: `${v.name}: ${score.name}`, fontSize: 8});
+                        if (score.abbreviation) valuesRichText.push({text: ` (${score.abbreviation})`, fontSize: 8, bold: true});
+                        ratedCount++;
+                    });
+                    let valuesContent: any = ratedCount > 0 ? {text: valuesRichText, fontSize: 8} : {text: 'No ratings', fontSize: 8};
+
+                    // Co-curricular section
+                    let coCurrText = (coCurrActivities as any[]).map((a) => a.coCurriculumActivity?.name || '').filter(Boolean).join(', ') || 'None';
+
+                    // Responsibilities section
+                    let respText = (studentResponsibilities as any[]).map((sr) => {
+                        let item = sr.responsibilitySocialSkill;
+                        return item ? `${item.name} (${item.category || ''})` : '';
+                    }).filter(Boolean).join(', ') || 'None';
+
+                    // Community service section
+                    let commText = (communityService as any[]).map((cs) => cs.communityServiceActivity?.name || '').filter(Boolean).join(', ') || 'None';
+
+                    let sessionName = session?.sessionName || '';
+                    let termEndDate = session?.endDate ? new Date(session.endDate).toLocaleDateString('en-GB') : '..............................';
+                    let nextSession = this.sessions.find((s) => s.rank == (session?.rank || 0) + 1);
+                    let nextTermStartDate = nextSession?.startDate ? new Date(nextSession.startDate).toLocaleDateString('en-GB') : '..............................';
+                    let gradeName = schoolClass?.learningLevel?.name || '';
+                    let streamName = schoolClass?.schoolStream?.name || '';
+                    let edLevelId = schoolClass?.learningLevel?.educationLevelId;
+                    let educationLevel = this.educationLevels.find((el) => el.id == edLevelId);
+                    let educationLevelName = educationLevel?.name || '';
+                    let reportTitle = `${sessionName.toUpperCase()} ${(year?.name || '').toUpperCase()} SUMMATIVE REPORT FOR ${educationLevelName.toUpperCase()}`;
+
+                    const docDefinition: any = {
+                        pageMargins: [25, 20, 25, 30],
+                        pageSize: 'A4',
+                        info: {
+                            title: `Report Card - ${student.fullName}`,
+                            author: (this.userSvc?.currentUser?.firstName || '') + ' ' + (this.userSvc?.currentUser?.lastName || '')
+                        },
+                        footer: this.reportSvc.getFooter('portrait'),
+                        images: { systemLogo: base64data, schoolLogo: school?.logoAsBase64 },
+                        styles: {
+                            tableHeader: {bold: true, fontSize: 8, fillColor: '#d4edda', color: '#155724'}
+                        },
+                        content: [
+                            {...this.reportSvc.getDIVIDER()},
+                            this.reportSvc.getReportHeader(school),
+                            {...this.reportSvc.getDIVIDER(), marginBottom: 1},
+                            this.reportSvc.getReportTitle(reportTitle),
+                            {...this.reportSvc.getDIVIDER(), marginBottom: 3},
+                            // Student details
+                            {
+                                layout: {
+                                    hLineWidth: (i) => (i === 0 || i === 2) ? 0.8 : 0.3,
+                                    vLineWidth: (i, node) => (i === 0 || i === node.table.widths.length) ? 0.8 : 0,
+                                    hLineColor: () => '#6fbf73',
+                                    vLineColor: () => '#6fbf73',
+                                    paddingLeft: () => 5,
+                                    paddingRight: () => 3,
+                                    paddingTop: () => 3,
+                                    paddingBottom: () => 3
+                                },
+                                table: {
+                                    widths: ['auto', 'auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+                                    body: [
+                                        [
+                                            {text: 'Adm No:', fontSize: 8, bold: true},
+                                            {text: student.upi || '', fontSize: 9, bold: true},
+                                            {text: 'Name:', fontSize: 8, bold: true},
+                                            {text: student.fullName, fontSize: 9, bold: true, noWrap: true},
+                                            {text: 'Grade:', fontSize: 8, bold: true},
+                                            {text: gradeName, fontSize: 9},
+                                            {text: 'Stream:', fontSize: 8, bold: true},
+                                            {text: streamName, fontSize: 9},
+                                            {text: 'Term:', fontSize: 8, bold: true},
+                                            {text: sessionName, fontSize: 9}
+                                        ],
+                                        [
+                                            {text: 'Year:', fontSize: 8, bold: true},
+                                            {text: year?.name || '', fontSize: 9},
+                                            {text: 'Class Leaders:', fontSize: 8, bold: true},
+                                            {text: classLeadersText || '..............................', fontSize: 8, noWrap: true},
+                                            {text: '', fontSize: 8},
+                                            {text: '', fontSize: 8},
+                                            {text: '', fontSize: 8},
+                                            {text: '', fontSize: 8},
+                                            {text: '', fontSize: 8},
+                                            {text: '', fontSize: 8}
+                                        ]
+                                    ]
+                                },
+                                marginBottom: 8
+                            },
+                            // Grading key
+                            gradingKeyTable,
+                            // Subject scores
+                            {
+                                layout: {
+                                    hLineWidth: () => 0.5,
+                                    vLineWidth: () => 0.5,
+                                    hLineColor: () => '#aaa',
+                                    vLineColor: () => '#aaa'
+                                },
+                                table: {
+                                    headerRows: 2,
+                                    widths: subjectWidths,
+                                    body: subjectBody
+                                },
+                                marginBottom: 8
+                            },
+                            // CBE Sections in boxes
+                            ...(this.showValues ? [this.sectionBox('VALUES', valuesContent, '#6f42c1')] : []),
+                            ...(this.showCoCurricular ? [this.sectionBox('CO-CURRICULAR ACTIVITIES', coCurrText, '#0d6efd')] : []),
+                            ...(this.showResponsibilities ? [this.sectionBox('RESPONSIBILITIES & SOCIAL SKILLS', respText, '#198754')] : []),
+                            ...(this.showCommunityService ? [this.sectionBox('COMMUNITY SERVICE', commText, '#fd7e14')] : []),
+                            // Class teacher box
+                            {
+                                layout: {
+                                    hLineWidth: (i) => (i === 0 || i === 2) ? 0.4 : 0,
+                                    vLineWidth: () => 0.4,
+                                    hLineColor: () => '#ccc',
+                                    vLineColor: () => '#ccc',
+                                    paddingLeft: () => 6,
+                                    paddingRight: () => 6,
+                                    paddingTop: () => 8,
+                                    paddingBottom: () => 8
+                                },
+                                table: {
+                                    widths: ['*'],
+                                    body: [
+                                        [{text: "Class teacher's comments: .............................................................................................................................................", fontSize: 8}],
+                                        [{text: 'Signature: ..............................................                                        Date: ..............................................', fontSize: 8}]
+                                    ]
+                                },
+                                marginTop: 5
+                            },
+                            // Head teacher box
+                            {
+                                layout: {
+                                    hLineWidth: (i) => (i === 0 || i === 2) ? 0.4 : 0,
+                                    vLineWidth: () => 0.4,
+                                    hLineColor: () => '#ccc',
+                                    vLineColor: () => '#ccc',
+                                    paddingLeft: () => 6,
+                                    paddingRight: () => 6,
+                                    paddingTop: () => 8,
+                                    paddingBottom: () => 8
+                                },
+                                table: {
+                                    widths: ['*'],
+                                    body: [
+                                        [{text: "Head teacher's comments: ..............................................................................................................................................", fontSize: 8}],
+                                        [{text: 'Signature: ..............................................                                        Date: ..............................................', fontSize: 8}]
+                                    ]
+                                },
+                                marginTop: 3
+                            },
+                            // Parent row
+                            {
+                                layout: {
+                                    hLineWidth: () => 0.4,
+                                    vLineWidth: () => 0.4,
+                                    hLineColor: () => '#ccc',
+                                    vLineColor: () => '#ccc',
+                                    paddingLeft: () => 6,
+                                    paddingRight: () => 6,
+                                    paddingTop: () => 8,
+                                    paddingBottom: () => 8
+                                },
+                                table: {
+                                    widths: ['*'],
+                                    body: [
+                                        [{text: "Parent/Guardian's signature: ..............................................                                        Date: ..............................................", fontSize: 8}]
+                                    ]
+                                },
+                                marginTop: 3
+                            },
+                            // Term dates
+                            {
+                                layout: 'noBorders',
+                                table: {
+                                    widths: ['auto', 'auto', '*', 'auto', 'auto'],
+                                    body: [
+                                        [
+                                            {text: 'This term ends on:', fontSize: 8, bold: true},
+                                            {text: termEndDate, fontSize: 8, decoration: 'underline'},
+                                            {text: '', fontSize: 8},
+                                            {text: 'Next term begins on:', fontSize: 8, bold: true},
+                                            {text: nextTermStartDate, fontSize: 8, decoration: 'underline'}
+                                        ]
+                                    ]
+                                },
+                                marginTop: 5
+                            },
+                            // System generated note
+                            {
+                                text: `This is a system generated document. Printed on ${new Date().toLocaleString('en-GB')}`,
+                                fontSize: 7,
+                                color: '#999999',
+                                italics: true,
+                                alignment: 'center',
+                                marginTop: 8
+                            }
+                        ]
+                    };
+
+                    let pdfDoc = pdfMake.createPdf(docDefinition);
+                    if (mode === 'print') {
+                        pdfDoc.print();
+                        if (!callback) this.isGenerating = false;
+                        if (callback) setTimeout(() => callback(), 500);
+                    } else {
+                        pdfDoc.getBlob((pdfBlob) => {
+                            const pdfUrl = URL.createObjectURL(pdfBlob);
+                            window.open(pdfUrl, '_blank');
+                            if (!callback) this.isGenerating = false;
+                            if (callback) callback();
+                        });
+                    }
+                };
+                reader.readAsDataURL(blob);
+            },
+            error: () => { this.isGenerating = false; this.toastr.error('Error loading logo.'); }
+        });
+    };
+}

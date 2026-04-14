@@ -35,7 +35,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
         {
             try
             {
-                var specificOutcomes = await _modelSvc.Find(includeProperties: "SubStrand,LearningLevel,BroadOutcome,GeneralOutcome");
+                var specificOutcomes = await _modelSvc.Find(includeProperties: "SubStrand,Session,BroadOutcome,GeneralOutcome");
                 var specificOutcomesDtos = _mapper.Map<List<SpecificOutcomeDto>>(specificOutcomes);
                 return Ok(specificOutcomesDtos);
             }
@@ -55,7 +55,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             try
             {
                 var paginatedData = await _modelSvc.GetPaginatedData(pageNumber ?? 1, pageSize ?? 10,
-                    includeProperties: "SubStrand,LearningLevel,BroadOutcome,GeneralOutcome");
+                    includeProperties: "SubStrand,Session,BroadOutcome,GeneralOutcome");
                 var mappedData = _mapper.Map<List<SpecificOutcomeDto>>(paginatedData.Data);
                 return Ok(new PaginatedDto<SpecificOutcomeDto>(mappedData.ToList(), paginatedData.TotalCount));
             }
@@ -77,7 +77,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             try
             {
                 if (id <= 0) return BadRequest(id);
-                var _item = await _modelSvc.GetById(id, includeProperties: "SubStrand,LearningLevel,BroadOutcome,GeneralOutcome");
+                var _item = await _modelSvc.GetById(id, includeProperties: "SubStrand,Session,BroadOutcome,GeneralOutcome");
 
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<SpecificOutcomeDto>(_item);
@@ -163,6 +163,11 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
                 _modelSvc.Delete(entity);
                 await _modelSvc.SaveChangesAsync();
                 return Ok();
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException dbEx)
+            {
+                _logger.LogError(dbEx, "FK constraint error while deleting specific outcome.");
+                return Conflict(new { message = "Cannot delete this specific outcome because it has student assessments linked to it. Delete the assessments first." });
             }
             catch (Exception ex)
             {

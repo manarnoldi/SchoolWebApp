@@ -11,6 +11,7 @@ namespace SchoolWebApp.API.Controllers.Class
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class LearningLevelsController : ControllerBase
     {
         private readonly ILogger<LearningLevelsController> _logger;

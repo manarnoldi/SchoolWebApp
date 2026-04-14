@@ -16,6 +16,7 @@ export class Grade extends ResourceModel<Grade> {
     public curriculum?: Curriculum;
 
     public rank?: number;
+    public category?: string;
 
     constructor(model?: Partial<Grade>) {
         super(model);

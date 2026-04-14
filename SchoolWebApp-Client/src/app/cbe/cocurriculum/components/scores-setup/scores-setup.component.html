@@ -1,0 +1,118 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<div class="modal fade" id="{{tableModel}}FormModal" tabindex="-1"
+    aria-hidden="true" data-bs-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header bg-success opacity-50 p-2">
+                <h5 class="modal-title">Score Details - {{ editMode ? 'Edit' : 'Add' }}</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"
+                    #closebutton (click)="resetForm()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="scoreForm" (ngSubmit)="onSubmit()" novalidate>
+                <div class="modal-body p-1">
+                    <div class="card-details-box border-info mb-1">
+                        <div class="form-group">
+                            <label for="coCurriculumScoreTypeId">Score Type: <span class="requiredField">*</span></label>
+                            <select class="form-select form-select-sm" formControlName="coCurriculumScoreTypeId"
+                                [ngClass]="{'is-invalid': (f.coCurriculumScoreTypeId.dirty || f.coCurriculumScoreTypeId.touched) && f.coCurriculumScoreTypeId.invalid}">
+                                <option [ngValue]="null" hidden disabled selected>Select score type</option>
+                                <option [ngValue]="st.id" *ngFor="let st of scoreTypes">{{st.name}}</option>
+                            </select>
+                            <div class="invalid-feedback">Score type is required</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label for="name">Score Name: <span class="requiredField">*</span></label>
+                                    <input id="name" placeholder="Score name" type="text"
+                                        class="form-control form-control-sm" formControlName="name"
+                                        [ngClass]="{'is-invalid': (f.name.dirty || f.name.touched) && f.name.invalid}" />
+                                    <div class="invalid-feedback">Name is required</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="abbreviation">Abbreviation:</label>
+                                    <input id="abbreviation" placeholder="e.g. EE" type="text"
+                                        class="form-control form-control-sm" formControlName="abbreviation" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="rank">Rank: <span class="requiredField">*</span></label>
+                                    <input id="rank" placeholder="Rank" type="number"
+                                        class="form-control form-control-sm" formControlName="rank"
+                                        [ngClass]="{'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid}" />
+                                    <div class="invalid-feedback">Rank is required</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea placeholder="Description" id="description"
+                                class="form-control form-control-sm" rows="2"
+                                formControlName="description"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer p-1">
+                    <button type="submit" [disabled]="scoreForm.invalid" class="btn btn-success">
+                        <i class="fas fa-save"></i> {{ editMode ? 'Update' : 'Save' }}
+                    </button>
+                    <button type="button" class="btn btn-warning" data-bs-dismiss="modal" (click)="resetForm()">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="container-fluid px-1">
+        <div class="row g-0 mb-1">
+            <div class="col-md-3">
+                <select class="form-select form-select-sm"
+                    [(ngModel)]="filterScoreTypeId" (change)="onScoreTypeChange()">
+                    <option [ngValue]="null" hidden disabled selected>Select score type</option>
+                    <option [ngValue]="st.id" *ngFor="let st of scoreTypes">{{st.name}}</option>
+                </select>
+            </div>
+            <div class="col">
+                <app-table-button modelName="{{tableModel}}" buttonTitle="{{buttonTitle}}"></app-table-button>
+            </div>
+        </div>
+        <div class="card">
+            <app-table-heading tableTitle="{{tableTitle}} - {{scores.length}} items"></app-table-heading>
+            <div class="card-body table-responsive p-0">
+                <table class="table table-striped table-hover text-nowrap">
+                    <thead>
+                        <tr>
+                            <th *ngFor="let header of tableHeaders">{{ header }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of scores | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize">
+                            <td>{{ item.id }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.abbreviation }}</td>
+                            <td>{{ item.coCurriculumScoreType?.name }}</td>
+                            <td>{{ item.rank }}</td>
+                            <td>{{ item.description }}</td>
+                            <app-table-action
+                                (editItemEvent)="editItem(item.id)"
+                                (deleteItemEvent)="deleteItem(item)"></app-table-action>
+                        </tr>
+                    </tbody>
+                </table>
+                <app-table-paging (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"
+                    [collectionSize]="scores.length"></app-table-paging>
+            </div>
+        </div>
+    </div>
+</section>

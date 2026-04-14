@@ -25,11 +25,14 @@ export class GradesAddFormComponent implements OnInit {
         this.refreshItems();
     }
 
+    categories: string[] = ['4-Point', '8-Point'];
+
     refreshItems = () => {
         this.gradeForm = this.formBuilder.group({
             name: ['', [Validators.required]],
             rank: [0, [Validators.required]],
             abbr: ['', [Validators.required]],
+            category: [null, [Validators.required]],
             minScore: [0, [Validators.required]],
             maxScore: [0, [Validators.required]],
             points: [0, [Validators.required]],
@@ -44,6 +47,7 @@ export class GradesAddFormComponent implements OnInit {
             name: grade?.name,
             rank: grade?.rank,
             abbr: grade?.abbr,
+            category: grade?.category ?? null,
             minScore: grade?.minScore,
             maxScore: grade?.maxScore,
             points: grade?.points,

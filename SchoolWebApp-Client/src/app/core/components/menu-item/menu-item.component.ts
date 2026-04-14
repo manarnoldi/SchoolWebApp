@@ -11,6 +11,7 @@ import {openCloseAnimation, rotateAnimation} from './menu-item.animations';
 })
 export class MenuItemComponent implements OnInit {
     @Input() menuItem: any = null;
+    @Input() depth: number = 0;
     public isExpandable: boolean = false;
     @HostBinding('class.nav-item') isNavItem: boolean = true;
     @HostBinding('class.menu-open') isMenuExtended: boolean = false;
@@ -62,6 +63,8 @@ export class MenuItemComponent implements OnInit {
             }
         } else if (this.menuItem.path && this.menuItem.path[0] === url) {
             this.isMainActive = true;
+        } else if (this.menuItem.extraActivePaths?.some((p: string) => url.startsWith(p))) {
+            this.isMainActive = true;
         }
     }
 
@@ -72,6 +75,7 @@ export class MenuItemComponent implements OnInit {
         return item.children.some(
             (child: any) =>
                 (child.path && url.startsWith(child.path[0])) ||
+                (child.extraActivePaths?.some((p: string) => url.startsWith(p))) ||
                 this.hasActiveChild(child, url)
         );
     }

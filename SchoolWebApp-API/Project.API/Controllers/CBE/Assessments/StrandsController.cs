@@ -31,7 +31,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
         {
             try
             {
-                var strands = await _modelSvc.Find(includeProperties: "Subject,LearningLevel,AcademicYear");
+                var strands = await _modelSvc.Find(includeProperties: "Subject,LearningLevel,Curriculum,Theme");
                 var strandsDtos = _mapper.Map<List<StrandDto>>(strands);
                 return Ok(strandsDtos);
             }
@@ -51,7 +51,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             try
             {
                 var paginatedData = await _modelSvc.GetPaginatedData(pageNumber ?? 1, pageSize ?? 10,
-                    includeProperties: "Subject,LearningLevel,AcademicYear");
+                    includeProperties: "Subject,LearningLevel,Curriculum,Theme");
                 var mappedData = _mapper.Map<List<StrandDto>>(paginatedData.Data);
                 return Ok(new PaginatedDto<StrandDto>(mappedData.ToList(), paginatedData.TotalCount));
             }
@@ -73,7 +73,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             try
             {
                 if (id <= 0) return BadRequest(id);
-                var _item = await _modelSvc.GetById(id, includeProperties: "Subject,LearningLevel,AcademicYear");
+                var _item = await _modelSvc.GetById(id, includeProperties: "Subject,LearningLevel,Curriculum,Theme");
 
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<StrandDto>(_item);
@@ -97,7 +97,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             if (ModelState.IsValid)
             {
                 var itemExist = await _modelSvc.ItemExistsAsync(m => m.Name == model.Name && m.LearningLevelId == model.LearningLevelId
-                && m.SubjectId == model.SubjectId && m.AcademicYearId == model.AcademicYearId);
+                && m.SubjectId == model.SubjectId );
 
                 if (itemExist)
                     return Conflict(new { message = $"The strand name - '{model.Name}' already exists" });
@@ -162,6 +162,11 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
                 _modelSvc.Delete(entity);
                 await _modelSvc.SaveChangesAsync();
                 return Ok();
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException dbEx)
+            {
+                _logger.LogError(dbEx, "FK constraint error while deleting strand.");
+                return Conflict(new { message = "Cannot delete this strand because it has child records (sub-strands, assessments, etc.). Delete them first." });
             }
             catch (Exception ex)
             {

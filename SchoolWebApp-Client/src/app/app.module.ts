@@ -25,6 +25,7 @@ import {StudentsModule} from './students/students.module';
 import {ClassModule} from './class/class.module';
 import {ReportsModule} from './reports/reports.module';
 import { CbeModule } from './cbe/cbe.module';
+import { SecurityModule } from './security/security.module';
 registerLocaleData(localeEn, 'en-EN');
 
 @NgModule({
@@ -40,6 +41,7 @@ registerLocaleData(localeEn, 'en-EN');
         ReportsModule,
         StudentsModule,
         CbeModule,
+        SecurityModule,
         ToastrModule.forRoot({
             timeOut: 10000,
             // positionClass: 'toast-top-full-width',

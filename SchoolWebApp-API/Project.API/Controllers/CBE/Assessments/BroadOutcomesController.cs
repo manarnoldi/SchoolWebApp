@@ -99,7 +99,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
                     return Conflict(new { message = $"The broad outcome name - '{model.Name}' already exists" });
                 try
                 {
-                    var _item = _mapper.Map<BroadOutcome>(model);
+                    var _item = _mapper.Map<SubjectOutcome>(model);
                     _modelSvc.Create(_item);
                     await _modelSvc.SaveChangesAsync();
 
@@ -129,7 +129,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
                     return BadRequest($"The broad outcome of Id- '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var _item = _mapper.Map<BroadOutcome>(model);
+                    var _item = _mapper.Map<SubjectOutcome>(model);
                     _modelSvc.Update(_item);
                     await _modelSvc.SaveChangesAsync();
                     return Ok();

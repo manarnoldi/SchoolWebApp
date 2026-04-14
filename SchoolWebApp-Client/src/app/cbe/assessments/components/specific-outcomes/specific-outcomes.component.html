@@ -1,0 +1,119 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<a class="btn btn-flat btn-sm btn-warning mb-1" [routerLink]="['/settings/dropdowns']" [queryParams]="{category: 'CBE Settings'}"><i class="fas fa-angle-double-left"></i> Back to Dropdowns</a>
+<div
+    class="modal fade"
+    id="specificOutcomeFormModal"
+    tabindex="-1"
+    attr.aria-labelledby="SpecificOutcomeModalLabel"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success opacity-50 p-2">
+                <h5 class="modal-title" id="SpecificOutcomeFormModalLabel">
+                    Specific outcome details
+                </h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"
+                    #closebutton (click)="resetForm()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <app-specific-outcome-add-form (addItemEvent)="addSpecificOutcome($event)"
+                [strands]="formStrands" [subStrands]="formSubStrands"
+                [learningLevels]="formLearningLevels"
+                [curricula]="curricula" [academicYears]="academicYears"
+                [sessions]="sessions"
+                [subjects]="formSubjects"
+                [broadOutcomes]="broadOutcomes" [generalOutcomes]="generalOutcomes"
+                (errorEvent)="errorEvent($event)"
+                (learningLevelChangedEvent)="learningLevelAddFormChanged($event)"
+                (curriculumChangedEvent)="curriculumAddFormChanged($event)"
+                (academicYearChangedEvent)="academicYearAddFormChanged($event)"
+                (subjectChangedEvent)="subjectAddFormChanged($event)"
+                (strandChangedEvent)="strandAddFormChanged($event)"
+                [editMode]="false"></app-specific-outcome-add-form>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="container-fluid px-1">
+        <div class="row g-0">
+            <div class="col-10">
+                <div class="row g-0">
+                    <div class="col">
+                        <app-school-soft-filter-form [showCurriculum]="true" [showAcademicYear]="true"
+                            [showLearningLevel]="true"
+                            [curricula]="curricula" [academicYears]="academicYears"
+                            [learningLevels]="learningLevels"
+                            [showSubject]="true" (searchItemEvent)="searchClicked($event)"
+                            (subjectChangedEvent)="subjectFilterFormChanged($event)"
+                            (academicYearChangedEvent)="academicYearFilterFormChanged($event)"
+                            (curriculumChangedEvent)="curriculumFilterFormChanged($event)"
+                            (learningLevelChangedEvent)="learningLevelFilterFormChanged($event)"
+                            [subjects]="subjects"></app-school-soft-filter-form>
+                    </div>
+                    <div class="col-auto py-1 px-1" *ngIf="strands.length > 0">
+                        <select class="form-select form-select-sm"
+                            [(ngModel)]="selectedStrandId"
+                            (change)="strandChanged()"
+                            id="strandFilter">
+                            <option [ngValue]="null" hidden disabled selected>-Strand-</option>
+                            <option [ngValue]="'all'">All Strands</option>
+                            <option [ngValue]="strand.id" *ngFor="let strand of strands">{{strand.code ? strand.code + ' - ' : ''}}{{strand.name}}</option>
+                        </select>
+                    </div>
+                    <div class="col-auto py-1 px-1" *ngIf="subStrands.length > 0">
+                        <select class="form-select form-select-sm"
+                            [(ngModel)]="selectedSubStrandId"
+                            (change)="subStrandChanged()"
+                            id="subStrandFilter">
+                            <option [ngValue]="null" hidden disabled selected>-Sub-Strand-</option>
+                            <option [ngValue]="'all'">All Sub-Strands</option>
+                            <option [ngValue]="subStrand.id" *ngFor="let subStrand of subStrands">{{subStrand.code ? subStrand.code + ' - ' : ''}}{{subStrand.name}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-2">
+                <app-table-button modelName="specificOutcome"
+                    buttonTitle="Add specific outcome"></app-table-button>
+            </div>
+        </div>
+        <div class="card">
+            <app-table-heading
+                tableTitle="{{tableTitle}}"></app-table-heading>
+            <div class="card-body table-responsive p-0">
+                <table class="table table-striped table-hover text-nowrap">
+                    <thead>
+                        <tr>
+                            <th *ngFor="let header of tableHeaders">
+                                {{ header }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            *ngFor="let item of specificOutcomes| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                            <td>{{ item.id }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.subStrand?.code ? item.subStrand.code + ' - ' : '' }}{{ item.subStrand?.name }}</td>
+                            <td>{{ item.generalOutcome?.name }}</td>
+                            <td>{{ item.broadOutcome?.name }}</td>
+                            <td>{{ item.rank }}</td>
+                            <app-table-action
+                                (editItemEvent)="editItem(item.id)"
+                                (deleteItemEvent)="deleteItem(item)"></app-table-action>
+                        </tr>
+                    </tbody>
+                </table>
+                <app-table-paging (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"
+                    [collectionSize]="specificOutcomes.length"></app-table-paging>
+            </div>
+        </div>
+    </div>
+</section>

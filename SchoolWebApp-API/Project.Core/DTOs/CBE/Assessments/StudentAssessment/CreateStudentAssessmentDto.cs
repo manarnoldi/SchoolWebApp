@@ -1,6 +1,8 @@
 ﻿using SchoolWebApp.Core.DTOs.Academics.Grade;
 using SchoolWebApp.Core.DTOs.CBE.Assessments.AssessmentType;
 using SchoolWebApp.Core.DTOs.CBE.Assessments.SpecificOutcome;
+using SchoolWebApp.Core.DTOs.CBE.Assessments.Strand;
+using SchoolWebApp.Core.DTOs.CBE.Assessments.SubStrand;
 using SchoolWebApp.Core.DTOs.Class.SchoolClass;
 using SchoolWebApp.Core.DTOs.Class.Session;
 using SchoolWebApp.Core.DTOs.Staff.StaffDetails;
@@ -14,8 +16,12 @@ namespace SchoolWebApp.Core.DTOs.CBE.Assessments.Assessment
         public StudentDto? Student { get; set; }
         public int SchoolClassId { get; set; }
         public SchoolClassDto? SchoolClass { get; set; }
-        public int SpecificOutcomeId { get; set; }
+        public int? SpecificOutcomeId { get; set; }
         public SpecificOutcomeDto? SpecificOutcome { get; set; }
+        public int? SubStrandId { get; set; }
+        public SubStrandDto? SubStrand { get; set; }
+        public int? StrandId { get; set; }
+        public StrandDto? Strand { get; set; }
         public int GradeId { get; set; }
         public GradeDto? Grade { get; set; }
         public int SessionId { get; set; }

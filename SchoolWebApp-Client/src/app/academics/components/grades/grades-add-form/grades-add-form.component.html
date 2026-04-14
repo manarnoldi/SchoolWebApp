@@ -18,7 +18,21 @@
                         <div class="invalid-feedback"> Curriculum is required</div>
                     </div>
                 </div>
-               <div class="col-md-6">
+               <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="category" class="form-label">Category: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm"
+                            formControlName="category" id="category" [ngClass]="{
+                                'is-invalid': (f.category.dirty || f.category.touched) && f.category.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select category</option>
+                            <option [value]="cat" *ngFor="let cat of categories">{{cat}}</option>
+                        </select>
+                        <div class="invalid-feedback">Category is required</div>
+                    </div>
+                </div>
+               <div class="col-md-3">
                     <div class="form-group">
                         <label for="rank" class="form-label">Rank: <span
                                 class="requiredField">*</span></label>

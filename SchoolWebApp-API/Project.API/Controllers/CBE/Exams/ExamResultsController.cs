@@ -37,7 +37,7 @@ namespace SchoolWebApp.API.Controllers.Academics
         {
             try
             {
-                return Ok(_mapper.Map<List<ExamResultDto>>(await _unitOfWork.ExamResults.Find(includeProperties: "StudentSubject,Exam")));
+                return Ok(_mapper.Map<List<ExamResultDto>>(await _unitOfWork.ExamResults.Find(includeProperties: "Student,Exam")));
             }
             catch (Exception ex)
             {
@@ -87,7 +87,7 @@ namespace SchoolWebApp.API.Controllers.Academics
             try
             {
                 if (id <= 0) return BadRequest(id);
-                var _item = await _unitOfWork.ExamResults.GetById(id, includeProperties: "StudentSubject,Exam");
+                var _item = await _unitOfWork.ExamResults.GetById(id, includeProperties: "Student,Exam");
 
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<ExamResultDto>(_item);
@@ -288,6 +288,7 @@ namespace SchoolWebApp.API.Controllers.Academics
                             if (existingExamResult != null)
                             {
                                 existingExamResult.Score = (float)item.Score;
+                                existingExamResult.Description = item.Description;
                                 _unitOfWork.ExamResults.Update(existingExamResult);
                             }
                             else

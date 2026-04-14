@@ -159,6 +159,11 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
                 await _modelSvc.SaveChangesAsync();
                 return Ok();
             }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException dbEx)
+            {
+                _logger.LogError(dbEx, "FK constraint error while deleting sub-strand.");
+                return Conflict(new { message = "Cannot delete this sub-strand because it has child records (specific outcomes, assessments, etc.). Delete them first." });
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while deleting the sub strand.");

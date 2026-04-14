@@ -1,0 +1,117 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+        <div class="card card-outline card-info mb-1">
+            <div class="card-body p-1">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group mb-1">
+                            <label class="form-label">Curriculum: <span class="requiredField">*</span></label>
+                            <select class="form-select form-select-sm"
+                                [(ngModel)]="filterCurriculumId" (change)="onCurriculumChange()">
+                                <option [ngValue]="null" hidden disabled selected>Select curriculum</option>
+                                <option [ngValue]="c.id" *ngFor="let c of curricula">{{c.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb-1">
+                            <label class="form-label">Year: <span class="requiredField">*</span></label>
+                            <select class="form-select form-select-sm"
+                                [(ngModel)]="filterAcademicYearId" (change)="onAcademicYearChange()">
+                                <option [ngValue]="null" hidden disabled selected>Select year</option>
+                                <option [ngValue]="y.id" *ngFor="let y of academicYears">{{y.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb-1">
+                            <label class="form-label">Class: <span class="requiredField">*</span></label>
+                            <select class="form-select form-select-sm"
+                                [(ngModel)]="filterSchoolClassId">
+                                <option [ngValue]="null" hidden disabled selected>Select class</option>
+                                <option [ngValue]="sc.id" *ngFor="let sc of schoolClasses">{{sc.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end mb-1">
+                        <button class="btn btn-sm btn-info" (click)="loadStudents()">
+                            <i class="fas fa-users"></i> Load Students
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" *ngIf="studentsLoaded">
+            <div class="card-header bg-success text-white p-1">
+                <strong>Student Responsibility / Social Skill Assignments</strong>
+                <span class="float-end">{{ studentRows.length }} student(s) | {{ getTotalAssignments() }} assignment(s)</span>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Student</th>
+                            <th>Assigned Responsibilities / Social Skills</th>
+                            <th>Add</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of studentRows; index as i">
+                            <td>{{ i + 1 }}</td>
+                            <td class="text-nowrap">{{ row.studentName }}</td>
+                            <td>
+                                <div *ngFor="let a of row.assignments" class="d-flex align-items-center gap-1 mb-1">
+                                    <span class="badge"
+                                        [ngClass]="a.itemType === 'Responsibility' ? 'bg-primary' : 'bg-info'">
+                                        {{a.itemType === 'Responsibility' ? 'R' : 'S'}}
+                                    </span>
+                                    <span class="text-nowrap">{{a.itemName}}</span>
+                                    <input type="text" class="form-control form-control-sm" style="flex: 1;"
+                                        [(ngModel)]="a.description" placeholder="Remarks"
+                                        [ngClass]="{'border-success': a.existingId}" />
+                                    <button class="btn btn-outline-danger btn-sm" (click)="removeItem(row, a)"
+                                        title="Remove">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div *ngIf="row.assignments.length === 0" class="text-muted">
+                                    No assignments yet
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <select class="form-select form-select-sm" style="min-width: 180px;"
+                                        [(ngModel)]="row.selectedItemId">
+                                        <option [ngValue]="null">-Select-</option>
+                                        <optgroup label="Responsibilities">
+                                            <option [ngValue]="r.id" *ngFor="let r of getAvailableResponsibilities(row)">{{r.name}}</option>
+                                        </optgroup>
+                                        <optgroup label="Social Skills">
+                                            <option [ngValue]="s.id" *ngFor="let s of getAvailableSocialSkills(row)">{{s.name}}</option>
+                                        </optgroup>
+                                    </select>
+                                    <button class="btn btn-success btn-sm" (click)="addItem(row)"
+                                        [disabled]="!row.selectedItemId" title="Add">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer p-1 text-end">
+                <button class="btn btn-success btn-sm" (click)="saveAll()" [disabled]="isSaving">
+                    <i class="fas fa-save"></i>
+                    {{ isSaving ? 'Saving...' : 'Save All Assignments' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</section>

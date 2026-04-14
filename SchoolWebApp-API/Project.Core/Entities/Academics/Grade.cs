@@ -33,6 +33,10 @@ namespace SchoolWebApp.Core.Entities.Academics
         [Display(Name = "Remarks in English")]
         public string? RemarksEng { get; set; }
         public int Rank { get; set; }
+
+        [StringLength(50)]
+        public string? Category { get; set; }
+
         public int CurriculumId { get; set; }
         public Curriculum? Curriculum { get; set; }
 

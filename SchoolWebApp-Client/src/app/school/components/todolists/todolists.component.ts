@@ -1,4 +1,5 @@
 import {AuthService} from '@/core/services/auth.service';
+import {GlobalSettingService} from '@/settings/services/global-setting.service';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
@@ -37,11 +38,20 @@ export class TodolistsComponent implements OnInit {
     constructor(
         private todoListSvc: TodolistsService,
         private authService: AuthService,
-        private toastr: ToastrService
+        private toastr: ToastrService,
+        private globalSettingSvc: GlobalSettingService
     ) {}
 
     ngOnInit(): void {
-        this.loadUserTodoLists();
+        this.globalSettingSvc.getByKey('General', 'TodoListPageSize').subscribe({
+            next: (setting) => {
+                if (setting?.settingValue) {
+                    this.pageSize = parseInt(setting.settingValue) || 4;
+                }
+                this.loadUserTodoLists();
+            },
+            error: () => this.loadUserTodoLists()
+        });
     }
 
     onMouseOver(index: number) {
@@ -53,16 +63,19 @@ export class TodolistsComponent implements OnInit {
     }
     loadUserTodoLists = () => {
         let curUser = this.authService.getCurrentUser();
-        this.curUserId = curUser.personId;
+        this.curUserId = curUser?.id;
+        if (!this.curUserId) return;
         this.todoListSvc
-            .get('/ToDoLists/byStaffId/' + this.curUserId)
+            .get('/ToDoLists/byUserId/' + this.curUserId)
             .subscribe(
                 (res) => {
-                    this.todoLists = res.sort(
-                        (a, b) =>
-                            new Date(b.completeBy).getTime() -
-                            new Date(a.completeBy).getTime()
-                    );
+                    this.todoLists = res
+                        .filter((t) => !t.completed)
+                        .sort(
+                            (a, b) =>
+                                new Date(b.completeBy).getTime() -
+                                new Date(a.completeBy).getTime()
+                        );
                     this.completeBtnColors = this.todoLists.map((todo) =>
                         todo.completed ? 'text-success' : 'text-primary'
                     );
@@ -88,14 +101,14 @@ export class TodolistsComponent implements OnInit {
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.value) {
-                todolistItem.staffDetailsId = this.curUserId;
+                todolistItem.userId = this.curUserId;
                 todolistItem.completed = false;
 
                 if (this.editMode) {
                     this.todoList.itemName = todolistItem.itemName;
                     this.todoList.completed = false;
                     this.todoList.completeBy = todolistItem.completeBy;
-                    this.todoList.staffDetailsId = this.curUserId;
+                    this.todoList.userId = this.curUserId;
                 }
 
                 let reqToProcess = this.editMode

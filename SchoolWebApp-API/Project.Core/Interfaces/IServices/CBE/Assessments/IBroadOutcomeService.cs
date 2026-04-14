@@ -2,10 +2,10 @@
 
 namespace SchoolWebApp.Core.Interfaces.IServices.CBE.Assessments
 {
-    public interface IBroadOutcomeService : IGenericService<BroadOutcome>
+    public interface IBroadOutcomeService : IGenericService<SubjectOutcome>
     {
-        Task<List<BroadOutcome>> GetByEducationLevelId(int eduLevelId);
-        Task<List<BroadOutcome>> GetBySubjectId(int subjectId);
-        Task<List<BroadOutcome>> GetByEducationLevelIdSubjectId(int eduLevelId, int subjectId);
+        Task<List<SubjectOutcome>> GetByEducationLevelId(int eduLevelId);
+        Task<List<SubjectOutcome>> GetBySubjectId(int subjectId);
+        Task<List<SubjectOutcome>> GetByEducationLevelIdSubjectId(int eduLevelId, int subjectId);
     }
 }

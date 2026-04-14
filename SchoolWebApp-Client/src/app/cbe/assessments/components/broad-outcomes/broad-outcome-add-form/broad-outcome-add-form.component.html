@@ -1,0 +1,86 @@
+<form [formGroup]="broadOutcomeForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="modal-body p-1">
+        <div class="card-details-box border-info mb-1">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="educationLevelId" class="form-label">Education level: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm" aria-label="Select education level"
+                            formControlName="educationLevelId" id="educationLevelId" [ngClass]="{
+                                'is-invalid': (f.educationLevelId.dirty || f.educationLevelId.touched) && f.educationLevelId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select education
+                                level</option>
+                            <option [ngValue]="level.id" *ngFor="let level of
+                                educationLevels">{{level.name}}</option>
+                        </select>
+                        <div class="invalid-feedback">Education level is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="subjectId" class="form-label">Subject: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm" aria-label="Select subject"
+                            formControlName="subjectId" id="subjectId" [ngClass]="{
+                                'is-invalid': (f.subjectId.dirty || f.subjectId.touched) && f.subjectId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select subject</option>
+                            <option [ngValue]="subject.id" *ngFor="let subject of
+                                subjects">{{subject.name}}</option>
+                        </select>
+                        <div class="invalid-feedback">Subject is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="name">Broad outcome name: <span
+                                class="requiredField">*</span></label>
+                        <input id="name" placeholder="Broad outcome name" type="text"
+                            class="form-control form-control-sm" formControlName="name" [ngClass]="{
+                            'is-invalid': (f.name.dirty || f.name.touched) && f.name.invalid
+                            }" />
+                        <div class="invalid-feedback">Broad outcome name is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea placeholder="Broad outcome description" id="description"
+                            class="form-control form-control-sm" rows="2" formControlName="description"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="rank" class="form-label">Rank: <span
+                                class="requiredField">*</span></label>
+                        <input id="rank" placeholder="Broad outcome rank" type="number"
+                            class="form-control form-control-sm" formControlName="rank" [ngClass]="{
+                            'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
+                            }" />
+                        <div class="invalid-feedback">Broad outcome rank is required</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer p-1">
+            <button type="submit" [disabled]="broadOutcomeForm.invalid" class="btn
+                btn-success"> <i class="fas fa-save"></i>
+                {{ editMode ? 'Update' : 'Save' }}
+            </button>
+            <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
+                #closeButton (click)="closeBroadOutcomeForm()">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+    </div>
+</form>

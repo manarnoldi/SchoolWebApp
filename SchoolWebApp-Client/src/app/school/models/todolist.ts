@@ -6,7 +6,7 @@ export class TodoList extends ResourceModel<TodoList> {
     public completed?: boolean;
     public timeToDeadline: number;
 
-    public staffDetailsId?: number;
+    public userId?: number;
 
     constructor(model?: Partial<TodoList>) {
         super(model);

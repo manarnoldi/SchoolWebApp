@@ -1,0 +1,82 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<a class="btn btn-flat btn-sm btn-warning mb-1" [routerLink]="['/settings/dropdowns']" [queryParams]="{category: 'CBE Settings'}"><i class="fas fa-angle-double-left"></i> Back to Dropdowns</a>
+<div
+    class="modal fade"
+    id="broadOutcomeFormModal"
+    tabindex="-1"
+    attr.aria-labelledby="BroadOutcomeModalLabel"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success opacity-50 p-2">
+                <h5 class="modal-title" id="BroadOutcomeFormModalLabel">
+                    Broad outcome details
+                </h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"
+                    #closebutton (click)="resetForm()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <app-broad-outcome-add-form (addItemEvent)="addBroadOutcome($event)"
+                [educationLevels]="educationLevels" [subjects]="subjects"
+                (errorEvent)="errorEvent($event)"
+                [editMode]="false"></app-broad-outcome-add-form>
+        </div>
+    </div>
+</div>
+<section class="content">
+    <div class="container-fluid px-1">
+        <div class="row g-0">
+            <div class="col-8">
+                <app-school-soft-filter-form
+                    [showEducationLevel]="true" [showSubject]="true"
+                    (searchItemEvent)="searchClicked($event)"
+                    (educationLevelChangedEvent)="educationLevelChanged($event)"
+                    (subjectChangedEvent)="subjectChanged($event)"
+                    [educationLevels]="educationLevels"
+                    [subjects]="subjects"></app-school-soft-filter-form>
+            </div>
+            <div class="col-4">
+                <app-table-button modelName="broadOutcome"
+                    buttonTitle="Add broad outcome"></app-table-button>
+            </div>
+        </div>
+        <div class="card">
+            <app-table-heading
+                tableTitle="{{tableTitle}}"></app-table-heading>
+            <div class="card-body table-responsive p-0">
+                <table class="table table-striped table-hover text-nowrap">
+                    <thead>
+                        <tr>
+                            <th *ngFor="let header of tableHeaders">
+                                {{ header }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            *ngFor="let item of broadOutcomes| slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                            <td>{{ item.id }}</td>
+                            <td>{{ item.educationLevel?.name }}</td>
+                            <td>{{ item.subject?.name }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.description }}</td>
+                            <td>{{ item.rank }}</td>
+                            <app-table-action
+                                (editItemEvent)="editItem(item.id)"
+                                (deleteItemEvent)="deleteItem(item.id)"></app-table-action>
+                        </tr>
+                    </tbody>
+                </table>
+                <app-table-paging (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"
+                    [collectionSize]="broadOutcomes.length"></app-table-paging>
+            </div>
+        </div>
+    </div>
+</section>

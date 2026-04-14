@@ -11,6 +11,8 @@ import {
     ViewChild
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {GlobalSettingService} from '@/settings/services/global-setting.service';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
     selector: 'app-staff-attendance-form',
@@ -28,10 +30,21 @@ export class StaffAttendanceFormComponent implements OnInit {
     @Output() errorEvent = new EventEmitter<string>();
 
     staffAttendanceForm: FormGroup;
+    requireAbsenceReason: boolean = false;
 
-    constructor(private formBuilder: FormBuilder) {}
+    constructor(
+        private formBuilder: FormBuilder,
+        private globalSettingSvc: GlobalSettingService,
+        private toastr: ToastrService
+    ) {}
 
     ngOnInit(): void {
+        this.globalSettingSvc.getByKey('General', 'RequireAbsenceReason').subscribe({
+            next: (setting) => {
+                this.requireAbsenceReason = setting?.settingValue === 'true';
+            },
+            error: () => {}
+        });
         this.refreshItems();
     }
 
@@ -85,21 +98,23 @@ export class StaffAttendanceFormComponent implements OnInit {
     }
 
     onSubmit = () => {
+        let formValue = this.staffAttendanceForm.value;
+        let isPresent = formValue.present === null ? false : formValue.present;
+        let remarks = (formValue.remarks || '').trim();
+
+        if (this.requireAbsenceReason && !isPresent && !remarks) {
+            this.toastr.warning('A reason/remark is required for absent records.');
+            return;
+        }
+
         if (this.editMode) {
             let staffAttendanceId = this.staffAttendance.id;
-            this.staffAttendance = new StaffAttendance(
-                this.staffAttendanceForm.value
-            );
+            this.staffAttendance = new StaffAttendance(formValue);
             this.staffAttendance.id = staffAttendanceId;
         } else {
-            this.staffAttendance = new StaffAttendance(
-                this.staffAttendanceForm.value
-            );
+            this.staffAttendance = new StaffAttendance(formValue);
         }
-        this.staffAttendance.present =
-            this.staffAttendance.present === null
-                ? false
-                : this.staffAttendance.present;
+        this.staffAttendance.present = isPresent;
         this.addItemEvent.emit(this.staffAttendance);
     };
 }

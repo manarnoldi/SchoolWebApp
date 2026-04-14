@@ -1,0 +1,165 @@
+<form [formGroup]="keyQuestionForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="modal-body p-1">
+        <div class="card-details-box border-info mb-1">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="academicYearId" class="form-label">Academic year: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm" aria-label="Select academic year"
+                            (change)="onAcademicYearChange()"
+                            [attr.disabled]="editMode? 'disabled' : null"
+                            formControlName="academicYearId" id="academicYearId" [ngClass]="{
+                                'is-invalid': (f.academicYearId.dirty || f.academicYearId.touched) && f.academicYearId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select academic
+                                year</option>
+                            <option [ngValue]="year.id" *ngFor="let year of
+                                academicYears">{{year.name}}</option>
+                        </select>
+                        <div class="invalid-feedback">Academic year is
+                            required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="curriculumId" class="form-label">Curriculum: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm" aria-label="Select curriculum"
+                            (change)="onCurriculumChange()"
+                            [attr.disabled]="editMode? 'disabled' : null"
+                            formControlName="curriculumId" id="curriculumId" [ngClass]="{
+                                'is-invalid': (f.curriculumId.dirty || f.curriculumId.touched) && f.curriculumId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select
+                                curriculum</option>
+                            <option [ngValue]="level.id" *ngFor="let level of
+                                curricula">{{level.name}}</option>
+                        </select>
+                        <div class="invalid-feedback">Curriculum is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="learningLevelId" class="form-label">Learning level: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm"
+                            aria-label="Select learning level"
+                            formControlName="learningLevelId" id="learningLevelId"
+                            [attr.disabled]="editMode? 'disabled' : null" [ngClass]="{
+                                'is-invalid': (f.learningLevelId.dirty || f.learningLevelId.touched) && f.learningLevelId.invalid
+                                }" (change)="onLearningLevelChange()">
+                            <option [ngValue]="null" hidden disabled selected>Select learning
+                                level</option>
+                            <option [ngValue]="level.id" *ngFor="let level of
+                                learningLevels">{{level.name}}</option>
+                        </select>
+                        <div class="invalid-feedback">Learning level is
+                            required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="subjectId" class="form-label">Subject: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm" aria-label="Select subject"
+                            formControlName="subjectId" id="subjectId"
+                            [attr.disabled]="editMode? 'disabled' : null" [ngClass]="{
+                                'is-invalid': (f.subjectId.dirty || f.subjectId.touched) && f.subjectId.invalid
+                                }" (change)="onSubjectChange()">
+                            <option [ngValue]="null" hidden disabled selected>Select
+                                subject</option>
+                            <option [ngValue]="subject.id" *ngFor="let subject of
+                                subjects">{{subject.name}}</option>
+                        </select>
+                        <div class="invalid-feedback">Subject is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="strandId" class="form-label">Strand: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm" aria-label="Select strand"
+                            formControlName="strandId" id="strandId"
+                            [ngClass]="{
+                                'is-invalid': (f.strandId.dirty || f.strandId.touched) && f.strandId.invalid
+                                }" (change)="onStrandChange()">
+                            <option [ngValue]="null" hidden disabled selected>Select
+                                strand</option>
+                            <option [ngValue]="strand.id" *ngFor="let strand of
+                                strands">{{strand.code ? strand.code + ' - ' : ''}}{{strand.name}}</option>
+                        </select>
+                        <div class="invalid-feedback">Strand is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="subStrandId" class="form-label">Sub-Strand: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm" aria-label="Select sub-strand"
+                            formControlName="subStrandId" id="subStrandId"
+                            [ngClass]="{
+                                'is-invalid': (f.subStrandId.dirty || f.subStrandId.touched) && f.subStrandId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select
+                                sub-strand</option>
+                            <option [ngValue]="subStrand.id" *ngFor="let subStrand of
+                                subStrands">{{subStrand.code ? subStrand.code + ' - ' : ''}}{{subStrand.name}}</option>
+                        </select>
+                        <div class="invalid-feedback">Sub-strand is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="rank" class="form-label">Rank: <span
+                                class="requiredField">*</span></label>
+                        <input id="rank" placeholder="Key question rank" type="number"
+                            class="form-control form-control-sm" formControlName="rank"
+                            [ngClass]="{
+                            'is-invalid': (f.rank.dirty || f.rank.touched) && f.rank.invalid
+                            }" />
+                        <div class="invalid-feedback">Key question rank is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="name">Key question name: <span
+                                class="requiredField">*</span></label>
+                        <input id="name" placeholder="Key question name" type="text"
+                            class="form-control form-control-sm" formControlName="name"
+                            [ngClass]="{
+                            'is-invalid': (f.name.dirty || f.name.touched) && f.name.invalid
+                            }" />
+                        <div class="invalid-feedback">Key question name is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea placeholder="Key question description" id="description"
+                            class="form-control form-control-sm" rows="2"
+                            formControlName="description"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer p-1">
+            <button type="submit" [disabled]="keyQuestionForm.invalid" class="btn
+                btn-success"> <i class="fas fa-save"></i>
+                {{ editMode ? 'Update' : 'Save' }}
+            </button>
+            <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
+                #closeButton (click)="closeKeyQuestionForm()">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+    </div>
+</form>

@@ -7,7 +7,7 @@ namespace SchoolWebApp.Core.DTOs.School.ToDoList
         public required string ItemName { get; set; }
         public DateTime CompleteBy { get; set; }
         public Boolean Completed { get; set; }
-        public int StaffDetailsId { get; set; }
+        public int? UserId { get; set; }
 
         [NotMapped]
         public double TimeToDeadline

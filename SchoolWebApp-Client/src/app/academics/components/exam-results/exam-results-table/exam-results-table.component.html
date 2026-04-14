@@ -13,14 +13,9 @@
                     <th class="py-1">Student name</th>
                     <th class="py-1" *ngIf="!isReport">Subject name</th>
                     <th class="py-1">Exam Type</th>
-                    <th class="py-1">Exam Name</th>
                     <th class="py-1" *ngIf="!isReport">Score</th>
                     <th class="py-1">Out of</th>
-                    <th class="py-1">Contributing</th>
                     <th class="py-1" *ngIf="!isReport">Action</th>
-                    <!-- <ng-content *ngFor="let header of tableHeaders">
-                        <th class="py-1 " *ngIf="header.show">{{header.name}}</th>
-                    </ng-content> -->
                 </tr>
             </thead>
             <tbody>
@@ -44,9 +39,8 @@
                         {{item.exam?.subject?.name}}
                     </td>
                     <td class="py-1 ">
-                        {{item.exam?.examName?.examType?.name}}
+                        {{item.exam?.examType?.name}}
                     </td>
-                    <td class="py-1 ">{{ item.exam?.name }}</td>
                     <td class="py-1 " *ngIf="!isReport">
                         <input class="form-control form-control-sm p-0 w-auto"
                             type="number"
@@ -57,7 +51,6 @@
                             [(ngModel)]="item.score">
                     </td>
                     <td class="py-1 ">{{ item.exam?.examMark }}</td>
-                    <td class="py-1 ">{{ item.exam?.contributingMark }}</td>
                     <app-table-action *ngIf="item.id && !isReport" [tblShowEditButton]="false"
                         (deleteItemEvent)="deleteItem(item)"></app-table-action>
                 </tr>

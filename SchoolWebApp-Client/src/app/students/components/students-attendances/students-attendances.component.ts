@@ -20,6 +20,7 @@ import {StudentsAttendancesTableComponent} from './students-attendances-table/st
 import Swal from 'sweetalert2';
 import {StudentAttendance} from '@/students/models/student-attendance';
 import {Status} from '@/core/enums/status';
+import {GlobalSettingService} from '@/settings/services/global-setting.service';
 
 @Component({
     selector: 'app-students-attendances',
@@ -48,6 +49,8 @@ export class StudentsAttendancesComponent implements OnInit {
 
     attendanceDate: Date;
 
+    requireAbsenceReason: boolean = false;
+
     constructor(
         private toastr: ToastrService,
         private curriculaSvc: CurriculumService,
@@ -56,10 +59,17 @@ export class StudentsAttendancesComponent implements OnInit {
         private schoolClassSvc: SchoolClassesService,
         private studentClassesSvc: StudentClassService,
         private studentAttendanceSvc: StudentAttendancesService,
+        private globalSettingSvc: GlobalSettingService,
         private datePipe: DatePipe
     ) {}
 
     ngOnInit(): void {
+        this.globalSettingSvc.getByKey('General', 'RequireAbsenceReason').subscribe({
+            next: (setting) => {
+                this.requireAbsenceReason = setting?.settingValue === 'true';
+            },
+            error: () => {}
+        });
         this.loadInitials();
     }
 
@@ -280,8 +290,23 @@ export class StudentsAttendancesComponent implements OnInit {
     };
 
     submitAttendances = () => {
-        if (this.studentClasses.length <= 0)
+        if (this.studentClasses.length <= 0) {
             this.toastr.error('There are no records to save!');
+            return;
+        }
+
+        // Validate: if RequireAbsenceReason is on, every absent record must have a remark
+        if (this.requireAbsenceReason) {
+            let missing = this.studentClasses.filter(
+                (st) => !st.isSelected && (!st.remarks || st.remarks.trim() === '')
+            );
+            if (missing.length > 0) {
+                this.toastr.warning(
+                    `${missing.length} absent student(s) require a reason/remark before saving.`
+                );
+                return;
+            }
+        }
 
         Swal.fire({
             title: `Update Students attendance record?`,

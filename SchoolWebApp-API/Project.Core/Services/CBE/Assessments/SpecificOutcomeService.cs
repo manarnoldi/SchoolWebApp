@@ -17,21 +17,21 @@ namespace SchoolWebApp.Core.Services.CBE.Assessments
         public async Task<List<SpecificOutcome>> GetByBroadOutcomeId(int broadOutcomeId)
         {
             var outcomes = await _unitOfWork.Repository<SpecificOutcome>()
-                .Find(a => a.BroadOutcomeId == broadOutcomeId, includeProperties: "SubStrand,BroadOutcome,GeneralOutcome");
+                .Find(a => a.BroadOutcomeId == broadOutcomeId, includeProperties: "SubStrand,Session,BroadOutcome,GeneralOutcome");
             return outcomes.ToList();
         }
 
         public async Task<List<SpecificOutcome>> GetByGeneralOutcomeId(int generalOutcomeId)
         {
             var outcomes = await _unitOfWork.Repository<SpecificOutcome>()
-                .Find(a => a.GeneralOutcomeId == generalOutcomeId, includeProperties: "SubStrand,BroadOutcome,GeneralOutcome");
+                .Find(a => a.GeneralOutcomeId == generalOutcomeId, includeProperties: "SubStrand,Session,BroadOutcome,GeneralOutcome");
             return outcomes.ToList();
         }
 
         public async Task<List<SpecificOutcome>> GetBySubStrandId(int subStrandId)
         {
             var outcomes = await _unitOfWork.Repository<SpecificOutcome>()
-                .Find(a => a.SubStrandId == subStrandId, includeProperties: "SubStrand,BroadOutcome,GeneralOutcome");
+                .Find(a => a.SubStrandId == subStrandId, includeProperties: "SubStrand,Session,BroadOutcome,GeneralOutcome");
             return outcomes.ToList();
         }
 

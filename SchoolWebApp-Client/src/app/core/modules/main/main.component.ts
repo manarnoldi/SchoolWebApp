@@ -34,6 +34,10 @@ export class MainComponent implements OnInit {
             document.querySelector('app-root'),
             'layout-fixed'
         );
+        this.renderer.addClass(
+            document.querySelector('app-root'),
+            'layout-footer-fixed'
+        );
 
         this.ui.subscribe(
             ({menuSidebarCollapsed, controlSidebarCollapsed, darkMode}) => {

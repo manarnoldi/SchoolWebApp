@@ -14,3 +14,52 @@
         background-color: transparent;
     }
 }
+
+:host {
+    position: relative;
+}
+
+.brand-tagline-center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    align-items: center;
+    line-height: 1.2;
+    pointer-events: none;
+    white-space: nowrap;
+
+    .brand-name {
+        font-weight: 800;
+        font-size: 1.45rem;
+        background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: 0.5px;
+    }
+
+    .brand-divider {
+        margin: 0 0.7rem;
+        color: #cbd5e1;
+        font-weight: 300;
+        font-size: 1.3rem;
+    }
+
+    .brand-slogan {
+        font-size: 1rem;
+        color: #475569;
+        font-style: italic;
+        font-weight: 500;
+
+        i {
+            color: #6366f1;
+        }
+    }
+}
+
+@media (max-width: 1199px) {
+    .brand-tagline-center .brand-slogan {
+        display: none;
+    }
+}

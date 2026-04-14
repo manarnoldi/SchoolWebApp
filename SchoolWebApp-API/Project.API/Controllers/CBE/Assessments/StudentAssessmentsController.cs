@@ -31,7 +31,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
         {
             try
             {
-                var studentAssessments = await _modelSvc.Find(includeProperties: "AssessmentType,Grade,Session,SpecificOutcome,SchoolClass");
+                var studentAssessments = await _modelSvc.Find(includeProperties: "AssessmentType,Grade,Session,SpecificOutcome,SubStrand,Strand,SchoolClass");
                 var studentAssessmentsDtos = _mapper.Map<List<StudentAssessmentDto>>(studentAssessments);
                 return Ok(studentAssessmentsDtos);
             }
@@ -51,7 +51,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             try
             {
                 var paginatedData = await _modelSvc.GetPaginatedData(pageNumber ?? 1, pageSize ?? 10,
-                    includeProperties: "AssessmentType,Grade,Session,SpecificOutcome,SchoolClass");
+                    includeProperties: "AssessmentType,Grade,Session,SpecificOutcome,SubStrand,Strand,SchoolClass");
                 var mappedData = _mapper.Map<List<StudentAssessmentDto>>(paginatedData.Data);
                 return Ok(new PaginatedDto<StudentAssessmentDto>(mappedData.ToList(), paginatedData.TotalCount));
             }
@@ -73,7 +73,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             try
             {
                 if (id <= 0) return BadRequest(id);
-                var _item = await _modelSvc.GetById(id, includeProperties: "AssessmentType,Grade,Session,SpecificOutcome,SchoolClass");
+                var _item = await _modelSvc.GetById(id, includeProperties: "AssessmentType,Grade,Session,SpecificOutcome,SubStrand,Strand,SchoolClass");
 
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<StudentAssessmentDto>(_item);
@@ -97,9 +97,9 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             if (ModelState.IsValid)
             {
                 if (await _modelSvc.ItemExistsAsync(st => st.StudentId == model.StudentId &&
-                st.SpecificOutcomeId == model.SpecificOutcomeId && st.GradeId == model.GradeId &&
-                st.SessionId == model.SessionId && st.AssessmentTypeId == model.AssessmentTypeId &&
-                st.SchoolClassId == model.SchoolClassId))
+                st.SpecificOutcomeId == model.SpecificOutcomeId && st.SubStrandId == model.SubStrandId &&
+                st.StrandId == model.StrandId && st.SessionId == model.SessionId &&
+                st.AssessmentTypeId == model.AssessmentTypeId && st.SchoolClassId == model.SchoolClassId))
                     return Conflict(new { message = $"The student assessment specified already exists" });
                 try
                 {
@@ -176,11 +176,11 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetBySessionIdAndParams(int sessionId, int? studentId, int? schoolClassId, int? assessmentTypeid,
-            int? specificOutcomeId)
+            int? specificOutcomeId, int? subStrandId, int? strandId)
         {
             try
             {
-                var _item = await _modelSvc.GetBySessionIdAndParams(sessionId, studentId, schoolClassId, assessmentTypeid, specificOutcomeId);
+                var _item = await _modelSvc.GetBySessionIdAndParams(sessionId, studentId, schoolClassId, assessmentTypeid, specificOutcomeId, subStrandId, strandId);
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<List<StudentAssessmentDto>>(_item);
                 return Ok(_itemDto);

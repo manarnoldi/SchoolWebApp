@@ -52,15 +52,12 @@
                                 (click)="deleteStaff(item.id)"
                                 data-original-title="Delete">
                                 <i class="fas fa-trash-alt"></i></a>
-                            <!-- </ng-content> -->
-                        </td>
-                        <td *ngIf="showType === 'manage'">
-                            <!-- <ng-content *ngIf="item.status !== status.Terminated"> -->
+                            <span> | </span>
                             <a [routerLink]="['/staff/manage/add']"
-                                [queryParams]='{id: item.id, action: showType}'
+                                [queryParams]='{id: item.id, action: "manage"}'
                                 class="view" title="Manage staff" data-toggle="tooltip"
                                 data-original-title="Manage staff">
-                                <i class="fas fa-wrench"></i> Manage</a>
+                                <i class="fas fa-wrench"></i></a>
                             <!-- </ng-content> -->
                         </td>
                     </tr>

@@ -3,15 +3,13 @@
         <div class="col-11">
             <app-school-soft-filter-form [showAcademicYear]="true" [showCurriculum]="true"
                 [showSession]="true" [showExamType]="true"
-                [showExamName]="true" [academicYears]="academicYears"
+                [academicYears]="academicYears"
                 [curricula]="curricula"
                 [sessions]="sessions" [examTypes]="examTypes"
-                [examNames]="examNames"
                 (sessionChangedEvent)="sessionChanged($event)"
                 (academicYearChangedEvent)="academicYearChanged($event)"
                 (curriculumChangedEvent)="curriculumChanged($event)"
                 (examTypeChangedEvent)="examTypeChanged($event)"
-                (examNameChangedEvent)="examNameChanged($event)"
                 (searchItemEvent)="onButtonSearchClick($event)"></app-school-soft-filter-form>
         </div>
         <div class="col-1">

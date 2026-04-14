@@ -37,15 +37,16 @@ export class EducationLevelSubjectsComponent implements OnInit {
     subjects: Subject[] = [];
 
     isLoading: boolean = false;
+    showCopyModal: boolean = false;
+    copyTargetYearId: any = null;
+    isCopying: boolean = false;
 
     educationLevelSubjects: EducationLevelSubject[] = [];
 
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Home'},
-        {
-            link: ['/academics/educationLevelSubjects'],
-            title: 'Academics: Edu-Level Subjects'
-        }
+        {link: ['/settings/dropdowns'], title: 'Dropdowns'},
+        {link: ['/academics/educationLevelSubjects'], title: 'Edu-Level Subjects'}
     ];
     dashboardTitle = 'Academics: Edu-Level Subjects';
 
@@ -118,19 +119,13 @@ export class EducationLevelSubjectsComponent implements OnInit {
             );
             return;
         }
-        if (!ssf.educationLevelId) {
-            this.toastr.error(
-                'Select education level first before clicking search'
-            );
-            return;
-        }
 
-        let educationLevelSubjectsReq = this.educationLevelSubjectSvc.get(
-            `/educationLevelSubjects/byEducationLevelYearId/${ssf.educationLevelId}/${ssf.academicYearId}`
-        );
+        let url = ssf.educationLevelId
+            ? `/educationLevelSubjects/byEducationLevelYearId/${ssf.educationLevelId}/${ssf.academicYearId}`
+            : `/educationLevelSubjects/byAcademicYearId/${ssf.academicYearId}`;
 
-        forkJoin([educationLevelSubjectsReq]).subscribe(
-            ([educationLevelSubjects]) => {
+        this.educationLevelSubjectSvc.get(url).subscribe(
+            (educationLevelSubjects) => {
                 this.educationLevelSubjects = educationLevelSubjects;
                 if (this.educationLevelSubjects.length <= 0) {
                     this.toastr.info('No record found for the selection!');
@@ -338,6 +333,57 @@ export class EducationLevelSubjectsComponent implements OnInit {
             }
         });
     };
+
+    copyToYear() {
+        if (!this.copyTargetYearId || this.educationLevelSubjects.length === 0) return;
+
+        let sourceYearId = this.educationLevelSubjects[0].academicYearId;
+        if (this.copyTargetYearId == sourceYearId) {
+            this.toastr.warning('Target year is the same as the source year.');
+            return;
+        }
+
+        let targetYearName = this.academicYears.find((y) => y.id == this.copyTargetYearId)?.name || '';
+
+        Swal.fire({
+            title: 'Copy subjects to ' + targetYearName + '?',
+            html: `<strong>${this.educationLevelSubjects.length}</strong> subject(s) will be copied. Existing entries in the target year will not be duplicated.`,
+            width: 450,
+            position: 'top',
+            padding: '1em',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Copy',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.value) {
+                this.isCopying = true;
+                let batch = this.educationLevelSubjects.map((els) =>
+                    new EducationLevelSubject({
+                        educationLevelId: els.educationLevelId,
+                        subjectId: els.subjectId,
+                        academicYearId: parseInt(this.copyTargetYearId),
+                        description: els.description || ''
+                    })
+                );
+
+                this.educationLevelSubjectSvc
+                    .createBatch('/educationLevelSubjects/batch', batch)
+                    .subscribe({
+                        next: () => {
+                            this.isCopying = false;
+                            this.showCopyModal = false;
+                            this.copyTargetYearId = null;
+                            this.toastr.success(`${batch.length} subject(s) copied to ${targetYearName} successfully!`);
+                        },
+                        error: (err) => {
+                            this.isCopying = false;
+                            this.toastr.error(err.error?.message || 'Error copying subjects.');
+                        }
+                    });
+            }
+        });
+    }
 
     private recordsUpdated(educationLevelSubjects: EducationLevelSubject[]) {
         this.toastr.success('Education level subjects updated successfully');

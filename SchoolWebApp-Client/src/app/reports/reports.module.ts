@@ -18,6 +18,17 @@ import { ClassAttendanceDetailsReportComponent } from './components/class-report
 import { MissingMarksReportComponent } from './components/academics-report/missing-marks-report/missing-marks-report.component';
 import { ResultsAnalysisComponent } from './components/academics-report/results-analysis/results-analysis.component';
 import { BroadsheetComponent } from "./components/academics-report/results-analysis/broadsheet/broadsheet.component";
+import { StaffAttendancePageComponent } from './components/pages/staff-attendance-page.component';
+import { StaffAttendanceDetailsPageComponent } from './components/pages/staff-attendance-details-page.component';
+import { StaffSubjectPageComponent } from './components/pages/staff-subject-page.component';
+import { ClassListPageComponent } from './components/pages/class-list-page.component';
+import { ClassAttendancePageComponent } from './components/pages/class-attendance-page.component';
+import { ClassAttendanceDetailsPageComponent } from './components/pages/class-attendance-details-page.component';
+import { MissingMarksPageComponent } from './components/pages/missing-marks-page.component';
+import { ResultsAnalysisPageComponent } from './components/pages/results-analysis-page.component';
+import { ReportFormsPageComponent } from './components/pages/report-forms-page.component';
+import { ReportFormComponent } from './components/academics-report/report-form/report-form.component';
+import { AssessmentReportComponent } from './components/academics-report/assessment-report/assessment-report.component';
 
 @NgModule({
     declarations: [
@@ -37,7 +48,18 @@ import { BroadsheetComponent } from "./components/academics-report/results-analy
         ClassAttendanceDetailsReportComponent,
         MissingMarksReportComponent,
         ResultsAnalysisComponent,
-        BroadsheetComponent
+        BroadsheetComponent,
+        StaffAttendancePageComponent,
+        StaffAttendanceDetailsPageComponent,
+        StaffSubjectPageComponent,
+        ClassListPageComponent,
+        ClassAttendancePageComponent,
+        ClassAttendanceDetailsPageComponent,
+        MissingMarksPageComponent,
+        ResultsAnalysisPageComponent,
+        ReportFormsPageComponent,
+        ReportFormComponent,
+        AssessmentReportComponent
     ],
     imports: [CoreModule, SharedModule]
 })

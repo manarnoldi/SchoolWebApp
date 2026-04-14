@@ -1,5 +1,6 @@
 import {SchoolEvent} from '@/school/models/schoolEvent';
 import {EventsService} from '@/school/services/events.service';
+import {GlobalSettingService} from '@/settings/services/global-setting.service';
 import {Component, OnInit} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 
@@ -12,14 +13,24 @@ export class EventsDashboardComponent implements OnInit {
     events: SchoolEvent[] = [];
     now = new Date();
     upcomingEvents: SchoolEvent[] = [];
+    eventsLimit: number = 4;
 
     constructor(
         private eventsSvc: EventsService,
-        private toastr: ToastrService
+        private toastr: ToastrService,
+        private globalSettingSvc: GlobalSettingService
     ) {}
 
     ngOnInit(): void {
-        this.refreshItems();
+        this.globalSettingSvc.getByKey('General', 'UpcomingEventsCount').subscribe({
+            next: (setting) => {
+                if (setting?.settingValue) {
+                    this.eventsLimit = parseInt(setting.settingValue) || 4;
+                }
+                this.refreshItems();
+            },
+            error: () => this.refreshItems()
+        });
     }
 
     refreshItems() {
@@ -35,7 +46,7 @@ export class EventsDashboardComponent implements OnInit {
                             new Date(a.startDate).getTime() -
                             new Date(b.startDate).getTime()
                     )
-                    .slice(0, 4);
+                    .slice(0, this.eventsLimit);
             },
             error: (err) => {
                 this.toastr.error(err.error);

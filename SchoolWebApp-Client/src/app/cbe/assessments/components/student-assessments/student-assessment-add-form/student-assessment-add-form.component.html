@@ -1,0 +1,153 @@
+<form [formGroup]="studentAssessmentForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="modal-body p-1">
+        <div class="card-details-box border-info mb-1">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="schoolClassId" class="form-label">School class: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm" aria-label="Select school class"
+                            formControlName="schoolClassId" id="schoolClassId"
+                            (change)="onSchoolClassChange()"
+                            [attr.disabled]="editMode ? 'disabled' : null" [ngClass]="{
+                                'is-invalid': (f.schoolClassId.dirty || f.schoolClassId.touched) && f.schoolClassId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select school class</option>
+                            <option [ngValue]="sc.id" *ngFor="let sc of
+                                schoolClasses">{{sc.name}}</option>
+                        </select>
+                        <div class="invalid-feedback">School class is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="studentId" class="form-label">Student: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm" aria-label="Select student"
+                            formControlName="studentId" id="studentId"
+                            [attr.disabled]="editMode ? 'disabled' : null" [ngClass]="{
+                                'is-invalid': (f.studentId.dirty || f.studentId.touched) && f.studentId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select student</option>
+                            <option [ngValue]="student.id" *ngFor="let student of
+                                students">{{student.upi}} - {{student.fullName}}</option>
+                        </select>
+                        <div class="invalid-feedback">Student is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="specificOutcomeId" class="form-label">Specific Outcome: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm" aria-label="Select specific outcome"
+                            formControlName="specificOutcomeId" id="specificOutcomeId"
+                            [attr.disabled]="editMode ? 'disabled' : null" [ngClass]="{
+                                'is-invalid': (f.specificOutcomeId.dirty || f.specificOutcomeId.touched) && f.specificOutcomeId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select specific outcome</option>
+                            <option [ngValue]="so.id" *ngFor="let so of
+                                specificOutcomes">{{so.name}}</option>
+                        </select>
+                        <div class="invalid-feedback">Specific outcome is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="gradeId" class="form-label">Grade: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm" aria-label="Select grade"
+                            formControlName="gradeId" id="gradeId" [ngClass]="{
+                                'is-invalid': (f.gradeId.dirty || f.gradeId.touched) && f.gradeId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select grade</option>
+                            <option [ngValue]="grade.id" *ngFor="let grade of
+                                grades">{{grade.name}}</option>
+                        </select>
+                        <div class="invalid-feedback">Grade is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="sessionId" class="form-label">Session: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm" aria-label="Select session"
+                            formControlName="sessionId" id="sessionId"
+                            [attr.disabled]="editMode ? 'disabled' : null" [ngClass]="{
+                                'is-invalid': (f.sessionId.dirty || f.sessionId.touched) && f.sessionId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select session</option>
+                            <option [ngValue]="session.id" *ngFor="let session of
+                                sessions">{{session.sessionName}}</option>
+                        </select>
+                        <div class="invalid-feedback">Session is required</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="assessmentTypeId" class="form-label">Assessment type: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm" aria-label="Select assessment type"
+                            formControlName="assessmentTypeId" id="assessmentTypeId"
+                            [attr.disabled]="editMode ? 'disabled' : null" [ngClass]="{
+                                'is-invalid': (f.assessmentTypeId.dirty || f.assessmentTypeId.touched) && f.assessmentTypeId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select assessment type</option>
+                            <option [ngValue]="at.id" *ngFor="let at of
+                                assessmentTypes">{{at.name}}</option>
+                        </select>
+                        <div class="invalid-feedback">Assessment type is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="assessmentDate" class="form-label">Assessment date:</label>
+                        <input id="assessmentDate" type="date"
+                            class="form-control form-control-sm" formControlName="assessmentDate" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="staffDetailsId" class="form-label">Staff: <span
+                                class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm" aria-label="Select staff"
+                            formControlName="staffDetailsId" id="staffDetailsId"
+                            [attr.disabled]="editMode ? 'disabled' : null" [ngClass]="{
+                                'is-invalid': (f.staffDetailsId.dirty || f.staffDetailsId.touched) && f.staffDetailsId.invalid
+                                }">
+                            <option [ngValue]="null" hidden disabled selected>Select staff</option>
+                            <option [ngValue]="staff.id" *ngFor="let staff of
+                                staffDetails">{{staff.fullName || staff.name}}</option>
+                        </select>
+                        <div class="invalid-feedback">Staff is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <textarea placeholder="Enter description" id="description"
+                            class="form-control form-control-sm" rows="2"
+                            formControlName="description"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer p-1">
+            <button type="submit" [disabled]="studentAssessmentForm.invalid" class="btn
+                btn-success"> <i class="fas fa-save"></i>
+                {{ editMode ? 'Update' : 'Save' }}
+            </button>
+            <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
+                #closeButton (click)="closeForm()">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+    </div>
+</form>

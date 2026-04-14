@@ -1,0 +1,212 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+        <!-- Filters -->
+        <div class="card card-outline card-primary mb-1">
+            <div class="card-header py-1">
+                <strong><i class="fas fa-exchange-alt mr-1"></i> Promotion Setup</strong>
+            </div>
+            <div class="card-body p-1">
+                <div class="row g-1">
+                    <!-- FROM -->
+                    <div class="col-md-6">
+                        <div class="card card-outline card-warning mb-0">
+                            <div class="card-header py-1">
+                                <strong class="text-warning"><i class="fas fa-sign-out-alt mr-1"></i> From (Current Class)</strong>
+                            </div>
+                            <div class="card-body p-1">
+                                <div class="row g-1">
+                                    <div class="col-md-6">
+                                        <label class="form-label mb-0" style="font-size:0.8rem;">Academic Year <span class="requiredField">*</span></label>
+                                        <select class="form-select form-select-sm"
+                                            [(ngModel)]="fromYearId"
+                                            (change)="onFromYearChange()">
+                                            <option [ngValue]="null" hidden disabled>Select year</option>
+                                            <option [ngValue]="y.id" *ngFor="let y of academicYears">{{ y.name }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label mb-0" style="font-size:0.8rem;">Class <span class="requiredField">*</span></label>
+                                        <select class="form-select form-select-sm"
+                                            [(ngModel)]="fromClassId"
+                                            (change)="onFromClassChange()">
+                                            <option [ngValue]="null" hidden disabled>Select class</option>
+                                            <option [ngValue]="c.id" *ngFor="let c of fromClasses">
+                                                {{ c.learningLevel?.name }}{{ c.schoolStream?.name ? ' - ' + c.schoolStream.name : '' }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TO -->
+                    <div class="col-md-6">
+                        <div class="card card-outline card-success mb-0">
+                            <div class="card-header py-1">
+                                <strong class="text-success"><i class="fas fa-sign-in-alt mr-1"></i> To (New Class)</strong>
+                            </div>
+                            <div class="card-body p-1">
+                                <div class="row g-1">
+                                    <div class="col-md-6">
+                                        <label class="form-label mb-0" style="font-size:0.8rem;">Academic Year <span class="requiredField">*</span></label>
+                                        <select class="form-select form-select-sm"
+                                            [(ngModel)]="toYearId"
+                                            (change)="onToYearChange()">
+                                            <option [ngValue]="null" hidden disabled>Select year</option>
+                                            <option [ngValue]="y.id" *ngFor="let y of academicYears">{{ y.name }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label mb-0" style="font-size:0.8rem;">Class <span class="requiredField">*</span></label>
+                                        <select class="form-select form-select-sm"
+                                            [(ngModel)]="toClassId">
+                                            <option [ngValue]="null" hidden disabled>Select class</option>
+                                            <option [ngValue]="c.id" *ngFor="let c of toClasses">
+                                                {{ c.learningLevel?.name }}{{ c.schoolStream?.name ? ' - ' + c.schoolStream.name : '' }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col text-center">
+                        <button class="btn btn-info btn-sm" (click)="loadStudents()"
+                            [disabled]="!fromClassId || !toYearId || !toClassId || isLoading">
+                            <i class="fas" [ngClass]="isLoading ? 'fa-spinner fa-spin' : 'fa-search'"></i>
+                            Load Students
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div class="text-center py-3" *ngIf="isLoading">
+            <i class="fas fa-spinner fa-spin text-primary"></i>
+            <span class="text-muted ml-1">Loading students...</span>
+        </div>
+
+        <!-- No students -->
+        <div class="text-center py-3 text-muted" *ngIf="hasLoaded && !isLoading && students.length === 0">
+            <i class="fas fa-info-circle mr-1"></i> No students found in the selected class.
+        </div>
+
+        <!-- Students pending promotion -->
+        <div class="card card-outline card-info mb-1" *ngIf="!isLoading && getSelectableStudents().length > 0">
+            <div class="card-header py-1 d-flex justify-content-between align-items-center">
+                <strong>
+                    <i class="fas fa-users mr-1"></i>
+                    Students to Promote
+                    <span class="badge bg-info ml-1">{{ getSelectableStudents().length }} pending</span>
+                    <span class="badge bg-warning ml-1" *ngIf="getSelectedCount() > 0">{{ getSelectedCount() }} selected</span>
+                </strong>
+                <button class="btn btn-success btn-sm" (click)="promoteStudents()"
+                    [disabled]="getSelectedCount() === 0 || isSaving">
+                    <i class="fas" [ngClass]="isSaving ? 'fa-spinner fa-spin' : 'fa-arrow-right'"></i>
+                    {{ isSaving ? 'Promoting...' : 'Promote Selected (' + getSelectedCount() + ')' }}
+                </button>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-sm table-striped table-hover mb-0">
+                    <thead>
+                        <tr class="table-light">
+                            <th style="width:5%;">
+                                <input type="checkbox" [checked]="selectAll"
+                                    (change)="toggleSelectAll()"
+                                    [disabled]="getSelectableStudents().length === 0">
+                            </th>
+                            <th style="width:5%;">#</th>
+                            <th style="width:15%;">UPI</th>
+                            <th style="width:45%;">Student Name</th>
+                            <th style="width:30%;" class="text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let student of getSelectableStudents(); index as i"
+                            [ngClass]="{'table-warning': student.selected}">
+                            <td class="align-middle">
+                                <input type="checkbox" [(ngModel)]="student.selected"
+                                    (change)="onStudentToggle()">
+                            </td>
+                            <td class="align-middle">{{ i + 1 }}</td>
+                            <td class="align-middle">{{ student.upi }}</td>
+                            <td class="align-middle fw-bold">{{ student.fullName }}</td>
+                            <td class="text-center align-middle">
+                                <span *ngIf="student.selected" class="badge bg-warning text-dark">
+                                    <i class="fas fa-arrow-right"></i> Ready to promote
+                                </span>
+                                <span *ngIf="!student.selected" class="badge bg-secondary">
+                                    <i class="fas fa-minus"></i> Not selected
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Already promoted students (with removal option) -->
+        <div class="card card-outline card-success mb-1" *ngIf="!isLoading && getPromotedStudents().length > 0">
+            <div class="card-header py-1 d-flex justify-content-between align-items-center">
+                <strong>
+                    <i class="fas fa-check-circle mr-1"></i>
+                    Already Promoted to {{ getToClassName() }}
+                    <span class="badge bg-success ml-1">{{ getPromotedStudents().length }} student(s)</span>
+                    <span class="badge bg-danger ml-1" *ngIf="getRemovalCount() > 0">{{ getRemovalCount() }} to remove</span>
+                </strong>
+                <button class="btn btn-danger btn-sm" (click)="removePromotions()"
+                    [disabled]="getRemovalCount() === 0 || isSaving">
+                    <i class="fas" [ngClass]="isSaving ? 'fa-spinner fa-spin' : 'fa-undo'"></i>
+                    {{ isSaving ? 'Removing...' : 'Reverse Selected (' + getRemovalCount() + ')' }}
+                </button>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-sm table-striped table-hover mb-0">
+                    <thead>
+                        <tr class="table-light">
+                            <th style="width:5%;">
+                                <input type="checkbox" [checked]="selectAllRemoval"
+                                    (change)="toggleSelectAllRemoval()">
+                            </th>
+                            <th style="width:5%;">#</th>
+                            <th style="width:15%;">UPI</th>
+                            <th style="width:45%;">Student Name</th>
+                            <th style="width:30%;" class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let student of getPromotedStudents(); index as i"
+                            [ngClass]="{'table-danger': student.selectedForRemoval}">
+                            <td class="align-middle">
+                                <input type="checkbox" [(ngModel)]="student.selectedForRemoval"
+                                    (change)="onRemovalToggle()">
+                            </td>
+                            <td class="align-middle">{{ i + 1 }}</td>
+                            <td class="align-middle">{{ student.upi }}</td>
+                            <td class="align-middle fw-bold">{{ student.fullName }}</td>
+                            <td class="text-center align-middle">
+                                <span *ngIf="student.selectedForRemoval" class="badge bg-danger">
+                                    <i class="fas fa-undo"></i> Will be removed
+                                </span>
+                                <span *ngIf="!student.selectedForRemoval" class="badge bg-success">
+                                    <i class="fas fa-check"></i> Promoted
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- No students at all -->
+        <div class="text-center py-3 text-muted" *ngIf="hasLoaded && !isLoading && students.length === 0">
+            <i class="fas fa-info-circle mr-1"></i> No students found in the selected class.
+        </div>
+    </div>
+</section>

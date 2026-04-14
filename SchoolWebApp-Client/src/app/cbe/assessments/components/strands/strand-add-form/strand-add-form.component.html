@@ -78,8 +78,20 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" *ngIf="themes.length > 0">
                 <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="themeId" class="form-label">Theme:</label>
+                        <select class="form-select form-select-sm"
+                            formControlName="themeId" id="themeId">
+                            <option [ngValue]="null">-- No Theme --</option>
+                            <option [ngValue]="t.id" *ngFor="let t of themes">{{t.code ? t.code + ' - ' : ''}}{{t.name}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-9">
                     <div class="form-group">
                         <label for="name">Strand name: <span
                                 class="requiredField">*</span></label>
@@ -89,6 +101,13 @@
                             'is-invalid': (f.name.dirty || f.name.touched) && f.name.invalid
                             }" />
                         <div class="invalid-feedback">Strand name is required</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="code">Code:</label>
+                        <input id="code" placeholder="e.g. S1.0" type="text"
+                            class="form-control form-control-sm" formControlName="code" />
                     </div>
                 </div>
             </div>

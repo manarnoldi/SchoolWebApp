@@ -1,0 +1,154 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+        <div class="card card-outline card-info mb-1">
+            <div class="card-body p-1">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group mb-1">
+                            <label class="form-label">Curriculum: <span class="requiredField">*</span></label>
+                            <select class="form-select form-select-sm"
+                                [(ngModel)]="filterCurriculumId" (change)="onCurriculumChange()">
+                                <option [ngValue]="null" hidden disabled selected>Select curriculum</option>
+                                <option [ngValue]="c.id" *ngFor="let c of curricula">{{c.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group mb-1">
+                            <label class="form-label">Year: <span class="requiredField">*</span></label>
+                            <select class="form-select form-select-sm"
+                                [(ngModel)]="filterAcademicYearId" (change)="onAcademicYearChange()">
+                                <option [ngValue]="null" hidden disabled selected>Select year</option>
+                                <option [ngValue]="y.id" *ngFor="let y of academicYears">{{y.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group mb-1">
+                            <label class="form-label">Session: <span class="requiredField">*</span></label>
+                            <select class="form-select form-select-sm"
+                                [(ngModel)]="filterSessionId" (change)="onSessionChange()">
+                                <option [ngValue]="null" hidden disabled selected>Select session</option>
+                                <option [ngValue]="s.id" *ngFor="let s of sessions">{{s.sessionName}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group mb-1">
+                            <label class="form-label">Class: <span class="requiredField">*</span></label>
+                            <select class="form-select form-select-sm"
+                                [(ngModel)]="filterSchoolClassId" (change)="onClassChange()">
+                                <option [ngValue]="null" hidden disabled selected>Select class</option>
+                                <option [ngValue]="sc.id" *ngFor="let sc of schoolClasses">{{sc.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group mb-1">
+                            <label class="form-label">Subject:</label>
+                            <select class="form-select form-select-sm"
+                                [(ngModel)]="filterSubjectId" (change)="onSubjectChange()">
+                                <option [ngValue]="null" hidden disabled selected>Select subject</option>
+                                <option [ngValue]="subj.id" *ngFor="let subj of subjects">{{subj.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group mb-1">
+                            <label class="form-label">Exam: <span class="requiredField">*</span></label>
+                            <select class="form-select form-select-sm"
+                                [(ngModel)]="filterExamId">
+                                <option [ngValue]="null" hidden disabled selected>Select exam</option>
+                                <option [ngValue]="exam.id" *ngFor="let exam of exams">{{getExamName(exam)}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-end">
+                        <button class="btn btn-sm btn-info" (click)="loadStudents()">
+                            <i class="fas fa-users"></i> Load Students
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" *ngIf="studentsLoaded">
+            <div class="card-header bg-success text-white p-1">
+                <strong>Exam Results - {{ selectedExam ? getExamName(selectedExam) : '' }}</strong>
+                <span class="float-end">
+                    {{scoringRows.length}} student(s) | Max: {{selectedExam?.examMark}}
+                </span>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Adm No.</th>
+                            <th>Student Name</th>
+                            <th>Score (out of {{selectedExam?.examMark}})</th>
+                            <th>%</th>
+                            <th>Grade</th>
+                            <th>Description</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of scoringRows; index as i"
+                            [class.table-success]="row.existingId">
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ row.upi }}</td>
+                            <td>{{ row.fullName }}</td>
+                            <td>
+                                <input type="number" class="form-control form-control-sm"
+                                    [(ngModel)]="row.score"
+                                    [max]="selectedExam?.examMark"
+                                    min="0" step="0.5"
+                                    placeholder="Score"
+                                    (change)="validateScore(row, selectedExam?.examMark)" />
+                            </td>
+                            <td>{{ row.score != null ? ((row.score / selectedExam?.examMark) * 100).toFixed(1) + '%' : '' }}</td>
+                            <td>{{ row.score != null ? getGradeForPercent((row.score / selectedExam?.examMark) * 100) : '' }}</td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm"
+                                    [(ngModel)]="row.description"
+                                    placeholder="Optional remarks" />
+                            </td>
+                            <td>
+                                <button *ngIf="row.existingId" class="btn btn-danger btn-sm"
+                                    (click)="deleteResult(row)" title="Delete result">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot *ngIf="getScoredCount() > 0">
+                        <tr class="table-info fw-bold">
+                            <td colspan="3" class="text-end">Class Average ({{getScoredCount()}} students):</td>
+                            <td>{{ getAverage() }} / {{selectedExam?.examMark}}</td>
+                            <td>{{ selectedExam?.examMark ? ((getAverage() / selectedExam?.examMark) * 100).toFixed(1) + '%' : '' }}</td>
+                            <td>{{ selectedExam?.examMark ? getGradeForPercent((getAverage() / selectedExam?.examMark) * 100) : '' }}</td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="card-footer p-1 d-flex justify-content-between">
+                <button class="btn btn-danger btn-sm" (click)="deleteAll()" [disabled]="isSaving || getExistingCount() === 0">
+                    <i class="fas fa-trash"></i>
+                    Delete All Results ({{getExistingCount()}})
+                </button>
+                <button class="btn btn-success btn-sm" (click)="saveAll()" [disabled]="isSaving">
+                    <i class="fas fa-save"></i>
+                    {{ isSaving ? 'Saving...' : 'Save All Results' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</section>

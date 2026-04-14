@@ -2,7 +2,7 @@ import {Roles} from '../enums/roles';
 import {ResourceModel} from './ResourceModel';
 
 export class User extends ResourceModel<User> {
-    id: string;
+    id: number;
     userName: string;
     email: string;
     password: string;

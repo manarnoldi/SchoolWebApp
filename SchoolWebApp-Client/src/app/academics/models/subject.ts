@@ -11,6 +11,7 @@ export class Subject extends ResourceModel<Subject> {
     public numOfLessons?: number;
     public description?: string;
     public optional?: boolean;
+    public examinable?: boolean;
 
     public subjectGroupId?: number;
     public subjectGroup?: SubjectGroup;

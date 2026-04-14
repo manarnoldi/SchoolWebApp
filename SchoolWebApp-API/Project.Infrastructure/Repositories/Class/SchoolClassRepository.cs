@@ -19,6 +19,7 @@ namespace SchoolWebApp.Infrastructure.Repositories.Class
                 .Include(l => l.LearningLevel)
                 .Include(l => l.SchoolStream)
                 .Include(l => l.AcademicYear)
+
                 .ToListAsync();
             return schoolClasses;
         }
@@ -29,6 +30,7 @@ namespace SchoolWebApp.Infrastructure.Repositories.Class
                 .Include(l => l.LearningLevel)
                 .Include(l => l.SchoolStream)
                 .Include(l => l.AcademicYear)
+
                 .ToListAsync();
             return schoolClasses;
         }
@@ -39,6 +41,7 @@ namespace SchoolWebApp.Infrastructure.Repositories.Class
                 .Include(l => l.LearningLevel)
                 .Include(l => l.SchoolStream)
                 .Include(l => l.AcademicYear)
+
                 .AsQueryable();
             if (educationLevelId != null)
                 query = query.Where(s => s.LearningLevel.EducationLevelId == educationLevelId);
@@ -56,6 +59,7 @@ namespace SchoolWebApp.Infrastructure.Repositories.Class
                 .Include(l => l.LearningLevel)
                 .Include(l => l.SchoolStream)
                 .Include(l => l.AcademicYear)
+
                 .FirstOrDefaultAsync();
             return schoolClass;
         }

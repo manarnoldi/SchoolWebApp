@@ -15,6 +15,7 @@ import {StaffsAttendancesTableComponent} from '../../../shared/components/staffs
 import Swal from 'sweetalert2';
 import {StaffAttendanceSearch} from '@/students/models/staff-attendance-search';
 import {Status} from '@/core/enums/status';
+import {GlobalSettingService} from '@/settings/services/global-setting.service';
 
 @Component({
     selector: 'app-staffs-attendances',
@@ -38,16 +39,25 @@ export class StaffsAttendancesComponent implements OnInit {
     saSearch: StaffAttendanceSearch;
     doneLoading = false;
 
+    requireAbsenceReason: boolean = false;
+
     constructor(
         private toastr: ToastrService,
         private staffCategoriesSvc: StaffCategoriesService,
         private employmentTypesSvc: EmploymentTypeService,
         private staffsSvc: StaffDetailsService,
         private datePipe: DatePipe,
-        private staffAttendancesSvc: StaffAttendancesService
+        private staffAttendancesSvc: StaffAttendancesService,
+        private globalSettingSvc: GlobalSettingService
     ) {}
 
     ngOnInit(): void {
+        this.globalSettingSvc.getByKey('General', 'RequireAbsenceReason').subscribe({
+            next: (setting) => {
+                this.requireAbsenceReason = setting?.settingValue === 'true';
+            },
+            error: () => {}
+        });
         this.loadInitials();
     }
 
@@ -220,8 +230,22 @@ export class StaffsAttendancesComponent implements OnInit {
         });
     }
     submitAttendances = () => {
-        if (this.staffs.length <= 0)
+        if (this.staffs.length <= 0) {
             this.toastr.error('There are no records to save!');
+            return;
+        }
+
+        if (this.requireAbsenceReason) {
+            let missing = this.staffs.filter(
+                (st: any) => !st.isSelected && (!st.remarks || st.remarks.trim() === '')
+            );
+            if (missing.length > 0) {
+                this.toastr.warning(
+                    `${missing.length} absent staff member(s) require a reason/remark before saving.`
+                );
+                return;
+            }
+        }
 
         Swal.fire({
             title: `Update staff attendances records?`,

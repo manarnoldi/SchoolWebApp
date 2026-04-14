@@ -12,6 +12,7 @@ import {SubjectsService} from '@/academics/services/subjects.service';
 import {SubjectGroupsService} from '@/academics/services/subject-groups.service';
 import {DepartmentsService} from '@/school/services/departments.service';
 import {StaffDetailsService} from '@/staff/services/staff-details.service';
+import {ActivatedRoute} from '@angular/router';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -20,6 +21,7 @@ import Swal from 'sweetalert2';
     styleUrl: './subjects.component.scss'
 })
 export class SubjectsComponent implements OnInit {
+    querySource: string = '';
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
     @ViewChild(SubjectsAddFormComponent)
@@ -33,7 +35,8 @@ export class SubjectsComponent implements OnInit {
     tableModel: string = 'subject';
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Home'},
-        {link: ['/academics/subjects'], title: 'Academics: Subjects'}
+        {link: ['/settings/dropdowns'], title: 'Dropdowns'},
+        {link: ['/academics/subjects'], title: 'Subjects'}
     ];
     dashboardTitle = 'Academics: Subjects';
 
@@ -49,10 +52,12 @@ export class SubjectsComponent implements OnInit {
         private subjectsSvc: SubjectsService,
         private subjectGroupsSvc: SubjectGroupsService,
         private departmentsSvc: DepartmentsService,
-        private staffsSvc: StaffDetailsService
+        private staffsSvc: StaffDetailsService,
+        private route: ActivatedRoute
     ) {}
 
     ngOnInit(): void {
+        this.querySource = this.route.snapshot.queryParamMap.get('source') || '';
         this.refreshItems();
     }
 

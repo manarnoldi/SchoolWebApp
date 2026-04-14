@@ -14,6 +14,8 @@ import { RelationshipsComponent } from './components/relationships/relationships
 import { ReligionsComponent } from './components/religions/religions.component';
 import { SessionTypesComponent } from './components/session-types/session-types.component';
 import { StaffCategoriesComponent } from './components/staff-categories/staff-categories.component';
+import { GlobalSettingsComponent } from './components/global-settings/global-settings.component';
+import { DropdownManagementComponent } from './components/dropdown-management/dropdown-management.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +30,9 @@ import { StaffCategoriesComponent } from './components/staff-categories/staff-ca
     RelationshipsComponent,
     ReligionsComponent,
     SessionTypesComponent,
-    StaffCategoriesComponent
+    StaffCategoriesComponent,
+    GlobalSettingsComponent,
+    DropdownManagementComponent
   ],
   imports: [
     CoreModule,

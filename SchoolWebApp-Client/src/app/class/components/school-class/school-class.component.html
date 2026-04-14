@@ -1,7 +1,7 @@
 <app-dashboard-header
     [title]="dashboardTitle"
     [breadcrumbs]="breadcrumbs"></app-dashboard-header>
-<hr>
+<hr class="mb-1">
 <div
     class="modal fade"
     id="schoolClassFormModal"
@@ -78,6 +78,16 @@
                                     <br />
                                 </ng-container>
                             </td>
+                            <td>
+                                <a role="button" class="badge bg-info text-white"
+                                    (click)="openStudentsModal(item)"
+                                    *ngIf="getStudentCount(item.id) > 0"
+                                    title="View student details">
+                                    <i class="fas fa-users mr-1"></i> {{ getStudentCount(item.id) }}
+                                </a>
+                                <span class="badge bg-secondary"
+                                    *ngIf="getStudentCount(item.id) === 0">0</span>
+                            </td>
                             <td>{{ item.description }}</td>
                             <app-table-action class="p-0"
                                 (editItemEvent)="editItem(item.id)"
@@ -101,3 +111,56 @@
         </div>
     </div>
 </section>
+
+<!-- Students in Class Modal -->
+<div class="modal-backdrop fade show" *ngIf="showStudentsModal" (click)="closeStudentsModal()"></div>
+<div class="modal fade show d-block" *ngIf="showStudentsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg" style="margin-top: 60px;">
+        <div class="modal-content">
+            <div class="modal-header bg-info p-2">
+                <h5 class="modal-title text-white">
+                    <i class="fas fa-users mr-1"></i>
+                    Students in {{ selectedClassName }}
+                    <span class="badge bg-light text-dark ml-1">{{ selectedClassStudents.length }}</span>
+                </h5>
+                <button type="button" class="close text-white" (click)="closeStudentsModal()">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-0" style="max-height: 60vh; overflow-y: auto;">
+                <div class="text-center py-3" *ngIf="isLoadingStudents">
+                    <i class="fas fa-spinner fa-spin text-primary"></i>
+                    <span class="text-muted ml-1">Loading student details...</span>
+                </div>
+                <table class="table table-sm table-striped table-hover mb-0" *ngIf="!isLoadingStudents">
+                    <thead class="table-light sticky-top">
+                        <tr>
+                            <th style="width:5%;">#</th>
+                            <th style="width:15%;">UPI</th>
+                            <th style="width:30%;">Full Name</th>
+                            <th style="width:15%;">Gender</th>
+                            <th style="width:20%;">Phone</th>
+                            <th style="width:15%;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let s of selectedClassStudents; index as i">
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ s.upi }}</td>
+                            <td class="fw-bold">{{ s.fullName }}</td>
+                            <td>{{ s.gender?.name || '-' }}</td>
+                            <td>{{ s.phoneNumber || '-' }}</td>
+                            <td>
+                                <span class="badge bg-success" *ngIf="s.status === 0 || s.status === 'Active'">Active</span>
+                                <span class="badge bg-secondary" *ngIf="!(s.status === 0 || s.status === 'Active')">{{ s.status }}</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer p-1">
+                <button class="btn btn-sm btn-secondary" (click)="closeStudentsModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

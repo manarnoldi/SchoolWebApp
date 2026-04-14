@@ -26,6 +26,6 @@ namespace SchoolWebApp.Core.Entities.School
 
         public List<LearningLevel> LearningLevels { get; set; } = new();
         public List<EducationLevelSubject> educationLevelSubjects { get; set; } = new();
-        public List<BroadOutcome> BroadOutcomes { get; set; } = new();
+        public List<SubjectOutcome> BroadOutcomes { get; set; } = new();
     }
 }

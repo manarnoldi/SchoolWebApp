@@ -1,10 +1,8 @@
 import {Curriculum} from '@/academics/models/curriculum';
 import {Exam} from '@/academics/models/exam';
-import {ExamName} from '@/academics/models/exam-name';
 import {ExamResult} from '@/academics/models/exam-result';
 import {ExamType} from '@/academics/models/exam-type';
 import {CurriculumService} from '@/academics/services/curriculum.service';
-import {ExamNamesService} from '@/academics/services/exam-names.service';
 import {ExamResultsService} from '@/academics/services/exam-results.service';
 import {ExamTypesService} from '@/academics/services/exam-types.service';
 import {ExamsService} from '@/academics/services/exams.service';
@@ -34,7 +32,6 @@ export class MissingMarksReportComponent implements OnInit {
     academicYears: AcademicYear[] = [];
     sessions: Session[] = [];
     examTypes: ExamType[] = [];
-    examNames: ExamName[] = [];
 
     constructor(
         private toastr: ToastrService,
@@ -43,7 +40,6 @@ export class MissingMarksReportComponent implements OnInit {
         private curriculaSvc: CurriculumService,
         private examsSvc: ExamsService,
         private examTypesSvc: ExamTypesService,
-        private examNamesSvc: ExamNamesService,
         private examResultsSvc: ExamResultsService,
         private schoolSvc: SchoolDetailsService,
         private missingMarksRptSvc: MissingMarksReportService
@@ -88,7 +84,7 @@ export class MissingMarksReportComponent implements OnInit {
     curriculumYearChanged = () => {
         this.sessions = [];
         this.missingMarksResults = [];
-        this.resetFormControls(true, true, true);
+        this.resetFormControls(true, true);
 
         let curriculumId =
             this.ssFilterFormComponent.schoolSoftFilterForm.get(
@@ -116,25 +112,11 @@ export class MissingMarksReportComponent implements OnInit {
     };
 
     sessionChanged = (sessionId: number) => {
-        this.resetFormControls(false, true, true);
+        this.resetFormControls(false, true);
         this.missingMarksResults = [];
     };
 
     examTypeChanged = (examTypeId: number) => {
-        this.missingMarksResults = [];
-        this.resetFormControls(false, false, true);
-
-        this.examNamesSvc.getByExamTypeId(examTypeId).subscribe({
-            next: (examNames) => {
-                this.examNames = examNames;
-            },
-            error: (err) => {
-                this.toastr.error(err.error);
-            }
-        });
-    };
-
-    examNameChanged = (examNameId: number) => {
         this.missingMarksResults = [];
     };
 
@@ -148,8 +130,6 @@ export class MissingMarksReportComponent implements OnInit {
             this.toastr.info('Select session before searching!');
         else if (!ssf.examTypeId)
             this.toastr.info('Select exam type before searching!');
-        else if (!ssf.examNameId)
-            this.toastr.info('Select exam name before searching!');
         else {
             this.examsSvc.getExamsBySearch(ssf).subscribe({
                 next: (exams) => {
@@ -200,10 +180,6 @@ export class MissingMarksReportComponent implements OnInit {
                     this.ssFilterFormComponent.schoolSoftFilterForm.get(
                         'examTypeId'
                     ).value;
-                const examNameId =
-                    this.ssFilterFormComponent.schoolSoftFilterForm.get(
-                        'examNameId'
-                    ).value;
                 const sessionId =
                     this.ssFilterFormComponent.schoolSoftFilterForm.get(
                         'sessionId'
@@ -217,19 +193,15 @@ export class MissingMarksReportComponent implements OnInit {
                     'MISSING MARKS REPORT FOR ' +
                     this.examTypes
                         .find((et) => et.id == examTypeId)
-                        .name.toUpperCase() +
-                    ': ' +
-                    this.examNames
-                        .find((et) => et.id == examNameId)
-                        .name.toUpperCase() +
-                    ' ' +
+                        ?.name?.toUpperCase() +
+                    ' - ' +
                     this.sessions
                         .find((et) => et.id == sessionId)
-                        .sessionName.toUpperCase() +
+                        ?.sessionName?.toUpperCase() +
                     ' ' +
                     this.academicYears
                         .find((et) => et.id == academicYearId)
-                        .name.toUpperCase();
+                        ?.name?.toUpperCase();
                 this.missingMarksRptSvc.generateReport(
                     school[0],
                     this.missingMarksResults,
@@ -244,20 +216,15 @@ export class MissingMarksReportComponent implements OnInit {
 
     resetFormControls = (
         sessionIdReset: boolean,
-        examTypeIdReset: boolean,
-        examNameIdReset: boolean
+        examTypeIdReset: boolean
     ) => {
         if (sessionIdReset)
             this.ssFilterFormComponent.schoolSoftFilterForm
                 .get('sessionId')
-                .reset();
+                ?.reset();
         if (examTypeIdReset)
             this.ssFilterFormComponent.schoolSoftFilterForm
                 .get('examTypeId')
-                .reset();
-        if (examNameIdReset)
-            this.ssFilterFormComponent.schoolSoftFilterForm
-                .get('examNameId')
-                .reset();
+                ?.reset();
     };
 }

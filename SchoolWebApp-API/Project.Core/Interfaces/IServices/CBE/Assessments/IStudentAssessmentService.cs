@@ -6,7 +6,7 @@ namespace SchoolWebApp.Core.Interfaces.IServices.CBE.Assessments
     {
         Task<List<StudentAssessment>> GetByStudentId(int studentId);
         Task<List<StudentAssessment>> GetBySessionIdAndParams(int sessionId, int? studentId, int? schoolClassId, int? assessmentTypeid,
-            int? specificOutcomeId);
+            int? specificOutcomeId, int? subStrandId = null, int? strandId = null);
         Task<List<StudentAssessment>> GetByAssessmentTypeId(int asessmentTypeId);
         Task<List<StudentAssessment>> GetBySpecificOutcomeId(int specificOutcomeId);
         Task<List<StudentAssessment>> GetByGradeId(int gradeId);

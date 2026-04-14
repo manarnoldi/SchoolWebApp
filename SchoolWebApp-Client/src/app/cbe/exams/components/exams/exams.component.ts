@@ -1,0 +1,349 @@
+import {Component, OnInit} from '@angular/core';
+import {BreadCrumb} from '@/core/models/bread-crumb';
+import {ToastrService} from 'ngx-toastr';
+import {forkJoin} from 'rxjs';
+import Swal from 'sweetalert2';
+import {Exam} from '../../models/exam';
+import {ExamService} from '../../services/exam.service';
+import {ExamTypeService} from '../../services/exam-type.service';
+import {CurriculumService} from '@/academics/services/curriculum.service';
+import {AcademicYearsService} from '@/school/services/academic-years.service';
+import {SessionsService} from '@/class/services/sessions.service';
+import {SchoolClassesService} from '@/class/services/school-classes.service';
+import {LearningLevelsService} from '@/class/services/learning-levels.service';
+import {EducationLevelService} from '@/school/services/education-level.service';
+import {EducationLevelSubjectService} from '@/academics/services/education-level-subject.service';
+import {ActivatedRoute} from '@angular/router';
+
+@Component({
+    selector: 'app-exams',
+    templateUrl: './exams.component.html',
+    styleUrl: './exams.component.scss'
+})
+export class ExamsComponent implements OnInit {
+    isAuthLoading: boolean;
+    querySource: string = '';
+
+    breadcrumbs: BreadCrumb[] = [
+        {link: ['/'], title: 'Dashboard'},
+        {link: ['/cbe/exams/exams'], title: 'CBE Exams: Exams'}
+    ];
+    dashboardTitle = 'CBE Exams: Exams';
+
+    page = 1;
+    pageSize = 10;
+
+    // Dropdown data
+    curricula: any[] = [];
+    academicYears: any[] = [];
+    sessions: any[] = [];
+    schoolClasses: any[] = [];
+    subjects: any[] = [];
+    examTypes: any[] = [];
+    educationLevels: any[] = [];
+    learningLevels: any[] = [];
+
+    // Filter selections
+    filterCurriculumId: any = null;
+    filterAcademicYearId: any = null;
+    filterSessionId: any = null;
+    filterEducationLevelId: any = null;
+
+    // Multi-select for batch creation
+    selectedClassIds: number[] = [];
+    selectedSubjectIds: number[] = [];
+    selectedExamTypeId: any = null;
+    examMark: number = 100;
+    examStartDate: string = '';
+    examEndDate: string = '';
+    examMarkEntryEndDate: string = '';
+    examDescription: string = '';
+
+    // Registered exams
+    exams: Exam[] = [];
+    isSaving: boolean = false;
+
+    constructor(
+        private toastr: ToastrService,
+        private examSvc: ExamService,
+        private examTypeSvc: ExamTypeService,
+        private curriculaSvc: CurriculumService,
+        private academicYearSvc: AcademicYearsService,
+        private sessionsSvc: SessionsService,
+        private schoolClassesSvc: SchoolClassesService,
+        private learningLevelSvc: LearningLevelsService,
+        private educationLevelSvc: EducationLevelService,
+        private educationLevelSubjectSvc: EducationLevelSubjectService,
+        private route: ActivatedRoute
+    ) {}
+
+    parseInt = parseInt;
+
+    pageSizeChanged = (pageSize: number) => { this.pageSize = pageSize; };
+    pageChanged = (page: number) => { this.page = page; };
+
+    ngOnInit(): void {
+        this.querySource = this.route.snapshot.queryParamMap.get('source') || '';
+        this.refreshItems();
+    }
+
+    refreshItems() {
+        forkJoin([
+            this.curriculaSvc.get('/curricula'),
+            this.academicYearSvc.get('/academicYears'),
+            this.examTypeSvc.get('/examTypes')
+        ]).subscribe({
+            next: ([curricula, academicYears, examTypes]) => {
+                this.curricula = curricula.sort((a, b) => a.rank - b.rank);
+                this.academicYears = academicYears.filter((y) => y.status === true).sort((a, b) => a.rank - b.rank);
+                this.examTypes = examTypes.sort((a, b) => a.rank - b.rank);
+            },
+            error: (err) => this.toastr.error(err.error)
+        });
+    }
+
+    onCurriculumChange = () => {
+        this.sessions = this.schoolClasses = this.subjects = this.educationLevels = [];
+        this.exams = [];
+        this.filterAcademicYearId = this.filterSessionId = this.filterEducationLevelId = null;
+        this.selectedClassIds = [];
+        this.selectedSubjectIds = [];
+        if (!this.filterCurriculumId) return;
+        this.educationLevelSvc.get(`/educationLevels/byCurriculumId?curriculumId=${this.filterCurriculumId}`).subscribe({
+            next: (levels) => { this.educationLevels = levels.sort((a, b) => a.rank - b.rank); },
+            error: (err) => this.toastr.error(err.error)
+        });
+    };
+
+    onAcademicYearChange = () => {
+        this.sessions = this.schoolClasses = this.subjects = [];
+        this.exams = [];
+        this.filterSessionId = this.filterEducationLevelId = null;
+        this.selectedClassIds = [];
+        this.selectedSubjectIds = [];
+        if (!this.filterAcademicYearId || !this.filterCurriculumId) return;
+        this.sessionsSvc.get(`/sessions/byCurriculumYearId?curriculumId=${this.filterCurriculumId}&academicYearId=${this.filterAcademicYearId}`).subscribe({
+            next: (sessions) => { this.sessions = sessions.sort((a, b) => a.rank - b.rank); },
+            error: (err) => this.toastr.error(err.error)
+        });
+    };
+
+    onSessionChange = () => {
+        this.exams = [];
+        if (this.filterSessionId) this.searchExams();
+    };
+
+    onEducationLevelChange = () => {
+        this.schoolClasses = this.subjects = [];
+        this.selectedClassIds = [];
+        this.selectedSubjectIds = [];
+        this.exams = [];
+        if (!this.filterEducationLevelId || !this.filterAcademicYearId) return;
+
+        if (this.filterEducationLevelId === 'all') {
+            this.loadAllEducationLevelData();
+            return;
+        }
+
+        forkJoin([
+            this.schoolClassesSvc.get(`/schoolClasses/byEducationLevelYearId?educationLevelId=${this.filterEducationLevelId}&academicYearId=${this.filterAcademicYearId}`),
+            this.educationLevelSubjectSvc.getByEducationLevelAndAcademicYear(this.filterEducationLevelId, this.filterAcademicYearId)
+        ]).subscribe({
+            next: ([schoolClasses, elSubjects]) => {
+                this.schoolClasses = schoolClasses;
+                this.subjects = elSubjects.map((es) => es.subject)
+                    .filter((s) => s.examinable !== false)
+                    .sort((a, b) => a.rank - b.rank);
+            },
+            error: (err) => this.toastr.error(err.error)
+        });
+    };
+
+    loadAllEducationLevelData = () => {
+        if (this.educationLevels.length === 0) return;
+
+        let classRequests = this.educationLevels.map((el) =>
+            this.schoolClassesSvc.get(`/schoolClasses/byEducationLevelYearId?educationLevelId=${el.id}&academicYearId=${this.filterAcademicYearId}`)
+        );
+        let subjectRequests = this.educationLevels.map((el) =>
+            this.educationLevelSubjectSvc.getByEducationLevelAndAcademicYear(parseInt(el.id), this.filterAcademicYearId)
+        );
+
+        forkJoin([
+            forkJoin(classRequests),
+            forkJoin(subjectRequests)
+        ]).subscribe({
+            next: ([classResults, subjectResults]: any) => {
+                // Flatten classes
+                let allClasses: any[] = [];
+                classResults.forEach((cls: any[]) => { allClasses = allClasses.concat(cls); });
+                this.schoolClasses = allClasses.sort((a, b) =>
+                    (a.learningLevel?.rank || 0) - (b.learningLevel?.rank || 0)
+                );
+
+                // Flatten subjects, dedupe by id, exclude non-examinable
+                let allSubjects: any[] = [];
+                subjectResults.forEach((els: any[]) => {
+                    els.forEach((es) => {
+                        if (es.subject && es.subject.examinable !== false) {
+                            allSubjects.push(es.subject);
+                        }
+                    });
+                });
+                let seen = new Set<string>();
+                this.subjects = allSubjects
+                    .filter((s) => {
+                        let key = s.id?.toString();
+                        if (!key || seen.has(key)) return false;
+                        seen.add(key);
+                        return true;
+                    })
+                    .sort((a, b) => (a.rank || 0) - (b.rank || 0));
+            },
+            error: (err) => this.toastr.error(err.error)
+        });
+    };
+
+    onStartDateChange = () => {
+        if (this.examStartDate) {
+            this.examEndDate = this.examStartDate;
+            this.examMarkEntryEndDate = '';
+        }
+    };
+
+    onEndDateChange = () => {
+        if (this.examEndDate && this.examStartDate && this.examEndDate < this.examStartDate) {
+            this.examEndDate = this.examStartDate;
+        }
+        if (this.examEndDate) {
+            this.examMarkEntryEndDate = this.examEndDate;
+        }
+    };
+
+    toggleClass = (classId: number) => {
+        let idx = this.selectedClassIds.indexOf(classId);
+        if (idx > -1) this.selectedClassIds.splice(idx, 1);
+        else this.selectedClassIds.push(classId);
+    };
+
+    toggleSubject = (subjectId: number) => {
+        let idx = this.selectedSubjectIds.indexOf(subjectId);
+        if (idx > -1) this.selectedSubjectIds.splice(idx, 1);
+        else this.selectedSubjectIds.push(subjectId);
+    };
+
+    selectAllClasses = () => {
+        if (this.selectedClassIds.length === this.schoolClasses.length) {
+            this.selectedClassIds = [];
+        } else {
+            this.selectedClassIds = this.schoolClasses.map((sc) => parseInt(sc.id));
+        }
+    };
+
+    selectAllSubjects = () => {
+        if (this.selectedSubjectIds.length === this.subjects.length) {
+            this.selectedSubjectIds = [];
+        } else {
+            this.selectedSubjectIds = this.subjects.map((s) => parseInt(s.id));
+        }
+    };
+
+    isClassSelected = (classId: number): boolean => {
+        return this.selectedClassIds.includes(classId);
+    };
+
+    isSubjectSelected = (subjectId: number): boolean => {
+        return this.selectedSubjectIds.includes(subjectId);
+    };
+
+    saveExams = () => {
+        if (!this.selectedExamTypeId) {
+            this.toastr.info('Please select an exam type.');
+            return;
+        }
+        if (!this.filterSessionId) {
+            this.toastr.info('Please select a session.');
+            return;
+        }
+        if (this.selectedClassIds.length === 0) {
+            this.toastr.info('Please select at least one class.');
+            return;
+        }
+        if (this.selectedSubjectIds.length === 0) {
+            this.toastr.info('Please select at least one subject.');
+            return;
+        }
+        if (!this.examStartDate || !this.examEndDate) {
+            this.toastr.info('Please enter start and end dates.');
+            return;
+        }
+
+        let totalExams = this.selectedClassIds.length * this.selectedSubjectIds.length;
+
+        Swal.fire({
+            title: 'Register exams?',
+            text: `${totalExams} exam(s) will be created (${this.selectedClassIds.length} class(es) x ${this.selectedSubjectIds.length} subject(s)).`,
+            width: 450, position: 'top', padding: '1em', icon: 'question',
+            showCancelButton: true, confirmButtonText: 'Save', cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.value) {
+                this.isSaving = true;
+                let requests = [];
+                for (let classId of this.selectedClassIds) {
+                    for (let subjectId of this.selectedSubjectIds) {
+                        let exam = new Exam({
+                            examMark: this.examMark,
+                            examStartDate: this.examStartDate,
+                            examEndDate: this.examEndDate,
+                            examMarkEntryEndDate: this.examMarkEntryEndDate || null,
+                            description: this.examDescription || null,
+                            examTypeId: this.selectedExamTypeId,
+                            schoolClassId: classId,
+                            sessionId: this.filterSessionId,
+                            subjectId: subjectId
+                        });
+                        requests.push(this.examSvc.create('/exams', exam));
+                    }
+                }
+                forkJoin(requests).subscribe(
+                    () => {
+                        this.isSaving = false;
+                        this.toastr.success(`${totalExams} exam(s) registered successfully!`);
+                        this.searchExams();
+                        this.selectedClassIds = [];
+                        this.selectedSubjectIds = [];
+                    },
+                    (err) => {
+                        this.isSaving = false;
+                        this.toastr.error(err.error?.message || 'Error saving exams.');
+                    }
+                );
+            }
+        });
+    };
+
+    searchExams = () => {
+        if (!this.filterSessionId || !this.filterAcademicYearId || !this.filterCurriculumId) return;
+        let url = `/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}`;
+        this.examSvc.get(url).subscribe({
+            next: (exams) => { this.exams = exams; },
+            error: (err) => this.toastr.error(err.error)
+        });
+    };
+
+    deleteItem(exam: Exam) {
+        Swal.fire({
+            title: 'Delete this exam?',
+            text: 'This action cannot be undone.',
+            width: 400, position: 'top', padding: '1em', icon: 'warning',
+            showCancelButton: true, confirmButtonText: 'Delete', cancelButtonText: 'Cancel', confirmButtonColor: '#d33'
+        }).then((result) => {
+            if (result.value) {
+                this.examSvc.delete('/exams', parseInt(exam.id)).subscribe(
+                    () => { this.searchExams(); this.toastr.success('Exam deleted!'); },
+                    (err) => this.toastr.error(err.error)
+                );
+            }
+        });
+    }
+}

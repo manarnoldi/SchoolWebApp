@@ -1,1 +1,156 @@
-<p>broadsheet works!</p>
+<div class="card card-outline card-info mb-1">
+    <div class="card-body p-1">
+        <div class="row">
+            <div class="col-md-2">
+                <div class="form-group mb-1">
+                    <label class="form-label">Curriculum: <span class="requiredField">*</span></label>
+                    <select class="form-select form-select-sm"
+                        [(ngModel)]="filterCurriculumId" (change)="onCurriculumChange()">
+                        <option [ngValue]="null" hidden disabled selected>Select curriculum</option>
+                        <option [ngValue]="c.id" *ngFor="let c of curricula">{{c.name}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group mb-1">
+                    <label class="form-label">Year: <span class="requiredField">*</span></label>
+                    <select class="form-select form-select-sm"
+                        [(ngModel)]="filterAcademicYearId" (change)="onAcademicYearChange()">
+                        <option [ngValue]="null" hidden disabled selected>Select year</option>
+                        <option [ngValue]="y.id" *ngFor="let y of academicYears">{{y.name}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group mb-1">
+                    <label class="form-label">Session: <span class="requiredField">*</span></label>
+                    <select class="form-select form-select-sm"
+                        [(ngModel)]="filterSessionId">
+                        <option [ngValue]="null" hidden disabled selected>Select session</option>
+                        <option [ngValue]="s.id" *ngFor="let s of sessions">{{s.sessionName}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group mb-1">
+                    <label class="form-label">Class: <span class="requiredField">*</span></label>
+                    <select class="form-select form-select-sm"
+                        [(ngModel)]="filterSchoolClassId">
+                        <option [ngValue]="null" hidden disabled selected>Select class</option>
+                        <option [ngValue]="sc.id" *ngFor="let sc of schoolClasses">{{sc.name}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group mb-1">
+                    <label class="form-label">Exam Type: <span class="requiredField">*</span></label>
+                    <select class="form-select form-select-sm"
+                        [(ngModel)]="filterExamTypeId">
+                        <option [ngValue]="null" hidden disabled selected>Select type</option>
+                        <option [ngValue]="et.id" *ngFor="let et of examTypes">{{et.name}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2 d-flex align-items-end mb-1">
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-info" (click)="loadBroadsheet()" [disabled]="isLoading">
+                        <i class="fas fa-search"></i> {{ isLoading ? '...' : 'Load' }}
+                    </button>
+                    <button class="btn btn-danger" (click)="printBroadsheet('marks')" title="Print Marks" [disabled]="!loaded">
+                        <i class="fas fa-print"></i> MKS
+                    </button>
+                    <button class="btn btn-warning" (click)="printBroadsheet('points')" title="Print Points" [disabled]="!loaded">
+                        <i class="fas fa-print"></i> PTS
+                    </button>
+                    <button class="btn btn-info" (click)="printBroadsheet('grades')" title="Print Grades" [disabled]="!loaded">
+                        <i class="fas fa-print"></i> GRD
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card" *ngIf="loaded">
+    <div class="card-header bg-info text-white p-1">
+        <strong>Broadsheet - {{ getFilterName('year') }} {{ getFilterName('session') }} - {{ getFilterName('examType') }} - {{ getFilterName('class') }}</strong>
+        <span class="float-end">
+            <span class="badge bg-light text-dark me-1" title="Ranking method from Global Settings">
+                <i class="fas fa-sort-numeric-down mr-1"></i>
+                Rank: {{ rankingMethod === 'mean_marks' ? 'Mean Marks' : 'Mean Points' }}
+            </span>
+            {{ broadsheetRows.length }} student(s)
+        </span>
+    </div>
+    <div class="card-body table-responsive p-0">
+        <table class="table table-striped table-hover table-sm table-bordered mb-0">
+            <thead>
+                <tr class="table-dark">
+                    <th>#</th>
+                    <th>Adm#</th>
+                    <th class="text-nowrap">Student Name</th>
+                    <th *ngFor="let subj of subjects" class="text-center">{{subj}}</th>
+                    <th class="text-center">Total M</th>
+                    <th class="text-center">Total P</th>
+                    <th class="text-center">Mean M</th>
+                    <th class="text-center">Mean P</th>
+                    <th class="text-center">Mean G</th>
+                    <th class="text-center">Rank</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let row of broadsheetRows | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i">
+                    <td>{{ (page-1) * pageSize + i + 1 }}</td>
+                    <td>{{ row.upi }}</td>
+                    <td class="text-nowrap">{{ row.fullName }}</td>
+                    <td *ngFor="let subj of subjects" class="text-center">
+                        {{ row.scores[subj].score != null ? row.scores[subj].score : '-' }}
+                    </td>
+                    <td class="text-center fw-bold">{{ row.total }}<span class="text-muted">/{{ row.totalOutOf }}</span></td>
+                    <td class="text-center fw-bold">{{ row.totalPoints }}<span class="text-muted">/{{ row.totalPointsOutOf }}</span></td>
+                    <td class="text-center">{{ row.average }}%</td>
+                    <td class="text-center">{{ row.meanPoints }}</td>
+                    <td class="text-center fw-bold">{{ row.averageGrade }}</td>
+                    <td class="text-center fw-bold">{{ row.rank }}</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr class="table-warning fw-bold">
+                    <td colspan="3" class="text-end">Class Average:</td>
+                    <td *ngFor="let subj of subjects" class="text-center">{{ getSubjectAvg(subj) }}</td>
+                    <td class="text-center">{{ getClassTotalMarksAvgOutOf() }}</td>
+                    <td class="text-center">{{ getClassTotalPointsAvgOutOf() }}</td>
+                    <td class="text-center">{{ getClassAvg() }}%</td>
+                    <td class="text-center">{{ getClassMeanPoints() }}</td>
+                    <td class="text-center">{{ getClassAvgGrade() }}</td>
+                    <td></td>
+                </tr>
+                <tr class="table-success fw-bold">
+                    <td colspan="3" class="text-end">Highest:</td>
+                    <td *ngFor="let subj of subjects" class="text-center">{{ getSubjectMax(subj) }}</td>
+                    <td class="text-center">{{ getMaxTotal() }}</td>
+                    <td class="text-center">{{ getMaxTotalPoints() }}</td>
+                    <td class="text-center">{{ getMax('average') }}%</td>
+                    <td class="text-center">{{ getMax('meanPoints') }}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr class="table-danger fw-bold">
+                    <td colspan="3" class="text-end">Lowest:</td>
+                    <td *ngFor="let subj of subjects" class="text-center">{{ getSubjectMin(subj) }}</td>
+                    <td class="text-center">{{ getMinTotal() }}</td>
+                    <td class="text-center">{{ getMinTotalPoints() }}</td>
+                    <td class="text-center">{{ getMin('average') }}%</td>
+                    <td class="text-center">{{ getMin('meanPoints') }}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+        <app-table-paging *ngIf="broadsheetRows.length > pageSize"
+            (pageChangedEvent)="pageChanged($event)"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"
+            [collectionSize]="broadsheetRows.length"
+            [pageSize]="pageSize"></app-table-paging>
+    </div>
+</div>

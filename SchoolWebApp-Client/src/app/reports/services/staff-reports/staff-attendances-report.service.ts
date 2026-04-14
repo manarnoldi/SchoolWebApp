@@ -123,7 +123,10 @@ export class StaffAttendancesReportService extends ResourceService<StaffAttendan
                             ]
                         };
 
-                        pdfMake.createPdf(docDefinition).open();
+                        pdfMake.createPdf(docDefinition).getBlob((blob) => {
+                            const url = URL.createObjectURL(blob);
+                            window.open(url, '_blank');
+                        });
                     };
 
                     reader.readAsDataURL(blob);

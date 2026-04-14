@@ -1,7 +1,8 @@
 <app-dashboard-header
     [title]="dashboardTitle"
     [breadcrumbs]="breadcrumbs"></app-dashboard-header>
-<hr>
+<hr class="mb-1">
+<a *ngIf="querySource==='dashboard'" class="btn btn-flat btn-sm btn-info mb-1" [routerLink]="['/']"><i class="fas fa-angle-double-left"></i> Dashboard</a>
 <section class="content">
     <div class="container-fluid px-1">
         <div class="row g-0 card-details-box border-primary mt-1">

@@ -14,6 +14,7 @@ import {
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
+import {GlobalSettingService} from '@/settings/services/global-setting.service';
 
 @Component({
     selector: 'app-student-attendance-form',
@@ -35,15 +36,23 @@ export class StudentAttendanceFormComponent implements OnInit {
     @Output() errorEvent = new EventEmitter<string>();
 
     studentAttendanceForm: FormGroup;
+    requireAbsenceReason: boolean = false;
 
     constructor(
         private formBuilder: FormBuilder,
         private toastrSvc: ToastrService,
         private schoolClassSvc: SchoolClassesService,
-        private router: Router
+        private router: Router,
+        private globalSettingSvc: GlobalSettingService
     ) { }
-    
+
     ngOnInit(): void {
+        this.globalSettingSvc.getByKey('General', 'RequireAbsenceReason').subscribe({
+            next: (setting) => {
+                this.requireAbsenceReason = setting?.settingValue === 'true';
+            },
+            error: () => {}
+        });
         this.refreshItems();
     }
 
@@ -101,18 +110,23 @@ export class StudentAttendanceFormComponent implements OnInit {
     }
 
     onSubmit = () => {
+        let formValue = this.studentAttendanceForm.value;
+        let isPresent = formValue.present === null ? false : formValue.present;
+        let remarks = (formValue.remarks || '').trim();
+
+        if (this.requireAbsenceReason && !isPresent && !remarks) {
+            this.toastrSvc.warning('A reason/remark is required for absent records.');
+            return;
+        }
+
         if (this.editMode) {
             let studentAttendanceId = this.studentAttendance.id;
-            this.studentAttendance = new StudentAttendance(
-                this.studentAttendanceForm.value
-            );
+            this.studentAttendance = new StudentAttendance(formValue);
             this.studentAttendance.id = studentAttendanceId;
         } else {
-            this.studentAttendance = new StudentAttendance(
-                this.studentAttendanceForm.value
-            );
+            this.studentAttendance = new StudentAttendance(formValue);
         }
-        this.studentAttendance.present = this.studentAttendance.present === null ? false : this.studentAttendance.present;
+        this.studentAttendance.present = isPresent;
         this.addItemEvent.emit(this.studentAttendance);
     };
 

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using SchoolWebApp.Core.Entities.Academics;
 using SchoolWebApp.Core.Entities.CBE.Assessments;
 using SchoolWebApp.Core.Entities.CBE.Cocurriculum;
+using SchoolWebApp.Core.Entities.CBE.CommunityService;
 using SchoolWebApp.Core.Entities.CBE.Exams;
 using SchoolWebApp.Core.Entities.CBE.Responsibilities;
 using SchoolWebApp.Core.Entities.CBE.Values;
@@ -19,7 +20,7 @@ using System.Security.Claims;
 
 namespace Project.Infrastructure.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<AppUser, AppRole, string>
+    public class ApplicationDbContext : IdentityDbContext<AppUser, AppRole, int>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options/*, IHttpContextAccessor httpContextAccessor*/, IHttpContextAccessor httpContextAccessor) : base(options)
@@ -40,8 +41,9 @@ namespace Project.Infrastructure.Data
         #region CBC Assessments
         public DbSet<Competency> Competencies { get; set; }
         public DbSet<GeneralOutcome> GeneralOutcomes { get; set; }
-        public DbSet<BroadOutcome> BroadOutcomes { get; set; }
+        public DbSet<SubjectOutcome> BroadOutcomes { get; set; }
         public DbSet<SpecificOutcome> SpecificOutcomes { get; set; }
+        public DbSet<Theme> Themes { get; set; }
         public DbSet<Strand> Strands { get; set; }
         public DbSet<SubStrand> SubStrands { get; set; }
         public DbSet<AssessmentType> AssessmentTypes { get; set; }
@@ -70,9 +72,13 @@ namespace Project.Infrastructure.Data
 
         #endregion
 
+        #region CBC Community Service Learning
+        public DbSet<CommunityServiceActivity> CommunityServiceActivities { get; set; }
+        public DbSet<StudentCommunityServiceActivity> StudentCommunityServiceActivities { get; set; }
+        #endregion
+
         #region CBC Responsibilities
         public DbSet<Responsibility> Responsibilities { get; set; }
-        public DbSet<SocialSkill> SocialSkills { get; set; }
         public DbSet<StudentResponsibility> StudentResponsibilities { get; set; }
         #endregion
 
@@ -108,6 +114,11 @@ namespace Project.Infrastructure.Data
         public DbSet<Religion> Religions { get; set; }
         public DbSet<SessionType> SessionTypes { get; set; }
         public DbSet<StaffCategory> StaffCategories { get; set; }
+        public DbSet<GlobalSetting> GlobalSettings { get; set; }
+        #endregion
+
+        #region Identity
+        public DbSet<MenuPermission> MenuPermissions { get; set; }
         #endregion
 
         #region Staff

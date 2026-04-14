@@ -7,7 +7,6 @@ using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using Microsoft.AspNetCore.Authorization;
 using SchoolWebApp.Core.DTOs.School.ToDoList;
-using SchoolWebApp.Core.Entities.Staff;
 
 namespace SchoolWebApp.API.Controllers.School
 {
@@ -72,30 +71,20 @@ namespace SchoolWebApp.API.Controllers.School
             }
         }
 
-        // GET api/toDoLists/byStaffId/5
-        /// <summary>
-        /// A method for retrieving to do list items by staff Id.
-        /// </summary>
-        /// <param name="id">The staff Id to be retrieved</param>
-        /// <returns></returns>
-        [HttpGet("byStaffId/{staffId}")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ToDoListDto))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        // GET api/toDoLists/byUserId/{userId}
+        [HttpGet("byUserId/{userId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ToDoListDto>))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetToDoListsByStaffId(int staffId)
+        public async Task<IActionResult> GetToDoListsByUserId(int userId)
         {
             try
             {
-                if (staffId <= 0) return BadRequest(staffId);
-                var _item = await _unitOfWork.ToDoLists.GetByStaffId(staffId);
-                if (_item == null) return NotFound();
-                var _itemDto = _mapper.Map<List<ToDoListDto>>(_item);
-                return Ok(_itemDto);
+                var items = await _unitOfWork.ToDoLists.Find(t => t.UserId == userId);
+                return Ok(_mapper.Map<List<ToDoListDto>>(items));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"An error occurred while retrieving the to do list items by staff id.");
+                _logger.LogError(ex, "An error occurred while retrieving to do list items by user id.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
@@ -145,7 +134,7 @@ namespace SchoolWebApp.API.Controllers.School
             if (ModelState.IsValid)
             {
                 if (await _unitOfWork.ToDoLists.ItemExistsAsync(s => s.ItemName == model.ItemName && s.Completed == model.Completed
-                && s.StaffDetailsId == model.StaffDetailsId && s.CompleteBy == model.CompleteBy))
+                && s.UserId == model.UserId && s.CompleteBy == model.CompleteBy))
                     return Conflict(new { message = $"The to do list item submitted already exist." });
                 try
                 {

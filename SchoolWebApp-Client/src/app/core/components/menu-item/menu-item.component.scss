@@ -1,3 +1,8 @@
 :host {
     cursor: pointer;
 }
+
+::ng-deep .depth-2-active.nav-link.active {
+    background-color: #17a2b8 !important;
+    color: #fff !important;
+}

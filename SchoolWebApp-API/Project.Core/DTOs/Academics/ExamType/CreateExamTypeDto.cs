@@ -10,7 +10,7 @@ namespace SchoolWebApp.Core.DTOs.Academics.ExamType
         [StringLength(255)]
         public required string Abbreviation { get; set; }
 
-        [Required(ErrorMessage = "Select if exam type is currently featured")]
-        public bool Featured { get; set; }
+        [Required(ErrorMessage = "Select if exam type is internal")]
+        public bool Internal { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using SchoolWebApp.Core.Entities.Class;
+﻿using SchoolWebApp.Core.Entities.CBE.Assessments;
+using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Entities.Shared;
 using SchoolWebApp.Core.Entities.Students;
@@ -26,5 +27,7 @@ namespace SchoolWebApp.Core.Entities.Academics
         public List<SubjectGroup> SubjectGroups { get; set; } = new();
         public List<Grade> Grades { get; set; } = new();
         public List<Session> Sessions { get; set; } = new();
+        public List<Strand> Strands { get; set; } = new();
+        public List<SubStrand> SubStrands { get; set; } = new();
     }
 }

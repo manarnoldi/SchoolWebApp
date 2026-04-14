@@ -27,6 +27,7 @@ export class StrandAddFormComponent implements OnInit {
     @Input() learningLevels: LearningLevel[];
     @Input() curricula: Curriculum[] = [];
     @Input() academicYears: AcademicYear[] = [];
+    @Input() themes: any[] = [];
     @Input() curriculum: Curriculum;
     @Input() editMode: boolean = false;
 
@@ -48,24 +49,28 @@ export class StrandAddFormComponent implements OnInit {
     refreshItems = () => {
         this.strandForm = this.formBuilder.group({
             name: ['', [Validators.required]],
+            code: [''],
             rank: [0, [Validators.required]],
             description: [''],
-            academicYearId: [null, [Validators.required]],
+            academicYearId: [null],
             curriculumId: [null, [Validators.required]],
             subjectId: [null, [Validators.required]],
-            learningLevelId: [null, [Validators.required]]
+            learningLevelId: [null, [Validators.required]],
+            themeId: [null]
         });
     };
 
     setFormControls = (strand: Strand) => {
         this.strandForm.setValue({
             name: strand.name,
+            code: strand.code ?? '',
             rank: strand.rank,
             description: strand.description,
             academicYearId: strand.academicYearId ?? null,
             curriculumId: strand.curriculumId ?? null,
             subjectId: strand.subjectId ?? null,
-            learningLevelId: strand.learningLevelId ?? null
+            learningLevelId: strand.learningLevelId ?? null,
+            themeId: strand.themeId ?? null
         });
     };
 

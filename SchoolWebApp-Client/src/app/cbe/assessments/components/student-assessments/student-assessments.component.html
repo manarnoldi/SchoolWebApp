@@ -1,0 +1,183 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<a *ngIf="querySource==='dashboard'" class="btn btn-flat btn-sm btn-info mb-1" [routerLink]="['/']"><i class="fas fa-angle-double-left"></i> Dashboard</a>
+<section class="content">
+    <div class="container-fluid px-1">
+        <div class="card card-outline card-info mb-1">
+            <div class="card-body p-1">
+                <div class="row g-1">
+                    <div class="col">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Curriculum <span class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm"
+                            [(ngModel)]="filterCurriculumId"
+                            (change)="onCurriculumChange()">
+                            <option [ngValue]="null" hidden disabled selected>Select</option>
+                            <option [ngValue]="c.id" *ngFor="let c of curricula">{{c.name}}</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Year <span class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm"
+                            [(ngModel)]="filterAcademicYearId"
+                            (change)="onAcademicYearChange()">
+                            <option [ngValue]="null" hidden disabled selected>Select</option>
+                            <option [ngValue]="y.id" *ngFor="let y of academicYears">{{y.name}}</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Session <span class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm"
+                            [(ngModel)]="filterSessionId"
+                            (change)="onSessionChange()">
+                            <option [ngValue]="null" hidden disabled selected>Select</option>
+                            <option [ngValue]="s.id" *ngFor="let s of sessions">{{s.sessionName}}</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Class <span class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm"
+                            [(ngModel)]="filterSchoolClassId"
+                            (change)="onClassChange()">
+                            <option [ngValue]="null" hidden disabled selected>Select</option>
+                            <option [ngValue]="sc.id" *ngFor="let sc of schoolClasses">{{sc.name}}</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Subject <span class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm"
+                            [(ngModel)]="filterSubjectId"
+                            (change)="onSubjectChange()">
+                            <option [ngValue]="null" hidden disabled selected>Select</option>
+                            <option [ngValue]="subj.id" *ngFor="let subj of subjects">{{subj.name}}</option>
+                        </select>
+                    </div>
+                    <div class="col" *ngIf="themes.length > 0">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Theme</label>
+                        <select class="form-select form-select-sm"
+                            [(ngModel)]="filterThemeId"
+                            (change)="onThemeChange()">
+                            <option [ngValue]="null">All Themes</option>
+                            <option [ngValue]="t.id" *ngFor="let t of themes">{{t.code ? t.code + ' - ' : ''}}{{t.name}}</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Strand <span class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm"
+                            [(ngModel)]="filterStrandId"
+                            (change)="onStrandChange()">
+                            <option [ngValue]="null" hidden disabled selected>Select</option>
+                            <option [ngValue]="strand.id" *ngFor="let strand of strands">{{strand.code ? strand.code + ' - ' : ''}}{{strand.name}}</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Sub-Strand <span class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm"
+                            [(ngModel)]="filterSubStrandId"
+                            (change)="onSubStrandChange()">
+                            <option [ngValue]="null" hidden disabled selected>Select</option>
+                            <option [ngValue]="ss.id" *ngFor="let ss of subStrands">{{ss.code ? ss.code + ' - ' : ''}}{{ss.name}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row g-1 mt-1">
+                    <div class="col">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Assessment Type <span class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm"
+                            [(ngModel)]="filterAssessmentTypeId">
+                            <option [ngValue]="null" hidden disabled selected>Select</option>
+                            <option [ngValue]="at.id" *ngFor="let at of assessmentTypes">{{at.name}}</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Teacher <span class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm"
+                            [(ngModel)]="filterStaffDetailsId">
+                            <option [ngValue]="null" hidden disabled selected>Select</option>
+                            <option [ngValue]="staff.id" *ngFor="let staff of teachers">{{staff.fullName}}</option>
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Date</label>
+                        <input type="date" class="form-control form-control-sm"
+                            [(ngModel)]="filterAssessmentDate" />
+                    </div>
+                    <div class="col-auto d-flex align-items-end">
+                        <button class="btn btn-sm btn-info" (click)="loadBulkAssessment()">
+                            <i class="fas fa-th"></i> Load Assessments
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bulk Assessment Grid -->
+        <div class="card" *ngIf="bulkLoaded">
+            <div class="card-header bg-success text-white p-1">
+                <strong>Student Assessments - {{ bulkOutcomes.length }} Outcome(s)</strong>
+                <span class="float-end">{{ bulkRows.length }} student(s) | {{ getBulkSavedCount() }} saved</span>
+            </div>
+            <div class="card-body table-responsive p-0">
+                <table class="table table-striped table-hover table-sm table-bordered mb-0">
+                    <thead>
+                        <tr class="table-dark">
+                            <th>#</th>
+                            <th class="text-nowrap">Adm No.</th>
+                            <th class="text-nowrap">Student Name</th>
+                            <th *ngFor="let oc of bulkOutcomes" class="text-center"
+                                style="min-width:120px; max-width:180px; white-space:normal; word-wrap:break-word; font-size:0.75rem; line-height:1.2;"
+                                [title]="oc.name">
+                                {{ oc.name }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of bulkRows; index as i">
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ row.upi }}</td>
+                            <td class="text-nowrap">{{ row.fullName }}</td>
+                            <td *ngFor="let oc of bulkOutcomes" class="p-0"
+                                [class.table-success]="row.outcomes[oc.id]?.existingId">
+                                <div class="d-flex align-items-center">
+                                    <select class="form-select form-select-sm border-0 flex-grow-1"
+                                        [(ngModel)]="row.outcomes[oc.id].gradeId"
+                                        style="font-size:0.75rem; padding:2px 4px;">
+                                        <option [ngValue]="null">-</option>
+                                        <option [ngValue]="grade.id" *ngFor="let grade of grades">{{grade.abbr}} ({{grade.points}})</option>
+                                    </select>
+                                    <i *ngIf="row.outcomes[oc.id]?.existingId"
+                                        class="fas fa-times text-danger me-1" style="cursor:pointer; font-size:0.65rem;"
+                                        title="Delete this assessment"
+                                        (click)="deleteBulkCell(row, oc.id)"></i>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-info fw-bold">
+                            <td colspan="3" class="text-end">Average:</td>
+                            <td *ngFor="let oc of bulkOutcomes" class="text-center">
+                                {{ getOutcomeAvg(oc.id) }}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="card-footer p-1 d-flex justify-content-between align-items-center">
+                <div>
+                    <small class="text-muted me-2">{{ getBulkGradedCount() }} grade(s) assigned</small>
+                    <button *ngIf="getBulkSavedCount() > 0" class="btn btn-danger btn-sm"
+                        (click)="deleteAllSavedAssessments()" [disabled]="isDeletingBulk">
+                        <i class="fas fa-trash"></i>
+                        {{ isDeletingBulk ? 'Deleting...' : 'Delete All Saved (' + getBulkSavedCount() + ')' }}
+                    </button>
+                </div>
+                <button class="btn btn-success btn-sm" (click)="saveBulkAssessments()" [disabled]="isSavingBulk">
+                    <i class="fas fa-save"></i>
+                    {{ isSavingBulk ? 'Saving...' : 'Save All Assessments' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</section>

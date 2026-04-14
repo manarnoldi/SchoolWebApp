@@ -26,6 +26,9 @@ import {Curriculum} from '@/academics/models/curriculum';
 import {EducationLevelService} from '@/school/services/education-level.service';
 import {EducationLevel} from '@/school/models/educationLevel';
 import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
+import { StudentClassService } from '@/students/services/student-class.service';
+import { StudentDetailsService } from '@/students/services/student-details.service';
+import { Status } from '@/core/enums/status';
 
 @Component({
     selector: 'app-school-class',
@@ -61,10 +64,18 @@ export class SchoolClassComponent implements OnInit {
         'Class name',
         'Rank',
         'Class Leaders',
+        'Students',
         'Description',
         'Action',
         'Leadership'
     ];
+
+    // Cache of students per school class id
+    classStudents: { [classId: number]: any[] } = {};
+    showStudentsModal: boolean = false;
+    selectedClassName: string = '';
+    selectedClassStudents: any[] = [];
+    isLoadingStudents: boolean = false;
 
     schoolClass: SchoolClass;
     schoolClasses: SchoolClass[] = [];
@@ -82,7 +93,9 @@ export class SchoolClassComponent implements OnInit {
         private academicYearsSvc: AcademicYearsService,
         private classLeadershipsService: ClassLeadershipsService,
         private educationLevelSvc: EducationLevelService,
-        private curriculumSvc: CurriculumService
+        private curriculumSvc: CurriculumService,
+        private studentClassSvc: StudentClassService,
+        private studentDetailsSvc: StudentDetailsService
     ) {}
 
     ngOnInit(): void {
@@ -183,19 +196,33 @@ export class SchoolClassComponent implements OnInit {
             .subscribe({
                 next: (schoolClasses) => {
                     let schoolClassLeadersReq = [];
-                    schoolClasses.forEach((sc) =>
+                    let studentClassesReq = [];
+                    schoolClasses.forEach((sc) => {
                         schoolClassLeadersReq.push(
                             this.classLeadershipsService.get(
                                 '/schoolClassLeaders/bySchoolClassId/' + sc.id
                             )
-                        )
-                    );
-                    schoolClassLeadersReq.push();
-                    forkJoin([...schoolClassLeadersReq]).subscribe(
-                        (resp) => {
-                            for (let i = 0; i < schoolClasses.length - 1; i++) {
-                                schoolClasses[i].schoolClassLeaders = resp[i];
-                            }
+                        );
+                        studentClassesReq.push(
+                            this.studentClassSvc.getBySchoolClassId(parseInt(sc.id), Status.Active)
+                        );
+                    });
+
+                    if (schoolClasses.length === 0) {
+                        this.schoolClasses = [];
+                        return;
+                    }
+
+                    forkJoin([
+                        forkJoin(schoolClassLeadersReq),
+                        forkJoin(studentClassesReq)
+                    ]).subscribe(
+                        ([leaders, studentsPerClass]) => {
+                            this.classStudents = {};
+                            schoolClasses.forEach((sc, i) => {
+                                sc.schoolClassLeaders = leaders[i] || [];
+                                this.classStudents[+sc.id] = studentsPerClass[i] || [];
+                            });
                             this.schoolClasses = schoolClasses.sort(
                                 (a, b) => a.rank - b.rank
                             );
@@ -210,6 +237,47 @@ export class SchoolClassComponent implements OnInit {
                 }
             });
     };
+
+    getStudentCount(classId: any): number {
+        return (this.classStudents[+classId] || []).length;
+    }
+
+    openStudentsModal(sc: any) {
+        let studentClasses = this.classStudents[+sc.id] || [];
+        if (studentClasses.length === 0) {
+            this.toastr.info('No students found in this class.');
+            return;
+        }
+        this.selectedClassName = (sc.learningLevel?.name || '') +
+            (sc.schoolStream?.name ? ' - ' + sc.schoolStream.name : '');
+        this.selectedClassStudents = [];
+        this.showStudentsModal = true;
+        this.isLoadingStudents = true;
+
+        // Fetch full student details (with gender, etc.) for each student
+        let requests = studentClasses
+            .filter((stc: any) => stc.studentId)
+            .map((stc: any) => this.studentDetailsSvc.getById(stc.studentId, '/students'));
+
+        forkJoin(requests).subscribe({
+            next: (students: any[]) => {
+                this.selectedClassStudents = students
+                    .filter(Boolean)
+                    .sort((a: any, b: any) => (a.fullName || '').localeCompare(b.fullName || ''));
+                this.isLoadingStudents = false;
+            },
+            error: (err) => {
+                this.isLoadingStudents = false;
+                this.toastr.error(err.error?.message || 'Error loading student details.');
+            }
+        });
+    }
+
+    closeStudentsModal() {
+        this.showStudentsModal = false;
+        this.selectedClassStudents = [];
+        this.selectedClassName = '';
+    }
 
     editItem(id: number) {
         this.schoolClassesSvc.getById(id, '/schoolClasses').subscribe(

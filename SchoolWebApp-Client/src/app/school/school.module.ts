@@ -19,6 +19,8 @@ import { EventsAddFormComponent } from './components/events/events-add-form/even
 import { EventsTableComponent } from './components/events/events-table/events-table.component';
 import { EventsDashboardComponent } from './components/events/events-dashboard/events-dashboard.component';
 import { EventsDashboardItemComponent } from './components/events/events-dashboard/events-dashboard-item/events-dashboard-item.component';
+import { DashboardExamSummaryComponent } from './components/dashboard-exam-summary/dashboard-exam-summary.component';
+import { BulkStaffSubjectsComponent } from './components/bulk-staff-subjects/bulk-staff-subjects.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +41,9 @@ import { EventsDashboardItemComponent } from './components/events/events-dashboa
     EventsAddFormComponent,
     EventsTableComponent,
     EventsDashboardComponent,
-    EventsDashboardItemComponent
+    EventsDashboardItemComponent,
+    DashboardExamSummaryComponent,
+    BulkStaffSubjectsComponent
   ],
   imports: [
     CoreModule,

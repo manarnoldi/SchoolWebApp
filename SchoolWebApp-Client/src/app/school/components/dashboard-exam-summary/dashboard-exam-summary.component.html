@@ -1,0 +1,70 @@
+<div class="card card-outline card-info mb-1">
+    <div class="card-header py-1">
+        <h3 class="card-title"><i class="fas fa-chart-line mr-1"></i> Class Exam Performance</h3>
+        <div class="card-tools">
+            <div class="d-inline-flex align-items-center gap-2">
+                <select class="form-select form-select-sm" style="width: auto; min-width: 120px;"
+                    [(ngModel)]="selectedSessionId">
+                    <option [ngValue]="null" disabled>Session</option>
+                    <option [ngValue]="s.id" *ngFor="let s of sessions">{{ s.sessionName }}</option>
+                </select>
+                <select class="form-select form-select-sm ml-1" style="width: auto; min-width: 120px;"
+                    [(ngModel)]="selectedExamTypeId">
+                    <option [ngValue]="null" disabled>Exam Type</option>
+                    <option [ngValue]="et.id" *ngFor="let et of examTypes">{{ et.name }}</option>
+                </select>
+                <button class="btn btn-sm btn-info ml-1" (click)="loadClassesAndPerformance()"
+                    [disabled]="!selectedSessionId || !selectedExamTypeId || isLoading">
+                    <i class="fas" [ngClass]="isLoading ? 'fa-spinner fa-spin' : 'fa-search'"></i> Load
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-1">
+        <!-- Loading -->
+        <div class="text-center py-3" *ngIf="isLoading">
+            <i class="fas fa-spinner fa-spin text-primary"></i>
+            <small class="text-muted ml-1">Loading performance data...</small>
+        </div>
+
+        <!-- No data -->
+        <div class="text-center py-3 text-muted" *ngIf="hasLoaded && !isLoading && classPerformance.length === 0">
+            <i class="fas fa-info-circle mr-1"></i> No exam results found for the selected filters.
+        </div>
+
+        <!-- Performance table -->
+        <div class="table-responsive" *ngIf="!isLoading && classPerformance.length > 0">
+            <table class="table table-sm table-hover table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Class</th>
+                        <th class="text-center">Students</th>
+                        <th>Class Average</th>
+                        <th class="text-center">Highest</th>
+                        <th class="text-center">Lowest</th>
+                        <th *ngIf="showTopStudent">Top Student</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let cp of classPerformance">
+                        <td><strong>{{ cp.className }}</strong></td>
+                        <td class="text-center">{{ cp.studentCount }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <span class="mr-2 font-weight-bold" [ngClass]="getPerformanceColor(cp.classAverage)"
+                                    style="min-width: 80px;">{{ cp.classAverage }}%<span class="text-muted ml-1" style="font-size:0.75rem;" *ngIf="cp.classAvgGrade">({{ cp.classAvgGrade }})</span></span>
+                                <div class="progress flex-grow-1" style="height: 8px;">
+                                    <div class="progress-bar" [ngClass]="getBarColor(cp.classAverage)"
+                                        [style.width.%]="getBarWidth(cp.classAverage)"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center text-success">{{ cp.highestAvg }}% <small class="text-muted" *ngIf="cp.highestGrade">({{ cp.highestGrade }})</small></td>
+                        <td class="text-center text-danger">{{ cp.lowestAvg }}% <small class="text-muted" *ngIf="cp.lowestGrade">({{ cp.lowestGrade }})</small></td>
+                        <td *ngIf="showTopStudent"><small>{{ cp.topStudent }}</small></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

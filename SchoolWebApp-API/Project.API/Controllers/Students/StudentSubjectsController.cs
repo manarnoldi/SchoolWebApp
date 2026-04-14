@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SchoolWebApp.Core.DTOs;
+using SchoolWebApp.Core.DTOs.Academics.Subject;
 using SchoolWebApp.Core.DTOs.Students.StudentSubjects;
 using SchoolWebApp.Core.Entities.Academics;
 using SchoolWebApp.Core.Entities.Students;
@@ -13,6 +14,7 @@ namespace SchoolWebApp.API.Controllers.Students
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class StudentSubjectsController : ControllerBase
     {
         private readonly ILogger<StudentSubjectsController> _logger;
@@ -264,6 +266,40 @@ namespace SchoolWebApp.API.Controllers.Students
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An error occurred while retrieving the student subjects by subject id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // GET api/studentSubjects/subjectsBySchoolClassId/5
+        /// <summary>
+        /// A method for retrieving distinct subjects allocated to students in a school class.
+        /// </summary>
+        /// <param name="schoolClassId">The school class Id</param>
+        /// <returns></returns>
+        [HttpGet("subjectsBySchoolClassId/{schoolClassId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<SubjectDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetSubjectsBySchoolClassId(int schoolClassId)
+        {
+            try
+            {
+                if (schoolClassId <= 0) return BadRequest(schoolClassId);
+                var _items = await _unitOfWork.StudentSubjects.GetSubjectsBySchoolClassId(schoolClassId);
+                if (_items == null) return NotFound();
+                var subjects = _items
+                    .Where(ss => ss.Subject != null)
+                    .Select(ss => ss.Subject)
+                    .DistinctBy(s => s.Id)
+                    .OrderBy(s => s.Rank)
+                    .ToList();
+                var _subjectDtos = _mapper.Map<List<SubjectDto>>(subjects);
+                return Ok(_subjectDtos);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving subjects by school class id.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }

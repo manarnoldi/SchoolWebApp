@@ -76,5 +76,14 @@ namespace SchoolWebApp.Infrastructure.Repositories.Students
                .ToListAsync();
             return studentSubjects;
         }
+
+        public async Task<List<StudentSubject>> GetSubjectsBySchoolClassId(int schoolClassId)
+        {
+            var studentSubjects = await _dbContext.StudentSubjects
+               .Where(e => e.StudentClass.SchoolClassId == schoolClassId)
+               .Include(s => s.Subject)
+               .ToListAsync();
+            return studentSubjects;
+        }
     }
 }

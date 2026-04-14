@@ -1,7 +1,8 @@
 <a
   (click)="handleMainMenuAction()"
+  [routerLink]="menuItem.path ? menuItem.path : null"
   class="nav-link"
-  [ngClass]="{active: isMainActive || isOneOfChildrenActive}">
+  [ngClass]="{'active': isMainActive || isOneOfChildrenActive, 'depth-2-active': depth >= 2 && isMainActive}">
   <i class="nav-icon {{ menuItem.iconClasses }}"></i>
   <p>
     {{ menuItem.name }}
@@ -17,10 +18,11 @@
 <ul class="nav nav-treeview"
     *ngIf="menuItem.children?.length > 0"
     [@openClose]="isMenuExtended"
-    [style.background-color]="'#2f4f4f'">
+    [style.background-color]="depth === 0 ? '#2f4f4f' : '#1a3a3a'">
   <app-menu-item
     *ngFor="let child of menuItem.children"
-    [menuItem]="child">
+    [menuItem]="child"
+    [depth]="depth + 1">
   </app-menu-item>
 </ul>
 

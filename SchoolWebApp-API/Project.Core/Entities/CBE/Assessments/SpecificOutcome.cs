@@ -8,8 +8,11 @@ namespace SchoolWebApp.Core.Entities.CBE.Assessments
         public int SubStrandId { get; set; }
         public SubStrand? SubStrand { get; set; } = null;
 
+        public int? SessionId { get; set; }
+        public Session? Session { get; set; } = null;
+
         public int BroadOutcomeId { get; set; }
-        public BroadOutcome? BroadOutcome { get; set; } = null;
+        public SubjectOutcome? BroadOutcome { get; set; } = null;
 
         public int GeneralOutcomeId { get; set; }
         public GeneralOutcome? GeneralOutcome { get; set; } = null;

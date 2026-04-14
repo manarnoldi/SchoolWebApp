@@ -4,13 +4,13 @@
             ><i class="fas fa-bars"></i
         ></a>
     </li>
-    <li class="nav-item d-none d-sm-inline-block">
-        <a [routerLink]="['/']" class="nav-link">Home</a>
-    </li>
-    <li class="nav-item d-none d-sm-inline-block">
-        <a [routerLink]="['/blank']" class="nav-link">Contact</a>
-    </li>
 </ul>
+
+<div class="brand-tagline-center d-none d-md-flex">
+    <span class="brand-name">Shule Nova</span>
+    <span class="brand-divider">|</span>
+    <span class="brand-slogan"><i class="fas fa-handshake me-1"></i>Your partner in managing your school</span>
+</div>
 
 <form class="form-inline ml-3" [formGroup]="searchForm" *ngIf="false">
     <div class="input-group input-group-sm">
@@ -30,7 +30,7 @@
 
 <ul class="navbar-nav ml-auto">
     <!-- <app-messages></app-messages> -->
-    <app-notifications></app-notifications>
+    <!-- <app-notifications></app-notifications> -->
     <!-- <app-language></app-language> -->
     <app-user></app-user>
     <!-- <li class="nav-item">

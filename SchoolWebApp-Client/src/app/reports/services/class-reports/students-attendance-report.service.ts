@@ -122,7 +122,10 @@ export class StudentsAttendanceReportService extends ResourceService<StudentAtte
                             ]
                         };
 
-                        pdfMake.createPdf(docDefinition).open();
+                        pdfMake.createPdf(docDefinition).getBlob((blob) => {
+                            const url = URL.createObjectURL(blob);
+                            window.open(url, '_blank');
+                        });
                     };
 
                     reader.readAsDataURL(blob);

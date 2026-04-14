@@ -12,7 +12,7 @@ import {ToastrService} from 'ngx-toastr';
 import {AuthService} from '@/core/services/auth.service';
 import {User} from '@/core/models/User';
 import {Router} from '@angular/router';
-import { AppService } from '@/core/services/app.service';
+import {AppService} from '@/core/services/app.service';
 
 @Component({
     selector: 'app-login',
@@ -23,8 +23,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     @HostBinding('class') class = 'login-box';
     public loginForm: UntypedFormGroup;
     public isAuthLoading = false;
-    public isGoogleLoading = false;
-    public isFacebookLoading = false;
+    public showPassword = false;
 
     currentUser = {};
     public currentYear: string = DateTime.now().toFormat('y');
@@ -43,17 +42,14 @@ export class LoginComponent implements OnInit, OnDestroy {
             'login-page'
         );
         this.loginForm = new UntypedFormGroup({
-            username: new UntypedFormControl(
-                'admin',
-                Validators.required
-            ),
+            username: new UntypedFormControl('admin', Validators.required),
             password: new UntypedFormControl('Admin@123', Validators.required)
         });
     }
 
     loginByAuth() {
         if (this.loginForm.valid) {
-            //this.spinner.show();
+            this.isAuthLoading = true;
             this.authService.signIn(this.loginForm.value).subscribe(
                 (result: any) => {
                     localStorage.setItem('ssw_token', result.token);
@@ -80,27 +76,32 @@ export class LoginComponent implements OnInit, OnDestroy {
                             });
                             this.authService.setCurrentUser(cuUser);
                             this.appService.setUserLoggedIn(true);
+                            this.isAuthLoading = false;
                             this.router.navigate(['/']);
-                            // this.spinner.hide();
                         },
                         (err) => {
+                            this.isAuthLoading = false;
                             this.toastr.error(
-                                'An error occured while logging to the application. Contact the system administrator.'
+                                'An error occurred while logging in. Contact the system administrator.'
                             );
                             console.log(err);
-                            // this.spinner.hide();
                         }
                     );
                 },
                 (err) => {
-                    this.toastr.error(
-                        'An error occured while logging to the application. Contact the system administrator.'
-                    );
-                    // this.spinner.hide();
+                    this.isAuthLoading = false;
+                    if (err.status === 401) {
+                        this.toastr.error('Invalid username or password.');
+                    } else {
+                        this.toastr.error(
+                            'An error occurred while logging in. Contact the system administrator.'
+                        );
+                    }
                 }
             );
         } else {
-            this.toastr.error('Form is not valid!');
+            this.loginForm.markAllAsTouched();
+            this.toastr.warning('Please fill in all required fields.');
         }
     }
 

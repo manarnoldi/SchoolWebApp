@@ -30,6 +30,7 @@ export class EventsAddFormComponent implements OnInit {
 
     eventForm: FormGroup;
     sessionsForFiltering: Session[] = [];
+    minEndDate: string = '';
 
     constructor(
         private formBuilder: FormBuilder,
@@ -42,17 +43,13 @@ export class EventsAddFormComponent implements OnInit {
 
     initializeForm = () => {
         this.sessionsForFiltering = [];
+        let today = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
+        this.minEndDate = today;
         this.eventForm = this.formBuilder.group({
             eventName: ['', [Validators.required]],
             eventLocation: ['', [Validators.required]],
-            startDate: [
-                this.datePipe.transform(new Date(), 'yyyy-MM-dd'),
-                [Validators.required]
-            ],
-            endDate: [
-                this.datePipe.transform(new Date(), 'yyyy-MM-dd'),
-                [Validators.required]
-            ],
+            startDate: [today, [Validators.required]],
+            endDate: [today, [Validators.required]],
             description: [''],
             sessionId: [null, [Validators.required]],
             academicYearId: [null, [Validators.required]]
@@ -77,15 +74,28 @@ export class EventsAddFormComponent implements OnInit {
         this.sessionsForFiltering = this.sessionsForFiltering.filter(
             (s) => s.academicYearId == acadYearId
         );
+        let startDateStr = formatDate(new Date(event.startDate), 'yyyy-MM-dd', 'en');
+        this.minEndDate = startDateStr;
         this.eventForm.setValue({
             eventName: event?.eventName,
             eventLocation: event?.eventLocation,
-            startDate: formatDate(new Date(event.startDate), 'yyyy-MM-dd', 'en'),
+            startDate: startDateStr,
             endDate: formatDate(new Date(event.endDate), 'yyyy-MM-dd', 'en'),
             description: event?.description,
             sessionId: event?.sessionId ?? null,
             academicYearId: acadYearId
         });
+    };
+
+    onStartDateChange = () => {
+        let startDate = this.eventForm.get('startDate').value;
+        if (startDate) {
+            this.minEndDate = startDate;
+            let currentEndDate = this.eventForm.get('endDate').value;
+            if (!currentEndDate || currentEndDate < startDate) {
+                this.eventForm.patchValue({endDate: startDate});
+            }
+        }
     };
 
     get f() {

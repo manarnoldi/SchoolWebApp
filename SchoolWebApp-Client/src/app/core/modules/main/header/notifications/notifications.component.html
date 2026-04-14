@@ -2,37 +2,36 @@
     <div slot="button">
         <a class="nav-link">
             <i class="far fa-bell"></i>
-            <span class="badge badge-warning navbar-badge">15</span>
+            <span class="badge badge-warning navbar-badge" *ngIf="notificationCount > 0">{{notificationCount}}</span>
         </a>
     </div>
     <div slot="menu">
-        <span class="dropdown-item dropdown-header">15 Notifications</span>
+        <span class="dropdown-item dropdown-header" *ngIf="notificationCount > 0">{{notificationCount}} Pending Task{{notificationCount !== 1 ? 's' : ''}}</span>
+        <span class="dropdown-item dropdown-header" *ngIf="notificationCount === 0">No pending tasks</span>
+
+        <ng-container *ngIf="overdueTodos.length > 0">
+            <div class="dropdown-divider"></div>
+            <span class="dropdown-item dropdown-header text-danger py-1" style="font-size: 0.75rem;">OVERDUE</span>
+            <a *ngFor="let todo of overdueTodos" class="dropdown-item" (click)="goToDashboard()" role="button">
+                <i class="fas fa-exclamation-circle mr-2 text-danger"></i>
+                <span class="text-truncate d-inline-block" style="max-width: 180px;">{{ todo.itemName }}</span>
+                <span class="float-right text-muted text-sm">{{ getTimeAgo(todo.completeBy) }}</span>
+            </a>
+        </ng-container>
+
+        <ng-container *ngIf="pendingTodos.length > 0">
+            <div class="dropdown-divider"></div>
+            <span class="dropdown-item dropdown-header text-info py-1" style="font-size: 0.75rem;">UPCOMING</span>
+            <a *ngFor="let todo of pendingTodos" class="dropdown-item" (click)="goToDashboard()" role="button">
+                <i class="far fa-clock mr-2 text-info"></i>
+                <span class="text-truncate d-inline-block" style="max-width: 180px;">{{ todo.itemName }}</span>
+                <span class="float-right text-muted text-sm">{{ getTimeAgo(todo.completeBy) }}</span>
+            </a>
+        </ng-container>
+
         <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item">
-            <i class="fas fa-envelope mr-2"></i> 4 new messages
-            <span class="float-right text-muted text-sm">3 mins</span>
+        <a class="dropdown-item dropdown-footer" (click)="goToDashboard()" role="button">
+            View All Tasks
         </a>
-        <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item">
-            <i class="fas fa-users mr-2"></i> 8 friend requests
-            <span class="float-right text-muted text-sm">12 hours</span>
-        </a>
-        <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item">
-            <i class="fas fa-file mr-2"></i> 3 new reports
-            <span class="float-right text-muted text-sm">2 days</span>
-        </a>
-        <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item dropdown-footer"
-            >See All Notifications</a
-        >
     </div>
 </pf-dropdown>
-
-<ng-template #notification>
-    <a href="#" class="dropdown-item">
-        <i class="fas fa-envelope mr-2"></i> 4 new messages
-        <span class="float-right text-muted text-sm">3 mins</span>
-    </a>
-    <div class="dropdown-divider"></div>
-</ng-template>

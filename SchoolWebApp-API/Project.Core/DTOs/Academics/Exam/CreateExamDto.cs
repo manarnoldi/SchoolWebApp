@@ -8,18 +8,14 @@ namespace SchoolWebApp.Core.DTOs.Academics.Exam
 {
     public class CreateExamDto
     {
-        public required string Name { get; set; }
-       [Required(ErrorMessage = "Enter the exam total mark")]
+        [Required(ErrorMessage = "Enter the exam total mark")]
         [Display(Name = "Examination total mark")]
         public float ExamMark { get; set; }
 
-        [Required(ErrorMessage = "Enter the examination contributing mark")]
-        [Display(Name = "Contributing mark")]
-        public float ContributingMark { get; set; }
         public DateOnly ExamStartDate { get; set; }
         public DateOnly ExamEndDate { get; set; }
         public DateOnly ExamMarkEntryEndDate { get; set; }
-        public string? OtherDetails { get; set; }
+        public string? Description { get; set; }
 
         public int ExamTypeId { get; set; }
         public ExamTypeDto? ExamType { get; set; }

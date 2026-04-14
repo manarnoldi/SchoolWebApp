@@ -28,6 +28,7 @@ namespace SchoolWebApp.Core.Entities.Academics
         public int NumOfLessons { get; set; }
         public string? Description { get; set; }
         public bool Optional { get; set; }
+        public bool Examinable { get; set; } = true;
         public int Rank { get; set; }
         public int SubjectGroupId { get; set; }
         public SubjectGroup? SubjectGroup { get; set; }
@@ -42,7 +43,9 @@ namespace SchoolWebApp.Core.Entities.Academics
         public List<StaffSubject> StaffSubjects { get; set; } = new();
         public List<Exam> Exams { get; set; } = new();
         public List<EducationLevelSubject> educationLevelSubjects { get; set; } = new();
-        public List<BroadOutcome> BroadOutcomes { get; set; } = new();
+        public List<SubjectOutcome> BroadOutcomes { get; set; } = new();
         public List<Strand> Strands { get; set; } = new();
+        public List<SubStrand> SubStrands { get; set; } = new();
+        public List<LessonAllocation> LessonAllocations { get; set; } = new();
     }
 }
