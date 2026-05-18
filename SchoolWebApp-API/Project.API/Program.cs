@@ -20,8 +20,8 @@ var builder = WebApplication.CreateBuilder(args);
 string mySqlConnectionStr = builder.Configuration.GetConnectionString("DefaultConnection");
 
 Log.Logger = new LoggerConfiguration()
-        .MinimumLevel.Error()
-        // .WriteTo.Console()
+        .MinimumLevel.Information()
+        .WriteTo.Console()
         .WriteTo.MySQL(mySqlConnectionStr)
         .CreateLogger();
 
@@ -147,7 +147,7 @@ app.UseExceptionHandler(errorApp =>
     {
         var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
         var exception = exceptionHandlerPathFeature?.Error;
-        //Log.Error(exception, "Unhandled exception occurred");
+        Log.Error(exception, "Unhandled exception occurred");
         return Task.CompletedTask;
     });
 });
