@@ -27,14 +27,9 @@ jobs:
           cache: 'npm'
           cache-dependency-path: SchoolWebApp-Client/package-lock.json
 
-      # NOTE: `npm install` (not `npm ci`) — package-lock.json was generated on Windows
-      # and doesn't list `@nx/nx-linux-x64-gnu` (nx's Linux-native binary, pulled in
-      # transitively by Angular CLI). `npm ci` strictly follows the lockfile and fails;
-      # `npm install` resolves cross-platform optional deps correctly.
-      # See: https://github.com/npm/cli/issues/4828
       - name: Install
         working-directory: SchoolWebApp-Client
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Build (production)
         working-directory: SchoolWebApp-Client
