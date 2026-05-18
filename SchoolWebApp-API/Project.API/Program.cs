@@ -139,6 +139,8 @@ builder.Services.AddApiVersioning(setupAction =>
 
 var app = builder.Build();
 
+app.UseCors("CorsPolicy");
+
 app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(context =>
@@ -149,7 +151,6 @@ app.UseExceptionHandler(errorApp =>
         return Task.CompletedTask;
     });
 });
-app.UseCors("CorsPolicy");
 
 // Apply pending migrations + idempotent seed/schema adjustments at startup
 using (var scope = app.Services.CreateScope())

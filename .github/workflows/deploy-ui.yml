@@ -1,0 +1,51 @@
+# Build the Angular client and FTP-deploy it to the Windows host (site4now / myWindowsHosting).
+#
+# Required GitHub secrets (Repo → Settings → Secrets and variables → Actions):
+#   FTP_SERVER          e.g. win8082.site4now.net               (reused from the API workflow)
+#   FTP_USERNAME        e.g. smwadwaa-002                       (reused from the API workflow)
+#   FTP_PASSWORD        the FTP password                        (reused from the API workflow)
+#   FTP_REMOTE_DIR_UI   the remote folder for the UI site, e.g. /swikunda-ui/
+#
+# Trigger: manual only — run from the Actions tab via the "Run workflow" button.
+
+name: Deploy UI to site4now (FTP)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: SchoolWebApp-Client/package-lock.json
+
+      - name: Install
+        working-directory: SchoolWebApp-Client
+        run: npm ci
+
+      - name: Build (production)
+        working-directory: SchoolWebApp-Client
+        run: npm run build
+
+      # FTP upload — only diffs are pushed on subsequent runs (state file kept on the host).
+      - name: FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_REMOTE_DIR_UI }}
+          local-dir: ./SchoolWebApp-Client/dist/shulenova/
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**

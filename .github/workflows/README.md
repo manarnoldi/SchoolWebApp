@@ -1,38 +1,60 @@
 # GitHub Actions Deployment
 
-## `deploy-api.yml` — API → site4now (FTP)
+Two manual workflows ship code to site4now over FTP:
 
-### One-time setup
+- `deploy-api.yml` → the .NET 8 API
+- `deploy-ui.yml`  → the Angular client
+
+## One-time setup (shared secrets)
 
 In the GitHub repo, go to **Settings → Secrets and variables → Actions → New repository secret**, and add:
 
-| Secret           | Value                                                                 |
-|------------------|-----------------------------------------------------------------------|
-| `FTP_SERVER`     | `win8082.site4now.net` (from your hosting panel → FTP Address)        |
-| `FTP_USERNAME`   | `smwadwaa-002` (from your hosting panel → FTP Login ID)               |
-| `FTP_PASSWORD`   | Your FTP password (set / reset in the hosting panel if you forgot it) |
-| `FTP_REMOTE_DIR` | `/site5/wwwroot/` — the remote folder for the target site             |
+| Secret              | Used by         | Value                                                                          |
+|---------------------|-----------------|--------------------------------------------------------------------------------|
+| `FTP_SERVER`        | both            | `win8082.site4now.net` (from hosting panel → FTP Address)                      |
+| `FTP_USERNAME`      | both            | `smwadwaa-002` (from hosting panel → FTP Login ID)                             |
+| `FTP_PASSWORD`      | both            | Your FTP password                                                              |
+| `FTP_REMOTE_DIR`    | `deploy-api.yml`| `/swikunda-api/` — the remote folder the API site is bound to in IIS          |
+| `FTP_REMOTE_DIR_UI` | `deploy-ui.yml` | `/swikunda-ui/`  — the remote folder the UI site is bound to in IIS           |
 
-> **Find the right remote dir**: In the hosting panel, the API site listed as `shulenova-api` maps to `smwadwaa-002-site5.qtempurl.com` — site number `5`, so the FTP path is usually `/site5/wwwroot/`. For other sites, change the digit.
+> **Find the right remote dir**: Log into FileZilla with these credentials. The root listing shows the named site folders (`swikunda-api`, `swikunda-ui`, `shulenova-api`, …). Each named folder IS the IIS document root — files go directly inside it, with no `wwwroot/` subfolder. Use whichever name matches the site you're deploying to.
 
-### How it runs
+## How they run
 
-- **Manual only**: in the GitHub repo → **Actions** tab → **Deploy API to site4now (FTP)** → **Run workflow** (pick the `master` branch). There is no auto-deploy on push.
+Both workflows are **manual only** — no auto-deploy on push.
 
-### What it does
+To deploy: GitHub repo → **Actions** tab → pick **Deploy API to site4now (FTP)** or **Deploy UI to site4now (FTP)** → **Run workflow** → pick `master` → **Run workflow**.
 
+## What each one does
+
+### `deploy-api.yml`
 1. Checks out the repo.
 2. Sets up .NET 8.
 3. `dotnet publish` the API project in Release mode to `./publish`.
-4. FTPs the result to the configured remote folder using `SamKirkland/FTP-Deploy-Action`. Only changed files are uploaded on subsequent runs (the action keeps a state file on the server).
+4. FTPs the output to `FTP_REMOTE_DIR`. The exclude list keeps `appsettings.Development.json` and `appsettings.Production.json` off the wire so the live config on the server is never overwritten.
 
-### After deploy
+### `deploy-ui.yml`
+1. Checks out the repo.
+2. Sets up Node 20 with npm cache.
+3. `npm ci` then `npm run build` (which is `ng build --configuration production`).
+4. FTPs `SchoolWebApp-Client/dist/shulenova/` to `FTP_REMOTE_DIR_UI`.
 
-- The host's IIS auto-reloads when files change. If your DB connection string or other secrets differ in production, set them in `appsettings.Production.json` on the server (the FTP excludes `appsettings.Development.json` so it won't overwrite local-only dev settings).
-- First-time only: ensure `appsettings.Production.json` exists on the server with the live DB connection string. The deploy will not overwrite if you've added it manually under a name the workflow doesn't deploy.
+Both use `SamKirkland/FTP-Deploy-Action` with a per-site `.ftp-deploy-sync-state.json` on the server, so subsequent runs upload only what changed.
 
-### Troubleshooting
+## After API deploy
 
-- **500.30** on first request after deploy → the app failed to start. SSH/RDP into the host (or open the hosting panel's Application Logs) and look at `stdout` logs. Usually a missing connection string or a migration error.
-- **502.5** → wrong .NET runtime version on the host. Hosting panels usually let you pick the version; make sure it's set to **.NET 8 (LTS)**.
-- **FTP connection refused** → some Windows hosts need `secure: false` plus passive mode; the `SamKirkland/FTP-Deploy-Action` defaults to FTP (port 21). If your host requires FTPS, add `protocol: ftps` to the workflow step.
+- IIS auto-reloads when files change.
+- **First-time only**: FTP an `appsettings.Production.json` into the API folder with the live DB connection string and JWT key. Without it the app starts with empty config and crashes on the first DB hit. Future deploys won't touch it (excluded).
+
+## After UI deploy
+
+- Reload the site in your browser. If the new bundle hash isn't loading, do a hard refresh (Ctrl+Shift+R) to bypass the browser cache for `index.html`.
+- The Angular build copies `src/web.config` into the dist, which gives the SPA the IIS rewrite rules it needs for deep links.
+
+## Troubleshooting
+
+- **API 500.30** on first request → app failed to start. Check the hosting panel's Application Logs / `stdout` logs. Usually a missing connection string or a migration error.
+- **502.5** → wrong .NET runtime version on the host. Set the site to **.NET 8 (LTS)** in the hosting panel.
+- **CORS errors in the browser** → the IIS `WebDAVModule` intercepts `OPTIONS` preflights on Windows shared hosts. The included [`Project.API/web.config`](../../SchoolWebApp-API/Project.API/web.config) removes WebDAV; if you still see CORS errors after deploy, confirm that web.config landed on the server and contains the `<remove name="WebDAVModule" />` line.
+- **`ECONNRESET (data socket)`** during FTP upload → transient hosting hiccup. Re-run the workflow. If persistent, your hosting quota may be full — clean up orphan folders from earlier mis-targeted deploys.
+- **FTP connection refused** → if your host requires FTPS, add `protocol: ftps` and `security: loose` to the workflow's FTP-Deploy step.

@@ -42,8 +42,8 @@ export class LoginComponent implements OnInit, OnDestroy {
             'login-page'
         );
         this.loginForm = new UntypedFormGroup({
-            username: new UntypedFormControl('admin', Validators.required),
-            password: new UntypedFormControl('Admin@123', Validators.required)
+            username: new UntypedFormControl('', Validators.required),
+            password: new UntypedFormControl('', Validators.required)
         });
     }
 
