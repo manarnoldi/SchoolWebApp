@@ -4,7 +4,6 @@ import {SharedModule} from '@/shared/shared.module';
 import {SecurityComponent} from './security.component';
 import {UsersComponent} from './components/users/users.component';
 import {RolesComponent} from './components/roles/roles.component';
-import {UserRolesComponent} from './components/user-roles/user-roles.component';
 import {MenuPermissionsComponent} from './components/menu-permissions/menu-permissions.component';
 
 @NgModule({
@@ -12,7 +11,6 @@ import {MenuPermissionsComponent} from './components/menu-permissions/menu-permi
         SecurityComponent,
         UsersComponent,
         RolesComponent,
-        UserRolesComponent,
         MenuPermissionsComponent
     ],
     imports: [

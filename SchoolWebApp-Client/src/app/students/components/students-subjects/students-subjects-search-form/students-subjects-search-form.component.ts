@@ -20,6 +20,9 @@ export class StudentsSubjectsSearchFormComponent implements OnInit {
     @Input() academicYears: AcademicYear[] = [];
     @Input() schoolClasses: SchoolClass[] = [];
     @Input() studentClasses: StudentClass[] = [];
+    // When false, hides the per-student dropdown - useful when the parent
+    // page renders the full student list instead (with click-to-select).
+    @Input() showStudent: boolean = true;
 
     @Output() searchItemEvent = new EventEmitter<StudentSubjectSearch>();
     @Output() curriculumChangedEvent = new EventEmitter<number>();
@@ -90,5 +93,24 @@ export class StudentsSubjectsSearchFormComponent implements OnInit {
             this.studentsSubjectsSearchForm.value
         );
         this.searchItemEvent.emit(this.ssSearch);
+    };
+
+    // Replays a previously-saved selection into the dropdowns. Used by the
+    // parent to restore filter state when the user navigates back to this
+    // page. Only patches the FormGroup - the parent re-runs the data-loading
+    // cascade so the dependent dropdowns repopulate in the correct order.
+    setFormValues = (values: {
+        curriculumId?: number | null;
+        academicYearId?: number | null;
+        educationLevelId?: number | null;
+        schoolClassId?: number | null;
+    }) => {
+        if (!this.studentsSubjectsSearchForm) return;
+        this.studentsSubjectsSearchForm.patchValue({
+            curriculumId: values.curriculumId ?? null,
+            academicYearId: values.academicYearId ?? null,
+            educationLevelId: values.educationLevelId ?? null,
+            schoolClassId: values.schoolClassId ?? null
+        });
     };
 }

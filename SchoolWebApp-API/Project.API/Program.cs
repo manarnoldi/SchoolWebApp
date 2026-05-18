@@ -17,7 +17,7 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string mySqlConnectionStr = builder.Configuration.GetConnectionString("PrimaryDbConnection");
+string mySqlConnectionStr = builder.Configuration.GetConnectionString("OnlineSwikundaDbConnection");
 
 Log.Logger = new LoggerConfiguration()
         .MinimumLevel.Error()
@@ -122,6 +122,11 @@ builder.Services.AddAuthorization(options =>
         policy.RequireRole("Administrator");
         // policy.RequireClaim("roles", "Admin");
     });
+    options.AddPolicy("SuperAdminRole", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireRole("SuperAdministrator");
+    });
 });
 
 builder.Services.AddApiVersioning(setupAction =>
@@ -145,6 +150,23 @@ app.UseExceptionHandler(errorApp =>
     });
 });
 app.UseCors("CorsPolicy");
+
+// Apply pending migrations + idempotent seed/schema adjustments at startup
+using (var scope = app.Services.CreateScope())
+{
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    try
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<Project.Infrastructure.Data.ApplicationDbContext>();
+        dbContext.Database.Migrate();
+        await Project.Infrastructure.Data.DatabaseBootstrapper.ApplyAsync(dbContext, logger);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Error applying database migrations / bootstrapper at startup.");
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

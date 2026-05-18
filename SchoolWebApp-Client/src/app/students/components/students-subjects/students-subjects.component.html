@@ -18,14 +18,27 @@
             <app-students-subjects-search-form [curricula]="curricula"
                 [educationLevels]="educationLevels" [academicYears]="academicYears"
                 [schoolClasses]="schoolClasses" [studentClasses]="studentClasses"
+                [showStudent]="false"
                 (curriculumChangedEvent)="curriculumChanged($event)"
                 (studentChangedEvent)="studentsChanged()"
                 (educationLevelYearChangedEvent)="educationLevelYearChanged($event)"
                 (schoolClassChangedEvent)="schoolClassChanged($event)"
                 (searchItemEvent)="dataSubmitted($event)"></app-students-subjects-search-form>
         </div>
-        <app-students-subjects-table [tableTitle]="'Student subjects list'"
-            [studentSubjects]="studentSubjects"
-            (deleteItemEvent)="deleteItem($event)"></app-students-subjects-table>
+        <div class="row g-0">
+            <div class="col-4">
+                <app-student-class-min-table
+                    [studentClasses]="studentClasses"
+                    [subjectCounts]="subjectCounts"
+                    [selectedId]="selectedStudentClassId"
+                    [showStatus]="false" [showMinimum]="true"
+                    (studentClassClickedEvent)="studentClassClicked($event)"></app-student-class-min-table>
+            </div>
+            <div class="col-8">
+                <app-students-subjects-table [tableTitle]="'Student subjects list'"
+                    [studentSubjects]="studentSubjects"
+                    (deleteItemEvent)="deleteItem($event)"></app-students-subjects-table>
+            </div>
+        </div>
     </div>
 </section>

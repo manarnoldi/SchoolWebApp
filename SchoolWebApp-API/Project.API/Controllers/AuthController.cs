@@ -60,6 +60,12 @@ namespace SchoolWebApp.API.Controllers
                 return BadRequest(new { message = string.Join(" ", errors) });
             }
 
+            if (user.MustChangePassword)
+            {
+                user.MustChangePassword = false;
+                await _userManager.UpdateAsync(user);
+            }
+
             return Ok(new { message = "Password changed successfully." });
         }
     }

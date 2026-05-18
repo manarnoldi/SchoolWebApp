@@ -63,6 +63,10 @@ export class ExamsComponent implements OnInit {
     exams: Exam[] = [];
     isSaving: boolean = false;
 
+    // Multi-select for bulk delete on the registered-exams table.
+    selectedExamIds: number[] = [];
+    isDeleting: boolean = false;
+
     constructor(
         private toastr: ToastrService,
         private examSvc: ExamService,
@@ -326,8 +330,58 @@ export class ExamsComponent implements OnInit {
         if (!this.filterSessionId || !this.filterAcademicYearId || !this.filterCurriculumId) return;
         let url = `/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}`;
         this.examSvc.get(url).subscribe({
-            next: (exams) => { this.exams = exams; },
+            next: (exams) => {
+                this.exams = exams;
+                this.selectedExamIds = [];  // reset selection when the underlying list changes
+            },
             error: (err) => this.toastr.error(err.error)
+        });
+    };
+
+    // ---- Multi-select helpers for bulk delete -------------------------------
+    isExamSelected = (examId: number): boolean => this.selectedExamIds.includes(examId);
+    toggleExamSelection = (examId: number) => {
+        const idx = this.selectedExamIds.indexOf(examId);
+        if (idx > -1) this.selectedExamIds.splice(idx, 1);
+        else this.selectedExamIds.push(examId);
+    };
+    allExamsSelected = (): boolean =>
+        this.exams.length > 0 && this.selectedExamIds.length === this.exams.length;
+    toggleAllExams = () => {
+        this.selectedExamIds = this.allExamsSelected()
+            ? []
+            : this.exams.map((e) => parseInt(e.id));
+    };
+
+    deleteSelectedExams = () => {
+        const ids = [...this.selectedExamIds];
+        if (ids.length === 0) {
+            this.toastr.info('Select at least one exam to delete.');
+            return;
+        }
+        Swal.fire({
+            title: `Delete ${ids.length} exam(s)?`,
+            text: `This will permanently delete the selected exam(s) and any linked exam results. This cannot be undone.`,
+            width: 460, position: 'top', padding: '1em', icon: 'warning',
+            showCancelButton: true, confirmButtonText: `Delete ${ids.length}`,
+            cancelButtonText: 'Cancel', confirmButtonColor: '#d33'
+        }).then((result) => {
+            if (!result.value) return;
+            this.isDeleting = true;
+            const requests = ids.map((id) => this.examSvc.delete('/exams', id));
+            forkJoin(requests).subscribe({
+                next: () => {
+                    this.isDeleting = false;
+                    this.toastr.success(`${ids.length} exam(s) deleted.`);
+                    this.searchExams();
+                },
+                error: (err) => {
+                    this.isDeleting = false;
+                    this.toastr.error(err.error?.message || 'Error deleting exams. Some may have linked exam results blocking the delete.');
+                    // Refresh anyway so we show what's actually left.
+                    this.searchExams();
+                }
+            });
         });
     };
 

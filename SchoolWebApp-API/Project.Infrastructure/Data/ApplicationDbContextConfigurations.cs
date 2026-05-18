@@ -12,6 +12,9 @@ using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Entities.Settings;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Entities.Students;
+using SchoolWebApp.Core.Entities.Finance;
+using SchoolWebApp.Core.Entities.Approvals;
+using SchoolWebApp.Core.Entities.Sponsorships;
 
 namespace Project.Infrastructure.Data
 {
@@ -37,6 +40,106 @@ namespace Project.Infrastructure.Data
                 .WithMany(e => e.SpecificOutcomes)
                 .UsingEntity(j => j.ToTable("SpecificOutcomeCompetencies"));
             // Responsibility-SocialSkill many-to-many removed - merged into single Responsibility table with Category
+
+            // Finance - decimal precision
+            modelBuilder.Entity<FeeStructureItem>().Property(p => p.Amount).HasPrecision(18, 2);
+            modelBuilder.Entity<StudentInvoice>().Property(p => p.TotalAmount).HasPrecision(18, 2);
+            modelBuilder.Entity<StudentInvoice>().Property(p => p.PaidAmount).HasPrecision(18, 2);
+            modelBuilder.Entity<StudentInvoice>().Property(p => p.DiscountAmount).HasPrecision(18, 2);
+            modelBuilder.Entity<StudentInvoiceItem>().Property(p => p.Amount).HasPrecision(18, 2);
+            modelBuilder.Entity<StudentInvoiceItem>().Property(p => p.Discount).HasPrecision(18, 2);
+            modelBuilder.Entity<Payment>().Property(p => p.Amount).HasPrecision(18, 2);
+            modelBuilder.Entity<ExpenseLine>().Property(p => p.Amount).HasPrecision(18, 2);
+            modelBuilder.Entity<JournalLine>().Property(p => p.Debit).HasPrecision(18, 2);
+            modelBuilder.Entity<JournalLine>().Property(p => p.Credit).HasPrecision(18, 2);
+
+            // Finance - FK behavior
+            modelBuilder.Entity<Account>()
+                .HasOne(a => a.ParentAccount)
+                .WithMany()
+                .HasForeignKey(a => a.ParentAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Approvals — cascade disabled; callers must remove children first.
+            modelBuilder.Entity<ApprovalWorkflowStep>()
+                .HasOne(s => s.ApprovalWorkflow)
+                .WithMany(w => w.Steps)
+                .HasForeignKey(s => s.ApprovalWorkflowId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ApprovalWorkflowStep>()
+                .HasOne(s => s.Role)
+                .WithMany()
+                .HasForeignKey(s => s.RoleId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ApprovalRequest>()
+                .HasOne(r => r.ApprovalWorkflow)
+                .WithMany()
+                .HasForeignKey(r => r.ApprovalWorkflowId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ApprovalRequest>()
+                .HasOne(r => r.SubmittedBy)
+                .WithMany()
+                .HasForeignKey(r => r.SubmittedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ApprovalRequest>()
+                .HasIndex(r => new { r.EntityType, r.EntityId });
+
+            modelBuilder.Entity<ApprovalStepAction>()
+                .HasOne(a => a.ApprovalRequest)
+                .WithMany(r => r.Actions)
+                .HasForeignKey(a => a.ApprovalRequestId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ApprovalStepAction>()
+                .HasOne(a => a.AssignedTo)
+                .WithMany()
+                .HasForeignKey(a => a.AssignedToUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ApprovalStepAction>()
+                .HasOne(a => a.ActionedBy)
+                .WithMany()
+                .HasForeignKey(a => a.ActionedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Sponsorships — decimal precision + FK rules
+            modelBuilder.Entity<Sponsorship>().Property(p => p.FixedAmount).HasPrecision(18, 2);
+            modelBuilder.Entity<Sponsorship>().Property(p => p.Percentage).HasPrecision(5, 2);
+            modelBuilder.Entity<SponsorPayment>().Property(p => p.Amount).HasPrecision(18, 2);
+
+            modelBuilder.Entity<Sponsor>()
+                .HasOne(s => s.ReceivableAccount)
+                .WithMany()
+                .HasForeignKey(s => s.ReceivableAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Sponsorship>()
+                .HasOne(s => s.Sponsor)
+                .WithMany()
+                .HasForeignKey(s => s.SponsorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SponsorshipFeeCategory>()
+                .HasOne(s => s.Sponsorship)
+                .WithMany(x => x.FeeCategories)
+                .HasForeignKey(s => s.SponsorshipId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<StudentInvoiceItem>()
+                .HasOne(i => i.Sponsorship)
+                .WithMany()
+                .HasForeignKey(i => i.SponsorshipId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SponsorPayment>()
+                .HasOne(p => p.Sponsor)
+                .WithMany()
+                .HasForeignKey(p => p.SponsorId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         public static void SeedData(ModelBuilder modelBuilder)
@@ -91,6 +194,15 @@ namespace Project.Infrastructure.Data
                 NormalizedName = Authorization.Roles.Others.ToString().ToUpper(),
                 Created = DateTime.Now, CreatedBy = "admin", Modified = DateTime.Now, ModifiedBy = "admin"
             });
+            modelBuilder.Entity<AppRole>().HasData(new AppRole
+            {
+                Id = 8,
+                Name = Authorization.Roles.SuperAdministrator.ToString(),
+                NormalizedName = Authorization.Roles.SuperAdministrator.ToString().ToUpper(),
+                Created = DateTime.Now, CreatedBy = "admin", Modified = DateTime.Now, ModifiedBy = "admin"
+            });
+            // Auto-assign the default admin user to the SuperAdministrator role
+            modelBuilder.Entity<IdentityUserRole<int>>().HasData(new IdentityUserRole<int> { RoleId = 8, UserId = 1 });
 
 
             //Add staff category
@@ -217,6 +329,8 @@ namespace Project.Infrastructure.Data
                 PhoneNumber = "+254724920000",
                 NormalizedUserName = Authorization.default_username.ToUpper(),
                 NormalizedEmail = Authorization.default_email.ToUpper(),
+                // Seeded admin keeps its shipped password — no forced change.
+                MustChangePassword = false,
                 Created = DateTime.Now,
                 CreatedBy = "admin",
                 Modified = DateTime.Now,
@@ -254,6 +368,67 @@ namespace Project.Infrastructure.Data
             //modelBuilder.Entity<EducationLevel>().HasData(schoolLevel1);
             //modelBuilder.Entity<EducationLevel>().HasData(schoolLevel2);
 
+            // Seed default approval workflows (2-step: Reviewer + Approver, Administrator role, maker-checker on)
+            var seedTime = DateTime.Now;
+            var formDefaults = new (int id, string formKey, string name)[]
+            {
+                (1, "BudgetAmendment", "Budget Amendment Approval"),
+                (2, "Expense", "Expense Approval"),
+                (3, "JournalEntry", "Journal Entry Approval"),
+                (4, "CreditDebitNote", "Credit/Debit Note Approval"),
+                (5, "Budget", "Budget Approval"),
+            };
+            foreach (var f in formDefaults)
+            {
+                modelBuilder.Entity<ApprovalWorkflow>().HasData(new
+                {
+                    Id = f.id,
+                    Name = f.name,
+                    FormKey = f.formKey,
+                    Description = (string?)$"Default {f.name.ToLower()} workflow",
+                    IsMakerChecker = true,
+                    IsActive = true,
+                    Created = seedTime,
+                    CreatedBy = (string?)"admin",
+                    Modified = seedTime,
+                    ModifiedBy = (string?)"admin"
+                });
+
+                // Step 1: Reviewer (rank 1)
+                modelBuilder.Entity<ApprovalWorkflowStep>().HasData(new
+                {
+                    Id = (f.id - 1) * 2 + 1,
+                    ApprovalWorkflowId = f.id,
+                    Rank = 1,
+                    Name = "Reviewer",
+                    RoleId = 1, // Administrator
+                    IsFinal = false,
+                    NotifyNextApprover = true,
+                    NotifyPreviousApprover = false,
+                    NotifyApplicant = true,
+                    Created = seedTime,
+                    CreatedBy = (string?)"admin",
+                    Modified = seedTime,
+                    ModifiedBy = (string?)"admin"
+                });
+                // Step 2: Approver (rank 2, final)
+                modelBuilder.Entity<ApprovalWorkflowStep>().HasData(new
+                {
+                    Id = (f.id - 1) * 2 + 2,
+                    ApprovalWorkflowId = f.id,
+                    Rank = 2,
+                    Name = "Approver",
+                    RoleId = 1, // Administrator
+                    IsFinal = true,
+                    NotifyNextApprover = false,
+                    NotifyPreviousApprover = true,
+                    NotifyApplicant = true,
+                    Created = seedTime,
+                    CreatedBy = (string?)"admin",
+                    Modified = seedTime,
+                    ModifiedBy = (string?)"admin"
+                });
+            }
         }
 
     }

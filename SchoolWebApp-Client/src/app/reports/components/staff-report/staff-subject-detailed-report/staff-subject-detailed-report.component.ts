@@ -26,6 +26,13 @@ export class StaffSubjectDetailedReportComponent implements OnInit {
 
     staffCategories: StaffCategory[] = [];
     staffDetails: StaffDetails[] = [];
+    // staffId -> count of StaffSubject rows for the current report year.
+    // Populated in parallel after searchForDataMethod resolves the staff list,
+    // then bound to the min-table so each row renders a clickable count badge.
+    subjectCounts: Record<number, number> = {};
+    // Last-clicked staff id, bound to the min-table so the row gets a
+    // table-active highlight while its subjects show in the right pane.
+    selectedStaffId: number | null = null;
 
     staffSubjects: StaffSubject[];
 
@@ -86,6 +93,7 @@ export class StaffSubjectDetailedReportComponent implements OnInit {
     };
 
     staffClicked = (staffId: number) => {
+        this.selectedStaffId = staffId;
         this.staffSubjects = [];
         this.staffSubjectsSvc
             .getByStaffYearId(staffId, this.currentRptYearId)
@@ -134,6 +142,30 @@ export class StaffSubjectDetailedReportComponent implements OnInit {
             .subscribe({
                 next: (staffDetails) => {
                     this.staffDetails = staffDetails;
+                    this.subjectCounts = {};
+                    // Eager parallel fetch of subject counts so each row can show
+                    // a clickable badge with the assignment count for the year.
+                    if (staffDetails?.length) {
+                        const reqs = staffDetails.map((s) =>
+                            this.staffSubjectsSvc.getByStaffYearId(
+                                parseInt(s.id),
+                                this.currentRptYearId
+                            )
+                        );
+                        forkJoin(reqs).subscribe({
+                            next: (results) => {
+                                const counts: Record<number, number> = {};
+                                staffDetails.forEach((s, idx) => {
+                                    counts[parseInt(s.id)] = (results[idx] || []).length;
+                                });
+                                this.subjectCounts = counts;
+                            },
+                            error: (err) => {
+                                // Non-fatal: badges just won't render.
+                                this.toastr.warning('Could not load subject counts.');
+                            }
+                        });
+                    }
                 },
                 error: (err) => {
                     this.toastr.error(err.error);

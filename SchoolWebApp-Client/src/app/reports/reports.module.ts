@@ -11,6 +11,8 @@ import { StaffAttendanceReportComponent } from './components/staff-report/staff-
 import { StaffAttendanceReportTableComponent } from './components/staff-report/staff-attendance-report/staff-attendance-report-table/staff-attendance-report-table.component';
 import { StaffAttendanceDetailsReportComponent } from './components/staff-report/staff-attendance-details-report/staff-attendance-details-report.component';
 import { StaffSubjectDetailedReportComponent } from './components/staff-report/staff-subject-detailed-report/staff-subject-detailed-report.component';
+import { StudentSubjectDetailedReportComponent } from './components/student-report/student-subject-detailed-report/student-subject-detailed-report.component';
+import { StudentSubjectPageComponent } from './components/pages/student-subject-page.component';
 import { ClassListsReportComponent } from './components/class-report/class-lists-report/class-lists-report.component';
 import { ClassAttendanceReportComponent } from './components/class-report/class-attendance-report/class-attendance-report.component';
 import { ClassAttendanceReportTableComponent } from './components/class-report/class-attendance-report/class-attendance-report-table/class-attendance-report-table.component';
@@ -42,6 +44,8 @@ import { AssessmentReportComponent } from './components/academics-report/assessm
         StaffAttendanceReportTableComponent,
         StaffAttendanceDetailsReportComponent,
         StaffSubjectDetailedReportComponent,
+        StudentSubjectDetailedReportComponent,
+        StudentSubjectPageComponent,
         ClassListsReportComponent,
         ClassAttendanceReportComponent,
         ClassAttendanceReportTableComponent,

@@ -16,6 +16,10 @@ using SchoolWebApp.Core.Entities.Settings;
 using SchoolWebApp.Core.Entities.Shared;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Entities.Students;
+using SchoolWebApp.Core.Entities.Finance;
+using SchoolWebApp.Core.Entities.Payroll;
+using SchoolWebApp.Core.Entities.Approvals;
+using SchoolWebApp.Core.Entities.Sponsorships;
 using System.Security.Claims;
 
 namespace Project.Infrastructure.Data
@@ -119,6 +123,55 @@ namespace Project.Infrastructure.Data
 
         #region Identity
         public DbSet<MenuPermission> MenuPermissions { get; set; }
+        #endregion
+
+        #region Finance
+        public DbSet<Account> Accounts { get; set; }
+        public DbSet<FeeCategory> FeeCategories { get; set; }
+        public DbSet<FeeStructure> FeeStructures { get; set; }
+        public DbSet<FeeStructureItem> FeeStructureItems { get; set; }
+        public DbSet<StudentInvoice> StudentInvoices { get; set; }
+        public DbSet<StudentInvoiceItem> StudentInvoiceItems { get; set; }
+        public DbSet<Payment> Payments { get; set; }
+        public DbSet<PaymentAllocation> PaymentAllocations { get; set; }
+        public DbSet<ExpenseCategory> ExpenseCategories { get; set; }
+        public DbSet<Expense> Expenses { get; set; }
+        public DbSet<ExpenseLine> ExpenseLines { get; set; }
+        public DbSet<JournalEntry> JournalEntries { get; set; }
+        public DbSet<JournalLine> JournalLines { get; set; }
+        public DbSet<Budget> Budgets { get; set; }
+        public DbSet<BudgetLine> BudgetLines { get; set; }
+        public DbSet<BudgetMaster> BudgetMasters { get; set; }
+        public DbSet<BudgetAmendment> BudgetAmendments { get; set; }
+        public DbSet<BudgetAmendmentLine> BudgetAmendmentLines { get; set; }
+        #endregion
+
+        #region Payroll
+        public DbSet<EarningType> EarningTypes { get; set; }
+        public DbSet<DeductionType> DeductionTypes { get; set; }
+        public DbSet<TaxBand> TaxBands { get; set; }
+        public DbSet<PayrollSetting> PayrollSettings { get; set; }
+        public DbSet<EmployeeSalary> EmployeeSalaries { get; set; }
+        public DbSet<EmployeeSalaryItem> EmployeeSalaryItems { get; set; }
+        public DbSet<LoanAdvance> LoanAdvances { get; set; }
+        public DbSet<PayrollPeriod> PayrollPeriods { get; set; }
+        public DbSet<Payslip> Payslips { get; set; }
+        public DbSet<PayslipEarning> PayslipEarnings { get; set; }
+        public DbSet<PayslipDeduction> PayslipDeductions { get; set; }
+        #endregion
+
+        #region Approvals
+        public DbSet<ApprovalWorkflow> ApprovalWorkflows { get; set; }
+        public DbSet<ApprovalWorkflowStep> ApprovalWorkflowSteps { get; set; }
+        public DbSet<ApprovalRequest> ApprovalRequests { get; set; }
+        public DbSet<ApprovalStepAction> ApprovalStepActions { get; set; }
+        #endregion
+
+        #region Sponsorships
+        public DbSet<Sponsor> Sponsors { get; set; }
+        public DbSet<Sponsorship> Sponsorships { get; set; }
+        public DbSet<SponsorshipFeeCategory> SponsorshipFeeCategories { get; set; }
+        public DbSet<SponsorPayment> SponsorPayments { get; set; }
         #endregion
 
         #region Staff

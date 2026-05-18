@@ -68,7 +68,7 @@ namespace SchoolWebApp.API.Controllers
                 var roleClaims = User.FindAll(System.Security.Claims.ClaimTypes.Role)
                     .Select(c => c.Value).ToList();
 
-                if (roleClaims.Contains("Administrator"))
+                if (roleClaims.Contains("SuperAdministrator"))
                 {
                     return Ok(new { allAccess = true, paths = new List<string>() });
                 }

@@ -36,7 +36,7 @@
                                     schoolClasses">{{schoolClass.name}}</option>
             </select>
         </div>
-        <div class="col-2 py-1 px-0">
+        <div class="col-2 py-1 px-0" *ngIf="showStudent">
             <select class="form-select form-select-sm" aria-label="Student"
                 (change)="studentsChanged()"
                 formControlName="studentClassId" id="studentClassId">
@@ -47,7 +47,7 @@
             </select>
         </div>
 
-        <div class="col-2 py-1 ps-1">
+        <div class="col-2 py-1 ps-1" *ngIf="showStudent">
             <button type="submit" [disabled]="studentsSubjectsSearchForm.invalid"
                 class="btn btn-sm btn-flat btn-warning btn-block">
                 <i class="fas fa-sync"></i> Search

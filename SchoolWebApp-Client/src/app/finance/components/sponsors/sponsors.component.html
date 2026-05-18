@@ -1,0 +1,199 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+
+        <!-- Add/Edit Modal -->
+        <div class="modal-backdrop fade show" *ngIf="showForm" (click)="cancel()"></div>
+        <div class="modal fade show d-block" *ngIf="showForm" tabindex="-1">
+            <div class="modal-dialog modal-lg" style="margin-top: 50px;">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white py-2">
+                        <h5 class="modal-title"><i class="fas fa-hands-helping me-1"></i> {{ editMode ? 'Edit' : 'New' }} Sponsor</h5>
+                        <button type="button" class="close text-white" (click)="cancel()"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body p-2">
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label class="form-label mb-0" style="font-size:0.8rem;">Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-sm" [(ngModel)]="item.name" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label mb-0" style="font-size:0.8rem;">Sponsor Type</label>
+                                <select class="form-select form-select-sm" [(ngModel)]="item.sponsorType">
+                                    <option *ngFor="let t of sponsorTypes" [ngValue]="t.value">{{ t.label }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label mb-0" style="font-size:0.8rem;">Description</label>
+                                <textarea class="form-control form-control-sm" rows="2" [(ngModel)]="item.description"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label mb-0" style="font-size:0.8rem;">Contact Name</label>
+                                <input class="form-control form-control-sm" [(ngModel)]="item.contactName" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label mb-0" style="font-size:0.8rem;">Email</label>
+                                <input type="email" class="form-control form-control-sm" [(ngModel)]="item.email" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label mb-0" style="font-size:0.8rem;">Phone</label>
+                                <input class="form-control form-control-sm" [(ngModel)]="item.phone" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label mb-0" style="font-size:0.8rem;">Address</label>
+                                <input class="form-control form-control-sm" [(ngModel)]="item.address" />
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label mb-0" style="font-size:0.8rem;">Sponsor Receivable Account</label>
+                                <select class="form-select form-select-sm" [(ngModel)]="item.receivableAccountId">
+                                    <option [ngValue]="null">-- None (use default Debtors) --</option>
+                                    <option *ngFor="let a of receivableAccounts" [ngValue]="a.id">{{ a.code }} - {{ a.name }}</option>
+                                </select>
+                                <small class="text-muted">Asset account used to track AR owed by this sponsor.</small>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <div class="icheck-primary">
+                                    <input type="checkbox" id="sponsorActive" [checked]="item.isActive" (change)="item.isActive = !item.isActive"/>
+                                    <label for="sponsorActive">Active</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer py-1">
+                        <button class="btn btn-sm btn-secondary" (click)="cancel()">Cancel</button>
+                        <button class="btn btn-sm btn-primary" (click)="save()"><i class="fas fa-save"></i> Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statement Modal -->
+        <div class="modal-backdrop fade show" *ngIf="statementSponsor" (click)="closeStatement()"></div>
+        <div class="modal fade show d-block" *ngIf="statementSponsor" tabindex="-1">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable" style="margin-top: 40px;">
+                <div class="modal-content">
+                    <div class="modal-header bg-info text-white py-2">
+                        <h5 class="modal-title"><i class="fas fa-book me-1"></i> Statement: {{ statementSponsor.name }}</h5>
+                        <button type="button" class="close text-white" (click)="closeStatement()"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body p-2">
+                        <div class="row g-1 mb-2">
+                            <div class="col-md-3">
+                                <label class="form-label mb-0" style="font-size:0.8rem;">From</label>
+                                <input type="date" class="form-control form-control-sm" [(ngModel)]="statementFromDate" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label mb-0" style="font-size:0.8rem;">To</label>
+                                <input type="date" class="form-control form-control-sm" [(ngModel)]="statementToDate" />
+                            </div>
+                            <div class="col-auto align-self-end">
+                                <button class="btn btn-sm btn-info" (click)="loadStatement()"><i class="fas fa-search"></i> Load</button>
+                            </div>
+                        </div>
+                        <div *ngIf="statement">
+                            <div class="row text-center mb-2" style="font-size:0.85rem;">
+                                <div class="col-md-4"><small class="text-muted d-block">Charges</small><strong class="text-danger">{{ statement.totalCharges | number:'1.2-2' }}</strong></div>
+                                <div class="col-md-4"><small class="text-muted d-block">Payments</small><strong class="text-success">{{ statement.totalPayments | number:'1.2-2' }}</strong></div>
+                                <div class="col-md-4"><small class="text-muted d-block">Balance</small><strong>{{ statement.balance | number:'1.2-2' }}</strong></div>
+                            </div>
+                            <table class="table table-sm table-striped mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Ref</th>
+                                        <th>Description</th>
+                                        <th class="text-end">Debit</th>
+                                        <th class="text-end">Credit</th>
+                                        <th class="text-end">Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let e of statement.entries">
+                                        <td><small>{{ e.date | date:'mediumDate' }}</small></td>
+                                        <td><span class="badge" [ngClass]="e.type === 'Charge' ? 'bg-danger' : 'bg-success'">{{ e.type }}</span></td>
+                                        <td>{{ e.reference }}</td>
+                                        <td><small>{{ e.description }}</small></td>
+                                        <td class="text-end">{{ e.debit ? (e.debit | number:'1.2-2') : '-' }}</td>
+                                        <td class="text-end">{{ e.credit ? (e.credit | number:'1.2-2') : '-' }}</td>
+                                        <td class="text-end fw-bold">{{ e.balance | number:'1.2-2' }}</td>
+                                    </tr>
+                                    <tr *ngIf="!statement.entries?.length">
+                                        <td colspan="7" class="text-center text-muted p-3"><i class="fas fa-info-circle me-1"></i> No entries for this period.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer py-1">
+                        <button class="btn btn-sm btn-secondary" (click)="closeStatement()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters + Add button -->
+        <div class="row g-1 mb-1 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label mb-0" style="font-size:0.8rem;">Search</label>
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="searchTerm" placeholder="Search by name, contact or email" />
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-sm btn-outline-secondary" (click)="searchTerm = ''"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="col text-end">
+                <button class="btn btn-sm btn-primary" (click)="addNew()"><i class="fas fa-plus"></i> Add Sponsor</button>
+            </div>
+        </div>
+
+        <!-- List -->
+        <div class="card card-outline card-primary">
+            <div class="card-header py-1 bg-info text-white">
+                <strong><i class="fas fa-hands-helping me-1"></i> Sponsors</strong>
+                <span class="badge bg-light text-dark ms-2">{{ filtered().length }}</span>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Contact</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>AR Account</th>
+                            <th>Status</th>
+                            <th style="min-width:140px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let s of filtered() | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i">
+                            <td>{{ (page-1) * pageSize + i + 1 }}</td>
+                            <td><strong>{{ s.name }}</strong><br/><small class="text-muted">{{ s.description }}</small></td>
+                            <td><span class="badge" [ngClass]="typeBadge(s.sponsorType)">{{ typeLabel(s.sponsorType) }}</span></td>
+                            <td>{{ s.contactName || '-' }}</td>
+                            <td><small>{{ s.email || '-' }}</small></td>
+                            <td><small>{{ s.phone || '-' }}</small></td>
+                            <td><small>{{ s.receivableAccountName || '(default)' }}</small></td>
+                            <td><span class="badge" [ngClass]="s.isActive ? 'bg-success' : 'bg-secondary'">{{ s.isActive ? 'Active' : 'Inactive' }}</span></td>
+                            <td>
+                                <button class="btn btn-outline-info btn-sm" (click)="openStatement(s)" title="Statement"><i class="fas fa-book"></i></button>
+                                <button class="btn btn-outline-primary btn-sm ms-1" (click)="edit(s)" title="Edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-outline-danger btn-sm ms-1" (click)="delete(s)" title="Delete"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="filtered().length === 0">
+                            <td colspan="9" class="text-center text-muted p-3"><i class="fas fa-info-circle me-1"></i> No sponsors.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <app-table-paging (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"
+                    [collectionSize]="filtered().length"></app-table-paging>
+            </div>
+        </div>
+
+    </div>
+</section>

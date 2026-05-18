@@ -1,8 +1,10 @@
 import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
+import {matchOptionId, pushQueryParams, readQueryParam} from '@/shared/utils/query-param-sync';
 import {StudentValueScore} from '../../models/student-value-score';
 import {StudentValueScoreService} from '../../services/student-value-score.service';
 import {ValueService} from '../../services/value.service';
@@ -50,6 +52,35 @@ export class StudentValueScoresComponent implements OnInit {
     studentsLoaded: boolean = false;
     isSaving: boolean = false;
 
+    // Client-side search + paging for the student-row table.
+    searchText: string = '';
+    tablePage: number = 1;
+    tablePageSize: number = 30;
+
+    get filteredStudentRows() {
+        const q = (this.searchText || '').trim().toLowerCase();
+        if (!q) return this.studentRows;
+        return this.studentRows.filter((r) => (r.studentName || '').toLowerCase().includes(q));
+    }
+    onSearchChanged = () => { this.tablePage = 1; this.syncUrl(); };
+    onTablePageChanged = (p: number) => { this.tablePage = p; this.syncUrl(); };
+    onTablePageSizeChanged = (s: number) => { this.tablePageSize = s; this.syncUrl(); };
+    onSessionPicked = () => { this.syncUrl(); };
+    onSchoolClassPicked = () => { this.syncUrl(); };
+
+    private syncUrl() {
+        pushQueryParams(this.router, this.route, {
+            curriculumId: this.filterCurriculumId,
+            academicYearId: this.filterAcademicYearId,
+            sessionId: this.filterSessionId,
+            schoolClassId: this.filterSchoolClassId,
+            q: this.searchText,
+            page: this.tablePage > 1 ? this.tablePage : null,
+            pageSize: this.tablePageSize !== 30 ? this.tablePageSize : null,
+            loaded: this.studentsLoaded ? 1 : null
+        });
+    }
+
     constructor(
         private toastr: ToastrService,
         private studentValueScoreSvc: StudentValueScoreService,
@@ -60,7 +91,9 @@ export class StudentValueScoresComponent implements OnInit {
         private curriculaSvc: CurriculumService,
         private academicYearSvc: AcademicYearsService,
         private sessionsSvc: SessionsService,
-        private learningLevelSvc: LearningLevelsService
+        private learningLevelSvc: LearningLevelsService,
+        private route: ActivatedRoute,
+        private router: Router
     ) {}
 
     ngOnInit(): void {
@@ -75,8 +108,49 @@ export class StudentValueScoresComponent implements OnInit {
                 this.academicYears = academicYears.filter((y) => y.status === true).sort((a, b) => a.rank - b.rank);
                 this.values = values.sort((a, b) => a.rank - b.rank);
                 this.valueScores = valueScores.sort((a, b) => a.rank - b.rank);
+                this.restoreFromUrl();
             },
             error: (err) => this.toastr.error(err.error)
+        });
+    }
+
+    private restoreFromUrl() {
+        const curriculumId = readQueryParam(this.route, 'curriculumId');
+        const academicYearId = readQueryParam(this.route, 'academicYearId');
+        const sessionId = readQueryParam(this.route, 'sessionId');
+        const schoolClassId = readQueryParam(this.route, 'schoolClassId');
+        const q = readQueryParam(this.route, 'q');
+        const page = readQueryParam(this.route, 'page');
+        const pageSize = readQueryParam(this.route, 'pageSize');
+        const loaded = readQueryParam(this.route, 'loaded');
+
+        if (q) this.searchText = q;
+        if (page) this.tablePage = +page;
+        if (pageSize) this.tablePageSize = +pageSize;
+        if (!curriculumId) return;
+
+        // matchOptionId resolves the URL-string id to the canonical option id
+        // (which may be number-typed), so [ngValue]="c.id" highlights properly.
+        this.filterCurriculumId = matchOptionId(this.curricula, curriculumId);
+        this.learningLevelSvc.getLearningLevelsByCurriculum(+curriculumId).subscribe({
+            next: (levels) => {
+                this.learningLevels = levels.sort((a, b) => a.rank - b.rank);
+                if (!academicYearId) return;
+                this.filterAcademicYearId = matchOptionId(this.academicYears, academicYearId);
+                forkJoin([
+                    this.sessionsSvc.get(`/sessions/byCurriculumYearId?curriculumId=${curriculumId}&academicYearId=${academicYearId}`),
+                    this.schoolClassesSvc.get(`/schoolClasses/byAcademicYearId/${academicYearId}`)
+                ]).subscribe({
+                    next: ([sessions, schoolClasses]) => {
+                        this.sessions = sessions.sort((a, b) => a.rank - b.rank);
+                        const currLLIds = this.learningLevels.map((ll) => +ll.id);
+                        this.schoolClasses = schoolClasses.filter((sc) => currLLIds.includes(+sc.learningLevelId));
+                        if (sessionId) this.filterSessionId = matchOptionId(this.sessions, sessionId);
+                        if (schoolClassId) this.filterSchoolClassId = matchOptionId(this.schoolClasses, schoolClassId);
+                        if (sessionId && schoolClassId && loaded) this.loadStudents();
+                    }
+                });
+            }
         });
     }
 
@@ -84,6 +158,7 @@ export class StudentValueScoresComponent implements OnInit {
         this.sessions = this.schoolClasses = [];
         this.filterAcademicYearId = this.filterSessionId = this.filterSchoolClassId = null;
         this.studentsLoaded = false;
+        this.syncUrl();
         if (!this.filterCurriculumId) return;
         this.learningLevelSvc.getLearningLevelsByCurriculum(this.filterCurriculumId).subscribe({
             next: (levels) => { this.learningLevels = levels.sort((a, b) => a.rank - b.rank); },
@@ -95,6 +170,7 @@ export class StudentValueScoresComponent implements OnInit {
         this.sessions = this.schoolClasses = [];
         this.filterSessionId = this.filterSchoolClassId = null;
         this.studentsLoaded = false;
+        this.syncUrl();
         if (!this.filterAcademicYearId || !this.filterCurriculumId) return;
         forkJoin([
             this.sessionsSvc.get(`/sessions/byCurriculumYearId?curriculumId=${this.filterCurriculumId}&academicYearId=${this.filterAcademicYearId}`),
@@ -151,6 +227,7 @@ export class StudentValueScoresComponent implements OnInit {
                     };
                 });
                 this.studentsLoaded = true;
+                this.syncUrl();
             },
             error: (err) => this.toastr.error(err.error)
         });

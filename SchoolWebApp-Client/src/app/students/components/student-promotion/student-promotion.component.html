@@ -5,7 +5,8 @@
         <!-- Filters -->
         <div class="card card-outline card-primary mb-1">
             <div class="card-header py-1">
-                <strong><i class="fas fa-exchange-alt mr-1"></i> Promotion Setup</strong>
+                <strong><i class="fas fa-exchange-alt mr-1"></i> Class Assignment Setup</strong>
+                <small class="text-muted ms-2">Use for end-of-year promotion or mid-year corrections (e.g. 5E &rarr; 5W).</small>
             </div>
             <div class="card-body p-1">
                 <div class="row g-1">
@@ -74,8 +75,20 @@
                         </div>
                     </div>
                 </div>
-                <div class="row mt-1">
-                    <div class="col text-center">
+                <div class="row mt-1 align-items-center">
+                    <div class="col">
+                        <div class="form-check ms-2" *ngIf="fromYearId && toYearId">
+                            <input class="form-check-input" type="checkbox" id="removeFromSourceChk"
+                                [(ngModel)]="removeFromSource">
+                            <label class="form-check-label" for="removeFromSourceChk">
+                                <strong>Also remove from source class</strong>
+                                <small class="text-muted">
+                                    (recommended for same-year corrections; for cross-year promotion leave unchecked to preserve history)
+                                </small>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-auto text-end">
                         <button class="btn btn-info btn-sm" (click)="loadStudents()"
                             [disabled]="!fromClassId || !toYearId || !toClassId || isLoading">
                             <i class="fas" [ngClass]="isLoading ? 'fa-spinner fa-spin' : 'fa-search'"></i>
@@ -97,19 +110,19 @@
             <i class="fas fa-info-circle mr-1"></i> No students found in the selected class.
         </div>
 
-        <!-- Students pending promotion -->
+        <!-- Students pending assignment -->
         <div class="card card-outline card-info mb-1" *ngIf="!isLoading && getSelectableStudents().length > 0">
             <div class="card-header py-1 d-flex justify-content-between align-items-center">
                 <strong>
                     <i class="fas fa-users mr-1"></i>
-                    Students to Promote
+                    Students to Assign
                     <span class="badge bg-info ml-1">{{ getSelectableStudents().length }} pending</span>
                     <span class="badge bg-warning ml-1" *ngIf="getSelectedCount() > 0">{{ getSelectedCount() }} selected</span>
                 </strong>
                 <button class="btn btn-success btn-sm" (click)="promoteStudents()"
                     [disabled]="getSelectedCount() === 0 || isSaving">
                     <i class="fas" [ngClass]="isSaving ? 'fa-spinner fa-spin' : 'fa-arrow-right'"></i>
-                    {{ isSaving ? 'Promoting...' : 'Promote Selected (' + getSelectedCount() + ')' }}
+                    {{ isSaving ? 'Assigning...' : (removeFromSource ? 'Move' : 'Assign') + ' Selected (' + getSelectedCount() + ')' }}
                 </button>
             </div>
             <div class="card-body p-0">
@@ -128,18 +141,18 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let student of getSelectableStudents(); index as i"
+                        <tr *ngFor="let student of getSelectableStudents() | slice: (pendingPage-1)*listPageSize : pendingPage*listPageSize; index as i"
                             [ngClass]="{'table-warning': student.selected}">
                             <td class="align-middle">
                                 <input type="checkbox" [(ngModel)]="student.selected"
                                     (change)="onStudentToggle()">
                             </td>
-                            <td class="align-middle">{{ i + 1 }}</td>
+                            <td class="align-middle">{{ (pendingPage-1)*listPageSize + i + 1 }}</td>
                             <td class="align-middle">{{ student.upi }}</td>
                             <td class="align-middle fw-bold">{{ student.fullName }}</td>
                             <td class="text-center align-middle">
                                 <span *ngIf="student.selected" class="badge bg-warning text-dark">
-                                    <i class="fas fa-arrow-right"></i> Ready to promote
+                                    <i class="fas fa-arrow-right"></i> Ready to {{ removeFromSource ? 'move' : 'assign' }}
                                 </span>
                                 <span *ngIf="!student.selected" class="badge bg-secondary">
                                     <i class="fas fa-minus"></i> Not selected
@@ -148,15 +161,18 @@
                         </tr>
                     </tbody>
                 </table>
+                <app-table-paging [collectionSize]="getSelectableStudents().length" [pageSize]="listPageSize"
+                    (pageChangedEvent)="pendingPage = $event"
+                    (pageSizeChangedEvent)="listPageSize = $event"></app-table-paging>
             </div>
         </div>
 
-        <!-- Already promoted students (with removal option) -->
+        <!-- Already assigned students (with removal option) -->
         <div class="card card-outline card-success mb-1" *ngIf="!isLoading && getPromotedStudents().length > 0">
             <div class="card-header py-1 d-flex justify-content-between align-items-center">
                 <strong>
                     <i class="fas fa-check-circle mr-1"></i>
-                    Already Promoted to {{ getToClassName() }}
+                    Already Assigned to {{ getToClassName() }}
                     <span class="badge bg-success ml-1">{{ getPromotedStudents().length }} student(s)</span>
                     <span class="badge bg-danger ml-1" *ngIf="getRemovalCount() > 0">{{ getRemovalCount() }} to remove</span>
                 </strong>
@@ -181,13 +197,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let student of getPromotedStudents(); index as i"
+                        <tr *ngFor="let student of getPromotedStudents() | slice: (promotedPage-1)*listPageSize : promotedPage*listPageSize; index as i"
                             [ngClass]="{'table-danger': student.selectedForRemoval}">
                             <td class="align-middle">
                                 <input type="checkbox" [(ngModel)]="student.selectedForRemoval"
                                     (change)="onRemovalToggle()">
                             </td>
-                            <td class="align-middle">{{ i + 1 }}</td>
+                            <td class="align-middle">{{ (promotedPage-1)*listPageSize + i + 1 }}</td>
                             <td class="align-middle">{{ student.upi }}</td>
                             <td class="align-middle fw-bold">{{ student.fullName }}</td>
                             <td class="text-center align-middle">
@@ -195,12 +211,15 @@
                                     <i class="fas fa-undo"></i> Will be removed
                                 </span>
                                 <span *ngIf="!student.selectedForRemoval" class="badge bg-success">
-                                    <i class="fas fa-check"></i> Promoted
+                                    <i class="fas fa-check"></i> Assigned
                                 </span>
                             </td>
                         </tr>
                     </tbody>
                 </table>
+                <app-table-paging [collectionSize]="getPromotedStudents().length" [pageSize]="listPageSize"
+                    (pageChangedEvent)="promotedPage = $event"
+                    (pageSizeChangedEvent)="listPageSize = $event"></app-table-paging>
             </div>
         </div>
 

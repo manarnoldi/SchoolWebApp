@@ -123,6 +123,8 @@
                                             [showCheckBoxes]="true"
                                             [tableTitle]="'Class Students List'"
                                             [showMinimum]="true"
+                                            [subjectCounts]="subjectCounts"
+                                            (studentClassClickedEvent)="showAssignedSubjects($event)"
                                             *ngIf="isLoading"></app-student-class-min-table>
                                     </div>
                                 </div>

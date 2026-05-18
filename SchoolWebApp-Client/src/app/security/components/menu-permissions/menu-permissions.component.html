@@ -3,7 +3,7 @@
 
 <div class="row g-1">
     <div class="col-md-2">
-        <div class="card card-outline card-info mb-1">
+        <div class="card card-outline card-info ms-1 mb-1">
             <div class="card-header p-1 pl-2">
                 <strong><i class="fas fa-user-shield"></i> Select Role</strong>
             </div>
@@ -40,8 +40,8 @@
             </div>
 
             <div class="card-body p-2" *ngIf="selectedRole && !isLoading">
-                <div class="text-info mb-2 small" *ngIf="selectedRole.name === 'Administrator'">
-                    <i class="fas fa-info-circle"></i> Administrators have full access regardless of these settings.
+                <div class="text-info mb-2 small" *ngIf="selectedRole.name === 'SuperAdministrator'">
+                    <i class="fas fa-info-circle"></i> Super Administrators have full access regardless of these settings.
                 </div>
 
                 <div *ngFor="let group of menuGroups" class="mb-1">

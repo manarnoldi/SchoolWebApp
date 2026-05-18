@@ -1,0 +1,130 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+
+        <!-- Form Modal -->
+        <div class="modal-backdrop fade show" *ngIf="showForm" (click)="cancel()"></div>
+        <div class="modal fade show d-block" *ngIf="showForm" tabindex="-1">
+            <div class="modal-dialog modal-lg" style="margin-top: 50px;">
+                <div class="modal-content">
+                    <div class="modal-header bg-info text-white py-2">
+                        <h5 class="modal-title"><i class="fas fa-hand-holding-usd me-1"></i> {{ editMode ? 'Edit' : 'New' }} Loan / Advance</h5>
+                        <button type="button" class="close text-white" (click)="cancel()"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body p-2">
+                        <div class="border border-info rounded p-2 mb-2">
+                            <div class="row g-1">
+                                <div class="col-md-6">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Staff Member <span class="requiredField">*</span></label>
+                                    <select class="form-select form-select-sm" [(ngModel)]="item.staffDetailsId">
+                                        <option [ngValue]="null" hidden disabled>Select staff</option>
+                                        <option [ngValue]="s.id" *ngFor="let s of staffList">{{ s.fullName || (s.firstName + ' ' + s.lastName) }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Issue Date</label>
+                                    <input type="date" class="form-control form-control-sm" [(ngModel)]="item.issueDate" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Status</label>
+                                    <select class="form-select form-select-sm" [(ngModel)]="item.status">
+                                        <option [ngValue]="s.value" *ngFor="let s of statuses">{{ s.label }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row g-1 mt-1">
+                                <div class="col-md-4">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Principal Amount <span class="requiredField">*</span></label>
+                                    <input type="number" class="form-control form-control-sm" [(ngModel)]="item.principalAmount" min="0" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Monthly Deduction <span class="requiredField">*</span></label>
+                                    <input type="number" class="form-control form-control-sm" [(ngModel)]="item.monthlyDeduction" min="0" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Balance</label>
+                                    <input type="number" class="form-control form-control-sm" [(ngModel)]="item.balance" min="0" />
+                                </div>
+                            </div>
+                            <div class="row g-1 mt-1">
+                                <div class="col-md-6">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Description</label>
+                                    <input class="form-control form-control-sm" [(ngModel)]="item.description" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Notes</label>
+                                    <input class="form-control form-control-sm" [(ngModel)]="item.notes" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer py-1">
+                        <button class="btn btn-sm btn-secondary" (click)="cancel()">Cancel</button>
+                        <button class="btn btn-sm btn-success" (click)="save()"><i class="fas fa-save"></i> Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="row g-1 mb-1 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label mb-0" style="font-size:0.8rem;">Staff Member</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filterStaffId">
+                    <option [ngValue]="null">All Staff</option>
+                    <option [ngValue]="s.id" *ngFor="let s of staffList">{{ s.fullName || (s.firstName + ' ' + s.lastName) }}</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label mb-0" style="font-size:0.8rem;">Status</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filterStatus">
+                    <option [ngValue]="null">All</option>
+                    <option [ngValue]="s.value" *ngFor="let s of statuses">{{ s.label }}</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-sm btn-outline-secondary" (click)="clearFilters()" title="Clear"><i class="fas fa-times"></i> Clear</button>
+            </div>
+            <div class="col-md-5 text-end">
+                <button class="btn btn-sm btn-success" (click)="addNew()"><i class="fas fa-plus"></i> Add Loan / Advance</button>
+            </div>
+        </div>
+
+        <!-- List -->
+        <div class="card card-outline card-primary">
+            <div class="card-header py-1 d-flex justify-content-between align-items-center bg-info text-white">
+                <div>
+                    <strong><i class="fas fa-hand-holding-usd me-1"></i> Loan Advances</strong>
+                    <span class="badge bg-light text-dark ms-2">{{ filtered().length }}</span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead class="table-light">
+                        <tr><th>#</th><th>Staff</th><th>Description</th><th class="text-end">Principal</th><th class="text-end">Monthly Ded.</th><th class="text-end">Balance</th><th>Issue Date</th><th>Status</th><th>Action</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let c of filtered() | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i">
+                            <td>{{ (page-1) * pageSize + i + 1 }}</td>
+                            <td><strong>{{ c.staffDetailsName || getStaffName(c.staffDetailsId) }}</strong></td>
+                            <td><small>{{ c.description }}</small></td>
+                            <td class="text-end">{{ c.principalAmount | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ c.monthlyDeduction | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ c.balance | number:'1.2-2' }}</td>
+                            <td><small>{{ c.issueDate | date:'mediumDate' }}</small></td>
+                            <td><span class="badge" [ngClass]="getStatusBadgeClass(c.status)">{{ getStatusLabel(c.status) }}</span></td>
+                            <td>
+                                <button class="btn btn-outline-primary btn-sm" (click)="edit(c)"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-outline-danger btn-sm ms-1" (click)="delete(c)"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <app-table-paging (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"
+                    [collectionSize]="filtered().length"></app-table-paging>
+            </div>
+        </div>
+    </div>
+</section>

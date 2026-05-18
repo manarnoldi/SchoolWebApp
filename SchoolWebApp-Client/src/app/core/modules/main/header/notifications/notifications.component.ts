@@ -1,71 +1,95 @@
-import {AuthService} from '@/core/services/auth.service';
-import {TodolistsService} from '@/school/services/todolists.service';
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
+import {ApprovalService} from '@/approvals/services/approval.service';
+import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-notifications',
     templateUrl: './notifications.component.html',
     styleUrls: ['./notifications.component.scss']
 })
-export class NotificationsComponent implements OnInit {
-    pendingTodos: any[] = [];
-    overdueTodos: any[] = [];
+export class NotificationsComponent implements OnInit, OnDestroy {
+    pendingApprovals: any[] = [];
     notificationCount: number = 0;
+    private refreshSub?: Subscription;
 
     constructor(
-        private authService: AuthService,
-        private todoListSvc: TodolistsService,
+        private approvalSvc: ApprovalService,
         private router: Router
     ) {}
 
     ngOnInit(): void {
         this.loadNotifications();
+        this.refreshSub = this.approvalSvc.refresh$.subscribe(() => this.loadNotifications());
+    }
+
+    ngOnDestroy(): void {
+        this.refreshSub?.unsubscribe();
     }
 
     loadNotifications() {
-        let curUser = this.authService.getCurrentUser();
-        if (!curUser?.id) return;
-
-        this.todoListSvc.get('/ToDoLists/byUserId/' + curUser.id).subscribe(
-            (res) => {
-                let now = new Date().getTime();
-                let incomplete = res.filter((t) => !t.completed);
-                this.overdueTodos = incomplete
-                    .filter((t) => new Date(t.completeBy).getTime() < now)
-                    .sort((a, b) => new Date(a.completeBy).getTime() - new Date(b.completeBy).getTime())
-                    .slice(0, 3);
-                this.pendingTodos = incomplete
-                    .filter((t) => new Date(t.completeBy).getTime() >= now)
-                    .sort((a, b) => new Date(a.completeBy).getTime() - new Date(b.completeBy).getTime())
-                    .slice(0, 3);
-                this.notificationCount = incomplete.length;
+        this.approvalSvc.getMyPending().subscribe({
+            next: (rows) => {
+                this.pendingApprovals = rows || [];
+                this.notificationCount = this.pendingApprovals.length;
             },
-            (err) => {}
-        );
+            error: () => {
+                this.pendingApprovals = [];
+                this.notificationCount = 0;
+            }
+        });
     }
 
-    getTimeAgo(dateStr: string): string {
-        let now = new Date().getTime();
-        let target = new Date(dateStr).getTime();
-        let diff = target - now;
-        let absDiff = Math.abs(diff);
-        let minutes = Math.floor(absDiff / 60000);
-        let hours = Math.floor(absDiff / 3600000);
-        let days = Math.floor(absDiff / 86400000);
-
-        if (diff < 0) {
-            if (days > 0) return days + 'd overdue';
-            if (hours > 0) return hours + 'h overdue';
-            return minutes + 'm overdue';
-        } else {
-            if (days > 0) return 'in ' + days + 'd';
-            if (hours > 0) return 'in ' + hours + 'h';
-            return 'in ' + minutes + 'm';
+    formKeyLabel(key: string): string {
+        switch (key) {
+            case 'Expense': return 'Expense';
+            case 'JournalEntry': return 'Journal Entry';
+            case 'CreditDebitNote': return 'Credit / Debit Note';
+            case 'BudgetAmendment': return 'Budget Amendment';
+            case 'Budget': return 'Budget';
+            default: return key;
         }
     }
 
-    goToDashboard() {
-        this.router.navigate(['/']);
+    iconFor(key: string): string {
+        switch (key) {
+            case 'Expense': return 'fas fa-money-bill-wave text-danger';
+            case 'JournalEntry': return 'fas fa-pen text-primary';
+            case 'CreditDebitNote': return 'fas fa-file-invoice text-warning';
+            case 'BudgetAmendment': return 'fas fa-edit text-warning';
+            case 'Budget': return 'fas fa-piggy-bank text-success';
+            default: return 'fas fa-check-double text-secondary';
+        }
+    }
+
+    private routeFor(key: string): string | null {
+        switch (key) {
+            case 'Expense': return '/finance/expenses';
+            case 'JournalEntry': return '/finance/journal-entries';
+            case 'CreditDebitNote': return '/finance/payments';
+            case 'BudgetAmendment': return '/finance/budget-amendments';
+            case 'Budget': return '/finance/budgets';
+            default: return null;
+        }
+    }
+
+    openTask(item: any) {
+        let route = this.routeFor(item.entityType);
+        if (!route) return;
+        this.router.navigate([route], {queryParams: {actId: item.entityId}});
+    }
+
+    getTimeAgo(dateStr: string): string {
+        if (!dateStr) return '';
+        let now = new Date().getTime();
+        let target = new Date(dateStr).getTime();
+        let diff = now - target;
+        let minutes = Math.floor(diff / 60000);
+        let hours = Math.floor(diff / 3600000);
+        let days = Math.floor(diff / 86400000);
+        if (days > 0) return days + 'd ago';
+        if (hours > 0) return hours + 'h ago';
+        if (minutes > 0) return minutes + 'm ago';
+        return 'just now';
     }
 }

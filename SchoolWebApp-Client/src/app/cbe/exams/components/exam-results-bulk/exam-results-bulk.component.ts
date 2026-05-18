@@ -59,6 +59,10 @@ export class ExamResultsBulkComponent implements OnInit {
     isSaving: boolean = false;
     isDeleting: boolean = false;
 
+    // Client-side paging for the bulk-grid; default 30 students per page.
+    tablePage: number = 1;
+    tablePageSize: number = 30;
+
     constructor(
         private toastr: ToastrService,
         private examResultSvc: ExamResultService,

@@ -56,14 +56,19 @@ export class MenuItemComponent implements OnInit {
         this.isMainActive = false;
         this.isOneOfChildrenActive = false;
 
+        // Strip query params so pages that persist filter state in the URL
+        // (e.g. /cbe/responsibilities/student-assignments?curriculumId=1) still
+        // match their menu entry.
+        const pathOnly = (url || '').split('?')[0];
+
         if (this.isExpandable) {
-            if (this.hasActiveChild(this.menuItem, url)) {
+            if (this.hasActiveChild(this.menuItem, pathOnly)) {
                 this.isOneOfChildrenActive = true;
                 this.isMenuExtended = true;
             }
-        } else if (this.menuItem.path && this.menuItem.path[0] === url) {
+        } else if (this.menuItem.path && this.isSamePathOrChild(pathOnly, this.menuItem.path[0])) {
             this.isMainActive = true;
-        } else if (this.menuItem.extraActivePaths?.some((p: string) => url.startsWith(p))) {
+        } else if (this.menuItem.extraActivePaths?.some((p: string) => this.isSamePathOrChild(pathOnly, p))) {
             this.isMainActive = true;
         }
     }
@@ -74,9 +79,18 @@ export class MenuItemComponent implements OnInit {
         }
         return item.children.some(
             (child: any) =>
-                (child.path && url.startsWith(child.path[0])) ||
-                (child.extraActivePaths?.some((p: string) => url.startsWith(p))) ||
+                (child.path && this.isSamePathOrChild(url, child.path[0])) ||
+                (child.extraActivePaths?.some((p: string) => this.isSamePathOrChild(url, p))) ||
                 this.hasActiveChild(child, url)
         );
+    }
+
+    // Matches when the current url is exactly target OR a sub-route of target
+    // (target + '/'). The trailing-slash check is the segment-boundary guard:
+    // '/cbe/responsibilities-other' will NOT match '/cbe/responsibilities'
+    // even though the second is a prefix of the first.
+    private isSamePathOrChild(url: string, target: string): boolean {
+        if (!url || !target) return false;
+        return url === target || url.startsWith(target + '/');
     }
 }

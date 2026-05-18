@@ -43,6 +43,21 @@ export class AuthService {
             .pipe(catchError(this.handleError));
     }
 
+    // Change own password (used by the forced-on-first-login flow)
+    changePassword(currentPassword: string, newPassword: string) {
+        return this.http
+            .post<any>('/auth/change-password', {currentPassword, newPassword})
+            .pipe(catchError(this.handleError));
+    }
+
+    clearMustChangePassword() {
+        const u = this.getCurrentUser();
+        if (u && u.mustChangePassword) {
+            u.mustChangePassword = false;
+            this.setCurrentUser(u);
+        }
+    }
+
     // Set current user
     setCurrentUser(user) {
         this.currentUser = user;

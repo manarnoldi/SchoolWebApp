@@ -24,6 +24,12 @@ export class StudentsMinTableComponent implements OnInit {
     @Input() showCheckBoxes: boolean = false;
     @Input() disabled: Boolean = false;
     @Input() showMinimum: Boolean = false;
+    // Optional map of studentId -> subject count for the current report year.
+    // When provided, a clickable badge is rendered next to each student name
+    // that emits studentClickedEvent on click (same as clicking the name).
+    @Input() subjectCounts: Record<number, number> | null = null;
+    // Highlights the row whose student.id matches this value.
+    @Input() selectedId: number | string | null = null;
 
     @Output() viewItemEvent = new EventEmitter<number>();
     @Output() editItemEvent = new EventEmitter<number>();

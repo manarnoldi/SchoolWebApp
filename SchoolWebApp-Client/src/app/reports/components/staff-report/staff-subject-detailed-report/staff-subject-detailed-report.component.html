@@ -23,6 +23,7 @@
 <div class="row g-0">
     <div class="col-3">
         <app-staff-min-table [staff]="staffDetails" [showCheckBoxes]="true"
+            [subjectCounts]="subjectCounts" [selectedId]="selectedStaffId"
             (staffClickedEvent)="staffClicked($event)"></app-staff-min-table>
     </div>
     <div class="col-9">

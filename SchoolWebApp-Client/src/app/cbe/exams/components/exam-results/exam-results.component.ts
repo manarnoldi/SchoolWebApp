@@ -68,6 +68,10 @@ export class ExamResultsComponent implements OnInit {
     isSaving: boolean = false;
     averageMethod: string = 'students_with_scores';
 
+    // Client-side paging for the per-student scoring rows; default 30/page.
+    tablePage: number = 1;
+    tablePageSize: number = 30;
+
     constructor(
         private toastr: ToastrService,
         private examResultSvc: ExamResultService,

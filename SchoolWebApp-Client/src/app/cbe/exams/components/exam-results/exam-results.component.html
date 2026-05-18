@@ -100,9 +100,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let row of scoringRows; index as i"
+                        <tr *ngFor="let row of scoringRows | slice: (tablePage-1)*tablePageSize : tablePage*tablePageSize; index as i"
                             [class.table-success]="row.existingId">
-                            <td>{{ i + 1 }}</td>
+                            <td>{{ (tablePage-1)*tablePageSize + i + 1 }}</td>
                             <td>{{ row.upi }}</td>
                             <td>{{ row.fullName }}</td>
                             <td>
@@ -138,6 +138,9 @@
                         </tr>
                     </tfoot>
                 </table>
+                <app-table-paging [collectionSize]="scoringRows.length" [pageSize]="tablePageSize"
+                    (pageChangedEvent)="tablePage = $event"
+                    (pageSizeChangedEvent)="tablePageSize = $event"></app-table-paging>
             </div>
             <div class="card-footer p-1 d-flex justify-content-between">
                 <button class="btn btn-danger btn-sm" (click)="deleteAll()" [disabled]="isSaving || getExistingCount() === 0">

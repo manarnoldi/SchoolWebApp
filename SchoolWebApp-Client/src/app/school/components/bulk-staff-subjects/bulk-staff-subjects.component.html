@@ -25,7 +25,7 @@
                             (change)="onSchoolClassChange()">
                             <option [ngValue]="null" hidden disabled>Select class</option>
                             <option [ngValue]="c.id" *ngFor="let c of schoolClasses">
-                                {{ c.learningLevel?.name }}{{ c.schoolStream?.name ? ' - ' + c.schoolStream.name : '' }}
+                                {{ c.name || (c.learningLevel?.name + (c.schoolStream?.name ? ' - ' + c.schoolStream.name : '')) }}
                             </option>
                         </select>
                     </div>

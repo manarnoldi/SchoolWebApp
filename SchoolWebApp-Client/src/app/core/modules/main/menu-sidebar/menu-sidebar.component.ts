@@ -36,11 +36,11 @@ export class MenuSidebarComponent implements OnInit {
     loadMenuPermissions() {
         if (!this.user) return;
 
-        // Administrators get full access
-        const isAdmin = this.user.roles?.some((r: string) =>
-            r.toLowerCase() === 'administrator'
+        // Super Administrators get full access
+        const isSuperAdmin = this.user.roles?.some((r: string) =>
+            r.toLowerCase() === 'superadministrator'
         );
-        if (isAdmin) {
+        if (isSuperAdmin) {
             this.menu = MENU;
             return;
         }
@@ -98,7 +98,6 @@ export const MENU = [
             {name: 'Details', iconClasses: 'fas fa-bullseye', path: ['/school/details']},
             {name: 'Academic Years', iconClasses: 'fas fa-bullseye', path: ['/school/academicYears']},
             {name: 'Sessions', iconClasses: 'fas fa-bullseye', path: ['/school/sessions']},
-            {name: 'Education Levels', iconClasses: 'fas fa-bullseye', path: ['/school/educationLevels']},
             {name: 'Classes', iconClasses: 'fas fa-bullseye', path: ['/class/classes']},
             {name: 'Staff Details', iconClasses: 'fas fa-bullseye', path: ['/staff/details']},
             {name: 'Staff Attendance', iconClasses: 'fas fa-bullseye', path: ['/staff/staff-attendances']},
@@ -114,7 +113,7 @@ export const MENU = [
             {name: 'Parents', iconClasses: 'fas fa-bullseye', path: ['/students/parents']},
             {name: 'Subject Allocation', iconClasses: 'fas fa-bullseye', path: ['/students/students-subjects']},
             {name: 'Attendance', iconClasses: 'fas fa-bullseye', path: ['/students/students-attendances']},
-            {name: 'Promotion', iconClasses: 'fas fa-bullseye', path: ['/students/promotion']}
+            {name: 'Class Assignment', iconClasses: 'fas fa-bullseye', path: ['/students/promotion']}
         ]
     },
     {
@@ -129,6 +128,40 @@ export const MENU = [
             {name: 'Register Exams', iconClasses: 'fas fa-bullseye text-warning', path: ['/cbe/exams/exams']},
             {name: 'Results (Subject)', iconClasses: 'fas fa-bullseye text-warning', path: ['/cbe/exams/exam-results']},
             {name: 'Results (Bulk)', iconClasses: 'fas fa-bullseye text-warning', path: ['/cbe/exams/exam-results-bulk']}
+        ]
+    },
+    {
+        name: 'Finance',
+        iconClasses: 'fas fa-coins',
+        children: [
+            {name: 'Budget Register', iconClasses: 'fas fa-clipboard-list text-info', path: ['/finance/budget-register']},
+            {name: 'Budgets', iconClasses: 'fas fa-piggy-bank text-warning', path: ['/finance/budgets']},
+            {name: 'Budget Amendments', iconClasses: 'fas fa-edit text-warning', path: ['/finance/budget-amendments']},
+            {name: 'Fee Structures', iconClasses: 'fas fa-file-invoice-dollar text-success', path: ['/finance/fee-structures']},
+            {name: 'Student Invoices', iconClasses: 'fas fa-file-invoice text-warning', path: ['/finance/invoices']},
+            {name: 'Fee Payments', iconClasses: 'fas fa-cash-register text-success', path: ['/finance/payments']},
+            {name: 'Sponsors', iconClasses: 'fas fa-hands-helping text-primary', path: ['/finance/sponsors']},
+            {name: 'Sponsorships', iconClasses: 'fas fa-award text-primary', path: ['/finance/sponsorships']},
+            {name: 'Sponsor Payments', iconClasses: 'fas fa-hand-holding-usd text-success', path: ['/finance/sponsor-payments']},
+            {name: 'Expenses', iconClasses: 'fas fa-money-bill-wave text-danger', path: ['/finance/expenses']},
+            {name: 'Journal Entries', iconClasses: 'fas fa-pen text-primary', path: ['/finance/journal-entries']},
+            {name: 'Fee Reports', iconClasses: 'fas fa-chart-bar text-info', path: ['/finance/reports/fees']},
+            {name: 'Expenses Report', iconClasses: 'fas fa-money-bill-wave text-danger', path: ['/finance/reports/expenses']},
+            {name: 'Statements', iconClasses: 'fas fa-file-invoice-dollar text-primary', path: ['/finance/reports/statements']}
+        ]
+    },
+    {
+        name: 'Payroll',
+        iconClasses: 'fas fa-money-check-alt',
+        children: [
+            {name: 'Processing', iconClasses: 'fas fa-cogs text-primary', path: ['/payroll/periods']},
+            {name: 'Employee Salaries', iconClasses: 'fas fa-user-tie text-success', path: ['/payroll/employee-salaries']},
+            {name: 'Loans & Advances', iconClasses: 'fas fa-hand-holding-usd text-warning', path: ['/payroll/loan-advances']},
+            {name: 'Earning Types', iconClasses: 'fas fa-plus-circle text-info', path: ['/payroll/earning-types']},
+            {name: 'Deduction Types', iconClasses: 'fas fa-minus-circle text-danger', path: ['/payroll/deduction-types']},
+            {name: 'Tax Bands', iconClasses: 'fas fa-percentage text-secondary', path: ['/payroll/tax-bands']},
+            {name: 'Payroll Settings', iconClasses: 'fas fa-sliders-h text-primary', path: ['/payroll/settings']},
+            {name: 'Reports', iconClasses: 'fas fa-chart-pie text-info', path: ['/payroll/reports']}
         ]
     },
     {
@@ -152,6 +185,11 @@ export const MENU = [
                 ]
             },
             {
+                name: 'Approval Workflows',
+                iconClasses: 'fas fa-sitemap text-info',
+                path: ['/settings/approval-workflows']
+            },
+            {
                 name: 'Global Settings',
                 iconClasses: 'fas fa-cogs text-primary',
                 path: ['/settings/global-settings']
@@ -164,7 +202,6 @@ export const MENU = [
         children: [
             {name: 'Users', iconClasses: 'fas fa-users text-primary', path: ['/security/users']},
             {name: 'Roles', iconClasses: 'fas fa-user-shield text-success', path: ['/security/roles']},
-            {name: 'User Roles', iconClasses: 'fas fa-user-tag text-warning', path: ['/security/user-roles']},
             {name: 'Menu Permissions', iconClasses: 'fas fa-bars text-danger', path: ['/security/menu-permissions']}
         ]
     },
@@ -237,6 +274,11 @@ export const MENU = [
                         name: 'Assessment Report',
                         iconClasses: 'fas fa-bullseye text-warning',
                         path: ['/reports/academics/assessment-report']
+                    },
+                    {
+                        name: 'Student Subject Allocation',
+                        iconClasses: 'fas fa-bullseye text-warning',
+                        path: ['/reports/academics/student-subject-allocation']
                     }
                 ]
             }

@@ -1,0 +1,142 @@
+<div *ngIf="!request || request.status !== Status.Approved" class="card card-outline mb-2" [ngClass]="{
+    'card-primary': !request,
+    'card-warning': request && (request.status === Status.Submitted || request.status === Status.Returned),
+    'card-danger': request && request.status === Status.Rejected
+}">
+    <div class="card-header p-1">
+        <strong><i class="fas fa-check-double me-1"></i> Approval</strong>
+        <span *ngIf="workflow" class="ms-2 text-muted"><small>{{ workflow.name }}</small></span>
+        <span *ngIf="request" class="float-end">
+            <span class="badge" [ngClass]="statusBadge(request.status)">{{ statusLabel(request.status) }}</span>
+            <span *ngIf="request.status === Status.Submitted" class="ms-1 text-muted">
+                <small>Awaiting step {{ request.currentStepRank }}</small>
+            </span>
+        </span>
+    </div>
+    <div class="card-body p-2">
+        <div *ngIf="loading" class="text-center p-2 text-muted">
+            <i class="fas fa-spinner fa-spin me-1"></i> Loading workflow…
+        </div>
+
+        <div *ngIf="!loading && !workflow" class="alert alert-warning mb-0 py-1">
+            <small>No active workflow configured for this form. Configure under Settings &rarr; Approval Workflows.</small>
+        </div>
+
+        <!-- Show the last return/reject/reversal comment prominently -->
+        <div *ngIf="!loading && workflow && request && (request.status === Status.Returned || request.status === Status.Rejected || request.status === Status.Reversed)"
+            class="alert py-1 mb-2"
+            [ngClass]="{
+                'alert-warning': request.status === Status.Returned,
+                'alert-danger': request.status === Status.Rejected,
+                'alert-dark': request.status === Status.Reversed
+            }">
+            <ng-container *ngIf="request.status === Status.Reversed">
+                <strong>Approval Reversed</strong> by a Super Administrator — the record is back to draft and editable.
+                <div *ngIf="request.actions && request.actions.length" class="mt-1">
+                    <small>Latest action comment: "{{ request.actions[request.actions.length - 1].comment || '-' }}"</small>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="request.status !== Status.Reversed && getLastReturnOrRejectAction() as la">
+                <strong>{{ request.status === Status.Returned ? 'Returned' : 'Rejected' }}</strong>
+                by <strong>{{ la.actionedByName }}</strong>
+                (Step {{ la.stepRank }}: {{ la.stepName }})
+                <span *ngIf="la.actionedAt" class="text-muted"> on {{ la.actionedAt | date:'medium' }}</span>
+                <div *ngIf="la.comment" class="mt-1"><small>"{{ la.comment }}"</small></div>
+            </ng-container>
+        </div>
+
+        <!-- Picker (no request yet OR returned OR rejected OR reversed) — always visible so the user can
+             pick approvers before OR after saving the record. -->
+        <div *ngIf="!loading && workflow && isInPickerMode()">
+            <div class="mb-1">
+                <small class="text-muted">Pick the approvers for each step. You can submit now, or save the record and come back to submit later.</small>
+            </div>
+            <div *ngIf="workflow.isMakerChecker" class="alert alert-secondary py-1 mb-2">
+                <small><i class="fas fa-shield-alt me-1"></i> Maker-checker is enabled: you cannot select yourself as any step's approver.</small>
+            </div>
+
+            <div *ngFor="let s of workflow.steps" class="row g-1 mb-1 align-items-center">
+                <div class="col-md-4">
+                    <strong>Step {{ s.rank }}: {{ s.name }}</strong>
+                    <small class="text-muted d-block">Role: {{ s.roleName }}</small>
+                </div>
+                <div class="col-md-8">
+                    <select class="form-select form-select-sm" [(ngModel)]="stepSelections[s.rank]">
+                        <option [ngValue]="undefined">-- Select approver --</option>
+                        <option *ngFor="let u of usersByRole[s.roleId]" [ngValue]="u.id"
+                            [disabled]="workflow.isMakerChecker && currentUserId === u.id">
+                            {{ u.fullName || u.userName }}
+                            <span *ngIf="workflow.isMakerChecker && currentUserId === u.id"> (you)</span>
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Internal Submit button only shown when the entity already exists (standalone submission).
+                 For new records, the parent form's Save & Submit button handles the combined flow. -->
+            <div class="text-end mt-2" *ngIf="entityId && entityId > 0">
+                <button class="btn btn-success btn-sm" [disabled]="!canSubmit()" (click)="submit()">
+                    <i class="fas fa-paper-plane"></i> {{ isReturned() ? 'Resubmit for Approval' : 'Submit for Approval' }}
+                </button>
+            </div>
+        </div>
+
+        <!-- Submitted / Approved / Rejected (finalized) — show progress + action -->
+        <div *ngIf="!loading && workflow && request && !isInPickerMode()">
+            <div class="mb-2">
+                <small class="text-muted">
+                    Submitted by <strong>{{ request.submittedByName }}</strong>
+                    on {{ request.submittedAt | date:'medium' }}
+                </small>
+            </div>
+
+            <div *ngFor="let a of request.actions" class="border rounded p-1 mb-1"
+                [ngClass]="{
+                    'bg-light': a.stepRank !== request.currentStepRank || request.status !== Status.Submitted,
+                    'border-warning': a.stepRank === request.currentStepRank && request.status === Status.Submitted
+                }">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Step {{ a.stepRank }}: {{ a.stepName }}</strong>
+                        <span class="badge ms-2" [ngClass]="stepStatusBadge(a.status)">{{ stepStatusLabel(a.status) }}</span>
+                    </div>
+                    <div>
+                        <small class="text-muted">Assigned: <strong>{{ a.assignedToName }}</strong></small>
+                    </div>
+                </div>
+                <div *ngIf="a.actionedAt" class="mt-1">
+                    <small>
+                        By <strong>{{ a.actionedByName }}</strong> on {{ a.actionedAt | date:'medium' }}
+                    </small>
+                    <div *ngIf="a.comment"><small class="text-muted">Comment: "{{ a.comment }}"</small></div>
+                </div>
+            </div>
+
+            <div *ngIf="isMyTurn()" class="mt-2 border-top pt-2">
+                <label class="form-label mb-0"><strong>Your action (Step {{ request.currentStepRank }})</strong></label>
+                <textarea class="form-control form-control-sm mb-1" rows="2"
+                    placeholder="Comment (required for Reject or Return)"
+                    [(ngModel)]="actionComment"></textarea>
+                <div class="text-end">
+                    <button class="btn btn-sm btn-danger me-1" (click)="performAction('reject')">
+                        <i class="fas fa-times"></i> Reject
+                    </button>
+                    <button class="btn btn-sm btn-warning me-1" (click)="performAction('return')">
+                        <i class="fas fa-undo"></i> Return
+                    </button>
+                    <button class="btn btn-sm btn-success" (click)="performAction('approve')">
+                        <i class="fas fa-check"></i> Approve
+                    </button>
+                </div>
+            </div>
+
+            <div *ngIf="isFinalized()" class="alert mb-0 mt-2 py-1"
+                [ngClass]="request.status === Status.Approved ? 'alert-success' : 'alert-danger'">
+                <small>
+                    <i class="fas" [ngClass]="request.status === Status.Approved ? 'fa-check-circle' : 'fa-times-circle'"></i>
+                    {{ request.status === Status.Approved ? 'Request fully approved.' : 'Request has been rejected.' }}
+                </small>
+            </div>
+        </div>
+    </div>
+</div>

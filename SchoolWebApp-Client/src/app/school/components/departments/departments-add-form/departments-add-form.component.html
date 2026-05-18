@@ -4,14 +4,12 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
-                        <label for="code">Department code: <span
-                                class="requiredField">*</span></label>
-                        <input id="code" placeholder="Enter department code" type="text"
-                            class="form-control form-control-sm" formControlName="code"
-                            [ngClass]="{
-                                'is-invalid': (f.code.dirty || f.code.touched) && f.code.invalid
-                                }" />
-                        <div class="invalid-feedback">Department code is required</div>
+                        <label for="code">Department code:
+                            <small class="text-muted">(auto-generated)</small></label>
+                        <input id="code" type="text"
+                            class="form-control form-control-sm bg-light"
+                            formControlName="code"
+                            readonly />
                     </div>
                 </div>
             </div>
@@ -35,6 +33,7 @@
                         <label for="staffDetailsId" class="form-label">Head of department:</label>
                         <ng-select labelForId="staffDetailsId" [items]="staffDetails"
                             bindLabel="fullName"
+                            bindValue="id"
                             formControlName="staffDetailsId"
                             placeholder="Select head of department">
                             <ng-template ng-label-tmp let-item="item">

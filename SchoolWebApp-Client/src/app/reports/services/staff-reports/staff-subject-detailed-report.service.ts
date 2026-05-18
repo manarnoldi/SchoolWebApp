@@ -81,25 +81,27 @@ export class StaffSubjectDetailedReportService extends ResourceService<StaffSubj
                         {text: 'Remarks', style: 'tableHeader'}
                     ];
 
-                    const tableWidths = ['*', '*', '*', 'auto'];
+                    // Star ratios always sum to the available page width so the
+                    // table can't overflow. Subject Name + Remarks share most
+                    // of the space and are allowed to wrap; class + code stay
+                    // compact and don't wrap.
+                    const tableWidths = ['*', 60, '*', '*'];
                     const tableBody = [
                         [...dayHeaders],
                         ...staffSubjects.map((staffSubject) => [
                             {
-                                text: staffSubject.schoolClass?.name,
+                                text: staffSubject.schoolClass?.name ?? '',
                                 noWrap: true
                             },
                             {
-                                text: staffSubject?.subject?.code,
+                                text: staffSubject?.subject?.code ?? '',
                                 noWrap: true
                             },
                             {
-                                text: staffSubject?.subject?.name,
-                                noWrap: true
+                                text: staffSubject?.subject?.name ?? ''
                             },
                             {
-                                text: staffSubject?.description,
-                                noWrap: false
+                                text: staffSubject?.description ?? ''
                             }
                         ])
                     ];

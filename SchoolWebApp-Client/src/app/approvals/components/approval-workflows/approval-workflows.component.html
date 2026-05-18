@@ -1,0 +1,178 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+        <div class="row g-1">
+            <!-- Form -->
+            <div class="col-md-5">
+                <div class="card card-outline card-primary">
+                    <div class="card-header p-1">
+                        <strong><i class="fas fa-sitemap me-1"></i> {{ editMode ? 'Edit' : 'Create' }} Workflow</strong>
+                        <button *ngIf="editMode" class="btn btn-sm btn-outline-secondary float-end" (click)="cancel()">
+                            <i class="fas fa-times"></i> Cancel Edit
+                        </button>
+                    </div>
+                    <div class="card-body p-2">
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label class="form-label mb-0">Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-sm" [(ngModel)]="form.name" placeholder="Workflow name" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label mb-0">Form <span class="text-danger">*</span></label>
+                                <select class="form-select form-select-sm" [(ngModel)]="form.formKey">
+                                    <option value="">Select form</option>
+                                    <option *ngFor="let f of formKeys" [ngValue]="f.value">{{ f.label }}</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label mb-0">Description</label>
+                                <textarea class="form-control form-control-sm" rows="1" [(ngModel)]="form.description"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="icheck-primary mt-1">
+                                    <input type="checkbox" id="isMakerChecker"
+                                        [checked]="form.isMakerChecker"
+                                        (change)="form.isMakerChecker = !form.isMakerChecker"/>
+                                    <label for="isMakerChecker">
+                                        Maker-checker (prevent self approval)
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="icheck-success mt-1">
+                                    <input type="checkbox" id="isActive"
+                                        [checked]="form.isActive"
+                                        (change)="form.isActive = !form.isActive"/>
+                                    <label for="isActive">Active</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-2"/>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <strong>Approval Steps</strong>
+                            <button class="btn btn-sm btn-outline-primary" (click)="addStep()">
+                                <i class="fas fa-plus"></i> Add Step
+                            </button>
+                        </div>
+
+                        <div *ngFor="let s of form.steps; let i = index" class="card mb-1">
+                            <div class="card-body p-2">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span><strong>Step {{ s.rank }}</strong>
+                                        <span *ngIf="s.isFinal" class="badge bg-success ms-1">Final</span>
+                                    </span>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-secondary" (click)="moveStep(i, -1)" [disabled]="i === 0" title="Move up"><i class="fas fa-arrow-up"></i></button>
+                                        <button class="btn btn-outline-secondary" (click)="moveStep(i, 1)" [disabled]="i === form.steps.length - 1" title="Move down"><i class="fas fa-arrow-down"></i></button>
+                                        <button class="btn btn-outline-danger" (click)="removeStep(i)" [disabled]="form.steps.length <= 1" title="Remove"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>
+                                <div class="row g-2">
+                                    <div class="col-md-6">
+                                        <label class="form-label mb-0">Step Name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm" [(ngModel)]="s.name" placeholder="e.g. Reviewer, Approver"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label mb-0">Role <span class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" [(ngModel)]="s.roleId">
+                                            <option [ngValue]="0">Select role</option>
+                                            <option *ngFor="let r of roles" [ngValue]="r.id">{{ r.name }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="icheck-primary mt-1">
+                                            <input type="checkbox" [id]="'nna'+i" [checked]="s.notifyNextApprover"
+                                                (change)="s.notifyNextApprover = !s.notifyNextApprover"/>
+                                            <label [for]="'nna'+i"><small>Notify next</small></label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="icheck-primary mt-1">
+                                            <input type="checkbox" [id]="'npa'+i" [checked]="s.notifyPreviousApprover"
+                                                (change)="s.notifyPreviousApprover = !s.notifyPreviousApprover"/>
+                                            <label [for]="'npa'+i"><small>Notify previous</small></label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="icheck-primary mt-1">
+                                            <input type="checkbox" [id]="'na'+i" [checked]="s.notifyApplicant"
+                                                (change)="s.notifyApplicant = !s.notifyApplicant"/>
+                                            <label [for]="'na'+i"><small>Notify applicant</small></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-end mt-2">
+                            <button class="btn btn-success btn-sm" (click)="save()">
+                                <i class="fas fa-save"></i> {{ editMode ? 'Update' : 'Create' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- List -->
+            <div class="col-md-7">
+                <div class="card card-outline card-info">
+                    <div class="card-header p-1">
+                        <strong><i class="fas fa-list me-1"></i> Configured Workflows ({{ workflows.length }})</strong>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-striped table-hover table-sm mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Form</th>
+                                    <th>Steps</th>
+                                    <th class="text-center">Maker-checker</th>
+                                    <th class="text-center">Active</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let w of workflows; let i = index">
+                                    <td>{{ i + 1 }}</td>
+                                    <td><strong>{{ w.name }}</strong><br/><small class="text-muted">{{ w.description }}</small></td>
+                                    <td><span class="badge bg-secondary">{{ formKeyLabel(w.formKey) }}</span></td>
+                                    <td>
+                                        <small>
+                                            <span *ngFor="let s of w.steps; let j = index">
+                                                <strong>{{ s.name }}</strong>
+                                                <small class="text-muted">({{ s.roleName }})</small>
+                                                <span *ngIf="j < w.steps.length - 1"> → </span>
+                                            </span>
+                                        </small>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge" [ngClass]="w.isMakerChecker ? 'bg-success' : 'bg-secondary'">
+                                            {{ w.isMakerChecker ? 'Yes' : 'No' }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge" [ngClass]="w.isActive ? 'bg-success' : 'bg-secondary'">
+                                            {{ w.isActive ? 'Yes' : 'No' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" (click)="startEdit(w)" title="Edit"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-outline-danger" (click)="deleteWorkflow(w)" title="Delete"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div *ngIf="workflows.length === 0" class="text-center text-muted p-3">
+                            <i class="fas fa-info-circle me-1"></i> No workflows configured yet.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

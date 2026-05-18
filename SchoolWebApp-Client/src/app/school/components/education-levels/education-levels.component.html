@@ -38,6 +38,7 @@
                     [curricula]="curricula"></app-school-soft-filter-form>
             </div>
             <div class="col-6">
+                <a class="btn btn-flat btn-sm btn-warning mb-1" [routerLink]="['/settings/dropdowns']" [queryParams]="{category: 'System Settings'}"><i class="fas fa-angle-double-left"></i> Back to Dropdowns</a>
                 <app-table-button modelName="educationLevel"
                     buttonTitle="Add education level"></app-table-button>
             </div>

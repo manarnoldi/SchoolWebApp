@@ -11,6 +11,7 @@ import {NonAuthGuard} from './core/guards/non-auth.guard';
 import {RegisterComponent} from './core/auth/register/register.component';
 import {ForgotPasswordComponent} from './core/auth/forgot-password/forgot-password.component';
 import {RecoverPasswordComponent} from './core/auth/recover-password/recover-password.component';
+import {ChangePasswordComponent} from './core/auth/change-password/change-password.component';
 import {DesignationsComponent} from './settings/components/designations/designations.component';
 import {OccupationsComponent} from './settings/components/occupations/occupations.component';
 import {SettingsComponent} from './settings/settings.component';
@@ -25,6 +26,7 @@ import {SessionTypesComponent} from './settings/components/session-types/session
 import {StaffCategoriesComponent} from './settings/components/staff-categories/staff-categories.component';
 import {GlobalSettingsComponent} from './settings/components/global-settings/global-settings.component';
 import {DropdownManagementComponent} from './settings/components/dropdown-management/dropdown-management.component';
+import {ApprovalWorkflowsComponent} from './approvals/components/approval-workflows/approval-workflows.component';
 import {LearningModesComponent} from './school/components/learning-modes/learning-modes.component';
 import {SchoolComponent} from './school/school.component';
 import {SchoolDetailsComponent} from './school/components/school-details/school-details.component';
@@ -76,6 +78,7 @@ import { AcademicsReportComponent } from './reports/components/academics-report/
 import { StaffAttendancePageComponent } from './reports/components/pages/staff-attendance-page.component';
 import { StaffAttendanceDetailsPageComponent } from './reports/components/pages/staff-attendance-details-page.component';
 import { StaffSubjectPageComponent } from './reports/components/pages/staff-subject-page.component';
+import { StudentSubjectPageComponent } from './reports/components/pages/student-subject-page.component';
 import { ClassListPageComponent } from './reports/components/pages/class-list-page.component';
 import { ClassAttendancePageComponent } from './reports/components/pages/class-attendance-page.component';
 import { ClassAttendanceDetailsPageComponent } from './reports/components/pages/class-attendance-details-page.component';
@@ -119,8 +122,32 @@ import { StudentCoCurriculumScoresComponent } from './cbe/cocurriculum/component
 import { SecurityComponent } from './security/security.component';
 import { UsersComponent } from './security/components/users/users.component';
 import { RolesComponent as SecurityRolesComponent } from './security/components/roles/roles.component';
-import { UserRolesComponent } from './security/components/user-roles/user-roles.component';
 import { MenuPermissionsComponent } from './security/components/menu-permissions/menu-permissions.component';
+import { FinanceComponent } from './finance/finance.component';
+import { FinanceAccountsComponent } from './finance/components/accounts/accounts.component';
+import { FeeCategoriesComponent } from './finance/components/fee-categories/fee-categories.component';
+import { ExpenseCategoriesComponent } from './finance/components/expense-categories/expense-categories.component';
+import { ExpensesComponent as FinanceExpensesComponent } from './finance/components/expenses/expenses.component';
+import { JournalEntriesComponent } from './finance/components/journal-entries/journal-entries.component';
+import { PaymentsComponent } from './finance/components/payments/payments.component';
+import { FinanceInvoicesComponent } from './finance/components/invoices/invoices.component';
+import { FinanceReportsComponent } from './finance/components/reports/finance-reports.component';
+import { FinanceBudgetsComponent } from './finance/components/budgets/budgets.component';
+import { FinanceBudgetAmendmentsComponent } from './finance/components/budget-amendments/budget-amendments.component';
+import { SponsorsComponent } from './finance/components/sponsors/sponsors.component';
+import { SponsorshipsComponent } from './finance/components/sponsorships/sponsorships.component';
+import { SponsorPaymentsComponent } from './finance/components/sponsor-payments/sponsor-payments.component';
+import { FinanceBudgetMastersComponent } from './finance/components/budget-masters/budget-masters.component';
+import { FeeStructuresComponent } from './finance/components/fee-structures/fee-structures.component';
+import { PayrollComponent } from './payroll/payroll.component';
+import { PayrollEarningTypesComponent } from './payroll/components/earning-types/earning-types.component';
+import { PayrollDeductionTypesComponent } from './payroll/components/deduction-types/deduction-types.component';
+import { PayrollTaxBandsComponent } from './payroll/components/tax-bands/tax-bands.component';
+import { PayrollSettingsComponent } from './payroll/components/payroll-settings/payroll-settings.component';
+import { PayrollEmployeeSalariesComponent } from './payroll/components/employee-salaries/employee-salaries.component';
+import { PayrollLoanAdvancesComponent } from './payroll/components/loan-advances/loan-advances.component';
+import { PayrollPeriodsComponent } from './payroll/components/payroll-periods/payroll-periods.component';
+import { PayrollReportsComponent } from './payroll/components/payroll-reports/payroll-reports.component';
 
 const routes: Routes = [
     {
@@ -297,7 +324,8 @@ const routes: Routes = [
             {path: 'sessionTypes', component: SessionTypesComponent},
             {path: 'staffCategories', component: StaffCategoriesComponent},
             {path: 'global-settings', component: GlobalSettingsComponent},
-            {path: 'dropdowns', component: DropdownManagementComponent}
+            {path: 'dropdowns', component: DropdownManagementComponent},
+            {path: 'approval-workflows', component: ApprovalWorkflowsComponent}
         ]
     },
     {
@@ -320,7 +348,8 @@ const routes: Routes = [
             {path: 'academics/results-analysis', component: ResultsAnalysisPageComponent},
             {path: 'academics/exam-results', component: ResultsAnalysisPageComponent},
             {path: 'academics/report-forms', component: ReportFormsPageComponent},
-            {path: 'academics/assessment-report', component: AssessmentReportComponent}
+            {path: 'academics/assessment-report', component: AssessmentReportComponent},
+            {path: 'academics/student-subject-allocation', component: StudentSubjectPageComponent}
         ]
     },
     {
@@ -331,8 +360,48 @@ const routes: Routes = [
         children: [
             {path: 'users', component: UsersComponent},
             {path: 'roles', component: SecurityRolesComponent},
-            {path: 'user-roles', component: UserRolesComponent},
+            {path: 'user-roles', redirectTo: 'users', pathMatch: 'full'},
             {path: 'menu-permissions', component: MenuPermissionsComponent}
+        ]
+    },
+    {
+        path: 'finance',
+        component: FinanceComponent,
+        canActivate: [AuthGuard],
+        canActivateChild: [AuthGuard],
+        children: [
+            {path: 'accounts', component: FinanceAccountsComponent},
+            {path: 'fee-categories', component: FeeCategoriesComponent},
+            {path: 'fee-structures', component: FeeStructuresComponent},
+            {path: 'expense-categories', component: ExpenseCategoriesComponent},
+            {path: 'expenses', component: FinanceExpensesComponent},
+            {path: 'journal-entries', component: JournalEntriesComponent},
+            {path: 'payments', component: PaymentsComponent},
+            {path: 'invoices', component: FinanceInvoicesComponent},
+            {path: 'budget-register', component: FinanceBudgetMastersComponent},
+            {path: 'budgets', component: FinanceBudgetsComponent},
+            {path: 'budget-amendments', component: FinanceBudgetAmendmentsComponent},
+            {path: 'sponsors', component: SponsorsComponent},
+            {path: 'sponsorships', component: SponsorshipsComponent},
+            {path: 'sponsor-payments', component: SponsorPaymentsComponent},
+            {path: 'reports', redirectTo: 'reports/fees', pathMatch: 'full'},
+            {path: 'reports/fees', component: FinanceReportsComponent, data: {reportGroup: 'fees'}},
+            {path: 'reports/expenses', component: FinanceReportsComponent, data: {reportGroup: 'expenses'}},
+            {path: 'reports/statements', component: FinanceReportsComponent, data: {reportGroup: 'statements'}}
+        ]
+    },
+    {
+        path: 'payroll',
+        component: PayrollComponent,
+        children: [
+            {path: 'earning-types', component: PayrollEarningTypesComponent},
+            {path: 'deduction-types', component: PayrollDeductionTypesComponent},
+            {path: 'tax-bands', component: PayrollTaxBandsComponent},
+            {path: 'settings', component: PayrollSettingsComponent},
+            {path: 'employee-salaries', component: PayrollEmployeeSalariesComponent},
+            {path: 'loan-advances', component: PayrollLoanAdvancesComponent},
+            {path: 'periods', component: PayrollPeriodsComponent},
+            {path: 'reports', component: PayrollReportsComponent}
         ]
     },
     {
@@ -354,6 +423,11 @@ const routes: Routes = [
         path: 'recover-password',
         component: RecoverPasswordComponent,
         canActivate: [NonAuthGuard]
+    },
+    {
+        path: 'change-password',
+        component: ChangePasswordComponent,
+        canActivate: [AuthGuard]
     },
     {path: '**', redirectTo: ''}
 ];

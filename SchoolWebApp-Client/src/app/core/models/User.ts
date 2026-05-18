@@ -32,6 +32,8 @@ export class User extends ResourceModel<User> {
     currentUserVisitor: boolean;
     currentUserAccounts: boolean;
 
+    mustChangePassword?: boolean;
+
     constructor(model?: Partial<User>) {
         super(model);
     }

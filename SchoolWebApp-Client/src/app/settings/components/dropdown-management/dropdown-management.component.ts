@@ -59,6 +59,21 @@ export class DropdownManagementComponent implements OnInit {
                     fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'abbreviation', label: 'Abbreviation', type: 'text'}, {key: 'rank', label: 'Rank', type: 'number', required: true}, {key: 'description', label: 'Description', type: 'textarea'}]},
                 {name: 'classLeadershipRoles', label: 'Leadership Roles', endpoint: '/classLeadershipRoles', category: 'System Settings',
                     fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'personType', label: 'Person Type', type: 'select', required: true, options: [{value: 0, label: 'Student'}, {value: 1, label: 'Teacher'}, {value: 2, label: 'Parent'}]}, {key: 'rank', label: 'Rank', type: 'number', required: true}, {key: 'description', label: 'Description', type: 'textarea'}]}
+            ],
+            links: [
+                {label: 'Departments', path: '/school/departments', icon: 'fas fa-building'},
+                {label: 'Education Levels', path: '/school/educationLevels', icon: 'fas fa-layer-group'}
+            ]
+        },
+        {
+            name: 'Finance',
+            icon: 'fas fa-coins',
+            color: 'info',
+            configs: [],
+            links: [
+                {label: 'Chart of Accounts', path: '/finance/accounts', icon: 'fas fa-book'},
+                {label: 'Fee Categories', path: '/finance/fee-categories', icon: 'fas fa-tags'},
+                {label: 'Expense Categories', path: '/finance/expense-categories', icon: 'fas fa-list'}
             ]
         },
         {
@@ -121,6 +136,11 @@ export class DropdownManagementComponent implements OnInit {
     editMode: boolean = false;
     formData: any = {};
 
+    page: number = 1;
+    pageSize: number = 10;
+    pageChanged = (page: number) => { this.page = page; };
+    pageSizeChanged = (pageSize: number) => { this.pageSize = pageSize; };
+
     constructor(
         private toastr: ToastrService,
         private http: HttpClient,
@@ -160,6 +180,7 @@ export class DropdownManagementComponent implements OnInit {
     selectConfig = (config: any) => {
         this.activeConfig = config;
         this.editMode = false;
+        this.page = 1;
         this.resetForm();
         this.loadItems();
     };

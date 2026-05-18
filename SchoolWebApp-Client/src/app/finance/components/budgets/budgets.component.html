@@ -1,0 +1,379 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+
+        <!-- Form Modal -->
+        <div class="modal-backdrop fade show" *ngIf="showForm" (click)="cancel()"></div>
+        <div class="modal fade show d-block" *ngIf="showForm" tabindex="-1">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable" style="margin-top: 30px;">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white py-2">
+                        <h5 class="modal-title">
+                            <i class="fas fa-piggy-bank me-1"></i>
+                            {{ viewMode ? 'Review' : (editMode ? 'Edit' : 'New') }} Budget
+                            <span *ngIf="editMode && item.name" class="ms-2">- {{ item.name }}</span>
+                        </h5>
+                        <button type="button" class="close text-white" (click)="cancel()" aria-label="Close">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body p-2">
+                        <fieldset [disabled]="viewMode">
+                        <!-- Step indicator -->
+                        <div class="d-flex align-items-center mb-2" style="font-size:0.8rem;" *ngIf="!viewMode">
+                            <span class="badge" [ngClass]="editMode ? 'bg-success' : 'bg-primary'">1. Budget Details</span>
+                            <i class="fas fa-arrow-right mx-2 text-muted"></i>
+                            <span class="badge" [ngClass]="editMode ? 'bg-primary' : 'bg-secondary'">2. Budget Lines</span>
+                            <span class="ms-2 text-muted" *ngIf="!editMode"><i class="fas fa-info-circle"></i> Save budget details first to start adding line items.</span>
+                        </div>
+
+                        <!-- Section 1: Budget Details -->
+                        <div class="border border-info rounded p-2 mb-2">
+                            <h6 class="text-info mb-2"><i class="fas fa-info-circle me-1"></i> Budget Details</h6>
+                            <div class="row g-1">
+                                <div class="col-md-12">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Budget Plan <span class="requiredField">*</span> <small class="text-muted">(select an Open plan — year & dates auto-fill)</small></label>
+                                    <select class="form-select form-select-sm" [(ngModel)]="item.budgetMasterId" (ngModelChange)="onBudgetPlanChange()" [disabled]="editMode">
+                                        <option [ngValue]="null" hidden disabled>Select budget plan</option>
+                                        <option [ngValue]="m.id" *ngFor="let m of getAvailableMasters()">{{ m.code }} - {{ m.name }} ({{ m.academicYearName }})</option>
+                                    </select>
+                                    <small class="text-muted" *ngIf="getAvailableMasters().length === 0"><i class="fas fa-exclamation-triangle text-warning"></i> No Open budget plans found. Create one in Budget Register first.</small>
+                                </div>
+                            </div>
+                            <div class="row g-1 mt-1">
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Academic Year</label>
+                                    <select class="form-select form-select-sm bg-light" [(ngModel)]="item.academicYearId" disabled>
+                                        <option [ngValue]="null" hidden disabled>Auto from plan</option>
+                                        <option [ngValue]="y.id" *ngFor="let y of academicYears">{{ y.name }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Start Date</label>
+                                    <input type="date" class="form-control form-control-sm bg-light" [(ngModel)]="item.startDate" readonly />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">End Date</label>
+                                    <input type="date" class="form-control form-control-sm bg-light" [(ngModel)]="item.endDate" readonly />
+                                </div>
+                                <div class="col-md-3 d-flex align-items-end">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" [(ngModel)]="item.isActive" id="bdgActive" />
+                                        <label class="form-check-label" for="bdgActive" style="font-size:0.8rem;">Active</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-1 mt-1">
+                                <div class="col-md-4">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Department <span class="requiredField">*</span></label>
+                                    <select class="form-select form-select-sm" [ngClass]="{'bg-light': editMode}" [(ngModel)]="item.departmentId" (ngModelChange)="autoBudgetName()" [disabled]="editMode || !item.budgetMasterId">
+                                        <option [ngValue]="null" hidden disabled>Select department</option>
+                                        <option [ngValue]="d.id" *ngFor="let d of departments">{{ getDepartmentLabel(d) }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-8">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Name <span class="requiredField">*</span> <small class="text-muted" *ngIf="!editMode">(auto-generated — editable)</small></label>
+                                    <input class="form-control form-control-sm" [ngClass]="{'bg-light': editMode}" [(ngModel)]="item.name" [readonly]="editMode" placeholder="Select plan & department to auto-fill" />
+                                </div>
+                            </div>
+                            <div class="row g-1 mt-1">
+                                <div class="col-md-12">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Description</label>
+                                    <textarea class="form-control form-control-sm" rows="2" [(ngModel)]="item.description"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 2: Budget Lines (only after header saved) -->
+                        <ng-container *ngIf="editMode">
+                            <!-- Income Lines -->
+                            <div class="border border-success rounded p-2 mb-2">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="text-success mb-0"><i class="fas fa-arrow-down me-1"></i> Income Budget Lines</h6>
+                                    <button class="btn btn-sm btn-outline-success" (click)="addLine('Income')">
+                                        <i class="fas fa-plus"></i> Add Income Line
+                                    </button>
+                                </div>
+                                <table class="table table-sm table-striped mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width:40%;">Income Account</th>
+                                            <th style="width:20%;" class="text-end">Budgeted Amount</th>
+                                            <th>Notes</th>
+                                            <th style="width:5%;"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let l of getLinesByType('Income')">
+                                            <td>
+                                                <select class="form-select form-select-sm" [(ngModel)]="l.accountId">
+                                                    <option [ngValue]="null" disabled hidden>Select Income Account</option>
+                                                    <option [ngValue]="a.id" *ngFor="let a of getAccountsByType('Income')">{{ a.code }} - {{ a.name }}</option>
+                                                </select>
+                                            </td>
+                                            <td><input type="number" class="form-control form-control-sm text-end" [(ngModel)]="l.budgetedAmount" min="0" /></td>
+                                            <td><input type="text" class="form-control form-control-sm" [(ngModel)]="l.notes" /></td>
+                                            <td class="text-center">
+                                                <button class="btn btn-sm btn-outline-danger" (click)="removeLine(l)" title="Remove"><i class="fas fa-times"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="getLinesByType('Income').length === 0">
+                                            <td colspan="4" class="text-center text-muted p-2"><i class="fas fa-info-circle"></i> No income lines yet.</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot *ngIf="getLinesByType('Income').length > 0">
+                                        <tr class="table-success">
+                                            <th>Total Income</th>
+                                            <th class="text-end">{{ getTypeTotal('Income') | number:'1.2-2' }}</th>
+                                            <th colspan="2"></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                            <!-- Expense Lines -->
+                            <div class="border border-danger rounded p-2 mb-2">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="text-danger mb-0"><i class="fas fa-arrow-up me-1"></i> Expenditure Budget Lines</h6>
+                                    <button class="btn btn-sm btn-outline-danger" (click)="addLine('Expense')">
+                                        <i class="fas fa-plus"></i> Add Expense Line
+                                    </button>
+                                </div>
+                                <table class="table table-sm table-striped mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width:40%;">Expense Account</th>
+                                            <th style="width:20%;" class="text-end">Budgeted Amount</th>
+                                            <th>Notes</th>
+                                            <th style="width:5%;"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let l of getLinesByType('Expense')">
+                                            <td>
+                                                <select class="form-select form-select-sm" [(ngModel)]="l.accountId">
+                                                    <option [ngValue]="null" disabled hidden>Select Expense Account</option>
+                                                    <option [ngValue]="a.id" *ngFor="let a of getAccountsByType('Expense')">{{ a.code }} - {{ a.name }}</option>
+                                                </select>
+                                            </td>
+                                            <td><input type="number" class="form-control form-control-sm text-end" [(ngModel)]="l.budgetedAmount" min="0" /></td>
+                                            <td><input type="text" class="form-control form-control-sm" [(ngModel)]="l.notes" /></td>
+                                            <td class="text-center">
+                                                <button class="btn btn-sm btn-outline-danger" (click)="removeLine(l)" title="Remove"><i class="fas fa-times"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="getLinesByType('Expense').length === 0">
+                                            <td colspan="4" class="text-center text-muted p-2"><i class="fas fa-info-circle"></i> No expense lines yet.</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot *ngIf="getLinesByType('Expense').length > 0">
+                                        <tr class="table-danger">
+                                            <th>Total Expenditure</th>
+                                            <th class="text-end">{{ getTypeTotal('Expense') | number:'1.2-2' }}</th>
+                                            <th colspan="2"></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                            <!-- Summary -->
+                            <div class="border border-primary rounded p-2 mb-2 bg-light" *ngIf="item.lines.length > 0">
+                                <div class="row text-center">
+                                    <div class="col-md-4"><small class="text-muted d-block">Total Income</small><strong class="text-success">{{ getTypeTotal('Income') | number:'1.2-2' }}</strong></div>
+                                    <div class="col-md-4"><small class="text-muted d-block">Total Expenditure</small><strong class="text-danger">{{ getTypeTotal('Expense') | number:'1.2-2' }}</strong></div>
+                                    <div class="col-md-4"><small class="text-muted d-block">Net (Income - Expense)</small><strong [ngClass]="getVarianceClass(getNetBudgeted())">{{ getNetBudgeted() | number:'1.2-2' }}</strong></div>
+                                </div>
+                            </div>
+                        </ng-container>
+                        </fieldset>
+
+                        <!-- Embedded Approval Webpart (show only when budget has been saved) -->
+                        <div class="mt-2" *ngIf="editMode">
+                            <app-approval-webpart
+                                #budgetApprovalWebpart
+                                formKey="Budget"
+                                entityType="Budget"
+                                [entityId]="item?.id ? +item.id : null"
+                                [currentUserId]="currentUserId"
+                                (statusChanged)="onBudgetApprovalChanged($event)"></app-approval-webpart>
+                        </div>
+                    </div>
+                    <div class="modal-footer py-1">
+                        <button class="btn btn-sm btn-secondary" (click)="cancel()">{{ viewMode ? 'Close' : (editMode ? 'Close' : 'Cancel') }}</button>
+                        <button *ngIf="!viewMode" class="btn btn-sm btn-success" (click)="save()">
+                            <i class="fas fa-save"></i>
+                            {{ editMode
+                                ? ((budgetApprovalWebpart?.hasPickerSelections() && budgetApprovalWebpart?.isInPickerMode()) ? 'Save &amp; Submit for Approval' : 'Save Changes')
+                                : 'Save & Add Lines' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Modal (Budget vs Actual) -->
+        <div class="modal-backdrop fade show" *ngIf="detail" (click)="closeDetail()"></div>
+        <div class="modal fade show d-block" *ngIf="detail" tabindex="-1">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable" style="margin-top: 30px;">
+                <div class="modal-content">
+                    <div class="modal-header bg-info text-white py-2">
+                        <h5 class="modal-title">
+                            <i class="fas fa-chart-bar me-1"></i> Budget vs Actual: {{ detail.name }}
+                            <span *ngIf="detail.budgetMasterName" class="badge bg-light text-dark ms-1">Plan: {{ detail.budgetMasterName }}</span>
+                        </h5>
+                        <button type="button" class="close text-white" (click)="closeDetail()"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body p-2">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar me-1"></i>{{ detail.startDate | date:'mediumDate' }} - {{ detail.endDate | date:'mediumDate' }}
+                                <span class="ms-2"><i class="fas fa-building me-1"></i>{{ detail.departmentName }}</span>
+                                <span class="ms-2"><i class="fas fa-graduation-cap me-1"></i>{{ detail.academicYearName }}</span>
+                            </small>
+                        </div>
+
+                        <div class="border border-info rounded p-2 mb-2">
+                            <h6 class="text-info mb-2"><i class="fas fa-chart-bar me-1"></i> Budget Lines</h6>
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Code</th>
+                            <th>Account</th>
+                            <th>Type</th>
+                            <th class="text-end">Budgeted</th>
+                            <th class="text-end">Amendments</th>
+                            <th class="text-end">Effective</th>
+                            <th class="text-end">Actual</th>
+                            <th class="text-end">Variance</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let l of detail.lines">
+                            <td><strong>{{ l.accountCode }}</strong></td>
+                            <td>{{ l.accountName }}</td>
+                            <td><small class="badge bg-secondary">{{ l.accountType }}</small></td>
+                            <td class="text-end">{{ l.budgetedAmount | number:'1.2-2' }}</td>
+                            <td class="text-end" [ngClass]="getVarianceClass(l.amendedAmount!)">{{ l.amendedAmount | number:'1.2-2' }}</td>
+                            <td class="text-end fw-bold">{{ l.effectiveAmount | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ l.actualAmount | number:'1.2-2' }}</td>
+                            <td class="text-end fw-bold" [ngClass]="getVarianceClass(l.variance!)">{{ l.variance | number:'1.2-2' }}</td>
+                            <td><small>{{ l.notes }}</small></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-warning fw-bold">
+                            <td colspan="3" class="text-end">TOTAL</td>
+                            <td class="text-end">{{ detail.totalBudgeted | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ detail.totalAmendments | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ detail.totalEffective | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ getDetailTotalActual() | number:'1.2-2' }}</td>
+                            <td class="text-end" [ngClass]="getVarianceClass(getDetailTotalVariance())">{{ getDetailTotalVariance() | number:'1.2-2' }}</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                        </div>
+
+                        <app-approval-history
+                            entityType="Budget"
+                            [entityId]="detail?.id ? +detail.id : null"></app-approval-history>
+                    </div>
+                    <div class="modal-footer py-1">
+                        <button class="btn btn-sm btn-secondary" (click)="closeDetail()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters + Add button row -->
+        <div class="row g-1 mb-1 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label mb-0" style="font-size:0.8rem;">Budget Plan</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filterBudgetMasterId" (ngModelChange)="onFilterBudgetPlanChange()">
+                    <option [ngValue]="null">All Plans</option>
+                    <option [ngValue]="m.id" *ngFor="let m of budgetMasters">{{ m.code }} - {{ m.name }}</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label mb-0" style="font-size:0.8rem;">Academic Year</label>
+                <select class="form-select form-select-sm bg-light" [(ngModel)]="filterAcademicYearId" disabled>
+                    <option [ngValue]="null">All Years</option>
+                    <option [ngValue]="y.id" *ngFor="let y of academicYears">{{ y.name }}</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label mb-0" style="font-size:0.8rem;">Department</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filterDepartmentId">
+                    <option [ngValue]="null">All Departments</option>
+                    <option [ngValue]="d.id" *ngFor="let d of departments">{{ getDepartmentLabel(d) }}</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label mb-0" style="font-size:0.8rem;">Status</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filterActive">
+                    <option [ngValue]="null">All</option>
+                    <option [ngValue]="true">Active</option>
+                    <option [ngValue]="false">Inactive</option>
+                </select>
+            </div>
+            <div class="col-md-1">
+                <button class="btn btn-sm btn-outline-secondary" (click)="clearFilters()" title="Clear"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="col-md-2 text-end">
+                <button class="btn btn-sm btn-success" (click)="addNew()"><i class="fas fa-plus"></i> Add Budget</button>
+            </div>
+        </div>
+
+        <!-- List -->
+        <div class="card card-outline card-primary">
+            <div class="card-header py-1 d-flex justify-content-between align-items-center bg-info text-white">
+                <div>
+                    <strong><i class="fas fa-coins me-1"></i> Budgets</strong>
+                    <span class="badge bg-light text-dark ms-2">{{ filteredBudgets().length }}</span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Plan</th>
+                            <th>Department</th>
+                            <th>Academic Year</th>
+                            <th>Period</th>
+                            <th class="text-end">Total Budgeted</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let b of filteredBudgets() | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize">
+                            <td><strong>{{ b.name }}</strong><br /><small class="text-muted">{{ b.description }}</small></td>
+                            <td><small>{{ b.budgetMasterName || '-' }}</small></td>
+                            <td><span class="badge bg-info">{{ b.departmentName || '-' }}</span></td>
+                            <td><small>{{ b.academicYearName || '-' }}</small></td>
+                            <td><small>{{ b.startDate | date:'mediumDate' }} - {{ b.endDate | date:'mediumDate' }}</small></td>
+                            <td class="text-end fw-bold">{{ b.totalBudgeted | number:'1.2-2' }}</td>
+                            <td>
+                                <span *ngIf="b.isActive" class="badge bg-success">Active</span>
+                                <span *ngIf="!b.isActive" class="badge bg-secondary">Inactive</span>
+                            </td>
+                            <td>
+                                <button class="btn btn-outline-info btn-sm" (click)="viewBudget(b)" title="View vs Actual"><i class="fas fa-chart-bar"></i></button>
+                                <button *ngIf="canEditOrDelete(b.id)" class="btn btn-outline-primary btn-sm ms-1" (click)="edit(b)" title="Edit budget"><i class="fas fa-edit"></i></button>
+                                <button *ngIf="isMyTurn(b.id)" class="btn btn-outline-dark btn-sm ms-1" (click)="act(b)" title="Review / Approve"><i class="fas fa-check-double"></i></button>
+                                <button *ngIf="canEditOrDelete(b.id)" class="btn btn-outline-danger btn-sm ms-1" (click)="delete(b)" title="Delete"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <app-table-paging (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"
+                    [collectionSize]="filteredBudgets().length"></app-table-paging>
+            </div>
+        </div>
+
+    </div>
+</section>

@@ -32,4 +32,25 @@ export class StudentSubjectsService extends ResourceService<StudentSubject> {
             )
         );
     };
+
+    // Mirrors StaffSubjectsService.getByStaffYearId: returns the student's subjects
+    // restricted to one academic year. The backend has no by-student+year endpoint,
+    // so we fetch the student's full subject history and filter client-side via
+    // studentClass.schoolClass.academicYearId.
+    getByStudentYearId = (
+        studentId: number,
+        yearId: number
+    ): Observable<StudentSubject[]> => {
+        return this.get('/studentSubjects/byStudentId/' + studentId).pipe(
+            map((subjects) =>
+                (subjects || []).filter(
+                    (s) =>
+                        // academicYearId is typed as string on the model but
+                        // comes back as a number-like; coerce both sides.
+                        String(s.studentClass?.schoolClass?.academicYearId) ===
+                        String(yearId)
+                )
+            )
+        );
+    };
 }

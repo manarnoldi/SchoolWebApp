@@ -36,7 +36,8 @@ namespace SchoolWebApp.Core.Services
                 Token = tokenHandler.WriteToken(token),
                 Expiration = expiration,
                 Id = user.Id,
-                Roles = userRoles
+                Roles = userRoles,
+                MustChangePassword = user.MustChangePassword
             };
         }
 

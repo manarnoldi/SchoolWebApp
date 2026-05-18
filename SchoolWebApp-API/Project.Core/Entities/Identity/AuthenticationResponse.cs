@@ -6,5 +6,6 @@ namespace SchoolWebApp.Core.Entities.Identity
         public string? Token { get; set; }
         public DateTime Expiration { get; set; }
         public IList<string>? Roles { get; set; }
+        public bool MustChangePassword { get; set; }
     }
 }

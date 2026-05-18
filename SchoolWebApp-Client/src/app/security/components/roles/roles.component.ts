@@ -25,6 +25,28 @@ export class RolesComponent implements OnInit {
     showForm = false;
     isLoading = false;
 
+    searchTerm: string = '';
+    page = 1;
+    pageSize = 10;
+    pageChanged = (p: number) => { this.page = p; };
+    pageSizeChanged = (s: number) => { this.pageSize = s; };
+
+    filtered = (): AppRole[] => {
+        let q = (this.searchTerm || '').trim().toLowerCase();
+        if (!q) return this.roles;
+        return this.roles.filter(r => (r.name || '').toLowerCase().includes(q));
+    };
+
+    addNew() {
+        this.resetForm();
+        this.showForm = true;
+    }
+
+    cancel() {
+        this.showForm = false;
+        this.resetForm();
+    }
+
     constructor(
         private roleSvc: RoleService,
         private toastr: ToastrService,

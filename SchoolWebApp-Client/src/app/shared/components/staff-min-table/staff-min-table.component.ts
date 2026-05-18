@@ -21,6 +21,14 @@ export class StaffMinTableComponent implements OnInit {
     @Input() tableTitle: string = 'Staff list';
     @Input() showCheckBoxes: boolean = false;
     @Input() checkBoxDisabled: Boolean = false;
+    // Optional map of staffId -> subject count for the current report year.
+    // When provided, a clickable badge is rendered next to each staff name
+    // that emits staffClickedEvent on click (same as clicking the name).
+    @Input() subjectCounts: Record<number, number> | null = null;
+    // Highlights the row whose staff.id matches this value. Parent typically
+    // updates it to the last-clicked staff so the selection is visually obvious
+    // while the right-hand subjects pane is loaded.
+    @Input() selectedId: number | string | null = null;
 
     @Output() staffClickedEvent = new EventEmitter<number>();
 

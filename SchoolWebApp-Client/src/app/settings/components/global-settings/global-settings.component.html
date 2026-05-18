@@ -61,6 +61,13 @@
                                     type="text" class="form-control form-control-sm"
                                     [ngModel]="getValue(module.name, setting.key)"
                                     (ngModelChange)="setValue(module.name, setting.key, $event)" />
+                                <select *ngIf="setting.type === 'account'"
+                                    class="form-select form-select-sm"
+                                    [ngModel]="getValue(module.name, setting.key)"
+                                    (ngModelChange)="setValue(module.name, setting.key, $event)">
+                                    <option value="">-- Select Account --</option>
+                                    <option [value]="a.id" *ngFor="let a of accounts">{{ a.code }} - {{ a.name }} ({{ a.accountTypeName }})</option>
+                                </select>
                             </td>
                         </tr>
                     </tbody>

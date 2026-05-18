@@ -26,6 +26,9 @@ import {ClassModule} from './class/class.module';
 import {ReportsModule} from './reports/reports.module';
 import { CbeModule } from './cbe/cbe.module';
 import { SecurityModule } from './security/security.module';
+import { FinanceModule } from './finance/finance.module';
+import { PayrollModule } from './payroll/payroll.module';
+import { ApprovalsModule } from './approvals/approvals.module';
 registerLocaleData(localeEn, 'en-EN');
 
 @NgModule({
@@ -42,6 +45,9 @@ registerLocaleData(localeEn, 'en-EN');
         StudentsModule,
         CbeModule,
         SecurityModule,
+        FinanceModule,
+        PayrollModule,
+        ApprovalsModule,
         ToastrModule.forRoot({
             timeOut: 10000,
             // positionClass: 'toast-top-full-width',

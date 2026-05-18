@@ -10,13 +10,15 @@
                 <div class="card card-outline mb-1" *ngFor="let cat of categories"
                     [class.card-primary]="cat.color === 'primary'"
                     [class.card-warning]="cat.color === 'warning'"
-                    [class.card-success]="cat.color === 'success'">
+                    [class.card-success]="cat.color === 'success'"
+                    [class.card-info]="cat.color === 'info'">
                     <div class="card-header p-1 cursor-pointer align-items-center"
                         style="display:flex !important; justify-content:space-between;"
                         (click)="selectCategory(cat)"
                         [class.bg-primary]="activeCategory === cat && cat.color === 'primary'"
                         [class.bg-success]="activeCategory === cat && cat.color === 'success'"
                         [class.bg-warning]="activeCategory === cat && cat.color === 'warning'"
+                        [class.bg-info]="activeCategory === cat && cat.color === 'info'"
                         [class.text-white]="activeCategory === cat">
                         <span><i class="{{cat.icon}} me-1"></i> <strong>{{cat.name}}</strong></span>
                         <i class="fas ms-auto" [class.fa-angle-double-down]="!isCategoryExpanded(cat)"
@@ -116,8 +118,8 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let item of items; index as i">
-                                        <td>{{ i + 1 }}</td>
+                                    <tr *ngFor="let item of items | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i">
+                                        <td>{{ (page-1) * pageSize + i + 1 }}</td>
                                         <td *ngFor="let field of activeConfig.fields">{{ item[field.key] }}</td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
@@ -132,6 +134,9 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            <app-table-paging (pageChangedEvent)="pageChanged($event)"
+                                (pageSizeChangedEvent)="pageSizeChanged($event)"
+                                [collectionSize]="items.length"></app-table-paging>
                         </div>
                     </div>
                 </div>

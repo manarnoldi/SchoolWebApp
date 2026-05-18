@@ -83,8 +83,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let row of studentRows; index as i">
-                            <td>{{ i + 1 }}</td>
+                        <tr *ngFor="let row of studentRows | slice: (tablePage-1)*tablePageSize : tablePage*tablePageSize; index as i">
+                            <td>{{ (tablePage-1)*tablePageSize + i + 1 }}</td>
                             <td class="text-nowrap">{{ row.studentName }}</td>
                             <td *ngFor="let subj of subjects" class="p-0"
                                 [ngClass]="{'bg-secondary-subtle': row.scores[subj.examId].disabled}">
@@ -104,6 +104,9 @@
                         </tr>
                     </tbody>
                 </table>
+                <app-table-paging [collectionSize]="studentRows.length" [pageSize]="tablePageSize"
+                    (pageChangedEvent)="tablePage = $event"
+                    (pageSizeChangedEvent)="tablePageSize = $event"></app-table-paging>
             </div>
             <div class="card-footer p-1 d-flex justify-content-between align-items-center">
                 <button class="btn btn-danger btn-sm" (click)="deleteAllResults()" [disabled]="isDeleting || getSavedCount() === 0">

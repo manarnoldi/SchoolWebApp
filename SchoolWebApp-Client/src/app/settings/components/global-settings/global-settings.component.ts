@@ -3,6 +3,7 @@ import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
 import {GlobalSettingService} from '../../services/global-setting.service';
 import {ExamTypeService} from '@/cbe/exams/services/exam-type.service';
+import {AccountService} from '@/finance/services/finance-services';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -60,7 +61,34 @@ export class GlobalSettingsComponent implements OnInit {
                     {value: 'students_with_scores', label: 'Students who did the exam only'},
                     {value: 'all_allocated_students', label: 'All students allocated to the subject/class'}
                 ], description: 'How class averages are computed: count only students with scores, or include all allocated students (absent students count as 0)'},
-                {key: 'RequireAbsenceReason', label: 'Require Reason for Absence', type: 'boolean', description: 'When enabled, a remark/reason is required for every absent record in both student and staff attendance. When disabled, absences can be saved without a remark.'}
+                {key: 'RequireAbsenceReason', label: 'Require Reason for Absence', type: 'boolean', description: 'When enabled, a remark/reason is required for every absent record in both student and staff attendance. When disabled, absences can be saved without a remark.'},
+                {key: 'DepartmentCodePrefix', label: 'Department Code Prefix', type: 'text', description: 'Prefix used when auto-generating department codes (e.g. DEPT produces DEPT001, DEPT002). Default: DEPT.'},
+                {key: 'BudgetMasterCodePrefix', label: 'Budget Plan Code Prefix', type: 'text', description: 'Prefix used when auto-generating budget plan codes (e.g. BUD produces BUD001). Default: BUD.'},
+                {key: 'ApprovalEditLockPolicy', label: 'Approval Edit Lock Policy', type: 'select', options: [
+                    {value: 'Strict', label: 'Strict — lock as soon as the request is submitted'},
+                    {value: 'AfterFirstApproval', label: 'Lenient — allow edits until the first step is approved'}
+                ], description: 'Strict locks the record as soon as it is submitted. Lenient keeps it editable until the first approval step is approved. Approved records are always locked.'}
+            ]
+        },
+        {
+            name: 'Finance',
+            title: 'Finance Settings',
+            color: 'info',
+            icon: 'fas fa-coins',
+            settings: [
+                {key: 'PaymentApportionMode', label: 'Payment Apportioning Mode', type: 'select', options: [
+                    {value: 'auto', label: 'Auto (by fee category priority/rank)'},
+                    {value: 'manual', label: 'Manual (finance officer allocates)'}
+                ], description: 'How payments are allocated to individual invoice items. Auto mode distributes by fee category rank (lowest rank = highest priority). Manual mode lets the finance officer enter amounts per item.'},
+                {key: 'AutoPostInvoiceJournal', label: 'Auto-Post Invoice Journal', type: 'boolean', description: 'Automatically create a journal entry (Debit Debtors, Credit Income) when a student invoice is created.'},
+                {key: 'AutoPostPaymentJournal', label: 'Auto-Post Payment Journal', type: 'boolean', description: 'Automatically create a journal entry (Debit Bank/Cash, Credit Debtors) when a payment is received.'},
+                {key: 'DebtorsAccountId', label: 'Student Debtors Account', type: 'account', description: 'Asset account for student receivables (e.g. 1200 Student Debtors).'},
+                {key: 'CashAccountId', label: 'Default Cash/Bank Account', type: 'account', description: 'Default asset account for receiving fee payments (e.g. 1100 Cash at Hand).'},
+                {key: 'SalaryExpenseAccountId', label: 'Salary Expense Account', type: 'account', description: 'Expense account for salary costs (e.g. 5100 Salary Expense).'},
+                {key: 'PayeAccountId', label: 'PAYE Payable Account', type: 'account', description: 'Liability account for PAYE tax (e.g. 2100 PAYE Payable).'},
+                {key: 'NssfAccountId', label: 'NSSF Payable Account', type: 'account', description: 'Liability account for NSSF (e.g. 2110 NSSF Payable).'},
+                {key: 'ShifAccountId', label: 'SHIF Payable Account', type: 'account', description: 'Liability account for SHIF (e.g. 2120 SHIF Payable).'},
+                {key: 'AhlAccountId', label: 'Housing Levy Account', type: 'account', description: 'Liability account for AHL (e.g. 2130 Housing Levy Payable).'}
             ]
         },
         {
@@ -114,19 +142,34 @@ export class GlobalSettingsComponent implements OnInit {
 
     settingValues: { [key: string]: string } = {};
     isSaving: boolean = false;
+    accounts: any[] = [];
 
     constructor(
         private toastr: ToastrService,
         private globalSettingSvc: GlobalSettingService,
-        private examTypeSvc: ExamTypeService
+        private examTypeSvc: ExamTypeService,
+        private accountSvc: AccountService
     ) {}
 
     ngOnInit(): void {
         // Collapse all modules except the first one
         this.modules.slice(1).forEach((m) => this.collapsedModules.add(m.name));
         this.loadExamTypes();
+        this.loadAccounts();
         this.loadSettings();
     }
+
+    loadAccounts = () => {
+        this.accountSvc.get('/accounts').subscribe({
+            next: (accounts: any[]) => {
+                let typeNames: any = {1: 'Asset', 2: 'Liability', 3: 'Equity', 4: 'Income', 5: 'Expense'};
+                this.accounts = accounts
+                    .map((a: any) => ({...a, accountTypeName: typeNames[a.accountType] || ''}))
+                    .sort((a: any, b: any) => (a.code || '').localeCompare(b.code || ''));
+            },
+            error: () => {}
+        });
+    };
 
     loadExamTypes = () => {
         this.examTypeSvc.get('/examTypes').subscribe({
@@ -153,11 +196,13 @@ export class GlobalSettingsComponent implements OnInit {
                 });
                 // Set defaults for missing settings
                 this.modules.forEach((m) => {
-                    m.settings.forEach((s) => {
+                    m.settings.forEach((s: any) => {
                         let key = m.name + '.' + s.key;
                         if (!this.settingValues[key]) {
                             if (s.type === 'boolean') this.settingValues[key] = 'true';
-                            else if (s.type === 'select') this.settingValues[key] = s.options[0].value;
+                            else if (s.type === 'select' && s.options?.length > 0) this.settingValues[key] = s.options[0].value;
+                            else if (s.type === 'text' && s.key === 'DepartmentCodePrefix') this.settingValues[key] = 'DEPT';
+                            else if (s.type === 'text' && s.key === 'BudgetMasterCodePrefix') this.settingValues[key] = 'BUD';
                         }
                     });
                 });

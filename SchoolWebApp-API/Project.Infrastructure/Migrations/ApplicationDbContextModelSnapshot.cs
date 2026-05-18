@@ -117,6 +117,11 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             UserId = 1,
+                            RoleId = 8
+                        },
+                        new
+                        {
+                            UserId = 1,
                             RoleId = 1
                         });
                 });
@@ -451,6 +456,447 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasIndex("CurriculumId");
 
                     b.ToTable("SubjectGroups");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Approvals.ApprovalRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("ApprovalWorkflowId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("CurrentStepRank")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EntityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("SubmittedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("SubmittedById")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApprovalWorkflowId");
+
+                    b.HasIndex("SubmittedById");
+
+                    b.HasIndex("EntityType", "EntityId");
+
+                    b.ToTable("ApprovalRequests");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Approvals.ApprovalStepAction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ActionedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("ActionedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ApprovalRequestId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AssignedToUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StepName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int>("StepRank")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActionedByUserId");
+
+                    b.HasIndex("ApprovalRequestId");
+
+                    b.HasIndex("AssignedToUserId");
+
+                    b.ToTable("ApprovalStepActions");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Approvals.ApprovalWorkflow", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("FormKey")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsMakerChecker")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApprovalWorkflows");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            CreatedBy = "admin",
+                            Description = "Default budget amendment approval workflow",
+                            FormKey = "BudgetAmendment",
+                            IsActive = true,
+                            IsMakerChecker = true,
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            ModifiedBy = "admin",
+                            Name = "Budget Amendment Approval"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            CreatedBy = "admin",
+                            Description = "Default expense approval workflow",
+                            FormKey = "Expense",
+                            IsActive = true,
+                            IsMakerChecker = true,
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            ModifiedBy = "admin",
+                            Name = "Expense Approval"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            CreatedBy = "admin",
+                            Description = "Default journal entry approval workflow",
+                            FormKey = "JournalEntry",
+                            IsActive = true,
+                            IsMakerChecker = true,
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            ModifiedBy = "admin",
+                            Name = "Journal Entry Approval"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            CreatedBy = "admin",
+                            Description = "Default credit/debit note approval workflow",
+                            FormKey = "CreditDebitNote",
+                            IsActive = true,
+                            IsMakerChecker = true,
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            ModifiedBy = "admin",
+                            Name = "Credit/Debit Note Approval"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            CreatedBy = "admin",
+                            Description = "Default budget approval workflow",
+                            FormKey = "Budget",
+                            IsActive = true,
+                            IsMakerChecker = true,
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            ModifiedBy = "admin",
+                            Name = "Budget Approval"
+                        });
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Approvals.ApprovalWorkflowStep", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("ApprovalWorkflowId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<bool>("IsFinal")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<bool>("NotifyApplicant")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("NotifyNextApprover")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("NotifyPreviousApprover")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApprovalWorkflowId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("ApprovalWorkflowSteps");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ApprovalWorkflowId = 1,
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            CreatedBy = "admin",
+                            IsFinal = false,
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            ModifiedBy = "admin",
+                            Name = "Reviewer",
+                            NotifyApplicant = true,
+                            NotifyNextApprover = true,
+                            NotifyPreviousApprover = false,
+                            Rank = 1,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ApprovalWorkflowId = 1,
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            CreatedBy = "admin",
+                            IsFinal = true,
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            ModifiedBy = "admin",
+                            Name = "Approver",
+                            NotifyApplicant = true,
+                            NotifyNextApprover = false,
+                            NotifyPreviousApprover = true,
+                            Rank = 2,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ApprovalWorkflowId = 2,
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            CreatedBy = "admin",
+                            IsFinal = false,
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            ModifiedBy = "admin",
+                            Name = "Reviewer",
+                            NotifyApplicant = true,
+                            NotifyNextApprover = true,
+                            NotifyPreviousApprover = false,
+                            Rank = 1,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ApprovalWorkflowId = 2,
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            CreatedBy = "admin",
+                            IsFinal = true,
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            ModifiedBy = "admin",
+                            Name = "Approver",
+                            NotifyApplicant = true,
+                            NotifyNextApprover = false,
+                            NotifyPreviousApprover = true,
+                            Rank = 2,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ApprovalWorkflowId = 3,
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            CreatedBy = "admin",
+                            IsFinal = false,
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            ModifiedBy = "admin",
+                            Name = "Reviewer",
+                            NotifyApplicant = true,
+                            NotifyNextApprover = true,
+                            NotifyPreviousApprover = false,
+                            Rank = 1,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ApprovalWorkflowId = 3,
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            CreatedBy = "admin",
+                            IsFinal = true,
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            ModifiedBy = "admin",
+                            Name = "Approver",
+                            NotifyApplicant = true,
+                            NotifyNextApprover = false,
+                            NotifyPreviousApprover = true,
+                            Rank = 2,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ApprovalWorkflowId = 4,
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            CreatedBy = "admin",
+                            IsFinal = false,
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            ModifiedBy = "admin",
+                            Name = "Reviewer",
+                            NotifyApplicant = true,
+                            NotifyNextApprover = true,
+                            NotifyPreviousApprover = false,
+                            Rank = 1,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ApprovalWorkflowId = 4,
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            CreatedBy = "admin",
+                            IsFinal = true,
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            ModifiedBy = "admin",
+                            Name = "Approver",
+                            NotifyApplicant = true,
+                            NotifyNextApprover = false,
+                            NotifyPreviousApprover = true,
+                            Rank = 2,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 9,
+                            ApprovalWorkflowId = 5,
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            CreatedBy = "admin",
+                            IsFinal = false,
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            ModifiedBy = "admin",
+                            Name = "Reviewer",
+                            NotifyApplicant = true,
+                            NotifyNextApprover = true,
+                            NotifyPreviousApprover = false,
+                            Rank = 1,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 10,
+                            ApprovalWorkflowId = 5,
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            CreatedBy = "admin",
+                            IsFinal = true,
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 271, DateTimeKind.Local).AddTicks(4550),
+                            ModifiedBy = "admin",
+                            Name = "Approver",
+                            NotifyApplicant = true,
+                            NotifyNextApprover = false,
+                            NotifyPreviousApprover = true,
+                            Rank = 2,
+                            RoleId = 1
+                        });
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.AssessmentType", b =>
@@ -1979,6 +2425,925 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.ToTable("Sessions");
                 });
 
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.Account", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("AccountType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("ParentAccountId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentAccountId");
+
+                    b.ToTable("Accounts");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.Budget", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("AcademicYearId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BudgetMasterId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AcademicYearId");
+
+                    b.HasIndex("BudgetMasterId");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("Budgets");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.BudgetAmendment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("AmendmentDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("ApprovedById")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ApprovedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("BudgetId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<string>("ReferenceNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApprovedById");
+
+                    b.HasIndex("BudgetId");
+
+                    b.ToTable("BudgetAmendments");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.BudgetAmendmentLine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BudgetAmendmentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<decimal>("Delta")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<decimal>("NewAmount")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<decimal>("PreviousAmount")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("BudgetAmendmentId");
+
+                    b.ToTable("BudgetAmendmentLines");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.BudgetLine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BudgetId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("BudgetedAmount")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("BudgetId");
+
+                    b.ToTable("BudgetLines");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.BudgetMaster", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("AcademicYearId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AcademicYearId");
+
+                    b.ToTable("BudgetMasters");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.Expense", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<DateTime>("ExpenseDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("PaidFromAccountId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReferenceNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TransactionReference")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaidFromAccountId");
+
+                    b.ToTable("Expenses");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.ExpenseCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int?>("ExpenseAccountId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpenseAccountId");
+
+                    b.ToTable("ExpenseCategories");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.ExpenseLine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("BudgetLineId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int>("ExpenseCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ExpenseId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Vendor")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BudgetLineId");
+
+                    b.HasIndex("ExpenseCategoryId");
+
+                    b.HasIndex("ExpenseId");
+
+                    b.ToTable("ExpenseLines");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.FeeCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int?>("IncomeAccountId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IncomeAccountId");
+
+                    b.ToTable("FeeCategories");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.FeeStructure", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("AcademicYearId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int?>("LearningLevelId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("SessionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AcademicYearId");
+
+                    b.HasIndex("LearningLevelId");
+
+                    b.HasIndex("SessionId");
+
+                    b.ToTable("FeeStructures");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.FeeStructureItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("FeeCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FeeStructureId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsMandatory")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FeeCategoryId");
+
+                    b.HasIndex("FeeStructureId");
+
+                    b.ToTable("FeeStructureItems");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.JournalEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<DateTime>("EntryDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsPosted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ReferenceNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("JournalEntries");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.JournalLine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<decimal>("Credit")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Debit")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("JournalEntryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("JournalEntryId");
+
+                    b.ToTable("JournalLines");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ApprovalStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BankAccountId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("OriginalPaymentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PaymentType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("ReceiptNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StudentInvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TransactionReference")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BankAccountId");
+
+                    b.HasIndex("OriginalPaymentId");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("StudentInvoiceId");
+
+                    b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.PaymentAllocation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("PaymentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentInvoiceItemId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaymentId");
+
+                    b.HasIndex("StudentInvoiceItemId");
+
+                    b.ToTable("PaymentAllocations");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.StudentInvoice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("AcademicYearId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<decimal>("DiscountAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("DueDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("InvoiceDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("InvoiceNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<decimal>("PaidAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("SessionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AcademicYearId");
+
+                    b.HasIndex("SessionId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("StudentInvoices");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.StudentInvoiceItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.Property<decimal>("Discount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("FeeCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<decimal>("PaidAmount")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<int?>("SponsorshipId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentInvoiceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FeeCategoryId");
+
+                    b.HasIndex("SponsorshipId");
+
+                    b.HasIndex("StudentInvoiceId");
+
+                    b.ToTable("StudentInvoiceItems");
+                });
+
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Identity.AppRole", b =>
                 {
                     b.Property<int>("Id")
@@ -2023,9 +3388,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9077),
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9179),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9094),
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9199),
                             ModifiedBy = "admin",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
@@ -2033,9 +3398,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 2,
-                            Created = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9138),
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9299),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9139),
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9301),
                             ModifiedBy = "admin",
                             Name = "HeadTeacher",
                             NormalizedName = "HEADTEACHER"
@@ -2043,9 +3408,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 3,
-                            Created = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9160),
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9349),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9160),
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9351),
                             ModifiedBy = "admin",
                             Name = "Teacher",
                             NormalizedName = "TEACHER"
@@ -2053,9 +3418,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 4,
-                            Created = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9179),
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9394),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9180),
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9396),
                             ModifiedBy = "admin",
                             Name = "Student",
                             NormalizedName = "STUDENT"
@@ -2063,9 +3428,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 5,
-                            Created = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9198),
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9439),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9199),
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9441),
                             ModifiedBy = "admin",
                             Name = "Parent",
                             NormalizedName = "PARENT"
@@ -2073,9 +3438,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 6,
-                            Created = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9217),
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9484),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9218),
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9486),
                             ModifiedBy = "admin",
                             Name = "Accounts",
                             NormalizedName = "ACCOUNTS"
@@ -2083,12 +3448,22 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 7,
-                            Created = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9237),
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9528),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9237),
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9530),
                             ModifiedBy = "admin",
                             Name = "Others",
                             NormalizedName = "OTHERS"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9571),
+                            CreatedBy = "admin",
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9573),
+                            ModifiedBy = "admin",
+                            Name = "SuperAdministrator",
+                            NormalizedName = "SUPERADMINISTRATOR"
                         });
                 });
 
@@ -2140,6 +3515,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
+                    b.Property<bool>("MustChangePassword")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
@@ -2150,6 +3528,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("longtext");
+
+                    b.Property<int?>("PersonId")
+                        .HasColumnType("int");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("longtext");
@@ -2176,6 +3557,8 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
+                    b.HasIndex("PersonId");
+
                     b.ToTable("AspNetUsers", (string)null);
 
                     b.HasData(
@@ -2183,19 +3566,20 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "000e9ebb-cdf4-4a10-b2b3-ee4b660e0fe3",
-                            Created = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9575),
+                            ConcurrencyStamp = "d0344471-1d08-49de-b8e5-eef04057632f",
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 192, DateTimeKind.Local).AddTicks(168),
                             CreatedBy = "admin",
                             Email = "admin@kodetek.co.ke",
                             EmailConfirmed = true,
                             FirstName = "SchoolSoft",
                             LastName = "Administrator",
                             LockoutEnabled = false,
-                            Modified = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9577),
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 192, DateTimeKind.Local).AddTicks(171),
                             ModifiedBy = "admin",
+                            MustChangePassword = false,
                             NormalizedEmail = "ADMIN@KODETEK.CO.KE",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEN/xn+ca9bs2aJlGeoX8DhZZ7+6JwKY6YVpSOXRWvArG4kXtf80l704WF+YnqTKRwA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJgP1ejCDqwXz5Egfmjyf6U6+fnmzeO1iPSzPiOK6pG3UY/TheOqE4fGY5JvJ1HlyA==",
                             PhoneNumber = "+254724920000",
                             PhoneNumberConfirmed = true,
                             TwoFactorEnabled = false,
@@ -2240,6 +3624,556 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MenuPermissions");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.DeductionType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsStatutory")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DeductionTypes");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.EarningType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsTaxable")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EarningTypes");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.EmployeeSalary", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("BasicSalary")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("EffectiveDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<decimal>("HouseAllowance")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<decimal>("OtherAllowances")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<int>("StaffDetailsId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TransportAllowance")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StaffDetailsId");
+
+                    b.ToTable("EmployeeSalaries");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.EmployeeSalaryItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("DeductionTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EarningTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmployeeSalaryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeductionTypeId");
+
+                    b.HasIndex("EarningTypeId");
+
+                    b.HasIndex("EmployeeSalaryId");
+
+                    b.ToTable("EmployeeSalaryItems");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.LoanAdvance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("IssueDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<decimal>("MonthlyDeduction")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<decimal>("PrincipalAmount")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<int>("StaffDetailsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StaffDetailsId");
+
+                    b.ToTable("LoanAdvances");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.PayrollPeriod", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ApprovedById")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ApprovedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime?>("PostedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("ProcessedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PayrollPeriods");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.PayrollSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<DateTime>("EffectiveDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PayrollSettings");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.Payslip", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Ahl")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("BasicSalary")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<decimal>("GrossPay")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("GrossTax")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("HouseAllowance")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("InsuranceRelief")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("LoanDeductions")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<decimal>("NetPay")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("NssfEmployee")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("NssfEmployer")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("OtherAllowances")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("OtherDeductions")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("Paye")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<int>("PayrollPeriodId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("PersonalRelief")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("Shif")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<int>("StaffDetailsId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TaxableIncome")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("TotalDeductions")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("TransportAllowance")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PayrollPeriodId");
+
+                    b.HasIndex("StaffDetailsId");
+
+                    b.ToTable("Payslips");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.PayslipDeduction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("DeductionTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("PayslipId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeductionTypeId");
+
+                    b.HasIndex("PayslipId");
+
+                    b.ToTable("PayslipDeductions");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.PayslipEarning", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("EarningTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("PayslipId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EarningTypeId");
+
+                    b.HasIndex("PayslipId");
+
+                    b.ToTable("PayslipEarnings");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.TaxBand", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("EffectiveDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<decimal>("LowerLimit")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<decimal>("Rate")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("UpperLimit")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TaxBands");
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.School.Department", b =>
@@ -2693,10 +4627,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9295),
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9712),
                             CreatedBy = "admin",
                             Description = "",
-                            Modified = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9296),
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9713),
                             ModifiedBy = "admin",
                             Name = "Supplier",
                             Rank = 1
@@ -2743,10 +4677,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9325),
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9753),
                             CreatedBy = "admin",
                             Description = "",
-                            Modified = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9326),
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9755),
                             ModifiedBy = "admin",
                             Name = "Contract",
                             Rank = 1
@@ -2793,10 +4727,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9404),
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9865),
                             CreatedBy = "admin",
                             Description = "",
-                            Modified = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9405),
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9867),
                             ModifiedBy = "admin",
                             Name = "Male",
                             Rank = 1
@@ -2887,10 +4821,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9346),
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9791),
                             CreatedBy = "admin",
                             Description = "",
-                            Modified = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9346),
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9793),
                             ModifiedBy = "admin",
                             Name = "Kenyan",
                             Rank = 1
@@ -3088,10 +5022,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9380),
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9829),
                             CreatedBy = "admin",
                             Description = "",
-                            Modified = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9380),
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9830),
                             ModifiedBy = "admin",
                             Name = "Christian",
                             Rank = 1
@@ -3183,11 +5117,11 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 1,
                             Code = "SC001",
-                            Created = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9274),
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9671),
                             CreatedBy = "admin",
                             Description = "",
                             ForTeaching = false,
-                            Modified = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9276),
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9674),
                             ModifiedBy = "admin",
                             Name = "Non-teaching",
                             Rank = 1
@@ -3334,6 +5268,234 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasDiscriminator<string>("Discriminator").HasValue("Person");
 
                     b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Sponsorships.Sponsor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(300)
+                        .HasColumnType("varchar(300)");
+
+                    b.Property<string>("ContactName")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
+                    b.Property<int?>("ReceivableAccountId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SponsorType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReceivableAccountId");
+
+                    b.ToTable("Sponsors");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Sponsorships.SponsorPayment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("BankAccountId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReferenceNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int>("SponsorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TransactionReference")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BankAccountId");
+
+                    b.HasIndex("SponsorId");
+
+                    b.ToTable("SponsorPayments");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Sponsorships.Sponsorship", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("AcademicYearId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CoverageType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<decimal>("FixedAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<decimal>("Percentage")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int?>("SchoolClassId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SessionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SponsorId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AcademicYearId");
+
+                    b.HasIndex("SchoolClassId");
+
+                    b.HasIndex("SessionId");
+
+                    b.HasIndex("SponsorId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("Sponsorships");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Sponsorships.SponsorshipFeeCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("FeeCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("SponsorshipId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FeeCategoryId");
+
+                    b.HasIndex("SponsorshipId");
+
+                    b.ToTable("SponsorshipFeeCategories");
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Staff.StaffAttendance", b =>
@@ -3717,13 +5879,13 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 1,
                             Address = "Admin",
-                            Created = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9451),
+                            Created = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9946),
                             CreatedBy = "admin",
-                            DateOfBirth = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9448),
+                            DateOfBirth = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9943),
                             Email = "admin@kodetek.co.ke",
                             FullName = "Admin",
                             GenderId = 1,
-                            Modified = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9457),
+                            Modified = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9946),
                             ModifiedBy = "admin",
                             NationalityId = 1,
                             OtherDetails = "Admin",
@@ -3733,9 +5895,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                             UPI = "Admin",
                             CurrentlyEmployed = true,
                             DesignationId = 1,
-                            EmploymentDate = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9444),
+                            EmploymentDate = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9930),
                             EmploymentTypeId = 1,
-                            EndofEmploymentDate = new DateTime(2026, 4, 13, 10, 58, 8, 312, DateTimeKind.Local).AddTicks(9446),
+                            EndofEmploymentDate = new DateTime(2026, 5, 18, 8, 48, 1, 191, DateTimeKind.Local).AddTicks(9932),
                             IdNumber = "Admin",
                             KraPinNo = "Admin",
                             NhifNo = "Admin",
@@ -3910,6 +6072,69 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Curriculum");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Approvals.ApprovalRequest", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Approvals.ApprovalWorkflow", "ApprovalWorkflow")
+                        .WithMany()
+                        .HasForeignKey("ApprovalWorkflowId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Identity.AppUser", "SubmittedBy")
+                        .WithMany()
+                        .HasForeignKey("SubmittedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ApprovalWorkflow");
+
+                    b.Navigation("SubmittedBy");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Approvals.ApprovalStepAction", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Identity.AppUser", "ActionedBy")
+                        .WithMany()
+                        .HasForeignKey("ActionedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Approvals.ApprovalRequest", "ApprovalRequest")
+                        .WithMany("Actions")
+                        .HasForeignKey("ApprovalRequestId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Identity.AppUser", "AssignedTo")
+                        .WithMany()
+                        .HasForeignKey("AssignedToUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ActionedBy");
+
+                    b.Navigation("ApprovalRequest");
+
+                    b.Navigation("AssignedTo");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Approvals.ApprovalWorkflowStep", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Approvals.ApprovalWorkflow", "ApprovalWorkflow")
+                        .WithMany("Steps")
+                        .HasForeignKey("ApprovalWorkflowId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Identity.AppRole", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ApprovalWorkflow");
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.GeneralOutcome", b =>
@@ -4429,6 +6654,399 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Navigation("SessionType");
                 });
 
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.Account", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.Account", "ParentAccount")
+                        .WithMany()
+                        .HasForeignKey("ParentAccountId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentAccount");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.Budget", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Academics.AcademicYear", "AcademicYear")
+                        .WithMany()
+                        .HasForeignKey("AcademicYearId")
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.BudgetMaster", "BudgetMaster")
+                        .WithMany("Budgets")
+                        .HasForeignKey("BudgetMasterId");
+
+                    b.HasOne("SchoolWebApp.Core.Entities.School.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .IsRequired();
+
+                    b.Navigation("AcademicYear");
+
+                    b.Navigation("BudgetMaster");
+
+                    b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.BudgetAmendment", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Identity.AppUser", "ApprovedBy")
+                        .WithMany()
+                        .HasForeignKey("ApprovedById");
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.Budget", "Budget")
+                        .WithMany("Amendments")
+                        .HasForeignKey("BudgetId")
+                        .IsRequired();
+
+                    b.Navigation("ApprovedBy");
+
+                    b.Navigation("Budget");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.BudgetAmendmentLine", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.Account", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.BudgetAmendment", "BudgetAmendment")
+                        .WithMany("Lines")
+                        .HasForeignKey("BudgetAmendmentId")
+                        .IsRequired();
+
+                    b.Navigation("Account");
+
+                    b.Navigation("BudgetAmendment");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.BudgetLine", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.Account", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.Budget", "Budget")
+                        .WithMany("Lines")
+                        .HasForeignKey("BudgetId")
+                        .IsRequired();
+
+                    b.Navigation("Account");
+
+                    b.Navigation("Budget");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.BudgetMaster", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Academics.AcademicYear", "AcademicYear")
+                        .WithMany()
+                        .HasForeignKey("AcademicYearId")
+                        .IsRequired();
+
+                    b.Navigation("AcademicYear");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.Expense", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.Account", "PaidFromAccount")
+                        .WithMany()
+                        .HasForeignKey("PaidFromAccountId");
+
+                    b.Navigation("PaidFromAccount");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.ExpenseCategory", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.Account", "ExpenseAccount")
+                        .WithMany()
+                        .HasForeignKey("ExpenseAccountId");
+
+                    b.Navigation("ExpenseAccount");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.ExpenseLine", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.BudgetLine", "BudgetLine")
+                        .WithMany()
+                        .HasForeignKey("BudgetLineId");
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.ExpenseCategory", "ExpenseCategory")
+                        .WithMany()
+                        .HasForeignKey("ExpenseCategoryId")
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.Expense", "Expense")
+                        .WithMany("Lines")
+                        .HasForeignKey("ExpenseId")
+                        .IsRequired();
+
+                    b.Navigation("BudgetLine");
+
+                    b.Navigation("Expense");
+
+                    b.Navigation("ExpenseCategory");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.FeeCategory", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.Account", "IncomeAccount")
+                        .WithMany()
+                        .HasForeignKey("IncomeAccountId");
+
+                    b.Navigation("IncomeAccount");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.FeeStructure", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Academics.AcademicYear", "AcademicYear")
+                        .WithMany()
+                        .HasForeignKey("AcademicYearId")
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Class.LearningLevel", "LearningLevel")
+                        .WithMany()
+                        .HasForeignKey("LearningLevelId");
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Class.Session", "Session")
+                        .WithMany()
+                        .HasForeignKey("SessionId");
+
+                    b.Navigation("AcademicYear");
+
+                    b.Navigation("LearningLevel");
+
+                    b.Navigation("Session");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.FeeStructureItem", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.FeeCategory", "FeeCategory")
+                        .WithMany()
+                        .HasForeignKey("FeeCategoryId")
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.FeeStructure", "FeeStructure")
+                        .WithMany("Items")
+                        .HasForeignKey("FeeStructureId")
+                        .IsRequired();
+
+                    b.Navigation("FeeCategory");
+
+                    b.Navigation("FeeStructure");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.JournalLine", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.Account", "Account")
+                        .WithMany("JournalLines")
+                        .HasForeignKey("AccountId")
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.JournalEntry", "JournalEntry")
+                        .WithMany("Lines")
+                        .HasForeignKey("JournalEntryId")
+                        .IsRequired();
+
+                    b.Navigation("Account");
+
+                    b.Navigation("JournalEntry");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.Payment", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.Account", "BankAccount")
+                        .WithMany()
+                        .HasForeignKey("BankAccountId");
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.Payment", "OriginalPayment")
+                        .WithMany()
+                        .HasForeignKey("OriginalPaymentId");
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.StudentInvoice", "StudentInvoice")
+                        .WithMany("Payments")
+                        .HasForeignKey("StudentInvoiceId");
+
+                    b.Navigation("BankAccount");
+
+                    b.Navigation("OriginalPayment");
+
+                    b.Navigation("Student");
+
+                    b.Navigation("StudentInvoice");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.PaymentAllocation", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.Payment", "Payment")
+                        .WithMany("Allocations")
+                        .HasForeignKey("PaymentId")
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.StudentInvoiceItem", "StudentInvoiceItem")
+                        .WithMany()
+                        .HasForeignKey("StudentInvoiceItemId")
+                        .IsRequired();
+
+                    b.Navigation("Payment");
+
+                    b.Navigation("StudentInvoiceItem");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.StudentInvoice", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Academics.AcademicYear", "AcademicYear")
+                        .WithMany()
+                        .HasForeignKey("AcademicYearId")
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Class.Session", "Session")
+                        .WithMany()
+                        .HasForeignKey("SessionId");
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .IsRequired();
+
+                    b.Navigation("AcademicYear");
+
+                    b.Navigation("Session");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.StudentInvoiceItem", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.FeeCategory", "FeeCategory")
+                        .WithMany()
+                        .HasForeignKey("FeeCategoryId")
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Sponsorships.Sponsorship", "Sponsorship")
+                        .WithMany()
+                        .HasForeignKey("SponsorshipId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.StudentInvoice", "StudentInvoice")
+                        .WithMany("Items")
+                        .HasForeignKey("StudentInvoiceId")
+                        .IsRequired();
+
+                    b.Navigation("FeeCategory");
+
+                    b.Navigation("Sponsorship");
+
+                    b.Navigation("StudentInvoice");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Identity.AppUser", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Shared.Person", "Person")
+                        .WithMany()
+                        .HasForeignKey("PersonId");
+
+                    b.Navigation("Person");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.EmployeeSalary", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Staff.StaffDetails", "StaffDetails")
+                        .WithMany()
+                        .HasForeignKey("StaffDetailsId")
+                        .IsRequired();
+
+                    b.Navigation("StaffDetails");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.EmployeeSalaryItem", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Payroll.DeductionType", "DeductionType")
+                        .WithMany()
+                        .HasForeignKey("DeductionTypeId");
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Payroll.EarningType", "EarningType")
+                        .WithMany()
+                        .HasForeignKey("EarningTypeId");
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Payroll.EmployeeSalary", "EmployeeSalary")
+                        .WithMany("Items")
+                        .HasForeignKey("EmployeeSalaryId")
+                        .IsRequired();
+
+                    b.Navigation("DeductionType");
+
+                    b.Navigation("EarningType");
+
+                    b.Navigation("EmployeeSalary");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.LoanAdvance", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Staff.StaffDetails", "StaffDetails")
+                        .WithMany()
+                        .HasForeignKey("StaffDetailsId")
+                        .IsRequired();
+
+                    b.Navigation("StaffDetails");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.Payslip", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Payroll.PayrollPeriod", "PayrollPeriod")
+                        .WithMany("Payslips")
+                        .HasForeignKey("PayrollPeriodId")
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Staff.StaffDetails", "StaffDetails")
+                        .WithMany()
+                        .HasForeignKey("StaffDetailsId")
+                        .IsRequired();
+
+                    b.Navigation("PayrollPeriod");
+
+                    b.Navigation("StaffDetails");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.PayslipDeduction", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Payroll.DeductionType", "DeductionType")
+                        .WithMany()
+                        .HasForeignKey("DeductionTypeId")
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Payroll.Payslip", "Payslip")
+                        .WithMany("Deductions")
+                        .HasForeignKey("PayslipId")
+                        .IsRequired();
+
+                    b.Navigation("DeductionType");
+
+                    b.Navigation("Payslip");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.PayslipEarning", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Payroll.EarningType", "EarningType")
+                        .WithMany()
+                        .HasForeignKey("EarningTypeId")
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Payroll.Payslip", "Payslip")
+                        .WithMany("Earnings")
+                        .HasForeignKey("PayslipId")
+                        .IsRequired();
+
+                    b.Navigation("EarningType");
+
+                    b.Navigation("Payslip");
+                });
+
             modelBuilder.Entity("SchoolWebApp.Core.Entities.School.Department", b =>
                 {
                     b.HasOne("SchoolWebApp.Core.Entities.Staff.StaffDetails", "StaffDetails")
@@ -4502,6 +7120,87 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Navigation("Nationality");
 
                     b.Navigation("Religion");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Sponsorships.Sponsor", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.Account", "ReceivableAccount")
+                        .WithMany()
+                        .HasForeignKey("ReceivableAccountId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ReceivableAccount");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Sponsorships.SponsorPayment", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.Account", "BankAccount")
+                        .WithMany()
+                        .HasForeignKey("BankAccountId");
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Sponsorships.Sponsor", "Sponsor")
+                        .WithMany()
+                        .HasForeignKey("SponsorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BankAccount");
+
+                    b.Navigation("Sponsor");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Sponsorships.Sponsorship", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Academics.AcademicYear", "AcademicYear")
+                        .WithMany()
+                        .HasForeignKey("AcademicYearId")
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Class.SchoolClass", "SchoolClass")
+                        .WithMany()
+                        .HasForeignKey("SchoolClassId");
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Class.Session", "Session")
+                        .WithMany()
+                        .HasForeignKey("SessionId");
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Sponsorships.Sponsor", "Sponsor")
+                        .WithMany()
+                        .HasForeignKey("SponsorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId");
+
+                    b.Navigation("AcademicYear");
+
+                    b.Navigation("SchoolClass");
+
+                    b.Navigation("Session");
+
+                    b.Navigation("Sponsor");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Sponsorships.SponsorshipFeeCategory", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.FeeCategory", "FeeCategory")
+                        .WithMany()
+                        .HasForeignKey("FeeCategoryId")
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Sponsorships.Sponsorship", "Sponsorship")
+                        .WithMany("FeeCategories")
+                        .HasForeignKey("SponsorshipId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FeeCategory");
+
+                    b.Navigation("Sponsorship");
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Staff.StaffAttendance", b =>
@@ -4753,6 +7452,16 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Navigation("Subjects");
                 });
 
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Approvals.ApprovalRequest", b =>
+                {
+                    b.Navigation("Actions");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Approvals.ApprovalWorkflow", b =>
+                {
+                    b.Navigation("Steps");
+                });
+
             modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.AssessmentType", b =>
                 {
                     b.Navigation("StudentAssessments");
@@ -4877,6 +7586,72 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Navigation("StudentValues");
                 });
 
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.Account", b =>
+                {
+                    b.Navigation("JournalLines");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.Budget", b =>
+                {
+                    b.Navigation("Amendments");
+
+                    b.Navigation("Lines");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.BudgetAmendment", b =>
+                {
+                    b.Navigation("Lines");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.BudgetMaster", b =>
+                {
+                    b.Navigation("Budgets");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.Expense", b =>
+                {
+                    b.Navigation("Lines");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.FeeStructure", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.JournalEntry", b =>
+                {
+                    b.Navigation("Lines");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.Payment", b =>
+                {
+                    b.Navigation("Allocations");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.StudentInvoice", b =>
+                {
+                    b.Navigation("Items");
+
+                    b.Navigation("Payments");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.EmployeeSalary", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.PayrollPeriod", b =>
+                {
+                    b.Navigation("Payslips");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.Payslip", b =>
+                {
+                    b.Navigation("Deductions");
+
+                    b.Navigation("Earnings");
+                });
+
             modelBuilder.Entity("SchoolWebApp.Core.Entities.School.Department", b =>
                 {
                     b.Navigation("Subjects");
@@ -4966,6 +7741,11 @@ namespace SchoolWebApp.Infrastructure.Migrations
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Shared.Person", b =>
                 {
                     b.Navigation("SchoolClassLeaders");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Sponsorships.Sponsorship", b =>
+                {
+                    b.Navigation("FeeCategories");
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Students.StudentClass", b =>

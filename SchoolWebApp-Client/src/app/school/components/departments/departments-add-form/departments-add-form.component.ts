@@ -36,7 +36,7 @@ export class DepartmentsAddFormComponent implements OnInit {
     initializeForm = () => {
         this.departmentForm = this.formBuilder.group({
             name: ['', [Validators.required]],
-            code: ['', [Validators.required]],
+            code: [{value: 'Auto', disabled: true}],
             description: [''],
             staffDetailsId: [null]
         });
@@ -45,7 +45,7 @@ export class DepartmentsAddFormComponent implements OnInit {
     setFormControls = (department: Department) => {
         this.departmentForm.setValue({
             name: department?.name,
-            code: department?.code,
+            code: department?.code || 'Auto',
             description: department?.description,
             staffDetailsId: department?.staffDetailsId
         });
@@ -77,9 +77,15 @@ export class DepartmentsAddFormComponent implements OnInit {
 
     onSubmit = () => {
         let departmentId = this.department?.id;
-        this.department = new Department(this.departmentForm.value);
-        this.department.staffDetailsId =
-            this.departmentForm.get('staffDetailsId').value?.id;
+        let raw = this.departmentForm.getRawValue();
+        this.department = new Department(raw);
+        // Backend auto-generates the code on create; clear the placeholder text
+        if (!this.editMode || !this.department.code || this.department.code === 'Auto') {
+            this.department.code = '';
+        }
+        // staffDetailsId is now bound directly to the id via ng-select bindValue
+        let staffVal = this.departmentForm.get('staffDetailsId').value;
+        this.department.staffDetailsId = (staffVal && typeof staffVal === 'object') ? staffVal.id : staffVal;
         if (this.editMode) this.department.id = departmentId;
         this.addItemEvent.emit(this.department);
     };

@@ -21,7 +21,8 @@ import {LearningLevelsService} from '@/class/services/learning-levels.service';
 import {SubjectsService} from '@/academics/services/subjects.service';
 import {ThemeService} from '../../services/theme.service';
 import {Status} from '@/core/enums/status';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
+import {matchOptionId, pushQueryParams, readQueryParam} from '@/shared/utils/query-param-sync';
 
 @Component({
     selector: 'app-student-assessments',
@@ -112,6 +113,49 @@ export class StudentAssessmentsComponent implements OnInit {
     isSavingBulk: boolean = false;
     isDeletingBulk: boolean = false;
 
+    // Client-side search + paging for the bulk grading grid.
+    searchText: string = '';
+    tablePage: number = 1;
+    tablePageSize: number = 30;
+
+    // Search matches upi (admno) OR fullName, case-insensitive substring.
+    get filteredBulkRows() {
+        const q = (this.searchText || '').trim().toLowerCase();
+        if (!q) return this.bulkRows;
+        return this.bulkRows.filter(
+            (r) =>
+                (r.upi || '').toLowerCase().includes(q) ||
+                (r.fullName || '').toLowerCase().includes(q)
+        );
+    }
+    onSearchChanged = () => { this.tablePage = 1; this.syncUrl(); };
+    onTablePageChanged = (p: number) => { this.tablePage = p; this.syncUrl(); };
+    onTablePageSizeChanged = (s: number) => { this.tablePageSize = s; this.syncUrl(); };
+    // Generic catch-all for filter selects that don't already trigger a change handler.
+    onAnyFilterPicked = () => { this.syncUrl(); };
+
+    // Persists the full filter set to URL so refresh / bookmark restores it.
+    private syncUrl() {
+        pushQueryParams(this.router, this.route, {
+            curriculumId: this.filterCurriculumId,
+            academicYearId: this.filterAcademicYearId,
+            sessionId: this.filterSessionId,
+            schoolClassId: this.filterSchoolClassId,
+            subjectId: this.filterSubjectId,
+            themeId: this.filterThemeId,
+            strandId: this.filterStrandId,
+            subStrandId: this.filterSubStrandId,
+            specificOutcomeId: this.filterSpecificOutcomeId,
+            assessmentTypeId: this.filterAssessmentTypeId,
+            staffDetailsId: this.filterStaffDetailsId,
+            assessmentDate: this.filterAssessmentDate,
+            q: this.searchText,
+            page: this.tablePage > 1 ? this.tablePage : null,
+            pageSize: this.tablePageSize !== 30 ? this.tablePageSize : null,
+            loaded: this.bulkLoaded ? 1 : null
+        });
+    }
+
     subStrandLoaded: boolean = false;
     strandLoaded: boolean = false;
     studentsLoaded: boolean = false;
@@ -137,7 +181,8 @@ export class StudentAssessmentsComponent implements OnInit {
         private learningLevelSvc: LearningLevelsService,
         private subjectsSvc: SubjectsService,
         private themeSvc: ThemeService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private router: Router
     ) {}
 
     ngOnInit(): void {
@@ -163,6 +208,7 @@ export class StudentAssessmentsComponent implements OnInit {
                 this.grades = allGrades.filter(g => g.category === this.gradingCategory).sort((a, b) => a.rank - b.rank);
                 this.teachers = teachers;
                 this.isAuthLoading = false;
+                this.restoreFromUrl();
             },
             error: (err) => {
                 this.toastr.error('An error occurred while loading data.');
@@ -171,11 +217,96 @@ export class StudentAssessmentsComponent implements OnInit {
         });
     }
 
+    // Replays URL-derived filter state through the dependent loads so a refresh
+    // restores the same view. Lazily chains: each ->subscribe waits for its
+    // server response before consuming the next URL param + firing the next load.
+    private restoreFromUrl() {
+        const p = this.route.snapshot.queryParamMap;
+        // Independent values
+        if (p.get('q')) this.searchText = p.get('q')!;
+        if (p.get('page')) this.tablePage = +p.get('page')!;
+        if (p.get('pageSize')) this.tablePageSize = +p.get('pageSize')!;
+        if (p.get('assessmentDate')) this.filterAssessmentDate = p.get('assessmentDate')!;
+        if (p.get('staffDetailsId')) this.filterStaffDetailsId = matchOptionId(this.teachers, p.get('staffDetailsId'));
+        if (p.get('assessmentTypeId')) this.filterAssessmentTypeId = matchOptionId(this.assessmentTypes, p.get('assessmentTypeId'));
+
+        const curriculumId = p.get('curriculumId');
+        const academicYearId = p.get('academicYearId');
+        const sessionId = p.get('sessionId');
+        const schoolClassId = p.get('schoolClassId');
+        const subjectId = p.get('subjectId');
+        const themeId = p.get('themeId');
+        const strandId = p.get('strandId');
+        const subStrandId = p.get('subStrandId');
+        const specificOutcomeId = p.get('specificOutcomeId');
+        const loaded = p.get('loaded');
+        if (!curriculumId) return;
+
+        this.filterCurriculumId = matchOptionId(this.curricula, curriculumId);
+        this.learningLevelSvc.getLearningLevelsByCurriculum(+curriculumId).subscribe((levels) => {
+            this.learningLevels = levels.sort((a, b) => a.rank - b.rank);
+            if (!academicYearId) return;
+            this.filterAcademicYearId = matchOptionId(this.academicYears, academicYearId);
+            forkJoin([
+                this.sessionsSvc.get(`/sessions/byCurriculumYearId?curriculumId=${curriculumId}&academicYearId=${academicYearId}`),
+                this.schoolClassesSvc.get(`/schoolClasses/byAcademicYearId/${academicYearId}`)
+            ]).subscribe(([sessions, schoolClasses]: [any[], any[]]) => {
+                this.sessions = sessions.sort((a, b) => a.rank - b.rank);
+                const currLLIds = this.learningLevels.map((ll) => +ll.id);
+                this.schoolClasses = schoolClasses.filter((sc) => currLLIds.includes(+sc.learningLevelId));
+                if (sessionId) this.filterSessionId = matchOptionId(this.sessions, sessionId);
+                if (!schoolClassId) return;
+                this.filterSchoolClassId = matchOptionId(this.schoolClasses, schoolClassId);
+
+                this.subjectsSvc.get(`/studentSubjects/subjectsBySchoolClassId/${schoolClassId}`).subscribe((subjects: any[]) => {
+                    this.subjects = subjects.sort((a, b) => (a.rank || 0) - (b.rank || 0));
+                    if (!subjectId) return;
+                    this.filterSubjectId = matchOptionId(this.subjects, subjectId);
+                    const selectedClass = this.schoolClasses.find((sc) => sc.id == schoolClassId);
+                    if (!selectedClass?.learningLevelId) return;
+                    forkJoin([
+                        this.themeSvc.get(`/themes/bySubjectId?subjectId=${subjectId}&learningLvlId=${selectedClass.learningLevelId}`),
+                        this.strandSvc.get(`/strands/bySubjectId?subjectId=${subjectId}&learningLvlId=${selectedClass.learningLevelId}&academicYearId=${academicYearId}`)
+                    ]).subscribe(([themes, strands]: [any[], any[]]) => {
+                        this.themes = themes.sort((a, b) => a.rank - b.rank);
+                        this.strands = strands.sort((a, b) => a.rank - b.rank);
+                        if (themeId) {
+                            this.filterThemeId = matchOptionId(this.themes, themeId);
+                            // Apply theme filter to strands list (mirrors onThemeChange).
+                            this.strands = strands
+                                .filter((s) => s.themeId == themeId || !s.themeId)
+                                .sort((a, b) => a.rank - b.rank);
+                        }
+                        if (!strandId) {
+                            if (loaded) this.loadBulkAssessment();
+                            return;
+                        }
+                        this.filterStrandId = matchOptionId(this.strands, strandId);
+                        this.subStrandSvc.get(`/subStrands/byStrandId/${strandId}`).subscribe((ssss: any[]) => {
+                            this.subStrands = ssss.sort((a, b) => a.rank - b.rank);
+                            if (!subStrandId) {
+                                if (loaded) this.loadBulkAssessment();
+                                return;
+                            }
+                            this.filterSubStrandId = matchOptionId(this.subStrands, subStrandId);
+                            this.specificOutcomeSvc.get(`/specificOutcomes/bySubStrandId/${subStrandId}`).subscribe((specs: any[]) => {
+                                this.specificOutcomes = specs.sort((a, b) => a.rank - b.rank);
+                                if (specificOutcomeId) this.filterSpecificOutcomeId = matchOptionId(this.specificOutcomes, specificOutcomeId);
+                                if (loaded) this.loadBulkAssessment();
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    }
+
     onCurriculumChange = () => {
         this.sessions = this.schoolClasses = this.subjects = this.strands = this.subStrands = this.specificOutcomes = [];
         this.filterAcademicYearId = this.filterSessionId = this.filterSchoolClassId = this.filterSubjectId = null;
         this.filterStrandId = this.filterSubStrandId = this.filterSpecificOutcomeId = null;
         this.studentsLoaded = false;
+        this.syncUrl();
         if (!this.filterCurriculumId) return;
 
         this.learningLevelSvc.getLearningLevelsByCurriculum(this.filterCurriculumId).subscribe({
@@ -191,6 +322,7 @@ export class StudentAssessmentsComponent implements OnInit {
         this.filterSessionId = this.filterSchoolClassId = this.filterSubjectId = this.filterStrandId = null;
         this.filterSubStrandId = this.filterSpecificOutcomeId = null;
         this.studentsLoaded = false;
+        this.syncUrl();
         if (!this.filterAcademicYearId || !this.filterCurriculumId) return;
 
         forkJoin([
@@ -211,6 +343,7 @@ export class StudentAssessmentsComponent implements OnInit {
 
     onSessionChange = () => {
         this.studentsLoaded = false;
+        this.syncUrl();
     };
 
     onClassChange = () => {
@@ -218,6 +351,7 @@ export class StudentAssessmentsComponent implements OnInit {
         this.filterSubjectId = this.filterStrandId = this.filterSubStrandId = this.filterSpecificOutcomeId = null;
         this.studentsLoaded = false;
         this.bulkLoaded = false;
+        this.syncUrl();
         if (!this.filterSchoolClassId) return;
 
         // Load only subjects allocated to students in this class
@@ -239,6 +373,7 @@ export class StudentAssessmentsComponent implements OnInit {
         this.filterThemeId = this.filterStrandId = this.filterSubStrandId = this.filterSpecificOutcomeId = null;
         this.studentsLoaded = false;
         this.bulkLoaded = false;
+        this.syncUrl();
         if (!this.filterSubjectId || !this.filterSchoolClassId) return;
 
         let selectedClass = this.schoolClasses.find((sc) => sc.id == this.filterSchoolClassId);
@@ -262,6 +397,7 @@ export class StudentAssessmentsComponent implements OnInit {
         this.filterStrandId = this.filterSubStrandId = this.filterSpecificOutcomeId = null;
         this.studentsLoaded = false;
         this.bulkLoaded = false;
+        this.syncUrl();
         if (!this.filterThemeId) return;
 
         // Filter strands by theme (if theme selected, show only strands under that theme)
@@ -285,6 +421,7 @@ export class StudentAssessmentsComponent implements OnInit {
         this.subStrands = this.specificOutcomes = [];
         this.filterSubStrandId = this.filterSpecificOutcomeId = null;
         this.studentsLoaded = false;
+        this.syncUrl();
         if (!this.filterStrandId) return;
 
         this.subStrandSvc.get(`/subStrands/byStrandId/${this.filterStrandId}`).subscribe({
@@ -299,6 +436,7 @@ export class StudentAssessmentsComponent implements OnInit {
         this.specificOutcomes = [];
         this.filterSpecificOutcomeId = null;
         this.studentsLoaded = false;
+        this.syncUrl();
         if (!this.filterSubStrandId) return;
 
         this.specificOutcomeSvc.get(`/specificOutcomes/bySubStrandId/${this.filterSubStrandId}`).subscribe({
@@ -760,6 +898,7 @@ export class StudentAssessmentsComponent implements OnInit {
                 });
 
                 this.bulkLoaded = true;
+                this.syncUrl();
 
                 if (this.bulkRows.length === 0) {
                     this.toastr.info('No students found in the selected class.');

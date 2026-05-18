@@ -13,5 +13,7 @@ namespace SchoolWebApp.Core.Entities.Identity
 
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
+        // Optional Person.Id (Staff / Student / Parent) the user is linked to.
+        public int? PersonId { get; set; }
     }
 }

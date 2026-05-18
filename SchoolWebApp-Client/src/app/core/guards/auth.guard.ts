@@ -25,8 +25,16 @@ export class AuthGuard implements CanActivate, CanActivateChild {
         | boolean
         | UrlTree {
         if (!this.authService.isLoggedIn) {
-            this.router.navigate(['login']);
+            return this.router.parseUrl('/login');
         }
+
+        // If a forced password change is pending, the only route allowed is
+        // /change-password — everything else bounces back there.
+        const user = this.authService.getCurrentUser();
+        if (user?.mustChangePassword && !state.url.startsWith('/change-password')) {
+            return this.router.parseUrl('/change-password');
+        }
+
         return true;
     }
 
@@ -40,19 +48,4 @@ export class AuthGuard implements CanActivate, CanActivateChild {
         | UrlTree {
         return this.canActivate(next, state);
     }
-
-    // getProfile() {
-    //     if (this.authService.currentUser) {
-    //         return true;
-    //     }
-
-    //     this.authService.getUserProfile().subscribe(
-    //         (res) => {
-    //             return true;
-    //         },
-    //         (err) => {
-    //             return false;
-    //         }
-    //     );
-    // }
 }

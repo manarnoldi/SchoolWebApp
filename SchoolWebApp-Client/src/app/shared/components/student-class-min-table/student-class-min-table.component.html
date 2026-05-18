@@ -24,7 +24,8 @@
             </thead>
             <tbody>
                 <tr
-                    *ngFor="let item of studentClasses | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i">
+                    *ngFor="let item of studentClasses | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize;index as i"
+                    [class.table-success]="selectedId !== null && (selectedId == item.id)">
                     <th *ngIf="showCheckBoxes">
                         <div class="icheck-success m-0 p-0">
                             <input type="checkbox" id="stud-id-{{item.id}}"
@@ -39,6 +40,13 @@
                         <a href="javascript:void(0)" (click)="studentClassClicked(item.id)">
                             {{item.student?.fullName }}
                         </a>
+                        <span *ngIf="subjectCounts && subjectCounts[item.id] !== undefined"
+                            class="badge bg-info ms-1"
+                            style="cursor: pointer;"
+                            title="View assigned subjects"
+                            (click)="studentClassClicked(item.id)">
+                            {{ subjectCounts[item.id] }}
+                        </span>
                     </td>
                     <td *ngIf="!showMinimum">{{ item.student?.admissionDate | date:
                         'dd/MM/yyyy' }}</td>

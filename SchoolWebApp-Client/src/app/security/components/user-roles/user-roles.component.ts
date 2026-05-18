@@ -5,6 +5,7 @@ import {UserService} from '../../services/user.service';
 import {RoleService} from '../../services/role.service';
 import {AppUser} from '../../models/app-user';
 import {AppRole} from '../../models/app-role';
+import {AuthService} from '@/core/services/auth.service';
 
 @Component({
     selector: 'app-user-roles',
@@ -23,12 +24,50 @@ export class UserRolesComponent implements OnInit {
     selectedUser: AppUser = null;
     isLoading = false;
     isSaving = false;
+    isSuperAdmin: boolean = false;
+
+    showForm = false;
+    searchTerm: string = '';
+    page = 1;
+    pageSize = 10;
+    pageChanged = (p: number) => { this.page = p; };
+    pageSizeChanged = (s: number) => { this.pageSize = s; };
+
+    filtered = (): AppUser[] => {
+        let q = (this.searchTerm || '').trim().toLowerCase();
+        if (!q) return this.users;
+        return this.users.filter(u =>
+            (u.userName || '').toLowerCase().includes(q) ||
+            (u.email || '').toLowerCase().includes(q) ||
+            ((u.firstName || '') + ' ' + (u.lastName || '')).toLowerCase().includes(q)
+        );
+    };
+
+    manageRoles(user: AppUser) {
+        this.selectedUser = user;
+        this.showForm = true;
+    }
+
+    cancel() {
+        this.showForm = false;
+        this.selectedUser = null;
+    }
 
     constructor(
         private userSvc: UserService,
         private roleSvc: RoleService,
-        private toastr: ToastrService
-    ) {}
+        private toastr: ToastrService,
+        private authSvc: AuthService
+    ) {
+        let user = this.authSvc.getCurrentUser();
+        this.isSuperAdmin = !!(user?.roles?.some((r: any) =>
+            (typeof r === 'string' ? r : r?.toString() || '').toLowerCase() === 'superadministrator'));
+    }
+
+    isRoleLocked = (role: AppRole): boolean => {
+        // SuperAdministrator role can only be toggled by another SuperAdministrator.
+        return (role?.name || '').toLowerCase() === 'superadministrator' && !this.isSuperAdmin;
+    };
 
     ngOnInit(): void {
         this.loadData();
@@ -74,7 +113,7 @@ export class UserRolesComponent implements OnInit {
                     this.isSaving = false;
                 },
                 error: (err) => {
-                    this.toastr.error(err.error?.error || 'Error removing role');
+                    this.toastr.error(err.error?.error || err.error?.message || err.message || 'Error removing role');
                     this.isSaving = false;
                 }
             });
@@ -88,7 +127,7 @@ export class UserRolesComponent implements OnInit {
                     this.isSaving = false;
                 },
                 error: (err) => {
-                    this.toastr.error(err.error?.error || 'Error adding role');
+                    this.toastr.error(err.error?.error || err.error?.message || err.message || 'Error adding role');
                     this.isSaving = false;
                 }
             });

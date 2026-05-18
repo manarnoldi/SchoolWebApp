@@ -20,6 +20,7 @@ import {authReducer} from './store/auth/reducer';
 import {uiReducer} from './store/ui/reducer';
 import {StoreModule} from '@ngrx/store';
 import {ForgotPasswordComponent} from './auth/forgot-password/forgot-password.component';
+import {ChangePasswordComponent} from './auth/change-password/change-password.component';
 import {RecoverPasswordComponent} from './auth/recover-password/recover-password.component';
 import {RegisterComponent} from './auth/register/register.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -56,6 +57,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
         RegisterComponent,
         ForgotPasswordComponent,
         RecoverPasswordComponent,
+        ChangePasswordComponent,
         DisplayTimeToPipe,
         DaysToWeeksYearsPipe,
         AgeFromDateOfBirthPipe
@@ -92,6 +94,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
         RegisterComponent,
         ForgotPasswordComponent,
         RecoverPasswordComponent,
+        ChangePasswordComponent,
         DisplayTimeToPipe,
         DaysToWeeksYearsPipe,
         AgeFromDateOfBirthPipe,

@@ -266,3 +266,76 @@ table.table.dataTable tr.bg-success-subtle > td {
 // }
 /* Importing Bootstrap SCSS file. */
 @import 'bootstrap/scss/bootstrap';
+
+/* ===== Global Print Styles ===== */
+@media print {
+  .main-sidebar,
+  .main-header,
+  .main-footer,
+  .d-print-none,
+  .nav-tabs,
+  aside,
+  #sidebar-overlay {
+    display: none !important;
+  }
+  .content-wrapper {
+    margin-left: 0 !important;
+    padding: 0 !important;
+    min-height: auto !important;
+  }
+  @page {
+    margin: 25mm 25mm 25mm 25mm !important;
+  }
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .container-fluid {
+    padding: 0 5mm !important;
+  }
+  section.content {
+    padding-bottom: 25mm !important;
+  }
+  .wrapper {
+    overflow: visible !important;
+  }
+  .card {
+    border: 1px solid #dee2e6 !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+  .card-header.bg-info {
+    background-color: #e9ecef !important;
+    color: #000 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .badge {
+    border: 1px solid #999;
+  }
+  body {
+    font-size: 11px !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  table {
+    font-size: 10px !important;
+  }
+  .table-warning, .table-success, .table-danger, .table-info {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .small-box {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* Print-only elements */
+@media screen {
+  .d-print-block { display: none !important; }
+}
+@media print {
+  .d-print-block { display: block !important; }
+  .d-none.d-print-block { display: block !important; }
+}

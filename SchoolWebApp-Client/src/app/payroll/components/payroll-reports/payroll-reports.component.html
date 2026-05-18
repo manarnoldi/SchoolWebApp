@@ -1,0 +1,250 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+
+        <!-- Period Selector + Report Type -->
+        <div class="row g-1 mb-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label mb-0" style="font-size:0.8rem;">Payroll Period</label>
+                <select class="form-select form-select-sm" [(ngModel)]="selectedPeriodId">
+                    <option [ngValue]="null" hidden disabled>Select period</option>
+                    <option [ngValue]="p.id" *ngFor="let p of periods">{{ p.name }}</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-sm btn-primary" (click)="loadReport()">
+                    <i class="fas fa-search"></i> Load Report
+                </button>
+            </div>
+        </div>
+
+        <!-- Report Type Tabs -->
+        <ul class="nav nav-tabs mb-0" *ngIf="payslips.length > 0">
+            <li class="nav-item">
+                <a class="nav-link" [class.active]="reportType === 'muster'" (click)="reportType = 'muster'" style="cursor:pointer;">
+                    <i class="fas fa-table me-1"></i> Muster Roll
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" [class.active]="reportType === 'statutory'" (click)="reportType = 'statutory'" style="cursor:pointer;">
+                    <i class="fas fa-landmark me-1"></i> Statutory Returns
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" [class.active]="reportType === 'bank'" (click)="reportType = 'bank'" style="cursor:pointer;">
+                    <i class="fas fa-university me-1"></i> Bank Schedule
+                </a>
+            </li>
+        </ul>
+
+        <!-- Muster Roll Tab -->
+        <div class="card card-outline card-primary" *ngIf="payslips.length > 0 && reportType === 'muster'">
+            <div class="card-header py-1 d-flex justify-content-between align-items-center bg-info text-white">
+                <div>
+                    <strong><i class="fas fa-table me-1"></i> Muster Roll: {{ getSelectedPeriodName() }}</strong>
+                    <span class="badge bg-light text-dark ms-2">{{ payslips.length }} employees</span>
+                </div>
+            </div>
+            <div class="card-body p-0" style="overflow-x: auto;">
+                <table class="table table-striped table-hover table-sm mb-0" style="font-size:0.78rem;">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>UPI</th>
+                            <th class="text-end">Basic</th>
+                            <th class="text-end">House</th>
+                            <th class="text-end">Transport</th>
+                            <th class="text-end">Other</th>
+                            <th class="text-end">Gross</th>
+                            <th class="text-end">NSSF</th>
+                            <th class="text-end">PAYE</th>
+                            <th class="text-end">SHIF</th>
+                            <th class="text-end">AHL</th>
+                            <th class="text-end">Other Ded</th>
+                            <th class="text-end">Loans</th>
+                            <th class="text-end">Total Ded</th>
+                            <th class="text-end">Net</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let ps of payslips | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; let i = index">
+                            <td>{{ (page-1) * pageSize + i + 1 }}</td>
+                            <td><strong>{{ ps.staffName }}</strong></td>
+                            <td><small>{{ ps.staffUpi }}</small></td>
+                            <td class="text-end">{{ ps.basicSalary | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ ps.houseAllowance | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ ps.transportAllowance | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ ps.otherAllowances | number:'1.2-2' }}</td>
+                            <td class="text-end fw-bold">{{ ps.grossPay | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ ps.nssfEmployee | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ ps.paye | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ ps.shif | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ ps.ahl | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ ps.otherDeductions | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ ps.loanDeductions | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ ps.totalDeductions | number:'1.2-2' }}</td>
+                            <td class="text-end fw-bold">{{ ps.netPay | number:'1.2-2' }}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-warning fw-bold">
+                            <td colspan="3" class="text-end">TOTALS</td>
+                            <td class="text-end">{{ totalBasic | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ totalHouse | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ totalTransport | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ totalOtherAllow | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ totalGross | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ totalNssf | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ totalPaye | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ totalShif | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ totalAhl | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ totalOtherDed | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ totalLoans | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ totalDeductions | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ totalNet | number:'1.2-2' }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <app-table-paging (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"
+                    [collectionSize]="payslips.length"></app-table-paging>
+            </div>
+        </div>
+
+        <!-- Statutory Returns Tab -->
+        <div class="card card-outline card-primary" *ngIf="payslips.length > 0 && reportType === 'statutory'">
+            <div class="card-header py-1 d-flex justify-content-between align-items-center bg-info text-white">
+                <div>
+                    <strong><i class="fas fa-landmark me-1"></i> Statutory Returns: {{ getSelectedPeriodName() }}</strong>
+                </div>
+            </div>
+            <div class="card-body p-2">
+                <div class="border border-info rounded p-2">
+                    <table class="table table-striped table-hover table-sm mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Statutory Deduction</th>
+                                <th>Description</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>PAYE</strong></td>
+                                <td>Pay As You Earn (Income Tax)</td>
+                                <td class="text-end fw-bold">{{ totalPaye | number:'1.2-2' }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>NSSF (Employee)</strong></td>
+                                <td>National Social Security Fund - Employee Contribution</td>
+                                <td class="text-end fw-bold">{{ totalNssf | number:'1.2-2' }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>NSSF (Employer)</strong></td>
+                                <td>National Social Security Fund - Employer Contribution</td>
+                                <td class="text-end fw-bold">{{ totalNssfEmployer | number:'1.2-2' }}</td>
+                            </tr>
+                            <tr class="table-info">
+                                <td colspan="2" class="text-end"><strong>Total NSSF Remittance</strong></td>
+                                <td class="text-end fw-bold">{{ (totalNssf + totalNssfEmployer) | number:'1.2-2' }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SHIF</strong></td>
+                                <td>Social Health Insurance Fund</td>
+                                <td class="text-end fw-bold">{{ totalShif | number:'1.2-2' }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>AHL</strong></td>
+                                <td>Affordable Housing Levy</td>
+                                <td class="text-end fw-bold">{{ totalAhl | number:'1.2-2' }}</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-warning fw-bold">
+                                <td colspan="2" class="text-end">GRAND TOTAL STATUTORY</td>
+                                <td class="text-end">{{ (totalPaye + totalNssf + totalNssfEmployer + totalShif + totalAhl) | number:'1.2-2' }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <!-- Summary cards -->
+                <div class="border border-primary rounded p-2 mt-2 bg-light">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Total Gross Pay</small>
+                            <strong class="text-success">{{ totalGross | number:'1.2-2' }}</strong>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Total Statutory</small>
+                            <strong class="text-danger">{{ (totalPaye + totalNssf + totalNssfEmployer + totalShif + totalAhl) | number:'1.2-2' }}</strong>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Total Net Pay</small>
+                            <strong class="text-primary">{{ totalNet | number:'1.2-2' }}</strong>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Employees</small>
+                            <strong>{{ payslips.length }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bank Schedule Tab -->
+        <div class="card card-outline card-primary" *ngIf="payslips.length > 0 && reportType === 'bank'">
+            <div class="card-header py-1 d-flex justify-content-between align-items-center bg-info text-white">
+                <div>
+                    <strong><i class="fas fa-university me-1"></i> Bank Schedule: {{ getSelectedPeriodName() }}</strong>
+                    <span class="badge bg-light text-dark ms-2">{{ payslips.length }} transfers</span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Employee</th>
+                            <th>UPI</th>
+                            <th>Bank</th>
+                            <th>Account No</th>
+                            <th class="text-end">Net Pay</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let ps of payslips | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; let i = index">
+                            <td>{{ (page-1) * pageSize + i + 1 }}</td>
+                            <td><strong>{{ ps.staffName }}</strong></td>
+                            <td><small>{{ ps.staffUpi }}</small></td>
+                            <td>{{ ps.bankName }}</td>
+                            <td>{{ ps.bankAccountNumber }}</td>
+                            <td class="text-end fw-bold">{{ ps.netPay | number:'1.2-2' }}</td>
+                        </tr>
+                        <tr *ngIf="payslips.length === 0">
+                            <td colspan="6" class="text-center text-muted p-2"><i class="fas fa-info-circle"></i> No data.</td>
+                        </tr>
+                    </tbody>
+                    <tfoot *ngIf="payslips.length > 0">
+                        <tr class="table-warning fw-bold">
+                            <td colspan="5" class="text-end">TOTAL</td>
+                            <td class="text-end">{{ totalNet | number:'1.2-2' }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <app-table-paging (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"
+                    [collectionSize]="payslips.length"></app-table-paging>
+            </div>
+        </div>
+
+        <!-- No data message -->
+        <div class="text-center text-muted p-4" *ngIf="payslips.length === 0 && selectedPeriodId">
+            <i class="fas fa-info-circle fa-2x mb-2 d-block"></i>
+            <p>Select a period and click "Load Report" to view payroll reports.</p>
+        </div>
+
+    </div>
+</section>

@@ -119,6 +119,23 @@ namespace SchoolWebApp.API.Controllers.School
                 try
                 {
                     var _item = _mapper.Map<Department>(model);
+
+                    // Auto-generate department code: <Prefix><3-digit sequence>
+                    // Prefix is pulled from the General.DepartmentCodePrefix global setting (defaults to DEPT)
+                    var prefixSetting = (await _unitOfWork.Repository<SchoolWebApp.Core.Entities.Settings.GlobalSetting>()
+                        .Find(s => s.Module == "General" && s.SettingKey == "DepartmentCodePrefix")).FirstOrDefault();
+                    var prefix = !string.IsNullOrWhiteSpace(prefixSetting?.SettingValue) ? prefixSetting!.SettingValue!.Trim() : "DEPT";
+
+                    var all = await _unitOfWork.Departments.Find();
+                    var maxSeq = 0;
+                    foreach (var d in all)
+                    {
+                        if (string.IsNullOrEmpty(d.Code) || !d.Code.StartsWith(prefix)) continue;
+                        var tail = d.Code.Substring(prefix.Length);
+                        if (int.TryParse(tail, out var n) && n > maxSeq) maxSeq = n;
+                    }
+                    _item.Code = $"{prefix}{(maxSeq + 1).ToString("D3")}";
+
                     _unitOfWork.Departments.Create(_item);
                     await _unitOfWork.SaveChangesAsync();
                     var returnItem = _mapper.Map<DepartmentDto>(_item);

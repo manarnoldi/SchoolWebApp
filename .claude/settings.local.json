@@ -3,7 +3,8 @@
     "allow": [
       "Bash(dotnet ef:*)",
       "Bash(\"/c/Program Files/MySQL/MySQL Server 8.0/bin/mysql.exe\" -u root -p'D@pyo\\(0\\)' SchoolWebAppDb -e \"SHOW CREATE TABLE Strands\\\\G\")",
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Bash(mysql -u root -p1234)"
     ]
   }
 }

@@ -1,0 +1,256 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+
+        <!-- Form Modal -->
+        <div class="modal-backdrop fade show" *ngIf="showForm" (click)="cancel()"></div>
+        <div class="modal fade show d-block" *ngIf="showForm" tabindex="-1">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable" style="margin-top: 30px;">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white py-2">
+                        <h5 class="modal-title"><i class="fas fa-money-bill-wave me-1"></i>
+                            {{ viewMode ? 'Review' : (editMode ? 'Edit' : 'New') }} Expense
+                            <span *ngIf="editMode && item.referenceNumber" class="ms-2">- {{ item.referenceNumber }}</span>
+                        </h5>
+                        <button type="button" class="close text-white" (click)="cancel()"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body p-2">
+                        <fieldset [disabled]="viewMode">
+                        <div class="border border-info rounded p-2 mb-2">
+                            <h6 class="text-info mb-2"><i class="fas fa-info-circle me-1"></i> Expense Details</h6>
+                            <div class="row g-1">
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Date <span class="requiredField">*</span></label>
+                                    <input type="date" class="form-control form-control-sm" [(ngModel)]="item.expenseDate" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Payment Method</label>
+                                    <select class="form-select form-select-sm" [(ngModel)]="item.paymentMethod">
+                                        <option [ngValue]="p.value" *ngFor="let p of paymentMethods">{{ p.label }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Paid From (Account)</label>
+                                    <select class="form-select form-select-sm" [(ngModel)]="item.paidFromAccountId">
+                                        <option [ngValue]="null">-- None --</option>
+                                        <option [ngValue]="a.id" *ngFor="let a of bankAccounts">{{ a.code }} - {{ a.name }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Transaction Ref</label>
+                                    <input class="form-control form-control-sm" [(ngModel)]="item.transactionReference" />
+                                </div>
+                            </div>
+                            <div class="row g-1 mt-1">
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Ref # <small class="text-muted">(auto if blank)</small></label>
+                                    <input class="form-control form-control-sm bg-light" [(ngModel)]="item.referenceNumber" readonly placeholder="Auto" />
+                                </div>
+                                <div class="col-md-9">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Description</label>
+                                    <input class="form-control form-control-sm" [(ngModel)]="item.description" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Expense Lines -->
+                        <div class="border border-danger rounded p-2">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="text-danger mb-0"><i class="fas fa-list-ul me-1"></i> Expense Lines</h6>
+                                <button class="btn btn-sm btn-outline-danger" (click)="addLine()" *ngIf="!viewMode"><i class="fas fa-plus"></i> Add Line</button>
+                            </div>
+                            <table class="table table-sm table-striped mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width:25%;">Category</th>
+                                        <th style="width:15%;">Vendor</th>
+                                        <th style="width:13%;" class="text-end">Amount</th>
+                                        <th style="width:37%;">Description</th>
+                                        <th style="width:5%;" *ngIf="!viewMode"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let l of item.lines">
+                                        <td>
+                                            <select class="form-select form-select-sm" [(ngModel)]="l.expenseCategoryId">
+                                                <option [ngValue]="null" hidden disabled>Select category</option>
+                                                <option [ngValue]="c.id" *ngFor="let c of categories">{{ c.name }}</option>
+                                            </select>
+                                        </td>
+                                        <td><input class="form-control form-control-sm" [(ngModel)]="l.vendor" placeholder="Vendor" /></td>
+                                        <td><input type="number" min="0" class="form-control form-control-sm text-end" [(ngModel)]="l.amount" /></td>
+                                        <td><input class="form-control form-control-sm" [(ngModel)]="l.description" /></td>
+                                        <td class="text-center" *ngIf="!viewMode"><button class="btn btn-sm btn-outline-danger" (click)="removeLine(l)"><i class="fas fa-times"></i></button></td>
+                                    </tr>
+                                    <tr *ngIf="item.lines.length === 0">
+                                        <td [attr.colspan]="viewMode ? 4 : 5" class="text-center text-muted p-2"><i class="fas fa-info-circle"></i> No lines yet.</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot *ngIf="item.lines.length > 0">
+                                    <tr class="table-warning fw-bold">
+                                        <td colspan="2" class="text-end">TOTAL</td>
+                                        <td class="text-end">{{ getLineTotal() | number:'1.2-2' }}</td>
+                                        <td [attr.colspan]="viewMode ? 1 : 2"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        </fieldset>
+
+                        <!-- Embedded Approval Webpart -->
+                        <div class="mt-2">
+                            <app-approval-webpart
+                                #approvalWebpart
+                                formKey="Expense"
+                                entityType="Expense"
+                                [entityId]="item?.id ? +item.id : null"
+                                [currentUserId]="currentUserId"
+                                (statusChanged)="onApprovalChanged($event)"></app-approval-webpart>
+                        </div>
+                    </div>
+                    <div class="modal-footer py-1">
+                        <button class="btn btn-sm btn-secondary" (click)="cancel()">{{ viewMode ? 'Close' : 'Cancel' }}</button>
+                        <button *ngIf="!viewMode" class="btn btn-sm btn-success" (click)="save()">
+                            <i class="fas fa-save"></i>
+                            {{ (approvalWebpart?.hasPickerSelections() && approvalWebpart?.isInPickerMode()) ? 'Save &amp; Submit for Approval' : 'Save' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View Detail Modal -->
+        <div class="modal-backdrop fade show" *ngIf="viewDetail" (click)="closeDetail()"></div>
+        <div class="modal fade show d-block" *ngIf="viewDetail" tabindex="-1">
+            <div class="modal-dialog modal-lg" style="margin-top: 50px;">
+                <div class="modal-content">
+                    <div class="modal-header bg-info text-white py-2">
+                        <h5 class="modal-title"><i class="fas fa-money-bill-wave me-1"></i> Expense: {{ viewDetail.referenceNumber }}
+                            <span class="badge ms-2" [ngClass]="getStatusClass(viewDetail.status)">{{ getStatusLabel(viewDetail.status) }}</span>
+                        </h5>
+                        <button type="button" class="close text-white" (click)="closeDetail()"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body p-2">
+                        <div class="border border-secondary rounded p-2 mb-2 bg-light">
+                            <div class="row" style="font-size:0.85rem;">
+                                <div class="col-md-4"><small class="text-muted d-block">Date</small><strong>{{ viewDetail.expenseDate | date:'mediumDate' }}</strong></div>
+                                <div class="col-md-4"><small class="text-muted d-block">Method</small><strong>{{ getMethodLabel(viewDetail.paymentMethod) }}</strong></div>
+                                <div class="col-md-4"><small class="text-muted d-block">Paid From</small><strong>{{ viewDetail.paidFromAccountName || '-' }}</strong></div>
+                            </div>
+                            <div class="row mt-1" style="font-size:0.85rem;" *ngIf="viewDetail.description">
+                                <div class="col-md-12"><small class="text-muted d-block">Description</small>{{ viewDetail.description }}</div>
+                            </div>
+                        </div>
+                        <table class="table table-sm table-striped mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Category</th>
+                                    <th>Vendor</th>
+                                    <th class="text-end">Amount</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let l of viewDetail.lines; index as idx">
+                                    <td>{{ idx + 1 }}</td>
+                                    <td>{{ l.expenseCategoryName }}</td>
+                                    <td><small>{{ l.vendor || '-' }}</small></td>
+                                    <td class="text-end fw-bold">{{ l.amount | number:'1.2-2' }}</td>
+                                    <td><small>{{ l.description }}</small></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-warning fw-bold">
+                                    <td colspan="3" class="text-end">TOTAL</td>
+                                    <td class="text-end">{{ viewDetail.totalAmount | number:'1.2-2' }}</td>
+                                    <td></td>
+
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <app-approval-history
+                            entityType="Expense"
+                            [entityId]="viewDetail?.id ? +viewDetail.id : null"></app-approval-history>
+                    </div>
+                    <div class="modal-footer py-1">
+                        <button class="btn btn-sm btn-secondary" (click)="closeDetail()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters + Buttons row -->
+        <div class="row g-1 mb-1 align-items-end">
+            <div class="col-md-2">
+                <label class="form-label mb-0" style="font-size:0.8rem;">Date From</label>
+                <input type="date" class="form-control form-control-sm" [(ngModel)]="filterDateFrom" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label mb-0" style="font-size:0.8rem;">Date To</label>
+                <input type="date" class="form-control form-control-sm" [(ngModel)]="filterDateTo" [min]="filterDateFrom" />
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-sm btn-outline-secondary" (click)="clearFilters()" title="Reset to current month"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="col text-end">
+                <button class="btn btn-sm btn-success" (click)="addNew()"><i class="fas fa-plus"></i> Add Expense</button>
+            </div>
+        </div>
+
+        <!-- List -->
+        <div class="card card-outline card-primary">
+            <div class="card-header py-1 d-flex justify-content-between align-items-center bg-info text-white">
+                <div>
+                    <strong><i class="fas fa-money-bill-wave me-1"></i> Expenses</strong>
+                    <span class="badge bg-light text-dark ms-2">{{ filtered().length }}</span>
+                </div>
+                <div>
+                    <span class="badge bg-danger">Total: {{ getFilteredTotal() | number:'1.2-2' }}</span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Ref #</th>
+                            <th>Date</th>
+                            <th class="text-center">Lines</th>
+                            <th class="text-end">Total</th>
+                            <th>Method</th>
+                            <th>Paid From</th>
+                            <th>Status</th>
+                            <th style="min-width:160px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let e of filtered() | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize">
+                            <td><strong>{{ e.referenceNumber }}</strong></td>
+                            <td><small>{{ e.expenseDate | date:'mediumDate' }}</small></td>
+                            <td class="text-center">
+                                <span class="badge bg-secondary" *ngIf="!e.lineCount">0</span>
+                                <a class="badge bg-info" style="cursor:pointer;" *ngIf="e.lineCount" (click)="viewExpense(e)">{{ e.lineCount }}</a>
+                            </td>
+                            <td class="text-end fw-bold">{{ e.totalAmount | number:'1.2-2' }}</td>
+                            <td><span class="badge bg-secondary">{{ getMethodLabel(e.paymentMethod) }}</span></td>
+                            <td><small>{{ e.paidFromAccountName || '-' }}</small></td>
+                            <td><span class="badge" [ngClass]="getStatusClass(e.status)">{{ getStatusLabel(e.status) }}</span></td>
+                            <td>
+                                <button class="btn btn-outline-info btn-sm" (click)="viewExpense(e)" title="Quick View"><i class="fas fa-eye"></i></button>
+                                <button *ngIf="canEditOrDelete(e.id)" class="btn btn-outline-primary btn-sm ms-1" (click)="edit(e)" title="Edit"><i class="fas fa-edit"></i></button>
+                                <button *ngIf="isMyTurn(e.id)" class="btn btn-outline-dark btn-sm ms-1" (click)="act(e)" title="Review / Approve"><i class="fas fa-check-double"></i></button>
+                                <button *ngIf="canEditOrDelete(e.id)" class="btn btn-outline-danger btn-sm ms-1" (click)="delete(e)" title="Delete"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <app-table-paging (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"
+                    [collectionSize]="filtered().length"></app-table-paging>
+            </div>
+        </div>
+
+    </div>
+</section>

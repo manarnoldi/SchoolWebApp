@@ -16,7 +16,8 @@ namespace SchoolWebApp.Core.Constants
             Student,
             Parent,
             Accounts,
-            Others
+            Others,
+            SuperAdministrator
         }
         public const string default_username = "admin";
         public const string default_email = "admin@kodetek.co.ke";

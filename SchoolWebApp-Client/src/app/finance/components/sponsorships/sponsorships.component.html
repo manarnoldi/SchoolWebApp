@@ -1,0 +1,218 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+
+        <!-- Add/Edit Modal -->
+        <div class="modal-backdrop fade show" *ngIf="showForm" (click)="cancel()"></div>
+        <div class="modal fade show d-block" *ngIf="showForm" tabindex="-1">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable" style="margin-top: 30px;">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white py-2">
+                        <h5 class="modal-title"><i class="fas fa-award me-1"></i> {{ editMode ? 'Edit' : 'New' }} Sponsorship</h5>
+                        <button type="button" class="close text-white" (click)="cancel()"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body p-2">
+                        <div class="border border-info rounded p-2 mb-2">
+                            <h6 class="text-info mb-2"><i class="fas fa-info-circle me-1"></i> Sponsor & Period</h6>
+                            <div class="row g-1">
+                                <div class="col-md-5">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Sponsor <span class="text-danger">*</span></label>
+                                    <select class="form-select form-select-sm" [(ngModel)]="item.sponsorId">
+                                        <option [ngValue]="0">-- Select sponsor --</option>
+                                        <option *ngFor="let s of sponsors" [ngValue]="s.id">{{ s.name }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Academic Year <span class="text-danger">*</span></label>
+                                    <select class="form-select form-select-sm" [(ngModel)]="item.academicYearId" (ngModelChange)="onFormYearChange()">
+                                        <option [ngValue]="0">-- Select year --</option>
+                                        <option *ngFor="let y of academicYears" [ngValue]="y.id">{{ y.name }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Session (Term)</label>
+                                    <select class="form-select form-select-sm" [(ngModel)]="item.sessionId">
+                                        <option [ngValue]="null">-- Whole Year --</option>
+                                        <option *ngFor="let s of formSessions" [ngValue]="s.id">{{ s.sessionName }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Start Date</label>
+                                    <input type="date" class="form-control form-control-sm" [(ngModel)]="item.startDate" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">End Date</label>
+                                    <input type="date" class="form-control form-control-sm" [(ngModel)]="item.endDate" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Status</label>
+                                    <select class="form-select form-select-sm" [(ngModel)]="item.status">
+                                        <option *ngFor="let s of statuses" [ngValue]="s.value">{{ s.label }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border border-success rounded p-2 mb-2">
+                            <h6 class="text-success mb-2"><i class="fas fa-user-graduate me-1"></i> Beneficiary</h6>
+                            <div class="row g-1">
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Target</label>
+                                    <select class="form-select form-select-sm" [(ngModel)]="targetMode" (ngModelChange)="onTargetModeChange()">
+                                        <option value="student">Individual Student</option>
+                                        <option value="class">Entire Class</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Class</label>
+                                    <select class="form-select form-select-sm" [(ngModel)]="item.schoolClassId" (ngModelChange)="onFormClassChange()">
+                                        <option [ngValue]="null">-- Select class --</option>
+                                        <option *ngFor="let c of schoolClasses" [ngValue]="c.id">
+                                            {{ c.learningLevel?.name }}{{ c.schoolStream?.name ? ' - ' + c.schoolStream.name : '' }}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-5" *ngIf="targetMode === 'student'">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Student <span class="text-danger">*</span></label>
+                                    <select class="form-select form-select-sm" [(ngModel)]="item.studentId">
+                                        <option [ngValue]="null">-- Select student --</option>
+                                        <option *ngFor="let s of formStudents" [ngValue]="s.id">{{ s.displayName }}</option>
+                                    </select>
+                                    <small class="text-muted" *ngIf="!item.schoolClassId">Pick a class first to list students.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border border-warning rounded p-2 mb-2">
+                            <h6 class="text-warning mb-2"><i class="fas fa-percentage me-1"></i> Coverage</h6>
+                            <div class="row g-1">
+                                <div class="col-md-4">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Coverage Type</label>
+                                    <select class="form-select form-select-sm" [(ngModel)]="item.coverageType">
+                                        <option *ngFor="let c of coverageTypes" [ngValue]="c.value">{{ c.label }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3" *ngIf="item.coverageType === 1">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Percentage</label>
+                                    <input type="number" min="1" max="100" class="form-control form-control-sm" [(ngModel)]="item.percentage" />
+                                </div>
+                                <div class="col-md-3" *ngIf="item.coverageType === 0">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Fixed Amount</label>
+                                    <input type="number" min="0" class="form-control form-control-sm" [(ngModel)]="item.fixedAmount" />
+                                </div>
+                            </div>
+
+                            <div class="mt-2">
+                                <label class="form-label mb-1" style="font-size:0.8rem;">
+                                    Fee Categories Covered
+                                    <small class="text-muted">(leave all unchecked = cover every fee category)</small>
+                                </label>
+                                <div class="row">
+                                    <div class="col-md-4 col-sm-6" *ngFor="let c of feeCategories">
+                                        <div class="icheck-primary">
+                                            <input type="checkbox" [id]="'fc' + c.id"
+                                                [checked]="isFeeCategoryChecked(c.id)"
+                                                (change)="toggleFeeCategory(c.id)" />
+                                            <label [for]="'fc' + c.id"><small>{{ c.name }}</small></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label mb-0" style="font-size:0.8rem;">Notes</label>
+                            <textarea class="form-control form-control-sm" rows="2" [(ngModel)]="item.notes"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer py-1">
+                        <button class="btn btn-sm btn-secondary" (click)="cancel()">Cancel</button>
+                        <button class="btn btn-sm btn-primary" (click)="save()"><i class="fas fa-save"></i> Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters + Add -->
+        <div class="row g-1 mb-1 align-items-end">
+            <div class="col-md-2">
+                <label class="form-label mb-0" style="font-size:0.8rem;">Academic Year</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filterYearId">
+                    <option [ngValue]="null">-- All --</option>
+                    <option *ngFor="let y of academicYears" [ngValue]="y.id">{{ y.name }}</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label mb-0" style="font-size:0.8rem;">Sponsor</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filterSponsorId">
+                    <option [ngValue]="null">-- All --</option>
+                    <option *ngFor="let s of sponsors" [ngValue]="s.id">{{ s.name }}</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label mb-0" style="font-size:0.8rem;">Status</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filterStatus">
+                    <option [ngValue]="null">-- All --</option>
+                    <option *ngFor="let s of statuses" [ngValue]="s.value">{{ s.label }}</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-sm btn-outline-secondary" (click)="clearFilters()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="col text-end">
+                <button class="btn btn-sm btn-primary" (click)="addNew()"><i class="fas fa-plus"></i> Add Sponsorship</button>
+            </div>
+        </div>
+
+        <!-- List -->
+        <div class="card card-outline card-primary">
+            <div class="card-header py-1 bg-info text-white">
+                <strong><i class="fas fa-award me-1"></i> Sponsorships</strong>
+                <span class="badge bg-light text-dark ms-2">{{ filtered().length }}</span>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Sponsor</th>
+                            <th>Beneficiary</th>
+                            <th>Year / Term</th>
+                            <th>Coverage</th>
+                            <th>Start - End</th>
+                            <th>Status</th>
+                            <th style="min-width:100px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let s of filtered() | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i">
+                            <td>{{ (page-1) * pageSize + i + 1 }}</td>
+                            <td><strong>{{ s.sponsorName }}</strong></td>
+                            <td>
+                                <small *ngIf="s.studentId"><i class="fas fa-user me-1"></i> {{ s.studentUPI }} - {{ s.studentName }}</small>
+                                <small *ngIf="s.schoolClassId && !s.studentId"><i class="fas fa-users me-1"></i> {{ s.schoolClassName }}</small>
+                            </td>
+                            <td><small>{{ s.academicYearName }}<span *ngIf="s.sessionName"> / {{ s.sessionName }}</span></small></td>
+                            <td><strong>{{ coverageLabel(s.coverageType) }}</strong><br/><small class="text-muted">{{ coverageSummary(s) }}</small></td>
+                            <td><small>{{ s.startDate | date:'mediumDate' }} <span *ngIf="s.endDate">→ {{ s.endDate | date:'mediumDate' }}</span></small></td>
+                            <td><span class="badge" [ngClass]="statusBadge(s.status)">{{ statusLabel(s.status) }}</span></td>
+                            <td>
+                                <button class="btn btn-outline-success btn-sm" (click)="applyToExisting(s)" title="Apply to existing open invoices"><i class="fas fa-bolt"></i></button>
+                                <button class="btn btn-outline-primary btn-sm ms-1" (click)="edit(s)" title="Edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-outline-danger btn-sm ms-1" (click)="delete(s)" title="Delete"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="filtered().length === 0">
+                            <td colspan="8" class="text-center text-muted p-3"><i class="fas fa-info-circle me-1"></i> No sponsorships.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <app-table-paging (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"
+                    [collectionSize]="filtered().length"></app-table-paging>
+            </div>
+        </div>
+
+    </div>
+</section>

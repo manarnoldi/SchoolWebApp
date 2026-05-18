@@ -6,6 +6,8 @@ using SchoolWebApp.Core.Interfaces.IRepositories.School;
 using SchoolWebApp.Core.Interfaces.IRepositories.Settings;
 using SchoolWebApp.Core.Interfaces.IRepositories.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories.Students;
+using SchoolWebApp.Core.Interfaces.IRepositories.Finance;
+using SchoolWebApp.Core.Interfaces.IRepositories.Payroll;
 
 namespace SchoolWebApp.Core.Interfaces.IRepositories
 {
@@ -91,6 +93,40 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
         #endregion
 
         // new generic repo accessor
+        #region Finance
+        IAccountRepository Accounts { get; }
+        IFeeCategoryRepository FeeCategories { get; }
+        IFeeStructureRepository FeeStructures { get; }
+        IFeeStructureItemRepository FeeStructureItems { get; }
+        IStudentInvoiceRepository StudentInvoices { get; }
+        IStudentInvoiceItemRepository StudentInvoiceItems { get; }
+        IPaymentRepository Payments { get; }
+        IExpenseCategoryRepository ExpenseCategories { get; }
+        IExpenseRepository Expenses { get; }
+        IExpenseLineRepository ExpenseLines { get; }
+        IJournalEntryRepository JournalEntries { get; }
+        IJournalLineRepository JournalLines { get; }
+        IBudgetRepository Budgets { get; }
+        IBudgetLineRepository BudgetLines { get; }
+        IBudgetMasterRepository BudgetMasters { get; }
+        IBudgetAmendmentRepository BudgetAmendments { get; }
+        IBudgetAmendmentLineRepository BudgetAmendmentLines { get; }
+        #endregion
+
+        #region Payroll
+        IEarningTypeRepository EarningTypes { get; }
+        IDeductionTypeRepository DeductionTypes { get; }
+        ITaxBandRepository TaxBands { get; }
+        IPayrollSettingRepository PayrollSettings { get; }
+        IEmployeeSalaryRepository EmployeeSalaries { get; }
+        IEmployeeSalaryItemRepository EmployeeSalaryItems { get; }
+        ILoanAdvanceRepository LoanAdvances { get; }
+        IPayrollPeriodRepository PayrollPeriods { get; }
+        IPayslipRepository Payslips { get; }
+        IPayslipEarningRepository PayslipEarnings { get; }
+        IPayslipDeductionRepository PayslipDeductions { get; }
+        #endregion
+
         IBaseRepository<T> Repository<T>() where T : Base;
 
         Task<int> SaveChangesAsync();

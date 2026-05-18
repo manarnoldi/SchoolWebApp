@@ -1,0 +1,878 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+
+        <!-- Print-only report header (school letterhead) -->
+        <div class="d-none d-print-block mb-3 text-center" style="padding-top:5mm;" *ngIf="school">
+            <div style="display:flex; align-items:center; justify-content:center; gap:15px; border-bottom: 2px solid #002D62; padding-bottom: 8px;">
+                <img *ngIf="school.logoAsBase64" [src]="school.logoAsBase64" style="width:70px; height:70px; object-fit:contain;" />
+                <div>
+                    <h4 style="margin:0; color:#002D62; font-weight:bold;">{{ school.name?.toUpperCase() }}</h4>
+                    <small *ngIf="school.address">{{ school.address }}</small><br *ngIf="school.address" />
+                    <small *ngIf="school.telephone">Tel: {{ school.telephone }}</small>
+                    <small *ngIf="school.telephone && school.email"> | </small>
+                    <small *ngIf="school.email">Email: {{ school.email }}</small><br *ngIf="school.email || school.telephone" />
+                    <small *ngIf="school.website">{{ school.website }}</small>
+                </div>
+            </div>
+            <h5 style="margin-top:8px; color:#002D62;">
+                <span *ngIf="activeTab==='trialBalance'">TRIAL BALANCE</span>
+                <span *ngIf="activeTab==='incomeStatement'">PROFIT &amp; LOSS STATEMENT</span>
+                <span *ngIf="activeTab==='balanceSheet'">BALANCE SHEET</span>
+                <span *ngIf="activeTab==='feeCollection'">FEE COLLECTION SUMMARY</span>
+                <span *ngIf="activeTab==='outstanding'">OUTSTANDING BALANCES REPORT</span>
+                <span *ngIf="activeTab==='feeBalancesByClass'">FEE BALANCES BY CLASS</span>
+                <span *ngIf="activeTab==='studentStatement'">STUDENT FEE STATEMENT</span>
+                <span *ngIf="activeTab==='expenses'">EXPENSES REPORT</span>
+                <span *ngIf="activeTab==='discounts'">STUDENT DISCOUNTS REPORT</span>
+                <span *ngIf="activeTab==='notes'">CREDIT &amp; DEBIT NOTES REPORT</span>
+                <span *ngIf="activeTab==='consolidatedBudget'">CONSOLIDATED BUDGET REPORT</span>
+            </h5>
+            <small style="color:#555;">
+                <span *ngIf="activeTab==='balanceSheet'">As of {{ asOfDate | date:'mediumDate' }}</span>
+                <span *ngIf="activeTab==='consolidatedBudget'">Academic Year: {{ consolidatedBudget?.academicYearName }}</span>
+                <span *ngIf="activeTab==='studentStatement' && studentStatement">
+                    Student: <strong>{{ studentStatement.student.upi }} - {{ studentStatement.student.fullName }}</strong>
+                    <span *ngIf="getStatementStudentClass()"> | Class: <strong>{{ getStatementStudentClass() }}</strong></span>
+                    | Academic Year: <strong>{{ getStatementYearName() }}</strong>
+                    | Term: <strong>{{ getStatementSessionName() }}</strong>
+                </span>
+                <span *ngIf="activeTab!=='balanceSheet' && activeTab!=='consolidatedBudget' && activeTab!=='outstanding' && activeTab!=='studentStatement' && activeTab!=='discounts'">
+                    Period: {{ fromDate | date:'mediumDate' }} to {{ toDate | date:'mediumDate' }}
+                </span>
+            </small>
+        </div>
+
+        <!-- Tabs — only those in the active report group are shown. -->
+        <ul class="nav nav-tabs mb-1 d-print-none">
+            <!-- Fee Reports -->
+            <li class="nav-item" *ngIf="isInGroup('feeCollection')"><a class="nav-link" [class.active]="activeTab==='feeCollection'" (click)="switchTab('feeCollection')" role="button"><i class="fas fa-cash-register me-1"></i> Fee Collection</a></li>
+            <li class="nav-item" *ngIf="isInGroup('outstanding')"><a class="nav-link" [class.active]="activeTab==='outstanding'" (click)="switchTab('outstanding')" role="button"><i class="fas fa-exclamation-triangle me-1"></i> Outstanding</a></li>
+            <li class="nav-item" *ngIf="isInGroup('feeBalancesByClass')"><a class="nav-link" [class.active]="activeTab==='feeBalancesByClass'" (click)="switchTab('feeBalancesByClass')" role="button"><i class="fas fa-users me-1"></i> Balances by Class</a></li>
+            <li class="nav-item" *ngIf="isInGroup('discounts')"><a class="nav-link" [class.active]="activeTab==='discounts'" (click)="switchTab('discounts')" role="button"><i class="fas fa-percentage me-1"></i> Discounts</a></li>
+            <li class="nav-item" *ngIf="isInGroup('studentStatement')"><a class="nav-link" [class.active]="activeTab==='studentStatement'" (click)="switchTab('studentStatement')" role="button"><i class="fas fa-file-alt me-1"></i> Student Statement</a></li>
+
+            <!-- Expenses Report -->
+            <li class="nav-item" *ngIf="isInGroup('expenses')"><a class="nav-link" [class.active]="activeTab==='expenses'" (click)="switchTab('expenses')" role="button"><i class="fas fa-money-bill-wave me-1"></i> Expenses</a></li>
+            <li class="nav-item" *ngIf="isInGroup('notes')"><a class="nav-link" [class.active]="activeTab==='notes'" (click)="switchTab('notes')" role="button"><i class="fas fa-file-invoice me-1"></i> Credit/Debit Notes</a></li>
+
+            <!-- Statements -->
+            <li class="nav-item" *ngIf="isInGroup('consolidatedBudget')"><a class="nav-link" [class.active]="activeTab==='consolidatedBudget'" (click)="switchTab('consolidatedBudget')" role="button"><i class="fas fa-piggy-bank me-1"></i> Budget</a></li>
+            <li class="nav-item" *ngIf="isInGroup('trialBalance')"><a class="nav-link" [class.active]="activeTab==='trialBalance'" (click)="switchTab('trialBalance')" role="button"><i class="fas fa-balance-scale me-1"></i> Trial Balance</a></li>
+            <li class="nav-item" *ngIf="isInGroup('incomeStatement')"><a class="nav-link" [class.active]="activeTab==='incomeStatement'" (click)="switchTab('incomeStatement')" role="button"><i class="fas fa-chart-line me-1"></i> Profit &amp; Loss</a></li>
+            <li class="nav-item" *ngIf="isInGroup('balanceSheet')"><a class="nav-link" [class.active]="activeTab==='balanceSheet'" (click)="switchTab('balanceSheet')" role="button"><i class="fas fa-file-invoice-dollar me-1"></i> Balance Sheet</a></li>
+        </ul>
+
+        <!-- ==================== TRIAL BALANCE ==================== -->
+        <div *ngIf="activeTab==='trialBalance'">
+            <div class="row g-1 mb-1 align-items-end d-print-none">
+                <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">From</label><input type="date" class="form-control form-control-sm" [(ngModel)]="fromDate"/></div>
+                <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">To</label><input type="date" class="form-control form-control-sm" [(ngModel)]="toDate"/></div>
+                <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadTrialBalance()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
+                <div class="col text-end" *ngIf="trialBalance.length > 0"><button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button></div>
+            </div>
+            <div class="card card-outline card-primary" *ngIf="trialBalance.length > 0">
+                <div class="card-header py-1 bg-info text-white"><strong>Trial Balance: {{ fromDate | date:'mediumDate' }} to {{ toDate | date:'mediumDate' }}</strong></div>
+                <div class="card-body p-0">
+                    <table class="table table-striped table-hover table-sm mb-0">
+                        <thead class="table-light"><tr><th>Code</th><th>Account</th><th>Type</th><th class="text-end">Debit</th><th class="text-end">Credit</th></tr></thead>
+                        <tbody>
+                            <tr *ngFor="let r of trialBalance">
+                                <td><strong>{{ r.accountCode }}</strong></td>
+                                <td>{{ r.accountName }}</td>
+                                <td><span class="badge bg-secondary">{{ getAccountTypeLabel(r.accountType) }}</span></td>
+                                <td class="text-end">{{ r.debit ? (r.debit | number:'1.2-2') : '-' }}</td>
+                                <td class="text-end">{{ r.credit ? (r.credit | number:'1.2-2') : '-' }}</td>
+                            </tr>
+                        </tbody>
+                        <tfoot><tr class="table-warning fw-bold"><td colspan="3" class="text-end">TOTAL</td><td class="text-end">{{ tbTotalDebit() | number:'1.2-2' }}</td><td class="text-end">{{ tbTotalCredit() | number:'1.2-2' }}</td></tr></tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== PROFIT & LOSS ==================== -->
+        <div *ngIf="activeTab==='incomeStatement'">
+            <div class="row g-1 mb-1 align-items-end d-print-none">
+                <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">From</label><input type="date" class="form-control form-control-sm" [(ngModel)]="fromDate"/></div>
+                <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">To</label><input type="date" class="form-control form-control-sm" [(ngModel)]="toDate"/></div>
+                <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadIncomeStatement()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
+                <div class="col text-end" *ngIf="incomeStatement"><button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button></div>
+            </div>
+            <div class="card card-outline card-primary" *ngIf="incomeStatement">
+                <div class="card-header py-1 bg-info text-white"><strong>Profit &amp; Loss: {{ fromDate | date:'mediumDate' }} to {{ toDate | date:'mediumDate' }}</strong></div>
+                <div class="card-body p-2">
+                    <h6 class="text-success"><i class="fas fa-arrow-up me-1"></i> Income</h6>
+                    <table class="table table-sm mb-2">
+                        <tbody>
+                            <tr *ngFor="let r of incomeStatement.income"><td style="width:15%;"><strong>{{ r.accountCode }}</strong></td><td>{{ r.accountName }}</td><td class="text-end" style="width:20%;">{{ r.amount | number:'1.2-2' }}</td></tr>
+                            <tr class="table-success fw-bold"><td colspan="2" class="text-end">Total Income</td><td class="text-end">{{ incomeStatement.totalIncome | number:'1.2-2' }}</td></tr>
+                        </tbody>
+                    </table>
+                    <h6 class="text-danger"><i class="fas fa-arrow-down me-1"></i> Expenses</h6>
+                    <table class="table table-sm mb-2">
+                        <tbody>
+                            <tr *ngFor="let r of incomeStatement.expenses"><td style="width:15%;"><strong>{{ r.accountCode }}</strong></td><td>{{ r.accountName }}</td><td class="text-end" style="width:20%;">{{ r.amount | number:'1.2-2' }}</td></tr>
+                            <tr class="table-danger fw-bold"><td colspan="2" class="text-end">Total Expenses</td><td class="text-end">{{ incomeStatement.totalExpenses | number:'1.2-2' }}</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="alert" [ngClass]="incomeStatement.netProfit >= 0 ? 'alert-success' : 'alert-danger'">
+                        <strong>Net {{ incomeStatement.netProfit >= 0 ? 'Profit' : 'Loss' }}:</strong>
+                        <span class="float-end fw-bold">{{ incomeStatement.netProfit | number:'1.2-2' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== BALANCE SHEET ==================== -->
+        <div *ngIf="activeTab==='balanceSheet'">
+            <div class="row g-1 mb-1 align-items-end d-print-none">
+                <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">As of Date</label><input type="date" class="form-control form-control-sm" [(ngModel)]="asOfDate"/></div>
+                <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadBalanceSheet()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
+                <div class="col text-end" *ngIf="balanceSheet"><button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button></div>
+            </div>
+            <div class="card card-outline card-primary" *ngIf="balanceSheet">
+                <div class="card-header py-1 bg-info text-white"><strong>Balance Sheet as of {{ balanceSheet.asOfDate | date:'mediumDate' }}</strong></div>
+                <div class="card-body p-2">
+                    <h6 class="text-success">Assets</h6>
+                    <table class="table table-sm mb-2"><tbody>
+                        <tr *ngFor="let r of balanceSheet.assets"><td style="width:15%;"><strong>{{ r.accountCode }}</strong></td><td>{{ r.accountName }}</td><td class="text-end" style="width:20%;">{{ r.amount | number:'1.2-2' }}</td></tr>
+                        <tr class="table-success fw-bold"><td colspan="2" class="text-end">Total Assets</td><td class="text-end">{{ balanceSheet.totalAssets | number:'1.2-2' }}</td></tr>
+                    </tbody></table>
+                    <h6 class="text-warning">Liabilities</h6>
+                    <table class="table table-sm mb-2"><tbody>
+                        <tr *ngFor="let r of balanceSheet.liabilities"><td style="width:15%;"><strong>{{ r.accountCode }}</strong></td><td>{{ r.accountName }}</td><td class="text-end" style="width:20%;">{{ r.amount | number:'1.2-2' }}</td></tr>
+                        <tr class="table-warning fw-bold"><td colspan="2" class="text-end">Total Liabilities</td><td class="text-end">{{ balanceSheet.totalLiabilities | number:'1.2-2' }}</td></tr>
+                    </tbody></table>
+                    <h6 class="text-info">Equity</h6>
+                    <table class="table table-sm mb-2"><tbody>
+                        <tr *ngFor="let r of balanceSheet.equity"><td style="width:15%;"><strong>{{ r.accountCode }}</strong></td><td>{{ r.accountName }}</td><td class="text-end" style="width:20%;">{{ r.amount | number:'1.2-2' }}</td></tr>
+                        <tr class="table-info fw-bold"><td colspan="2" class="text-end">Total Equity</td><td class="text-end">{{ balanceSheet.totalEquity | number:'1.2-2' }}</td></tr>
+                    </tbody></table>
+                    <div class="alert alert-primary"><strong>Total Liabilities + Equity:</strong><span class="float-end fw-bold">{{ (balanceSheet.totalLiabilities + balanceSheet.totalEquity) | number:'1.2-2' }}</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== FEE COLLECTION ==================== -->
+        <div *ngIf="activeTab==='feeCollection'">
+            <div class="row g-1 mb-1 align-items-end d-print-none">
+                <div class="col-md-2">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Academic Year</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="feeCollectionYearId" (ngModelChange)="onFeeCollectionYearChange()">
+                        <option [ngValue]="null">All</option>
+                        <option [ngValue]="y.id" *ngFor="let y of academicYears">{{ y.name }}</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Session</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="feeCollectionSessionId" [disabled]="!feeCollectionYearId">
+                        <option [ngValue]="null">All</option>
+                        <option [ngValue]="s.id" *ngFor="let s of feeCollectionSessions">{{ s.sessionName }}</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Class</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="feeCollectionClassId" [disabled]="!feeCollectionYearId">
+                        <option [ngValue]="null">All Classes</option>
+                        <option [ngValue]="c.id" *ngFor="let c of feeCollectionClasses">{{ c.learningLevel?.name }}{{ c.schoolStream?.name ? ' - ' + c.schoolStream.name : '' }}</option>
+                    </select>
+                </div>
+                <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">From</label><input type="date" class="form-control form-control-sm" [(ngModel)]="fromDate"/></div>
+                <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">To</label><input type="date" class="form-control form-control-sm" [(ngModel)]="toDate"/></div>
+                <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadFeeCollection()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
+                <div class="col-auto"><button class="btn btn-sm btn-outline-secondary" (click)="clearFeeCollectionFilters()" title="Clear"><i class="fas fa-times"></i></button></div>
+                <div class="col text-end" *ngIf="feeCollection"><button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button></div>
+            </div>
+
+            <div *ngIf="feeCollection">
+                <!-- Summary boxes -->
+                <div class="row g-2 mb-2 d-print-none">
+                    <div class="col-md-3"><div class="small-box bg-info p-2"><div class="inner"><h5 class="mb-0">{{ feeCollection.totalInvoiced | number:'1.0-2' }}</h5><div>Total Invoiced</div></div></div></div>
+                    <div class="col-md-3"><div class="small-box bg-success p-2"><div class="inner"><h5 class="mb-0">{{ feeCollection.totalCollected | number:'1.0-2' }}</h5><div>Total Collected</div></div></div></div>
+                    <div class="col-md-3"><div class="small-box bg-warning p-2"><div class="inner"><h5 class="mb-0">{{ feeCollection.totalOutstanding | number:'1.0-2' }}</h5><div>Outstanding</div></div></div></div>
+                    <div class="col-md-3"><div class="small-box bg-primary p-2"><div class="inner"><h5 class="mb-0">{{ feeCollection.paidCount }}/{{ feeCollection.invoiceCount }}</h5><div>Paid / Total</div></div></div></div>
+                </div>
+
+                <div *ngIf="feeCollection.classes?.length === 0" class="alert alert-info">
+                    <i class="fas fa-info-circle me-1"></i> No fee activity found for the selected filters.
+                </div>
+
+                <!-- Per-class detail (each on its own page when printing) -->
+                <div *ngFor="let cls of feeCollection.classes; let idx = index" [style.page-break-before]="idx > 0 ? 'always' : 'auto'">
+                    <div class="card card-outline card-primary mb-3">
+                        <div class="card-header py-1 bg-info text-white d-flex justify-content-between">
+                            <strong><i class="fas fa-users me-1"></i> {{ cls.className }}</strong>
+                            <span class="badge bg-light text-dark">
+                                {{ cls.studentCount }} student(s) | Invoiced: {{ cls.totalInvoiced | number:'1.2-2' }} | Collected: {{ cls.totalCollected | number:'1.2-2' }} | Outstanding: {{ cls.totalOutstanding | number:'1.2-2' }}
+                            </span>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-striped table-sm mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width:5%;">#</th>
+                                        <th style="width:15%;">Adm No</th>
+                                        <th>Student Name</th>
+                                        <th class="text-end">Invoiced</th>
+                                        <th class="text-end">Collected</th>
+                                        <th class="text-end">Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let s of cls.students; index as i">
+                                        <td>{{ i + 1 }}</td>
+                                        <td><strong>{{ s.studentUPI }}</strong></td>
+                                        <td>{{ s.studentName }}</td>
+                                        <td class="text-end">{{ s.invoiced | number:'1.2-2' }}</td>
+                                        <td class="text-end text-success">{{ s.paid | number:'1.2-2' }}</td>
+                                        <td class="text-end fw-bold" [class.text-danger]="s.balance > 0" [class.text-success]="s.balance <= 0">{{ s.balance | number:'1.2-2' }}</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-warning fw-bold">
+                                        <td colspan="3" class="text-end">CLASS TOTAL</td>
+                                        <td class="text-end">{{ cls.totalInvoiced | number:'1.2-2' }}</td>
+                                        <td class="text-end">{{ cls.totalCollected | number:'1.2-2' }}</td>
+                                        <td class="text-end">{{ cls.totalOutstanding | number:'1.2-2' }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== OUTSTANDING BALANCES ==================== -->
+        <div *ngIf="activeTab==='outstanding'">
+            <div class="row g-1 mb-1 align-items-end d-print-none">
+                <div class="col-md-2">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Academic Year</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="outstandingYearId" (ngModelChange)="onOutstandingYearChange()">
+                        <option [ngValue]="null">All</option>
+                        <option [ngValue]="y.id" *ngFor="let y of academicYears">{{ y.name }}</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Term / Session</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="outstandingSessionId" [disabled]="!outstandingYearId">
+                        <option [ngValue]="null">All</option>
+                        <option [ngValue]="s.id" *ngFor="let s of outstandingSessions">{{ s.sessionName }}</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Student (name or Adm No)</label>
+                    <input class="form-control form-control-sm" [(ngModel)]="outstandingSearch" (ngModelChange)="applyOutstandingSearch()" placeholder="Type to search..." />
+                </div>
+                <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadOutstanding()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
+                <div class="col-auto"><button class="btn btn-sm btn-outline-secondary" (click)="clearOutstandingFilters()" title="Clear"><i class="fas fa-times"></i></button></div>
+                <div class="col text-end" *ngIf="outstanding.length > 0"><button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button></div>
+            </div>
+            <div class="card card-outline card-primary" *ngIf="outstanding.length > 0">
+                <div class="card-header py-1 bg-info text-white d-flex justify-content-between">
+                    <strong>Outstanding Balances</strong>
+                    <span class="badge bg-light text-dark">{{ outstanding.length }} student(s) | Total: {{ outstandingTotal() | number:'1.2-2' }}</span>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-striped table-hover table-sm mb-0">
+                        <thead class="table-light"><tr><th>#</th><th>Adm No</th><th>Student</th><th class="text-end">Invoiced</th><th class="text-end">Paid</th><th class="text-end">Balance</th></tr></thead>
+                        <tbody>
+                            <tr *ngFor="let r of outstanding; index as i">
+                                <td>{{ i + 1 }}</td><td><strong>{{ r.studentUPI }}</strong></td><td>{{ r.studentName }}</td>
+                                <td class="text-end">{{ r.totalInvoiced | number:'1.2-2' }}</td>
+                                <td class="text-end text-success">{{ r.totalPaid | number:'1.2-2' }}</td>
+                                <td class="text-end fw-bold text-danger">{{ r.balance | number:'1.2-2' }}</td>
+                            </tr>
+                        </tbody>
+                        <tfoot><tr class="table-warning fw-bold"><td colspan="3" class="text-end">TOTAL</td><td></td><td></td><td class="text-end">{{ outstandingTotal() | number:'1.2-2' }}</td></tr></tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== EXPENSES REPORT ==================== -->
+        <div *ngIf="activeTab==='expenses'">
+            <div class="row g-1 mb-1 align-items-end d-print-none">
+                <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">From</label><input type="date" class="form-control form-control-sm" [(ngModel)]="fromDate"/></div>
+                <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">To</label><input type="date" class="form-control form-control-sm" [(ngModel)]="toDate"/></div>
+                <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadExpenseReport()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
+                <div class="col text-end" *ngIf="expenseReport"><button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button></div>
+            </div>
+            <div *ngIf="expenseReport">
+                <!-- Summary by category -->
+                <div class="card card-outline card-primary mb-1">
+                    <div class="card-header py-1 bg-info text-white d-flex justify-content-between">
+                        <strong>Expenses by Category: {{ fromDate | date:'mediumDate' }} to {{ toDate | date:'mediumDate' }}</strong>
+                        <span class="badge bg-danger">Total: {{ expenseReport.totalAmount | number:'1.2-2' }} ({{ expenseReport.totalCount }} expense(s))</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-striped table-sm mb-0">
+                            <thead class="table-light"><tr><th>#</th><th>Category</th><th class="text-center">Count</th><th class="text-end">Amount</th><th class="text-end">% of Total</th></tr></thead>
+                            <tbody>
+                                <tr *ngFor="let c of expenseReport.byCategory; index as i">
+                                    <td>{{ i + 1 }}</td><td><strong>{{ c.category }}</strong></td>
+                                    <td class="text-center"><span class="badge bg-secondary">{{ c.count }}</span></td>
+                                    <td class="text-end fw-bold">{{ c.amount | number:'1.2-2' }}</td>
+                                    <td class="text-end">{{ (c.amount / expenseReport.totalAmount * 100) | number:'1.1-1' }}%</td>
+                                </tr>
+                            </tbody>
+                            <tfoot><tr class="table-warning fw-bold"><td colspan="3" class="text-end">TOTAL</td><td class="text-end">{{ expenseReport.totalAmount | number:'1.2-2' }}</td><td></td></tr></tfoot>
+                        </table>
+                    </div>
+                </div>
+                <!-- Detail -->
+                <div class="card card-outline card-primary">
+                    <div class="card-header py-1 bg-info text-white"><strong>Expense Details</strong></div>
+                    <div class="card-body p-0">
+                        <table class="table table-striped table-hover table-sm mb-0">
+                            <thead class="table-light"><tr><th>Ref #</th><th>Date</th><th>Category</th><th>Vendor</th><th class="text-end">Amount</th><th>Description</th></tr></thead>
+                            <tbody>
+                                <tr *ngFor="let d of expenseReport.detail">
+                                    <td><strong>{{ d.referenceNumber }}</strong></td>
+                                    <td><small>{{ d.date | date:'mediumDate' }}</small></td>
+                                    <td><span class="badge bg-secondary">{{ d.category }}</span></td>
+                                    <td><small>{{ d.vendor || '-' }}</small></td>
+                                    <td class="text-end fw-bold">{{ d.amount | number:'1.2-2' }}</td>
+                                    <td><small>{{ d.description }}</small></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== FEE BALANCES BY CLASS ==================== -->
+        <div *ngIf="activeTab==='feeBalancesByClass'">
+            <div class="row g-1 mb-1 align-items-end d-print-none">
+                <div class="col-md-2">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Academic Year</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="feeBalanceYearId" (ngModelChange)="onFeeBalanceYearChange()">
+                        <option [ngValue]="null">All</option>
+                        <option [ngValue]="y.id" *ngFor="let y of academicYears">{{ y.name }}</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Term / Session</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="feeBalanceSessionId" [disabled]="!feeBalanceYearId">
+                        <option [ngValue]="null">All</option>
+                        <option [ngValue]="s.id" *ngFor="let s of feeBalanceSessions">{{ s.sessionName }}</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Class</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="feeBalanceClassId" [disabled]="!feeBalanceYearId">
+                        <option [ngValue]="null">All Classes</option>
+                        <option [ngValue]="c.id" *ngFor="let c of feeBalanceClasses">{{ c.learningLevel?.name }}{{ c.schoolStream?.name ? ' - ' + c.schoolStream.name : '' }}</option>
+                    </select>
+                </div>
+                <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadFeeBalancesByClass()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
+                <div class="col-auto"><button class="btn btn-sm btn-outline-secondary" (click)="clearFeeBalanceFilters()" title="Clear"><i class="fas fa-times"></i></button></div>
+                <div class="col text-end" *ngIf="feeBalancesReport"><button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button></div>
+            </div>
+
+            <div *ngIf="feeBalancesReport">
+                <!-- Summary -->
+                <div class="card card-outline card-primary mb-2 d-print-none" *ngIf="feeBalancesReport.totalClasses > 0">
+                    <div class="card-header py-1 bg-info text-white d-flex justify-content-between">
+                        <strong>Summary</strong>
+                        <span class="badge bg-light text-dark">{{ feeBalancesReport.totalClasses }} class(es) | Grand Total: {{ feeBalancesReport.grandTotal | number:'1.2-2' }}</span>
+                    </div>
+                </div>
+
+                <div *ngIf="feeBalancesReport.totalClasses === 0" class="alert alert-info">
+                    <i class="fas fa-info-circle me-1"></i> No fee balances found for the selected filters.
+                </div>
+
+                <!-- Per-class sections (each on its own page when printing) -->
+                <div *ngFor="let cls of feeBalancesReport.classes; let idx = index" [style.page-break-before]="idx > 0 ? 'always' : 'auto'">
+                    <div class="card card-outline card-primary mb-3">
+                        <div class="card-header py-1 bg-info text-white d-flex justify-content-between">
+                            <strong><i class="fas fa-users me-1"></i> {{ cls.className }}</strong>
+                            <span class="badge bg-light text-dark">{{ cls.studentCount }} student(s) | Balance: {{ cls.totalBalance | number:'1.2-2' }}</span>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-striped table-sm mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width:5%;">#</th>
+                                        <th style="width:15%;">Adm No</th>
+                                        <th>Student Name</th>
+                                        <th class="text-end">Invoiced</th>
+                                        <th class="text-end">Paid</th>
+                                        <th class="text-end">Balance</th>
+                                        <th style="width:20%;">Parent Signature</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let s of cls.students; index as i">
+                                        <td>{{ i + 1 }}</td>
+                                        <td><strong>{{ s.studentUPI }}</strong></td>
+                                        <td>{{ s.studentName }}</td>
+                                        <td class="text-end">{{ s.totalInvoiced | number:'1.2-2' }}</td>
+                                        <td class="text-end text-success">{{ s.totalPaid | number:'1.2-2' }}</td>
+                                        <td class="text-end fw-bold text-danger">{{ s.balance | number:'1.2-2' }}</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-warning fw-bold">
+                                        <td colspan="5" class="text-end">CLASS TOTAL</td>
+                                        <td class="text-end">{{ cls.totalBalance | number:'1.2-2' }}</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            <div class="p-2 d-print-block d-none" style="font-size:10px;">
+                                <br /><br />
+                                <div style="display:flex; justify-content:space-between;">
+                                    <div>Class Teacher: ____________________________</div>
+                                    <div>Date: ____________________</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== STUDENT STATEMENT ==================== -->
+        <div *ngIf="activeTab==='studentStatement'">
+            <div class="row g-1 mb-1 align-items-end d-print-none">
+                <div class="col-md-2">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Academic Year</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="statementYearId" (ngModelChange)="onStatementYearChange()">
+                        <option [ngValue]="null">All</option>
+                        <option [ngValue]="y.id" *ngFor="let y of academicYears">{{ y.name }}</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Session</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="statementSessionId" [disabled]="!statementYearId">
+                        <option [ngValue]="null">All</option>
+                        <option [ngValue]="s.id" *ngFor="let s of statementSessions">{{ s.sessionName }}</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Class</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="statementClassId" (ngModelChange)="onStatementClassChange()" [disabled]="!statementYearId">
+                        <option [ngValue]="null" hidden disabled>Select class</option>
+                        <option [ngValue]="c.id" *ngFor="let c of statementClasses">{{ c.learningLevel?.name }}{{ c.schoolStream?.name ? ' - ' + c.schoolStream.name : '' }}</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Student <span class="requiredField">*</span></label>
+                    <ng-select
+                        [items]="statementStudents"
+                        bindLabel="displayName"
+                        bindValue="id"
+                        [(ngModel)]="statementStudentId"
+                        placeholder="Search by name or adm no..."
+                        [searchable]="true"
+                        [clearable]="true"
+                        [disabled]="statementStudents.length === 0"
+                        class="form-control-sm p-0">
+                    </ng-select>
+                </div>
+                <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadStudentStatement()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
+                <div class="col-auto"><button class="btn btn-sm btn-outline-secondary" (click)="clearStatementFilters()" title="Clear"><i class="fas fa-times"></i></button></div>
+                <div class="col text-end" *ngIf="studentStatement"><button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button></div>
+            </div>
+
+            <div *ngIf="studentStatement">
+                <!-- Header / student info -->
+                <div class="card card-outline card-primary mb-2">
+                    <div class="card-header py-1 bg-info text-white">
+                        <strong><i class="fas fa-user me-1"></i> {{ studentStatement.student.upi }} - {{ studentStatement.student.fullName }}</strong>
+                    </div>
+                    <div class="card-body p-2">
+                        <div class="row g-1" style="font-size:0.85rem;">
+                            <div class="col-md-3"><small class="text-muted d-block">Total Invoiced</small><strong class="text-primary">{{ studentStatement.totalInvoiced | number:'1.2-2' }}</strong></div>
+                            <div class="col-md-3"><small class="text-muted d-block">Total Paid</small><strong class="text-success">{{ studentStatement.totalPaid | number:'1.2-2' }}</strong></div>
+                            <div class="col-md-3"><small class="text-muted d-block">Closing Balance</small><strong [ngClass]="studentStatement.balance > 0 ? 'text-danger' : 'text-success'">{{ studentStatement.balance | number:'1.2-2' }}</strong></div>
+                            <div class="col-md-3"><small class="text-muted d-block">Transactions</small><strong>{{ studentStatement.transactions.length }}</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transactions ledger -->
+                <div class="card card-outline card-primary">
+                    <div class="card-header py-1 bg-info text-white">
+                        <strong>Transaction History</strong>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-striped table-sm mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Reference</th>
+                                    <th>Description</th>
+                                    <th>Method</th>
+                                    <th>Received By</th>
+                                    <th class="text-end">Debit</th>
+                                    <th class="text-end">Credit</th>
+                                    <th class="text-end">Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let t of studentStatement.transactions; index as i">
+                                    <td>{{ i + 1 }}</td>
+                                    <td><small>{{ t.date | date:'mediumDate' }}</small></td>
+                                    <td>
+                                        <span class="badge" [ngClass]="{
+                                            'bg-primary': t.type === 'Invoice',
+                                            'bg-success': t.type === 'Receipt',
+                                            'bg-warning text-dark': t.type === 'Credit Note',
+                                            'bg-danger': t.type === 'Debit Note'
+                                        }">{{ t.type }}</span>
+                                    </td>
+                                    <td><strong>{{ t.reference }}</strong></td>
+                                    <td><small>{{ t.description }}</small></td>
+                                    <td><small>{{ t.method || '-' }}</small></td>
+                                    <td><small>{{ t.createdBy || '-' }}</small></td>
+                                    <td class="text-end">{{ t.debit ? (t.debit | number:'1.2-2') : '-' }}</td>
+                                    <td class="text-end text-success">{{ t.credit ? (t.credit | number:'1.2-2') : '-' }}</td>
+                                    <td class="text-end fw-bold" [ngClass]="t.balance > 0 ? 'text-danger' : 'text-success'">{{ t.balance | number:'1.2-2' }}</td>
+                                </tr>
+                                <tr *ngIf="studentStatement.transactions.length === 0">
+                                    <td colspan="10" class="text-center text-muted p-2"><i class="fas fa-info-circle"></i> No transactions found for the selected filters.</td>
+                                </tr>
+                            </tbody>
+                            <tfoot *ngIf="studentStatement.transactions.length > 0">
+                                <tr class="table-warning fw-bold">
+                                    <td colspan="7" class="text-end">TOTALS</td>
+                                    <td class="text-end">{{ studentStatement.totalInvoiced | number:'1.2-2' }}</td>
+                                    <td class="text-end">{{ studentStatement.totalPaid | number:'1.2-2' }}</td>
+                                    <td class="text-end" [ngClass]="studentStatement.balance > 0 ? 'text-danger' : 'text-success'">{{ studentStatement.balance | number:'1.2-2' }}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== CONSOLIDATED BUDGET ==================== -->
+        <div *ngIf="activeTab==='consolidatedBudget'">
+            <div class="row g-1 mb-1 align-items-end d-print-none">
+                <div class="col-md-3">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Academic Year</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="selectedAcademicYearId">
+                        <option [ngValue]="null" disabled hidden>Select year</option>
+                        <option [ngValue]="y.id" *ngFor="let y of academicYears">{{ y.name }}</option>
+                    </select>
+                </div>
+                <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadConsolidatedBudget()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
+                <div class="col text-end" *ngIf="consolidatedBudget"><button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button></div>
+            </div>
+
+            <div class="card card-outline card-primary" *ngIf="consolidatedBudget">
+                <div class="card-header py-1 bg-info text-white d-flex justify-content-between">
+                    <strong><i class="fas fa-piggy-bank me-1"></i> Consolidated Budget — {{ consolidatedBudget.academicYearName || '-' }}</strong>
+                    <span class="badge bg-light text-dark">{{ consolidatedBudget.departments?.length || 0 }} department(s)</span>
+                </div>
+                <div class="card-body p-2">
+                    <div class="row g-2 mb-2" *ngIf="consolidatedBudget.departments?.length > 0">
+                        <div class="col-md-3"><div class="small-box bg-success p-2"><div class="inner"><h5 class="mb-0">{{ consolidatedBudget.grandBudgetedIncome | number:'1.0-2' }}</h5><div>Budgeted Income</div><small class="text-white-50">Actual: {{ consolidatedBudget.grandActualIncome | number:'1.0-2' }}</small></div></div></div>
+                        <div class="col-md-3"><div class="small-box bg-danger p-2"><div class="inner"><h5 class="mb-0">{{ consolidatedBudget.grandBudgetedExpense | number:'1.0-2' }}</h5><div>Budgeted Expense</div><small class="text-white-50">Actual: {{ consolidatedBudget.grandActualExpense | number:'1.0-2' }}</small></div></div></div>
+                        <div class="col-md-3"><div class="small-box bg-primary p-2"><div class="inner"><h5 class="mb-0">{{ consolidatedBudget.netBudgeted | number:'1.0-2' }}</h5><div>Net Budgeted</div></div></div></div>
+                        <div class="col-md-3"><div class="small-box p-2" [ngClass]="consolidatedBudget.netActual >= 0 ? 'bg-info' : 'bg-warning'"><div class="inner"><h5 class="mb-0">{{ consolidatedBudget.netActual | number:'1.0-2' }}</h5><div>Net Actual</div></div></div></div>
+                    </div>
+
+                    <div *ngIf="consolidatedBudget.departments?.length === 0" class="text-center text-muted p-3"><i class="fas fa-info-circle me-1"></i> No budgets found.</div>
+
+                    <table class="table table-sm table-striped table-hover mb-0" *ngIf="consolidatedBudget.departments?.length > 0">
+                        <thead class="table-light">
+                            <tr><th style="width:4%;"></th><th>Department</th><th class="text-center">Budgets</th><th class="text-end">Budgeted Income</th><th class="text-end">Actual Income</th><th class="text-end">Budgeted Expense</th><th class="text-end">Actual Expense</th><th class="text-end">Net Budget</th></tr>
+                        </thead>
+                        <tbody>
+                            <ng-container *ngFor="let d of consolidatedBudget.departments">
+                                <tr (click)="toggleDept(d.departmentId)" role="button" class="table-primary">
+                                    <td><i class="fas" [ngClass]="isDeptExpanded(d.departmentId) ? 'fa-chevron-down' : 'fa-chevron-right'"></i></td>
+                                    <td><strong>{{ d.departmentName || '(No Department)' }}</strong></td>
+                                    <td class="text-center">{{ d.budgetCount }}</td>
+                                    <td class="text-end text-success">{{ d.totalBudgetedIncome | number:'1.2-2' }}</td>
+                                    <td class="text-end">{{ d.totalActualIncome | number:'1.2-2' }}</td>
+                                    <td class="text-end text-danger">{{ d.totalBudgetedExpense | number:'1.2-2' }}</td>
+                                    <td class="text-end">{{ d.totalActualExpense | number:'1.2-2' }}</td>
+                                    <td class="text-end fw-bold" [ngClass]="getVarianceClass(d.totalBudgetedIncome - d.totalBudgetedExpense)">{{ (d.totalBudgetedIncome - d.totalBudgetedExpense) | number:'1.2-2' }}</td>
+                                </tr>
+                                <tr *ngIf="isDeptExpanded(d.departmentId)">
+                                    <td></td>
+                                    <td colspan="7">
+                                        <table class="table table-sm table-bordered mb-0">
+                                            <thead class="table-light"><tr><th>Code</th><th>Account</th><th>Type</th><th class="text-end">Budgeted</th><th class="text-end">Actual</th><th class="text-end">Variance</th></tr></thead>
+                                            <tbody>
+                                                <tr *ngFor="let l of d.lines">
+                                                    <td><small>{{ l.accountCode }}</small></td><td>{{ l.accountName }}</td>
+                                                    <td><span class="badge" [ngClass]="l.accountType === 'Income' ? 'bg-success' : 'bg-danger'">{{ l.accountType }}</span></td>
+                                                    <td class="text-end">{{ l.budgeted | number:'1.2-2' }}</td><td class="text-end">{{ l.actual | number:'1.2-2' }}</td>
+                                                    <td class="text-end fw-bold" [ngClass]="getVarianceClass(l.variance)">{{ l.variance | number:'1.2-2' }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </ng-container>
+                        </tbody>
+                        <tfoot><tr class="table-warning fw-bold"><td></td><td>GRAND TOTAL</td><td></td>
+                            <td class="text-end">{{ consolidatedBudget.grandBudgetedIncome | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ consolidatedBudget.grandActualIncome | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ consolidatedBudget.grandBudgetedExpense | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ consolidatedBudget.grandActualExpense | number:'1.2-2' }}</td>
+                            <td class="text-end" [ngClass]="getVarianceClass(consolidatedBudget.netBudgeted)">{{ consolidatedBudget.netBudgeted | number:'1.2-2' }}</td>
+                        </tr></tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== STUDENT DISCOUNTS ==================== -->
+        <div *ngIf="activeTab==='discounts'">
+            <div class="row g-1 mb-1 align-items-end d-print-none">
+                <div class="col-md-2">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Academic Year</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="discountYearId" (change)="onDiscountYearChange()">
+                        <option [ngValue]="null">-- All --</option>
+                        <option *ngFor="let y of academicYears" [ngValue]="y.id">{{ y.name }}</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Term</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="discountSessionId">
+                        <option [ngValue]="null">-- All --</option>
+                        <option *ngFor="let s of discountSessions" [ngValue]="s.id">{{ s.sessionName }}</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Class</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="discountClassId">
+                        <option [ngValue]="null">-- All --</option>
+                        <option *ngFor="let c of discountClasses" [ngValue]="c.id">
+                            {{ c.learningLevel?.name }}{{ c.schoolStream?.name ? ' - ' + c.schoolStream.name : '' }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadStudentDiscounts()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
+                <div class="col-auto"><button class="btn btn-sm btn-outline-secondary" (click)="clearDiscountFilters()"><i class="fas fa-times"></i> Clear</button></div>
+                <div class="col text-end" *ngIf="discountReport?.students?.length"><button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button></div>
+            </div>
+
+            <div class="card card-outline card-primary" *ngIf="discountReport">
+                <div class="card-header py-1 bg-info text-white">
+                    <strong>Student Discounts</strong>
+                    <span class="float-end">
+                        Students: <strong>{{ discountReport.studentCount }}</strong>
+                        | Total Discount: <strong>{{ discountReport.grandTotalDiscount | number:'1.2-2' }}</strong>
+                    </span>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-striped table-hover table-sm mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width:30px;"></th>
+                                <th>#</th>
+                                <th>UPI</th>
+                                <th>Student</th>
+                                <th>Class</th>
+                                <th class="text-end">Invoices</th>
+                                <th class="text-end">Invoiced</th>
+                                <th class="text-end">Total Discount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ng-container *ngFor="let s of discountReport.students; let i = index">
+                                <tr style="cursor:pointer;" (click)="toggleDiscountStudent(s.studentId)">
+                                    <td class="d-print-none"><i class="fas" [ngClass]="isDiscountStudentExpanded(s.studentId) ? 'fa-chevron-down' : 'fa-chevron-right'"></i></td>
+                                    <td class="d-none d-print-table-cell"></td>
+                                    <td>{{ i + 1 }}</td>
+                                    <td>{{ s.studentUPI }}</td>
+                                    <td><strong>{{ s.studentName }}</strong></td>
+                                    <td>{{ s.className }}</td>
+                                    <td class="text-end">{{ s.invoiceCount }}</td>
+                                    <td class="text-end">{{ s.totalInvoiced | number:'1.2-2' }}</td>
+                                    <td class="text-end fw-bold text-success">{{ s.totalDiscount | number:'1.2-2' }}</td>
+                                </tr>
+                                <tr *ngIf="isDiscountStudentExpanded(s.studentId) || true" [class.d-none]="!isDiscountStudentExpanded(s.studentId)" class="d-print-table-row">
+                                    <td></td>
+                                    <td colspan="7" class="p-2" style="background:#f8fafc;">
+                                        <div *ngFor="let inv of s.invoices" class="mb-2">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span>
+                                                    <strong>{{ inv.invoiceNumber }}</strong>
+                                                    <span class="ms-2 text-muted">{{ inv.invoiceDate | date:'mediumDate' }}</span>
+                                                    <span class="ms-2" *ngIf="inv.academicYear">| {{ inv.academicYear }}</span>
+                                                    <span class="ms-1" *ngIf="inv.session">/ {{ inv.session }}</span>
+                                                </span>
+                                                <span>
+                                                    Invoiced: <strong>{{ inv.totalAmount | number:'1.2-2' }}</strong>
+                                                    <span class="ms-2" *ngIf="inv.headerDiscount > 0">Header Discount: <strong class="text-success">{{ inv.headerDiscount | number:'1.2-2' }}</strong></span>
+                                                </span>
+                                            </div>
+                                            <table class="table table-sm mb-0" *ngIf="inv.items?.length">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Fee Category</th>
+                                                        <th>Description</th>
+                                                        <th class="text-end">Amount</th>
+                                                        <th class="text-end">Discount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngFor="let it of inv.items">
+                                                        <td>{{ it.feeCategory }}</td>
+                                                        <td><small class="text-muted">{{ it.description }}</small></td>
+                                                        <td class="text-end">{{ it.amount | number:'1.2-2' }}</td>
+                                                        <td class="text-end fw-bold text-success">{{ it.discount | number:'1.2-2' }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <div *ngIf="!inv.items?.length && inv.headerDiscount > 0" class="text-muted small">
+                                                Invoice-level discount applied.
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ng-container>
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-warning fw-bold">
+                                <td></td>
+                                <td colspan="6" class="text-end">GRAND TOTAL</td>
+                                <td class="text-end text-success">{{ discountReport.grandTotalDiscount | number:'1.2-2' }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <div class="text-center text-muted p-3" *ngIf="discountReport && !discountReport.students?.length">
+                <i class="fas fa-info-circle me-1"></i> No discounts recorded for the selected filters.
+            </div>
+        </div>
+
+        <!-- ==================== CREDIT / DEBIT NOTES ==================== -->
+        <div *ngIf="activeTab==='notes'">
+            <div class="row g-1 mb-1 align-items-end d-print-none">
+                <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">From</label><input type="date" class="form-control form-control-sm" [(ngModel)]="fromDate"/></div>
+                <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">To</label><input type="date" class="form-control form-control-sm" [(ngModel)]="toDate"/></div>
+                <div class="col-md-2">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Academic Year</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="notesYearId" (change)="onNotesYearChange()">
+                        <option [ngValue]="null">-- All --</option>
+                        <option *ngFor="let y of academicYears" [ngValue]="y.id">{{ y.name }}</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Term</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="notesSessionId">
+                        <option [ngValue]="null">-- All --</option>
+                        <option *ngFor="let s of notesSessions" [ngValue]="s.id">{{ s.sessionName }}</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Class</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="notesClassId">
+                        <option [ngValue]="null">-- All --</option>
+                        <option *ngFor="let c of notesClasses" [ngValue]="c.id">
+                            {{ c.learningLevel?.name }}{{ c.schoolStream?.name ? ' - ' + c.schoolStream.name : '' }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Type</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="notesType">
+                        <option value="">All</option>
+                        <option value="credit">Credit Notes</option>
+                        <option value="debit">Debit Notes</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Status</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="notesStatus">
+                        <option value="">All</option>
+                        <option value="Draft">Draft</option>
+                        <option value="Submitted">Submitted</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
+                </div>
+                <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadCreditDebitNotes()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
+                <div class="col-auto"><button class="btn btn-sm btn-outline-secondary" (click)="clearNotesFilters()"><i class="fas fa-times"></i> Clear</button></div>
+                <div class="col text-end" *ngIf="notesReport?.notes?.length"><button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button></div>
+            </div>
+
+            <div class="card card-outline card-primary" *ngIf="notesReport">
+                <div class="card-header py-1 bg-info text-white">
+                    <strong>Credit &amp; Debit Notes: {{ fromDate | date:'mediumDate' }} to {{ toDate | date:'mediumDate' }}</strong>
+                    <span class="float-end">
+                        Credits: <strong>{{ notesReport.creditCount }}</strong> ({{ notesReport.totalCredit | number:'1.2-2' }})
+                        | Debits: <strong>{{ notesReport.debitCount }}</strong> ({{ notesReport.totalDebit | number:'1.2-2' }})
+                    </span>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-striped table-hover table-sm mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Ref #</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>UPI</th>
+                                <th>Student</th>
+                                <th>Class</th>
+                                <th>Year/Term</th>
+                                <th>Invoice #</th>
+                                <th>Orig Receipt</th>
+                                <th class="text-end">Amount</th>
+                                <th>Reason</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let n of notesReport.notes; let i = index">
+                                <td>{{ i + 1 }}</td>
+                                <td><strong>{{ n.receiptNumber }}</strong></td>
+                                <td>
+                                    <span class="badge" [ngClass]="n.paymentType === 'CreditNote' ? 'bg-warning' : 'bg-primary'">
+                                        {{ n.paymentType === 'CreditNote' ? 'Credit' : 'Debit' }}
+                                    </span>
+                                </td>
+                                <td><span class="badge" [ngClass]="getStatusBadge(n.approvalStatus)">{{ n.approvalStatus }}</span></td>
+                                <td>{{ n.paymentDate | date:'mediumDate' }}</td>
+                                <td>{{ n.studentUPI }}</td>
+                                <td>{{ n.studentName }}</td>
+                                <td>{{ n.className }}</td>
+                                <td><small>{{ n.academicYear }}<span *ngIf="n.session"> / {{ n.session }}</span></small></td>
+                                <td>{{ n.invoiceNumber }}</td>
+                                <td>{{ n.originalReceipt }}</td>
+                                <td class="text-end fw-bold"
+                                    [class.text-danger]="n.paymentType === 'CreditNote'"
+                                    [class.text-success]="n.paymentType === 'DebitNote'">
+                                    {{ n.amount | number:'1.2-2' }}
+                                </td>
+                                <td><small>{{ n.reason || n.description }}</small></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-warning fw-bold">
+                                <td colspan="11" class="text-end">TOTAL</td>
+                                <td class="text-end">{{ (notesReport.totalDebit - notesReport.totalCredit) | number:'1.2-2' }}</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <div class="text-center text-muted p-3" *ngIf="notesReport && !notesReport.notes?.length">
+                <i class="fas fa-info-circle me-1"></i> No credit or debit notes found for the selected filters.
+            </div>
+        </div>
+
+    </div>
+</section>

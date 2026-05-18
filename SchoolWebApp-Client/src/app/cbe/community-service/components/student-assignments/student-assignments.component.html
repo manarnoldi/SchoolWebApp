@@ -31,7 +31,7 @@
                         <div class="form-group mb-1">
                             <label class="form-label">Session: <span class="requiredField">*</span></label>
                             <select class="form-select form-select-sm"
-                                [(ngModel)]="filterSessionId">
+                                [(ngModel)]="filterSessionId" (ngModelChange)="onSessionPicked()">
                                 <option [ngValue]="null" hidden disabled selected>Select session</option>
                                 <option [ngValue]="s.id" *ngFor="let s of sessions">{{s.sessionName}}</option>
                             </select>
@@ -41,7 +41,7 @@
                         <div class="form-group mb-1">
                             <label class="form-label">Class: <span class="requiredField">*</span></label>
                             <select class="form-select form-select-sm"
-                                [(ngModel)]="filterSchoolClassId">
+                                [(ngModel)]="filterSchoolClassId" (ngModelChange)="onSchoolClassPicked()">
                                 <option [ngValue]="null" hidden disabled selected>Select class</option>
                                 <option [ngValue]="sc.id" *ngFor="let sc of schoolClasses">{{sc.name}}</option>
                             </select>
@@ -57,9 +57,11 @@
         </div>
 
         <div class="card" *ngIf="studentsLoaded">
-            <div class="card-header bg-success text-white p-1">
+            <div class="card-header bg-success text-white p-1 d-flex justify-content-between align-items-center gap-2">
                 <strong>Student Community Service Assignments</strong>
-                <span class="float-end">{{ studentRows.length }} student(s) | {{ getTotalAssignments() }} assignment(s)</span>
+                <input type="text" class="form-control form-control-sm" placeholder="Search by admno or name..."
+                    style="max-width: 250px;" [(ngModel)]="searchText" (ngModelChange)="onSearchChanged()">
+                <span>{{ filteredStudentRows.length }} of {{ studentRows.length }} student(s) | {{ getTotalAssignments() }} assignment(s)</span>
             </div>
             <div class="card-body p-0">
                 <table class="table table-striped table-hover table-sm mb-0">
@@ -72,8 +74,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let row of studentRows; index as i">
-                            <td>{{ i + 1 }}</td>
+                        <tr *ngFor="let row of filteredStudentRows | slice: (tablePage-1)*tablePageSize : tablePage*tablePageSize; index as i">
+                            <td>{{ (tablePage-1)*tablePageSize + i + 1 }}</td>
                             <td class="text-nowrap">{{ row.studentName }}</td>
                             <td>
                                 <div *ngFor="let a of row.assignments" class="d-flex align-items-center gap-1 mb-1">
@@ -107,6 +109,9 @@
                         </tr>
                     </tbody>
                 </table>
+                <app-table-paging [collectionSize]="filteredStudentRows.length" [pageSize]="tablePageSize"
+                    (pageChangedEvent)="onTablePageChanged($event)"
+                    (pageSizeChangedEvent)="onTablePageSizeChanged($event)"></app-table-paging>
             </div>
             <div class="card-footer p-1 text-end">
                 <button class="btn btn-success btn-sm" (click)="saveAll()" [disabled]="isSaving">

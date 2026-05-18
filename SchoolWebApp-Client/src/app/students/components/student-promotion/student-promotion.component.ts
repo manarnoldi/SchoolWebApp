@@ -18,9 +18,9 @@ import {Status} from '@/core/enums/status';
 export class StudentPromotionComponent implements OnInit {
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Dashboard'},
-        {link: ['/students/promotion'], title: 'Student Promotion'}
+        {link: ['/students/promotion'], title: 'Class Assignment'}
     ];
-    dashboardTitle = 'Student Promotion';
+    dashboardTitle = 'Class Assignment';
 
     academicYears: any[] = [];
     fromClasses: any[] = [];
@@ -33,6 +33,7 @@ export class StudentPromotionComponent implements OnInit {
 
     students: {
         studentId: number;
+        sourceRecordId: string;        // StudentClass ID in the FROM class (for same-year removal)
         fullName: string;
         upi: string;
         selected: boolean;
@@ -47,6 +48,16 @@ export class StudentPromotionComponent implements OnInit {
     selectAll: boolean = false;
     selectAllRemoval: boolean = false;
     showPromoted: boolean = false;
+    // When ticked, the assignment also removes the student from the source
+    // class. Defaults true for mid-year corrections (same year source+target)
+    // like moving 5E -> 5W; defaults false for cross-year promotion so the
+    // history of the previous class is preserved.
+    removeFromSource: boolean = false;
+
+    // Client-side paging for the two student lists; default 30 items per page.
+    pendingPage: number = 1;
+    promotedPage: number = 1;
+    listPageSize: number = 30;
 
     constructor(
         private toastr: ToastrService,
@@ -86,6 +97,10 @@ export class StudentPromotionComponent implements OnInit {
     onToYearChange() {
         this.toClasses = [];
         this.toClassId = null;
+        // Same-year switch is almost always a mid-year correction (e.g. 5E -> 5W)
+        // where the source class membership should be cleared.
+        this.removeFromSource = this.fromYearId && this.toYearId
+            && +this.fromYearId === +this.toYearId;
         if (!this.toYearId) return;
 
         this.schoolClassesSvc.getByAcademicYearId(parseInt(this.toYearId)).subscribe({
@@ -135,6 +150,7 @@ export class StudentPromotionComponent implements OnInit {
                     .filter((sc) => sc.student)
                     .map((sc) => ({
                         studentId: sc.studentId,
+                        sourceRecordId: sc.id,
                         fullName: sc.student?.fullName || '',
                         upi: sc.student?.upi || '',
                         selected: false,
@@ -143,6 +159,7 @@ export class StudentPromotionComponent implements OnInit {
                         selectedForRemoval: false
                     }))
                     .sort((a, b) => a.fullName.localeCompare(b.fullName));
+                this.pendingPage = this.promotedPage = 1;
 
                 this.isLoading = false;
                 this.hasLoaded = true;
@@ -226,31 +243,57 @@ export class StudentPromotionComponent implements OnInit {
     promoteStudents() {
         let toPromote = this.students.filter((s) => s.selected && !s.alreadyPromoted);
         if (toPromote.length === 0) {
-            this.toastr.info('Please select at least one student to promote.');
+            this.toastr.info('Please select at least one student to assign.');
             return;
         }
 
+        const verb = this.removeFromSource ? 'moved' : 'assigned';
+        const noun = this.removeFromSource ? 'Move' : 'Assign';
+        const removeBlurb = this.removeFromSource
+            ? ` They will also be <strong>removed</strong> from ${this.getFromClassName()}.`
+            : '';
+
         Swal.fire({
-            title: 'Promote students?',
-            html: `<strong>${toPromote.length}</strong> student(s) will be promoted from <strong>${this.getFromClassName()}</strong> to <strong>${this.getToClassName()}</strong>.`,
-            width: 450,
+            title: `${noun} students?`,
+            html: `<strong>${toPromote.length}</strong> student(s) will be ${verb} from <strong>${this.getFromClassName()}</strong> to <strong>${this.getToClassName()}</strong>.${removeBlurb}`,
+            width: 460,
             position: 'top',
             padding: '1em',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Promote',
+            confirmButtonText: noun,
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.value) {
                 this.isSaving = true;
 
-                let requests = toPromote.map((student) => {
-                    let payload = new StudentClass({
+                // Two distinct save modes:
+                //  - Same-year correction: UPDATE the existing StudentClass row in
+                //    place, just changing its schoolClassId. Preserves the row Id
+                //    and every dependent record (StudentSubject, StudentAttendance,
+                //    exam results, etc.) that already references it.
+                //  - Cross-year promotion: CREATE a new StudentClass row in the
+                //    target class; keep the old one for historical reference.
+                const requests = toPromote.map((student) => {
+                    if (this.removeFromSource) {
+                        const updatePayload = new StudentClass({
+                            id: student.sourceRecordId,
+                            studentId: student.studentId,
+                            schoolClassId: parseInt(this.toClassId),
+                            description: `Re-assigned from ${this.getFromClassName()} to ${this.getToClassName()}`
+                        });
+                        return this.studentClassSvc.update('/studentClasses', updatePayload)
+                            .pipe(catchError((err) => {
+                                this.toastr.error(`Error moving ${student.fullName}: ${err.error?.message || 'Unknown error'}`);
+                                return of(null);
+                            }));
+                    }
+                    const createPayload = new StudentClass({
                         studentId: student.studentId,
                         schoolClassId: parseInt(this.toClassId),
                         description: 'Promoted from ' + this.getFromClassName()
                     });
-                    return this.studentClassSvc.create('/studentClasses', payload)
+                    return this.studentClassSvc.create('/studentClasses', createPayload)
                         .pipe(catchError((err) => {
                             this.toastr.error(`Error promoting ${student.fullName}: ${err.error?.message || 'Unknown error'}`);
                             return of(null);
@@ -259,20 +302,30 @@ export class StudentPromotionComponent implements OnInit {
 
                 forkJoin(requests).subscribe({
                     next: (results) => {
-                        let successCount = results.filter((r) => r !== null).length;
-                        this.isSaving = false;
-                        if (successCount > 0) {
-                            this.toastr.success(`${successCount} student(s) promoted successfully!`);
-                            this.loadStudents();
-                        }
+                        const successCount = results.filter((r) => r !== null).length;
+                        // For same-year moves, every success is both an add (target)
+                        // AND a remove (source) because it's the same row.
+                        const removedCount = this.removeFromSource ? successCount : 0;
+                        this.finishAssignment(successCount, removedCount);
                     },
                     error: () => {
                         this.isSaving = false;
-                        this.toastr.error('Error during promotion.');
+                        this.toastr.error('Error during assignment.');
                     }
                 });
             }
         });
+    }
+
+    private finishAssignment(addedCount: number, removedCount: number) {
+        this.isSaving = false;
+        if (addedCount > 0) {
+            const msg = removedCount > 0
+                ? `${addedCount} student(s) moved (added to target, removed from source).`
+                : `${addedCount} student(s) assigned successfully!`;
+            this.toastr.success(msg);
+            this.loadStudents();
+        }
     }
 
     removePromotions() {

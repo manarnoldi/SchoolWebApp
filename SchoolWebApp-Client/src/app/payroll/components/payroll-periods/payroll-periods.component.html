@@ -1,0 +1,321 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+
+        <!-- New Period Modal -->
+        <div class="modal-backdrop fade show" *ngIf="showForm" (click)="cancel()"></div>
+        <div class="modal fade show d-block" *ngIf="showForm" tabindex="-1">
+            <div class="modal-dialog modal-dialog-scrollable" style="margin-top: 30px;">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white py-2">
+                        <h5 class="modal-title">
+                            <i class="fas fa-plus-circle me-1"></i> New Payroll Period
+                        </h5>
+                        <button type="button" class="close text-white" (click)="cancel()" aria-label="Close">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body p-2">
+                        <div class="border border-info rounded p-2 mb-2">
+                            <h6 class="text-info mb-2"><i class="fas fa-calendar me-1"></i> Period Details</h6>
+                            <div class="row g-1">
+                                <div class="col-md-6">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Month <span class="requiredField">*</span></label>
+                                    <select class="form-select form-select-sm" [(ngModel)]="item.month">
+                                        <option [ngValue]="null" hidden disabled>Select month</option>
+                                        <option [ngValue]="m.v" *ngFor="let m of months">{{ m.n }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Year <span class="requiredField">*</span></label>
+                                    <input type="number" class="form-control form-control-sm" [(ngModel)]="item.year" min="2020" max="2099" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer py-1">
+                        <button class="btn btn-sm btn-secondary" (click)="cancel()">Cancel</button>
+                        <button class="btn btn-sm btn-success" (click)="save()">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payslip List Modal -->
+        <div class="modal-backdrop fade show" *ngIf="showPayslips" (click)="closePayslips()"></div>
+        <div class="modal fade show d-block" *ngIf="showPayslips" tabindex="-1">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable" style="margin-top: 30px;">
+                <div class="modal-content">
+                    <div class="modal-header bg-info text-white py-2">
+                        <h5 class="modal-title">
+                            <i class="fas fa-file-invoice me-1"></i> Payslips: {{ selectedPeriod?.name }}
+                            <span class="badge bg-light text-dark ms-2">{{ payslips.length }}</span>
+                        </h5>
+                        <button type="button" class="close text-white" (click)="closePayslips()"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body p-2">
+                        <div class="border border-info rounded p-2">
+                            <table class="table table-striped table-hover table-sm mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Employee</th>
+                                        <th>UPI</th>
+                                        <th>Designation</th>
+                                        <th class="text-end">Gross</th>
+                                        <th class="text-end">NSSF</th>
+                                        <th class="text-end">PAYE</th>
+                                        <th class="text-end">SHIF</th>
+                                        <th class="text-end">AHL</th>
+                                        <th class="text-end">Net Pay</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let ps of payslips; let i = index">
+                                        <td>{{ i + 1 }}</td>
+                                        <td><strong>{{ ps.staffName }}</strong></td>
+                                        <td><small>{{ ps.staffUpi }}</small></td>
+                                        <td><small>{{ ps.designationName }}</small></td>
+                                        <td class="text-end">{{ ps.grossPay | number:'1.2-2' }}</td>
+                                        <td class="text-end">{{ ps.nssfEmployee | number:'1.2-2' }}</td>
+                                        <td class="text-end">{{ ps.paye | number:'1.2-2' }}</td>
+                                        <td class="text-end">{{ ps.shif | number:'1.2-2' }}</td>
+                                        <td class="text-end">{{ ps.ahl | number:'1.2-2' }}</td>
+                                        <td class="text-end fw-bold">{{ ps.netPay | number:'1.2-2' }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-info" (click)="viewPayslip(ps)" title="View Payslip">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="payslips.length === 0">
+                                        <td colspan="11" class="text-center text-muted p-2"><i class="fas fa-info-circle"></i> No payslips found for this period.</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot *ngIf="payslips.length > 0">
+                                    <tr class="table-warning fw-bold">
+                                        <td colspan="4" class="text-end">TOTALS</td>
+                                        <td class="text-end">{{ getPayslipsTotalGross() | number:'1.2-2' }}</td>
+                                        <td class="text-end">{{ getPayslipsTotalNssf() | number:'1.2-2' }}</td>
+                                        <td class="text-end">{{ getPayslipsTotalPaye() | number:'1.2-2' }}</td>
+                                        <td class="text-end">{{ getPayslipsTotalShif() | number:'1.2-2' }}</td>
+                                        <td class="text-end">{{ getPayslipsTotalAhl() | number:'1.2-2' }}</td>
+                                        <td class="text-end">{{ getPayslipsTotalNet() | number:'1.2-2' }}</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer py-1">
+                        <button class="btn btn-sm btn-secondary" (click)="closePayslips()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payslip Detail Modal (stacked) -->
+        <div class="modal-backdrop fade show" *ngIf="showPayslipDetail" style="z-index: 1070;"></div>
+        <div class="modal fade show d-block" *ngIf="showPayslipDetail" tabindex="-1" style="z-index: 1080;">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable" style="margin-top: 30px;">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white py-2">
+                        <h5 class="modal-title">
+                            <i class="fas fa-file-alt me-1"></i> Payslip: {{ selectedPayslip?.staffName }}
+                            <small class="ms-2">| {{ selectedPeriod?.name }}</small>
+                        </h5>
+                        <button type="button" class="close text-white" (click)="closePayslipDetail()"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body p-2" *ngIf="selectedPayslip">
+                        <!-- Employee Info -->
+                        <div class="border border-secondary rounded p-2 mb-2 bg-light">
+                            <div class="row" style="font-size:0.85rem;">
+                                <div class="col-md-4"><small class="text-muted d-block">Employee</small><strong>{{ selectedPayslip.staffName }}</strong></div>
+                                <div class="col-md-2"><small class="text-muted d-block">UPI</small>{{ selectedPayslip.staffUpi }}</div>
+                                <div class="col-md-3"><small class="text-muted d-block">Designation</small>{{ selectedPayslip.designationName }}</div>
+                                <div class="col-md-3"><small class="text-muted d-block">Department</small>{{ selectedPayslip.departmentName }}</div>
+                            </div>
+                        </div>
+
+                        <div class="row g-2">
+                            <!-- Earnings -->
+                            <div class="col-md-6">
+                                <div class="border border-success rounded p-2 h-100">
+                                    <h6 class="text-success mb-2"><i class="fas fa-arrow-down me-1"></i> Earnings</h6>
+                                    <table class="table table-sm table-striped mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Item</th>
+                                                <th class="text-end">Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Basic Salary</td>
+                                                <td class="text-end">{{ selectedPayslip.basicSalary | number:'1.2-2' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>House Allowance</td>
+                                                <td class="text-end">{{ selectedPayslip.houseAllowance | number:'1.2-2' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Transport Allowance</td>
+                                                <td class="text-end">{{ selectedPayslip.transportAllowance | number:'1.2-2' }}</td>
+                                            </tr>
+                                            <tr *ngFor="let e of selectedPayslip.earnings">
+                                                <td>{{ e.name }}</td>
+                                                <td class="text-end">{{ e.amount | number:'1.2-2' }}</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="table-success fw-bold">
+                                                <td>Gross Pay</td>
+                                                <td class="text-end">{{ selectedPayslip.grossPay | number:'1.2-2' }}</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Deductions -->
+                            <div class="col-md-6">
+                                <div class="border border-danger rounded p-2 h-100">
+                                    <h6 class="text-danger mb-2"><i class="fas fa-arrow-up me-1"></i> Deductions</h6>
+                                    <table class="table table-sm table-striped mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Item</th>
+                                                <th class="text-end">Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>NSSF (Employee)</td>
+                                                <td class="text-end">{{ selectedPayslip.nssfEmployee | number:'1.2-2' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>PAYE</td>
+                                                <td class="text-end">{{ selectedPayslip.paye | number:'1.2-2' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>SHIF</td>
+                                                <td class="text-end">{{ selectedPayslip.shif | number:'1.2-2' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>AHL</td>
+                                                <td class="text-end">{{ selectedPayslip.ahl | number:'1.2-2' }}</td>
+                                            </tr>
+                                            <tr *ngFor="let d of selectedPayslip.deductions">
+                                                <td>{{ d.name }}</td>
+                                                <td class="text-end">{{ d.amount | number:'1.2-2' }}</td>
+                                            </tr>
+                                            <tr *ngIf="selectedPayslip.loanDeductions">
+                                                <td>Loan Deductions</td>
+                                                <td class="text-end">{{ selectedPayslip.loanDeductions | number:'1.2-2' }}</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="table-danger fw-bold">
+                                                <td>Total Deductions</td>
+                                                <td class="text-end">{{ selectedPayslip.totalDeductions | number:'1.2-2' }}</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Net Pay Summary -->
+                        <div class="border border-primary rounded p-2 mt-2 bg-light">
+                            <div class="row text-center">
+                                <div class="col-md-4">
+                                    <small class="text-muted d-block">Gross Pay</small>
+                                    <strong class="text-success">{{ selectedPayslip.grossPay | number:'1.2-2' }}</strong>
+                                </div>
+                                <div class="col-md-4">
+                                    <small class="text-muted d-block">Total Deductions</small>
+                                    <strong class="text-danger">{{ selectedPayslip.totalDeductions | number:'1.2-2' }}</strong>
+                                </div>
+                                <div class="col-md-4">
+                                    <small class="text-muted d-block">Net Pay</small>
+                                    <strong class="text-primary" style="font-size: 1.3rem;">{{ selectedPayslip.netPay | number:'1.2-2' }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer py-1">
+                        <button class="btn btn-sm btn-secondary" (click)="closePayslipDetail()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add button row -->
+        <div class="row g-1 mb-1 align-items-end">
+            <div class="col-md-10"></div>
+            <div class="col-md-2 text-end">
+                <button class="btn btn-sm btn-success" (click)="addNew()"><i class="fas fa-plus"></i> New Period</button>
+            </div>
+        </div>
+
+        <!-- Periods List -->
+        <div class="card card-outline card-primary">
+            <div class="card-header py-1 d-flex justify-content-between align-items-center bg-info text-white">
+                <div>
+                    <strong><i class="fas fa-calendar-alt me-1"></i> Payroll Periods</strong>
+                    <span class="badge bg-light text-dark ms-2">{{ periods.length }}</span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th class="text-center">Payslips</th>
+                            <th class="text-end">Total Gross</th>
+                            <th class="text-end">Total Net</th>
+                            <th class="text-end">Total PAYE</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let p of periods | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize">
+                            <td><strong>{{ p.name }}</strong></td>
+                            <td><span class="badge" [ngClass]="getStatusClass(p.status!)">{{ getStatusLabel(p.status!) }}</span></td>
+                            <td class="text-center"><span class="badge bg-info">{{ p.payslipCount || 0 }}</span></td>
+                            <td class="text-end">{{ p.totalGross | number:'1.2-2' }}</td>
+                            <td class="text-end fw-bold">{{ p.totalNet | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ p.totalPaye | number:'1.2-2' }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-info" (click)="viewPayslips(p)" title="View Payslips">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button *ngIf="p.status === 0" class="btn btn-sm btn-outline-warning ms-1" (click)="process(p)" title="Process">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <button *ngIf="p.status === 1" class="btn btn-sm btn-outline-success ms-1" (click)="approve(p)" title="Approve">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button *ngIf="p.status === 0" class="btn btn-sm btn-outline-danger ms-1" (click)="delete(p)" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="periods.length === 0">
+                            <td colspan="7" class="text-center text-muted p-3"><i class="fas fa-info-circle"></i> No payroll periods found. Click "New Period" to create one.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+                <app-table-paging (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"
+                    [collectionSize]="periods.length"></app-table-paging>
+        </div>
+
+    </div>
+</section>

@@ -57,6 +57,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                         (res) => {
                             let cuUser: User = {...res};
                             cuUser.roles = result.roles;
+                            cuUser.mustChangePassword = !!result.mustChangePassword;
 
                             cuUser.roles.forEach((r) => {
                                 if (r.toString() == 'Parent')
@@ -77,7 +78,12 @@ export class LoginComponent implements OnInit, OnDestroy {
                             this.authService.setCurrentUser(cuUser);
                             this.appService.setUserLoggedIn(true);
                             this.isAuthLoading = false;
-                            this.router.navigate(['/']);
+                            if (cuUser.mustChangePassword) {
+                                this.toastr.info('Please change your password before continuing.');
+                                this.router.navigate(['/change-password']);
+                            } else {
+                                this.router.navigate(['/']);
+                            }
                         },
                         (err) => {
                             this.isAuthLoading = false;

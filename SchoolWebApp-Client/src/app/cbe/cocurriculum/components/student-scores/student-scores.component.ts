@@ -1,8 +1,11 @@
 import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
-import {forkJoin} from 'rxjs';
+import {forkJoin, of} from 'rxjs';
 import Swal from 'sweetalert2';
+import {matchOptionId, pushQueryParams, readQueryParam} from '@/shared/utils/query-param-sync';
+import {StudentCoCurriculumActivity} from '../../models/student-co-curriculum-activity';
 import {StudentCoCurriculumScore} from '../../models/student-co-curriculum-score';
 import {StudentCoCurriculumScoreService} from '../../services/student-co-curriculum-score.service';
 import {StudentCoCurriculumActivityService} from '../../services/student-co-curriculum-activity.service';
@@ -41,17 +44,51 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
     filterSchoolClassId: any = null;
     filterActivityId: any = null;
 
-    // Each row = one student, with a score column per score type
+    // Each row = one student in the class, with a score column per score type.
+    // studentActivityId is null when the student hasn't been enrolled in the
+    // activity yet; saveAll() auto-enrols them on demand before posting scores.
     batchRows: {
         studentId: number;
         studentName: string;
-        studentActivityId: number;
-        // scores keyed by scoreTypeId: { scoreId, description, existingId }
+        studentActivityId: number | null;
+        isEnrolled: boolean;
         scoresByType: { [scoreTypeId: number]: { scoreId: any; description: string; existingId: string | null } };
     }[] = [];
 
     batchLoaded: boolean = false;
     isSaving: boolean = false;
+
+    // Client-side search + paging for the student-row table.
+    searchText: string = '';
+    tablePage: number = 1;
+    tablePageSize: number = 30;
+
+    // Search matches studentName (upi-fullName) case-insensitive substring.
+    get filteredBatchRows() {
+        const q = (this.searchText || '').trim().toLowerCase();
+        if (!q) return this.batchRows;
+        return this.batchRows.filter((r) => (r.studentName || '').toLowerCase().includes(q));
+    }
+    onSearchChanged = () => { this.tablePage = 1; this.syncUrl(); };
+    onTablePageChanged = (p: number) => { this.tablePage = p; this.syncUrl(); };
+    onTablePageSizeChanged = (s: number) => { this.tablePageSize = s; this.syncUrl(); };
+    onSchoolClassPicked = () => { this.syncUrl(); };
+    onActivityPicked = () => { this.syncUrl(); };
+
+    // Persists current filter selections to the URL so a refresh / bookmark
+    // restores the same view. Called from every filter handler.
+    private syncUrl() {
+        pushQueryParams(this.router, this.route, {
+            curriculumId: this.filterCurriculumId,
+            academicYearId: this.filterAcademicYearId,
+            schoolClassId: this.filterSchoolClassId,
+            activityId: this.filterActivityId,
+            q: this.searchText,
+            page: this.tablePage > 1 ? this.tablePage : null,
+            pageSize: this.tablePageSize !== 30 ? this.tablePageSize : null,
+            loaded: this.batchLoaded ? 1 : null
+        });
+    }
 
     constructor(
         private toastr: ToastrService,
@@ -64,7 +101,9 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
         private studentClassSvc: StudentClassService,
         private curriculaSvc: CurriculumService,
         private academicYearSvc: AcademicYearsService,
-        private learningLevelSvc: LearningLevelsService
+        private learningLevelSvc: LearningLevelsService,
+        private route: ActivatedRoute,
+        private router: Router
     ) {}
 
     ngOnInit(): void {
@@ -81,8 +120,56 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
                 this.scoreTypes = scoreTypes.sort((a, b) => a.rank - b.rank);
                 this.allScores = scores.sort((a, b) => a.rank - b.rank);
                 this.activities = activities.sort((a, b) => a.rank - b.rank);
+                // Restore previously-bookmarked / refreshed selections.
+                this.restoreFromUrl();
             },
             error: (err) => this.toastr.error(err.error)
+        });
+    }
+
+    // Reads filter state from query params and replays the cascade so the
+    // grid populates the same way it did before refresh.
+    private restoreFromUrl() {
+        const curriculumId = readQueryParam(this.route, 'curriculumId');
+        const academicYearId = readQueryParam(this.route, 'academicYearId');
+        const schoolClassId = readQueryParam(this.route, 'schoolClassId');
+        const activityId = readQueryParam(this.route, 'activityId');
+        const q = readQueryParam(this.route, 'q');
+        const page = readQueryParam(this.route, 'page');
+        const pageSize = readQueryParam(this.route, 'pageSize');
+        const loaded = readQueryParam(this.route, 'loaded');
+
+        if (q) this.searchText = q;
+        if (page) this.tablePage = +page;
+        if (pageSize) this.tablePageSize = +pageSize;
+        if (!curriculumId) return;
+
+        // matchOptionId aligns the URL string id with the canonical option id
+        // (sometimes number-typed) so the dropdown actually highlights.
+        this.filterCurriculumId = matchOptionId(this.curricula, curriculumId);
+        this.learningLevelSvc.getLearningLevelsByCurriculum(+curriculumId).subscribe({
+            next: (levels) => {
+                this.learningLevels = levels.sort((a, b) => a.rank - b.rank);
+                if (!academicYearId) return;
+
+                this.filterAcademicYearId = matchOptionId(this.academicYears, academicYearId);
+                this.schoolClassesSvc
+                    .get(`/schoolClasses/byAcademicYearId/${academicYearId}`)
+                    .subscribe({
+                        next: (schoolClasses) => {
+                            const currLLIds = this.learningLevels.map((ll) => +ll.id);
+                            this.schoolClasses = schoolClasses.filter((sc) =>
+                                currLLIds.includes(+sc.learningLevelId)
+                            );
+                            if (schoolClassId) this.filterSchoolClassId = matchOptionId(this.schoolClasses, schoolClassId);
+                            if (activityId) this.filterActivityId = matchOptionId(this.activities, activityId);
+
+                            if (schoolClassId && activityId && loaded) {
+                                this.loadBatchScores();
+                            }
+                        }
+                    });
+            }
         });
     }
 
@@ -94,6 +181,7 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
         this.schoolClasses = [];
         this.filterAcademicYearId = this.filterSchoolClassId = this.filterActivityId = null;
         this.batchLoaded = false;
+        this.syncUrl();
         if (!this.filterCurriculumId) return;
         this.learningLevelSvc.getLearningLevelsByCurriculum(this.filterCurriculumId).subscribe({
             next: (levels) => { this.learningLevels = levels.sort((a, b) => a.rank - b.rank); },
@@ -105,6 +193,7 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
         this.schoolClasses = [];
         this.filterSchoolClassId = this.filterActivityId = null;
         this.batchLoaded = false;
+        this.syncUrl();
         if (!this.filterAcademicYearId || !this.filterCurriculumId) return;
         this.schoolClassesSvc.get(`/schoolClasses/byAcademicYearId/${this.filterAcademicYearId}`).subscribe({
             next: (schoolClasses) => {
@@ -143,39 +232,57 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
 
                 forkJoin(activityRequests).subscribe({
                     next: (allStudentActivities) => {
-                        let studentsWithActivity: any[] = [];
-
-                        classStudents.forEach((student, idx) => {
-                            let match = allStudentActivities[idx].find(
+                        // Build one row per student in the class, regardless of
+                        // whether they've been enrolled in this activity yet.
+                        // Rows without a studentActivityId render with empty
+                        // score cells; if the user picks any score, saveAll()
+                        // auto-enrols them before saving.
+                        const studentRows = classStudents.map((student, idx) => {
+                            const match = allStudentActivities[idx].find(
                                 (sa) => sa.coCurriculumActivityId == this.filterActivityId
                             );
-                            if (match) {
-                                studentsWithActivity.push({student, studentActivityId: +match.id});
-                            }
+                            return {
+                                student,
+                                studentActivityId: match ? +match.id : null,
+                                isEnrolled: !!match
+                            };
                         });
 
-                        if (studentsWithActivity.length === 0) {
-                            this.toastr.info('No students in this class are assigned to this activity.');
-                            return;
-                        }
+                        // Fetch existing scores only for already-enrolled students.
+                        const enrolled = studentRows.filter((r) => r.studentActivityId != null);
+                        const scoreRequests = enrolled.length
+                            ? forkJoin(
+                                  enrolled.map((r) =>
+                                      this.studentScoreSvc.get(
+                                          `/studentCoCurriculumScores/byStudentCoCurriculumActivityId/${r.studentActivityId}`
+                                      )
+                                  )
+                              )
+                            : of([] as any[][]);
 
-                        // Load all existing scores for each student's activity
-                        let scoreRequests = studentsWithActivity.map((item) =>
-                            this.studentScoreSvc.get(
-                                `/studentCoCurriculumScores/byStudentCoCurriculumActivityId/${item.studentActivityId}`
-                            )
-                        );
-
-                        forkJoin(scoreRequests).subscribe({
+                        scoreRequests.subscribe({
                             next: (allScores) => {
-                                this.batchRows = studentsWithActivity.map((item, idx) => {
-                                    let existingScores = allScores[idx];
+                                // Index existing scores by studentActivityId so non-enrolled
+                                // students fall through to empty cells.
+                                const scoresByActivityId = new Map<number, any[]>();
+                                enrolled.forEach((r, i) => {
+                                    if (r.studentActivityId != null) {
+                                        scoresByActivityId.set(r.studentActivityId, allScores[i] || []);
+                                    }
+                                });
 
-                                    // Build scoresByType: for each score type, find the existing score
-                                    let scoresByType: any = {};
+                                this.batchRows = studentRows.map((r) => {
+                                    const existingScores =
+                                        r.studentActivityId != null
+                                            ? scoresByActivityId.get(r.studentActivityId) || []
+                                            : [];
+
+                                    const scoresByType: any = {};
                                     this.scoreTypes.forEach((st) => {
-                                        let existing = existingScores.find((es) => {
-                                            let matchedScore = this.allScores.find((s) => +s.id == es.coCurriculumScoreId);
+                                        const existing = existingScores.find((es: any) => {
+                                            const matchedScore = this.allScores.find(
+                                                (s) => +s.id == es.coCurriculumScoreId
+                                            );
                                             return matchedScore && matchedScore.coCurriculumScoreTypeId == st.id;
                                         });
                                         scoresByType[st.id] = {
@@ -186,13 +293,15 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
                                     });
 
                                     return {
-                                        studentId: +item.student.id,
-                                        studentName: `${item.student.upi || ''}-${item.student.fullName || ''}`,
-                                        studentActivityId: item.studentActivityId,
-                                        scoresByType: scoresByType
+                                        studentId: +r.student.id,
+                                        studentName: `${r.student.upi || ''}-${r.student.fullName || ''}`,
+                                        studentActivityId: r.studentActivityId,
+                                        isEnrolled: r.isEnrolled,
+                                        scoresByType
                                     };
                                 });
                                 this.batchLoaded = true;
+                                this.syncUrl();
                             },
                             error: (err) => this.toastr.error(err.error)
                         });
@@ -205,14 +314,21 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
     };
 
     saveAll = () => {
-        // Collect all score entries across all rows and all score types
-        let itemsToSave: any[] = [];
+        // Collect all score entries across all rows. Items keep a reference to
+        // their parent row so we can patch in a newly-created studentActivityId
+        // for auto-enrolment before posting the score record.
+        const itemsToSave: {
+            row: any;
+            scoreId: any;
+            description: string;
+            existingId: string | null;
+        }[] = [];
         this.batchRows.forEach((row) => {
             this.scoreTypes.forEach((st) => {
-                let entry = row.scoresByType[st.id];
+                const entry = row.scoresByType[st.id];
                 if (entry && entry.scoreId != null) {
                     itemsToSave.push({
-                        studentActivityId: row.studentActivityId,
+                        row,
                         scoreId: entry.scoreId,
                         description: entry.description,
                         existingId: entry.existingId
@@ -226,40 +342,83 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
             return;
         }
 
+        // Distinct rows lacking a studentActivityId need to be enrolled first.
+        const rowsNeedingEnrolment = Array.from(
+            new Set(itemsToSave.filter((i) => i.row.studentActivityId == null).map((i) => i.row))
+        );
+
+        const confirmText =
+            rowsNeedingEnrolment.length > 0
+                ? `${itemsToSave.length} score(s) will be saved. ${rowsNeedingEnrolment.length} student(s) will be auto-enrolled in this activity.`
+                : `${itemsToSave.length} score(s) will be saved.`;
+
         Swal.fire({
             title: 'Save all scores?',
-            text: `${itemsToSave.length} score(s) will be saved.`,
+            text: confirmText,
             width: 400, position: 'top', padding: '1em', icon: 'question',
             showCancelButton: true, confirmButtonText: 'Save', cancelButtonText: 'Cancel'
         }).then((result) => {
-            if (result.value) {
-                this.isSaving = true;
-                let requests = itemsToSave.map((item) => {
-                    let score = new StudentCoCurriculumScore({
-                        studentCoCurriculumActivityId: item.studentActivityId,
-                        coCurriculumScoreId: item.scoreId,
-                        description: item.description
-                    });
-                    if (item.existingId) {
-                        score.id = item.existingId;
-                        return this.studentScoreSvc.update('/studentCoCurriculumScores', score);
-                    } else {
-                        return this.studentScoreSvc.create('/studentCoCurriculumScores', score);
-                    }
-                });
+            if (!result.value) return;
+            this.isSaving = true;
 
-                forkJoin(requests).subscribe(
-                    () => {
-                        this.isSaving = false;
-                        this.toastr.success('All scores saved!');
-                        this.loadBatchScores();
-                    },
-                    (err) => {
-                        this.isSaving = false;
-                        this.toastr.error(err.error?.message || 'Error saving.');
-                    }
-                );
-            }
+            // Phase 1: enrol any students that don't yet have a
+            // studentCoCurriculumActivity record for the picked activity.
+            const enrolReqs = rowsNeedingEnrolment.map((row) => {
+                const enrol = new StudentCoCurriculumActivity({
+                    studentId: row.studentId,
+                    coCurriculumActivityId: this.filterActivityId
+                });
+                return this.studentActivitySvc.create('/studentCoCurriculumActivities', enrol);
+            });
+
+            const enrolStream = enrolReqs.length > 0 ? forkJoin(enrolReqs) : of([] as any[]);
+
+            enrolStream.subscribe({
+                next: (enrolledResponses: any[]) => {
+                    // Patch the new ids back onto the rows so all itemsToSave
+                    // entries now have a usable studentActivityId.
+                    rowsNeedingEnrolment.forEach((row, idx) => {
+                        row.studentActivityId = +enrolledResponses[idx].id;
+                        row.isEnrolled = true;
+                    });
+
+                    // Phase 2: save (insert or update) each score.
+                    const scoreReqs = itemsToSave.map((item) => {
+                        const score = new StudentCoCurriculumScore({
+                            studentCoCurriculumActivityId: item.row.studentActivityId,
+                            coCurriculumScoreId: item.scoreId,
+                            description: item.description
+                        });
+                        if (item.existingId) {
+                            score.id = item.existingId;
+                            return this.studentScoreSvc.update('/studentCoCurriculumScores', score);
+                        } else {
+                            return this.studentScoreSvc.create('/studentCoCurriculumScores', score);
+                        }
+                    });
+
+                    forkJoin(scoreReqs).subscribe({
+                        next: () => {
+                            this.isSaving = false;
+                            const enrolledCount = enrolReqs.length;
+                            const msg =
+                                enrolledCount > 0
+                                    ? `Auto-enrolled ${enrolledCount} student(s) and saved ${itemsToSave.length} score(s).`
+                                    : 'All scores saved!';
+                            this.toastr.success(msg);
+                            this.loadBatchScores();
+                        },
+                        error: (err) => {
+                            this.isSaving = false;
+                            this.toastr.error(err.error?.message || 'Error saving scores.');
+                        }
+                    });
+                },
+                error: (err) => {
+                    this.isSaving = false;
+                    this.toastr.error(err.error?.message || 'Error enrolling students.');
+                }
+            });
         });
     };
 

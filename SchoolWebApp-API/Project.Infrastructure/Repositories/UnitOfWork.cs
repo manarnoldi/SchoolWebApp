@@ -9,6 +9,8 @@ using SchoolWebApp.Core.Interfaces.IRepositories.School;
 using SchoolWebApp.Core.Interfaces.IRepositories.Settings;
 using SchoolWebApp.Core.Interfaces.IRepositories.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories.Students;
+using SchoolWebApp.Core.Interfaces.IRepositories.Finance;
+using SchoolWebApp.Core.Interfaces.IRepositories.Payroll;
 
 namespace SchoolWebApp.Infrastructure.Repositories
 {
@@ -79,6 +81,41 @@ namespace SchoolWebApp.Infrastructure.Repositories
         public ISessionTypesRepository SessionTypes { get; }
         public IStaffCategoryRepository StaffCategories { get; }
         #endregion
+
+        #region Finance
+        public IAccountRepository Accounts { get; }
+        public IFeeCategoryRepository FeeCategories { get; }
+        public IFeeStructureRepository FeeStructures { get; }
+        public IFeeStructureItemRepository FeeStructureItems { get; }
+        public IStudentInvoiceRepository StudentInvoices { get; }
+        public IStudentInvoiceItemRepository StudentInvoiceItems { get; }
+        public IPaymentRepository Payments { get; }
+        public IExpenseCategoryRepository ExpenseCategories { get; }
+        public IExpenseRepository Expenses { get; }
+        public IExpenseLineRepository ExpenseLines { get; }
+        public IJournalEntryRepository JournalEntries { get; }
+        public IJournalLineRepository JournalLines { get; }
+        public IBudgetRepository Budgets { get; }
+        public IBudgetLineRepository BudgetLines { get; }
+        public IBudgetMasterRepository BudgetMasters { get; }
+        public IBudgetAmendmentRepository BudgetAmendments { get; }
+        public IBudgetAmendmentLineRepository BudgetAmendmentLines { get; }
+        #endregion
+
+        #region Payroll
+        public IEarningTypeRepository EarningTypes { get; }
+        public IDeductionTypeRepository DeductionTypes { get; }
+        public ITaxBandRepository TaxBands { get; }
+        public IPayrollSettingRepository PayrollSettings { get; }
+        public IEmployeeSalaryRepository EmployeeSalaries { get; }
+        public IEmployeeSalaryItemRepository EmployeeSalaryItems { get; }
+        public ILoanAdvanceRepository LoanAdvances { get; }
+        public IPayrollPeriodRepository PayrollPeriods { get; }
+        public IPayslipRepository Payslips { get; }
+        public IPayslipEarningRepository PayslipEarnings { get; }
+        public IPayslipDeductionRepository PayslipDeductions { get; }
+        #endregion
+
         public UnitOfWork(ApplicationDbContext context,
                 //Academics
                 IAcademicYearRepository academicYearRepository,
@@ -135,7 +172,39 @@ namespace SchoolWebApp.Infrastructure.Repositories
                 IRelationshipsRepository relationshipsRepository,
                 IReligionsRepository religionsRepository,
                 ISessionTypesRepository sessionTypesRepository,
-                IStaffCategoryRepository staffCategoryRepository
+                IStaffCategoryRepository staffCategoryRepository,
+
+                //Finance
+                IAccountRepository accountRepository,
+                IFeeCategoryRepository feeCategoryRepository,
+                IFeeStructureRepository feeStructureRepository,
+                IFeeStructureItemRepository feeStructureItemRepository,
+                IStudentInvoiceRepository studentInvoiceRepository,
+                IStudentInvoiceItemRepository studentInvoiceItemRepository,
+                IPaymentRepository paymentRepository,
+                IExpenseCategoryRepository expenseCategoryRepository,
+                IExpenseRepository expenseRepository,
+                IExpenseLineRepository expenseLineRepository,
+                IJournalEntryRepository journalEntryRepository,
+                IJournalLineRepository journalLineRepository,
+                IBudgetRepository budgetRepository,
+                IBudgetLineRepository budgetLineRepository,
+                IBudgetMasterRepository budgetMasterRepository,
+                IBudgetAmendmentRepository budgetAmendmentRepository,
+                IBudgetAmendmentLineRepository budgetAmendmentLineRepository,
+
+                //Payroll
+                IEarningTypeRepository earningTypeRepository,
+                IDeductionTypeRepository deductionTypeRepository,
+                ITaxBandRepository taxBandRepository,
+                IPayrollSettingRepository payrollSettingRepository,
+                IEmployeeSalaryRepository employeeSalaryRepository,
+                IEmployeeSalaryItemRepository employeeSalaryItemRepository,
+                ILoanAdvanceRepository loanAdvanceRepository,
+                IPayrollPeriodRepository payrollPeriodRepository,
+                IPayslipRepository payslipRepository,
+                IPayslipEarningRepository payslipEarningRepository,
+                IPayslipDeductionRepository payslipDeductionRepository
          )
         {
             _context = context;
@@ -200,6 +269,40 @@ namespace SchoolWebApp.Infrastructure.Repositories
             Religions = religionsRepository;
             SessionTypes = sessionTypesRepository;
             StaffCategories = staffCategoryRepository;
+            #endregion
+
+            #region Finance
+            Accounts = accountRepository;
+            FeeCategories = feeCategoryRepository;
+            FeeStructures = feeStructureRepository;
+            FeeStructureItems = feeStructureItemRepository;
+            StudentInvoices = studentInvoiceRepository;
+            StudentInvoiceItems = studentInvoiceItemRepository;
+            Payments = paymentRepository;
+            ExpenseCategories = expenseCategoryRepository;
+            Expenses = expenseRepository;
+            ExpenseLines = expenseLineRepository;
+            JournalEntries = journalEntryRepository;
+            JournalLines = journalLineRepository;
+            Budgets = budgetRepository;
+            BudgetLines = budgetLineRepository;
+            BudgetMasters = budgetMasterRepository;
+            BudgetAmendments = budgetAmendmentRepository;
+            BudgetAmendmentLines = budgetAmendmentLineRepository;
+            #endregion
+
+            #region Payroll
+            EarningTypes = earningTypeRepository;
+            DeductionTypes = deductionTypeRepository;
+            TaxBands = taxBandRepository;
+            PayrollSettings = payrollSettingRepository;
+            EmployeeSalaries = employeeSalaryRepository;
+            EmployeeSalaryItems = employeeSalaryItemRepository;
+            LoanAdvances = loanAdvanceRepository;
+            PayrollPeriods = payrollPeriodRepository;
+            Payslips = payslipRepository;
+            PayslipEarnings = payslipEarningRepository;
+            PayslipDeductions = payslipDeductionRepository;
             #endregion
         }
 

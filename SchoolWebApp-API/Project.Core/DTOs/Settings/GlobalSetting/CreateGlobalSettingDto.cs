@@ -12,9 +12,8 @@ namespace SchoolWebApp.Core.DTOs.Settings.GlobalSetting
         [StringLength(100)]
         public required string SettingKey { get; set; }
 
-        [Required]
         [StringLength(500)]
-        public required string SettingValue { get; set; }
+        public string SettingValue { get; set; } = "";
 
         [StringLength(255)]
         public string? Description { get; set; }

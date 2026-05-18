@@ -1,0 +1,61 @@
+# Build the .NET API and FTP-deploy it to the Windows host (site4now / myWindowsHosting).
+#
+# Required GitHub secrets (Repo → Settings → Secrets and variables → Actions):
+#   FTP_SERVER       e.g. win8082.site4now.net
+#   FTP_USERNAME     e.g. smwadwaa-002
+#   FTP_PASSWORD     the FTP password
+#   FTP_REMOTE_DIR   the remote folder for this site, typically /site5/wwwroot/ for shulenova-api
+#
+# Trigger: any push to main that touches the API folder. You can also run it manually from
+# the Actions tab via the "Run workflow" button.
+
+name: Deploy API to site4now (FTP)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'SchoolWebApp-API/**'
+      - '.github/workflows/deploy-api.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore SchoolWebApp-API/SchoolWebApp.API.Project.sln
+
+      - name: Publish
+        run: >
+          dotnet publish SchoolWebApp-API/Project.API/SchoolWebApp.API.csproj
+          --configuration Release
+          --output ./publish
+          --no-restore
+          /p:UseAppHost=false
+
+      # FTP upload — only diffs are pushed on subsequent runs (state file kept on the host).
+      - name: FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_REMOTE_DIR }}
+          local-dir: ./publish/
+          # Don't delete files we didn't upload (logs, App_Data, etc.).
+          dangerous-clean-slate: false
+          # Keep these on the server even if local doesn't have them.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/appsettings.Development.json

@@ -38,6 +38,14 @@ export class StudentsSubjectsAddFormComponent implements OnInit {
     schoolClasses: SchoolClass[] = [];
     studentClasses: StudentClass[] = [];
 
+    // Existing per-student assignments, keyed by studentClassId. Populated
+    // after schoolClassChanged. Drives two things:
+    //   1. The count badge on each row of the student list (via subjectCounts).
+    //   2. The duplicate-skip logic on Save - any (studentClassId, subjectId)
+    //      pair already present is silently filtered out.
+    existingSubjectsByStudentClass: Map<number, Subject[]> = new Map();
+    subjectCounts: Record<number, number> = {};
+
     isLoading: boolean = true;
 
     breadcrumbs: BreadCrumb[] = [
@@ -105,6 +113,8 @@ export class StudentsSubjectsAddFormComponent implements OnInit {
 
     schoolClassChanged = () => {
         this.studentClasses = [];
+        this.existingSubjectsByStudentClass = new Map();
+        this.subjectCounts = {};
         let schoolClassId =
             this.studentSubjectsAddForm.get('schoolClassId').value;
         if (!schoolClassId || schoolClassId == null) {
@@ -116,11 +126,73 @@ export class StudentsSubjectsAddFormComponent implements OnInit {
             .subscribe({
                 next: (studentClasses) => {
                     this.studentClasses = studentClasses;
+                    this.refreshStudentSubjectCounts();
                 },
                 error: (err) => {
                     this.toastr.error(err.error);
                 }
             });
+    };
+
+    // Eager parallel fetch of each student's existing subjects for the picked
+    // class. Populates subjectCounts (for the badge) and existingSubjectsByStudentClass
+    // (for duplicate detection on Save and for the popup view).
+    private refreshStudentSubjectCounts = () => {
+        if (!this.studentClasses?.length) return;
+        const reqs = this.studentClasses.map((sc) =>
+            this.studentSubjectsSvc.get(
+                '/studentSubjects/byStudentClassId/' + sc.id
+            )
+        );
+        forkJoin(reqs).subscribe({
+            next: (results) => {
+                const counts: Record<number, number> = {};
+                const map = new Map<number, Subject[]>();
+                this.studentClasses.forEach((sc, idx) => {
+                    const list = results[idx] || [];
+                    const sid = parseInt(sc.id);
+                    counts[sid] = list.length;
+                    map.set(
+                        sid,
+                        list
+                            .map((ss) => ss.subject)
+                            .filter((s): s is Subject => !!s)
+                    );
+                });
+                this.subjectCounts = counts;
+                this.existingSubjectsByStudentClass = map;
+            },
+            error: () => {
+                // Non-fatal: badges + duplicate-skip just won't work.
+            }
+        });
+    };
+
+    // Opens a sweetalert popup listing the subjects already assigned to the
+    // clicked student. Bound to the student-class-min-table's click event.
+    showAssignedSubjects = (studentClassId: number) => {
+        const sc = this.studentClasses.find(
+            (s) => +s.id === +studentClassId
+        );
+        const subjects = this.existingSubjectsByStudentClass.get(studentClassId) || [];
+        const name = sc?.student?.fullName ?? 'Student';
+        const upi = sc?.student?.upi ?? '';
+        const body = subjects.length
+            ? '<ul style="text-align:left;">' +
+              subjects
+                  .map(
+                      (s) =>
+                          `<li><strong>${s.code ?? ''}</strong> - ${s.name ?? ''}</li>`
+                  )
+                  .join('') +
+              '</ul>'
+            : '<em>No subjects assigned yet.</em>';
+        Swal.fire({
+            title: `${name} (${upi})`,
+            html: `<div><strong>${subjects.length}</strong> assigned subject${subjects.length === 1 ? '' : 's'}</div>${body}`,
+            width: 500,
+            confirmButtonText: 'Close'
+        });
     };
 
     curriculumChanged = () => {
@@ -231,31 +303,57 @@ export class StudentsSubjectsAddFormComponent implements OnInit {
         }).then((result) => {
             if (result.value) {
                 let studentSubjects: StudentSubject[] = [];
+                let skipped = 0;
 
                 this.studentClasses.forEach((st) => {
                     if (st.isSelected) {
+                        const stId = parseInt(st.id);
+                        const existing = this.existingSubjectsByStudentClass.get(stId) || [];
+                        const existingSubjectIds = new Set(
+                            existing.map((s) => parseInt(s.id))
+                        );
                         this.subjects.forEach((sub) => {
                             if (sub.isSelected) {
+                                const subId = parseInt(sub.id);
+                                if (existingSubjectIds.has(subId)) {
+                                    // Already assigned -> skip silently and count.
+                                    skipped++;
+                                    return;
+                                }
                                 let ss = new StudentSubject();
-                                ss.studentClassId = parseInt(st.id);
-                                ss.subjectId = parseInt(sub.id);
+                                ss.studentClassId = stId;
+                                ss.subjectId = subId;
                                 studentSubjects.push(ss);
                             }
                         });
                     }
                 });
 
+                if (studentSubjects.length === 0) {
+                    this.toastr.info(
+                        skipped > 0
+                            ? `All ${skipped} selected pairings are already assigned. Nothing to save.`
+                            : 'Nothing to save.'
+                    );
+                    return;
+                }
+
                 this.studentSubjectsSvc
                     .createBatch('/studentSubjects/batch', studentSubjects)
                     .subscribe({
                         next: (res) => {
-                            this.toastr.success(
-                                'Students subjects allocations saved successfully.'
-                            );
-                            this.subjects = [];
-                            this.studentClasses = [];
-                            this.studentSubjectsAddForm.get('educationLevelId').reset();
-                            this.studentSubjectsAddForm.get('schoolClassId').reset();
+                            const msg =
+                                `Saved ${studentSubjects.length} new assignment${studentSubjects.length === 1 ? '' : 's'}.` +
+                                (skipped > 0
+                                    ? ` Skipped ${skipped} already-assigned pairing${skipped === 1 ? '' : 's'}.`
+                                    : '');
+                            this.toastr.success(msg);
+                            // Refresh counts so the badges reflect the new state
+                            // without forcing the user to re-pick the class.
+                            this.refreshStudentSubjectCounts();
+                            // Clear the just-saved selections without resetting filters.
+                            this.studentClasses.forEach((st) => (st.isSelected = false));
+                            this.subjects.forEach((sub) => (sub.isSelected = false));
                         },
                         error: (err) => {
                             this.toastr.error(err.error?.message);

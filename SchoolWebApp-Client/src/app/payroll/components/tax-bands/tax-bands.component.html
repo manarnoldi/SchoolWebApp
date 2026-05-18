@@ -1,0 +1,90 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+
+        <!-- Form Modal -->
+        <div class="modal-backdrop fade show" *ngIf="showForm" (click)="cancel()"></div>
+        <div class="modal fade show d-block" *ngIf="showForm" tabindex="-1">
+            <div class="modal-dialog modal-lg" style="margin-top: 50px;">
+                <div class="modal-content">
+                    <div class="modal-header bg-info text-white py-2">
+                        <h5 class="modal-title"><i class="fas fa-percentage me-1"></i> {{ editMode ? 'Edit' : 'New' }} Tax Band</h5>
+                        <button type="button" class="close text-white" (click)="cancel()"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body p-2">
+                        <div class="border border-info rounded p-2 mb-2">
+                            <div class="row g-1">
+                                <div class="col-md-6">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Description <span class="requiredField">*</span></label>
+                                    <input class="form-control form-control-sm" [(ngModel)]="item.description" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Effective Date</label>
+                                    <input type="date" class="form-control form-control-sm" [(ngModel)]="item.effectiveDate" />
+                                </div>
+                                <div class="col-md-3 d-flex align-items-end">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" [(ngModel)]="item.isActive" id="tbAct"><label for="tbAct" class="form-check-label" style="font-size:0.8rem;">Active</label></div>
+                                </div>
+                            </div>
+                            <div class="row g-1 mt-1">
+                                <div class="col-md-4">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Lower Limit <span class="requiredField">*</span></label>
+                                    <input type="number" class="form-control form-control-sm" [(ngModel)]="item.lowerLimit" min="0" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Upper Limit <span class="requiredField">*</span></label>
+                                    <input type="number" class="form-control form-control-sm" [(ngModel)]="item.upperLimit" min="0" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Rate (%) <span class="requiredField">*</span></label>
+                                    <input type="number" class="form-control form-control-sm" [(ngModel)]="item.rate" min="0" max="100" step="0.01" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer py-1">
+                        <button class="btn btn-sm btn-secondary" (click)="cancel()">Cancel</button>
+                        <button class="btn btn-sm btn-success" (click)="save()"><i class="fas fa-save"></i> Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- List -->
+        <div class="card card-outline card-primary">
+            <div class="card-header py-1 d-flex justify-content-between align-items-center bg-info text-white">
+                <div>
+                    <strong><i class="fas fa-percentage me-1"></i> Tax Bands</strong>
+                    <span class="badge bg-light text-dark ms-2">{{ items.length }}</span>
+                </div>
+                <button class="btn btn-sm btn-success" (click)="addNew()"><i class="fas fa-plus"></i> Add</button>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead class="table-light">
+                        <tr><th>#</th><th>Description</th><th class="text-end">Lower Limit</th><th class="text-end">Upper Limit</th><th class="text-end">Rate (%)</th><th>Effective Date</th><th>Active</th><th>Action</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let c of items | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i">
+                            <td>{{ (page-1) * pageSize + i + 1 }}</td>
+                            <td><strong>{{ c.description }}</strong></td>
+                            <td class="text-end">{{ c.lowerLimit | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ c.upperLimit | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ c.rate | number:'1.2-2' }}%</td>
+                            <td><small>{{ c.effectiveDate | date:'mediumDate' }}</small></td>
+                            <td><span *ngIf="c.isActive" class="badge bg-success">Active</span><span *ngIf="!c.isActive" class="badge bg-secondary">Inactive</span></td>
+                            <td>
+                                <button class="btn btn-outline-primary btn-sm" (click)="edit(c)"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-outline-danger btn-sm ms-1" (click)="delete(c)"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <app-table-paging (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"
+                    [collectionSize]="items.length"></app-table-paging>
+            </div>
+        </div>
+    </div>
+</section>

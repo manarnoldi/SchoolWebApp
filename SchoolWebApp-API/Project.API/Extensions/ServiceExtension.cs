@@ -6,6 +6,10 @@ using SchoolWebApp.Core.Interfaces.IRepositories.School;
 using SchoolWebApp.Core.Interfaces.IRepositories.Settings;
 using SchoolWebApp.Core.Interfaces.IRepositories.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories.Students;
+using SchoolWebApp.Core.Interfaces.IRepositories.Finance;
+using SchoolWebApp.Core.Interfaces.IRepositories.Payroll;
+using SchoolWebApp.Infrastructure.Repositories.Finance;
+using SchoolWebApp.Infrastructure.Repositories.Payroll;
 using SchoolWebApp.Core.Interfaces.IServices;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.Assessments;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.Cocurriculum;
@@ -148,6 +152,40 @@ namespace Project.API.Extensions
             services.AddScoped<ILearningExperienceService, LearningExperienceService>();
             services.AddScoped<IPCIService, PCIService>();
             services.AddScoped<ILessonAllocationService, LessonAllocationService>();
+            #endregion
+
+            #region Finance Repositories
+            services.AddTransient<IAccountRepository, AccountRepository>();
+            services.AddTransient<IFeeCategoryRepository, FeeCategoryRepository>();
+            services.AddTransient<IFeeStructureRepository, FeeStructureRepository>();
+            services.AddTransient<IFeeStructureItemRepository, FeeStructureItemRepository>();
+            services.AddTransient<IStudentInvoiceRepository, StudentInvoiceRepository>();
+            services.AddTransient<IStudentInvoiceItemRepository, StudentInvoiceItemRepository>();
+            services.AddTransient<IPaymentRepository, PaymentRepository>();
+            services.AddTransient<IExpenseCategoryRepository, ExpenseCategoryRepository>();
+            services.AddTransient<IExpenseRepository, ExpenseRepository>();
+            services.AddTransient<IExpenseLineRepository, ExpenseLineRepository>();
+            services.AddTransient<IJournalEntryRepository, JournalEntryRepository>();
+            services.AddTransient<IJournalLineRepository, JournalLineRepository>();
+            services.AddTransient<IBudgetRepository, BudgetRepository>();
+            services.AddTransient<IBudgetLineRepository, BudgetLineRepository>();
+            services.AddTransient<IBudgetMasterRepository, BudgetMasterRepository>();
+            services.AddTransient<IBudgetAmendmentRepository, BudgetAmendmentRepository>();
+            services.AddTransient<IBudgetAmendmentLineRepository, BudgetAmendmentLineRepository>();
+            #endregion
+
+            #region Payroll Repositories
+            services.AddTransient<IEarningTypeRepository, EarningTypeRepository>();
+            services.AddTransient<IDeductionTypeRepository, DeductionTypeRepository>();
+            services.AddTransient<ITaxBandRepository, TaxBandRepository>();
+            services.AddTransient<IPayrollSettingRepository, PayrollSettingRepository>();
+            services.AddTransient<IEmployeeSalaryRepository, EmployeeSalaryRepository>();
+            services.AddTransient<IEmployeeSalaryItemRepository, EmployeeSalaryItemRepository>();
+            services.AddTransient<ILoanAdvanceRepository, LoanAdvanceRepository>();
+            services.AddTransient<IPayrollPeriodRepository, PayrollPeriodRepository>();
+            services.AddTransient<IPayslipRepository, PayslipRepository>();
+            services.AddTransient<IPayslipEarningRepository, PayslipEarningRepository>();
+            services.AddTransient<IPayslipDeductionRepository, PayslipDeductionRepository>();
             #endregion
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
