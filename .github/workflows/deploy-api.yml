@@ -6,17 +6,11 @@
 #   FTP_PASSWORD     the FTP password
 #   FTP_REMOTE_DIR   the remote folder for this site, typically /site5/wwwroot/ for shulenova-api
 #
-# Trigger: any push to main that touches the API folder. You can also run it manually from
-# the Actions tab via the "Run workflow" button.
+# Trigger: manual only — run from the Actions tab via the "Run workflow" button.
 
 name: Deploy API to site4now (FTP)
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'SchoolWebApp-API/**'
-      - '.github/workflows/deploy-api.yml'
   workflow_dispatch:
 
 jobs:
@@ -59,3 +53,4 @@ jobs:
             **/.git*/**
             **/node_modules/**
             **/appsettings.Development.json
+            **/appsettings.Production.json

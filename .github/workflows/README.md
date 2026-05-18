@@ -17,8 +17,7 @@ In the GitHub repo, go to **Settings → Secrets and variables → Actions → N
 
 ### How it runs
 
-- **Auto**: every push to `main` that changes anything under `SchoolWebApp-API/` triggers a deploy.
-- **Manual**: in the GitHub repo → **Actions** tab → **Deploy API to site4now (FTP)** → **Run workflow**.
+- **Manual only**: in the GitHub repo → **Actions** tab → **Deploy API to site4now (FTP)** → **Run workflow** (pick the `master` branch). There is no auto-deploy on push.
 
 ### What it does
 

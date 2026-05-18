@@ -3,3 +3,6 @@
 ################################################################################
 
 /SchoolWebApp-API/Project.Core/Entities/Academics/ExamName.cs
+
+# Production secrets — kept on the server only, never committed.
+**/appsettings.Production.json

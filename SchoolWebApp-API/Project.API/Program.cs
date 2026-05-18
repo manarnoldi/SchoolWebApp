@@ -17,7 +17,7 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string mySqlConnectionStr = builder.Configuration.GetConnectionString("OnlineSwikundaDbConnection");
+string mySqlConnectionStr = builder.Configuration.GetConnectionString("DefaultConnection");
 
 Log.Logger = new LoggerConfiguration()
         .MinimumLevel.Error()
