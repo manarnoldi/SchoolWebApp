@@ -27,8 +27,13 @@ jobs:
           cache: 'npm'
           cache-dependency-path: SchoolWebApp-Client/package-lock.json
 
+      # HUSKY=0 skips the husky `prepare` hook, which fails in CI because .git lives
+      # at the repo root, not next to package.json. Husky is only needed for local
+      # git hooks, so disabling it in CI is harmless.
       - name: Install
         working-directory: SchoolWebApp-Client
+        env:
+          HUSKY: 0
         run: npm ci --no-audit --no-fund
 
       - name: Build (production)
