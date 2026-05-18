@@ -4,11 +4,11 @@
 #   FTP_SERVER          e.g. win8082.site4now.net               (reused from the API workflow)
 #   FTP_USERNAME        e.g. smwadwaa-002                       (reused from the API workflow)
 #   FTP_PASSWORD        the FTP password                        (reused from the API workflow)
-#   FTP_REMOTE_DIR_UI   the remote folder for the UI site, e.g. /swikunda-ui/
+#   FTP_REMOTE_DIR_SWIKUNDA_UI   the remote folder for the swikunda UI site, e.g. /swikunda-ui/
 #
 # Trigger: manual only — run from the Actions tab via the "Run workflow" button.
 
-name: Deploy UI to site4now (FTP)
+name: Deploy Swikunda UI to site4now (FTP)
 
 on:
   workflow_dispatch:
@@ -42,7 +42,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: ${{ secrets.FTP_REMOTE_DIR_UI }}
+          server-dir: ${{ secrets.FTP_REMOTE_DIR_SWIKUNDA_UI }}
           local-dir: ./SchoolWebApp-Client/dist/shulenova/
           dangerous-clean-slate: false
           exclude: |

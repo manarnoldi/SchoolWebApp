@@ -1,21 +1,23 @@
 # GitHub Actions Deployment
 
-Two manual workflows ship code to site4now over FTP:
+Manual workflows ship code to site4now over FTP. Workflows are named per **target site** so that future deploys to other sites (e.g. shulenova) can live alongside without ambiguity:
 
-- `deploy-api.yml` → the .NET 8 API
-- `deploy-ui.yml`  → the Angular client
+- `deploy-swikunda-api.yml` → the .NET 8 API, target site `/swikunda-api/`
+- `deploy-swikunda-ui.yml`  → the Angular client, target site `/swikunda-ui/`
 
 ## One-time setup (shared secrets)
 
 In the GitHub repo, go to **Settings → Secrets and variables → Actions → New repository secret**, and add:
 
-| Secret              | Used by         | Value                                                                          |
-|---------------------|-----------------|--------------------------------------------------------------------------------|
-| `FTP_SERVER`        | both            | `win8082.site4now.net` (from hosting panel → FTP Address)                      |
-| `FTP_USERNAME`      | both            | `smwadwaa-002` (from hosting panel → FTP Login ID)                             |
-| `FTP_PASSWORD`      | both            | Your FTP password                                                              |
-| `FTP_REMOTE_DIR`    | `deploy-api.yml`| `/swikunda-api/` — the remote folder the API site is bound to in IIS          |
-| `FTP_REMOTE_DIR_UI` | `deploy-ui.yml` | `/swikunda-ui/`  — the remote folder the UI site is bound to in IIS           |
+| Secret                         | Used by                   | Value                                                                |
+|--------------------------------|---------------------------|----------------------------------------------------------------------|
+| `FTP_SERVER`                   | all FTP workflows         | `win8082.site4now.net` (from hosting panel → FTP Address)            |
+| `FTP_USERNAME`                 | all FTP workflows         | `smwadwaa-002` (from hosting panel → FTP Login ID)                   |
+| `FTP_PASSWORD`                 | all FTP workflows         | Your FTP password                                                    |
+| `FTP_REMOTE_DIR_SWIKUNDA_API`  | `deploy-swikunda-api.yml` | `/swikunda-api/` — the remote folder the API site is bound to in IIS |
+| `FTP_REMOTE_DIR_SWIKUNDA_UI`   | `deploy-swikunda-ui.yml`  | `/swikunda-ui/`  — the remote folder the UI site is bound to in IIS  |
+
+When you add shulenova workflows later, follow the same pattern: `FTP_REMOTE_DIR_SHULENOVA_API` → `/shulenova-api/`, `FTP_REMOTE_DIR_SHULENOVA_UI` → `/shulenova-ui/`. The first three secrets are shared across all sites (same FTP account).
 
 > **Find the right remote dir**: Log into FileZilla with these credentials. The root listing shows the named site folders (`swikunda-api`, `swikunda-ui`, `shulenova-api`, …). Each named folder IS the IIS document root — files go directly inside it, with no `wwwroot/` subfolder. Use whichever name matches the site you're deploying to.
 
@@ -23,17 +25,17 @@ In the GitHub repo, go to **Settings → Secrets and variables → Actions → N
 
 Both workflows are **manual only** — no auto-deploy on push.
 
-To deploy: GitHub repo → **Actions** tab → pick **Deploy API to site4now (FTP)** or **Deploy UI to site4now (FTP)** → **Run workflow** → pick `master` → **Run workflow**.
+To deploy: GitHub repo → **Actions** tab → pick **Deploy Swikunda API to site4now (FTP)** or **Deploy Swikunda UI to site4now (FTP)** → **Run workflow** → pick `master` → **Run workflow**.
 
 ## What each one does
 
-### `deploy-api.yml`
+### `deploy-swikunda-api.yml`
 1. Checks out the repo.
 2. Sets up .NET 8.
 3. `dotnet publish` the API project in Release mode to `./publish`.
 4. FTPs the output to `FTP_REMOTE_DIR`. The exclude list keeps `appsettings.Development.json` and `appsettings.Production.json` off the wire so the live config on the server is never overwritten.
 
-### `deploy-ui.yml`
+### `deploy-swikunda-ui.yml`
 1. Checks out the repo.
 2. Sets up Node 20 with npm cache.
 3. `npm ci` then `npm run build` (which is `ng build --configuration production`).

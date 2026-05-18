@@ -4,11 +4,11 @@
 #   FTP_SERVER       e.g. win8082.site4now.net
 #   FTP_USERNAME     e.g. smwadwaa-002
 #   FTP_PASSWORD     the FTP password
-#   FTP_REMOTE_DIR   the remote folder for this site, typically /site5/wwwroot/ for shulenova-api
+#   FTP_REMOTE_DIR_SWIKUNDA_API   the remote folder for the swikunda API site, e.g. /swikunda-api/
 #
 # Trigger: manual only — run from the Actions tab via the "Run workflow" button.
 
-name: Deploy API to site4now (FTP)
+name: Deploy Swikunda API to site4now (FTP)
 
 on:
   workflow_dispatch:
@@ -43,7 +43,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: ${{ secrets.FTP_REMOTE_DIR }}
+          server-dir: ${{ secrets.FTP_REMOTE_DIR_SWIKUNDA_API }}
           local-dir: ./publish/
           # Don't delete files we didn't upload (logs, App_Data, etc.).
           dangerous-clean-slate: false
