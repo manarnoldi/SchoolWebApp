@@ -20,7 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 string mySqlConnectionStr = builder.Configuration.GetConnectionString("DefaultConnection");
 
 Log.Logger = new LoggerConfiguration()
-        .MinimumLevel.Information()
+        .MinimumLevel.Warning()
         .WriteTo.Console()
         .WriteTo.MySQL(mySqlConnectionStr)
         .CreateLogger();
