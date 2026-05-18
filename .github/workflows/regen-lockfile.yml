@@ -29,9 +29,13 @@ jobs:
 
       - name: Regenerate lockfile
         working-directory: SchoolWebApp-Client
+        # --ignore-scripts skips lifecycle scripts (including the husky `prepare` hook,
+        # which fails in CI because .git lives at the repo root, not next to package.json).
+        # We only need the dependency graph to resolve so the lockfile reflects Linux
+        # optionalDependencies — postinstall scripts aren't needed for that.
         run: |
           rm -rf node_modules package-lock.json
-          npm install --no-audit --no-fund
+          npm install --no-audit --no-fund --ignore-scripts
           echo "---"
           echo "New lockfile size: $(wc -l < package-lock.json) lines"
           echo "Linux nx binary entries: $(grep -c 'nx-linux-x64-gnu' package-lock.json || echo 0)"
