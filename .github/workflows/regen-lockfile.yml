@@ -1,0 +1,44 @@
+# One-off helper: regenerates SchoolWebApp-Client/package-lock.json on the Linux CI
+# runner and uploads it as a downloadable artifact. Use this when the lockfile was
+# generated on Windows and pins Windows-only native binaries (e.g. nx-win32-x64-msvc),
+# breaking cross-platform CI.
+#
+# Workflow:
+#   1. Run this from the Actions tab.
+#   2. Open the run, scroll to "Artifacts", download "package-lock-linux".
+#   3. Unzip it, replace SchoolWebApp-Client/package-lock.json with the file inside.
+#   4. Commit + push.
+#   5. Delete this workflow file (it's a one-off; no point keeping it around).
+
+name: Regenerate package-lock.json (Linux)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  regen:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Regenerate lockfile
+        working-directory: SchoolWebApp-Client
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install --no-audit --no-fund
+          echo "---"
+          echo "New lockfile size: $(wc -l < package-lock.json) lines"
+          echo "Linux nx binary entries: $(grep -c 'nx-linux-x64-gnu' package-lock.json || echo 0)"
+
+      - name: Upload lockfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-lock-linux
+          path: SchoolWebApp-Client/package-lock.json
+          if-no-files-found: error
