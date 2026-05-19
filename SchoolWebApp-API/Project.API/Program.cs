@@ -19,6 +19,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 string mySqlConnectionStr = builder.Configuration.GetConnectionString("DefaultConnection");
 
+// Cap below site4now's per-MySQL-user limit of 20 concurrent connections.
+// EF Core defaults to a pool of 100, which exhausts the hosting quota under
+// load and triggers "max_user_connections" errors. Serilog's MySQL sink shares
+// this same MySQL user so we leave headroom for it.
+if (!string.IsNullOrEmpty(mySqlConnectionStr) &&
+    !mySqlConnectionStr.Contains("MaximumPoolSize", StringComparison.OrdinalIgnoreCase))
+{
+    var separator = mySqlConnectionStr.TrimEnd().EndsWith(";") ? "" : ";";
+    mySqlConnectionStr = $"{mySqlConnectionStr}{separator}MaximumPoolSize=10;MinimumPoolSize=0";
+}
+
 Log.Logger = new LoggerConfiguration()
         .MinimumLevel.Warning()
         .WriteTo.Console()

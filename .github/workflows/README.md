@@ -33,7 +33,10 @@ To deploy: GitHub repo → **Actions** tab → pick **Deploy Swikunda API to sit
 1. Checks out the repo.
 2. Sets up .NET 8.
 3. `dotnet publish` the API project in Release mode to `./publish`.
-4. FTPs the output to `FTP_REMOTE_DIR`. The exclude list keeps `appsettings.Development.json` and `appsettings.Production.json` off the wire so the live config on the server is never overwritten.
+4. **Takes the app offline** by FTP-uploading [`.github/deploy/app_offline.htm`](../deploy/app_offline.htm). ASP.NET Core sees this file and gracefully shuts down the worker process, releasing the file locks on the running DLLs. Visitors see a friendly "be right back" page during the deploy.
+5. Waits 10s for IIS to release locks.
+6. FTPs the published output to `FTP_REMOTE_DIR_SWIKUNDA_API`. The exclude list keeps `appsettings.Development.json` and `appsettings.Production.json` off the wire so the live config on the server is never overwritten.
+7. **Brings the app back online** by deleting `app_offline.htm` from the server. This step runs even if step 6 failed (via `if: always()`), so a botched deploy won't leave the site stuck offline.
 
 ### `deploy-swikunda-ui.yml`
 1. Checks out the repo.
@@ -59,4 +62,5 @@ Both use `SamKirkland/FTP-Deploy-Action` with a per-site `.ftp-deploy-sync-state
 - **502.5** → wrong .NET runtime version on the host. Set the site to **.NET 8 (LTS)** in the hosting panel.
 - **CORS errors in the browser** → the IIS `WebDAVModule` intercepts `OPTIONS` preflights on Windows shared hosts. The included [`Project.API/web.config`](../../SchoolWebApp-API/Project.API/web.config) removes WebDAV; if you still see CORS errors after deploy, confirm that web.config landed on the server and contains the `<remove name="WebDAVModule" />` line.
 - **`ECONNRESET (data socket)`** during FTP upload → transient hosting hiccup. Re-run the workflow. If persistent, your hosting quota may be full — clean up orphan folders from earlier mis-targeted deploys.
+- **Site stuck on the "be right back" offline page after a failed deploy** → `app_offline.htm` wasn't deleted at the end of the workflow. Quickest fix: re-run the deploy (it overwrites + retries the delete). Manual fix: FTP into `/swikunda-api/` and delete `app_offline.htm`.
 - **FTP connection refused** → if your host requires FTPS, add `protocol: ftps` and `security: loose` to the workflow's FTP-Deploy step.

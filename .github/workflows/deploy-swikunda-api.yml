@@ -36,6 +36,25 @@ jobs:
           --no-restore
           /p:UseAppHost=false
 
+      # Take the app offline by uploading app_offline.htm. ASP.NET Core sees this
+      # file and gracefully shuts down the worker, releasing file locks so the
+      # FTP step below can overwrite the DLLs without 550 errors.
+      - name: Take app offline
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_REMOTE_DIR: ${{ secrets.FTP_REMOTE_DIR_SWIKUNDA_API }}
+        run: |
+          curl --silent --show-error --fail \
+            --user "$FTP_USERNAME:$FTP_PASSWORD" \
+            -T .github/deploy/app_offline.htm \
+            "ftp://$FTP_SERVER$FTP_REMOTE_DIR"
+
+      # Give IIS a few seconds to notice app_offline.htm and release file locks.
+      - name: Wait for IIS to release locks
+        run: sleep 10
+
       # FTP upload — only diffs are pushed on subsequent runs (state file kept on the host).
       - name: FTP Deploy
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -54,3 +73,23 @@ jobs:
             **/node_modules/**
             **/appsettings.Development.json
             **/appsettings.Production.json
+
+      # Bring the app back online by deleting app_offline.htm. `if: always()`
+      # runs this even when an earlier step failed, otherwise a botched deploy
+      # would leave the site stuck on the offline page until manually fixed.
+      # The `|| true` swallows errors so a network blip here doesn't fail the
+      # whole workflow — re-running the deploy will overwrite + retry the delete.
+      - name: Bring app back online
+        if: always()
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_REMOTE_DIR: ${{ secrets.FTP_REMOTE_DIR_SWIKUNDA_API }}
+        run: |
+          curl --silent --show-error \
+            --user "$FTP_USERNAME:$FTP_PASSWORD" \
+            --output /dev/null \
+            -Q "DELE app_offline.htm" \
+            "ftp://$FTP_SERVER$FTP_REMOTE_DIR" \
+            || echo "app_offline.htm delete failed (may not exist) — site will still come back up after IIS recycle."
