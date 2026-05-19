@@ -77,8 +77,12 @@ jobs:
       # Bring the app back online by deleting app_offline.htm. `if: always()`
       # runs this even when an earlier step failed, otherwise a botched deploy
       # would leave the site stuck on the offline page until manually fixed.
-      # The `|| true` swallows errors so a network blip here doesn't fail the
-      # whole workflow — re-running the deploy will overwrite + retry the delete.
+      #
+      # IIS sometimes holds a brief lock on app_offline.htm during shutdown, so
+      # a single delete attempt can silently no-op. This step tries up to 5
+      # times with a HEAD verification after each, and explicitly fails the
+      # workflow if the file is still present at the end. Failure is loud on
+      # purpose: a stuck app_offline.htm means the site stays offline.
       - name: Bring app back online
         if: always()
         env:
@@ -87,9 +91,32 @@ jobs:
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
           FTP_REMOTE_DIR: ${{ secrets.FTP_REMOTE_DIR_SWIKUNDA_API }}
         run: |
-          curl --silent --show-error \
-            --user "$FTP_USERNAME:$FTP_PASSWORD" \
-            --output /dev/null \
-            -Q "DELE app_offline.htm" \
-            "ftp://$FTP_SERVER$FTP_REMOTE_DIR" \
-            || echo "app_offline.htm delete failed (may not exist) — site will still come back up after IIS recycle."
+          set +e  # don't exit on transient curl failures inside the loop
+
+          for attempt in 1 2 3 4 5; do
+            echo "Attempt ${attempt}: deleting app_offline.htm"
+            curl --show-error \
+              --user "$FTP_USERNAME:$FTP_PASSWORD" \
+              --output /dev/null \
+              -Q "DELE app_offline.htm" \
+              "ftp://$FTP_SERVER$FTP_REMOTE_DIR" 2>&1 | sed 's/^/  /'
+
+            # Give IIS a moment to release any lock if it was holding one.
+            sleep 3
+
+            # Verify by trying to HEAD the file. If curl returns non-zero,
+            # the file is gone (HEAD returns 5xx from FTP for missing files).
+            if ! curl --silent --fail --head \
+              --user "$FTP_USERNAME:$FTP_PASSWORD" \
+              "ftp://$FTP_SERVER${FTP_REMOTE_DIR}app_offline.htm" \
+              > /dev/null 2>&1; then
+              echo "Confirmed: app_offline.htm is gone (attempt ${attempt})"
+              exit 0
+            fi
+
+            echo "  file still present, retrying in 5s..."
+            sleep 5
+          done
+
+          echo "::error::Failed to remove app_offline.htm after 5 attempts. Site is stuck on the offline page — log into FileZilla and delete /swikunda-api/app_offline.htm manually."
+          exit 1
