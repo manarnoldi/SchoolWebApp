@@ -93,13 +93,18 @@ jobs:
         run: |
           set +e  # don't exit on transient curl failures inside the loop
 
+          # curl's -Q (quote) commands run from the FTP user's home directory,
+          # NOT from the URL path. So we must pass an absolute path in the DELE
+          # command itself; the URL is just the connection target.
+          REMOTE_FILE="${FTP_REMOTE_DIR%/}/app_offline.htm"
+
           for attempt in 1 2 3 4 5; do
-            echo "Attempt ${attempt}: deleting app_offline.htm"
+            echo "Attempt ${attempt}: deleting $REMOTE_FILE"
             curl --show-error \
               --user "$FTP_USERNAME:$FTP_PASSWORD" \
               --output /dev/null \
-              -Q "DELE app_offline.htm" \
-              "ftp://$FTP_SERVER$FTP_REMOTE_DIR" 2>&1 | sed 's/^/  /'
+              -Q "DELE $REMOTE_FILE" \
+              "ftp://$FTP_SERVER/" 2>&1 | sed 's/^/  /'
 
             # Give IIS a moment to release any lock if it was holding one.
             sleep 3

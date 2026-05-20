@@ -1,3 +1,4 @@
+using System.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -33,45 +34,95 @@ namespace Project.Infrastructure.Data
 
         private static async Task RestrictApprovalCascadeDeletesAsync(ApplicationDbContext db, ILogger logger)
         {
-            // Drop and recreate the two approval FK constraints with RESTRICT instead of CASCADE.
-            // Uses MySQL information_schema to find the actual constraint names.
-            var alterSteps = @"
-                SET @sql = (SELECT CONCAT('ALTER TABLE ApprovalWorkflowSteps DROP FOREIGN KEY ', CONSTRAINT_NAME)
-                            FROM information_schema.KEY_COLUMN_USAGE
-                            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ApprovalWorkflowSteps'
-                              AND REFERENCED_TABLE_NAME = 'ApprovalWorkflows' AND COLUMN_NAME = 'ApprovalWorkflowId' LIMIT 1);
-                SET @sql = IFNULL(@sql, 'SELECT 1');
-                PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
-                ALTER TABLE ApprovalWorkflowSteps
-                    ADD CONSTRAINT FK_ApprovalWorkflowSteps_ApprovalWorkflows_ApprovalWorkflowId
-                    FOREIGN KEY (ApprovalWorkflowId) REFERENCES ApprovalWorkflows(Id) ON DELETE RESTRICT;
-            ";
-            var alterActions = @"
-                SET @sql = (SELECT CONCAT('ALTER TABLE ApprovalStepActions DROP FOREIGN KEY ', CONSTRAINT_NAME)
-                            FROM information_schema.KEY_COLUMN_USAGE
-                            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ApprovalStepActions'
-                              AND REFERENCED_TABLE_NAME = 'ApprovalRequests' AND COLUMN_NAME = 'ApprovalRequestId' LIMIT 1);
-                SET @sql = IFNULL(@sql, 'SELECT 1');
-                PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
-                ALTER TABLE ApprovalStepActions
-                    ADD CONSTRAINT FK_ApprovalStepActions_ApprovalRequests_ApprovalRequestId
-                    FOREIGN KEY (ApprovalRequestId) REFERENCES ApprovalRequests(Id) ON DELETE RESTRICT;
-            ";
-            // MySQL doesn't allow multi-statement prepared blocks via ExecuteSqlRaw unless AllowUserVariables is enabled.
-            // Split into individual statements.
-            foreach (var stmt in SplitStatements(alterSteps).Concat(SplitStatements(alterActions)))
+            // Force RESTRICT on the two approval FKs. We can't use MySQL user variables
+            // (@sql) across separate ExecuteSqlRawAsync calls because each call pulls a
+            // new pooled connection and user variables are per-connection. So we open
+            // one connection explicitly and run discrete commands on it.
+            var conn = db.Database.GetDbConnection();
+            var openedHere = conn.State != ConnectionState.Open;
+            if (openedHere) await conn.OpenAsync();
+            try
             {
-                if (string.IsNullOrWhiteSpace(stmt)) continue;
-                await db.Database.ExecuteSqlRawAsync(stmt);
+                await EnsureRestrictAsync(conn,
+                    table: "ApprovalWorkflowSteps",
+                    referencedTable: "ApprovalWorkflows",
+                    column: "ApprovalWorkflowId",
+                    newConstraintName: "FK_ApprovalWorkflowSteps_ApprovalWorkflows_ApprovalWorkflowId",
+                    logger: logger);
+
+                await EnsureRestrictAsync(conn,
+                    table: "ApprovalStepActions",
+                    referencedTable: "ApprovalRequests",
+                    column: "ApprovalRequestId",
+                    newConstraintName: "FK_ApprovalStepActions_ApprovalRequests_ApprovalRequestId",
+                    logger: logger);
             }
-            logger.LogInformation("Approval FK cascade constraints set to RESTRICT.");
+            finally
+            {
+                if (openedHere) await conn.CloseAsync();
+            }
         }
 
-        private static IEnumerable<string> SplitStatements(string block)
+        private static async Task EnsureRestrictAsync(
+            IDbConnection conn, string table, string referencedTable, string column,
+            string newConstraintName, ILogger logger)
         {
-            return block.Split(';', StringSplitOptions.RemoveEmptyEntries)
-                .Select(s => s.Trim())
-                .Where(s => s.Length > 0);
+            // 1. Look up the current DELETE_RULE. If already RESTRICT/NO ACTION, do nothing.
+            var currentRule = await ScalarAsync(conn,
+                $@"SELECT rc.DELETE_RULE
+                   FROM information_schema.REFERENTIAL_CONSTRAINTS rc
+                   JOIN information_schema.KEY_COLUMN_USAGE k
+                     ON k.CONSTRAINT_SCHEMA = rc.CONSTRAINT_SCHEMA
+                    AND k.CONSTRAINT_NAME = rc.CONSTRAINT_NAME
+                   WHERE rc.CONSTRAINT_SCHEMA = DATABASE()
+                     AND rc.TABLE_NAME = '{table}'
+                     AND rc.REFERENCED_TABLE_NAME = '{referencedTable}'
+                     AND k.COLUMN_NAME = '{column}'
+                   LIMIT 1");
+
+            if (string.Equals(currentRule, "RESTRICT", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(currentRule, "NO ACTION", StringComparison.OrdinalIgnoreCase))
+            {
+                return; // already correct, no-op
+            }
+
+            // 2. Find the existing constraint name (if any) so we can drop it.
+            var existingFk = await ScalarAsync(conn,
+                $@"SELECT CONSTRAINT_NAME
+                   FROM information_schema.KEY_COLUMN_USAGE
+                   WHERE TABLE_SCHEMA = DATABASE()
+                     AND TABLE_NAME = '{table}'
+                     AND REFERENCED_TABLE_NAME = '{referencedTable}'
+                     AND COLUMN_NAME = '{column}'
+                   LIMIT 1");
+
+            if (!string.IsNullOrEmpty(existingFk))
+            {
+                await NonQueryAsync(conn, $"ALTER TABLE {table} DROP FOREIGN KEY {existingFk}");
+            }
+
+            // 3. Add the new constraint with ON DELETE RESTRICT.
+            await NonQueryAsync(conn,
+                $@"ALTER TABLE {table}
+                   ADD CONSTRAINT {newConstraintName}
+                   FOREIGN KEY ({column}) REFERENCES {referencedTable}(Id) ON DELETE RESTRICT");
+
+            logger.LogInformation("FK {Table}.{Column} -> {Ref} set to RESTRICT.", table, column, referencedTable);
+        }
+
+        private static async Task<string> ScalarAsync(IDbConnection conn, string sql)
+        {
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = sql;
+            var result = await ((System.Data.Common.DbCommand)cmd).ExecuteScalarAsync();
+            return result?.ToString();
+        }
+
+        private static async Task NonQueryAsync(IDbConnection conn, string sql)
+        {
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = sql;
+            await ((System.Data.Common.DbCommand)cmd).ExecuteNonQueryAsync();
         }
     }
 }
