@@ -1,45 +1,39 @@
-<pf-dropdown [hideArrow]="true" class="user-menu">
-    <div slot="button">
-        <a class="nav-link">
-            <pf-image
-                [src]="user?.picture"
-                fallbackSrc="assets/img/default-profile.png"
-                class="user-image-small"
-                width="25"
-                height="25"
-                alt="User Image"
-                rounded="true"
-            />
-        </a>
-    </div>
-    <div slot="menu">
-        <li class="user-header bg-primary">
-            <pf-image
-                [src]="user?.picture"
-                fallbackSrc="assets/img/default-profile.png"
-                class="user-image-big"
-                alt="User Image"
-                width="90"
-                height="90"
-                rounded="true"
-            />
-            <p>
-                <span>{{ user?.firstName }} {{ user?.lastName }}</span>
-                <small>{{ user?.email }}</small>
-            </p>
+<div class="user-menu dropdown">
+    <a class="nav-link" role="button" id="userDropdownBtn"
+        data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-user-circle"
+            style="font-size: 1.5rem; color: var(--dbta-primary, #3674B3);"></i>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end p-0" aria-labelledby="userDropdownBtn" style="min-width: 280px;">
+        <li>
+            <a class="dropdown-item user-header bg-primary text-white py-3 px-3"
+                style="cursor:pointer; text-decoration:none; white-space: normal;"
+                routerLink="/profile">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-user-circle" style="font-size: 2rem;"></i>
+                    <div>
+                        <div class="fw-semibold" style="font-size: 0.9rem;">{{ user?.firstName }} {{ user?.lastName }}</div>
+                        <small style="font-size: 0.75rem; opacity: 0.85;">{{ user?.email }}</small>
+                    </div>
+                </div>
+            </a>
         </li>
-        <li class="user-body" *ngIf="user?.roles?.length > 0">
-            <div class="text-center">
+        <li *ngIf="user?.roles?.length > 0">
+            <div class="px-3 py-2 border-top text-center">
                 <span class="badge bg-info me-1" *ngFor="let role of user?.roles">{{ role }}</span>
             </div>
         </li>
-        <li class="user-footer">
-            <a [routerLink]="['/profile']" class="btn btn-default btn-flat">
-                <i class="fas fa-user mr-1"></i> Profile
-            </a>
-            <a (click)="logout()" class="btn btn-default btn-flat float-right" role="button">
-                <i class="fas fa-sign-out-alt mr-1"></i> Sign out
-            </a>
+        <li>
+            <div class="d-flex justify-content-between px-2 py-2 border-top"
+                style="font-size:0.78rem">
+                <a [routerLink]="['/change-password']" class="btn btn-default btn-flat btn-sm">
+                    <i class="fas fa-key me-1"></i>Change Password
+                </a>
+                <a (click)="logout()" class="btn btn-flat btn-sm"
+                    style="color:#dc3545; cursor:pointer">
+                    <i class="fas fa-sign-out-alt me-1"></i>Sign out
+                </a>
+            </div>
         </li>
-    </div>
-</pf-dropdown>
+    </ul>
+</div>

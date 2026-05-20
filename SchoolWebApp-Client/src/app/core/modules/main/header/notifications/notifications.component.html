@@ -1,32 +1,42 @@
-<pf-dropdown [hideArrow]="true">
-    <div slot="button">
-        <a class="nav-link">
-            <i class="far fa-bell"></i>
-            <span class="badge badge-warning navbar-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
-        </a>
-    </div>
-    <div slot="menu">
-        <span class="dropdown-item dropdown-header" *ngIf="notificationCount > 0">
-            {{ notificationCount }} pending approval{{ notificationCount !== 1 ? 's' : '' }}
-        </span>
-        <span class="dropdown-item dropdown-header" *ngIf="notificationCount === 0">No pending approvals</span>
+<div class="dropdown">
+    <a class="nav-link position-relative" role="button" id="notificationsDropdownBtn"
+        data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="far fa-bell" style="font-size: 1.4rem; color: var(--dbta-primary, #3674B3);"></i>
+        <span class="badge bg-warning navbar-badge position-absolute"
+            style="top: 4px; right: 0; font-size: 0.65rem;"
+            *ngIf="notificationCount > 0">{{ notificationCount }}</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end p-0" aria-labelledby="notificationsDropdownBtn"
+        style="min-width: 320px; max-height: 480px; overflow-y: auto;">
+        <li>
+            <span class="dropdown-item dropdown-header" *ngIf="notificationCount > 0">
+                {{ notificationCount }} pending approval{{ notificationCount !== 1 ? 's' : '' }}
+            </span>
+            <span class="dropdown-item dropdown-header" *ngIf="notificationCount === 0">No pending approvals</span>
+        </li>
 
         <ng-container *ngIf="pendingApprovals.length > 0">
-            <div class="dropdown-divider"></div>
-            <a *ngFor="let item of pendingApprovals" class="dropdown-item" (click)="openTask(item)" role="button" style="white-space: normal;">
-                <i [ngClass]="iconFor(item.entityType)" class="mr-2"></i>
-                <strong>{{ formKeyLabel(item.entityType) }}</strong>
-                <small class="text-muted"> &mdash; Step {{ item.currentStepRank }}: {{ item.stepName }}</small>
-                <div class="text-sm text-muted">
-                    From <strong>{{ item.submittedByName }}</strong>
-                    <span class="float-right">{{ getTimeAgo(item.submittedAt) }}</span>
-                </div>
-            </a>
+            <li><hr class="dropdown-divider m-0"></li>
+            <li *ngFor="let item of pendingApprovals">
+                <a class="dropdown-item" (click)="openTask(item)" role="button"
+                    style="white-space: normal; cursor: pointer;">
+                    <i [ngClass]="iconFor(item.entityType)" class="me-2"></i>
+                    <strong>{{ formKeyLabel(item.entityType) }}</strong>
+                    <small class="text-muted"> &mdash; Step {{ item.currentStepRank }}: {{ item.stepName }}</small>
+                    <div class="text-sm text-muted">
+                        From <strong>{{ item.submittedByName }}</strong>
+                        <span class="float-end">{{ getTimeAgo(item.submittedAt) }}</span>
+                    </div>
+                </a>
+            </li>
         </ng-container>
 
-        <div class="dropdown-divider" *ngIf="pendingApprovals.length > 0"></div>
-        <a class="dropdown-item dropdown-footer" (click)="loadNotifications()" role="button">
-            <i class="fas fa-sync-alt me-1"></i> Refresh
-        </a>
-    </div>
-</pf-dropdown>
+        <li *ngIf="pendingApprovals.length > 0"><hr class="dropdown-divider m-0"></li>
+        <li>
+            <a class="dropdown-item text-center" (click)="loadNotifications()" role="button"
+                style="cursor: pointer;">
+                <i class="fas fa-sync-alt me-1"></i> Refresh
+            </a>
+        </li>
+    </ul>
+</div>
