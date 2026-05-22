@@ -25,22 +25,6 @@
 
 // @import "~ngx-spinner/animations/ball-circus.css";
 
-/* ngx-spinner: make the loading overlay non-blocking.
-   The interceptor uses a refcount + 250ms debounce so the spinner only appears
-   for genuinely slow operations. When it does appear, we still want users to
-   be able to read and interact with the page underneath (especially on the
-   dashboard where multiple sequential queries can keep the spinner up for a
-   while). `pointer-events: none` makes clicks/keystrokes pass straight through
-   the backdrop to the elements behind. */
-.ngx-spinner-overlay,
-.ngx-spinner-fullscreen,
-.overlay.ngx-spinner-icon-overlay {
-    pointer-events: none !important;
-}
-ngx-spinner .loading-text,
-ngx-spinner .ngx-spinner-overlay > div {
-    pointer-events: none !important;
-}
 
 html, body {
     overflow-x: hidden;
