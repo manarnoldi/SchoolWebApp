@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
-import {forkJoin, of} from 'rxjs';
-import {catchError} from 'rxjs/operators';
+import {forkJoin, of, Subject} from 'rxjs';
+import {catchError, takeUntil} from 'rxjs/operators';
 import {LoadingStateService} from '@/core/services/loading-state.service';
 import {AcademicYearsService} from '../../services/academic-years.service';
 import {SessionsService} from '@/class/services/sessions.service';
@@ -45,6 +45,13 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
     grades: any[] = [];
     isLoading: boolean = false;
     hasLoaded: boolean = false;
+
+    // Signals when the component is being torn down. Every HTTP subscription
+    // in this widget pipes through `takeUntil(destroy$)` so navigating away
+    // mid-load cancels the in-flight cascade — otherwise pending requests
+    // would keep firing after `loadingState.resume()` and the global spinner
+    // would stay up indefinitely on the page the user moved to.
+    private destroy$ = new Subject<void>();
     showTopStudent: boolean = true;
     configuredExamTypeId: string = null;
     averageMethod: string = 'students_with_scores';
@@ -78,7 +85,7 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
             this.globalSettingSvc.getByKey('General', 'AverageCalculation').pipe(catchError(() => of(null))),
             this.gradesSvc.get('/grades').pipe(catchError(() => of([]))),
             this.globalSettingSvc.getByKey('Grading', 'ExamResults').pipe(catchError(() => of(null)))
-        ]).subscribe({
+        ]).pipe(takeUntil(this.destroy$)).subscribe({
             next: ([showTopSetting, examTypeSetting, avgSetting, allGrades, gradingSetting]) => {
                 this.showTopStudent = showTopSetting?.settingValue !== 'false';
                 this.configuredExamTypeId = examTypeSetting?.settingValue || null;
@@ -97,7 +104,7 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
         let examTypesReq = this.examTypeSvc.get('/examTypes');
         let curriculaReq = this.curriculaSvc.get('/curricula');
 
-        forkJoin([acadYearsReq, examTypesReq, curriculaReq]).subscribe({
+        forkJoin([acadYearsReq, examTypesReq, curriculaReq]).pipe(takeUntil(this.destroy$)).subscribe({
             next: ([academicYears, examTypes, curricula]) => {
                 this.examTypes = examTypes.sort((a, b) => a.rank - b.rank);
                 // Use configured exam type if it exists in the list
@@ -114,7 +121,7 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
                 this.sessionsSvc.getByCurriculumYear(
                     this.activeCurriculumId,
                     this.activeAcademicYearId
-                ).subscribe({
+                ).pipe(takeUntil(this.destroy$)).subscribe({
                     next: (sessions) => {
                         this.sessions = sessions.sort((a, b) => a.rank - b.rank);
                         if (this.sessions.length > 0 && this.examTypes.length > 0) {
@@ -140,7 +147,7 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
         this.classPerformance = [];
         this.hasLoaded = false;
 
-        this.schoolClassesSvc.get('/schoolClasses/byAcademicYearId/' + this.activeAcademicYearId).subscribe({
+        this.schoolClassesSvc.get('/schoolClasses/byAcademicYearId/' + this.activeAcademicYearId).pipe(takeUntil(this.destroy$)).subscribe({
             next: (classes) => {
                 this.schoolClasses = classes.sort((a, b) => {
                     let nameA = a.learningLevel?.name || '';
@@ -178,7 +185,7 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
         // Search for exams for this class
         let examUrl = `/exams/examSearch?academicYearId=${this.activeAcademicYearId}&curriculumId=${this.activeCurriculumId}&sessionId=${this.selectedSessionId}&schoolClassId=${sc.id}&examTypeId=${this.selectedExamTypeId}`;
 
-        this.examSvc.get(examUrl).pipe(catchError(() => of([]))).subscribe({
+        this.examSvc.get(examUrl).pipe(catchError(() => of([])), takeUntil(this.destroy$)).subscribe({
             next: (exams) => {
                 if (!exams || exams.length === 0) {
                     this.processClassesSequentially(index + 1);
@@ -187,7 +194,7 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
 
                 // Get students in this class
                 this.studentClassSvc.getBySchoolClassId(parseInt(sc.id), Status.Active)
-                    .pipe(catchError(() => of([])))
+                    .pipe(catchError(() => of([])), takeUntil(this.destroy$))
                     .subscribe({
                         next: (studentClasses) => {
                             let students = studentClasses.map((stc) => stc.student).filter(Boolean);
@@ -202,7 +209,7 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
                                     .pipe(catchError(() => of([])))
                             );
 
-                            forkJoin(resultRequests).subscribe({
+                            forkJoin(resultRequests).pipe(takeUntil(this.destroy$)).subscribe({
                                 next: (allResults) => {
                                     // Build per-student scores
                                     let studentScores: { [studentId: number]: { total: number; count: number } } = {};
@@ -303,6 +310,13 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        // Cancel every in-flight HTTP subscription this widget started. Without
+        // this, the recursive per-class chain keeps firing after navigation
+        // and — because `resume()` below has already run — each new request
+        // ticks the global spinner on whatever page the user moved to.
+        this.destroy$.next();
+        this.destroy$.complete();
+
         // Release the spinner-suspension so other pages get normal loader
         // behaviour after the user leaves the dashboard.
         this.loadingState.resume();
