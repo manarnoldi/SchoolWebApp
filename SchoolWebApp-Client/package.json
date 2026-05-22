@@ -5,7 +5,7 @@
     "type": "module",
     "scripts": {
         "prepare": "husky install",
-        "start": "ng serve -o",
+        "start": "ng serve -o --port 4300",
         "build": "ng build --configuration production",
         "test": "ng test",
         "lint": "ng lint",
