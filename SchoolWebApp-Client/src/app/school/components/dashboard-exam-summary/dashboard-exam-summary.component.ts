@@ -1,8 +1,7 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin, of} from 'rxjs';
 import {catchError} from 'rxjs/operators';
-import {LoadingStateService} from '@/core/services/loading-state.service';
 import {AcademicYearsService} from '../../services/academic-years.service';
 import {SessionsService} from '@/class/services/sessions.service';
 import {SchoolClassesService} from '@/class/services/school-classes.service';
@@ -20,7 +19,7 @@ import {Status} from '@/core/enums/status';
     templateUrl: './dashboard-exam-summary.component.html',
     styleUrl: './dashboard-exam-summary.component.scss'
 })
-export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
+export class DashboardExamSummaryComponent implements OnInit {
     sessions: any[] = [];
     examTypes: any[] = [];
     schoolClasses: any[] = [];
@@ -60,15 +59,10 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
         private curriculaSvc: CurriculumService,
         private studentClassSvc: StudentClassService,
         private globalSettingSvc: GlobalSettingService,
-        private gradesSvc: GradesService,
-        private loadingState: LoadingStateService
+        private gradesSvc: GradesService
     ) {}
 
     ngOnInit(): void {
-        // Suspend the page-level spinner for the lifetime of this widget;
-        // the widget shows its own inline "Loading performance data..." spinner.
-        this.loadingState.suspend();
-
         forkJoin([
             this.globalSettingSvc.getByKey('General', 'ShowTopStudent').pipe(catchError(() => of(null))),
             this.globalSettingSvc.getByKey('General', 'CurrentExamType').pipe(catchError(() => of(null))),
@@ -297,11 +291,5 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
         if (avg >= 50) return 'bg-info';
         if (avg >= 40) return 'bg-warning';
         return 'bg-danger';
-    }
-
-    ngOnDestroy(): void {
-        // Restore the page-level spinner so other screens that rely on it
-        // continue to work normally after the user leaves the dashboard.
-        this.loadingState.resume();
     }
 }

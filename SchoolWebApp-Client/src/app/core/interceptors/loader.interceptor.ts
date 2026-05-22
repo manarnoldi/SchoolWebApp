@@ -35,10 +35,21 @@ export class LoaderInterceptor implements HttpInterceptor {
     // window so requests that finish quickly never trigger it at all.
     private showTimer: ReturnType<typeof setTimeout> | null = null;
 
+    // Pending "hide the spinner" timer. We keep the spinner up for a short
+    // settling window after activeRequests drops to 0 so cascades of requests
+    // (e.g. dashboard widgets where one finishing triggers the next) read as
+    // one continuous load rather than several blinks.
+    private hideTimer: ReturnType<typeof setTimeout> | null = null;
+
     // How long a request must run before the spinner appears. Tuned so most
     // cached / fast requests stay invisible, while genuinely slow requests
     // still get a loading indicator after a brief moment.
     private readonly SHOW_DELAY_MS = 250;
+
+    // How long to wait after the last in-flight request before actually
+    // hiding the spinner. If a new request arrives within this window, the
+    // pending hide is cancelled and the spinner stays up smoothly.
+    private readonly HIDE_DELAY_MS = 400;
 
     constructor(
         private spinner: NgxSpinnerService,
@@ -71,6 +82,11 @@ export class LoaderInterceptor implements HttpInterceptor {
     }
 
     private startRequest() {
+        // A new request cancels any pending "hide" — we're not idle anymore.
+        if (this.hideTimer) {
+            clearTimeout(this.hideTimer);
+            this.hideTimer = null;
+        }
         this.activeRequests++;
         // Only schedule a "show" if this is the first request and the spinner
         // isn't already visible. Subsequent overlapping requests just increment
@@ -94,11 +110,18 @@ export class LoaderInterceptor implements HttpInterceptor {
                 clearTimeout(this.showTimer);
                 this.showTimer = null;
             }
-            // Hide only if the spinner was actually shown — avoids spurious
-            // hide calls that could interfere with other UI overlays.
-            if (this.spinnerVisible) {
-                this.spinner.hide();
-                this.spinnerVisible = false;
+            // Defer the hide. If a cascade of requests is in progress (e.g.
+            // dashboard widgets that fire sequentially), each new request will
+            // cancel this timer in startRequest and the spinner stays up as
+            // one continuous load. After HIDE_DELAY_MS of true idle, hide it.
+            if (this.spinnerVisible && !this.hideTimer) {
+                this.hideTimer = setTimeout(() => {
+                    this.hideTimer = null;
+                    if (this.activeRequests === 0 && this.spinnerVisible) {
+                        this.spinner.hide();
+                        this.spinnerVisible = false;
+                    }
+                }, this.HIDE_DELAY_MS);
             }
         }
     }

@@ -25,6 +25,18 @@
 
 // @import "~ngx-spinner/animations/ball-circus.css";
 
+/* ngx-spinner: keep the loading overlay non-blocking so the user can still
+   read/interact with the page underneath while the global spinner is up. */
+.ngx-spinner-overlay,
+.ngx-spinner-fullscreen,
+.overlay.ngx-spinner-icon-overlay {
+    pointer-events: none !important;
+}
+ngx-spinner .loading-text,
+ngx-spinner .ngx-spinner-overlay > div {
+    pointer-events: none !important;
+}
+
 
 html, body {
     overflow-x: hidden;
