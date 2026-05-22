@@ -26,9 +26,10 @@ export class ExamsComponent implements OnInit {
 
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Dashboard'},
-        {link: ['/cbe/exams/exams'], title: 'CBE Exams: Exams'}
+        {link: ['/cbe/exams/exams'], title: 'CBE Exams: Register'},
+        {link: ['/cbe/exams/exams/register'], title: 'New Exam(s)'}
     ];
-    dashboardTitle = 'CBE Exams: Exams';
+    dashboardTitle = 'CBE Exams: Register New Exam(s)';
 
     page = 1;
     pageSize = 10;

@@ -1,0 +1,262 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+
+<div class="container-fluid px-1">
+
+        <!-- Top-of-page action bar — flush right -->
+        <div class="d-flex justify-content-end mb-1">
+            <a class="btn btn-success btn-sm" [routerLink]="['/cbe/exams/exams/register']">
+                <i class="fas fa-plus"></i> Register New Exam(s)
+            </a>
+        </div>
+
+        <!-- Filter + search -->
+        <div class="card card-outline card-info mb-1">
+            <div class="card-header p-1">
+                <strong>Find Registered Exams</strong>
+            </div>
+            <div class="card-body p-1">
+                <div class="row g-1">
+                    <div class="col-md-2">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">
+                            Curriculum <span class="requiredField">*</span>
+                        </label>
+                        <select class="form-select form-select-sm"
+                            [(ngModel)]="filterCurriculumId" (change)="onCurriculumChange()">
+                            <option [ngValue]="null" hidden disabled selected>Select curriculum</option>
+                            <option [ngValue]="c.id" *ngFor="let c of curricula">{{c.name}}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">
+                            Year <span class="requiredField">*</span>
+                        </label>
+                        <select class="form-select form-select-sm"
+                            [(ngModel)]="filterAcademicYearId" (change)="onAcademicYearChange()">
+                            <option [ngValue]="null" hidden disabled selected>Select year</option>
+                            <option [ngValue]="y.id" *ngFor="let y of academicYears">{{y.name}}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">
+                            Term (Session) <span class="requiredField">*</span>
+                        </label>
+                        <select class="form-select form-select-sm"
+                            [(ngModel)]="filterSessionId" (change)="onSessionChange()">
+                            <option [ngValue]="null" hidden disabled selected>Select term</option>
+                            <option [ngValue]="s.id" *ngFor="let s of sessions">{{s.sessionName}}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Class</label>
+                        <select class="form-select form-select-sm"
+                            [(ngModel)]="filterSchoolClassId" (change)="onClassChange()">
+                            <option [ngValue]="null">All classes</option>
+                            <option [ngValue]="sc.id" *ngFor="let sc of schoolClasses">{{sc.name}}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Exam Type</label>
+                        <select class="form-select form-select-sm"
+                            [(ngModel)]="filterExamTypeId" (change)="onExamTypeChange()">
+                            <option [ngValue]="null">All types</option>
+                            <option [ngValue]="et.id" *ngFor="let et of examTypes">{{et.name}}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Search</label>
+                        <input type="text" class="form-control form-control-sm"
+                            placeholder="Subject, class, type..."
+                            [(ngModel)]="searchText" (ngModelChange)="onSearchChanged()" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help when no filter set -->
+        <div class="alert alert-light border d-flex align-items-center mb-1 py-2"
+            *ngIf="!filterCurriculumId || !filterAcademicYearId || !filterSessionId">
+            <i class="fas fa-info-circle me-2 text-info"></i>
+            <div>
+                Pick a <strong>Curriculum</strong>, <strong>Year</strong> and <strong>Term</strong> to list
+                registered exams. Use the optional Class / Exam Type filters and the search box to narrow further.
+            </div>
+        </div>
+
+        <!-- Results table -->
+        <div class="card"
+            *ngIf="filterCurriculumId && filterAcademicYearId && filterSessionId">
+            <div class="card-header bg-info text-white p-1 d-flex justify-content-between align-items-center">
+                <strong>
+                    Registered Exams - {{ filteredExams.length }} of {{ exams.length }} match
+                    <span *ngIf="selectedExamIds.length > 0" class="badge bg-warning text-dark ms-1">
+                        {{ selectedExamIds.length }} selected
+                    </span>
+                </strong>
+                <button class="btn btn-danger btn-sm"
+                    [disabled]="selectedExamIds.length === 0 || isDeleting"
+                    (click)="deleteSelectedExams()">
+                    <i class="fas" [ngClass]="isDeleting ? 'fa-spinner fa-spin' : 'fa-trash'"></i>
+                    {{ isDeleting ? 'Deleting...' : 'Delete Selected (' + selectedExamIds.length + ')' }}
+                </button>
+            </div>
+
+            <div class="card-body table-responsive p-0">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width:30px;">
+                                <input type="checkbox" [checked]="allFilteredSelected()" (change)="toggleAllFiltered()"
+                                    title="Select all on this page" />
+                            </th>
+                            <th>#</th>
+                            <th>Exam Type</th>
+                            <th>Class</th>
+                            <th>Subject</th>
+                            <th>Mark</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Mark Entry Deadline</th>
+                            <th>Description</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="isLoading">
+                            <td colspan="11" class="text-center text-muted py-3">
+                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                            </td>
+                        </tr>
+                        <tr *ngIf="!isLoading && filteredExams.length === 0">
+                            <td colspan="11" class="text-center text-muted py-3">
+                                No exams match the current filters.
+                            </td>
+                        </tr>
+                        <tr *ngFor="let item of filteredExams | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i"
+                            [class.table-warning]="isExamSelected(parseInt(item.id))">
+                            <td>
+                                <input type="checkbox" [checked]="isExamSelected(parseInt(item.id))"
+                                    (change)="toggleExamSelection(parseInt(item.id))" />
+                            </td>
+                            <td>{{ (page-1) * pageSize + i + 1 }}</td>
+                            <td>{{ item.examType?.name }}</td>
+                            <td>{{ item.schoolClass?.name }}</td>
+                            <td>{{ item.subject?.name }}</td>
+                            <td>{{ item.examMark }}</td>
+                            <td>{{ item.examStartDate | date:'mediumDate' }}</td>
+                            <td>{{ item.examEndDate | date:'mediumDate' }}</td>
+                            <td>{{ item.examMarkEntryEndDate | date:'mediumDate' }}</td>
+                            <td>{{ item.description }}</td>
+                            <td class="text-end" style="white-space:nowrap;">
+                                <button class="btn btn-primary btn-sm me-1" (click)="openEdit(item)" title="Edit dates / mark">
+                                    <i class="fas fa-pen"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm" (click)="deleteItem(item)" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <app-table-paging *ngIf="filteredExams.length > 0"
+                    (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"
+                    [collectionSize]="filteredExams.length"></app-table-paging>
+            </div>
+        </div>
+    </div>
+
+<!-- Edit modal — only dates and exam mark are writable; the rest is read-only. -->
+<div class="modal show d-block" *ngIf="editingExam" tabindex="-1" role="dialog"
+    style="background: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white p-2">
+                <h5 class="modal-title">
+                    <i class="fas fa-pen me-1"></i> Edit Exam
+                </h5>
+                <button type="button" class="btn-close btn-close-white" (click)="cancelEdit()"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-2">
+                <!-- Read-only context: tells the user what they're editing, but
+                     you can't change the keying. -->
+                <div class="row g-1 mb-2">
+                    <div class="col-md-3">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Exam Type</label>
+                        <input type="text" class="form-control form-control-sm"
+                            [value]="editingExam.examType?.name || ''" readonly />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Class</label>
+                        <input type="text" class="form-control form-control-sm"
+                            [value]="editingExam.schoolClass?.name || ''" readonly />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Subject</label>
+                        <input type="text" class="form-control form-control-sm"
+                            [value]="editingExam.subject?.name || ''" readonly />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Session (Term)</label>
+                        <input type="text" class="form-control form-control-sm"
+                            [value]="editingExam.session?.sessionName || ''" readonly />
+                    </div>
+                </div>
+
+                <hr class="my-2">
+
+                <!-- Editable fields -->
+                <div class="row g-1">
+                    <div class="col-md-3">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">
+                            Exam Mark <span class="requiredField">*</span>
+                        </label>
+                        <input type="number" class="form-control form-control-sm"
+                            [(ngModel)]="editForm.examMark" min="1" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">
+                            Start Date <span class="requiredField">*</span>
+                        </label>
+                        <input type="date" class="form-control form-control-sm"
+                            [(ngModel)]="editForm.examStartDate" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">
+                            End Date <span class="requiredField">*</span>
+                        </label>
+                        <input type="date" class="form-control form-control-sm"
+                            [(ngModel)]="editForm.examEndDate" [min]="editForm.examStartDate" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Mark Entry Deadline</label>
+                        <input type="date" class="form-control form-control-sm"
+                            [(ngModel)]="editForm.examMarkEntryEndDate" [min]="editForm.examEndDate" />
+                    </div>
+                </div>
+                <div class="row g-1 mt-1">
+                    <div class="col-md-12">
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Description</label>
+                        <input type="text" class="form-control form-control-sm"
+                            [(ngModel)]="editForm.description" placeholder="Optional" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer p-2">
+                <button type="button" class="btn btn-secondary btn-sm" (click)="cancelEdit()"
+                    [disabled]="isSavingEdit">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-success btn-sm" (click)="saveEdit()"
+                    [disabled]="isSavingEdit">
+                    <i class="fas" [ngClass]="isSavingEdit ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+                    {{ isSavingEdit ? 'Saving...' : 'Save Changes' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+

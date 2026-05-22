@@ -23,6 +23,12 @@ import {ThemeService} from '../../services/theme.service';
 import {Status} from '@/core/enums/status';
 import {ActivatedRoute, Router} from '@angular/router';
 import {matchOptionId, pushQueryParams, readQueryParam} from '@/shared/utils/query-param-sync';
+import {AuthService} from '@/core/services/auth.service';
+import {MenuPermissionService} from '@/security/services/menu-permission.service';
+import {StaffSubjectsService} from '@/staff/services/staff-subjects.service';
+import {StaffSubject} from '@/staff/models/staff-subject';
+import {of} from 'rxjs';
+import {catchError} from 'rxjs/operators';
 
 @Component({
     selector: 'app-student-assessments',
@@ -163,6 +169,18 @@ export class StudentAssessmentsComponent implements OnInit {
     isSavingSubStrand: boolean = false;
     isSavingStrand: boolean = false;
 
+    // Mode + allocation gating.
+    // - hasAdminAccess === true: behaves as before (all teachers visible, no
+    //   per-subject restriction). Granted via the Administrator/SuperAdministrator
+    //   role OR by assigning the `/cbe/assessments/admin` menu permission path.
+    // - hasAdminAccess === false: only the current user is shown in the teacher
+    //   dropdown and they can only save marks for (class, subject) pairs they
+    //   have a StaffSubject row for in the selected academic year.
+    hasAdminAccess: boolean = false;
+    currentUserStaffId: number | null = null;
+    teacherAllocations: StaffSubject[] = [];
+    isAllocatedToSelection: boolean = true;
+
     constructor(
         private toastr: ToastrService,
         private studentAssessmentSvc: StudentAssessmentService,
@@ -182,12 +200,38 @@ export class StudentAssessmentsComponent implements OnInit {
         private subjectsSvc: SubjectsService,
         private themeSvc: ThemeService,
         private route: ActivatedRoute,
-        private router: Router
+        private router: Router,
+        private authService: AuthService,
+        private menuPermSvc: MenuPermissionService,
+        private staffSubjectsSvc: StaffSubjectsService
     ) {}
 
     ngOnInit(): void {
         this.querySource = this.route.snapshot.queryParamMap.get('source') || '';
-        this.refreshItems();
+
+        let user = this.authService.getCurrentUser();
+        this.currentUserStaffId = user?.staffId ?? null;
+
+        // Role shortcuts — Admins and SuperAdmins always have admin access here.
+        let roleAdmin = !!user?.currentUserAdministrator;
+        let roleSuperAdmin = (user?.roles || []).some(
+            (r: any) => String(r).toLowerCase() === 'superadministrator'
+        );
+        if (roleAdmin || roleSuperAdmin) {
+            this.hasAdminAccess = true;
+            this.refreshItems();
+            return;
+        }
+
+        // Otherwise honour the `/cbe/assessments/admin` menu permission.
+        // On any error / no permission, default to teacher mode (safer).
+        this.menuPermSvc.getMyPermissions()
+            .pipe(catchError(() => of({allAccess: false, paths: [] as string[]})))
+            .subscribe((res) => {
+                this.hasAdminAccess = !!res?.allAccess
+                    || (res?.paths || []).includes('/cbe/assessments/admin');
+                this.refreshItems();
+            });
     }
 
     refreshItems() {
@@ -206,7 +250,19 @@ export class StudentAssessmentsComponent implements OnInit {
                 let settingResponse = gradingSetting as any;
                 this.gradingCategory = settingResponse?.settingValue || '4-Point';
                 this.grades = allGrades.filter(g => g.category === this.gradingCategory).sort((a, b) => a.rank - b.rank);
-                this.teachers = teachers;
+
+                // Teachers list: admins see everyone; non-admins see only themselves
+                // (and the dropdown auto-selects them since there's only one option).
+                if (this.hasAdminAccess) {
+                    this.teachers = teachers;
+                } else {
+                    this.teachers = teachers.filter(
+                        (t: any) => this.currentUserStaffId != null && t.id == this.currentUserStaffId
+                    );
+                    if (this.teachers.length === 1) {
+                        this.filterStaffDetailsId = this.teachers[0].id;
+                    }
+                }
                 this.isAuthLoading = false;
                 this.restoreFromUrl();
             },
@@ -301,6 +357,52 @@ export class StudentAssessmentsComponent implements OnInit {
         });
     }
 
+    /**
+     * Pulls the current user's StaffSubject allocations for the selected year.
+     * Cached on the component so the per-subject lookup is local on every
+     * subsequent dropdown change. No-op when in admin mode or when staffId /
+     * year aren't set yet.
+     */
+    private loadTeacherAllocations() {
+        if (this.hasAdminAccess || !this.currentUserStaffId || !this.filterAcademicYearId) {
+            this.teacherAllocations = [];
+            this.updateAllocationStatus();
+            return;
+        }
+        this.staffSubjectsSvc
+            .getByStaffYearId(this.currentUserStaffId, this.filterAcademicYearId)
+            .subscribe({
+                next: (allocations) => {
+                    this.teacherAllocations = allocations || [];
+                    this.updateAllocationStatus();
+                },
+                error: () => {
+                    this.teacherAllocations = [];
+                    this.updateAllocationStatus();
+                }
+            });
+    }
+
+    /**
+     * Recomputes `isAllocatedToSelection` whenever the (class, subject) tuple
+     * changes. Admins always pass. Teachers must have a StaffSubject linking
+     * them to the selected class+subject; otherwise marks entry is blocked.
+     */
+    private updateAllocationStatus() {
+        if (this.hasAdminAccess) {
+            this.isAllocatedToSelection = true;
+            return;
+        }
+        // Don't show the banner until the user has actually picked a (class, subject).
+        if (!this.filterSchoolClassId || !this.filterSubjectId) {
+            this.isAllocatedToSelection = true;
+            return;
+        }
+        this.isAllocatedToSelection = this.teacherAllocations.some(
+            (sa) => sa.subjectId == this.filterSubjectId && sa.schoolClassId == this.filterSchoolClassId
+        );
+    }
+
     onCurriculumChange = () => {
         this.sessions = this.schoolClasses = this.subjects = this.strands = this.subStrands = this.specificOutcomes = [];
         this.filterAcademicYearId = this.filterSessionId = this.filterSchoolClassId = this.filterSubjectId = null;
@@ -323,6 +425,7 @@ export class StudentAssessmentsComponent implements OnInit {
         this.filterSubStrandId = this.filterSpecificOutcomeId = null;
         this.studentsLoaded = false;
         this.syncUrl();
+        this.loadTeacherAllocations();
         if (!this.filterAcademicYearId || !this.filterCurriculumId) return;
 
         forkJoin([
@@ -352,6 +455,7 @@ export class StudentAssessmentsComponent implements OnInit {
         this.studentsLoaded = false;
         this.bulkLoaded = false;
         this.syncUrl();
+        this.updateAllocationStatus();
         if (!this.filterSchoolClassId) return;
 
         // Load only subjects allocated to students in this class
@@ -374,6 +478,7 @@ export class StudentAssessmentsComponent implements OnInit {
         this.studentsLoaded = false;
         this.bulkLoaded = false;
         this.syncUrl();
+        this.updateAllocationStatus();
         if (!this.filterSubjectId || !this.filterSchoolClassId) return;
 
         let selectedClass = this.schoolClasses.find((sc) => sc.id == this.filterSchoolClassId);
@@ -497,6 +602,10 @@ export class StudentAssessmentsComponent implements OnInit {
     };
 
     saveAll = () => {
+        if (!this.isAllocatedToSelection) {
+            this.toastr.warning('You are not allocated to this subject for the selected class. Marks cannot be saved.');
+            return;
+        }
         let rowsToSave = this.gradingRows.filter((r) => r.gradeId != null);
         if (rowsToSave.length === 0) {
             this.toastr.info('Please assign at least one grade before saving.');
@@ -653,6 +762,10 @@ export class StudentAssessmentsComponent implements OnInit {
     };
 
     saveSubStrandAssessments = () => {
+        if (!this.isAllocatedToSelection) {
+            this.toastr.warning('You are not allocated to this subject for the selected class. Marks cannot be saved.');
+            return;
+        }
         let rowsToSave = this.subStrandRows.filter((r) => r.gradeId != null);
         if (rowsToSave.length === 0) {
             this.toastr.info('No computed grades to save.');
@@ -770,6 +883,10 @@ export class StudentAssessmentsComponent implements OnInit {
     };
 
     saveStrandAssessments = () => {
+        if (!this.isAllocatedToSelection) {
+            this.toastr.warning('You are not allocated to this subject for the selected class. Marks cannot be saved.');
+            return;
+        }
         let rowsToSave = this.strandRows.filter((r) => r.gradeId != null);
         if (rowsToSave.length === 0) {
             this.toastr.info('No computed grades to save.');
@@ -909,6 +1026,10 @@ export class StudentAssessmentsComponent implements OnInit {
     };
 
     saveBulkAssessments = () => {
+        if (!this.isAllocatedToSelection) {
+            this.toastr.warning('You are not allocated to this subject for the selected class. Marks cannot be saved.');
+            return;
+        }
         let requests: any[] = [];
         let count = 0;
 

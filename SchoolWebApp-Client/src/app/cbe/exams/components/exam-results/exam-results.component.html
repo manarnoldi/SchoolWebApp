@@ -70,11 +70,34 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12 text-end">
-                        <button class="btn btn-sm btn-info" (click)="loadStudents()">
+                        <button class="btn btn-sm btn-info" (click)="loadStudents()"
+                            [disabled]="!isAllocatedToSubject">
                             <i class="fas fa-users"></i> Load Students
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="alert alert-warning d-flex align-items-center mb-1"
+            *ngIf="!isAllocatedToSubject"
+            role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <div>
+                <strong>You are not allocated to this subject for the selected class.</strong>
+                You cannot enter or save results here. Please contact your administrator to be assigned to the subject for this class.
+            </div>
+        </div>
+
+        <div class="alert alert-danger d-flex align-items-center mb-1"
+            *ngIf="isPastMarkEntryDeadline"
+            role="alert">
+            <i class="fas fa-lock me-2"></i>
+            <div>
+                <strong>Mark entry deadline has passed.</strong>
+                The deadline for this exam was
+                <strong>{{ selectedExam?.examMarkEntryEndDate | date:'mediumDate' }}</strong>.
+                New marks, edits, and deletions are locked on this page. An administrator can still make corrections via <em>Results (Bulk)</em>.
             </div>
         </div>
 
@@ -122,7 +145,9 @@
                             </td>
                             <td>
                                 <button *ngIf="row.existingId" class="btn btn-danger btn-sm"
-                                    (click)="deleteResult(row)" title="Delete result">
+                                    (click)="deleteResult(row)"
+                                    [disabled]="isPastMarkEntryDeadline"
+                                    [title]="isPastMarkEntryDeadline ? 'Mark entry deadline has passed' : 'Delete result'">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
@@ -143,11 +168,13 @@
                     (pageSizeChangedEvent)="tablePageSize = $event"></app-table-paging>
             </div>
             <div class="card-footer p-1 d-flex justify-content-between">
-                <button class="btn btn-danger btn-sm" (click)="deleteAll()" [disabled]="isSaving || getExistingCount() === 0">
+                <button class="btn btn-danger btn-sm" (click)="deleteAll()"
+                    [disabled]="isSaving || getExistingCount() === 0 || isPastMarkEntryDeadline">
                     <i class="fas fa-trash"></i>
                     Delete All Results ({{getExistingCount()}})
                 </button>
-                <button class="btn btn-success btn-sm" (click)="saveAll()" [disabled]="isSaving">
+                <button class="btn btn-success btn-sm" (click)="saveAll()"
+                    [disabled]="isSaving || !isAllocatedToSubject || isPastMarkEntryDeadline">
                     <i class="fas fa-save"></i>
                     {{ isSaving ? 'Saving...' : 'Save All Results' }}
                 </button>

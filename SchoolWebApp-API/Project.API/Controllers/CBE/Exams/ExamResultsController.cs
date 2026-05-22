@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Academics.ExamResult;
 using SchoolWebApp.Core.DTOs.Reports.Academics;
 using SchoolWebApp.Core.Entities.CBE.Exams;
+using SchoolWebApp.Core.Entities.Identity;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.Academics
@@ -17,12 +19,90 @@ namespace SchoolWebApp.API.Controllers.Academics
         private readonly ILogger<ExamResultsController> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly UserManager<AppUser> _userManager;
 
-        public ExamResultsController(ILogger<ExamResultsController> logger, IUnitOfWork unitOfWork, IMapper mapper)
+        public ExamResultsController(
+            ILogger<ExamResultsController> logger,
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            UserManager<AppUser> userManager)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userManager = userManager;
+        }
+
+        /// <summary>
+        /// Enforces that the current user may write results for the given exam(s).
+        /// Administrators and SuperAdministrators bypass the check. Teachers must
+        /// have a StaffSubject row linking them to the exam's (SubjectId,
+        /// SchoolClassId) pair. Returns null when allowed, or an IActionResult
+        /// the caller should return immediately when blocked.
+        /// </summary>
+        /// <remarks>
+        /// Defense-in-depth alongside the frontend banner in
+        /// ExamResultsComponent. The frontend disables the Save button when a
+        /// teacher is not allocated; this server-side gate stops a tampered or
+        /// scripted request from bypassing the UI.
+        /// </remarks>
+        private async Task<IActionResult> CheckCanWriteResultsAsync(IEnumerable<int> examIds)
+        {
+            // Roles are emitted as `"roles"` claims by JwtService; read directly
+            // rather than rely on User.IsInRole (RoleClaimType is not configured).
+            var roles = User.Claims
+                .Where(c => c.Type == "roles")
+                .Select(c => c.Value)
+                .ToHashSet();
+
+            if (roles.Contains("Administrator") || roles.Contains("SuperAdministrator"))
+                return null;
+
+            if (!roles.Contains("Teacher"))
+                return StatusCode(StatusCodes.Status403Forbidden,
+                    new { message = "Only teachers and administrators can submit exam results." });
+
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userid")?.Value;
+            if (!int.TryParse(userIdClaim, out var userId))
+                return StatusCode(StatusCodes.Status403Forbidden,
+                    new { message = "Unable to identify the current user." });
+
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user?.PersonId == null)
+                return StatusCode(StatusCodes.Status403Forbidden,
+                    new { message = "Your account is not linked to a staff record." });
+
+            var staffDetailsId = user.PersonId.Value;
+
+            // Resolve each distinct exam to its (SubjectId, SchoolClassId) pair
+            // so we know exactly which allocations to check.
+            var distinctExamIds = examIds.Where(id => id > 0).Distinct().ToList();
+            if (distinctExamIds.Count == 0) return null;
+
+            var requiredPairs = new HashSet<(int subjectId, int schoolClassId)>();
+            foreach (var eid in distinctExamIds)
+            {
+                var exam = await _unitOfWork.Exams.GetById(eid);
+                if (exam == null) continue; // existing handlers will return their own error for unknown exam
+                requiredPairs.Add((exam.SubjectId, exam.SchoolClassId));
+            }
+            if (requiredPairs.Count == 0) return null;
+
+            // One DB roundtrip for the teacher's full allocation list, then local filter.
+            var allocations = await _unitOfWork.StaffSubjects.GetByStaffDetailsId(staffDetailsId);
+            foreach (var pair in requiredPairs)
+            {
+                var ok = allocations.Any(a => a.SubjectId == pair.subjectId
+                                              && a.SchoolClassId == pair.schoolClassId);
+                if (!ok)
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden, new
+                    {
+                        message = "You are not allocated to one or more of the (subject, class) combinations being submitted."
+                    });
+                }
+            }
+            return null;
         }
 
         // GET: api/examResults
@@ -242,6 +322,10 @@ namespace SchoolWebApp.API.Controllers.Academics
                     return Conflict(new { message = $"The student details submitted does not exist." });
                 if (!await _unitOfWork.Exams.ItemExistsAsync(s => s.Id == model.ExamId))
                     return Conflict(new { message = $"The exam details submitted do not exist." });
+
+                var authBlock = await CheckCanWriteResultsAsync(new[] { model.ExamId });
+                if (authBlock != null) return authBlock;
+
                 try
                 {
                     var _item = _mapper.Map<ExamResult>(model);
@@ -275,6 +359,10 @@ namespace SchoolWebApp.API.Controllers.Academics
             {
                 return BadRequest("No exam results provided.");
             }
+
+            var authBlock = await CheckCanWriteResultsAsync(model.Select(m => m.ExamId));
+            if (authBlock != null) return authBlock;
+
             if (ModelState.IsValid)
             {
                 try
@@ -361,6 +449,10 @@ namespace SchoolWebApp.API.Controllers.Academics
                 var itemExists = await _unitOfWork.ExamResults.GetById(id);
                 if (itemExists == null)
                     return BadRequest($"The exam result of Id- '{id}' does not exist hence cannot be deleted.");
+
+                var authBlock = await CheckCanWriteResultsAsync(new[] { itemExists.ExamId });
+                if (authBlock != null) return authBlock;
+
                 var entity = await _unitOfWork.ExamResults.GetById(id);
                 _unitOfWork.ExamResults.Delete(entity);
                 await _unitOfWork.SaveChangesAsync();

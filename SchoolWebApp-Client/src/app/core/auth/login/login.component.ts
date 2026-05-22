@@ -58,6 +58,11 @@ export class LoginComponent implements OnInit, OnDestroy {
                             let cuUser: User = {...res};
                             cuUser.roles = result.roles;
                             cuUser.mustChangePassword = !!result.mustChangePassword;
+                            // Backend returns the linked Person row's id as `personId`
+                            // (PersonId on the .NET DTO). For teachers this Person row
+                            // IS their StaffDetails row, so map it to `staffId` for the
+                            // per-subject allocation check on the frontend.
+                            cuUser.staffId = res?.personId ?? res?.PersonId ?? null;
 
                             cuUser.roles.forEach((r) => {
                                 if (r.toString() == 'Parent')

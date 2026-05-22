@@ -18,6 +18,9 @@ import {StudentSubjectsService} from '@/students/services/student-subjects.servi
 import {GradesService} from '@/academics/services/grades.service';
 import {GlobalSettingService} from '@/settings/services/global-setting.service';
 import {Status} from '@/core/enums/status';
+import {AuthService} from '@/core/services/auth.service';
+import {StaffSubjectsService} from '@/staff/services/staff-subjects.service';
+import {StaffSubject} from '@/staff/models/staff-subject';
 
 @Component({
     selector: 'app-exam-results',
@@ -68,6 +71,32 @@ export class ExamResultsComponent implements OnInit {
     isSaving: boolean = false;
     averageMethod: string = 'students_with_scores';
 
+    // Teachers can only enter results for subjects they are allocated to in the
+    // selected class. Administrators (and other non-teacher roles) bypass this
+    // check and use the bulk entry / per-subject screen freely.
+    currentUserIsTeacher: boolean = false;
+    currentUserStaffId: number | null = null;
+    teacherAllocations: StaffSubject[] = [];
+    isAllocatedToSubject: boolean = true;
+
+    /**
+     * True when today (date-only, no time) is strictly AFTER the selected
+     * exam's `examMarkEntryEndDate`. The per-subject results page is the
+     * teacher-facing entry point, so we lock marks entry/edits/deletes here
+     * once the deadline has passed. Administrators can still make corrections
+     * via the Results (Bulk) page.
+     */
+    get isPastMarkEntryDeadline(): boolean {
+        let raw = this.selectedExam?.examMarkEntryEndDate;
+        if (!raw) return false;
+        let deadline = new Date(raw);
+        if (isNaN(deadline.getTime())) return false;
+        deadline.setHours(0, 0, 0, 0);
+        let today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return today.getTime() > deadline.getTime();
+    }
+
     // Client-side paging for the per-student scoring rows; default 30/page.
     tablePage: number = 1;
     tablePageSize: number = 30;
@@ -86,10 +115,16 @@ export class ExamResultsComponent implements OnInit {
         private studentClassSvc: StudentClassService,
         private studentSubjectsSvc: StudentSubjectsService,
         private gradesSvc: GradesService,
-        private globalSettingSvc: GlobalSettingService
+        private globalSettingSvc: GlobalSettingService,
+        private authService: AuthService,
+        private staffSubjectsSvc: StaffSubjectsService
     ) {}
 
     ngOnInit(): void {
+        let user = this.authService.getCurrentUser();
+        this.currentUserIsTeacher = !!user?.currentUserTeacher;
+        this.currentUserStaffId = user?.staffId ?? null;
+
         this.globalSettingSvc.getByKey('General', 'AverageCalculation').subscribe({
             next: (setting) => {
                 this.averageMethod = setting?.settingValue || 'students_with_scores';
@@ -97,6 +132,51 @@ export class ExamResultsComponent implements OnInit {
             error: () => {}
         });
         this.refreshItems();
+    }
+
+    /**
+     * Pulls the current user's StaffSubject allocations for the selected academic
+     * year. Cached on the component so the per-subject lookup is a local filter,
+     * not a server roundtrip on every dropdown change.
+     */
+    private loadTeacherAllocations() {
+        if (!this.currentUserIsTeacher || !this.currentUserStaffId || !this.filterAcademicYearId) {
+            this.teacherAllocations = [];
+            this.updateAllocationStatus();
+            return;
+        }
+        this.staffSubjectsSvc
+            .getByStaffYearId(this.currentUserStaffId, this.filterAcademicYearId)
+            .subscribe({
+                next: (allocations) => {
+                    this.teacherAllocations = allocations || [];
+                    this.updateAllocationStatus();
+                },
+                error: () => {
+                    this.teacherAllocations = [];
+                    this.updateAllocationStatus();
+                }
+            });
+    }
+
+    /**
+     * Re-evaluates whether the current user is permitted to enter results for
+     * the currently selected (class, subject) tuple. Non-teachers always pass.
+     * Teachers must have a StaffSubject matching the selection.
+     */
+    private updateAllocationStatus() {
+        if (!this.currentUserIsTeacher) {
+            this.isAllocatedToSubject = true;
+            return;
+        }
+        // Not yet a complete selection — don't show the banner prematurely.
+        if (!this.filterSubjectId || !this.filterSchoolClassId) {
+            this.isAllocatedToSubject = true;
+            return;
+        }
+        this.isAllocatedToSubject = this.teacherAllocations.some(
+            (sa) => sa.subjectId == this.filterSubjectId && sa.schoolClassId == this.filterSchoolClassId
+        );
     }
 
     refreshItems() {
@@ -141,6 +221,7 @@ export class ExamResultsComponent implements OnInit {
         this.sessions = this.schoolClasses = this.subjects = this.exams = [];
         this.filterSessionId = this.filterSchoolClassId = this.filterSubjectId = this.filterExamId = null;
         this.studentsLoaded = false;
+        this.loadTeacherAllocations();
         if (!this.filterAcademicYearId || !this.filterCurriculumId) return;
         forkJoin([
             this.sessionsSvc.get(`/sessions/byCurriculumYearId?curriculumId=${this.filterCurriculumId}&academicYearId=${this.filterAcademicYearId}`),
@@ -166,6 +247,7 @@ export class ExamResultsComponent implements OnInit {
         this.subjects = this.exams = [];
         this.filterSubjectId = this.filterExamId = null;
         this.studentsLoaded = false;
+        this.updateAllocationStatus();
         if (!this.filterSchoolClassId || !this.filterAcademicYearId) return;
         let selectedClass = this.schoolClasses.find((sc) => sc.id == this.filterSchoolClassId);
         if (!selectedClass?.learningLevel?.educationLevelId) return;
@@ -185,6 +267,7 @@ export class ExamResultsComponent implements OnInit {
         this.exams = [];
         this.filterExamId = null;
         this.studentsLoaded = false;
+        this.updateAllocationStatus();
         this.loadExams();
     };
 
@@ -202,6 +285,10 @@ export class ExamResultsComponent implements OnInit {
     loadStudents = () => {
         if (!this.filterExamId || !this.filterSchoolClassId) {
             this.toastr.info('Please select a class and an exam.');
+            return;
+        }
+        if (!this.isAllocatedToSubject) {
+            this.toastr.warning('You are not allocated to this subject for the selected class. Contact your administrator to be assigned.');
             return;
         }
 
@@ -269,6 +356,14 @@ export class ExamResultsComponent implements OnInit {
     };
 
     saveAll = () => {
+        if (!this.isAllocatedToSubject) {
+            this.toastr.warning('You are not allocated to this subject for the selected class. Marks cannot be saved.');
+            return;
+        }
+        if (this.isPastMarkEntryDeadline) {
+            this.toastr.warning('The mark entry deadline for this exam has passed. Contact an administrator if changes are needed.');
+            return;
+        }
         let rowsToSave = this.scoringRows.filter((r) => r.score != null);
         if (rowsToSave.length === 0) {
             this.toastr.info('Please enter at least one score before saving.');
@@ -311,6 +406,10 @@ export class ExamResultsComponent implements OnInit {
     };
 
     deleteResult = (row: any) => {
+        if (this.isPastMarkEntryDeadline) {
+            this.toastr.warning('The mark entry deadline for this exam has passed. Contact an administrator if changes are needed.');
+            return;
+        }
         Swal.fire({
             title: 'Delete result?',
             text: `Remove result for ${row.fullName}?`,
@@ -352,6 +451,10 @@ export class ExamResultsComponent implements OnInit {
     };
 
     deleteAll = () => {
+        if (this.isPastMarkEntryDeadline) {
+            this.toastr.warning('The mark entry deadline for this exam has passed. Contact an administrator if changes are needed.');
+            return;
+        }
         let existingRows = this.scoringRows.filter((r) => r.existingId != null);
         if (existingRows.length === 0) return;
 

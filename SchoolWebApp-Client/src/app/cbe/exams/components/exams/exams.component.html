@@ -2,7 +2,14 @@
     [title]="dashboardTitle"
     [breadcrumbs]="breadcrumbs"></app-dashboard-header>
 <hr class="mb-1">
-<a *ngIf="querySource==='dashboard'" class="btn btn-flat btn-sm btn-info mb-1" [routerLink]="['/']"><i class="fas fa-angle-double-left"></i> Dashboard</a>
+<div class="mb-1">
+    <a class="btn btn-flat btn-sm btn-secondary" [routerLink]="['/cbe/exams/exams']">
+        <i class="fas fa-angle-double-left"></i> Back to Registered Exams
+    </a>
+    <a *ngIf="querySource==='dashboard'" class="btn btn-flat btn-sm btn-info ms-1" [routerLink]="['/']">
+        <i class="fas fa-angle-double-left"></i> Dashboard
+    </a>
+</div>
 <section class="content">
     <div class="container-fluid px-1">
         <!-- Filters -->

@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.CBE.Assessments.Assessment;
 using SchoolWebApp.Core.Entities.CBE.Assessments;
+using SchoolWebApp.Core.Entities.Identity;
+using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.Assessments;
 
 namespace SchoolWebApp.API.Controllers.CBE.Assessments
@@ -16,11 +19,100 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
         private readonly ILogger<StudentAssessmentsController> _logger;
         private readonly IStudentAssessmentService _modelSvc;
         private readonly IMapper _mapper;
-        public StudentAssessmentsController(ILogger<StudentAssessmentsController> logger, IStudentAssessmentService service, IMapper mapper)
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<AppUser> _userManager;
+
+        // Sentinel path that, when assigned to a role via MenuPermissions, grants
+        // admin rights on student assessments (full teacher list, no per-(class,
+        // subject) restriction). Matches the menu entry under CBE Curriculum.
+        private const string ADMIN_PERMISSION_PATH = "/cbe/assessments/admin";
+
+        public StudentAssessmentsController(
+            ILogger<StudentAssessmentsController> logger,
+            IStudentAssessmentService service,
+            IMapper mapper,
+            IUnitOfWork unitOfWork,
+            UserManager<AppUser> userManager)
         {
             _logger = logger;
             _modelSvc = service;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
+            _userManager = userManager;
+        }
+
+        /// <summary>
+        /// True if the caller bypasses the per-allocation restriction: either
+        /// the Administrator/SuperAdministrator role, OR a role that has the
+        /// <c>/cbe/assessments/admin</c> path assigned via MenuPermissions.
+        /// </summary>
+        private async Task<bool> HasAdminAccessAsync()
+        {
+            var roles = User.Claims.Where(c => c.Type == "roles").Select(c => c.Value).ToList();
+            if (roles.Contains("Administrator") || roles.Contains("SuperAdministrator"))
+                return true;
+            if (roles.Count == 0) return false;
+
+            var perms = await _unitOfWork.Repository<MenuPermission>()
+                .Find(p => p.MenuPath == ADMIN_PERMISSION_PATH && roles.Contains(p.RoleId));
+            return perms.Any();
+        }
+
+        /// <summary>
+        /// Gates a write to student assessments. Admins / permission-holders
+        /// pass through. Other authenticated users (typically Teachers) must
+        /// have a StaffSubject row linking their staff record to the
+        /// (SchoolClassId, derived SubjectId) of the assessment being saved.
+        /// Returns null when allowed, or an IActionResult the caller should
+        /// return immediately when blocked.
+        /// </summary>
+        private async Task<IActionResult> CheckCanWriteAsync(int schoolClassId, int? strandId, int? subStrandId)
+        {
+            if (await HasAdminAccessAsync()) return null;
+
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userid")?.Value;
+            if (!int.TryParse(userIdClaim, out var userId))
+                return StatusCode(StatusCodes.Status403Forbidden,
+                    new { message = "Unable to identify the current user." });
+
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user?.PersonId == null)
+                return StatusCode(StatusCodes.Status403Forbidden,
+                    new { message = "Your account is not linked to a staff record." });
+
+            // Resolve the assessment's SubjectId from its Strand (or its
+            // SubStrand's parent Strand). Uses the generic Repository<T>
+            // accessor since Strands/SubStrands aren't in the unit of work's
+            // named property list.
+            int? subjectId = null;
+            if (strandId.HasValue && strandId.Value > 0)
+            {
+                var strand = await _unitOfWork.Repository<Strand>().GetById(strandId.Value);
+                if (strand != null) subjectId = strand.SubjectId;
+            }
+            if (subjectId == null && subStrandId.HasValue && subStrandId.Value > 0)
+            {
+                var subStrand = await _unitOfWork.Repository<SubStrand>().GetById(subStrandId.Value, includeProperties: "Strand");
+                if (subStrand?.Strand != null) subjectId = subStrand.Strand.SubjectId;
+            }
+            if (subjectId == null)
+            {
+                // No strand/subject context — can't enforce; fall back to deny
+                // for non-admins (safer than allowing an un-checkable write).
+                return StatusCode(StatusCodes.Status403Forbidden,
+                    new { message = "Cannot verify subject allocation for this assessment." });
+            }
+
+            var allocations = await _unitOfWork.StaffSubjects.GetByStaffDetailsId(user.PersonId.Value);
+            var ok = allocations.Any(a => a.SchoolClassId == schoolClassId && a.SubjectId == subjectId.Value);
+            if (!ok)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    message = "You are not allocated to this subject for the selected class."
+                });
+            }
+            return null;
         }
 
         // GET: api/studentAssessments
@@ -101,6 +193,10 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
                 st.StrandId == model.StrandId && st.SessionId == model.SessionId &&
                 st.AssessmentTypeId == model.AssessmentTypeId && st.SchoolClassId == model.SchoolClassId))
                     return Conflict(new { message = $"The student assessment specified already exists" });
+
+                var authBlock = await CheckCanWriteAsync(model.SchoolClassId, model.StrandId, model.SubStrandId);
+                if (authBlock != null) return authBlock;
+
                 try
                 {
                     var _item = _mapper.Map<StudentAssessment>(model);
@@ -131,6 +227,10 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
                 var itemExist = await _modelSvc.ItemExistsAsync(m => m.Id == model.Id);
                 if (!itemExist)
                     return BadRequest($"The student assessment of Id- '{model.Id}' does not exist hence cannot be updated.");
+
+                var authBlock = await CheckCanWriteAsync(model.SchoolClassId, model.StrandId, model.SubStrandId);
+                if (authBlock != null) return authBlock;
+
                 try
                 {
                     var _item = _mapper.Map<StudentAssessment>(model);
@@ -158,6 +258,10 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
                 var itemExists = await _modelSvc.GetById(id);
                 if (itemExists == null)
                     return BadRequest($"The student assessment of Id- '{id}' does not exist hence cannot be deleted.");
+
+                var authBlock = await CheckCanWriteAsync(itemExists.SchoolClassId, itemExists.StrandId, itemExists.SubStrandId);
+                if (authBlock != null) return authBlock;
+
                 var entity = await _modelSvc.GetById(id);
                 _modelSvc.Delete(entity);
                 await _modelSvc.SaveChangesAsync();

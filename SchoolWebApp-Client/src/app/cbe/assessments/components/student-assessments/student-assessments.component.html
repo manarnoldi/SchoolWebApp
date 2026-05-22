@@ -5,6 +5,15 @@
 <a *ngIf="querySource==='dashboard'" class="btn btn-flat btn-sm btn-info mb-1" [routerLink]="['/']"><i class="fas fa-angle-double-left"></i> Dashboard</a>
 <section class="content">
     <div class="container-fluid px-1">
+        <div class="alert alert-warning d-flex align-items-center mb-1 py-2"
+            *ngIf="!isAllocatedToSelection"
+            role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <div>
+                <strong>You are not allocated to this subject for the selected class.</strong>
+                You cannot enter or save assessments here. Please contact your administrator to be assigned to the subject for this class.
+            </div>
+        </div>
         <div class="card card-outline card-info mb-1">
             <div class="card-body p-1">
                 <div class="row g-1">
@@ -178,7 +187,8 @@
                         {{ isDeletingBulk ? 'Deleting...' : 'Delete All Saved (' + getBulkSavedCount() + ')' }}
                     </button>
                 </div>
-                <button class="btn btn-success btn-sm" (click)="saveBulkAssessments()" [disabled]="isSavingBulk">
+                <button class="btn btn-success btn-sm" (click)="saveBulkAssessments()"
+                    [disabled]="isSavingBulk || !isAllocatedToSelection">
                     <i class="fas fa-save"></i>
                     {{ isSavingBulk ? 'Saving...' : 'Save All Assessments' }}
                 </button>

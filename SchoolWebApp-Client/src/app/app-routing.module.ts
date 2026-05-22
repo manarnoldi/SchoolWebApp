@@ -110,6 +110,7 @@ import { PCIsComponent } from './cbe/assessments/components/pcis/pcis.component'
 import { StudentAssessmentsComponent } from './cbe/assessments/components/student-assessments/student-assessments.component';
 import { ExamTypesComponent as CbeExamTypesComponent } from './cbe/exams/components/exam-types/exam-types.component';
 import { ExamsComponent as CbeExamsComponent } from './cbe/exams/components/exams/exams.component';
+import { ExamRegisterListComponent } from './cbe/exams/components/exam-register-list/exam-register-list.component';
 import { ExamResultsComponent as CbeExamResultsComponent } from './cbe/exams/components/exam-results/exam-results.component';
 import { ExamResultsClasswiseComponent as CbeExamResultsClasswiseComponent } from './cbe/exams/components/exam-results-classwise/exam-results-classwise.component';
 import { ExamResultsBulkComponent } from './cbe/exams/components/exam-results-bulk/exam-results-bulk.component';
@@ -293,8 +294,13 @@ const routes: Routes = [
             {path: 'assessments/lesson-allocations', component: LessonAllocationsComponent},
             {path: 'assessments/pcis', component: PCIsComponent},
             {path: 'assessments/assessments', component: StudentAssessmentsComponent},
+            // Permission sentinel — see MENU note in menu-sidebar.component.ts.
+            // Reuses the same component; the component reads its mode from the
+            // user's MenuPermissions list.
+            {path: 'assessments/admin', redirectTo: 'assessments/assessments', pathMatch: 'full'},
             {path: 'exams/exam-types', component: CbeExamTypesComponent},
-            {path: 'exams/exams', component: CbeExamsComponent},
+            {path: 'exams/exams', component: ExamRegisterListComponent},
+            {path: 'exams/exams/register', component: CbeExamsComponent},
             {path: 'exams/exam-results', component: CbeExamResultsComponent},
             {path: 'exams/exam-results-classwise', component: CbeExamResultsClasswiseComponent},
             {path: 'exams/exam-results-bulk', component: ExamResultsBulkComponent},

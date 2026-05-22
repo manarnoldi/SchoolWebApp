@@ -121,6 +121,12 @@ export const MENU = [
         iconClasses: 'fas fa-pen',
         children: [
             {name: 'Student Assessments', iconClasses: 'fas fa-bullseye text-info', path: ['/cbe/assessments/assessments']},
+            // Permission flag (not a navigable feature). When assigned to a role,
+            // members of that role can enter Student Assessment marks for any
+            // teacher / class / subject. Without it (and without Administrator
+            // or SuperAdministrator role), users are restricted to their own
+            // allocations on /cbe/assessments/assessments.
+            {name: 'Student Assessments (Admin)', iconClasses: 'fas fa-user-shield text-warning', path: ['/cbe/assessments/admin']},
             {name: 'Co-curricular', iconClasses: 'fas fa-bullseye text-success', path: ['/cbe/cocurriculum/student-scores']},
             {name: 'Responsibilities', iconClasses: 'fas fa-bullseye text-primary', path: ['/cbe/responsibilities/student-assignments']},
             {name: 'Community Service', iconClasses: 'fas fa-bullseye text-secondary', path: ['/cbe/community-service/student-assignments']},

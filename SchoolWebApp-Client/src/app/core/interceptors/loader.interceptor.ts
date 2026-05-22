@@ -9,6 +9,7 @@ import {
 import {Observable, throwError} from 'rxjs';
 import {catchError, finalize} from 'rxjs/operators';
 import {NgxSpinnerService} from 'ngx-spinner';
+import {LoadingStateService} from '../services/loading-state.service';
 
 /**
  * Header that callers can set to opt their request out of the global spinner.
@@ -39,18 +40,27 @@ export class LoaderInterceptor implements HttpInterceptor {
     // still get a loading indicator after a brief moment.
     private readonly SHOW_DELAY_MS = 250;
 
-    constructor(private spinner: NgxSpinnerService) {}
+    constructor(
+        private spinner: NgxSpinnerService,
+        private loadingState: LoadingStateService
+    ) {}
 
     intercept(
         req: HttpRequest<any>,
         next: HttpHandler
     ): Observable<HttpEvent<any>> {
-        // Opt-out path: the caller marked this request as "don't show spinner".
-        // Strip the header before forwarding so it doesn't leak to the server,
-        // and pass through without touching the spinner state.
+        // Per-request opt-out via header. Strip it before forwarding so it
+        // doesn't leak to the server, then pass through without touching state.
         if (req.headers.has(SKIP_LOADER_HEADER)) {
             const forwarded = req.clone({headers: req.headers.delete(SKIP_LOADER_HEADER)});
             return next.handle(forwarded).pipe(catchError(this.handleError));
+        }
+
+        // Global opt-out: any component currently suspending the spinner
+        // (e.g. dashboard widgets with their own inline loaders) bypasses
+        // show/hide entirely.
+        if (this.loadingState.isSuspended) {
+            return next.handle(req).pipe(catchError(this.handleError));
         }
 
         this.startRequest();
