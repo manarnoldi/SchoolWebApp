@@ -13,6 +13,7 @@ import {AuthService} from '@/core/services/auth.service';
 import {User} from '@/core/models/User';
 import {Router} from '@angular/router';
 import {AppService} from '@/core/services/app.service';
+import {retry, timer} from 'rxjs';
 
 @Component({
     selector: 'app-login',
@@ -50,7 +51,22 @@ export class LoginComponent implements OnInit, OnDestroy {
     loginByAuth() {
         if (this.loginForm.valid) {
             this.isAuthLoading = true;
-            this.authService.signIn(this.loginForm.value).subscribe(
+            // Cold-start mitigation: shared-host workers go idle and the first
+            // request after that window dies with ERR_NETWORK_CHANGED while the
+            // worker is spinning up. Auto-retry once after 2s so the user
+            // doesn't have to click Login twice. The retry hits a warm worker.
+            this.authService.signIn(this.loginForm.value).pipe(
+                retry({
+                    count: 1,
+                    delay: (err: any) => {
+                        if (err?.status === 0) {
+                            this.toastr.info('Connecting to server, please wait...');
+                            return timer(2000);
+                        }
+                        throw err;
+                    }
+                })
+            ).subscribe(
                 (result: any) => {
                     localStorage.setItem('ssw_token', result.token);
                     this.authService.getUserProfile(result.id).subscribe(
