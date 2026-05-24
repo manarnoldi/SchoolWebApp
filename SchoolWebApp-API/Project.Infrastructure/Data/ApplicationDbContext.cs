@@ -123,6 +123,7 @@ namespace Project.Infrastructure.Data
 
         #region Identity
         public DbSet<MenuPermission> MenuPermissions { get; set; }
+        public DbSet<Log> Logs { get; set; }
         #endregion
 
         #region Finance

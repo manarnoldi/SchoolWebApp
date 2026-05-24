@@ -208,7 +208,8 @@ export const MENU = [
         children: [
             {name: 'Users', iconClasses: 'fas fa-users text-primary', path: ['/security/users']},
             {name: 'Roles', iconClasses: 'fas fa-user-shield text-success', path: ['/security/roles']},
-            {name: 'Menu Permissions', iconClasses: 'fas fa-bars text-danger', path: ['/security/menu-permissions']}
+            {name: 'Menu Permissions', iconClasses: 'fas fa-bars text-danger', path: ['/security/menu-permissions']},
+            {name: 'Error Logs', iconClasses: 'fas fa-bug text-warning', path: ['/security/logs']}
         ]
     },
     {

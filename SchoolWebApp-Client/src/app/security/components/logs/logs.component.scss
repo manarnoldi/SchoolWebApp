@@ -1,0 +1,21 @@
+pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 320px;
+    overflow: auto;
+    font-size: 0.75rem;
+}
+
+// Force the table to honour explicit column widths so the cell-clip divs
+// below can actually truncate. Without `table-layout: fixed`, browsers
+// expand columns to fit whatever content lands in them — exactly what
+// makes the Message column blow up with a giant stack trace.
+.logs-table {
+    table-layout: fixed;
+
+    .cell-clip {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}

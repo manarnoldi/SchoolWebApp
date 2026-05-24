@@ -12,8 +12,180 @@ namespace Project.Infrastructure.Data
     {
         public static async Task ApplyAsync(ApplicationDbContext db, ILogger logger)
         {
+            try { await EnsureLogsTableAsync(db, logger); } catch (Exception ex) { logger.LogError(ex, "EnsureLogsTableAsync failed."); }
             try { await SeedSuperAdministratorRoleAsync(db, logger); } catch (Exception ex) { logger.LogError(ex, "SeedSuperAdministratorRoleAsync failed."); }
             try { await RestrictApprovalCascadeDeletesAsync(db, logger); } catch (Exception ex) { logger.LogError(ex, "RestrictApprovalCascadeDeletesAsync failed."); }
+        }
+
+        /// <summary>
+        /// Creates the Logs table for fresh deploys, or migrates an existing
+        /// legacy Serilog-sink table in place. The legacy schema had:
+        ///   Id, Timestamp, Level, Template, Message, Exception, Properties, _ts
+        /// (Template and Properties were NOT NULL — which would block NLog's
+        /// INSERT that doesn't supply those columns.) We rename Timestamp →
+        /// Logged, relax the NOT-NULL constraints on the leftover columns,
+        /// and add the new NLog/audit fields. All idempotent so it's safe to
+        /// run on every startup.
+        /// </summary>
+        private static async Task EnsureLogsTableAsync(ApplicationDbContext db, ILogger logger)
+        {
+            // Base table — used only when there's no existing Logs at all.
+            await db.Database.ExecuteSqlRawAsync(@"
+                CREATE TABLE IF NOT EXISTS Logs (
+                    Id              INT NOT NULL AUTO_INCREMENT,
+                    Logged          DATETIME(6) NOT NULL,
+                    Level           VARCHAR(50)   NULL,
+                    Message         TEXT          NULL,
+                    Logger          VARCHAR(255)  NULL,
+                    Exception       TEXT          NULL,
+                    Url             VARCHAR(2048) NULL,
+                    CallSite        VARCHAR(512)  NULL,
+                    MachineName     VARCHAR(255)  NULL,
+                    UserName        VARCHAR(255)  NULL,
+                    Resolved        TINYINT(1) NOT NULL DEFAULT 0,
+                    ResolvedBy      VARCHAR(255)  NULL,
+                    ResolvedAt      DATETIME(6)   NULL,
+                    ResolutionNote  TEXT          NULL,
+                    PRIMARY KEY (Id)
+                ) CHARACTER SET=utf8mb4;
+            ");
+
+            // Legacy Serilog schema had `Timestamp`; the new entity expects
+            // `Logged`. Rename in place to preserve all existing rows.
+            await RenameColumnIfPresentAsync(db, "Logs", "Timestamp", "Logged", "DATETIME(6) NOT NULL");
+
+            // Legacy Serilog schema had Template/Properties as NOT NULL. NLog
+            // doesn't supply values for those, so the inserts would fail.
+            // Relax them; existing rows keep their data.
+            await MakeColumnNullableIfPresentAsync(db, "Logs", "Template");
+            await MakeColumnNullableIfPresentAsync(db, "Logs", "Properties");
+
+            // Add the columns NLog needs (and the resolution-audit fields the
+            // controller writes). Each call is independent + idempotent.
+            await AddColumnIfMissingAsync(db, "Logs", "Logger",         "VARCHAR(255) NULL");
+            await AddColumnIfMissingAsync(db, "Logs", "Url",            "VARCHAR(2048) NULL");
+            await AddColumnIfMissingAsync(db, "Logs", "CallSite",       "VARCHAR(512) NULL");
+            await AddColumnIfMissingAsync(db, "Logs", "MachineName",    "VARCHAR(255) NULL");
+            await AddColumnIfMissingAsync(db, "Logs", "UserName",       "VARCHAR(255) NULL");
+            await AddColumnIfMissingAsync(db, "Logs", "Resolved",       "TINYINT(1) NOT NULL DEFAULT 0");
+            await AddColumnIfMissingAsync(db, "Logs", "ResolvedBy",     "VARCHAR(255) NULL");
+            await AddColumnIfMissingAsync(db, "Logs", "ResolvedAt",     "DATETIME(6) NULL");
+            await AddColumnIfMissingAsync(db, "Logs", "ResolutionNote", "TEXT NULL");
+
+            logger.LogInformation("Logs table verified.");
+        }
+
+        /// <summary>
+        /// Renames a column when the old name exists and the new name doesn't.
+        /// CHANGE COLUMN also retypes, which is intentional — moving from
+        /// TIMESTAMP to DATETIME(6) preserves all values within the TIMESTAMP
+        /// range (1970-2038) without truncation.
+        /// </summary>
+        private static async Task RenameColumnIfPresentAsync(
+            ApplicationDbContext db, string table, string oldName, string newName, string newColumnDef)
+        {
+            var conn = db.Database.GetDbConnection();
+            var openedHere = conn.State != ConnectionState.Open;
+            if (openedHere) await conn.OpenAsync();
+            try
+            {
+                using var checkCmd = conn.CreateCommand();
+                checkCmd.CommandText = $@"
+                    SELECT COLUMN_NAME FROM information_schema.COLUMNS
+                    WHERE TABLE_SCHEMA = DATABASE()
+                      AND TABLE_NAME = '{table}'
+                      AND COLUMN_NAME IN ('{oldName}', '{newName}')";
+                bool oldPresent = false, newPresent = false;
+                using (var reader = await ((System.Data.Common.DbCommand)checkCmd).ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var name = reader.GetString(0);
+                        if (string.Equals(name, oldName, StringComparison.OrdinalIgnoreCase)) oldPresent = true;
+                        if (string.Equals(name, newName, StringComparison.OrdinalIgnoreCase)) newPresent = true;
+                    }
+                }
+                if (!oldPresent || newPresent) return;
+
+                using var alterCmd = conn.CreateCommand();
+                alterCmd.CommandText = $"ALTER TABLE {table} CHANGE COLUMN {oldName} {newName} {newColumnDef}";
+                await ((System.Data.Common.DbCommand)alterCmd).ExecuteNonQueryAsync();
+            }
+            finally
+            {
+                if (openedHere) await conn.CloseAsync();
+            }
+        }
+
+        /// <summary>
+        /// Drops the NOT NULL constraint on a column when present. Keeps the
+        /// column's existing data type intact — we read it from
+        /// information_schema and pass it back in the MODIFY clause so we
+        /// don't accidentally widen / narrow the type.
+        /// </summary>
+        private static async Task MakeColumnNullableIfPresentAsync(
+            ApplicationDbContext db, string table, string column)
+        {
+            var conn = db.Database.GetDbConnection();
+            var openedHere = conn.State != ConnectionState.Open;
+            if (openedHere) await conn.OpenAsync();
+            try
+            {
+                using var checkCmd = conn.CreateCommand();
+                checkCmd.CommandText = $@"
+                    SELECT IS_NULLABLE, COLUMN_TYPE FROM information_schema.COLUMNS
+                    WHERE TABLE_SCHEMA = DATABASE()
+                      AND TABLE_NAME = '{table}'
+                      AND COLUMN_NAME = '{column}'
+                    LIMIT 1";
+                string? isNullable = null;
+                string? columnType = null;
+                using (var reader = await ((System.Data.Common.DbCommand)checkCmd).ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        isNullable = reader.IsDBNull(0) ? null : reader.GetString(0);
+                        columnType = reader.IsDBNull(1) ? null : reader.GetString(1);
+                    }
+                }
+                if (string.IsNullOrEmpty(columnType)) return; // column doesn't exist
+                if (string.Equals(isNullable, "YES", StringComparison.OrdinalIgnoreCase)) return; // already nullable
+
+                using var alterCmd = conn.CreateCommand();
+                alterCmd.CommandText = $"ALTER TABLE {table} MODIFY COLUMN {column} {columnType} NULL";
+                await ((System.Data.Common.DbCommand)alterCmd).ExecuteNonQueryAsync();
+            }
+            finally
+            {
+                if (openedHere) await conn.CloseAsync();
+            }
+        }
+
+        private static async Task AddColumnIfMissingAsync(
+            ApplicationDbContext db, string table, string column, string columnDef)
+        {
+            var conn = db.Database.GetDbConnection();
+            var openedHere = conn.State != ConnectionState.Open;
+            if (openedHere) await conn.OpenAsync();
+            try
+            {
+                using var checkCmd = conn.CreateCommand();
+                checkCmd.CommandText = $@"
+                    SELECT COUNT(*) FROM information_schema.COLUMNS
+                    WHERE TABLE_SCHEMA = DATABASE()
+                      AND TABLE_NAME = '{table}'
+                      AND COLUMN_NAME = '{column}'";
+                var count = Convert.ToInt32(await ((System.Data.Common.DbCommand)checkCmd).ExecuteScalarAsync());
+                if (count > 0) return;
+
+                using var alterCmd = conn.CreateCommand();
+                alterCmd.CommandText = $"ALTER TABLE {table} ADD COLUMN {column} {columnDef}";
+                await ((System.Data.Common.DbCommand)alterCmd).ExecuteNonQueryAsync();
+            }
+            finally
+            {
+                if (openedHere) await conn.CloseAsync();
+            }
         }
 
         private static async Task SeedSuperAdministratorRoleAsync(ApplicationDbContext db, ILogger logger)

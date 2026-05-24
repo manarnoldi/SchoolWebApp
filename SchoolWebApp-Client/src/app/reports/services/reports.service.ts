@@ -67,15 +67,28 @@ export class ReportsService {
     };
 
     public getDIVIDER = () => {
+        // The previous implementation used a 1-column empty table with
+        // `headerLineOnly` to fake a horizontal rule. That hack depends on
+        // pdfmake's per-cell math which changed between 0.2.6 and 0.2.15 and
+        // started rendering with visible vertical gaps above/below the line.
+        // A canvas line is a single PDF stroke and avoids the math entirely.
+        // 515 = A4 portrait width (595.28pt) minus default left/right margins
+        // of 40 each. For landscape callers the line still draws cleanly —
+        // it just won't span the full width, which is acceptable since most
+        // dividers sit inside content blocks anyway.
         return {
-            table: {
-                headerRows: 1,
-                widths: ['100%'],
-                body: [[''], ['']]
-            },
-            layout: 'headerLineOnly',
-            marginBottom: 2,
-            color: '#002D62'
+            canvas: [
+                {
+                    type: 'line',
+                    x1: 0,
+                    y1: 0,
+                    x2: 515,
+                    y2: 0,
+                    lineWidth: 1,
+                    lineColor: '#002D62'
+                }
+            ],
+            marginBottom: 2
         };
     };
 

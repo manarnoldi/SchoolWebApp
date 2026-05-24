@@ -7,13 +7,18 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
+using NLog;
+using NLog.Web;
 using Project.API.Extensions;
 using Project.Infrastructure.Data;
 using SchoolWebApp.Core.Entities.Identity;
 using SchoolWebApp.Core.Services;
-using Serilog;
 using System.Text;
 using System.Text.Json.Serialization;
+
+// Bootstrap NLog as early as possible so config-load errors are visible.
+var nlogLogger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+nlogLogger.Debug("Starting ShuleNova API");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,8 +26,8 @@ string mySqlConnectionStr = builder.Configuration.GetConnectionString("DefaultCo
 
 // Cap below site4now's per-MySQL-user limit of 20 concurrent connections.
 // EF Core defaults to a pool of 100, which exhausts the hosting quota under
-// load and triggers "max_user_connections" errors. Serilog's MySQL sink shares
-// this same MySQL user so we leave headroom for it.
+// load and triggers "max_user_connections" errors. NLog's MySQL target also
+// uses this same user, so we leave headroom for it.
 if (!string.IsNullOrEmpty(mySqlConnectionStr) &&
     !mySqlConnectionStr.Contains("MaximumPoolSize", StringComparison.OrdinalIgnoreCase))
 {
@@ -30,14 +35,12 @@ if (!string.IsNullOrEmpty(mySqlConnectionStr) &&
     mySqlConnectionStr = $"{mySqlConnectionStr}{separator}MaximumPoolSize=10;MinimumPoolSize=0";
 }
 
-Log.Logger = new LoggerConfiguration()
-        .MinimumLevel.Warning()
-        .WriteTo.Console()
-        .WriteTo.MySQL(mySqlConnectionStr)
-        .CreateLogger();
-
+// Replace the default logging providers with NLog so everything that resolves
+// ILogger<T> writes through NLog's pipeline (and into the Logs table for
+// Error-level entries, per nlog.config).
 builder.Logging.ClearProviders();
-builder.Host.UseSerilog();
+builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+builder.Host.UseNLog();
 
 builder.Services.AddDbContext<ApplicationDbContext>(
                 options => options.UseMySql(mySqlConnectionStr, ServerVersion.AutoDetect(mySqlConnectionStr)));
@@ -158,7 +161,10 @@ app.UseExceptionHandler(errorApp =>
     {
         var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
         var exception = exceptionHandlerPathFeature?.Error;
-        Log.Error(exception, "Unhandled exception occurred");
+        // Route through Microsoft.Extensions.Logging so NLog picks it up via
+        // the provider registered in builder.Host.UseNLog() above.
+        var requestLogger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+        requestLogger.LogError(exception, "Unhandled exception occurred");
         return Task.CompletedTask;
     });
 });
@@ -197,4 +203,18 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+try
+{
+    app.Run();
+}
+catch (Exception startupEx)
+{
+    nlogLogger.Error(startupEx, "Application stopped because of an unhandled exception during startup.");
+    throw;
+}
+finally
+{
+    // Flush & stop NLog timers/threads before exit (avoids segfaults on Linux,
+    // ensures the last few log entries actually hit the DB on graceful stop).
+    LogManager.Shutdown();
+}

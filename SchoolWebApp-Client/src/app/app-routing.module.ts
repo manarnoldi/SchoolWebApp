@@ -124,6 +124,7 @@ import { SecurityComponent } from './security/security.component';
 import { UsersComponent } from './security/components/users/users.component';
 import { RolesComponent as SecurityRolesComponent } from './security/components/roles/roles.component';
 import { MenuPermissionsComponent } from './security/components/menu-permissions/menu-permissions.component';
+import { LogsComponent } from './security/components/logs/logs.component';
 import { FinanceComponent } from './finance/finance.component';
 import { FinanceAccountsComponent } from './finance/components/accounts/accounts.component';
 import { FeeCategoriesComponent } from './finance/components/fee-categories/fee-categories.component';
@@ -367,7 +368,8 @@ const routes: Routes = [
             {path: 'users', component: UsersComponent},
             {path: 'roles', component: SecurityRolesComponent},
             {path: 'user-roles', redirectTo: 'users', pathMatch: 'full'},
-            {path: 'menu-permissions', component: MenuPermissionsComponent}
+            {path: 'menu-permissions', component: MenuPermissionsComponent},
+            {path: 'logs', component: LogsComponent}
         ]
     },
     {

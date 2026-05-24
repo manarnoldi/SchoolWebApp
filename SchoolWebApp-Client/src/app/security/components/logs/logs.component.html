@@ -1,0 +1,301 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1" />
+
+<div class="container-fluid px-1">
+    <div class="row">
+        <div class="col-12 px-1">
+            <form
+                [formGroup]="filterForm"
+                (ngSubmit)="applyFilters()"
+                class="card card-body mb-1">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-2">
+                        <label class="form-label small mb-1">From</label>
+                        <input type="date" class="form-control form-control-sm"
+                            formControlName="startDate" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small mb-1">To</label>
+                        <input type="date" class="form-control form-control-sm"
+                            formControlName="endDate" />
+                    </div>
+                    <div class="col-md-1">
+                        <label class="form-label small mb-1">Level</label>
+                        <select class="form-select form-select-sm" formControlName="level">
+                            <option value="">All</option>
+                            <option *ngFor="let l of levels" [value]="l">{{ l }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small mb-1">Status</label>
+                        <select class="form-select form-select-sm" formControlName="status">
+                            <option value="open">Open only</option>
+                            <option value="resolved">Resolved only</option>
+                            <option value="all">All</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small mb-1">Search</label>
+                        <input type="text" class="form-control form-control-sm"
+                            placeholder="message / logger / url"
+                            formControlName="search" />
+                    </div>
+                    <div class="col-md-3 d-flex gap-1">
+                        <button type="submit" class="btn btn-sm btn-primary"
+                            [disabled]="loading" title="Apply filters">
+                            <i class="fas" [ngClass]="loading ? 'fa-spinner fa-spin' : 'fa-search'"></i>
+                            Search
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                            (click)="clearFilters()" title="Clear filters">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-12 px-1">
+            <div class="card">
+                <div class="card-header bg-secondary text-white d-flex align-items-center">
+                    <span><i class="fas fa-bug"></i> Application logs</span>
+                    <span class="ms-auto small">
+                        <ng-container *ngIf="total > 0; else noMatch">
+                            Showing {{ pageStart }}&ndash;{{ pageEnd }} of {{ total }}
+                        </ng-container>
+                        <ng-template #noMatch>
+                            No log entries match the current filters.
+                        </ng-template>
+                    </span>
+                </div>
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-striped table-hover mb-0 logs-table">
+                        <thead>
+                            <tr>
+                                <th style="width:60px">#</th>
+                                <th style="width:160px">Logged</th>
+                                <th style="width:80px">Level</th>
+                                <th style="width:90px">Status</th>
+                                <th style="width:220px">Logger</th>
+                                <th>Message</th>
+                                <th style="width:240px">URL</th>
+                                <th style="width:80px">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let log of logs; let i = index; trackBy: trackById"
+                                [class.text-muted]="log.resolved">
+                                <td>{{ pageStart + i }}.</td>
+                                <td>{{ log.logged | date: 'dd-MM-yyyy HH:mm:ss' }}</td>
+                                <td>
+                                    <span class="badge" [ngClass]="levelClass(log.level)">
+                                        {{ log.level }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span *ngIf="log.resolved; else openBadge"
+                                        class="badge bg-success-subtle text-success-emphasis"
+                                        [title]="'Resolved by ' + (log.resolvedBy || '?') +
+                                                ' on ' + (log.resolvedAt | date: 'dd-MM-yyyy HH:mm')">
+                                        <i class="fas fa-check"></i> Resolved
+                                    </span>
+                                    <ng-template #openBadge>
+                                        <span class="badge bg-warning-subtle text-warning-emphasis">Open</span>
+                                    </ng-template>
+                                </td>
+                                <td>
+                                    <div class="cell-clip small" [title]="log.logger">
+                                        {{ log.logger }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell-clip" [title]="log.message">
+                                        <span *ngIf="burstCountFor(log) > 1"
+                                            class="badge bg-warning-subtle text-warning-emphasis me-1"
+                                            [title]="'This row repeats ' + burstCountFor(log) + ' times on this page — likely the same incident'">
+                                            <i class="fas fa-layer-group"></i>
+                                            &times;{{ burstCountFor(log) }}
+                                        </span>
+                                        {{ log.message }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell-clip small" [title]="log.url">
+                                        {{ log.url }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <a role="button" class="text-primary"
+                                        (click)="openDetails(log)" title="View full log details">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr *ngIf="logs.length === 0 && !loading">
+                                <td colspan="8" class="text-center text-muted py-3">
+                                    No log entries.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <app-table-paging
+                    [collectionSize]="total"
+                    [pageSize]="pageSize"
+                    (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"></app-table-paging>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Log details modal -->
+<div #logDetailsModal class="modal fade" id="logDetailsModal" tabindex="-1"
+    aria-labelledby="logDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header text-white"
+                [ngClass]="selected ? headerBgClass(selected.level) : 'bg-secondary'">
+                <h5 class="modal-title" id="logDetailsModalLabel">
+                    <ng-container *ngIf="selected; else noSelectionTitle">
+                        <i class="fas fa-bug me-2"></i>
+                        <span class="badge bg-white text-dark me-2">#{{ selected.id }}</span>
+                        {{ selected.level }} log entry
+                        <span *ngIf="burstCountFor(selected) > 1"
+                            class="badge bg-white text-warning-emphasis ms-2"
+                            title="This message repeats on the current page — likely the same incident">
+                            <i class="fas fa-layer-group"></i>
+                            &times;{{ burstCountFor(selected) }} on this page
+                        </span>
+                    </ng-container>
+                    <ng-template #noSelectionTitle>Log entry</ng-template>
+                </h5>
+                <button type="button" class="btn-close btn-close-white"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ng-container *ngIf="selected">
+                    <!-- Metadata strip -->
+                    <div class="card-details-box border-info p-2 mb-2">
+                        <div class="row g-2">
+                            <div class="col-md-3">
+                                <div class="small text-muted"><i class="fas fa-clock"></i> Logged</div>
+                                <b>{{ selected.logged | date: 'dd-MM-yyyy HH:mm:ss.SSS' }}</b>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="small text-muted"><i class="fas fa-signal"></i> Level</div>
+                                <span class="badge" [ngClass]="levelClass(selected.level)">
+                                    {{ selected.level }}
+                                </span>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="small text-muted"><i class="fas fa-user"></i> Logged-in user</div>
+                                <b class="text-break">
+                                    <ng-container *ngIf="selected.userName; else anon">
+                                        {{ selected.userName }}
+                                    </ng-container>
+                                    <ng-template #anon>
+                                        <span class="text-muted fst-italic small">
+                                            anonymous / background
+                                        </span>
+                                    </ng-template>
+                                </b>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="small text-muted"><i class="fas fa-server"></i> Machine</div>
+                                <b>{{ selected.machineName || '-' }}</b>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="small text-muted"><i class="fas fa-code"></i> Logger</div>
+                                <b class="text-break">{{ selected.logger || '-' }}</b>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Location: URL + call site -->
+                    <div class="card-details-box border-warning p-2 mb-2">
+                        <div class="small text-muted mb-1">
+                            <i class="fas fa-link"></i> Where it happened
+                        </div>
+                        <div class="mb-1">
+                            <b class="small">URL:</b>
+                            <code class="small">{{ selected.url || '-' }}</code>
+                        </div>
+                        <div>
+                            <b class="small">Call site:</b>
+                            <code class="small">{{ selected.callSite || '-' }}</code>
+                        </div>
+                    </div>
+
+                    <!-- Message -->
+                    <div class="card-details-box p-2 mb-2"
+                        [ngClass]="messageBorderClass(selected.level)">
+                        <div class="small text-muted mb-1">
+                            <i class="fas fa-comment-alt"></i> Message
+                        </div>
+                        <pre class="bg-light p-2 mb-0">{{ selected.message }}</pre>
+                    </div>
+
+                    <!-- Exception (only when present) -->
+                    <div *ngIf="selected.exception"
+                        class="card-details-box p-2 mb-2"
+                        [ngClass]="messageBorderClass(selected.level)">
+                        <div class="small text-muted mb-1">
+                            <i class="fas fa-exclamation-triangle"></i> Exception &amp; stack trace
+                        </div>
+                        <pre class="bg-light p-2 mb-0 small">{{ selected.exception }}</pre>
+                    </div>
+
+                    <!-- Resolution block. Open => prompt for a note; Resolved => show audit metadata. -->
+                    <div *ngIf="selected.resolved; else resolveForm"
+                        class="card-details-box border-success p-2">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-check-circle text-success fa-2x me-2"></i>
+                            <div class="flex-grow-1">
+                                <div>
+                                    <b class="text-success-emphasis">Resolved</b>
+                                    by {{ selected.resolvedBy || '?' }} on
+                                    {{ selected.resolvedAt | date: 'dd-MM-yyyy HH:mm' }}
+                                </div>
+                                <div *ngIf="selected.resolutionNote" class="mt-1 small">
+                                    <b>Note:</b> {{ selected.resolutionNote }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <ng-template #resolveForm>
+                        <div class="card-details-box border-success p-2">
+                            <div class="small text-muted mb-1">
+                                <i class="fas fa-clipboard-check"></i> Mark as resolved
+                            </div>
+                            <textarea class="form-control form-control-sm" rows="2"
+                                maxlength="2000"
+                                placeholder="What did you do to fix this? Anything the next on-call needs to know? (optional)"
+                                [(ngModel)]="resolutionNote"></textarea>
+                        </div>
+                    </ng-template>
+                </ng-container>
+            </div>
+            <div class="modal-footer">
+                <ng-container *ngIf="selected">
+                    <button *ngIf="selected.resolved; else markResolvedBtn"
+                        type="button" class="btn btn-outline-warning"
+                        (click)="toggleResolved(selected)" title="Reopen this log entry">
+                        <i class="fas fa-undo"></i> Reopen
+                    </button>
+                    <ng-template #markResolvedBtn>
+                        <button type="button" class="btn btn-success"
+                            (click)="toggleResolved(selected)" title="Mark this log entry as resolved">
+                            <i class="fas fa-check"></i> Mark resolved
+                        </button>
+                    </ng-template>
+                </ng-container>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
