@@ -4,7 +4,7 @@
             <i class="ion ion-calendar mr-1"></i>
             Upcoming events list
         </h3>
-        <div class="card-tools">
+        <div class="card-tools" *ngIf="canManageEvents">
             <a
                 [routerLink]="['/school/events']"
                 [routerLinkActive]="'active'"
