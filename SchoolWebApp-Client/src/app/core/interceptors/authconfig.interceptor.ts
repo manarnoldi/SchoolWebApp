@@ -25,7 +25,12 @@ export class AuthInterceptor implements HttpInterceptor {
 
         return next.handle(req).pipe(
             catchError((error) => {
-                if (error.status === 401 || error.status === 0) {
+                // Only force-logout on a real "your token is no longer valid"
+                // signal from the API. Status 0 means the request didn't
+                // complete (network blip, hard refresh cancelling in-flight
+                // XHRs, ERR_NETWORK_CHANGED, brief server unreachability) and
+                // previously caused users to be bounced to /login mid-session.
+                if (error.status === 401) {
                     this.authService.doLogout();
                 } else if (error.status === 409) {
                     // console.log(error);
