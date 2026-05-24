@@ -5,6 +5,21 @@
         <title>ShuleNova</title>
         <base href="/" />
 
+        <!--
+          Cache-busting for the SPA entry point.
+          Angular emits hashed bundle filenames (main.<hash>.js etc.) but
+          index.html itself is not hashed — it references the new bundle
+          names every deploy. If browsers cache this file they keep loading
+          stale bundle URLs that may no longer exist on the server, which
+          is what produces "blank screen until hard refresh" right after a
+          deploy. The meta tags below tell browsers to always revalidate
+          this file. (We can't enforce it from web.config because the
+          required IIS sections are locked on site4now's shared host.)
+        -->
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <meta http-equiv="Expires" content="0" />
+
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link
             rel="icon"
