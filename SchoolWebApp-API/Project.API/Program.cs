@@ -46,6 +46,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(
                 options => options.UseMySql(mySqlConnectionStr, ServerVersion.AutoDetect(mySqlConnectionStr)));
 builder.Services.RegisterService();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddMemoryCache();
 
 builder.Services.AddControllers(
            options =>
