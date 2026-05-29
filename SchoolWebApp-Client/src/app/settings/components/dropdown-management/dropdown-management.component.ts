@@ -62,7 +62,9 @@ export class DropdownManagementComponent implements OnInit {
             ],
             links: [
                 {label: 'Departments', path: '/school/departments', icon: 'fas fa-building'},
-                {label: 'Education Levels', path: '/school/educationLevels', icon: 'fas fa-layer-group'}
+                {label: 'Education Levels', path: '/school/educationLevels', icon: 'fas fa-layer-group'},
+                {label: 'Learning Levels', path: '/school/learning-levels', icon: 'fas fa-graduation-cap'},
+                {label: 'Streams', path: '/class/streams', icon: 'fas fa-stream'}
             ]
         },
         {

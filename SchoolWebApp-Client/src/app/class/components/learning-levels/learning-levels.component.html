@@ -30,6 +30,11 @@
 <section class="content">
     <div class="container-fluid px-1">
         <div class="row g-0">
+            <div class="col-12">
+                <a class="btn btn-flat btn-sm btn-warning mb-1" [routerLink]="['/settings/dropdowns']" [queryParams]="{category: 'System Settings'}"><i class="fas fa-angle-double-left"></i> Back to Dropdowns</a>
+            </div>
+        </div>
+        <div class="row g-0">
             <div class="col-6">
                 <app-school-soft-filter-form
                     [showCurriculum]="true" (searchItemEvent)="searchClicked($event)"
