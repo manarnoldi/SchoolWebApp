@@ -181,7 +181,7 @@ const routes: Routes = [
                 component: EducationLevelTypesComponent
             },
             
-            {path: 'educationLevels', component: EducationLevelsComponent},
+            {path: 'learning-levels', component: LearningLevelsComponent},
             {path: 'departments', component: DepartmentsComponent},
             {path: 'events', component: EventsComponent},
             {path: 'bulk-staff-subjects', component: BulkStaffSubjectsComponent}

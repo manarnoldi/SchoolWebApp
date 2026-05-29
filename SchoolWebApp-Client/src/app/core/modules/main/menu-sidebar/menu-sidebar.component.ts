@@ -98,6 +98,7 @@ export const MENU = [
             {name: 'Details', iconClasses: 'fas fa-bullseye', path: ['/school/details']},
             {name: 'Academic Years', iconClasses: 'fas fa-bullseye', path: ['/school/academicYears']},
             {name: 'Sessions', iconClasses: 'fas fa-bullseye', path: ['/school/sessions']},
+            {name: 'Learning Levels', iconClasses: 'fas fa-bullseye', path: ['/school/learning-levels']},
             {name: 'Classes', iconClasses: 'fas fa-bullseye', path: ['/class/classes']},
             {name: 'Staff Details', iconClasses: 'fas fa-bullseye', path: ['/staff/details']},
             {name: 'Staff Attendance', iconClasses: 'fas fa-bullseye', path: ['/staff/staff-attendances']},

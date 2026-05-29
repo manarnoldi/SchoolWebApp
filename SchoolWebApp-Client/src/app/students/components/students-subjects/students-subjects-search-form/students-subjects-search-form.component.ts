@@ -25,10 +25,13 @@ export class StudentsSubjectsSearchFormComponent implements OnInit {
     @Input() showStudent: boolean = true;
 
     @Output() searchItemEvent = new EventEmitter<StudentSubjectSearch>();
-    @Output() curriculumChangedEvent = new EventEmitter<number>();
+    // Emit null when the user clears the upstream dropdown so the parent can
+    // drop dependent state (rows, button-gating ids, etc.) instead of being
+    // stuck with stale selections after a -Curriculum-/-Level-/-Class- pick.
+    @Output() curriculumChangedEvent = new EventEmitter<number | null>();
     @Output() educationLevelYearChangedEvent =
-        new EventEmitter<EducationLevelYear>();
-    @Output() schoolClassChangedEvent = new EventEmitter<number>();
+        new EventEmitter<EducationLevelYear | null>();
+    @Output() schoolClassChangedEvent = new EventEmitter<number | null>();
     @Output() studentChangedEvent = new EventEmitter<void>();
 
     studentsSubjectsSearchForm: FormGroup;
@@ -53,7 +56,21 @@ export class StudentsSubjectsSearchFormComponent implements OnInit {
     curriculumChanged = () => {
         let curriculumId =
             this.studentsSubjectsSearchForm.get('curriculumId').value;
-        if (!curriculumId || curriculumId == '') return;
+        // Always emit — null signals "user cleared the dropdown" so the
+        // parent can drop dependent state instead of holding stale ids.
+        if (!curriculumId || curriculumId == '') {
+            // Cascade-clear downstream controls so re-selecting an upstream
+            // value can't leave a stale child selection that fails to fire a
+            // (change) event the second time around.
+            this.studentsSubjectsSearchForm.patchValue({
+                academicYearId: null,
+                educationLevelId: null,
+                schoolClassId: null,
+                studentClassId: null
+            });
+            this.curriculumChangedEvent.emit(null);
+            return;
+        }
         this.curriculumChangedEvent.emit(curriculumId);
     };
 
@@ -67,8 +84,16 @@ export class StudentsSubjectsSearchFormComponent implements OnInit {
             educationLevelId == '' ||
             !academicYearId ||
             academicYearId == ''
-        )
+        ) {
+            // Drop the now-orphaned class/student selection so re-picking
+            // year+level later doesn't show a stale child silently.
+            this.studentsSubjectsSearchForm.patchValue({
+                schoolClassId: null,
+                studentClassId: null
+            });
+            this.educationLevelYearChangedEvent.emit(null);
             return;
+        }
 
         let ely: EducationLevelYear = new EducationLevelYear();
         ely.educationLevelId = educationLevelId;
@@ -80,7 +105,10 @@ export class StudentsSubjectsSearchFormComponent implements OnInit {
         this.studentsSubjectsSearchForm.get('studentClassId').reset();
         let schoolClassId =
             this.studentsSubjectsSearchForm.get('schoolClassId').value;
-        if (!schoolClassId || schoolClassId == '') return;
+        if (!schoolClassId || schoolClassId == '') {
+            this.schoolClassChangedEvent.emit(null);
+            return;
+        }
         this.schoolClassChangedEvent.emit(schoolClassId);
     };
 

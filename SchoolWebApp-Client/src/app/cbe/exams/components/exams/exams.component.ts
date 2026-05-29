@@ -44,6 +44,14 @@ export class ExamsComponent implements OnInit {
     educationLevels: any[] = [];
     learningLevels: any[] = [];
 
+    // educationLevelId -> Set of subjectIds registered for that level in the
+    // current academic year. Used by saveExams() to drop (class, subject)
+    // combinations where the subject isn't taught at the class's level -
+    // matters most when the user picks "All Education Levels", because the
+    // de-duplicated subject list above mixes subjects across all levels and
+    // a naive class × subject cross-product would create irrelevant exams.
+    validSubjectsByEducationLevel = new Map<number, Set<number>>();
+
     // Filter selections
     filterCurriculumId: any = null;
     filterAcademicYearId: any = null;
@@ -143,6 +151,7 @@ export class ExamsComponent implements OnInit {
         this.selectedClassIds = [];
         this.selectedSubjectIds = [];
         this.exams = [];
+        this.validSubjectsByEducationLevel = new Map<number, Set<number>>();
         if (!this.filterEducationLevelId || !this.filterAcademicYearId) return;
 
         if (this.filterEducationLevelId === 'all') {
@@ -159,6 +168,18 @@ export class ExamsComponent implements OnInit {
                 this.subjects = elSubjects.map((es) => es.subject)
                     .filter((s) => s.examinable !== false)
                     .sort((a, b) => a.rank - b.rank);
+
+                // Record the valid (level -> subjectIds) mapping so saveExams
+                // can validate combinations. In single-level mode this is a
+                // no-op safety net since every subject in the picker is
+                // already correct for the level.
+                let validIds = new Set<number>(
+                    elSubjects
+                        .filter((es) => es.subject?.examinable !== false)
+                        .map((es) => parseInt(es.subject?.id))
+                        .filter((id) => !isNaN(id))
+                );
+                this.validSubjectsByEducationLevel.set(parseInt(this.filterEducationLevelId), validIds);
             },
             error: (err) => this.toastr.error(err.error)
         });
@@ -185,6 +206,23 @@ export class ExamsComponent implements OnInit {
                 this.schoolClasses = allClasses.sort((a, b) =>
                     (a.learningLevel?.rank || 0) - (b.learningLevel?.rank || 0)
                 );
+
+                // Build the per-level subject lookup BEFORE flattening so the
+                // (level -> subjectIds) association is preserved. saveExams
+                // uses this to skip cross-level (class, subject) pairs that
+                // would otherwise slip through the deduped subject list below.
+                this.validSubjectsByEducationLevel = new Map<number, Set<number>>();
+                this.educationLevels.forEach((el, idx) => {
+                    let levelId = parseInt(el.id);
+                    let levelSubjects = (subjectResults[idx] as any[]) || [];
+                    let ids = new Set<number>(
+                        levelSubjects
+                            .filter((es) => es.subject?.examinable !== false)
+                            .map((es) => parseInt(es.subject?.id))
+                            .filter((id) => !isNaN(id))
+                    );
+                    if (!isNaN(levelId)) this.validSubjectsByEducationLevel.set(levelId, ids);
+                });
 
                 // Flatten subjects, dedupe by id, exclude non-examinable
                 let allSubjects: any[] = [];
@@ -283,37 +321,66 @@ export class ExamsComponent implements OnInit {
             return;
         }
 
-        let totalExams = this.selectedClassIds.length * this.selectedSubjectIds.length;
+        // Build the actual (class, subject) plan up-front. We drop any pair
+        // whose subject isn't allocated to the class's education level - this
+        // matters when "All Education Levels" is selected, where the subject
+        // picker mixes subjects from every level and the naive cross-product
+        // would create exams for subjects not taught at the class's level.
+        let plan: {classId: number; subjectId: number}[] = [];
+        let skipped = 0;
+        for (let classId of this.selectedClassIds) {
+            let schoolClass = this.schoolClasses.find((sc) => parseInt(sc.id) === classId);
+            let levelId = parseInt(schoolClass?.learningLevel?.educationLevelId);
+            let validForLevel = !isNaN(levelId) ? this.validSubjectsByEducationLevel.get(levelId) : null;
+            for (let subjectId of this.selectedSubjectIds) {
+                if (validForLevel && !validForLevel.has(subjectId)) {
+                    skipped++;
+                    continue;
+                }
+                plan.push({classId, subjectId});
+            }
+        }
+
+        if (plan.length === 0) {
+            this.toastr.info('No valid (class, subject) combinations to register - the selected subjects are not allocated to the selected education levels.');
+            return;
+        }
+
+        let totalExams = plan.length;
+        let skippedSuffix = skipped > 0
+            ? ` (${skipped} skipped - subject not allocated to that education level)`
+            : '';
 
         Swal.fire({
             title: 'Register exams?',
-            text: `${totalExams} exam(s) will be created (${this.selectedClassIds.length} class(es) x ${this.selectedSubjectIds.length} subject(s)).`,
-            width: 450, position: 'top', padding: '1em', icon: 'question',
+            text: `${totalExams} exam(s) will be created from ${this.selectedClassIds.length} class(es) × ${this.selectedSubjectIds.length} subject(s)${skippedSuffix}.`,
+            width: 460, position: 'top', padding: '1em', icon: 'question',
             showCancelButton: true, confirmButtonText: 'Save', cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.value) {
                 this.isSaving = true;
-                let requests = [];
-                for (let classId of this.selectedClassIds) {
-                    for (let subjectId of this.selectedSubjectIds) {
-                        let exam = new Exam({
-                            examMark: this.examMark,
-                            examStartDate: this.examStartDate,
-                            examEndDate: this.examEndDate,
-                            examMarkEntryEndDate: this.examMarkEntryEndDate || null,
-                            description: this.examDescription || null,
-                            examTypeId: this.selectedExamTypeId,
-                            schoolClassId: classId,
-                            sessionId: this.filterSessionId,
-                            subjectId: subjectId
-                        });
-                        requests.push(this.examSvc.create('/exams', exam));
-                    }
-                }
+                let requests = plan.map(({classId, subjectId}) => {
+                    let exam = new Exam({
+                        examMark: this.examMark,
+                        examStartDate: this.examStartDate,
+                        examEndDate: this.examEndDate,
+                        examMarkEntryEndDate: this.examMarkEntryEndDate || null,
+                        description: this.examDescription || null,
+                        examTypeId: this.selectedExamTypeId,
+                        schoolClassId: classId,
+                        sessionId: this.filterSessionId,
+                        subjectId: subjectId
+                    });
+                    return this.examSvc.create('/exams', exam);
+                });
                 forkJoin(requests).subscribe(
                     () => {
                         this.isSaving = false;
-                        this.toastr.success(`${totalExams} exam(s) registered successfully!`);
+                        let msg = `${totalExams} exam(s) registered successfully!`;
+                        if (skipped > 0) {
+                            msg += ` ${skipped} combination(s) skipped - subject not allocated to that education level.`;
+                        }
+                        this.toastr.success(msg);
                         this.searchExams();
                         this.selectedClassIds = [];
                         this.selectedSubjectIds = [];

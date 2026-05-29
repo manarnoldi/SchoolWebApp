@@ -4,20 +4,13 @@
 <hr class="mb-1">
 <section class="content">
     <div class="container-fluid px-1">
-        <div class="row g-0 pt-1">
-            <div class="col-12">
-                <a
-                    [routerLink]="['/students/students-subjects/add']"
-                    [routerLinkActive]="'active'"
-                    class="btn btn-sm btn-flat btn-success float-right">
-                    <i class="fas fa-plus-circle"></i> Manage Students Subjects
-                </a>
-            </div>
-        </div>
         <div class="card my-1">
-            <app-students-subjects-search-form [curricula]="curricula"
-                [educationLevels]="educationLevels" [academicYears]="academicYears"
-                [schoolClasses]="schoolClasses" [studentClasses]="studentClasses"
+            <app-students-subjects-search-form
+                [curricula]="curricula"
+                [educationLevels]="educationLevels"
+                [academicYears]="academicYears"
+                [schoolClasses]="schoolClasses"
+                [studentClasses]="studentClasses"
                 [showStudent]="false"
                 (curriculumChangedEvent)="curriculumChanged($event)"
                 (studentChangedEvent)="studentsChanged()"
@@ -25,20 +18,209 @@
                 (schoolClassChangedEvent)="schoolClassChanged($event)"
                 (searchItemEvent)="dataSubmitted($event)"></app-students-subjects-search-form>
         </div>
-        <div class="row g-0">
-            <div class="col-4">
-                <app-student-class-min-table
-                    [studentClasses]="studentClasses"
-                    [subjectCounts]="subjectCounts"
-                    [selectedId]="selectedStudentClassId"
-                    [showStatus]="false" [showMinimum]="true"
-                    (studentClassClickedEvent)="studentClassClicked($event)"></app-student-class-min-table>
+
+        <div class="card">
+            <div class="card-header py-1 d-flex align-items-center">
+                <h3 class="card-title my-1">
+                    Student subject allocations
+                    <span class="text-muted small ms-2" *ngIf="rows.length">
+                        ({{ rows.length }} student<span *ngIf="rows.length !== 1">s</span>)
+                    </span>
+                </h3>
+                <div class="ms-auto d-flex">
+                    <button type="button"
+                        class="btn btn-sm btn-flat btn-danger me-2"
+                        [disabled]="selectedRowIds.size === 0"
+                        (click)="deleteSelected()">
+                        <i class="fas fa-trash"></i>
+                        Delete selected
+                        <span *ngIf="selectedRowIds.size">({{ selectedRowIds.size }})</span>
+                    </button>
+                    <button type="button"
+                        class="btn btn-sm btn-flat btn-success"
+                        [disabled]="currentSchoolClassId == null || rows.length === 0"
+                        (click)="openAddModal()">
+                        <i class="fas fa-plus-circle"></i> Add allocations
+                    </button>
+                </div>
             </div>
-            <div class="col-8">
-                <app-students-subjects-table [tableTitle]="'Student subjects list'"
-                    [studentSubjects]="studentSubjects"
-                    (deleteItemEvent)="deleteItem($event)"></app-students-subjects-table>
+            <div class="card-body p-0">
+                <table class="table table-sm table-bordered table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 40px;" class="text-center">
+                                <input type="checkbox"
+                                    [checked]="allSelected"
+                                    (change)="toggleSelectAll($any($event.target).checked)"
+                                    [disabled]="rows.length === 0">
+                            </th>
+                            <th style="width: 40px;">#</th>
+                            <th style="width: 110px;">UPI</th>
+                            <th style="width: 220px;">Student</th>
+                            <th>Allocated subjects</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="currentSchoolClassId == null">
+                            <td colspan="5" class="text-center text-muted py-3">
+                                Select curriculum, year, education level and class
+                                above to view student subject allocations.
+                            </td>
+                        </tr>
+                        <tr *ngIf="currentSchoolClassId != null && rows.length === 0">
+                            <td colspan="5" class="text-center text-muted py-3">
+                                No students enrolled in the selected class.
+                            </td>
+                        </tr>
+                        <tr *ngFor="let row of rows; let i = index"
+                            [class.table-active]="isRowSelected(row.studentClassId)">
+                            <td class="text-center align-middle">
+                                <input type="checkbox"
+                                    [checked]="isRowSelected(row.studentClassId)"
+                                    (change)="toggleRow(row.studentClassId, $any($event.target).checked)">
+                            </td>
+                            <td class="align-middle">{{ i + 1 }}</td>
+                            <td class="align-middle">{{ row.upi }}</td>
+                            <td class="align-middle">{{ row.fullName }}</td>
+                            <td>
+                                <span *ngIf="row.chips.length === 0" class="text-muted small">
+                                    No subjects allocated
+                                </span>
+                                <span *ngFor="let chip of row.chips"
+                                    class="badge bg-secondary me-1 mb-1 d-inline-flex align-items-center"
+                                    style="font-weight: 500;">
+                                    {{ chip.name }}
+                                    <button type="button"
+                                        class="btn btn-link btn-sm p-0 ms-2 text-white text-decoration-none"
+                                        style="line-height: 1;"
+                                        title="Remove this subject"
+                                        (click)="removeChip(row, chip)">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </section>
+
+<!-- Add Allocations modal -->
+<div class="modal show d-block" tabindex="-1" role="dialog"
+    *ngIf="showAddModal" style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <h5 class="modal-title">
+                    <i class="fas fa-plus-circle text-success"></i>
+                    Add subject allocations
+                </h5>
+                <button type="button" class="btn-close"
+                    [disabled]="modalSaving"
+                    (click)="closeAddModal()"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small mb-2">
+                    Pick the students on the left and the subjects on the right.
+                    Each selected student will be allocated every selected subject.
+                    Allocations that already exist will be skipped.
+                </p>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header py-1 d-flex align-items-center">
+                                <strong>Students</strong>
+                                <small class="text-muted ms-2"
+                                    *ngIf="modalStudentIds.size">
+                                    ({{ modalStudentIds.size }} selected)
+                                </small>
+                                <div class="form-check ms-auto">
+                                    <input type="checkbox" class="form-check-input"
+                                        id="selectAllStudentsChk"
+                                        [checked]="allModalStudentsChecked"
+                                        (change)="toggleAllModalStudents($any($event.target).checked)">
+                                    <label class="form-check-label small"
+                                        for="selectAllStudentsChk">Select all</label>
+                                </div>
+                            </div>
+                            <div class="card-body p-0"
+                                style="max-height: 320px; overflow-y: auto;">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item py-1"
+                                        *ngFor="let row of rows">
+                                        <div class="form-check">
+                                            <input type="checkbox"
+                                                class="form-check-input"
+                                                [id]="'mstu-' + row.studentClassId"
+                                                [checked]="modalStudentIds.has(row.studentClassId)"
+                                                (change)="toggleModalStudent(row.studentClassId, $any($event.target).checked)">
+                                            <label class="form-check-label"
+                                                [for]="'mstu-' + row.studentClassId">
+                                                <span class="text-muted me-1">{{ row.upi }}</span>
+                                                {{ row.fullName }}
+                                            </label>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header py-1 d-flex align-items-center">
+                                <strong>Subjects</strong>
+                                <small class="text-muted ms-2"
+                                    *ngIf="modalSubjectIds.size">
+                                    ({{ modalSubjectIds.size }} selected)
+                                </small>
+                                <div class="form-check ms-auto">
+                                    <input type="checkbox" class="form-check-input"
+                                        id="selectAllSubjectsChk"
+                                        [checked]="allModalSubjectsChecked"
+                                        (change)="toggleAllModalSubjects($any($event.target).checked)">
+                                    <label class="form-check-label small"
+                                        for="selectAllSubjectsChk">Select all</label>
+                                </div>
+                            </div>
+                            <div class="card-body p-0"
+                                style="max-height: 320px; overflow-y: auto;">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item py-1"
+                                        *ngFor="let subj of availableSubjects">
+                                        <div class="form-check">
+                                            <input type="checkbox"
+                                                class="form-check-input"
+                                                [id]="'msub-' + subj.id"
+                                                [checked]="modalSubjectIds.has(subj.id)"
+                                                (change)="toggleModalSubject(subj.id, $any($event.target).checked)">
+                                            <label class="form-check-label"
+                                                [for]="'msub-' + subj.id">
+                                                <span class="text-muted me-1"
+                                                    *ngIf="subj.code">{{ subj.code }}</span>
+                                                {{ subj.name }}
+                                            </label>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer py-2">
+                <button type="button" class="btn btn-sm btn-flat btn-secondary"
+                    [disabled]="modalSaving"
+                    (click)="closeAddModal()">Cancel</button>
+                <button type="button" class="btn btn-sm btn-flat btn-success"
+                    [disabled]="modalSaving || modalStudentIds.size === 0 || modalSubjectIds.size === 0"
+                    (click)="saveModal()">
+                    <i class="fas fa-save" *ngIf="!modalSaving"></i>
+                    <i class="fas fa-spinner fa-spin" *ngIf="modalSaving"></i>
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
