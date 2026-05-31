@@ -211,7 +211,8 @@ export const MENU = [
             {name: 'Users', iconClasses: 'fas fa-users text-primary', path: ['/security/users']},
             {name: 'Roles', iconClasses: 'fas fa-user-shield text-success', path: ['/security/roles']},
             {name: 'Menu Permissions', iconClasses: 'fas fa-bars text-danger', path: ['/security/menu-permissions']},
-            {name: 'Error Logs', iconClasses: 'fas fa-bug text-warning', path: ['/security/logs']}
+            {name: 'Error Logs', iconClasses: 'fas fa-bug text-warning', path: ['/security/logs']},
+            {name: 'Audit Logs', iconClasses: 'fas fa-clipboard-list text-info', path: ['/security/audit-logs']}
         ]
     },
     {

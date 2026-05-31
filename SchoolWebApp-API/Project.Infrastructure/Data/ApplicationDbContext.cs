@@ -20,6 +20,9 @@ using SchoolWebApp.Core.Entities.Finance;
 using SchoolWebApp.Core.Entities.Payroll;
 using SchoolWebApp.Core.Entities.Approvals;
 using SchoolWebApp.Core.Entities.Sponsorships;
+using SchoolWebApp.Core.Entities.Security;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Newtonsoft.Json;
 using System.Security.Claims;
 
 namespace Project.Infrastructure.Data
@@ -124,6 +127,15 @@ namespace Project.Infrastructure.Data
         #region Identity
         public DbSet<MenuPermission> MenuPermissions { get; set; }
         public DbSet<Log> Logs { get; set; }
+        #endregion
+
+        #region Security
+        // Audit trail - "who did what" for admin/compliance review.
+        // Distinct from Logs (NLog error sink). Auto-written by
+        // SaveChangesAsync for entity Create/Update/Delete, and
+        // explicitly by IAuditService for non-entity events (login,
+        // view, print, etc.). Append-only.
+        public DbSet<AuditLog> AuditLogs { get; set; }
         #endregion
 
         #region Finance
@@ -234,27 +246,174 @@ namespace Project.Infrastructure.Data
         //    return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         //}
 
+        // Entity types whose lifecycle we deliberately do NOT mirror
+        // into AuditLog. AuditLog itself would loop; Log is the NLog
+        // error sink (noise, owned by NLog).
+        private static readonly HashSet<Type> _auditExcluded = new HashSet<Type>
+        {
+            typeof(AuditLog),
+            typeof(Log)
+        };
+
+        // Property names skipped when computing field-level diffs - they
+        // either round-trip on every update (audit columns) or carry
+        // values that would just bloat the JSON without aiding review.
+        private static readonly HashSet<string> _auditSkipProps = new HashSet<string>
+        {
+            nameof(Base.Modified),
+            nameof(Base.ModifiedBy),
+            nameof(Base.Created),
+            nameof(Base.CreatedBy)
+        };
+
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
             var entries = ChangeTracker.Entries().Where(e => e.Entity is Base && (e.State == EntityState.Added || e.State == EntityState.Modified));
             var user = _httpContextAccessor.HttpContext?.User?.FindFirstValue("username");
+            // Use UtcNow rather than .Now so audit timestamps stay
+            // timezone-anchored: the hosting server's local clock may
+            // not match the school's (e.g. server on PST, school on
+            // EAT). Combined with the Newtonsoft DateTimeZoneHandling.
+            // Utc setting in Program.cs the value reaches the browser
+            // with a Z suffix and gets localised by the client.
+            // Existing rows from before this change need a one-off
+            // `Created/Modified + INTERVAL N HOUR` backfill to migrate
+            // historical local-time values into UTC.
             foreach (var entityEntry in entries)
             {
-                ((Base)entityEntry.Entity).Modified = DateTime.Now;
+                ((Base)entityEntry.Entity).Modified = DateTime.UtcNow;
                 ((Base)entityEntry.Entity).ModifiedBy = user;
 
                 if (entityEntry.State == EntityState.Added)
                 {
-                    ((Base)entityEntry.Entity).Created = DateTime.Now;
+                    ((Base)entityEntry.Entity).Created = DateTime.UtcNow;
                     ((Base)entityEntry.Entity).CreatedBy = user;
                 }
                 else
                 {
+                    // Defend against PUT bodies that brought back the
+                    // full DTO with Created/CreatedBy omitted (would
+                    // overwrite the historical values with defaults).
                     entityEntry.Property("Created").IsModified = false;
                     entityEntry.Property("CreatedBy").IsModified = false;
                 }
             }
+
+            // Audit trail capture - one AuditLog row per Added /
+            // Modified / Deleted entity, written in the same transaction
+            // as the data it describes. AuditLog itself and the NLog
+            // Log sink are skipped to avoid loops / noise.
+            var auditRows = BuildAuditRows(user);
+            if (auditRows.Count > 0)
+            {
+                AuditLogs.AddRange(auditRows);
+            }
+
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
+
+        private List<AuditLog> BuildAuditRows(string user)
+        {
+            // Snapshot the relevant entries before we begin adding new
+            // AuditLog rows - mutating the ChangeTracker mid-enumeration
+            // would throw InvalidOperationException.
+            var trackedNow = ChangeTracker
+                .Entries()
+                .Where(e =>
+                    !_auditExcluded.Contains(e.Entity.GetType()) &&
+                    (e.State == EntityState.Added ||
+                     e.State == EntityState.Modified ||
+                     e.State == EntityState.Deleted))
+                .ToList();
+
+            var http = _httpContextAccessor.HttpContext;
+            var ip = http?.Connection?.RemoteIpAddress?.ToString();
+            var ua = http?.Request?.Headers["User-Agent"].ToString();
+            var path = http?.Request?.Path.Value;
+
+            var actor = string.IsNullOrEmpty(user) ? "system" : user;
+
+            var rows = new List<AuditLog>(trackedNow.Count);
+            foreach (var entry in trackedNow)
+            {
+                var entityType = entry.Entity.GetType().Name;
+                var (oldJson, newJson, action) = SnapshotForAudit(entry);
+                if (oldJson == null && newJson == null && action != "Delete")
+                    continue;
+
+                rows.Add(new AuditLog
+                {
+                    Timestamp = DateTime.UtcNow,
+                    UserId = http?.User?.FindFirstValue(ClaimTypes.NameIdentifier),
+                    UserName = actor,
+                    Action = action,
+                    EntityType = entityType,
+                    EntityId = TryGetKey(entry),
+                    OldValues = oldJson,
+                    NewValues = newJson,
+                    IpAddress = ip,
+                    UserAgent = string.IsNullOrEmpty(ua) ? null : ua,
+                    RequestPath = path
+                });
+            }
+            return rows;
+        }
+
+        private static (string oldJson, string newJson, string action) SnapshotForAudit(EntityEntry entry)
+        {
+            switch (entry.State)
+            {
+                case EntityState.Added:
+                    var newAdded = entry.Properties
+                        .Where(p => !_auditSkipProps.Contains(p.Metadata.Name))
+                        .ToDictionary(p => p.Metadata.Name, p => p.CurrentValue);
+                    return (null, JsonConvert.SerializeObject(newAdded), "Create");
+
+                case EntityState.Deleted:
+                    var oldDeleted = entry.Properties
+                        .Where(p => !_auditSkipProps.Contains(p.Metadata.Name))
+                        .ToDictionary(p => p.Metadata.Name, p => p.OriginalValue);
+                    return (JsonConvert.SerializeObject(oldDeleted), null, "Delete");
+
+                case EntityState.Modified:
+                    var modifiedProps = entry.Properties
+                        .Where(p =>
+                            p.IsModified &&
+                            !_auditSkipProps.Contains(p.Metadata.Name))
+                        .ToList();
+                    if (modifiedProps.Count == 0) return (null, null, "Update");
+
+                    // Tight diff when OriginalValues survived; full
+                    // post-state fallback if EF was forced to mark
+                    // every prop modified without an original (rare
+                    // here since BaseRepository.Update doesn't call
+                    // ChangeTracker.Clear()).
+                    var changed = modifiedProps
+                        .Where(p => !object.Equals(p.OriginalValue, p.CurrentValue))
+                        .ToList();
+                    if (changed.Count > 0)
+                    {
+                        var oldUpd = changed.ToDictionary(p => p.Metadata.Name, p => p.OriginalValue);
+                        var newUpd = changed.ToDictionary(p => p.Metadata.Name, p => p.CurrentValue);
+                        return (JsonConvert.SerializeObject(oldUpd), JsonConvert.SerializeObject(newUpd), "Update");
+                    }
+
+                    var postState = modifiedProps.ToDictionary(p => p.Metadata.Name, p => p.CurrentValue);
+                    return (null, JsonConvert.SerializeObject(postState), "Update");
+
+                default:
+                    return (null, null, null);
+            }
+        }
+
+        private static string TryGetKey(EntityEntry entry)
+        {
+            var pk = entry.Metadata.FindPrimaryKey();
+            if (pk == null) return null;
+            var values = pk.Properties
+                .Select(p => entry.Property(p.Name).CurrentValue?.ToString())
+                .ToArray();
+            return string.Join(",", values);
         }
 
     }

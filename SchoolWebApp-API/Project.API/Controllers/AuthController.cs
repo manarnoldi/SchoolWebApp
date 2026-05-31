@@ -12,11 +12,13 @@ namespace SchoolWebApp.API.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly JwtService _jwtService;
+        private readonly IAuditService _audit;
 
-        public AuthController(UserManager<AppUser> userManager, JwtService jwtService)
+        public AuthController(UserManager<AppUser> userManager, JwtService jwtService, IAuditService audit)
         {
             _userManager = userManager;
             _jwtService = jwtService;
+            _audit = audit;
         }
 
         //POST: api/auth/login
@@ -27,13 +29,26 @@ namespace SchoolWebApp.API.Controllers
 
             var user = await _userManager.FindByNameAsync(request.UserName);
 
-            if (user == null) return BadRequest("Bad credentials");
+            if (user == null)
+            {
+                await _audit.LogLoginFailedAsync(request.UserName, "User not found");
+                return BadRequest("Bad credentials");
+            }
 
             var isPasswordValid = await _userManager.CheckPasswordAsync(user, request.Password);
 
-            if (!isPasswordValid) return BadRequest("Bad credentials");
+            if (!isPasswordValid)
+            {
+                await _audit.LogLoginFailedAsync(request.UserName, "Invalid password");
+                return BadRequest("Bad credentials");
+            }
 
             var token = _jwtService.CreateToken(user, await _userManager.GetRolesAsync(user));
+
+            // Successful sign-in - record after the token is built so
+            // a token-generation failure surfaces as LoginFailed
+            // rather than a misleading Login + 500.
+            await _audit.LogLoginAsync(user.UserName, user.Id.ToString());
 
             return Ok(token);
         }

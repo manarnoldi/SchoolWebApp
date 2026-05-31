@@ -63,6 +63,17 @@ builder.Services.AddControllers(
                ////options.SerializerSettings.MaxDepth = 1;
                //options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+
+               // Force every DateTime over the wire to UTC. EF reads
+               // MySQL datetimes as Unspecified Kind; without this
+               // the JSON would land without a Z suffix and the
+               // browser would parse it as local. With Utc handling
+               // + the ISO format string below the response carries
+               // a Z and clients can localise correctly regardless
+               // of the hosting server's clock.
+               options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+               options.SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
+               options.SerializerSettings.DateFormatString = "yyyy-MM-ddTHH:mm:ss.fffZ";
            });
 
 builder.Services.AddEndpointsApiExplorer();

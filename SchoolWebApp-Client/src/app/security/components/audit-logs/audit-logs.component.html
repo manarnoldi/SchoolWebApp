@@ -1,0 +1,251 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1" />
+
+<div class="container-fluid px-1">
+    <div class="row">
+        <div class="col-12 px-1">
+            <form
+                [formGroup]="filterForm"
+                (ngSubmit)="applyFilters()"
+                class="card card-body mb-1">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-2">
+                        <label class="form-label small mb-1">From</label>
+                        <input type="date" class="form-control form-control-sm"
+                            formControlName="startDate" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small mb-1">To</label>
+                        <input type="date" class="form-control form-control-sm"
+                            formControlName="endDate" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small mb-1">User</label>
+                        <input type="text" class="form-control form-control-sm"
+                            placeholder="e.g. emily"
+                            formControlName="userName" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small mb-1">Action</label>
+                        <select class="form-select form-select-sm" formControlName="action">
+                            <option value="">All</option>
+                            <option *ngFor="let a of actions" [value]="a">{{ a }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small mb-1">Entity</label>
+                        <select class="form-select form-select-sm" formControlName="entityType">
+                            <option value="">All</option>
+                            <option *ngFor="let t of entityTypes" [value]="t">{{ t }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex gap-1">
+                        <button type="submit" class="btn btn-sm btn-primary"
+                            [disabled]="loading" title="Apply filters">
+                            <i class="fas" [ngClass]="loading ? 'fa-spinner fa-spin' : 'fa-search'"></i>
+                            Search
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                            (click)="clearFilters()" title="Clear filters">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
+                    <div class="col-md-12">
+                        <input type="text" class="form-control form-control-sm"
+                            placeholder="Search user / entity / notes / request path"
+                            formControlName="search"
+                            (keyup.enter)="applyFilters()" />
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-12 px-1">
+            <div class="card">
+                <div class="card-header bg-secondary text-white d-flex align-items-center">
+                    <span><i class="fas fa-shield-alt"></i> Audit trail</span>
+                    <span class="ms-auto small">
+                        <ng-container *ngIf="total > 0; else noMatch">
+                            Showing {{ pageStart }}&ndash;{{ pageEnd }} of {{ total }}
+                        </ng-container>
+                        <ng-template #noMatch>
+                            No audit rows match the current filters.
+                        </ng-template>
+                    </span>
+                </div>
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-striped table-hover mb-0 audit-table">
+                        <thead>
+                            <tr>
+                                <th style="width:60px">#</th>
+                                <th style="width:160px">Timestamp</th>
+                                <th style="width:120px">User</th>
+                                <th style="width:110px">Action</th>
+                                <th style="width:140px">Entity</th>
+                                <th style="width:110px">Entity Id</th>
+                                <th>Path</th>
+                                <th style="width:110px">IP</th>
+                                <th style="width:60px">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let row of logs; let i = index; trackBy: trackById">
+                                <td>{{ pageStart + i }}.</td>
+                                <td>{{ row.timestamp | date: 'dd-MM-yyyy HH:mm:ss' }}</td>
+                                <td>{{ row.userName || '-' }}</td>
+                                <td>
+                                    <span class="badge" [ngClass]="actionClass(row.action)">
+                                        {{ row.action }}
+                                    </span>
+                                </td>
+                                <td>{{ row.entityType || '-' }}</td>
+                                <td>{{ row.entityId || '-' }}</td>
+                                <td>
+                                    <div class="cell-clip small text-muted" [title]="row.requestPath">
+                                        {{ row.requestPath || '-' }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="small text-muted">{{ row.ipAddress || '-' }}</span>
+                                </td>
+                                <td>
+                                    <a role="button" class="text-primary"
+                                        (click)="openDetails(row)" title="View details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr *ngIf="logs.length === 0 && !loading">
+                                <td colspan="9" class="text-center text-muted py-3">
+                                    No audit rows.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <app-table-paging
+                    [collectionSize]="total"
+                    [pageSize]="pageSize"
+                    (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"></app-table-paging>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Audit row details modal -->
+<div #auditDetailsModal class="modal fade" id="auditDetailsModal" tabindex="-1"
+    aria-labelledby="auditDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-secondary text-white">
+                <h5 class="modal-title" id="auditDetailsModalLabel">
+                    <ng-container *ngIf="selected; else noSelectionTitle">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        <span class="badge bg-white text-dark me-2">#{{ selected.id }}</span>
+                        Audit row
+                        <span class="badge ms-2" [ngClass]="actionClass(selected.action)">
+                            {{ selected.action }}
+                        </span>
+                    </ng-container>
+                    <ng-template #noSelectionTitle>Audit row</ng-template>
+                </h5>
+                <button type="button" class="btn-close btn-close-white"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ng-container *ngIf="selected">
+                    <!-- Metadata strip -->
+                    <div class="card-details-box border-info p-2 mb-2">
+                        <div class="row g-2">
+                            <div class="col-md-3">
+                                <div class="small text-muted"><i class="fas fa-clock"></i> When</div>
+                                <b>{{ selected.timestamp | date: 'dd-MM-yyyy HH:mm:ss.SSS' }}</b>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="small text-muted"><i class="fas fa-user"></i> By</div>
+                                <b class="text-break">
+                                    <ng-container *ngIf="selected.userName; else anon">
+                                        {{ selected.userName }}
+                                    </ng-container>
+                                    <ng-template #anon>
+                                        <span class="text-muted fst-italic small">
+                                            anonymous / system
+                                        </span>
+                                    </ng-template>
+                                    <span *ngIf="selected.userId" class="small text-muted ms-1">
+                                        ({{ selected.userId }})
+                                    </span>
+                                </b>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="small text-muted"><i class="fas fa-database"></i> Entity</div>
+                                <b>{{ selected.entityType || '-' }}</b>
+                                <span *ngIf="selected.entityId" class="text-muted ms-1">
+                                    #{{ selected.entityId }}
+                                </span>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="small text-muted"><i class="fas fa-network-wired"></i> IP</div>
+                                <b>{{ selected.ipAddress || '-' }}</b>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Location: path + user agent -->
+                    <div class="card-details-box border-warning p-2 mb-2">
+                        <div class="small text-muted mb-1">
+                            <i class="fas fa-link"></i> Request context
+                        </div>
+                        <div class="mb-1">
+                            <b class="small">Path:</b>
+                            <code class="small">{{ selected.requestPath || '-' }}</code>
+                        </div>
+                        <div *ngIf="selected.userAgent">
+                            <b class="small">User agent:</b>
+                            <code class="small">{{ selected.userAgent }}</code>
+                        </div>
+                    </div>
+
+                    <!-- Notes (only when present) -->
+                    <div *ngIf="selected.notes"
+                        class="card-details-box border-info p-2 mb-2">
+                        <div class="small text-muted mb-1">
+                            <i class="fas fa-comment-alt"></i> Notes
+                        </div>
+                        <div>{{ selected.notes }}</div>
+                    </div>
+
+                    <!-- Old vs New diff. Each side renders only when the
+                         corresponding payload existed; for Login/Logout
+                         events both stay hidden. -->
+                    <div *ngIf="selectedOld || selectedNew" class="row g-2">
+                        <div *ngIf="selectedOld" class="col-md-6">
+                            <div class="card-details-box border-danger p-2">
+                                <div class="small text-danger mb-1">
+                                    <b><i class="fas fa-minus-circle"></i> Old values</b>
+                                </div>
+                                <pre class="bg-danger-subtle p-2 mb-0 small audit-pre">{{ asJson(selectedOld) }}</pre>
+                            </div>
+                        </div>
+                        <div *ngIf="selectedNew" class="col-md-6">
+                            <div class="card-details-box border-success p-2">
+                                <div class="small text-success mb-1">
+                                    <b><i class="fas fa-plus-circle"></i> New values</b>
+                                </div>
+                                <pre class="bg-success-subtle p-2 mb-0 small audit-pre">{{ asJson(selectedNew) }}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,5 +1,9 @@
 ﻿using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.Interfaces.IRepositories.Academics;
+using SchoolWebApp.Core.Interfaces.IRepositories.Security;
+using SchoolWebApp.Core.Services;
+using Project.Infrastructure.Repositories.Security;
+using Project.Infrastructure.Services;
 //using SchoolWebApp.Core.Interfaces.IRepositories.CBE.Assessments;
 using SchoolWebApp.Core.Interfaces.IRepositories.Class;
 using SchoolWebApp.Core.Interfaces.IRepositories.School;
@@ -39,6 +43,14 @@ namespace Project.API.Extensions
         {
             #region IUnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            #endregion
+
+            #region Security / Audit
+            // Append-only audit trail. AuditLog rows describe "who did
+            // what" for admin/compliance review - separate from NLog,
+            // which is the operational error sink.
+            services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+            services.AddScoped<IAuditService, AuditService>();
             #endregion
 
             #region Academics Repositories

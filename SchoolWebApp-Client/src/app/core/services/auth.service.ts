@@ -78,6 +78,15 @@ export class AuthService {
     }
 
     doLogout() {
+        // Fire the audit POST BEFORE we strip the token from
+        // localStorage - the auth interceptor reads the token at
+        // request time, so as long as the request leaves the queue
+        // first it carries a valid JWT. Errors are swallowed because
+        // an audit-recording failure must not block sign-out.
+        this.http
+            .post('/auditevents/logout', {})
+            .subscribe({error: () => {}});
+
         let removeToken = localStorage.removeItem('ssw_token');
         localStorage.removeItem('current_user');
         this.appService.setUserLoggedIn(false);
