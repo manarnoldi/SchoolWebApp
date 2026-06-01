@@ -23,6 +23,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
         public IAcademicYearRepository AcademicYears { get; }
         public ICurriculumRepository Curricula { get; }
         public IExamTypeRepository ExamTypes { get; }
+        public ISchoolExamRepository SchoolExams { get; }
         public IExamRepository Exams { get; }
         public IExamResultRepository ExamResults { get; }
         public IGradeRepository Grades { get; }
@@ -121,6 +122,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
                 IAcademicYearRepository academicYearRepository,
                 ICurriculumRepository curriculumRepository,
                 IExamTypeRepository examTypeRepository,
+                ISchoolExamRepository schoolExamRepository,
                 IExamRepository examRepository,
                 IExamResultRepository examResultsRepository,
                 IGradeRepository gradeRepository,
@@ -212,6 +214,7 @@ namespace SchoolWebApp.Infrastructure.Repositories
             AcademicYears = academicYearRepository;
             Curricula = curriculumRepository;
             ExamTypes = examTypeRepository;
+            SchoolExams = schoolExamRepository;
             ExamResults = examResultsRepository;
             Exams = examRepository;
             Grades = gradeRepository;

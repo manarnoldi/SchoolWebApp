@@ -94,11 +94,13 @@ namespace SchoolWebApp.API.Controllers.Dashboard
                 //    scope for free.
                 var exams = await _db.Exams
                     .AsNoTracking()
-                    .Where(e => e.SessionId == sessionId
-                                && e.ExamTypeId == examTypeId
-                                && e.Session != null
-                                && e.Session.AcademicYearId == academicYearId
-                                && e.Session.CurriculumId == curriculumId)
+                    .Where(e => e.SchoolExam != null
+                                && e.SchoolExam.SessionId == sessionId
+                                && e.SchoolExam.ExamTypeId == examTypeId
+                                && e.SchoolExam.IsReleased
+                                && e.SchoolExam.Session != null
+                                && e.SchoolExam.Session.AcademicYearId == academicYearId
+                                && e.SchoolExam.Session.CurriculumId == curriculumId)
                     .Select(e => new {e.Id, e.SchoolClassId, e.ExamMark})
                     .ToListAsync();
 

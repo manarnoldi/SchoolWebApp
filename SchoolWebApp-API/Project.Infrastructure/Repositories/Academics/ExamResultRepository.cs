@@ -23,7 +23,7 @@ namespace SchoolWebApp.Infrastructure.Repositories.Academics
                 .Include(e => e.Student)
                 .Include(e => e.Exam.SchoolClass)
                 .Include(e => e.Exam.Subject)
-                .Include(e => e.Exam.ExamType)
+                .Include(e => e.Exam.SchoolExam.ExamType)
                 .ToListAsync();
             return examsResults;
         }
@@ -66,8 +66,8 @@ namespace SchoolWebApp.Infrastructure.Repositories.Academics
         join exam in _dbContext.Exams
             on studentSubject.SubjectId equals exam.SubjectId
         where exam.SchoolClassId == classId &&
-              exam.SessionId == sessionId &&
-              exam.ExamTypeId == examTypeId
+              exam.SchoolExam.SessionId == sessionId &&
+              exam.SchoolExam.ExamTypeId == examTypeId
 
         join result in _dbContext.ExamResults
             on new { ExamId = exam.Id, StudentId = studentId }

@@ -58,6 +58,7 @@ namespace Project.Infrastructure.Data
         #endregion
 
         #region CBC Exams
+        public DbSet<SchoolExam> SchoolExams { get; set; }
         public DbSet<Exam> Exams { get; set; }
         public DbSet<ExamResult> ExamResults { get; set; }
         public DbSet<ExamType> ExamTypes { get; set; }

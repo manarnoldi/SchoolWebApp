@@ -6,6 +6,6 @@ namespace SchoolWebApp.Core.Entities.CBE.Exams
     {
         public required string Abbreviation { get; set; }
         public bool Internal { get; set; }
-        public List<Exam> Exams { get; set; } = new ();
+        public List<SchoolExam> SchoolExams { get; set; } = new ();
     }
 }

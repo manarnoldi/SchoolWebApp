@@ -131,6 +131,7 @@ export const MENU = [
             {name: 'Responsibilities', iconClasses: 'fas fa-bullseye text-primary', path: ['/cbe/responsibilities/student-assignments']},
             {name: 'Community Service', iconClasses: 'fas fa-bullseye text-secondary', path: ['/cbe/community-service/student-assignments']},
             {name: 'Values', iconClasses: 'fas fa-bullseye text-danger', path: ['/cbe/values/student-assignments']},
+            {name: 'School Exams', iconClasses: 'fas fa-calendar-check text-info', path: ['/cbe/exams/school-exams']},
             {name: 'Register Exams', iconClasses: 'fas fa-bullseye text-warning', path: ['/cbe/exams/exams']},
             {name: 'Results (Subject)', iconClasses: 'fas fa-bullseye text-warning', path: ['/cbe/exams/exam-results']},
             {name: 'Results (Bulk)', iconClasses: 'fas fa-bullseye text-warning', path: ['/cbe/exams/exam-results-bulk']}

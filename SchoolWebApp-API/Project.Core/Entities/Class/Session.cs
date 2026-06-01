@@ -40,7 +40,7 @@ namespace SchoolWebApp.Core.Entities.Class
         public int SessionTypeId { get; set; }
         public SessionType? SessionType { get; set; }
 
-        public List<Exam> Exams { get; set; } = new();
+        public List<SchoolExam> SchoolExams { get; set; } = new();
         public List<Event> Events { get; set; } = new();
         public List<StudentValueScore> StudentValues { get; set; } = new();
         public List<StudentAssessment> StudentAssessments { get; set; } = new();

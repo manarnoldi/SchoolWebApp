@@ -2,6 +2,7 @@ import {ResourceModel} from '@/core/models/ResourceModel';
 
 export class Exam extends ResourceModel<Exam> {
     public examMark?: number;
+    public schoolExamId?: number;
     public examStartDate?: string;
     public examEndDate?: string;
     public examMarkEntryEndDate?: string;

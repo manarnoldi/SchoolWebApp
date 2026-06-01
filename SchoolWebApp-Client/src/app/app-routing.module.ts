@@ -111,6 +111,7 @@ import { StudentAssessmentsComponent } from './cbe/assessments/components/studen
 import { ExamTypesComponent as CbeExamTypesComponent } from './cbe/exams/components/exam-types/exam-types.component';
 import { ExamsComponent as CbeExamsComponent } from './cbe/exams/components/exams/exams.component';
 import { ExamRegisterListComponent } from './cbe/exams/components/exam-register-list/exam-register-list.component';
+import { SchoolExamsComponent } from './cbe/exams/components/school-exams/school-exams.component';
 import { ExamResultsComponent as CbeExamResultsComponent } from './cbe/exams/components/exam-results/exam-results.component';
 import { ExamResultsClasswiseComponent as CbeExamResultsClasswiseComponent } from './cbe/exams/components/exam-results-classwise/exam-results-classwise.component';
 import { ExamResultsBulkComponent } from './cbe/exams/components/exam-results-bulk/exam-results-bulk.component';
@@ -301,6 +302,7 @@ const routes: Routes = [
             // user's MenuPermissions list.
             {path: 'assessments/admin', redirectTo: 'assessments/assessments', pathMatch: 'full'},
             {path: 'exams/exam-types', component: CbeExamTypesComponent},
+            {path: 'exams/school-exams', component: SchoolExamsComponent},
             {path: 'exams/exams', component: ExamRegisterListComponent},
             {path: 'exams/exams/register', component: CbeExamsComponent},
             {path: 'exams/exam-results', component: CbeExamResultsComponent},

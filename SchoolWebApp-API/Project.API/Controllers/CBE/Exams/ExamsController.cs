@@ -36,7 +36,7 @@ namespace SchoolWebApp.API.Controllers.Academics
             try
             {
                 return Ok(_mapper.Map<List<ExamDto>>(await _unitOfWork.Exams
-                    .Find(includeProperties: "ExamType,SchoolClass,Session,Subject")));
+                    .Find(includeProperties: "SchoolExam.ExamType,SchoolExam.Session,SchoolClass,Subject")));
             }
             catch (Exception ex)
             {
@@ -178,7 +178,7 @@ namespace SchoolWebApp.API.Controllers.Academics
             try
             {
                 if (id <= 0) return BadRequest(id);
-                var _item = await _unitOfWork.Exams.GetById(id, includeProperties: "ExamName,SchoolClass,Session,Subject");
+                var _item = await _unitOfWork.Exams.GetById(id, includeProperties: "SchoolExam.ExamType,SchoolExam.Session,SchoolClass,Subject");
 
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<ExamDto>(_item);
@@ -206,8 +206,8 @@ namespace SchoolWebApp.API.Controllers.Academics
         {
             if (ModelState.IsValid)
             {
-                if (await _unitOfWork.Exams.ItemExistsAsync(s => s.ExamTypeId == model.ExamTypeId && s.SchoolClassId == model.SchoolClassId
-                && s.SessionId == model.SessionId && s.SubjectId == model.SubjectId))
+                if (await _unitOfWork.Exams.ItemExistsAsync(s => s.SchoolExamId == model.SchoolExamId
+                && s.SchoolClassId == model.SchoolClassId && s.SubjectId == model.SubjectId))
                     return Conflict(new { message = $"The exam details submitted already exist." });
                 try
                 {
@@ -240,13 +240,18 @@ namespace SchoolWebApp.API.Controllers.Academics
         {
             if (ModelState.IsValid)
             {
-                var itemExist = await _unitOfWork.Exams.ItemExistsAsync(m => m.Id == model.Id);
-                if (!itemExist)
+                var existing = await _unitOfWork.Exams.GetById(model.Id);
+                if (existing == null)
                     return BadRequest($"The exam of Id - '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
-                    var _item = _mapper.Map<Exam>(model);
-                    _unitOfWork.Exams.Update(_item);
+                    // Only the per-row mark and description are editable here;
+                    // the schedule/type/term live on the SchoolExam header and
+                    // the FK keys are immutable, so preserve them from the
+                    // stored row rather than trusting the inbound DTO.
+                    existing.ExamMark = model.ExamMark;
+                    existing.Description = model.Description;
+                    _unitOfWork.Exams.Update(existing);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }

@@ -57,6 +57,7 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories
 
         #region CBC Exams
         IExamTypeRepository ExamTypes { get; }
+        ISchoolExamRepository SchoolExams { get; }
         IExamRepository Exams { get; }
         IExamResultRepository ExamResults { get; }
         #endregion

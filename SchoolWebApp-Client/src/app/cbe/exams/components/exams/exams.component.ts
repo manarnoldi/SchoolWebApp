@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import {Exam} from '../../models/exam';
 import {ExamService} from '../../services/exam.service';
 import {ExamTypeService} from '../../services/exam-type.service';
+import {SchoolExamService} from '../../services/school-exam.service';
 import {CurriculumService} from '@/academics/services/curriculum.service';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {SessionsService} from '@/class/services/sessions.service';
@@ -61,12 +62,14 @@ export class ExamsComponent implements OnInit {
     // Multi-select for batch creation
     selectedClassIds: number[] = [];
     selectedSubjectIds: number[] = [];
-    selectedExamTypeId: any = null;
     examMark: number = 100;
-    examStartDate: string = '';
-    examEndDate: string = '';
-    examMarkEntryEndDate: string = '';
     examDescription: string = '';
+
+    // School exam (header) selection. The exam type and schedule now live on
+    // the chosen SchoolExam; this form only attaches class/subject detail rows.
+    schoolExams: any[] = [];
+    selectedSchoolExamId: any = null;
+    selectedSchoolExam: any = null;
 
     // Registered exams
     exams: Exam[] = [];
@@ -80,6 +83,7 @@ export class ExamsComponent implements OnInit {
         private toastr: ToastrService,
         private examSvc: ExamService,
         private examTypeSvc: ExamTypeService,
+        private schoolExamSvc: SchoolExamService,
         private curriculaSvc: CurriculumService,
         private academicYearSvc: AcademicYearsService,
         private sessionsSvc: SessionsService,
@@ -143,7 +147,25 @@ export class ExamsComponent implements OnInit {
 
     onSessionChange = () => {
         this.exams = [];
-        if (this.filterSessionId) this.searchExams();
+        this.schoolExams = [];
+        this.selectedSchoolExamId = null;
+        this.selectedSchoolExam = null;
+        if (!this.filterSessionId) return;
+        // Load the school-exam headers for this term so the user can attach
+        // class/subject detail rows to one of them.
+        this.schoolExamSvc.get(
+            `/schoolExams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}`
+        ).subscribe({
+            next: (items) => { this.schoolExams = items; },
+            error: (err) => this.toastr.error(err.error)
+        });
+        this.searchExams();
+    };
+
+    onSchoolExamChange = () => {
+        this.selectedSchoolExam = this.schoolExams.find(
+            (se) => se.id == this.selectedSchoolExamId
+        ) || null;
     };
 
     onEducationLevelChange = () => {
@@ -247,22 +269,6 @@ export class ExamsComponent implements OnInit {
         });
     };
 
-    onStartDateChange = () => {
-        if (this.examStartDate) {
-            this.examEndDate = this.examStartDate;
-            this.examMarkEntryEndDate = '';
-        }
-    };
-
-    onEndDateChange = () => {
-        if (this.examEndDate && this.examStartDate && this.examEndDate < this.examStartDate) {
-            this.examEndDate = this.examStartDate;
-        }
-        if (this.examEndDate) {
-            this.examMarkEntryEndDate = this.examEndDate;
-        }
-    };
-
     toggleClass = (classId: number) => {
         let idx = this.selectedClassIds.indexOf(classId);
         if (idx > -1) this.selectedClassIds.splice(idx, 1);
@@ -300,12 +306,12 @@ export class ExamsComponent implements OnInit {
     };
 
     saveExams = () => {
-        if (!this.selectedExamTypeId) {
-            this.toastr.info('Please select an exam type.');
-            return;
-        }
         if (!this.filterSessionId) {
             this.toastr.info('Please select a session.');
+            return;
+        }
+        if (!this.selectedSchoolExamId) {
+            this.toastr.info('Please select a school exam (the type and schedule come from it).');
             return;
         }
         if (this.selectedClassIds.length === 0) {
@@ -316,8 +322,8 @@ export class ExamsComponent implements OnInit {
             this.toastr.info('Please select at least one subject.');
             return;
         }
-        if (!this.examStartDate || !this.examEndDate) {
-            this.toastr.info('Please enter start and end dates.');
+        if (this.examMark == null || this.examMark <= 0) {
+            this.toastr.info('Please enter a positive exam mark.');
             return;
         }
 
@@ -362,13 +368,9 @@ export class ExamsComponent implements OnInit {
                 let requests = plan.map(({classId, subjectId}) => {
                     let exam = new Exam({
                         examMark: this.examMark,
-                        examStartDate: this.examStartDate,
-                        examEndDate: this.examEndDate,
-                        examMarkEntryEndDate: this.examMarkEntryEndDate || null,
                         description: this.examDescription || null,
-                        examTypeId: this.selectedExamTypeId,
+                        schoolExamId: this.selectedSchoolExamId,
                         schoolClassId: classId,
-                        sessionId: this.filterSessionId,
                         subjectId: subjectId
                     });
                     return this.examSvc.create('/exams', exam);

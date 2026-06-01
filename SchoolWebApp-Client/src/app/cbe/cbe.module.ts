@@ -27,6 +27,7 @@ import { StudentAssessmentAddFormComponent } from './assessments/components/stud
 import { ExamTypesComponent } from './exams/components/exam-types/exam-types.component';
 import { ExamsComponent } from './exams/components/exams/exams.component';
 import { ExamRegisterListComponent } from './exams/components/exam-register-list/exam-register-list.component';
+import { SchoolExamsComponent } from './exams/components/school-exams/school-exams.component';
 import { ExamResultsComponent } from './exams/components/exam-results/exam-results.component';
 import { ExamResultsClasswiseComponent } from './exams/components/exam-results-classwise/exam-results-classwise.component';
 import { ExamResultsBulkComponent } from './exams/components/exam-results-bulk/exam-results-bulk.component';
@@ -73,6 +74,7 @@ import { PCIAddFormComponent } from './assessments/components/pcis/pci-add-form/
     ExamTypesComponent,
     ExamsComponent,
     ExamRegisterListComponent,
+    SchoolExamsComponent,
     ExamResultsComponent,
     ExamResultsClasswiseComponent,
     ExamResultsBulkComponent,

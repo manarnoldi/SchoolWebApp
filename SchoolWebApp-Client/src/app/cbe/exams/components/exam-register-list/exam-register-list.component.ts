@@ -281,41 +281,18 @@ export class ExamRegisterListComponent implements OnInit {
     saveEdit = () => {
         if (!this.editingExam) return;
 
-        // Local validation: enforce date ordering (start <= end <= deadline)
-        // and a positive examMark so we never submit nonsense to the API.
+        // Only the per-row mark and description are editable here. The exam
+        // schedule (start/end/mark-entry dates) now lives on the SchoolExam
+        // header and is edited under /cbe/exams/school-exams.
         if (this.editForm.examMark == null || this.editForm.examMark <= 0) {
             this.toastr.warning('Exam mark must be a positive number.');
             return;
         }
-        if (!this.editForm.examStartDate || !this.editForm.examEndDate) {
-            this.toastr.warning('Start and end dates are required.');
-            return;
-        }
-        if (this.editForm.examEndDate < this.editForm.examStartDate) {
-            this.toastr.warning('End date cannot be earlier than start date.');
-            return;
-        }
-        if (this.editForm.examMarkEntryEndDate
-            && this.editForm.examMarkEntryEndDate < this.editForm.examEndDate) {
-            this.toastr.warning('Mark entry deadline cannot be earlier than the exam end date.');
-            return;
-        }
 
-        // Build the payload the way the API expects: keep the immutable
-        // foreign-key fields (examTypeId, schoolClassId, subjectId, sessionId)
-        // from the original record so the server-side update only changes the
-        // fields the user is allowed to touch.
         let payload = new Exam({
             id: this.editingExam.id,
             examMark: this.editForm.examMark,
-            examStartDate: this.editForm.examStartDate,
-            examEndDate: this.editForm.examEndDate,
-            examMarkEntryEndDate: this.editForm.examMarkEntryEndDate || null,
-            description: this.editForm.description || null,
-            examTypeId: this.editingExam.examTypeId ?? this.editingExam.examType?.id,
-            schoolClassId: this.editingExam.schoolClassId ?? this.editingExam.schoolClass?.id,
-            subjectId: this.editingExam.subjectId ?? this.editingExam.subject?.id,
-            sessionId: this.editingExam.sessionId ?? this.editingExam.session?.id
+            description: this.editForm.description || null
         });
 
         this.isSavingEdit = true;

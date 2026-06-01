@@ -58,13 +58,18 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="form-group mb-1">
-                            <label class="form-label">Exam Type: <span class="requiredField">*</span></label>
+                            <label class="form-label">School Exam: <span class="requiredField">*</span></label>
                             <select class="form-select form-select-sm"
-                                [(ngModel)]="selectedExamTypeId">
-                                <option [ngValue]="null" hidden disabled selected>Select type</option>
-                                <option [ngValue]="et.id" *ngFor="let et of examTypes">{{et.name}}</option>
+                                [(ngModel)]="selectedSchoolExamId" (change)="onSchoolExamChange()"
+                                [disabled]="!filterSessionId">
+                                <option [ngValue]="null" hidden disabled selected>
+                                    {{ filterSessionId ? 'Select school exam' : 'Select a term first' }}
+                                </option>
+                                <option [ngValue]="se.id" *ngFor="let se of schoolExams">
+                                    {{ se.examType?.name }} ({{ se.examStartDate | date:'mediumDate' }})
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -77,29 +82,27 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group mb-1">
-                            <label class="form-label">Start Date: <span class="requiredField">*</span></label>
-                            <input type="date" class="form-control form-control-sm"
-                                [(ngModel)]="examStartDate" (change)="onStartDateChange()" />
+                    <div class="col-md-8">
+                        <div class="alert alert-light border py-1 px-2 mb-1" *ngIf="selectedSchoolExam">
+                            <i class="fas fa-calendar-check text-info me-1"></i>
+                            <small>
+                                Schedule from the selected school exam:
+                                <strong>{{ selectedSchoolExam.examStartDate | date:'mediumDate' }}</strong>
+                                &rarr; <strong>{{ selectedSchoolExam.examEndDate | date:'mediumDate' }}</strong>,
+                                mark entry by <strong>{{ selectedSchoolExam.examMarkEntryEndDate | date:'mediumDate' }}</strong>.
+                                Edit dates under <a [routerLink]="['/cbe/exams/school-exams']">School Exams</a>.
+                            </small>
+                        </div>
+                        <div class="alert alert-warning border py-1 px-2 mb-1"
+                            *ngIf="filterSessionId && schoolExams.length === 0">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            <small>
+                                No school exams exist for this term yet.
+                                Create one under <a [routerLink]="['/cbe/exams/school-exams']">School Exams</a> first.
+                            </small>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group mb-1">
-                            <label class="form-label">End Date: <span class="requiredField">*</span></label>
-                            <input type="date" class="form-control form-control-sm"
-                                [(ngModel)]="examEndDate" [min]="examStartDate"
-                                (change)="onEndDateChange()" />
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group mb-1">
-                            <label class="form-label">Mark Entry Deadline:</label>
-                            <input type="date" class="form-control form-control-sm"
-                                [(ngModel)]="examMarkEntryEndDate" [min]="examEndDate" />
-                        </div>
-                    </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="form-group mb-1">
                             <label class="form-label">Description:</label>
                             <input type="text" class="form-control form-control-sm"

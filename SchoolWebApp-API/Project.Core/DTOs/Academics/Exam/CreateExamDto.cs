@@ -12,6 +12,12 @@ namespace SchoolWebApp.Core.DTOs.Academics.Exam
         [Display(Name = "Examination total mark")]
         public float ExamMark { get; set; }
 
+        // The SchoolExam header this detail row belongs to. On create only
+        // SchoolExamId + SchoolClassId + SubjectId + ExamMark are used; the
+        // header-level fields below are populated on read (flattened from
+        // the SchoolExam navigation) so existing consumers keep working.
+        public int SchoolExamId { get; set; }
+
         public DateOnly ExamStartDate { get; set; }
         public DateOnly ExamEndDate { get; set; }
         public DateOnly ExamMarkEntryEndDate { get; set; }

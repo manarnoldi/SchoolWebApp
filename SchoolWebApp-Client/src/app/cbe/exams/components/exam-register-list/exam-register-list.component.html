@@ -213,23 +213,28 @@
                             [(ngModel)]="editForm.examMark" min="1" />
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label mb-0" style="font-size:0.75rem;">
-                            Start Date <span class="requiredField">*</span>
-                        </label>
+                        <label class="form-label mb-0" style="font-size:0.75rem;">Start Date</label>
                         <input type="date" class="form-control form-control-sm"
-                            [(ngModel)]="editForm.examStartDate" />
+                            [(ngModel)]="editForm.examStartDate" readonly />
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label mb-0" style="font-size:0.75rem;">
-                            End Date <span class="requiredField">*</span>
-                        </label>
+                        <label class="form-label mb-0" style="font-size:0.75rem;">End Date</label>
                         <input type="date" class="form-control form-control-sm"
-                            [(ngModel)]="editForm.examEndDate" [min]="editForm.examStartDate" />
+                            [(ngModel)]="editForm.examEndDate" readonly />
                     </div>
                     <div class="col-md-3">
                         <label class="form-label mb-0" style="font-size:0.75rem;">Mark Entry Deadline</label>
                         <input type="date" class="form-control form-control-sm"
-                            [(ngModel)]="editForm.examMarkEntryEndDate" [min]="editForm.examEndDate" />
+                            [(ngModel)]="editForm.examMarkEntryEndDate" readonly />
+                    </div>
+                </div>
+                <div class="row g-1">
+                    <div class="col-12">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle"></i>
+                            Dates are set on the exam header. Edit them under
+                            <a [routerLink]="['/cbe/exams/school-exams']">School Exams</a>.
+                        </small>
                     </div>
                 </div>
                 <div class="row g-1 mt-1">

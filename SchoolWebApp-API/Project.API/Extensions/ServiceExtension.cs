@@ -57,6 +57,7 @@ namespace Project.API.Extensions
             services.AddTransient<IAcademicYearRepository, AcademicYearRepository>();
             services.AddTransient<ICurriculumRepository, CurriculumRepository>();
             services.AddTransient<IExamTypeRepository, ExamTypeRepository>();
+            services.AddTransient<ISchoolExamRepository, SchoolExamRepository>();
             services.AddTransient<IExamResultRepository, ExamResultRepository>();
             services.AddTransient<IExamRepository, ExamRepository>();
             services.AddTransient<IGradeRepository, GradeRepository>();
