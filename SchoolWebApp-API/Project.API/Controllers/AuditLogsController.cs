@@ -99,6 +99,13 @@ namespace SchoolWebApp.API.Controllers
                 .Take(pageSize)
                 .ToArrayAsync();
 
+            // Timestamps are stored in UTC (DateTime.UtcNow) but MySQL hands
+            // them back with Kind=Unspecified, so System.Text.Json serializes
+            // them without the trailing 'Z'. Mark them UTC so the client
+            // receives an unambiguous ISO-8601 instant and renders it as UTC.
+            foreach (var item in items)
+                item.Timestamp = DateTime.SpecifyKind(item.Timestamp, DateTimeKind.Utc);
+
             return Ok(new AuditLogPage { Total = total, Items = items });
         }
 

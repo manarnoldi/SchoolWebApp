@@ -3,13 +3,13 @@
     [breadcrumbs]="breadcrumbs"></app-dashboard-header>
 <hr class="mb-1" />
 
-<div class="container-fluid px-1">
+<div class="container-fluid">
     <div class="row">
         <div class="col-12 px-1">
             <form
                 [formGroup]="filterForm"
                 (ngSubmit)="applyFilters()"
-                class="card card-body mb-1">
+                class="card card-outline card-warning card-body mb-1">
                 <div class="row g-2 align-items-end">
                     <div class="col-md-2">
                         <label class="form-label small mb-1">From</label>
@@ -80,7 +80,7 @@
                         <thead>
                             <tr>
                                 <th style="width:60px">#</th>
-                                <th style="width:160px">Timestamp</th>
+                                <th style="width:160px">Timestamp (UTC)</th>
                                 <th style="width:120px">User</th>
                                 <th style="width:110px">Action</th>
                                 <th style="width:140px">Entity</th>
@@ -93,7 +93,7 @@
                         <tbody>
                             <tr *ngFor="let row of logs; let i = index; trackBy: trackById">
                                 <td>{{ pageStart + i }}.</td>
-                                <td>{{ row.timestamp | date: 'dd-MM-yyyy HH:mm:ss' }}</td>
+                                <td>{{ row.timestamp | date: 'dd-MM-yyyy HH:mm:ss' : 'UTC' }}</td>
                                 <td>{{ row.userName || '-' }}</td>
                                 <td>
                                     <span class="badge" [ngClass]="actionClass(row.action)">
@@ -161,8 +161,8 @@
                     <div class="card-details-box border-info p-2 mb-2">
                         <div class="row g-2">
                             <div class="col-md-3">
-                                <div class="small text-muted"><i class="fas fa-clock"></i> When</div>
-                                <b>{{ selected.timestamp | date: 'dd-MM-yyyy HH:mm:ss.SSS' }}</b>
+                                <div class="small text-muted"><i class="fas fa-clock"></i> When (UTC)</div>
+                                <b>{{ selected.timestamp | date: 'dd-MM-yyyy HH:mm:ss.SSS' : 'UTC' }}</b>
                             </div>
                             <div class="col-md-3">
                                 <div class="small text-muted"><i class="fas fa-user"></i> By</div>
