@@ -29,9 +29,10 @@ export class AppComponent implements OnInit{
         private appService: AppService,
         public router: Router
     ) {
-        // sets an idle timeout of 5 seconds, for testing purposes.
-        idle.setIdle(300);
-        // sets a timeout period of 5 seconds. after 10 seconds of inactivity, the user will be considered timed out.
+        // Consider the user idle after 30 minutes (1800s) of no activity.
+        idle.setIdle(1800);
+        // After going idle, show a 60s warning countdown before logging out
+        // (so total time to auto-logout is 30 minutes + 1 minute).
         idle.setTimeout(60);
         // sets the default interrupts, in this case, things like clicks, scrolls, touches to the document
         idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
