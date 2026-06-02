@@ -2,7 +2,7 @@
     [title]="dashboardTitle"
     [breadcrumbs]="breadcrumbs"></app-dashboard-header>
 <hr class="mb-1">
-<div class="mb-1">
+<div class="mb-1 px-1">
     <a class="btn btn-flat btn-sm btn-secondary" [routerLink]="['/cbe/exams/exams']">
         <i class="fas fa-angle-double-left"></i> Back to Registered Exams
     </a>
@@ -104,9 +104,9 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group mb-1">
-                            <label class="form-label">Description:</label>
+                            <!-- <label class="form-label">Description:</label> -->
                             <input type="text" class="form-control form-control-sm"
-                                [(ngModel)]="examDescription" placeholder="Optional" />
+                                [(ngModel)]="examDescription" placeholder="Description (Optional)" />
                         </div>
                     </div>
                 </div>

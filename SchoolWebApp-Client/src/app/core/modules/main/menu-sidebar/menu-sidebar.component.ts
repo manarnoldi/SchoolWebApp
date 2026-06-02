@@ -206,17 +206,6 @@ export const MENU = [
         ]
     },
     {
-        name: 'Security',
-        iconClasses: 'fas fa-lock',
-        children: [
-            {name: 'Users', iconClasses: 'fas fa-users text-primary', path: ['/security/users']},
-            {name: 'Roles', iconClasses: 'fas fa-user-shield text-success', path: ['/security/roles']},
-            {name: 'Menu Permissions', iconClasses: 'fas fa-bars text-danger', path: ['/security/menu-permissions']},
-            {name: 'Error Logs', iconClasses: 'fas fa-bug text-warning', path: ['/security/logs']},
-            {name: 'Audit Logs', iconClasses: 'fas fa-clipboard-list text-info', path: ['/security/audit-logs']}
-        ]
-    },
-    {
         name: 'Reports',
         iconClasses: 'fas fa-chart-bar',
         children: [
@@ -293,6 +282,17 @@ export const MENU = [
                     }
                 ]
             }
+        ]
+    },
+    {
+        name: 'Security',
+        iconClasses: 'fas fa-lock',
+        children: [
+            {name: 'Users', iconClasses: 'fas fa-users text-primary', path: ['/security/users']},
+            {name: 'Roles', iconClasses: 'fas fa-user-shield text-success', path: ['/security/roles']},
+            {name: 'Menu Permissions', iconClasses: 'fas fa-bars text-danger', path: ['/security/menu-permissions']},
+            {name: 'Error Logs', iconClasses: 'fas fa-bug text-warning', path: ['/security/logs']},
+            {name: 'Audit Logs', iconClasses: 'fas fa-clipboard-list text-info', path: ['/security/audit-logs']}
         ]
     }
 ];

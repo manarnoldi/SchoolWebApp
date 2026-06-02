@@ -12,7 +12,7 @@
                     <div class="input-group-prepend">
                         <div class="input-group-text"><i class="fas fa-user"></i></div>
                     </div>
-                    <input formControlName="username" type="text" class="form-control"
+                    <input formControlName="username" type="text" class="form-control form-control-sm"
                         id="username" placeholder="Enter your username"
                         [ngClass]="{'is-invalid': loginForm.get('username').touched && loginForm.get('username').invalid}" />
                 </div>
@@ -28,10 +28,10 @@
                         <div class="input-group-text"><i class="fas fa-lock"></i></div>
                     </div>
                     <input formControlName="password" [type]="showPassword ? 'text' : 'password'"
-                        class="form-control" id="password" placeholder="Enter your password"
+                        class="form-control form-control-sm" id="password" placeholder="Enter your password"
                         [ngClass]="{'is-invalid': loginForm.get('password').touched && loginForm.get('password').invalid}" />
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button" (click)="showPassword = !showPassword" tabindex="-1">
+                        <button class="btn btn-sm btn-outline-secondary" type="button" (click)="showPassword = !showPassword" tabindex="-1">
                             <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
                         </button>
                     </div>
@@ -50,7 +50,7 @@
                     class="text-decoration-none forgot-password">Forgot password?</a>
             </div>
 
-            <button type="submit" class="btn btn-gradient w-100 py-2" [disabled]="isAuthLoading">
+            <button type="submit" class="btn btn-sm btn-gradient w-100 py-2" [disabled]="isAuthLoading">
                 <span *ngIf="!isAuthLoading"><i class="fas fa-sign-in-alt mr-1"></i> Sign In</span>
                 <span *ngIf="isAuthLoading"><i class="fas fa-spinner fa-spin mr-1"></i> Signing in...</span>
             </button>
