@@ -48,12 +48,23 @@ namespace SchoolWebApp.API.Controllers.Academics
         /// </remarks>
         private async Task<IActionResult> CheckCanWriteResultsAsync(IEnumerable<int> examIds)
         {
-            // Roles are emitted as `"roles"` claims by JwtService; read directly
-            // rather than rely on User.IsInRole (RoleClaimType is not configured).
-            var roles = User.Claims
-                .Where(c => c.Type == "roles")
-                .Select(c => c.Value)
-                .ToHashSet();
+            // Resolve the current user from the stable `userid` claim, then read
+            // their roles authoritatively from the database. Reading roles from
+            // the JWT directly is fragile: the claim type depends on the JWT
+            // inbound-claim mapping (so `User.Claims["roles"]` can come back
+            // empty), and a token minted before a role change is stale. The DB
+            // is the source of truth and covers both cases.
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userid")?.Value;
+            if (!int.TryParse(userIdClaim, out var userId))
+                return StatusCode(StatusCodes.Status403Forbidden,
+                    new { message = "Unable to identify the current user." });
+
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+                return StatusCode(StatusCodes.Status403Forbidden,
+                    new { message = "Unable to identify the current user." });
+
+            var roles = (await _userManager.GetRolesAsync(user)).ToHashSet();
 
             if (roles.Contains("Administrator") || roles.Contains("SuperAdministrator"))
                 return null;
@@ -62,13 +73,7 @@ namespace SchoolWebApp.API.Controllers.Academics
                 return StatusCode(StatusCodes.Status403Forbidden,
                     new { message = "Only teachers and administrators can submit exam results." });
 
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userid")?.Value;
-            if (!int.TryParse(userIdClaim, out var userId))
-                return StatusCode(StatusCodes.Status403Forbidden,
-                    new { message = "Unable to identify the current user." });
-
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-            if (user?.PersonId == null)
+            if (user.PersonId == null)
                 return StatusCode(StatusCodes.Status403Forbidden,
                     new { message = "Your account is not linked to a staff record." });
 
