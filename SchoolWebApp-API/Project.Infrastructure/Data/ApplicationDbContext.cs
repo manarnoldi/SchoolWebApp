@@ -267,7 +267,7 @@ namespace Project.Infrastructure.Data
             nameof(Base.CreatedBy)
         };
 
-        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+        public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
             var entries = ChangeTracker.Entries().Where(e => e.Entity is Base && (e.State == EntityState.Added || e.State == EntityState.Modified));
             var user = _httpContextAccessor.HttpContext?.User?.FindFirstValue("username");
@@ -300,20 +300,77 @@ namespace Project.Infrastructure.Data
                 }
             }
 
-            // Audit trail capture - one AuditLog row per Added /
-            // Modified / Deleted entity, written in the same transaction
-            // as the data it describes. AuditLog itself and the NLog
-            // Log sink are skipped to avoid loops / noise.
-            var auditRows = BuildAuditRows(user);
-            if (auditRows.Count > 0)
-            {
-                AuditLogs.AddRange(auditRows);
-            }
+            // Audit trail capture - one AuditLog row per Added / Modified /
+            // Deleted entity. Modified/Deleted rows are ready immediately;
+            // Added rows are deferred because EF only assigns a real primary
+            // key during SaveChanges - capturing it earlier would record EF's
+            // temporary negative placeholder (e.g. -2147482641) instead of the
+            // store-generated id. AuditLog itself and the NLog Log sink are
+            // skipped to avoid loops / noise.
+            var (auditRows, pendingAdds) = BuildAuditRows(user);
 
-            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+            if (auditRows.Count == 0 && pendingAdds.Count == 0)
+                return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+
+            // Persist the data and its audit trail atomically: save the data
+            // first so the real keys land on Added rows, fill in the deferred
+            // audit rows, then save them - all in one transaction so audit
+            // always accompanies the data it describes.
+            var ownsTransaction = Database.CurrentTransaction == null;
+            var transaction = ownsTransaction
+                ? await Database.BeginTransactionAsync(cancellationToken)
+                : null;
+            try
+            {
+                var affected = await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+
+                foreach (var pending in pendingAdds)
+                {
+                    // Real key is now assigned - patch both the EntityId column
+                    // and the "Id" inside the captured new-values JSON.
+                    pending.Row.EntityId = TryGetKey(pending.Entry);
+                    var pk = pending.Entry.Metadata.FindPrimaryKey();
+                    if (pk != null)
+                        foreach (var keyProp in pk.Properties)
+                            pending.NewValues[keyProp.Name] = pending.Entry.Property(keyProp.Name).CurrentValue;
+                    pending.Row.NewValues = JsonConvert.SerializeObject(pending.NewValues);
+                    auditRows.Add(pending.Row);
+                }
+
+                if (auditRows.Count > 0)
+                {
+                    AuditLogs.AddRange(auditRows);
+                    await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+                }
+
+                if (transaction != null)
+                    await transaction.CommitAsync(cancellationToken);
+
+                return affected;
+            }
+            catch
+            {
+                if (transaction != null)
+                    await transaction.RollbackAsync(cancellationToken);
+                throw;
+            }
+            finally
+            {
+                if (transaction != null)
+                    await transaction.DisposeAsync();
+            }
         }
 
-        private List<AuditLog> BuildAuditRows(string user)
+        // Carries an Added entity's audit row until after SaveChanges, when the
+        // real primary key is available to patch into EntityId / NewValues.
+        private sealed class PendingAdd
+        {
+            public EntityEntry Entry { get; set; }
+            public AuditLog Row { get; set; }
+            public Dictionary<string, object> NewValues { get; set; }
+        }
+
+        private (List<AuditLog> ready, List<PendingAdd> pendingAdds) BuildAuditRows(string user)
         {
             // Snapshot the relevant entries before we begin adding new
             // AuditLog rows - mutating the ChangeTracker mid-enumeration
@@ -331,21 +388,55 @@ namespace Project.Infrastructure.Data
             var ip = http?.Connection?.RemoteIpAddress?.ToString();
             var ua = http?.Request?.Headers["User-Agent"].ToString();
             var path = http?.Request?.Path.Value;
+            var userId = http?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var timestamp = DateTime.UtcNow;
 
             var actor = string.IsNullOrEmpty(user) ? "system" : user;
 
-            var rows = new List<AuditLog>(trackedNow.Count);
+            var ready = new List<AuditLog>(trackedNow.Count);
+            var pendingAdds = new List<PendingAdd>();
+
             foreach (var entry in trackedNow)
             {
                 var entityType = entry.Entity.GetType().Name;
+
+                // Added entities are deferred: their primary key is still a
+                // temporary placeholder until SaveChanges runs. Capture the
+                // values now, but finish EntityId / NewValues after the save.
+                if (entry.State == EntityState.Added)
+                {
+                    var newAdded = entry.Properties
+                        .Where(p => !_auditSkipProps.Contains(p.Metadata.Name))
+                        .ToDictionary(p => p.Metadata.Name, p => p.CurrentValue);
+
+                    pendingAdds.Add(new PendingAdd
+                    {
+                        Entry = entry,
+                        NewValues = newAdded,
+                        Row = new AuditLog
+                        {
+                            Timestamp = timestamp,
+                            UserId = userId,
+                            UserName = actor,
+                            Action = "Create",
+                            EntityType = entityType,
+                            OldValues = null,
+                            IpAddress = ip,
+                            UserAgent = string.IsNullOrEmpty(ua) ? null : ua,
+                            RequestPath = path
+                        }
+                    });
+                    continue;
+                }
+
                 var (oldJson, newJson, action) = SnapshotForAudit(entry);
                 if (oldJson == null && newJson == null && action != "Delete")
                     continue;
 
-                rows.Add(new AuditLog
+                ready.Add(new AuditLog
                 {
-                    Timestamp = DateTime.UtcNow,
-                    UserId = http?.User?.FindFirstValue(ClaimTypes.NameIdentifier),
+                    Timestamp = timestamp,
+                    UserId = userId,
                     UserName = actor,
                     Action = action,
                     EntityType = entityType,
@@ -357,7 +448,7 @@ namespace Project.Infrastructure.Data
                     RequestPath = path
                 });
             }
-            return rows;
+            return (ready, pendingAdds);
         }
 
         private static (string oldJson, string newJson, string action) SnapshotForAudit(EntityEntry entry)
