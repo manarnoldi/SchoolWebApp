@@ -30,21 +30,22 @@
                     <div class="col-md-2">
                         <label class="form-label small mb-1">Action</label>
                         <select class="form-select form-select-sm" formControlName="action">
-                            <option value="">All</option>
+                            <option value>All</option>
                             <option *ngFor="let a of actions" [value]="a">{{ a }}</option>
                         </select>
                     </div>
                     <div class="col-md-2">
                         <label class="form-label small mb-1">Entity</label>
                         <select class="form-select form-select-sm" formControlName="entityType">
-                            <option value="">All</option>
+                            <option value>All</option>
                             <option *ngFor="let t of entityTypes" [value]="t">{{ t }}</option>
                         </select>
                     </div>
                     <div class="col-md-2 d-flex gap-1">
                         <button type="submit" class="btn btn-sm btn-primary"
                             [disabled]="loading" title="Apply filters">
-                            <i class="fas" [ngClass]="loading ? 'fa-spinner fa-spin' : 'fa-search'"></i>
+                            <i class="fas"
+                                [ngClass]="loading ? 'fa-spinner fa-spin' : 'fa-search'"></i>
                             Search
                         </button>
                         <button type="button" class="btn btn-sm btn-outline-secondary"
@@ -80,7 +81,7 @@
                         <thead>
                             <tr>
                                 <th style="width:60px">#</th>
-                                <th style="width:160px">Timestamp (UTC)</th>
+                                <th style="width:160px">Timestamp</th>
                                 <th style="width:120px">User</th>
                                 <th style="width:110px">Action</th>
                                 <th style="width:140px">Entity</th>
@@ -93,7 +94,7 @@
                         <tbody>
                             <tr *ngFor="let row of logs; let i = index; trackBy: trackById">
                                 <td>{{ pageStart + i }}.</td>
-                                <td>{{ row.timestamp | date: 'dd-MM-yyyy HH:mm:ss' : 'UTC' }}</td>
+                                <td>{{ row.timestamp | date: 'dd-MM-yyyy HH:mm:ss' }}</td>
                                 <td>{{ row.userName || '-' }}</td>
                                 <td>
                                     <span class="badge" [ngClass]="actionClass(row.action)">
@@ -103,7 +104,8 @@
                                 <td>{{ row.entityType || '-' }}</td>
                                 <td>{{ row.entityId || '-' }}</td>
                                 <td>
-                                    <div class="cell-clip small text-muted" [title]="row.requestPath">
+                                    <div class="cell-clip small text-muted"
+                                        [title]="row.requestPath">
                                         {{ row.requestPath || '-' }}
                                     </div>
                                 </td>
@@ -161,8 +163,9 @@
                     <div class="card-details-box border-info p-2 mb-2">
                         <div class="row g-2">
                             <div class="col-md-3">
-                                <div class="small text-muted"><i class="fas fa-clock"></i> When (UTC)</div>
-                                <b>{{ selected.timestamp | date: 'dd-MM-yyyy HH:mm:ss.SSS' : 'UTC' }}</b>
+                                <div class="small text-muted"><i class="fas fa-clock"></i>
+                                    When</div>
+                                <b>{{ selected.timestamp | date: 'dd-MM-yyyy HH:mm:ss.SSS' }}</b>
                             </div>
                             <div class="col-md-3">
                                 <div class="small text-muted"><i class="fas fa-user"></i> By</div>
@@ -181,14 +184,16 @@
                                 </b>
                             </div>
                             <div class="col-md-3">
-                                <div class="small text-muted"><i class="fas fa-database"></i> Entity</div>
+                                <div class="small text-muted"><i class="fas fa-database"></i>
+                                    Entity</div>
                                 <b>{{ selected.entityType || '-' }}</b>
                                 <span *ngIf="selected.entityId" class="text-muted ms-1">
                                     #{{ selected.entityId }}
                                 </span>
                             </div>
                             <div class="col-md-3">
-                                <div class="small text-muted"><i class="fas fa-network-wired"></i> IP</div>
+                                <div class="small text-muted"><i class="fas fa-network-wired"></i>
+                                    IP</div>
                                 <b>{{ selected.ipAddress || '-' }}</b>
                             </div>
                         </div>
@@ -227,7 +232,8 @@
                                 <div class="small text-danger mb-1">
                                     <b><i class="fas fa-minus-circle"></i> Old values</b>
                                 </div>
-                                <pre class="bg-danger-subtle p-2 mb-0 small audit-pre">{{ asJson(selectedOld) }}</pre>
+                                <pre
+                                    class="bg-danger-subtle p-2 mb-0 small audit-pre">{{ asJson(selectedOld) }}</pre>
                             </div>
                         </div>
                         <div *ngIf="selectedNew" class="col-md-6">
@@ -235,7 +241,8 @@
                                 <div class="small text-success mb-1">
                                     <b><i class="fas fa-plus-circle"></i> New values</b>
                                 </div>
-                                <pre class="bg-success-subtle p-2 mb-0 small audit-pre">{{ asJson(selectedNew) }}</pre>
+                                <pre
+                                    class="bg-success-subtle p-2 mb-0 small audit-pre">{{ asJson(selectedNew) }}</pre>
                             </div>
                         </div>
                     </div>
