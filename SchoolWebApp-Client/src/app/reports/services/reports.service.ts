@@ -66,23 +66,24 @@ export class ReportsService {
         });
     };
 
-    public getDIVIDER = () => {
+    public getDIVIDER = (pageOrientation: string = 'portrait') => {
         // The previous implementation used a 1-column empty table with
         // `headerLineOnly` to fake a horizontal rule. That hack depends on
         // pdfmake's per-cell math which changed between 0.2.6 and 0.2.15 and
         // started rendering with visible vertical gaps above/below the line.
         // A canvas line is a single PDF stroke and avoids the math entirely.
-        // 515 = A4 portrait width (595.28pt) minus default left/right margins
-        // of 40 each. For landscape callers the line still draws cleanly —
-        // it just won't span the full width, which is acceptable since most
-        // dividers sit inside content blocks anyway.
+        // The width must match the page so the rule spans the full content
+        // area: ~800pt for A4 landscape, ~555pt for portrait (A4 595.28pt minus
+        // the 20pt left/right margins these reports use). These match the
+        // getFooter widths. Landscape callers must pass 'landscape' or the line
+        // stops short.
         return {
             canvas: [
                 {
                     type: 'line',
                     x1: 0,
                     y1: 0,
-                    x2: 515,
+                    x2: pageOrientation.toLowerCase() === 'landscape' ? 800 : 555,
                     y2: 0,
                     lineWidth: 1,
                     lineColor: '#002D62'

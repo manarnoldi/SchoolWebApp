@@ -52,7 +52,27 @@ export class StaffAttendancesReportService extends ResourceService<StaffAttendan
                             text: `${i + 1}`,
                             style: 'tableHeader'
                         }));
-                        const tableWidths = ['auto', ...Array(31).fill('*')];
+                        // Fixed compact widths so all 31 day columns fit across
+                        // an A4 landscape page: a capped (wrapping) name column +
+                        // 31 narrow day columns. With 'auto'/'*' the long names
+                        // forced the table past the page edge, dropping day 31.
+                        // Name column fixed; day columns share the rest equally
+                        // ('*') so the table spans the full content width and the
+                        // left/right gaps stay symmetric. With the name capped,
+                        // 31 star columns still fit comfortably.
+                        const tableWidths = [110, ...Array(31).fill('*')];
+                        // Tighter cell padding than the shared layout to claw back
+                        // horizontal space for the day columns.
+                        const compactLayout = {
+                            hLineWidth: () => 0.1,
+                            vLineWidth: () => 0.1,
+                            hLineColor: () => '#4169E1',
+                            vLineColor: () => '#4169E1',
+                            paddingLeft: () => 2,
+                            paddingRight: () => 2,
+                            paddingTop: () => 3,
+                            paddingBottom: () => 3
+                        };
                         const tableBody = [
                             [
                                 {text: 'Staff Full Name', style: 'tableHeader'},
@@ -60,19 +80,18 @@ export class StaffAttendancesReportService extends ResourceService<StaffAttendan
                             ],
                             ...attends.map((attend) => [
                                 {
-                                    text: attend.staffDetail.fullName,
-                                    noWrap: true
+                                    text: attend.staffDetail.fullName
                                 },
                                 ...Array.from(
                                     {length: 31},
-                                    (_, i) => attend[`day${i + 1}`]
+                                    (_, i) => ({text: attend[`day${i + 1}`] ?? '', alignment: 'center'})
                                 )
                             ])
                         ];
 
                         const docDefinition = {
                             pageOrientation: 'landscape',
-                            pageMargins: [20, 20, 20, 40],
+                            pageMargins: [20, 15, 20, 40],
                             pageSize: 'A4',
                             info: {
                                 title: '',
@@ -91,19 +110,20 @@ export class StaffAttendancesReportService extends ResourceService<StaffAttendan
                                 tableHeader: this.reportSvc.getHEADER_STYLE()
                             },
                             content: [
-                                {...this.reportSvc.getDIVIDER()},
+                                {...this.reportSvc.getDIVIDER('landscape')},
                                 this.reportSvc.getReportHeader(schoolDetails),
                                 {
-                                    ...this.reportSvc.getDIVIDER(),
+                                    ...this.reportSvc.getDIVIDER('landscape'),
                                     marginBottom: 1
                                 },
                                 this.reportSvc.getReportTitle(reportTitle),
                                 {
-                                    ...this.reportSvc.getDIVIDER(),
-                                    marginBottom: 1
+                                    ...this.reportSvc.getDIVIDER('landscape'),
+                                    marginTop: 5,
+                                    marginBottom: 3
                                 },
                                 {
-                                    layout: this.reportSvc.getTableLayout(),
+                                    layout: compactLayout,
                                     table: {
                                         headerRows: 1,
                                         widths: tableWidths,
@@ -111,9 +131,9 @@ export class StaffAttendancesReportService extends ResourceService<StaffAttendan
                                     },
                                     marginBottom: 2,
                                     color: '#002D62',
-                                    fontSize: 10
+                                    fontSize: 8
                                 },
-                                {...this.reportSvc.getDIVIDER()},
+                                {...this.reportSvc.getDIVIDER('landscape')},
                                 this.reportSvc.getPrintDetails(
                                     this.userSvc?.currentUser?.firstName +
                                         ' ' +

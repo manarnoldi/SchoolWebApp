@@ -105,15 +105,15 @@ export class MissingMarksReportService {
                                 tableHeader: this.reportSvc.getHEADER_STYLE()
                             },
                             content: [
-                                {...this.reportSvc.getDIVIDER()},
+                                {...this.reportSvc.getDIVIDER('landscape')},
                                 this.reportSvc.getReportHeader(schoolDetails),
                                 {
-                                    ...this.reportSvc.getDIVIDER(),
+                                    ...this.reportSvc.getDIVIDER('landscape'),
                                     marginBottom: 1
                                 },
                                 this.reportSvc.getReportTitle(reportTitle),
                                 {
-                                    ...this.reportSvc.getDIVIDER(),
+                                    ...this.reportSvc.getDIVIDER('landscape'),
                                     marginBottom: 1
                                 },
                                 {
@@ -127,7 +127,7 @@ export class MissingMarksReportService {
                                     color: '#002D62',
                                     fontSize: 10
                                 },
-                                {...this.reportSvc.getDIVIDER()},
+                                {...this.reportSvc.getDIVIDER('landscape')},
                                 this.reportSvc.getPrintDetails(
                                     this.userSvc?.currentUser?.firstName +
                                         ' ' +
