@@ -55,6 +55,78 @@ namespace SchoolWebApp.Infrastructure.Repositories.Academics
             return examsResults;
         }
 
+        public async Task<List<ExamResult>> GetMissingMarks(int academicYearId, int curriculumId, int sessionId, int? examTypeId)
+        {
+            // 1. All exams in scope. Year/term/curriculum/type now live on the
+            //    SchoolExam header; include it so the mapped ExamDto carries the
+            //    flattened exam type.
+            var exams = await _dbContext.Exams
+                .Where(e => e.SchoolClass.AcademicYearId == academicYearId
+                    && e.SchoolExam.Session.CurriculumId == curriculumId
+                    && e.SchoolExam.SessionId == sessionId
+                    && (examTypeId == null || e.SchoolExam.ExamTypeId == examTypeId))
+                .Include(e => e.SchoolExam).ThenInclude(se => se.ExamType)
+                .Include(e => e.SchoolClass)
+                .Include(e => e.Subject)
+                .AsNoTracking()
+                .ToListAsync();
+
+            if (exams.Count == 0) return new List<ExamResult>();
+
+            var examIds = exams.Select(e => e.Id).ToList();
+            var classIds = exams.Select(e => e.SchoolClassId).Distinct().ToList();
+            var subjectIds = exams.Select(e => e.SubjectId).Distinct().ToList();
+
+            // 2. (examId, studentId) pairs that already have a result.
+            var existing = await _dbContext.ExamResults
+                .Where(r => examIds.Contains(r.ExamId))
+                .Select(r => new { r.ExamId, r.StudentId })
+                .ToListAsync();
+            var have = new HashSet<(int ExamId, int StudentId)>(
+                existing.Select(x => (x.ExamId, x.StudentId)));
+
+            // 3. Student allocations for the involved class+subject pairs.
+            var allocations = await _dbContext.StudentSubjects
+                .Where(ss => classIds.Contains(ss.StudentClass.SchoolClassId)
+                    && subjectIds.Contains(ss.SubjectId))
+                .Select(ss => new
+                {
+                    SchoolClassId = ss.StudentClass.SchoolClassId,
+                    ss.SubjectId,
+                    StudentId = ss.StudentClass.StudentId,
+                    Student = ss.StudentClass.Student
+                })
+                .AsNoTracking()
+                .ToListAsync();
+
+            var allocByClassSubject = allocations
+                .GroupBy(a => (a.SchoolClassId, a.SubjectId))
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            // 4. For each exam, the allocated students with no result yet.
+            var missing = new List<ExamResult>();
+            foreach (var exam in exams)
+            {
+                if (!allocByClassSubject.TryGetValue((exam.SchoolClassId, exam.SubjectId), out var allocs))
+                    continue;
+                foreach (var a in allocs)
+                {
+                    if (have.Contains((exam.Id, a.StudentId)))
+                        continue;
+                    // Score is left at its default - these rows represent the
+                    // absence of a result; the report doesn't render a score.
+                    missing.Add(new ExamResult
+                    {
+                        ExamId = exam.Id,
+                        Exam = exam,
+                        StudentId = a.StudentId,
+                        Student = a.Student
+                    });
+                }
+            }
+            return missing;
+        }
+
         public async Task<StudentPerformanceDto> GetStudentPerformace(int sessionId, int classId, int examTypeId, int studentId)
         {
             var subjectPerformanceList = await (

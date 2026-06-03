@@ -25,6 +25,23 @@ export class ExamResultsService extends ResourceService<ExamResult> {
         );
     };
 
+    /**
+     * One-shot missing-marks fetch: the server returns every allocated student
+     * with no recorded result for the exams matching the selection. Replaces
+     * the previous per-exam request fan-out that tripped CORS/host limits.
+     */
+    getMissingMarks = (
+        academicYearId: number,
+        curriculumId: number,
+        sessionId: number,
+        examTypeId: number
+    ): Observable<ExamResult[]> => {
+        return this.get(
+            `/examResults/missingMarks?academicYearId=${academicYearId}` +
+                `&curriculumId=${curriculumId}&sessionId=${sessionId}&examTypeId=${examTypeId}`
+        );
+    };
+
     loadExamResults = (
         exam: Exam,
         missingMarksReport: boolean

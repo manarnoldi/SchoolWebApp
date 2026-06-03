@@ -243,6 +243,34 @@ namespace SchoolWebApp.API.Controllers.Academics
             }
         }
 
+        // GET api/examResults/missingMarks?academicYearId=5&curriculumId=5&sessionId=5&examTypeId=5
+        /// <summary>
+        /// Returns, in one query, every allocated student who has no result
+        /// recorded yet for the exams matching the selection. Replaces the
+        /// frontend's per-exam request fan-out that overwhelmed the host.
+        /// </summary>
+        [HttpGet("missingMarks")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ExamResultDto>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetMissingMarks(int academicYearId, int curriculumId, int sessionId, int? examTypeId = null)
+        {
+            try
+            {
+                if (academicYearId <= 0) return BadRequest(academicYearId);
+                if (curriculumId <= 0) return BadRequest(curriculumId);
+                if (sessionId <= 0) return BadRequest(sessionId);
+
+                var missing = await _unitOfWork.ExamResults.GetMissingMarks(academicYearId, curriculumId, sessionId, examTypeId);
+                return Ok(_mapper.Map<List<ExamResultDto>>(missing));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving the missing marks.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         // GET api/examResults/getStudentPerformance/5/5/5/5
         /// <summary>
         /// A method for retrieving student performance.

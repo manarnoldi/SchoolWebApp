@@ -12,5 +12,10 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.Academics
         Task<ExamResult> GetByStudentExamId(int studentId, int examId);
         Task<List<ExamResult>> GetClassExamTypeRanking(int sessionId, int classId, int examTypeId);
         Task<StudentPerformanceDto> GetStudentPerformace(int sessionId, int schoolClassId, int examNameId, int studentId);
+
+        // One-shot missing-marks query: for every exam matching the selection,
+        // the allocated students who have no result yet. Replaces the client's
+        // per-exam request fan-out.
+        Task<List<ExamResult>> GetMissingMarks(int academicYearId, int curriculumId, int sessionId, int? examTypeId);
     }
 }
