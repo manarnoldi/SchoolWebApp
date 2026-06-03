@@ -2,14 +2,14 @@
     <div class="row g-0">
         <div class="col-11">
             <app-school-soft-filter-form [showAcademicYear]="true" [showCurriculum]="true"
-                [showSession]="true" [showExamType]="true"
+                [showSession]="true" [showSchoolExam]="true"
                 [academicYears]="academicYears"
                 [curricula]="curricula"
-                [sessions]="sessions" [examTypes]="examTypes"
+                [sessions]="sessions" [schoolExams]="schoolExams"
                 (sessionChangedEvent)="sessionChanged($event)"
                 (academicYearChangedEvent)="academicYearChanged($event)"
                 (curriculumChangedEvent)="curriculumChanged($event)"
-                (examTypeChangedEvent)="examTypeChanged($event)"
+                (schoolExamChangedEvent)="schoolExamChanged($event)"
                 (searchItemEvent)="onButtonSearchClick($event)"></app-school-soft-filter-form>
         </div>
         <div class="col-1">

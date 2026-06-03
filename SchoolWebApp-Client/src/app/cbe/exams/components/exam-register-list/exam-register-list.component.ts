@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import {Exam} from '../../models/exam';
 import {ExamService} from '../../services/exam.service';
 import {ExamTypeService} from '../../services/exam-type.service';
+import {SchoolExamService} from '../../services/school-exam.service';
 import {CurriculumService} from '@/academics/services/curriculum.service';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {SessionsService} from '@/class/services/sessions.service';
@@ -41,6 +42,8 @@ export class ExamRegisterListComponent implements OnInit {
     filterSessionId: any = null;
     filterSchoolClassId: any = null;
     filterExamTypeId: any = null;
+    filterSchoolExamId: any = null;
+    schoolExams: any[] = [];
     searchText: string = '';
 
     // Data
@@ -71,6 +74,7 @@ export class ExamRegisterListComponent implements OnInit {
         private toastr: ToastrService,
         private examSvc: ExamService,
         private examTypeSvc: ExamTypeService,
+        private schoolExamSvc: SchoolExamService,
         private curriculaSvc: CurriculumService,
         private academicYearSvc: AcademicYearsService,
         private sessionsSvc: SessionsService,
@@ -99,15 +103,17 @@ export class ExamRegisterListComponent implements OnInit {
     // ---- Cascading filter handlers --------------------------------------------
 
     onCurriculumChange = () => {
-        this.sessions = this.schoolClasses = [];
+        this.sessions = this.schoolClasses = this.schoolExams = [];
         this.filterAcademicYearId = this.filterSessionId = this.filterSchoolClassId = null;
+        this.filterSchoolExamId = this.filterExamTypeId = null;
         this.exams = [];
         this.selectedExamIds = [];
     };
 
     onAcademicYearChange = () => {
-        this.sessions = this.schoolClasses = [];
+        this.sessions = this.schoolClasses = this.schoolExams = [];
         this.filterSessionId = this.filterSchoolClassId = null;
+        this.filterSchoolExamId = this.filterExamTypeId = null;
         this.exams = [];
         this.selectedExamIds = [];
         if (!this.filterAcademicYearId || !this.filterCurriculumId) return;
@@ -131,6 +137,16 @@ export class ExamRegisterListComponent implements OnInit {
     };
 
     onSessionChange = () => {
+        this.filterSchoolExamId = this.filterExamTypeId = null;
+        this.schoolExams = [];
+        if (this.filterSessionId && this.filterCurriculumId && this.filterAcademicYearId) {
+            this.schoolExamSvc
+                .get(`/schoolExams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}`)
+                .subscribe({
+                    next: (items) => { this.schoolExams = items; },
+                    error: (err) => this.toastr.error(err.error)
+                });
+        }
         this.searchExams();
     };
 
@@ -138,9 +154,12 @@ export class ExamRegisterListComponent implements OnInit {
         this.searchExams();
     };
 
-    onExamTypeChange = () => {
-        // No reload needed — exam type filter is applied client-side after the
-        // session-scoped fetch.
+    // Picking a school exam sets the exam-type filter the list applies client-
+    // side (a school exam is one exam type within the chosen term).
+    onSchoolExamChange = () => {
+        let se = this.schoolExams.find((s) => s.id == this.filterSchoolExamId);
+        this.filterExamTypeId = se?.examTypeId ?? se?.examType?.id ?? null;
+        this.page = 1;
     };
 
     /**

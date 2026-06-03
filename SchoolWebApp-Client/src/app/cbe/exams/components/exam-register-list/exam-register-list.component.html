@@ -58,11 +58,14 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label mb-0" style="font-size:0.75rem;">Exam Type</label>
+                        <label class="form-label mb-0" style="font-size:0.75rem;">School Exam</label>
                         <select class="form-select form-select-sm"
-                            [(ngModel)]="filterExamTypeId" (change)="onExamTypeChange()">
-                            <option [ngValue]="null">All types</option>
-                            <option [ngValue]="et.id" *ngFor="let et of examTypes">{{et.name}}</option>
+                            [(ngModel)]="filterSchoolExamId" (change)="onSchoolExamChange()"
+                            [disabled]="!filterSessionId">
+                            <option [ngValue]="null">All school exams</option>
+                            <option [ngValue]="se.id" *ngFor="let se of schoolExams">
+                                {{ se.examType?.name }} ({{ se.examStartDate | date:'mediumDate' }})
+                            </option>
                         </select>
                     </div>
                     <div class="col-md-2">

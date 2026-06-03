@@ -168,6 +168,18 @@
                 </select>
             </div>
         </ng-content>
+        <ng-content *ngIf="showSchoolExam">
+            <div class="col py-1 px-0">
+                <select class="form-select form-select-sm" aria-label="School exam"
+                    (change)="schoolExamChanged()"
+                    formControlName="schoolExamId" id="schoolExamId">
+                    <option [ngValue]="null" selected>-School exam-</option>
+                    <option [ngValue]="se.id" *ngFor="let se of schoolExams">
+                        {{se?.examType?.name}} ({{se?.examStartDate | date:'mediumDate'}})
+                    </option>
+                </select>
+            </div>
+        </ng-content>
         <ng-content *ngIf="showExamName">
             <div class="col py-1 px-1">
                 <select class="form-select form-select-sm" aria-label="ExamName"

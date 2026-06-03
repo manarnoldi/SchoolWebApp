@@ -25,7 +25,7 @@
                 <div class="form-group mb-1">
                     <label class="form-label">Session: <span class="requiredField">*</span></label>
                     <select class="form-select form-select-sm"
-                        [(ngModel)]="filterSessionId">
+                        [(ngModel)]="filterSessionId" (change)="onSessionChange()">
                         <option [ngValue]="null" hidden disabled selected>Select session</option>
                         <option [ngValue]="s.id" *ngFor="let s of sessions">{{s.sessionName}}</option>
                     </select>
@@ -35,7 +35,7 @@
                 <div class="form-group mb-1">
                     <label class="form-label">Class: <span class="requiredField">*</span></label>
                     <select class="form-select form-select-sm"
-                        [(ngModel)]="filterSchoolClassId">
+                        [(ngModel)]="filterSchoolClassId" (change)="onFilterChange()">
                         <option [ngValue]="null" hidden disabled selected>Select class</option>
                         <option [ngValue]="sc.id" *ngFor="let sc of schoolClasses">{{sc.name}}</option>
                     </select>
@@ -43,11 +43,16 @@
             </div>
             <div class="col-md-2">
                 <div class="form-group mb-1">
-                    <label class="form-label">Exam Type: <span class="requiredField">*</span></label>
+                    <label class="form-label">School Exam: <span class="requiredField">*</span></label>
                     <select class="form-select form-select-sm"
-                        [(ngModel)]="filterExamTypeId">
-                        <option [ngValue]="null" hidden disabled selected>Select type</option>
-                        <option [ngValue]="et.id" *ngFor="let et of examTypes">{{et.name}}</option>
+                        [(ngModel)]="filterSchoolExamId" (change)="onSchoolExamChange()"
+                        [disabled]="!filterSessionId">
+                        <option [ngValue]="null" hidden disabled selected>
+                            {{ filterSessionId ? 'Select school exam' : 'Select a term first' }}
+                        </option>
+                        <option [ngValue]="se.id" *ngFor="let se of schoolExams">
+                            {{ se.examType?.name }} ({{ se.examStartDate | date:'mediumDate' }})
+                        </option>
                     </select>
                 </div>
             </div>
@@ -114,7 +119,7 @@
                     <td class="text-center fw-bold">{{ row.rank }}</td>
                 </tr>
             </tbody>
-            <tfoot>
+            <tfoot *ngIf="isLastPage">
                 <tr class="table-warning fw-bold">
                     <td colspan="3" class="text-end">Class Average:</td>
                     <td *ngFor="let subj of subjects" class="text-center">{{ getSubjectAvg(subj) }}</td>

@@ -8,6 +8,7 @@ import {ExamTypesService} from '@/academics/services/exam-types.service';
 import {ExamsService} from '@/academics/services/exams.service';
 import {Session} from '@/class/models/session';
 import {SessionsService} from '@/class/services/sessions.service';
+import {SchoolExamService} from '@/cbe/exams/services/school-exam.service';
 import {MissingMarksReportService} from '@/reports/services/academicsReports/missing-marks-report.service';
 import {AcademicYear} from '@/school/models/academic-year';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
@@ -32,6 +33,7 @@ export class MissingMarksReportComponent implements OnInit {
     academicYears: AcademicYear[] = [];
     sessions: Session[] = [];
     examTypes: ExamType[] = [];
+    schoolExams: any[] = [];
 
     constructor(
         private toastr: ToastrService,
@@ -42,6 +44,7 @@ export class MissingMarksReportComponent implements OnInit {
         private examTypesSvc: ExamTypesService,
         private examResultsSvc: ExamResultsService,
         private schoolSvc: SchoolDetailsService,
+        private schoolExamSvc: SchoolExamService,
         private missingMarksRptSvc: MissingMarksReportService
     ) {}
 
@@ -114,9 +117,26 @@ export class MissingMarksReportComponent implements OnInit {
     sessionChanged = (sessionId: number) => {
         this.resetFormControls(false, true);
         this.missingMarksResults = [];
+        this.schoolExams = [];
+        if (!sessionId) return;
+
+        let curriculumId =
+            this.ssFilterFormComponent.schoolSoftFilterForm.get('curriculumId').value;
+        let acadYearId =
+            this.ssFilterFormComponent.schoolSoftFilterForm.get('academicYearId').value;
+        if (!curriculumId || !acadYearId) return;
+
+        // Load the school exams for this term; the user picks one and we derive
+        // its exam type for the search.
+        this.schoolExamSvc
+            .get(`/schoolExams/examSearch?academicYearId=${acadYearId}&curriculumId=${curriculumId}&sessionId=${sessionId}`)
+            .subscribe({
+                next: (items) => { this.schoolExams = items; },
+                error: (err) => this.toastr.error(err.error)
+            });
     };
 
-    examTypeChanged = (examTypeId: number) => {
+    schoolExamChanged = (schoolExamId: number) => {
         this.missingMarksResults = [];
     };
 
@@ -128,48 +148,43 @@ export class MissingMarksReportComponent implements OnInit {
             this.toastr.info('Select curriculum before searching!');
         else if (!ssf.sessionId)
             this.toastr.info('Select session before searching!');
-        else if (!ssf.examTypeId)
-            this.toastr.info('Select exam type before searching!');
+        else if (!ssf.schoolExamId)
+            this.toastr.info('Select school exam before searching!');
         else {
-            this.examsSvc.getExamsBySearch(ssf).subscribe({
-                next: (exams) => {
-                    if (!exams || exams.length <= 0) {
-                        this.toastr.error(
-                            'There are no exams registered under the selections!'
-                        );
-                        return;
-                    }
-
-                    let missingMarksReq = [];
-                    exams.forEach((ex) => {
-                        missingMarksReq.push(
-                            this.examResultsSvc.loadExamResults(ex, true)
-                        );
-                    });
-
-                    forkJoin(missingMarksReq).subscribe({
-                        next: (examResults) => {
-                            this.missingMarksResults.push(
-                                ...examResults.flat()
+            // The school exam carries the exam type the API still filters by.
+            let schoolExam = this.schoolExams.find((se) => se.id == ssf.schoolExamId);
+            let examTypeId = schoolExam?.examTypeId ?? schoolExam?.examType?.id;
+            // Single server-side call instead of one request per exam. The
+            // API returns every allocated student with no result for the
+            // selection, already scoped by year/curriculum/session/type.
+            this.examResultsSvc
+                .getMissingMarks(
+                    ssf.academicYearId,
+                    ssf.curriculumId,
+                    ssf.sessionId,
+                    examTypeId
+                )
+                .subscribe({
+                    next: (examResults) => {
+                        if (!examResults || examResults.length <= 0) {
+                            this.toastr.info(
+                                'No missing marks found for the selections (or no exams are registered).'
                             );
-                            this.missingMarksResults.sort(
-                                (a, b) =>
-                                    a.exam?.schoolClass.rank -
-                                        b.exam?.schoolClass.rank ||
-                                    a.exam?.subject.rank -
-                                        b.exam?.subject.rank ||
-                                    a.student.upi.localeCompare(b.student.upi)
-                            );
-                        },
-                        error: (err) => {
-                            this.toastr.error(err.error);
+                            return;
                         }
-                    });
-                },
-                error: (err) => {
-                    this.toastr.error(err.error);
-                }
-            });
+                        this.missingMarksResults.push(...examResults);
+                        this.missingMarksResults.sort(
+                            (a, b) =>
+                                a.exam?.schoolClass.rank -
+                                    b.exam?.schoolClass.rank ||
+                                a.exam?.subject.rank - b.exam?.subject.rank ||
+                                a.student.upi.localeCompare(b.student.upi)
+                        );
+                    },
+                    error: (err) => {
+                        this.toastr.error(err.error);
+                    }
+                });
         }
     };
 
@@ -222,9 +237,13 @@ export class MissingMarksReportComponent implements OnInit {
             this.ssFilterFormComponent.schoolSoftFilterForm
                 .get('sessionId')
                 ?.reset();
-        if (examTypeIdReset)
+        if (examTypeIdReset) {
             this.ssFilterFormComponent.schoolSoftFilterForm
                 .get('examTypeId')
                 ?.reset();
+            this.ssFilterFormComponent.schoolSoftFilterForm
+                .get('schoolExamId')
+                ?.reset();
+        }
     };
 }

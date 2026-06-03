@@ -23,6 +23,7 @@ export class SchoolSoftFilter {
 
     public subjectId?: number;
     public examTypeId?: number;
+    public schoolExamId?: number;
     public examNameId?: number;
     public examId?: number;
 

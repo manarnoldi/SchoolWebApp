@@ -11,6 +11,7 @@ import {GlobalSettingService} from '@/settings/services/global-setting.service';
 import {SchoolDetailsService} from '@/school/services/school-details.service';
 import {ExamService} from '@/cbe/exams/services/exam.service';
 import {ExamTypeService} from '@/cbe/exams/services/exam-type.service';
+import {SchoolExamService} from '@/cbe/exams/services/school-exam.service';
 import {ExamResultService} from '@/cbe/exams/services/exam-result.service';
 import {StudentClassService} from '@/students/services/student-class.service';
 import {AuthService} from '@/core/services/auth.service';
@@ -45,6 +46,8 @@ export class BroadsheetComponent implements OnInit {
     filterSessionId: any = null;
     filterSchoolClassId: any = null;
     filterExamTypeId: any = null;
+    filterSchoolExamId: any = null;
+    schoolExams: any[] = [];
 
     subjects: string[] = [];
     broadsheetRows: {
@@ -78,6 +81,7 @@ export class BroadsheetComponent implements OnInit {
         private globalSettingSvc: GlobalSettingService,
         private examSvc: ExamService,
         private examTypeSvc: ExamTypeService,
+        private schoolExamSvc: SchoolExamService,
         private examResultSvc: ExamResultService,
         private studentClassSvc: StudentClassService,
         private schoolSvc: SchoolDetailsService,
@@ -115,8 +119,40 @@ export class BroadsheetComponent implements OnInit {
         this.grades = this.allGrades.filter(g => g.category === this.selectedGradingCategory).sort((a, b) => a.rank - b.rank);
     };
 
+    // Any filter change invalidates the loaded broadsheet - hide and clear it
+    // so stale data isn't shown until the user clicks Load again.
+    onFilterChange = () => {
+        this.loaded = false;
+        this.broadsheetRows = [];
+        this.page = 1;
+    };
+
+    // Session drives the School Exam list (a school exam carries the exam type
+    // the broadsheet query still filters by).
+    onSessionChange = () => {
+        this.onFilterChange();
+        this.schoolExams = [];
+        this.filterSchoolExamId = this.filterExamTypeId = null;
+        if (!this.filterSessionId || !this.filterCurriculumId || !this.filterAcademicYearId) return;
+        this.schoolExamSvc
+            .get(`/schoolExams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}`)
+            .subscribe({
+                next: (items) => { this.schoolExams = items; },
+                error: (err) => this.toastr.error(err.error)
+            });
+    };
+
+    onSchoolExamChange = () => {
+        this.onFilterChange();
+        let se = this.schoolExams.find((s) => s.id == this.filterSchoolExamId);
+        this.filterExamTypeId = se?.examTypeId ?? se?.examType?.id ?? null;
+    };
+
     onCurriculumChange = () => {
-        this.sessions = this.schoolClasses = [];
+        this.sessions = this.schoolClasses = this.schoolExams = [];
+        this.filterSchoolExamId = null;
+        this.broadsheetRows = [];
+        this.page = 1;
         this.filterAcademicYearId = this.filterSessionId = this.filterSchoolClassId = this.filterExamTypeId = null;
         this.loaded = false;
         if (!this.filterCurriculumId) return;
@@ -127,9 +163,11 @@ export class BroadsheetComponent implements OnInit {
     };
 
     onAcademicYearChange = () => {
-        this.sessions = this.schoolClasses = [];
-        this.filterSessionId = this.filterSchoolClassId = this.filterExamTypeId = null;
+        this.sessions = this.schoolClasses = this.schoolExams = [];
+        this.filterSessionId = this.filterSchoolClassId = this.filterExamTypeId = this.filterSchoolExamId = null;
         this.loaded = false;
+        this.broadsheetRows = [];
+        this.page = 1;
         if (!this.filterAcademicYearId || !this.filterCurriculumId) return;
         forkJoin([
             this.sessionsSvc.get(`/sessions/byCurriculumYearId?curriculumId=${this.filterCurriculumId}&academicYearId=${this.filterAcademicYearId}`),
@@ -408,17 +446,17 @@ export class BroadsheetComponent implements OnInit {
                                 images: { systemLogo: base64data, schoolLogo: school[0]?.logoAsBase64 },
                                 styles: { tableHeader: this.reportSvc.getHEADER_STYLE() },
                                 content: [
-                                    {...this.reportSvc.getDIVIDER()},
+                                    {...this.reportSvc.getDIVIDER('landscape')},
                                     this.reportSvc.getReportHeader(school[0]),
-                                    {...this.reportSvc.getDIVIDER(), marginBottom: 1},
+                                    {...this.reportSvc.getDIVIDER('landscape'), marginBottom: 1},
                                     this.reportSvc.getReportTitle(reportTitle),
-                                    {...this.reportSvc.getDIVIDER(), marginBottom: 1},
+                                    {...this.reportSvc.getDIVIDER('landscape'), marginBottom: 1},
                                     {
                                         layout: this.reportSvc.getTableLayout(),
                                         table: { headerRows: 1, widths, body },
                                         marginBottom: 2, color: '#002D62', fontSize: 8
                                     },
-                                    {...this.reportSvc.getDIVIDER()},
+                                    {...this.reportSvc.getDIVIDER('landscape')},
                                     this.reportSvc.getPrintDetails(
                                         (this.userSvc?.currentUser?.firstName || '') + ' ' + (this.userSvc?.currentUser?.lastName || ''),
                                         new Date().toLocaleString('en-GB')
@@ -441,7 +479,15 @@ export class BroadsheetComponent implements OnInit {
     };
 
     pageChanged = (page: number) => { this.page = page; };
-    pageSizeChanged = (pageSize: number) => { this.pageSize = pageSize; };
+    pageSizeChanged = (pageSize: number) => { this.pageSize = pageSize; this.page = 1; };
+
+    // The class summary (average/highest/lowest) is rendered only on the last
+    // page so it reads as an end-of-report total, not a per-page footer that
+    // could hide the fact more pages follow.
+    get isLastPage(): boolean {
+        if (this.broadsheetRows.length === 0) return false;
+        return this.page >= Math.ceil(this.broadsheetRows.length / this.pageSize);
+    }
 
     getSubjectAvg = (subj: string): string => {
         let scored = this.broadsheetRows.filter((r) => r.scores[subj]?.score != null);

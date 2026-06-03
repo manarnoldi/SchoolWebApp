@@ -38,6 +38,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
 
     @Input() subjects: Subject[] = [];
     @Input() examTypes: ExamType[] = [];
+    @Input() schoolExams: any[] = [];
     @Input() examNames: ExamName[] = [];
     @Input() exams: Exam[] = [];
 
@@ -61,6 +62,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
 
     @Input() showSubject: boolean = false;
     @Input() showExamType: boolean = false;
+    @Input() showSchoolExam: boolean = false;
     @Input() showExamName: boolean = false;
     @Input() showExam: boolean = false;
 
@@ -86,6 +88,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
 
     @Output() subjectChangedEvent = new EventEmitter<number>();
     @Output() examTypeChangedEvent = new EventEmitter<number>();
+    @Output() schoolExamChangedEvent = new EventEmitter<number>();
     @Output() examNameChangedEvent = new EventEmitter<number>();
     @Output() examChangedEvent = new EventEmitter<number>();
 
@@ -154,6 +157,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
                 : null,
             subjectId: cysSearch.subjectId ?? null,
             examTypeId: cysSearch.examTypeId ?? null,
+            schoolExamId: cysSearch.schoolExamId ?? null,
             examNameId: cysSearch.examNameId ?? null,
             examId: cysSearch.examId ?? null,
         });
@@ -180,6 +184,7 @@ export class SchoolSoftFilterFormComponent implements OnInit {
             dateTo: [null],
             subjectId:[null],
             examTypeId:[null],
+            schoolExamId:[null],
             examNameId:[null],
             examId:[null]
         });
@@ -230,6 +235,12 @@ export class SchoolSoftFilterFormComponent implements OnInit {
         let examTypeId =
             this.schoolSoftFilterForm.get('examTypeId').value;
         this.examTypeChangedEvent.emit(examTypeId);
+    };
+
+    schoolExamChanged = () => {
+        let schoolExamId =
+            this.schoolSoftFilterForm.get('schoolExamId').value;
+        this.schoolExamChangedEvent.emit(schoolExamId);
     };
 
      examNameChanged = () => {
