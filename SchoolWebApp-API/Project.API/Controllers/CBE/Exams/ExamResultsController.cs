@@ -110,6 +110,35 @@ namespace SchoolWebApp.API.Controllers.Academics
             return null;
         }
 
+        /// <summary>
+        /// Resolves the StudentSubject (allocation) a result for (examId,
+        /// studentId) belongs to. Returns null when the student is not allocated
+        /// the exam's subject in the exam's class - in which case a result must
+        /// not be created (it would be an orphan). An optional per-exam cache
+        /// avoids re-querying allocations for every row of a batch.
+        /// </summary>
+        private async Task<int?> ResolveStudentSubjectIdAsync(
+            int examId, int studentId, Dictionary<int, Dictionary<int, int>> cache = null)
+        {
+            if (cache == null || !cache.TryGetValue(examId, out var byStudent))
+            {
+                byStudent = new Dictionary<int, int>();
+                var exam = await _unitOfWork.Exams.GetById(examId);
+                if (exam != null)
+                {
+                    var allocations = await _unitOfWork.StudentSubjects
+                        .GetBySchoolClassSubjectId(exam.SchoolClassId, exam.SubjectId);
+                    foreach (var a in allocations)
+                    {
+                        var sid = a.StudentClass?.StudentId;
+                        if (sid != null) byStudent[sid.Value] = a.Id;
+                    }
+                }
+                cache?.Add(examId, byStudent);
+            }
+            return byStudent.TryGetValue(studentId, out var ssId) ? ssId : (int?)null;
+        }
+
         // GET: api/examResults
         /// <summary>
         /// A method for retrieving all exam results
@@ -359,9 +388,15 @@ namespace SchoolWebApp.API.Controllers.Academics
                 var authBlock = await CheckCanWriteResultsAsync(new[] { model.ExamId });
                 if (authBlock != null) return authBlock;
 
+                // A result must belong to a subject allocation.
+                var studentSubjectId = await ResolveStudentSubjectIdAsync(model.ExamId, model.StudentId);
+                if (studentSubjectId == null)
+                    return Conflict(new { message = "The student is not allocated this exam's subject, so a result cannot be recorded." });
+
                 try
                 {
                     var _item = _mapper.Map<ExamResult>(model);
+                    _item.StudentSubjectId = studentSubjectId.Value;
                     _unitOfWork.ExamResults.Create(_item);
                     await _unitOfWork.SaveChangesAsync();
                     var returnItem = _mapper.Map<ExamResultDto>(_item);
@@ -400,6 +435,10 @@ namespace SchoolWebApp.API.Controllers.Academics
             {
                 try
                 {
+                    // Cache (studentId -> studentSubjectId) per exam so we resolve
+                    // each exam's allocations once, not per row.
+                    var allocationCache = new Dictionary<int, Dictionary<int, int>>();
+
                     foreach (var item in model)
                     {
                         if (item.Score != null)
@@ -414,7 +453,14 @@ namespace SchoolWebApp.API.Controllers.Academics
                             }
                             else
                             {
+                                // A result must belong to a subject allocation. If
+                                // the student isn't allocated the exam's subject in
+                                // its class, skip the row (don't create an orphan).
+                                var studentSubjectId = await ResolveStudentSubjectIdAsync(item.ExamId, item.StudentId, allocationCache);
+                                if (studentSubjectId == null) continue;
+
                                 var _item = _mapper.Map<ExamResult>(item);
+                                _item.StudentSubjectId = studentSubjectId.Value;
                                 _unitOfWork.ExamResults.Create(_item);
                             }
                         }

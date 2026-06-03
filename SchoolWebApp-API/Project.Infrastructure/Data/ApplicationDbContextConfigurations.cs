@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using SchoolWebApp.Core.Constants;
 using SchoolWebApp.Core.Entities.CBE.Assessments;
+using SchoolWebApp.Core.Entities.CBE.Exams;
 using SchoolWebApp.Core.Entities.CBE.Responsibilities;
 using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Identity;
@@ -105,6 +106,16 @@ namespace Project.Infrastructure.Data
                 .WithMany()
                 .HasForeignKey(a => a.ActionedByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // An ExamResult belongs to a StudentSubject (the allocation). Cascade
+            // so removing the allocation removes its results - a result can never
+            // outlive the allocation. (Cascade convention is removed globally, so
+            // this must be set explicitly.)
+            modelBuilder.Entity<ExamResult>()
+                .HasOne(er => er.StudentSubject)
+                .WithMany()
+                .HasForeignKey(er => er.StudentSubjectId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Sponsorships — decimal precision + FK rules
             modelBuilder.Entity<Sponsorship>().Property(p => p.FixedAmount).HasPrecision(18, 2);
