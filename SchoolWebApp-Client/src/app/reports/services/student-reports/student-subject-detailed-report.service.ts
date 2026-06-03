@@ -7,6 +7,7 @@ import {SchoolDetails} from '@/school/models/school-details';
 import {concatMap, from, map, Observable, switchMap} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
 import {StudentSubject} from '@/students/models/student-subject';
+import {Subject} from '@/academics/models/subject';
 import {StaffAttendancesReport} from '../../models/staff-attendances-report';
 
 import pdfMake from 'pdfmake/build/pdfmake';
@@ -66,6 +67,109 @@ export class StudentSubjectDetailedReportService extends ResourceService<Student
                 error: (err) => {
                     this.toastr.error(err.error || err);
                 }
+            });
+    };
+
+    /**
+     * Whole-class subject allocation on one sheet: one row per student with
+     * their allocated subjects shown as codes. Landscape so the codes fit on a
+     * single line. Opens one PDF (not a per-student batch).
+     */
+    printClassReport = (
+        schoolDetails: SchoolDetails,
+        reportTitle: string,
+        rows: {upi: string; fullName: string; subjects: Subject[]}[]
+    ) => {
+        this.reportSvc
+            .loadImageAsBase64('assets/img/shule-nova-logo-only.png')
+            .subscribe({
+                next: (blob) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        const base64data = reader.result as string;
+                        const colHeaders = [
+                            {text: '#', style: 'tableHeader'},
+                            {text: 'Adm No', style: 'tableHeader'},
+                            {text: 'Student name', style: 'tableHeader'},
+                            {text: 'Subjects', style: 'tableHeader'},
+                            {text: 'Allocated subjects (codes)', style: 'tableHeader'}
+                        ];
+                        const tableWidths = ['auto', 'auto', '*', 'auto', '*'];
+                        const tableBody = [
+                            [...colHeaders],
+                            ...rows.map((r, i) => [
+                                {text: i + 1, noWrap: true},
+                                {text: r.upi ?? '', noWrap: true},
+                                {text: r.fullName ?? ''},
+                                {text: r.subjects.length, alignment: 'center', noWrap: true},
+                                {
+                                    text: r.subjects
+                                        .map((s) => s.code)
+                                        .filter((c) => !!c)
+                                        .join(', ')
+                                }
+                            ])
+                        ];
+
+                        const docDefinition = {
+                            pageOrientation: 'landscape',
+                            pageMargins: [20, 20, 20, 40],
+                            pageSize: 'A4',
+                            info: {
+                                title: 'Class subject allocation',
+                                author:
+                                    this.userSvc?.currentUser?.firstName +
+                                    ' ' +
+                                    this.userSvc?.currentUser?.lastName,
+                                subject: reportTitle
+                            },
+                            watermark: this.reportSvc.getWatermark(
+                                'ShuleNova - ' + schoolDetails?.name
+                            ),
+                            footer: this.reportSvc.getFooter('landscape'),
+                            images: {
+                                systemLogo: base64data,
+                                schoolLogo: schoolDetails.logoAsBase64
+                            },
+                            styles: {
+                                tableHeader: this.reportSvc.getHEADER_STYLE()
+                            },
+                            content: [
+                                {...this.reportSvc.getDIVIDER('landscape')},
+                                this.reportSvc.getReportHeader(schoolDetails),
+                                {...this.reportSvc.getDIVIDER('landscape'), marginBottom: 1},
+                                this.reportSvc.getReportTitle(reportTitle),
+                                {...this.reportSvc.getDIVIDER('landscape'), marginBottom: 1},
+                                {
+                                    layout: this.reportSvc.getTableLayout(),
+                                    table: {
+                                        headerRows: 1,
+                                        widths: tableWidths,
+                                        body: tableBody
+                                    },
+                                    marginBottom: 2,
+                                    color: '#002D62',
+                                    fontSize: 10
+                                },
+                                {...this.reportSvc.getDIVIDER('landscape')},
+                                this.reportSvc.getPrintDetails(
+                                    this.userSvc?.currentUser?.firstName +
+                                        ' ' +
+                                        this.userSvc?.currentUser?.lastName,
+                                    new Date().toLocaleString('en-GB')
+                                )
+                            ]
+                        };
+
+                        pdfMake
+                            .createPdf(docDefinition)
+                            .getBlob((b: Blob) =>
+                                window.open(URL.createObjectURL(b), '_blank')
+                            );
+                    };
+                    reader.readAsDataURL(blob);
+                },
+                error: (err) => this.toastr.error(err.error || err)
             });
     };
 

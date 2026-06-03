@@ -14,24 +14,56 @@
         </div>
         <div class="col-1">
             <button type="button" class="btn btn-sm btn-flat btn-danger btn-block float-right m-1"
-                [disabled]="selectedCount <= 0"
+                [disabled]="classRows.length <= 0"
                 (click)="printReport()">
-                <i class="fas fa-print"></i>
-                {{ selectedCount === 1? 'Preview':'Print' }}
+                <i class="fas fa-print"></i> Print
             </button>
         </div>
     </div>
 </div>
-<div class="row g-0">
-    <div class="col-4">
-        <app-student-class-min-table [studentClasses]="studentClasses"
-            [showCheckBoxes]="true" [showStatus]="false" [showMinimum]="true"
-            [subjectCounts]="subjectCounts" [selectedId]="selectedStudentClassId"
-            (studentClassClickedEvent)="studentClassClicked($event)"></app-student-class-min-table>
+
+<div class="card">
+    <div class="card-header bg-info text-white p-1">
+        <strong>
+            Student Subject Allocations
+            <span *ngIf="classRows.length > 0">- {{ classRows.length }} student(s)</span>
+        </strong>
     </div>
-    <div class="col-8">
-        <app-student-subject-table [academicYears]="academicYears"
-            [studentSubjects]="studentSubjects"
-            *ngIf="studentSubjects" [showEditDeleteControls]="false"></app-student-subject-table>
+    <div class="card-body table-responsive p-0">
+        <table class="table table-striped table-hover table-sm mb-0">
+            <thead>
+                <tr>
+                    <th style="width:50px">#</th>
+                    <th style="width:90px">Adm No</th>
+                    <th style="width:220px">Student</th>
+                    <th style="width:80px" class="text-center">Subjects</th>
+                    <th>Allocated subjects</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngIf="!isLoading && classRows.length === 0">
+                    <td colspan="5" class="text-center text-muted py-3">
+                        Pick a curriculum, year, education level and class to list its
+                        students and their subject allocations.
+                    </td>
+                </tr>
+                <tr *ngFor="let row of classRows; index as i">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ row.upi }}</td>
+                    <td>{{ row.fullName }}</td>
+                    <td class="text-center fw-bold">{{ row.subjects.length }}</td>
+                    <td>
+                        <span *ngIf="row.subjects.length === 0" class="text-muted">
+                            No subjects allocated
+                        </span>
+                        <span *ngFor="let s of row.subjects"
+                            class="badge bg-light text-dark border me-1 mb-1"
+                            [title]="s.name">
+                            {{ s.code }} - {{ s.name }}
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>

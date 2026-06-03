@@ -125,6 +125,32 @@ namespace SchoolWebApp.API.Controllers.Students
             }
         }
 
+        // GET api/studentSubjects/allocationsBySchoolClassId/5
+        /// <summary>
+        /// Returns every student-subject allocation for a whole class in one
+        /// call (each row carries its StudentClassId + Subject), so the class
+        /// subject-allocation report can group by student without firing a
+        /// request per student.
+        /// </summary>
+        [HttpGet("allocationsBySchoolClassId/{schoolClassId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StudentSubjectDto>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetAllocationsBySchoolClassId(int schoolClassId)
+        {
+            try
+            {
+                if (schoolClassId <= 0) return BadRequest(schoolClassId);
+                var _items = await _unitOfWork.StudentSubjects.GetSubjectsBySchoolClassId(schoolClassId);
+                return Ok(_mapper.Map<List<StudentSubjectDto>>(_items));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving allocations by school class id.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         // GET api/studentSubjects/bySchoolClassSubjectId/5/5
         /// <summary>
         /// A method for retrieving student subjects by school class and subject Ids.
