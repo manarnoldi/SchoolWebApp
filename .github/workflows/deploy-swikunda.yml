@@ -1,14 +1,20 @@
-# Build the .NET API and FTP-deploy it to the Windows host (site4now / myWindowsHosting).
+# Build the .NET API + Angular client and FTP-deploy them as ONE site to the
+# Windows host (site4now). The Angular build is embedded in the API's wwwroot,
+# so the API serves both the app and the /api endpoints from a single origin.
 #
 # Required GitHub secrets (Repo → Settings → Secrets and variables → Actions):
-#   FTP_SERVER       e.g. win8082.site4now.net
-#   FTP_USERNAME     e.g. smwadwaa-002
-#   FTP_PASSWORD     the FTP password
-#   FTP_REMOTE_DIR_SWIKUNDA_API   the remote folder for the swikunda API site, e.g. /swikunda-api/
+#   FTP_SERVER                    e.g. win8082.site4now.net
+#   FTP_USERNAME                  e.g. smwadwaa-002
+#   FTP_PASSWORD                  the FTP password
+#   FTP_REMOTE_DIR_SWIKUNDA_UI    the remote folder for the swikunda site, e.g. /swikunda-ui/
+#
+# Note: the swikunda site must be configured for ASP.NET Core, and an
+# appsettings.Production.json (connection string + JWT key) must already exist
+# in the remote folder — this workflow never deploys that secret file.
 #
 # Trigger: manual only — run from the Actions tab via the "Run workflow" button.
 
-name: Deploy Swikunda API to site4now (FTP)
+name: Deploy Swikunda (API + UI) to site4now (FTP)
 
 on:
   workflow_dispatch:
@@ -25,16 +31,41 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Restore
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: SchoolWebApp-Client/package-lock.json
+
+      - name: Restore (API)
         run: dotnet restore SchoolWebApp-API/SchoolWebApp.API.Project.sln
 
-      - name: Publish
+      - name: Publish (API)
         run: >
           dotnet publish SchoolWebApp-API/Project.API/SchoolWebApp.API.csproj
           --configuration Release
           --output ./publish
           --no-restore
           /p:UseAppHost=false
+
+      # HUSKY=0 skips the husky `prepare` hook, which fails in CI because .git
+      # lives at the repo root, not next to package.json.
+      - name: Install (client)
+        working-directory: SchoolWebApp-Client
+        env:
+          HUSKY: 0
+        run: npm ci --no-audit --no-fund
+
+      - name: Build (client, production)
+        working-directory: SchoolWebApp-Client
+        run: npm run build
+
+      # Embed the built Angular app in the API's wwwroot so the API serves it.
+      - name: Embed client in API wwwroot
+        run: |
+          mkdir -p ./publish/wwwroot
+          cp -r SchoolWebApp-Client/dist/shulenova/* ./publish/wwwroot/
 
       # Take the app offline by uploading app_offline.htm. ASP.NET Core sees this
       # file and gracefully shuts down the worker, releasing file locks so the
@@ -44,14 +75,13 @@ jobs:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-          FTP_REMOTE_DIR: ${{ secrets.FTP_REMOTE_DIR_SWIKUNDA_API }}
+          FTP_REMOTE_DIR: ${{ secrets.FTP_REMOTE_DIR_SWIKUNDA_UI }}
         run: |
           curl --silent --show-error --fail \
             --user "$FTP_USERNAME:$FTP_PASSWORD" \
             -T .github/deploy/app_offline.htm \
             "ftp://$FTP_SERVER$FTP_REMOTE_DIR"
 
-      # Give IIS a few seconds to notice app_offline.htm and release file locks.
       - name: Wait for IIS to release locks
         run: sleep 10
 
@@ -62,7 +92,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: ${{ secrets.FTP_REMOTE_DIR_SWIKUNDA_API }}
+          server-dir: ${{ secrets.FTP_REMOTE_DIR_SWIKUNDA_UI }}
           local-dir: ./publish/
           # Don't delete files we didn't upload (logs, App_Data, etc.).
           dangerous-clean-slate: false
@@ -77,19 +107,13 @@ jobs:
       # Bring the app back online by deleting app_offline.htm. `if: always()`
       # runs this even when an earlier step failed, otherwise a botched deploy
       # would leave the site stuck on the offline page until manually fixed.
-      #
-      # IIS sometimes holds a brief lock on app_offline.htm during shutdown, so
-      # a single delete attempt can silently no-op. This step tries up to 5
-      # times with a HEAD verification after each, and explicitly fails the
-      # workflow if the file is still present at the end. Failure is loud on
-      # purpose: a stuck app_offline.htm means the site stays offline.
       - name: Bring app back online
         if: always()
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-          FTP_REMOTE_DIR: ${{ secrets.FTP_REMOTE_DIR_SWIKUNDA_API }}
+          FTP_REMOTE_DIR: ${{ secrets.FTP_REMOTE_DIR_SWIKUNDA_UI }}
         run: |
           set +e  # don't exit on transient curl failures inside the loop
 
@@ -106,11 +130,8 @@ jobs:
               -Q "DELE $REMOTE_FILE" \
               "ftp://$FTP_SERVER/" 2>&1 | sed 's/^/  /'
 
-            # Give IIS a moment to release any lock if it was holding one.
             sleep 3
 
-            # Verify by trying to HEAD the file. If curl returns non-zero,
-            # the file is gone (HEAD returns 5xx from FTP for missing files).
             if ! curl --silent --fail --head \
               --user "$FTP_USERNAME:$FTP_PASSWORD" \
               "ftp://$FTP_SERVER${FTP_REMOTE_DIR}app_offline.htm" \
@@ -123,5 +144,5 @@ jobs:
             sleep 5
           done
 
-          echo "::error::Failed to remove app_offline.htm after 5 attempts. Site is stuck on the offline page — log into FileZilla and delete /swikunda-api/app_offline.htm manually."
+          echo "::error::Failed to remove app_offline.htm after 5 attempts. Site is stuck on the offline page — log into FileZilla and delete app_offline.htm manually."
           exit 1

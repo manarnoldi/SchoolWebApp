@@ -1,4 +1,6 @@
 export const environment = {
     production: true,
-    baseUrl: 'https://swikunda-api.kodetek.co.ke/api'
+    // Same-origin: the API serves this app, so calls go to /api on the same
+    // host. Removes cross-origin requests (and CORS) entirely.
+    baseUrl: '/api'
 };

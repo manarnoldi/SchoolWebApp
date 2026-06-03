@@ -167,6 +167,13 @@ var app = builder.Build();
 
 app.UseCors("CorsPolicy");
 
+// Serve the bundled Angular client (published into wwwroot) so the API and UI
+// run as one site / one origin. UseDefaultFiles maps "/" to index.html; the
+// SPA fallback below returns index.html for any non-/api, non-file route so
+// Angular's path-based deep links work without a separate IIS rewrite.
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(context =>
@@ -214,6 +221,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Any route not matched by a controller or a static file returns the SPA shell
+// so Angular can route it client-side (deep links, refresh on a deep link).
+app.MapFallbackToFile("index.html");
 
 try
 {
