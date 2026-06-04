@@ -4,6 +4,19 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!--
+      EF Core's NonNullableReferencePropertyConvention and ASP.NET MVC's
+      model metadata layer both use System.Reflection.NullabilityInfoContext
+      to discover whether `string` properties on entities/DTOs are required
+      vs nullable. The feature is gated by a runtime switch baked into
+      runtimeconfig.json. On some shared hosts the control panel rewrites
+      runtimeconfig.json when you toggle the .NET Core hosting model and
+      flips this switch to false - which crashes startup with
+      "NullabilityInfoContext is not supported in the current application".
+      Setting NullabilityInfoContextSupport=true here ensures the property
+      ships as true and survives that kind of host-side rewrite.
+    -->
+    <NullabilityInfoContextSupport>true</NullabilityInfoContextSupport>
   </PropertyGroup>
 
   <ItemGroup>
