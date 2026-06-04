@@ -7,6 +7,7 @@ import {ExamResult} from '../../models/exam-result';
 import {ExamResultService} from '../../services/exam-result.service';
 import {ExamService} from '../../services/exam.service';
 import {ExamTypeService} from '../../services/exam-type.service';
+import {SchoolExamService} from '../../services/school-exam.service';
 import {CurriculumService} from '@/academics/services/curriculum.service';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {SessionsService} from '@/class/services/sessions.service';
@@ -45,6 +46,8 @@ export class ExamResultsBulkComponent implements OnInit {
     filterSessionId: any = null;
     filterSchoolClassId: any = null;
     filterExamTypeId: any = null;
+    filterSchoolExamId: any = null;
+    schoolExams: any[] = [];
 
     // Grid data
     subjects: any[] = []; // {name, abbr, examId, examMark}
@@ -68,6 +71,7 @@ export class ExamResultsBulkComponent implements OnInit {
         private examResultSvc: ExamResultService,
         private examSvc: ExamService,
         private examTypeSvc: ExamTypeService,
+        private schoolExamSvc: SchoolExamService,
         private curriculaSvc: CurriculumService,
         private academicYearSvc: AcademicYearsService,
         private sessionsSvc: SessionsService,
@@ -101,8 +105,9 @@ export class ExamResultsBulkComponent implements OnInit {
     }
 
     onCurriculumChange = () => {
-        this.sessions = this.schoolClasses = [];
-        this.filterAcademicYearId = this.filterSessionId = this.filterSchoolClassId = this.filterExamTypeId = null;
+        this.sessions = this.schoolClasses = this.schoolExams = [];
+        this.filterAcademicYearId = this.filterSessionId = this.filterSchoolClassId = null;
+        this.filterSchoolExamId = this.filterExamTypeId = null;
         this.loaded = false;
         if (!this.filterCurriculumId) return;
         this.learningLevelSvc.getLearningLevelsByCurriculum(this.filterCurriculumId).subscribe({
@@ -112,8 +117,9 @@ export class ExamResultsBulkComponent implements OnInit {
     };
 
     onAcademicYearChange = () => {
-        this.sessions = this.schoolClasses = [];
-        this.filterSessionId = this.filterSchoolClassId = this.filterExamTypeId = null;
+        this.sessions = this.schoolClasses = this.schoolExams = [];
+        this.filterSessionId = this.filterSchoolClassId = null;
+        this.filterSchoolExamId = this.filterExamTypeId = null;
         this.loaded = false;
         if (!this.filterAcademicYearId || !this.filterCurriculumId) return;
         forkJoin([
@@ -129,13 +135,34 @@ export class ExamResultsBulkComponent implements OnInit {
         });
     };
 
+    // Session drives the School Exam list (a school exam carries the exam type
+    // the grid still filters by).
+    onSessionChange = () => {
+        this.schoolExams = [];
+        this.filterSchoolExamId = this.filterExamTypeId = null;
+        this.loaded = false;
+        if (!this.filterSessionId || !this.filterCurriculumId || !this.filterAcademicYearId) return;
+        this.schoolExamSvc
+            .get(`/schoolExams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}`)
+            .subscribe({
+                next: (items) => { this.schoolExams = items; },
+                error: (err) => this.toastr.error(err.error)
+            });
+    };
+
+    onSchoolExamChange = () => {
+        this.loaded = false;
+        let se = this.schoolExams.find((s) => s.id == this.filterSchoolExamId);
+        this.filterExamTypeId = se?.examTypeId ?? se?.examType?.id ?? null;
+    };
+
     getGradeForPercent = (percent: number): any => {
         return this.grades.find((g) => percent >= g.minScore && percent <= g.maxScore);
     };
 
     loadGrid = () => {
-        if (!this.filterSessionId || !this.filterSchoolClassId || !this.filterExamTypeId) {
-            this.toastr.info('Please select Session, Class, and Exam Type.');
+        if (!this.filterSessionId || !this.filterSchoolClassId || !this.filterSchoolExamId) {
+            this.toastr.info('Please select Session, Class, and School Exam.');
             return;
         }
 
