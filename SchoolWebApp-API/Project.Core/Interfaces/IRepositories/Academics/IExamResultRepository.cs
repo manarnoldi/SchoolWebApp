@@ -17,5 +17,12 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.Academics
         // the allocated students who have no result yet. Replaces the client's
         // per-exam request fan-out.
         Task<List<ExamResult>> GetMissingMarks(int academicYearId, int curriculumId, int sessionId, int? examTypeId);
+
+        // Results attached to a single subject allocation - shown in the
+        // deallocation confirmation (they cascade-delete with the allocation).
+        Task<List<ExamResult>> GetByAllocationId(int studentSubjectId);
+
+        // Total results attached to a set of allocations (bulk deallocation).
+        Task<int> CountByAllocationIds(List<int> studentSubjectIds);
     }
 }

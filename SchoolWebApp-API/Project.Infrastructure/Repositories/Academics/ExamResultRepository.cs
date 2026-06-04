@@ -55,6 +55,23 @@ namespace SchoolWebApp.Infrastructure.Repositories.Academics
             return examsResults;
         }
 
+        public async Task<List<ExamResult>> GetByAllocationId(int studentSubjectId)
+        {
+            return await _dbContext.ExamResults
+                .Where(r => r.StudentSubjectId == studentSubjectId)
+                .Include(r => r.Exam).ThenInclude(e => e.SchoolExam).ThenInclude(se => se.ExamType)
+                .Include(r => r.Exam).ThenInclude(e => e.Subject)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<int> CountByAllocationIds(List<int> studentSubjectIds)
+        {
+            if (studentSubjectIds == null || studentSubjectIds.Count == 0) return 0;
+            return await _dbContext.ExamResults
+                .CountAsync(r => studentSubjectIds.Contains(r.StudentSubjectId));
+        }
+
         public async Task<List<ExamResult>> GetMissingMarks(int academicYearId, int curriculumId, int sessionId, int? examTypeId)
         {
             // 1. All exams in scope. Year/term/curriculum/type now live on the

@@ -300,6 +300,51 @@ namespace SchoolWebApp.API.Controllers.Academics
             }
         }
 
+        // GET api/examResults/byAllocation/5
+        /// <summary>
+        /// Exam results attached to a single subject allocation (StudentSubject).
+        /// Used by the deallocation dialog to show what will cascade-delete.
+        /// </summary>
+        [HttpGet("byAllocation/{studentSubjectId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ExamResultDto>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetByAllocation(int studentSubjectId)
+        {
+            try
+            {
+                if (studentSubjectId <= 0) return BadRequest(studentSubjectId);
+                var items = await _unitOfWork.ExamResults.GetByAllocationId(studentSubjectId);
+                return Ok(_mapper.Map<List<ExamResultDto>>(items));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving results by allocation.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // POST api/examResults/countByAllocations
+        /// <summary>
+        /// Total exam results attached to a set of allocations - used by the
+        /// bulk deallocation dialog to warn how many results will be deleted.
+        /// </summary>
+        [HttpPost("countByAllocations")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CountByAllocations([FromBody] List<int> studentSubjectIds)
+        {
+            try
+            {
+                return Ok(await _unitOfWork.ExamResults.CountByAllocationIds(studentSubjectIds));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while counting results by allocations.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         // GET api/examResults/getStudentPerformance/5/5/5/5
         /// <summary>
         /// A method for retrieving student performance.

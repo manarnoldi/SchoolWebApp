@@ -12,6 +12,7 @@ import {SchoolClass} from '@/class/models/school-class';
 import {StudentClassService} from '@/students/services/student-class.service';
 import {Subject} from '@/academics/models/subject';
 import {SubjectsService} from '@/academics/services/subjects.service';
+import {ExamResultsService} from '@/academics/services/exam-results.service';
 import {StudentClass} from '@/students/models/student-class';
 import {StudentSubjectsLoadFormComponent} from './student-subjects-load-form/student-subjects-load-form.component';
 import { EducationLevel } from '@/school/models/educationLevel';
@@ -47,8 +48,33 @@ export class StudentSubjectsComponent implements OnInit {
         private route: ActivatedRoute,
         private studentClassesSvc: StudentClassService,
         private subjectsSvc: SubjectsService,
-        private educationLevelSubjectsSvc: EducationLevelSubjectService
+        private educationLevelSubjectsSvc: EducationLevelSubjectService,
+        private examResultsSvc: ExamResultsService
     ) {}
+
+    // Builds the "these results will also be deleted" block for a deallocation
+    // dialog. Empty string when there are none.
+    examResultsWarningHtml = (results: any[]): string => {
+        if (!results || results.length === 0) return '';
+        const fmtDate = (d: any) =>
+            d
+                ? new Date(d).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                  })
+                : '';
+        const items = results
+            .map(
+                (r) =>
+                    `<li>${r.exam?.examType?.name ?? 'Exam'} (${fmtDate(r.exam?.examStartDate)}) – ${r.exam?.subject?.name ?? ''}: <b>${r.score}</b></li>`
+            )
+            .join('');
+        return (
+            `<div class="text-danger mt-2"><strong>${results.length} exam result(s)</strong> are attached and will be permanently deleted too:</div>` +
+            `<ul style="text-align:left; max-height:160px; overflow:auto;">${items}</ul>`
+        );
+    };
 
     ngOnInit(): void {
         this.loadStudentSubjects();
@@ -114,13 +140,23 @@ export class StudentSubjectsComponent implements OnInit {
     };
 
     deleteItem(id: number) {
+        // Fetch any exam results attached to this allocation first so the user
+        // sees what will be cascade-deleted. On error, fall back to a plain
+        // confirm rather than blocking the delete.
+        this.examResultsSvc.getByAllocationId(id).subscribe({
+            next: (results) => this.confirmDeleteItem(id, results),
+            error: () => this.confirmDeleteItem(id, [])
+        });
+    }
+
+    private confirmDeleteItem(id: number, results: any[]) {
         Swal.fire({
             title: `Delete record?`,
-            text: `Confirm if you want to delete record.`,
-            width: 400,
+            html: `Confirm if you want to delete this subject allocation.` + this.examResultsWarningHtml(results),
+            width: 420,
             position: 'top',
             padding: '1em',
-            icon: 'question',
+            icon: results && results.length > 0 ? 'warning' : 'question',
             showCancelButton: true,
             confirmButtonText: `Delete`,
             cancelButtonText: 'Cancel'

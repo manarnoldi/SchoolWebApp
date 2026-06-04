@@ -16,6 +16,7 @@ import {StudentSubject} from '@/students/models/student-subject';
 import {StudentSubjectSearch} from '@/students/models/student-subject-search';
 import {StudentClassService} from '@/students/services/student-class.service';
 import {StudentSubjectsService} from '@/students/services/student-subjects.service';
+import {ExamResultsService} from '@/academics/services/exam-results.service';
 import {StudentsSubjectsStateService} from '@/students/services/students-subjects-state.service';
 import {StudentsSubjectsSearchFormComponent} from './students-subjects-search-form/students-subjects-search-form.component';
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
@@ -88,6 +89,7 @@ export class StudentsSubjectsComponent implements OnInit, AfterViewInit {
         private schoolClassSvc: SchoolClassesService,
         private studentClassesSvc: StudentClassService,
         private studentSubjectsSvc: StudentSubjectsService,
+        private examResultsSvc: ExamResultsService,
         private stateSvc: StudentsSubjectsStateService
     ) {}
 
@@ -296,15 +298,47 @@ export class StudentsSubjectsComponent implements OnInit, AfterViewInit {
         }
     };
 
+    // Builds the "these results will also be deleted" block for a deallocation
+    // dialog. Empty string when there are none.
+    private examResultsWarningHtml(results: any[]): string {
+        if (!results || results.length === 0) return '';
+        const fmtDate = (d: any) =>
+            d
+                ? new Date(d).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                  })
+                : '';
+        const items = results
+            .map(
+                (r) =>
+                    `<li>${r.exam?.examType?.name ?? 'Exam'} (${fmtDate(r.exam?.examStartDate)}) – ${r.exam?.subject?.name ?? ''}: <b>${r.score}</b></li>`
+            )
+            .join('');
+        return (
+            `<div class="text-danger mt-2"><strong>${results.length} exam result(s)</strong> are attached and will be permanently deleted too:</div>` +
+            `<ul style="text-align:left; max-height:160px; overflow:auto;">${items}</ul>`
+        );
+    }
+
     // Per-chip delete: removes one student/subject allocation.
     removeChip(row: StudentRow, chip: ChipSubject): void {
+        // Show any attached exam results that will cascade-delete.
+        this.examResultsSvc.getByAllocationId(chip.studentSubjectId).subscribe({
+            next: (results) => this.confirmRemoveChip(row, chip, results),
+            error: () => this.confirmRemoveChip(row, chip, [])
+        });
+    }
+
+    private confirmRemoveChip(row: StudentRow, chip: ChipSubject, results: any[]): void {
         Swal.fire({
             title: 'Remove subject?',
-            text: `Remove "${chip.name}" from ${row.fullName}?`,
-            width: 400,
+            html: `Remove "${chip.name}" from ${row.fullName}?` + this.examResultsWarningHtml(results),
+            width: 420,
             position: 'top',
             padding: '1em',
-            icon: 'question',
+            icon: results && results.length > 0 ? 'warning' : 'question',
             showCancelButton: true,
             confirmButtonText: 'Remove',
             cancelButtonText: 'Cancel'
@@ -362,10 +396,22 @@ export class StudentsSubjectsComponent implements OnInit, AfterViewInit {
             );
             return;
         }
+        // Warn how many exam results across the selection will cascade-delete.
+        this.examResultsSvc.countByAllocations(ids).subscribe({
+            next: (count) => this.confirmDeleteSelected(ids, targetRows.length, count),
+            error: () => this.confirmDeleteSelected(ids, targetRows.length, null)
+        });
+    }
+
+    private confirmDeleteSelected(ids: number[], studentCount: number, resultCount: number | null): void {
+        const resultsLine =
+            resultCount && resultCount > 0
+                ? `<div class="text-danger mt-2"><strong>${resultCount} exam result(s)</strong> attached to these allocations will also be permanently deleted.</div>`
+                : '';
         Swal.fire({
             title: 'Delete selected allocations?',
-            text: `This will remove ${ids.length} allocation(s) across ${targetRows.length} student(s).`,
-            width: 420,
+            html: `This will remove ${ids.length} allocation(s) across ${studentCount} student(s).` + resultsLine,
+            width: 440,
             position: 'top',
             padding: '1em',
             icon: 'warning',

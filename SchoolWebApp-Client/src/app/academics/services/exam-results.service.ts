@@ -26,6 +26,22 @@ export class ExamResultsService extends ResourceService<ExamResult> {
     };
 
     /**
+     * Exam results attached to a single subject allocation (StudentSubject) -
+     * shown in the deallocation dialog so the user sees what will cascade-delete.
+     */
+    getByAllocationId = (studentSubjectId: number): Observable<ExamResult[]> => {
+        return this.get('/examResults/byAllocation/' + studentSubjectId);
+    };
+
+    /** Total exam results attached to a set of allocations (bulk deallocation). */
+    countByAllocations = (studentSubjectIds: number[]): Observable<number> => {
+        return this.http.post<number>(
+            '/examResults/countByAllocations',
+            studentSubjectIds
+        );
+    };
+
+    /**
      * One-shot missing-marks fetch: the server returns every allocated student
      * with no recorded result for the exams matching the selection. Replaces
      * the previous per-exam request fan-out that tripped CORS/host limits.
