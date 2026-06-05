@@ -3,6 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# Angular build output: the client now builds straight into the API's wwwroot
+# (angular.json outputPath), so it's generated, not source.
+Project.API/wwwroot/
+
 # User-specific files
 *.rsuser
 *.suo

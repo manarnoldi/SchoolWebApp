@@ -1,0 +1,205 @@
+name: Deploy ShuleNova (API + UI)
+
+# Build the .NET API and the Angular client, embed the Angular bundle in the
+# API's wwwroot, and FTP-deploy the combined publish/ folder as ONE site.
+# The API serves both /api/* and the SPA from the same origin - no separate UI
+# site, no CORS surface, one SSL cert.
+#
+# Manually triggered. The `target` input maps onto a GitHub Environment of the
+# same name, where the per-school FTP credentials and remote path live (see the
+# required secrets/variables below). Add a new option + Environment to deploy
+# another school instance.
+#
+# Per-environment SECRETS:   FTP_SERVER, FTP_USERNAME, FTP_PASSWORD,
+#                            FTP_SWIKUNDA_UI_PATH (remote folder)
+# Per-environment VARIABLES: API_BASE_URL (public origin, e.g.
+#                            https://swikunda.kodetek.co.ke - no /api suffix),
+#                            FTP_PORT (optional, defaults to 21)
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'School to deploy to (must match an Environment in repo Settings)'
+        required: true
+        default: 'swikunda'
+        type: choice
+        options:
+          - swikunda
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.target }}
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: SchoolWebApp-Client/package-lock.json
+
+      # HUSKY=0 skips the husky `prepare` hook, which fails in CI because .git
+      # lives at the repo root, not next to package.json.
+      - name: Install Angular deps
+        working-directory: SchoolWebApp-Client
+        env:
+          HUSKY: 0
+        run: npm ci --no-audit --no-fund
+
+      # angular.json's outputPath points at ../SchoolWebApp-API/Project.API/wwwroot,
+      # so this writes the hashed SPA bundle directly into the API project's
+      # wwwroot. The next dotnet publish picks it up via the Web SDK.
+      - name: Build Angular (production)
+        working-directory: SchoolWebApp-Client
+        run: npm run build
+
+      - name: Restore API
+        working-directory: SchoolWebApp-API/Project.API
+        run: dotnet restore
+
+      # /p:UseAppHost=false keeps the publish output framework-dependent (no
+      # native apphost.exe) which is what the IIS host needs.
+      - name: Publish API (Release)
+        working-directory: SchoolWebApp-API/Project.API
+        run: dotnet publish -c Release -o publish --no-restore /p:UseAppHost=false
+
+      - name: Install lftp
+        # Skip apt-get update - GitHub runners already index the Ubuntu archive
+        # and refreshing it can take 5-10 minutes when mirrors are throttling.
+        run: sudo apt-get install -y --no-install-recommends lftp
+
+      # Deploy via lftp (not SamKirkland's FTP-Deploy-Action) because shared
+      # FTPS hosts (site4now et al.) frequently kill the TLS-protected data
+      # socket mid-STOR; lftp lets us set ftp:ssl-protect-data false and retry.
+      #
+      # Excludes preserve host-side files: appsettings*.json (production MySQL
+      # connection + JWT key, placed by hand), web.config (host-managed), and
+      # logs/ (runtime NLog output).
+      - name: Deploy to ${{ inputs.target }}
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          # Consolidated site lives at the (formerly UI-only) origin. The IIS
+          # site at this path MUST be ASP.NET Core hosting - a static-only site
+          # will 200 index.html but 404 every /api/* call.
+          FTP_PATH: ${{ secrets.FTP_SWIKUNDA_UI_PATH }}
+          FTP_PORT: ${{ vars.FTP_PORT || 21 }}
+        run: |
+          # Common lftp settings. Ubuntu lftp uses GnuTLS which chokes on
+          # Microsoft FTP Service's handshake unless we force TLS 1.2 and the
+          # %COMPAT priority. Data-channel TLS off because shared FTPS hosts
+          # kill TLS-protected data sockets mid-STOR.
+          LFTP_PRELUDE="
+            set ssl:verify-certificate no;
+            set ssl:priority 'NORMAL:-VERS-TLS1.3:%COMPAT';
+            set ssl:use-sni no;
+            set ftp:ssl-force true;
+            set ftp:ssl-protect-data false;
+            set ftp:ssl-protect-list false;
+            set net:max-retries 5;
+            set net:reconnect-interval-base 5;
+            set net:reconnect-interval-multiplier 1;
+            set net:timeout 30;
+            set xfer:clobber yes;
+            set cmd:fail-exit yes;
+          "
+
+          # Always try to remove app_offline.htm on exit, even if the mirror
+          # fails - otherwise the site stays offline indefinitely.
+          cleanup() {
+            echo "Removing app_offline.htm to bring the app back online..."
+            lftp -c "
+              $LFTP_PRELUDE
+              open -p $FTP_PORT -u '$FTP_USERNAME','$FTP_PASSWORD' ftp://$FTP_SERVER;
+              cd $FTP_PATH;
+              rm -f app_offline.htm;
+              bye;
+            " || echo "Warning: could not remove app_offline.htm. Remove it by hand via FileZilla."
+          }
+          trap cleanup EXIT
+
+          echo "Step 1/2: uploading app_offline.htm so IIS unloads the app pool..."
+          lftp -c "
+            $LFTP_PRELUDE
+            open -p $FTP_PORT -u '$FTP_USERNAME','$FTP_PASSWORD' ftp://$FTP_SERVER;
+            cd $FTP_PATH;
+            put .github/deploy/app_offline.htm -o app_offline.htm;
+            bye;
+          "
+
+          # IIS needs a few seconds to detect the marker and shut down.
+          sleep 5
+
+          echo "Step 2/2: mirroring publish output (API binaries + wwwroot SPA)..."
+          lftp -c "
+            $LFTP_PRELUDE
+            open -p $FTP_PORT -u '$FTP_USERNAME','$FTP_PASSWORD' ftp://$FTP_SERVER;
+            mirror --reverse --no-perms --parallel=1 --verbose \
+              --exclude-glob 'appsettings*.json' \
+              --exclude-glob 'web.config' \
+              --exclude-glob 'app_offline.htm' \
+              --exclude-glob 'logs/' \
+              --exclude-glob 'logs/*' \
+              ./SchoolWebApp-API/Project.API/publish/ $FTP_PATH;
+            bye;
+          "
+          # trap fires here: removes app_offline.htm so IIS restarts
+
+      # Force IIS to spin up the dotnet process. Without this the worker stays
+      # cold until the next human request - and EF migrations only run inside
+      # Main() via Database.Migrate(). This pays the cold-start + migration cost
+      # so the deploy itself proves the schema is in sync.
+      #
+      # Set API_BASE_URL on the GitHub Environment to the public origin (no /api
+      # suffix). If unset we skip the warmup with a warning - deploy still
+      # succeeds, but you must hit the site manually before migrations apply.
+      - name: Warm up site (force boot + apply pending migrations)
+        env:
+          API_BASE_URL: ${{ vars.API_BASE_URL }}
+        run: |
+          if [ -z "$API_BASE_URL" ]; then
+            echo "::warning::API_BASE_URL not set for this environment. Skipping warmup; pending EF migrations will only run on first real request."
+            exit 0
+          fi
+
+          echo "Warming up $API_BASE_URL (cold start runs EF Migrate + seed)..."
+
+          # Cold start on shared-host IIS + Migrate + seed can take 30-60s the
+          # first time. curl gets up to 60s per attempt, retries 6 times with a
+          # 10s gap. Any 2xx/3xx, or 401/403/404 means the process booted; 5xx,
+          # connection refused, or HTTP 000 mean boot/migration failed.
+          #
+          # The SPA root returns 200 from a static index.html even when the app
+          # is unhealthy, so hit the root anyway - a successful boot still runs
+          # migrations on the way up, and a 5xx/000 surfaces a broken deploy.
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            --max-time 60 --retry 6 --retry-delay 10 --retry-all-errors \
+            "$API_BASE_URL/" || echo "000")
+
+          case "$HTTP_CODE" in
+            2*|3*|401|403|404)
+              echo "::notice::Site responded with $HTTP_CODE - boot + migrations OK"
+              ;;
+            000)
+              echo "::error::No response from $API_BASE_URL. Boot or migration likely failed - check IIS / NLog (Logs table) for the stack trace."
+              exit 1
+              ;;
+            *)
+              echo "::error::Site returned $HTTP_CODE - probable boot/migration failure. Check IIS / NLog (Logs table) for the stack trace."
+              exit 1
+              ;;
+          esac
+
+      - name: Summary
+        run: |
+          echo "::notice::Deployed ShuleNova (API + UI) to '${{ inputs.target }}' from commit ${GITHUB_SHA::7}"
