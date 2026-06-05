@@ -108,7 +108,7 @@ export class ExamResultsBulkComponent implements OnInit {
         this.sessions = this.schoolClasses = this.schoolExams = [];
         this.filterAcademicYearId = this.filterSessionId = this.filterSchoolClassId = null;
         this.filterSchoolExamId = this.filterExamTypeId = null;
-        this.loaded = false;
+        this.clearGrid();
         if (!this.filterCurriculumId) return;
         this.learningLevelSvc.getLearningLevelsByCurriculum(this.filterCurriculumId).subscribe({
             next: (levels) => { this.learningLevels = levels.sort((a, b) => a.rank - b.rank); },
@@ -120,7 +120,7 @@ export class ExamResultsBulkComponent implements OnInit {
         this.sessions = this.schoolClasses = this.schoolExams = [];
         this.filterSessionId = this.filterSchoolClassId = null;
         this.filterSchoolExamId = this.filterExamTypeId = null;
-        this.loaded = false;
+        this.clearGrid();
         if (!this.filterAcademicYearId || !this.filterCurriculumId) return;
         forkJoin([
             this.sessionsSvc.get(`/sessions/byCurriculumYearId?curriculumId=${this.filterCurriculumId}&academicYearId=${this.filterAcademicYearId}`),
@@ -138,9 +138,9 @@ export class ExamResultsBulkComponent implements OnInit {
     // Session drives the School Exam list (a school exam carries the exam type
     // the grid still filters by).
     onSessionChange = () => {
+        this.clearGrid();
         this.schoolExams = [];
         this.filterSchoolExamId = this.filterExamTypeId = null;
-        this.loaded = false;
         if (!this.filterSessionId || !this.filterCurriculumId || !this.filterAcademicYearId) return;
         this.schoolExamSvc
             .get(`/schoolExams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}`)
@@ -151,10 +151,21 @@ export class ExamResultsBulkComponent implements OnInit {
     };
 
     onSchoolExamChange = () => {
-        this.loaded = false;
+        this.clearGrid();
         let se = this.schoolExams.find((s) => s.id == this.filterSchoolExamId);
         this.filterExamTypeId = se?.examTypeId ?? se?.examType?.id ?? null;
     };
+
+    // Changing the class (or any filter) invalidates the loaded grid - clear it
+    // so stale marks aren't shown until the user clicks Load Grid again.
+    onClassChange = () => this.clearGrid();
+
+    private clearGrid() {
+        this.loaded = false;
+        this.subjects = [];
+        this.studentRows = [];
+        this.tablePage = 1;
+    }
 
     getGradeForPercent = (percent: number): any => {
         return this.grades.find((g) => percent >= g.minScore && percent <= g.maxScore);

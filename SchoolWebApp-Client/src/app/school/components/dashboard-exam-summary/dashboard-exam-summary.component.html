@@ -3,18 +3,26 @@
         <h3 class="card-title"><i class="fas fa-chart-line mr-1"></i> Class Exam Performance</h3>
         <div class="card-tools">
             <div class="d-inline-flex align-items-center gap-2">
-                <select class="form-select form-select-sm" style="width: auto; min-width: 120px;"
-                    [(ngModel)]="selectedSessionId">
+                <select class="form-select form-select-sm" style="width: auto; min-width: 110px;"
+                    [(ngModel)]="selectedAcademicYearId" (change)="onAcademicYearChange()">
+                    <option [ngValue]="null" disabled>Year</option>
+                    <option [ngValue]="y.id" *ngFor="let y of academicYears">{{ y.name }}</option>
+                </select>
+                <select class="form-select form-select-sm ml-1" style="width: auto; min-width: 110px;"
+                    [(ngModel)]="selectedSessionId" (change)="onSessionChange()">
                     <option [ngValue]="null" disabled>Session</option>
                     <option [ngValue]="s.id" *ngFor="let s of sessions">{{ s.sessionName }}</option>
                 </select>
-                <select class="form-select form-select-sm ml-1" style="width: auto; min-width: 120px;"
-                    [(ngModel)]="selectedExamTypeId">
-                    <option [ngValue]="null" disabled>Exam Type</option>
-                    <option [ngValue]="et.id" *ngFor="let et of examTypes">{{ et.name }}</option>
+                <select class="form-select form-select-sm ml-1" style="width: auto; min-width: 150px;"
+                    [(ngModel)]="selectedSchoolExamId" (change)="onSchoolExamChange()"
+                    [disabled]="!selectedSessionId">
+                    <option [ngValue]="null" disabled>School Exam</option>
+                    <option [ngValue]="se.id" *ngFor="let se of schoolExams">
+                        {{ se.examType?.name }} ({{ se.examStartDate | date:'mediumDate' }})
+                    </option>
                 </select>
                 <button class="btn btn-sm btn-info ml-1" (click)="loadClassesAndPerformance()"
-                    [disabled]="!selectedSessionId || !selectedExamTypeId || isLoading">
+                    [disabled]="!selectedSessionId || !selectedSchoolExamId || isLoading">
                     <i class="fas" [ngClass]="isLoading ? 'fa-spinner fa-spin' : 'fa-search'"></i> Load
                 </button>
             </div>

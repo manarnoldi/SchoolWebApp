@@ -6,7 +6,7 @@ import {catchError, takeUntil} from 'rxjs/operators';
 import {LoadingStateService} from '@/core/services/loading-state.service';
 import {AcademicYearsService} from '../../services/academic-years.service';
 import {SessionsService} from '@/class/services/sessions.service';
-import {ExamTypeService} from '@/cbe/exams/services/exam-type.service';
+import {SchoolExamService} from '@/cbe/exams/services/school-exam.service';
 import {CurriculumService} from '@/academics/services/curriculum.service';
 import {GlobalSettingService} from '@/settings/services/global-setting.service';
 
@@ -16,13 +16,17 @@ import {GlobalSettingService} from '@/settings/services/global-setting.service';
     styleUrl: './dashboard-exam-summary.component.scss'
 })
 export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
+    academicYears: any[] = [];
     sessions: any[] = [];
-    examTypes: any[] = [];
+    schoolExams: any[] = [];
 
+    selectedAcademicYearId: any = null;
     selectedSessionId: any = null;
+    selectedSchoolExamId: any = null;
+    // Derived from the selected school exam - the summary endpoint still filters
+    // by exam type (and only released exams).
     selectedExamTypeId: any = null;
-    activeCurriculumId: number = null;
-    activeAcademicYearId: number = null;
+    activeCurriculumId: any = null;
 
     classPerformance: {
         className: string;
@@ -52,7 +56,7 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
         private toastr: ToastrService,
         private academicYearSvc: AcademicYearsService,
         private sessionsSvc: SessionsService,
-        private examTypeSvc: ExamTypeService,
+        private schoolExamSvc: SchoolExamService,
         private curriculaSvc: CurriculumService,
         private globalSettingSvc: GlobalSettingService,
         private loadingState: LoadingStateService,
@@ -63,15 +67,12 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
         // Class exam performance fans out into many sequential per-class queries
         // and can take a while on a populated school. Suspend the global spinner
         // for the lifetime of this widget so the user can browse and act on the
-        // rest of the dashboard while these requests trickle in. The widget's
-        // own rows will appear as the data arrives.
+        // rest of the dashboard while these requests trickle in.
         this.loadingState.suspend();
 
-        // Settings that affect what the WIDGET displays vs. what the server
-        // computes. Averaging method + grading category now live entirely
-        // server-side in the new /dashboard/classExamSummary endpoint — we
-        // only need ShowTopStudent (display toggle) and CurrentExamType
-        // (initial dropdown selection) on the client.
+        // ShowTopStudent (display toggle) + CurrentExamType (used to pick a
+        // sensible default school exam) are the only client-side settings; the
+        // averaging/grading happen server-side in /dashboard/classExamSummary.
         forkJoin([
             this.globalSettingSvc.getByKey('General', 'ShowTopStudent').pipe(catchError(() => of(null))),
             this.globalSettingSvc.getByKey('General', 'CurrentExamType').pipe(catchError(() => of(null)))
@@ -86,44 +87,93 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
     }
 
     loadInitialData() {
-        let acadYearsReq = this.academicYearSvc.get('/academicYears');
-        let examTypesReq = this.examTypeSvc.get('/examTypes');
-        let curriculaReq = this.curriculaSvc.get('/curricula');
-
-        forkJoin([acadYearsReq, examTypesReq, curriculaReq]).pipe(takeUntil(this.destroy$)).subscribe({
-            next: ([academicYears, examTypes, curricula]) => {
-                this.examTypes = examTypes.sort((a, b) => a.rank - b.rank);
-                // Use configured exam type if it exists in the list
-                if (this.configuredExamTypeId) {
-                    let match = this.examTypes.find((et) => et.id.toString() === this.configuredExamTypeId);
-                    if (match) this.selectedExamTypeId = match.id;
-                }
-                let activeYear = academicYears.find((y) => y.status === true);
+        forkJoin([
+            this.academicYearSvc.get('/academicYears'),
+            this.curriculaSvc.get('/curricula')
+        ]).pipe(takeUntil(this.destroy$)).subscribe({
+            next: ([academicYears, curricula]) => {
+                this.academicYears = academicYears.sort((a, b) => b.rank - a.rank);
+                let activeYear = academicYears.find((y) => y.status === true) || this.academicYears[0];
                 let topCurriculum = curricula.sort((a, b) => a.rank - b.rank)[0];
                 if (!activeYear || !topCurriculum) return;
-                this.activeAcademicYearId = parseInt(activeYear.id);
-                this.activeCurriculumId = parseInt(topCurriculum.id);
-
-                this.sessionsSvc.getByCurriculumYear(
-                    this.activeCurriculumId,
-                    this.activeAcademicYearId
-                ).pipe(takeUntil(this.destroy$)).subscribe({
-                    next: (sessions) => {
-                        this.sessions = sessions.sort((a, b) => a.rank - b.rank);
-                        if (this.sessions.length > 0 && this.examTypes.length > 0) {
-                            let openSession = this.sessions.find((s) => s.status === true);
-                            this.selectedSessionId = openSession ? openSession.id : this.sessions[0].id;
-                            if (!this.selectedExamTypeId) {
-                                this.selectedExamTypeId = this.examTypes[0].id;
-                            }
-                            this.loadClassesAndPerformance();
-                        }
-                    },
-                    error: () => {}
-                });
+                this.selectedAcademicYearId = activeYear.id;
+                this.activeCurriculumId = topCurriculum.id;
+                // Initial load auto-runs once the defaults settle.
+                this.loadSessions(true);
             },
             error: () => {}
         });
+    }
+
+    // Year drives Sessions, which drives School Exams. `autoLoad` runs the
+    // summary once the cascade settles (used on first load only; manual filter
+    // changes leave it to the Load button).
+    private loadSessions(autoLoad: boolean) {
+        this.sessions = this.schoolExams = [];
+        this.selectedSessionId = this.selectedSchoolExamId = this.selectedExamTypeId = null;
+        if (!this.activeCurriculumId || !this.selectedAcademicYearId) return;
+        this.sessionsSvc
+            .getByCurriculumYear(this.activeCurriculumId, this.selectedAcademicYearId)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (sessions) => {
+                    this.sessions = sessions.sort((a, b) => a.rank - b.rank);
+                    if (this.sessions.length === 0) return;
+                    let openSession = this.sessions.find((s) => s.status === true);
+                    this.selectedSessionId = openSession ? openSession.id : this.sessions[0].id;
+                    this.loadSchoolExams(autoLoad);
+                },
+                error: () => {}
+            });
+    }
+
+    private loadSchoolExams(autoLoad: boolean) {
+        this.schoolExams = [];
+        this.selectedSchoolExamId = this.selectedExamTypeId = null;
+        if (!this.selectedSessionId || !this.activeCurriculumId || !this.selectedAcademicYearId) return;
+        this.schoolExamSvc
+            .get(`/schoolExams/examSearch?academicYearId=${this.selectedAcademicYearId}&curriculumId=${this.activeCurriculumId}&sessionId=${this.selectedSessionId}`)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (items) => {
+                    // Only released school exams - the summary only counts those.
+                    this.schoolExams = (items || [])
+                        .filter((se: any) => se.isReleased)
+                        .sort((a: any, b: any) => (b.examStartDate || '').localeCompare(a.examStartDate || ''));
+                    if (this.schoolExams.length === 0) return;
+                    // Default to the configured exam type's released exam, else
+                    // the most recent released one.
+                    let match = this.configuredExamTypeId
+                        ? this.schoolExams.find((se: any) => String(se.examTypeId) === this.configuredExamTypeId)
+                        : null;
+                    let chosen = match || this.schoolExams[0];
+                    this.selectedSchoolExamId = chosen.id;
+                    this.selectedExamTypeId = chosen.examTypeId ?? chosen.examType?.id;
+                    if (autoLoad) this.loadClassesAndPerformance();
+                },
+                error: () => {}
+            });
+    }
+
+    onAcademicYearChange = () => {
+        this.clearSummary();
+        this.loadSessions(false);
+    };
+
+    onSessionChange = () => {
+        this.clearSummary();
+        this.loadSchoolExams(false);
+    };
+
+    onSchoolExamChange = () => {
+        this.clearSummary();
+        let se = this.schoolExams.find((s: any) => s.id == this.selectedSchoolExamId);
+        this.selectedExamTypeId = se?.examTypeId ?? se?.examType?.id ?? null;
+    };
+
+    private clearSummary() {
+        this.classPerformance = [];
+        this.hasLoaded = false;
     }
 
     loadClassesAndPerformance() {
@@ -134,12 +184,9 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
         this.hasLoaded = false;
 
         // Single round-trip — the server does the per-class loop, builds the
-        // ranked summary, and caches the result for 5 minutes. Replaces what
-        // used to be 3+ requests per class on the client (and was tripping
-        // site4now's perimeter rate limiter into 403/CORS errors on schools
-        // with many classes).
+        // ranked summary, and caches the result for 5 minutes.
         let params = new HttpParams()
-            .set('academicYearId', String(this.activeAcademicYearId))
+            .set('academicYearId', String(this.selectedAcademicYearId))
             .set('curriculumId', String(this.activeCurriculumId))
             .set('sessionId', String(this.selectedSessionId))
             .set('examTypeId', String(this.selectedExamTypeId));
@@ -190,10 +237,7 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        // Cancel every in-flight HTTP subscription this widget started. Without
-        // this, the recursive per-class chain keeps firing after navigation
-        // and — because `resume()` below has already run — each new request
-        // ticks the global spinner on whatever page the user moved to.
+        // Cancel every in-flight HTTP subscription this widget started.
         this.destroy$.next();
         this.destroy$.complete();
 

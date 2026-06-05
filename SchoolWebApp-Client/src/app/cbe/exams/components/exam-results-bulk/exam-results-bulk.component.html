@@ -41,7 +41,7 @@
                         <div class="form-group mb-1">
                             <label class="form-label">Class: <span class="requiredField">*</span></label>
                             <select class="form-select form-select-sm"
-                                [(ngModel)]="filterSchoolClassId">
+                                [(ngModel)]="filterSchoolClassId" (change)="onClassChange()">
                                 <option [ngValue]="null" hidden disabled selected>Select class</option>
                                 <option [ngValue]="sc.id" *ngFor="let sc of schoolClasses">{{sc.name}}</option>
                             </select>
