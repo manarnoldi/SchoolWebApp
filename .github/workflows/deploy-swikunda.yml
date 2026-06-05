@@ -146,3 +146,18 @@ jobs:
 
           echo "::error::Failed to remove app_offline.htm after 5 attempts. Site is stuck on the offline page — log into FileZilla and delete app_offline.htm manually."
           exit 1
+
+      # Warm the app so the first real user doesn't eat the cold start (process
+      # spin-up + JIT + migrate-on-startup). Also surfaces a broken deploy
+      # immediately. A slow warm-up only warns; it doesn't fail the deploy.
+      - name: Warm up the site
+        run: |
+          URL="https://swikunda.kodetek.co.ke/"
+          echo "Warming up $URL ..."
+          for i in 1 2 3 4 5 6; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 90 "$URL" || echo "000")
+            echo "  attempt $i -> HTTP $code"
+            if [ "$code" = "200" ]; then echo "Site is warm."; exit 0; fi
+            sleep 10
+          done
+          echo "::warning::Site did not return HTTP 200 during warm-up; the first user may still hit a cold start."

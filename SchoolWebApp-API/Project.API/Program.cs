@@ -171,8 +171,44 @@ app.UseCors("CorsPolicy");
 // run as one site / one origin. UseDefaultFiles maps "/" to index.html; the
 // SPA fallback below returns index.html for any non-/api, non-file route so
 // Angular's path-based deep links work without a separate IIS rewrite.
+// The SPA shell (index.html) must never be cached, so a fresh page load always
+// gets the latest content-hashed bundles after a deploy. The hashed bundles
+// themselves are immutable (their filename changes per build) and are cached
+// aggressively below. (A client VersionCheckService also prompts a refresh for
+// tabs left open across a deploy.)
+app.Use(async (context, next) =>
+{
+    context.Response.OnStarting(() =>
+    {
+        var contentType = context.Response.ContentType;
+        if (contentType != null && contentType.Contains("text/html", StringComparison.OrdinalIgnoreCase))
+        {
+            context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+            context.Response.Headers["Pragma"] = "no-cache";
+            context.Response.Headers["Expires"] = "0";
+        }
+        return Task.CompletedTask;
+    });
+    await next();
+});
+
 app.UseDefaultFiles();
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        // Angular emits content-hashed filenames (e.g. main.<hash>.js). Those
+        // are safe to cache forever; index.html / un-hashed files fall under the
+        // no-cache rule above.
+        var path = ctx.Context.Request.Path.Value ?? string.Empty;
+        if (System.Text.RegularExpressions.Regex.IsMatch(
+                path, @"\.[0-9a-f]{8,}\.(js|css|woff2?|ttf|eot|svg)$",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+        {
+            ctx.Context.Response.Headers["Cache-Control"] = "public, max-age=31536000, immutable";
+        }
+    }
+});
 
 app.UseExceptionHandler(errorApp =>
 {

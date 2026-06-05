@@ -2,6 +2,7 @@ import {ChangeDetectorRef, Component, OnInit, ViewChild, inject} from '@angular/
 import {DEFAULT_INTERRUPTSOURCES, Idle} from '@ng-idle/core';
 import {AuthService} from './core/services/auth.service';
 import {AppService} from './core/services/app.service';
+import {VersionCheckService} from './core/services/version-check.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Router} from '@angular/router';
 
@@ -27,6 +28,7 @@ export class AppComponent implements OnInit{
         cd: ChangeDetectorRef,
         private authService: AuthService,
         private appService: AppService,
+        private versionCheck: VersionCheckService,
         public router: Router
     ) {
         // Consider the user idle after 30 minutes (1800s) of no activity.
@@ -85,6 +87,9 @@ export class AppComponent implements OnInit{
         // this.reset();
     }
     ngOnInit(): void {
+        // Prompt to refresh when a newer build is deployed while this tab is open.
+        this.versionCheck.init(10);
+
         this.appService.getUserLoggedIn().subscribe((userLoggedIn) => {
             if (userLoggedIn) {
                 this.idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
