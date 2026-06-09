@@ -14,6 +14,7 @@ import {ExamTypeService} from '@/cbe/exams/services/exam-type.service';
 import {SchoolExamService} from '@/cbe/exams/services/school-exam.service';
 import {ExamResultService} from '@/cbe/exams/services/exam-result.service';
 import {StudentClassService} from '@/students/services/student-class.service';
+import {StudentSubjectsService} from '@/students/services/student-subjects.service';
 import {AuthService} from '@/core/services/auth.service';
 import {ReportsService} from '@/reports/services/reports.service';
 import {Status} from '@/core/enums/status';
@@ -40,6 +41,9 @@ export class BroadsheetComponent implements OnInit {
     selectedGradingCategory: string = '4-Point';
     allGrades: any[] = [];
     rankingMethod: string = 'mean_marks';
+    // 'subjects_done' (default) divides totals/means by subjects with marks;
+    // 'subjects_expected' divides by all subjects the student is allocated to.
+    meanBasis: string = 'subjects_done';
 
     filterCurriculumId: any = null;
     filterAcademicYearId: any = null;
@@ -84,6 +88,7 @@ export class BroadsheetComponent implements OnInit {
         private schoolExamSvc: SchoolExamService,
         private examResultSvc: ExamResultService,
         private studentClassSvc: StudentClassService,
+        private studentSubjectsSvc: StudentSubjectsService,
         private schoolSvc: SchoolDetailsService,
         private userSvc: AuthService,
         private reportSvc: ReportsService
@@ -97,10 +102,12 @@ export class BroadsheetComponent implements OnInit {
             this.gradesSvc.get('/grades'),
             this.globalSettingSvc.getByKey('Grading', 'ExamResults'),
             this.globalSettingSvc.getByKey('Grading', 'RankingMethod'),
-            this.globalSettingSvc.getByKey('General', 'AverageCalculation')
+            this.globalSettingSvc.getByKey('General', 'AverageCalculation'),
+            this.globalSettingSvc.getByKey('Grading', 'MeanBasis')
         ]).subscribe({
-            next: ([curricula, academicYears, examTypes, allGrades, gradingSetting, rankingSetting, avgSetting]) => {
+            next: ([curricula, academicYears, examTypes, allGrades, gradingSetting, rankingSetting, avgSetting, meanBasisSetting]) => {
                 this.averageMethod = (avgSetting as any)?.settingValue || 'students_with_scores';
+                this.meanBasis = (meanBasisSetting as any)?.settingValue || 'subjects_done';
                 this.curricula = curricula.sort((a, b) => a.rank - b.rank);
                 this.academicYears = academicYears.sort((a, b) => b.rank - a.rank);
                 this.examTypes = examTypes.sort((a, b) => a.rank - b.rank);
@@ -217,9 +224,10 @@ export class BroadsheetComponent implements OnInit {
 
         forkJoin([
             this.examSvc.get(url),
-            this.studentClassSvc.getBySchoolClassId(this.filterSchoolClassId, Status.Active)
+            this.studentClassSvc.getBySchoolClassId(this.filterSchoolClassId, Status.Active),
+            this.studentSubjectsSvc.get(`/studentSubjects/allocationsBySchoolClassId/${this.filterSchoolClassId}`)
         ]).subscribe({
-            next: ([exams, studentClasses]) => {
+            next: ([exams, studentClasses, allocations]) => {
                 if (exams.length === 0) {
                     this.isLoading = false;
                     this.toastr.info('No exams found.');
@@ -227,14 +235,34 @@ export class BroadsheetComponent implements OnInit {
                 }
 
                 let subjectMap = new Map<string, number>();
+                // Map a subject's display key (abbr/name) to its id and exam mark
+                // so the "expected subjects" basis can be evaluated against the
+                // student's allocation, which is keyed by subjectId.
+                let subjectIdByKey = new Map<string, number>();
+                let examMarkByKey = new Map<string, number>();
                 exams.forEach((e) => {
-                    if (e.subject?.name && !subjectMap.has(e.subject.abbr || e.subject.name)) {
-                        subjectMap.set(e.subject.abbr || e.subject.name, e.subject.rank || 0);
-                    }
+                    let key = e.subject?.abbr || e.subject?.name;
+                    if (!key) return;
+                    if (!subjectMap.has(key)) subjectMap.set(key, e.subject?.rank || 0);
+                    if (!subjectIdByKey.has(key)) subjectIdByKey.set(key, +e.subjectId);
+                    if (!examMarkByKey.has(key)) examMarkByKey.set(key, e.examMark || 0);
                 });
                 this.subjects = [...subjectMap.entries()].sort((a, b) => a[1] - b[1]).map((e) => e[0]);
 
                 let students = studentClasses.map((sc) => sc.student).filter(Boolean);
+
+                // Build per-student allocated subjectId sets. Allocation rows carry
+                // studentClassId, so bridge to studentId via the student-class list.
+                let studentIdByClassId = new Map<number, number>();
+                studentClasses.forEach((sc) => { if (sc.student) studentIdByClassId.set(+sc.id, +sc.student.id); });
+                let allocatedByStudentId = new Map<number, Set<number>>();
+                (allocations || []).forEach((a: any) => {
+                    let sid = studentIdByClassId.get(+a.studentClassId);
+                    if (!sid) return;
+                    if (!allocatedByStudentId.has(sid)) allocatedByStudentId.set(sid, new Set<number>());
+                    allocatedByStudentId.get(sid)!.add(+a.subjectId);
+                });
+                let useExpected = this.meanBasis === 'subjects_expected';
 
                 let resultRequests = exams.map((exam) =>
                     this.examResultSvc.get(`/examResults/byExamId/${exam.id}`)
@@ -276,13 +304,29 @@ export class BroadsheetComponent implements OnInit {
                                     scores[subj] = {score: null, grade: '', points: 0};
                                 }
                             });
-                            let average = count > 0 ? Math.round((total / count) * 10) / 10 : 0;
-                            let meanPoints = count > 0 ? Math.round((totalPoints / count) * 10) / 10 : 0;
+                            // Under the "expected subjects" basis, divide by every
+                            // subject the student is allocated to (that is examined),
+                            // not just the ones with marks - missing subjects count
+                            // as zero. Falls back to recorded count when the student
+                            // has no allocation data.
+                            // Keep students with no marks as-is (don't apply the
+                            // expected denominator) so they don't read as 0/900.
+                            let allocated = allocatedByStudentId.get(+student.id);
+                            let expectedSubjects = (useExpected && count > 0 && allocated && allocated.size > 0)
+                                ? this.subjects.filter((s) => allocated!.has(subjectIdByKey.get(s) ?? -1))
+                                : null;
+                            let denomCount = expectedSubjects ? expectedSubjects.length : count;
+                            let outOf = expectedSubjects
+                                ? expectedSubjects.reduce((sum, s) => sum + (examMarkByKey.get(s) || 0), 0)
+                                : totalOutOf;
+
+                            let average = denomCount > 0 ? Math.round((total / denomCount) * 10) / 10 : 0;
+                            let meanPoints = denomCount > 0 ? Math.round((totalPoints / denomCount) * 10) / 10 : 0;
                             let meanGrade = this.getGradeForPoints(meanPoints);
-                            let totalPointsOutOf = count * maxGradePoints;
+                            let totalPointsOutOf = denomCount * maxGradePoints;
                             return {
                                 rank: 0, upi: student.upi || '', fullName: student.fullName || '',
-                                scores, total: Math.round(total * 10) / 10, totalOutOf, totalPoints, totalPointsOutOf, average, meanPoints, averageGrade: meanGrade
+                                scores, total: Math.round(total * 10) / 10, totalOutOf: outOf, totalPoints, totalPointsOutOf, average, meanPoints, averageGrade: meanGrade
                             };
                         });
 

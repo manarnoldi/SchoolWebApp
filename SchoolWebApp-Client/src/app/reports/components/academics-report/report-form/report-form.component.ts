@@ -62,6 +62,9 @@ export class ReportFormComponent implements OnInit {
     responsibilities: any[] = [];
     socialSkills: any[] = [];
     rankingMethod: string = 'mean_points';
+    // 'subjects_done' (default) divides totals/averages by subjects with marks;
+    // 'subjects_expected' divides by all subjects the student is allocated to.
+    meanBasis: string = 'subjects_done';
     learningLevels: any[] = [];
     educationLevels: any[] = [];
 
@@ -131,9 +134,11 @@ export class ReportFormComponent implements OnInit {
             this.globalSettingSvc.getByModule('ReportForm'),
             this.coCurrScoreSvc.get('/coCurriculumScores'),
             this.globalSettingSvc.getByKey('Grading', 'ExamResults'),
-            this.globalSettingSvc.getByKey('Grading', 'RankingMethod')
+            this.globalSettingSvc.getByKey('Grading', 'RankingMethod'),
+            this.globalSettingSvc.getByKey('Grading', 'MeanBasis')
         ]).subscribe({
-            next: ([curricula, academicYears, examTypes, allGrades, values, valueScores, responsibilities, reportSettings, coCurrScores, gradingSetting, rankingSetting]) => {
+            next: ([curricula, academicYears, examTypes, allGrades, values, valueScores, responsibilities, reportSettings, coCurrScores, gradingSetting, rankingSetting, meanBasisSetting]) => {
+                this.meanBasis = (meanBasisSetting as any)?.settingValue || 'subjects_done';
                 this.curricula = curricula.sort((a, b) => a.rank - b.rank);
                 this.academicYears = academicYears.sort((a, b) => b.rank - a.rank);
                 this.examTypes = examTypes.filter((et) => et.internal).sort((a, b) => a.rank - b.rank);
@@ -339,6 +344,26 @@ export class ReportFormComponent implements OnInit {
                     (studentSubjects || []).map((ss: any) => +ss.subjectId)
                 );
 
+                // Under the "expected subjects" basis, the Total Score and Average
+                // per exam type are divided by every allocated subject examined in
+                // that type (missing ones count as zero), not just the ones with
+                // marks. Null entries mean "use the recorded-subject count" (the
+                // default basis, or when the student has no allocation data).
+                let useExpected = this.meanBasis === 'subjects_expected';
+                let expectedByType: any = {};
+                this.examTypes.forEach((et, typeIdx) => {
+                    let exams = (examsByType as any[][])[typeIdx] || [];
+                    if (useExpected && allocatedSubjectIds.size > 0) {
+                        let allocExams = exams.filter((e: any) => allocatedSubjectIds.has(+e.subjectId));
+                        expectedByType[et.id] = {
+                            count: allocExams.length,
+                            outOf: allocExams.reduce((s: number, e: any) => s + (e.examMark || 0), 0)
+                        };
+                    } else {
+                        expectedByType[et.id] = null;
+                    }
+                });
+
                 // Find class leaders with Teacher personType
                 let teacherLeaders = (classLeaders || []).filter(
                     (cl) => cl.classLeadershipRole?.personType === 1 || cl.classLeadershipRole?.personType === 'Teacher'
@@ -383,7 +408,7 @@ export class ReportFormComponent implements OnInit {
                 });
 
                 if (resultRequests.length === 0) {
-                    this.buildAndPrintReport(student, session, schoolClass, year, subjects, [], valueScores, coCurrActivities, studentResponsibilities, communityService, schoolDetails[0], classLeadersText, callback, mode, {positionsByType: {}, overall: {position: 0, totalStudents: 0}});
+                    this.buildAndPrintReport(student, session, schoolClass, year, subjects, [], valueScores, coCurrActivities, studentResponsibilities, communityService, schoolDetails[0], classLeadersText, callback, mode, {positionsByType: {}, overall: {position: 0, totalStudents: 0}}, expectedByType);
                     return;
                 }
 
@@ -474,7 +499,7 @@ export class ReportFormComponent implements OnInit {
 
                         let positionData = {positionsByType, overall: overallPosition};
 
-                        this.buildAndPrintReport(student, session, schoolClass, year, subjects, subjectScores, valueScores, coCurrActivities, studentResponsibilities, communityService, schoolDetails[0], classLeadersText, callback, mode, positionData);
+                        this.buildAndPrintReport(student, session, schoolClass, year, subjects, subjectScores, valueScores, coCurrActivities, studentResponsibilities, communityService, schoolDetails[0], classLeadersText, callback, mode, positionData, expectedByType);
                     },
                     error: (err) => { this.isGenerating = false; this.toastr.error(err.error); }
                 });
@@ -483,7 +508,7 @@ export class ReportFormComponent implements OnInit {
         });
     };
 
-    buildAndPrintReport = (student, session, schoolClass, year, subjects, subjectScores, valueScores, coCurrActivities, studentResponsibilities, communityService, school, classLeadersText: string, callback?: () => void, mode: string = 'preview', positionData?: any) => {
+    buildAndPrintReport = (student, session, schoolClass, year, subjects, subjectScores, valueScores, coCurrActivities, studentResponsibilities, communityService, school, classLeadersText: string, callback?: () => void, mode: string = 'preview', positionData?: any, expectedByType?: any) => {
         this.reportSvc.loadImageAsBase64('assets/img/shule-nova-logo-only.png').subscribe({
             next: (blob) => {
                 const reader = new FileReader();
@@ -566,8 +591,13 @@ export class ReportFormComponent implements OnInit {
                     // Total Score row (e.g., 440/600)
                     let totalRow: any[] = [{text: 'Total Score', bold: true, fontSize: 8}];
                     this.examTypes.forEach((et) => {
+                        let exp = expectedByType?.[et.id];
+                        let outOf = exp ? exp.outOf : outOfByType[et.id];
+                        // Keep '-' when the student has no marks at all; only switch
+                        // the denominator to the expected (allocated) basis once at
+                        // least one subject has been scored.
                         let totalText = countsByType[et.id] > 0
-                            ? `${Math.round(totalsByType[et.id])}/${outOfByType[et.id]}`
+                            ? `${Math.round(totalsByType[et.id])}/${outOf}`
                             : '-';
                         if (isTwoCol) {
                             totalRow.push({text: totalText, alignment: 'center', bold: true, fontSize: 8, colSpan: 2});
@@ -581,7 +611,9 @@ export class ReportFormComponent implements OnInit {
                     // Average row
                     let avgRow: any[] = [{text: 'Average Score', bold: true, fontSize: 8}];
                     this.examTypes.forEach((et) => {
-                        let avg = countsByType[et.id] > 0 ? Math.round(totalsByType[et.id] / countsByType[et.id]) : 0;
+                        let exp = expectedByType?.[et.id];
+                        let denomCount = exp ? exp.count : countsByType[et.id];
+                        let avg = denomCount > 0 ? Math.round(totalsByType[et.id] / denomCount) : 0;
                         let grade = this.getGradeForPercent(avg);
                         let avgStr = avg > 0 ? avg + '%' : '-';
                         if (this.displayMode === 'marks') {

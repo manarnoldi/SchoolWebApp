@@ -65,7 +65,10 @@ namespace SchoolWebApp.API.Controllers.Settings
                 var settings = await _unitOfWork.Repository<GlobalSetting>()
                     .Find(s => s.Module == module && s.SettingKey == key);
                 var setting = settings.FirstOrDefault();
-                if (setting == null) return NotFound();
+                // An unset key is a normal state (e.g. a newly added setting the
+                // school hasn't saved yet). Return 200 with an empty body so the
+                // caller falls back to its default rather than logging a 404.
+                if (setting == null) return Ok();
                 return Ok(_mapper.Map<GlobalSettingDto>(setting));
             }
             catch (Exception ex)

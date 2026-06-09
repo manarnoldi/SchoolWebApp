@@ -116,7 +116,11 @@ export class GlobalSettingsComponent implements OnInit {
                 {key: 'RankingMethod', label: 'Ranking Method', type: 'select', options: [
                     {value: 'mean_marks', label: 'Mean Marks (Average %)'},
                     {value: 'mean_points', label: 'Mean Points (Score)'}
-                ], description: 'How students are ranked on broadsheet and report form'}
+                ], description: 'How students are ranked on broadsheet and report form'},
+                {key: 'MeanBasis', label: 'Totals & Means Basis', type: 'select', options: [
+                    {value: 'subjects_done', label: 'Subjects with results recorded'},
+                    {value: 'subjects_expected', label: 'All subjects allocated to the student'}
+                ], description: "How a student's totals, means and grade are divided: by subjects with marks recorded, or by all subjects they are allocated to (missing ones count as zero). Affects broadsheet and report forms."}
             ]
         },
         {

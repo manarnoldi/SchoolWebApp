@@ -7,7 +7,21 @@
       "Bash(mysql -u root -p1234)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(git commit -q -m 'Add audit logs feature with sidebar access *)",
+      "Bash(git commit -q -m 'Reformat styles.scss and force base font-size to 14px *)",
+      "Bash(git commit -q -m 'Link ExamResult to StudentSubject with cascade delete *)",
+      "Bash(xargs grep -l \"delete\")",
+      "Bash(npx ng *)",
+      "Bash(git commit -q -m 'Show attached exam results in the subject-deallocation dialog *)",
+      "Bash(git commit -q -m 'Bulk Results Entry: select School Exam instead of Exam Type *)",
+      "Bash(ASPNETCORE_ENVIRONMENT=Development ASPNETCORE_URLS=http://localhost:5099 dotnet SchoolWebApp.API.dll)",
+      "Bash(git commit -q -m 'Prompt refresh on new deploys; warm the site to avoid cold starts *)",
+      "Bash(ls -la \"/c/Personal/Documents/KODETEK INVESTMENT LIMITED/HosiNova/.github/workflows/\" 2>&1)",
+      "Read(//c/Personal/Documents/KODETEK INVESTMENT LIMITED/HosiNova/.github/workflows//**)",
+      "Bash(git commit -q -m 'Dashboard exam summary: add Year + School Exam filters; bulk grid clears on filter change *)",
+      "Bash(git commit -q -m 'Single env-based deploy workflow; build Angular into the API wwwroot *)",
+      "Bash(git ls-tree *)"
     ]
   }
 }
