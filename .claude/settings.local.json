@@ -21,7 +21,9 @@
       "Read(//c/Personal/Documents/KODETEK INVESTMENT LIMITED/HosiNova/.github/workflows//**)",
       "Bash(git commit -q -m 'Dashboard exam summary: add Year + School Exam filters; bulk grid clears on filter change *)",
       "Bash(git commit -q -m 'Single env-based deploy workflow; build Angular into the API wwwroot *)",
-      "Bash(git ls-tree *)"
+      "Bash(git ls-tree *)",
+      "Bash(git commit *)",
+      "Bash(rm -f .git/COMMIT_MSG.txt)"
     ]
   }
 }

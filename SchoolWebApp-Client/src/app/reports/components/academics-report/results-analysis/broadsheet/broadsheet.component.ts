@@ -44,6 +44,9 @@ export class BroadsheetComponent implements OnInit {
     // 'subjects_done' (default) divides totals/means by subjects with marks;
     // 'subjects_expected' divides by all subjects the student is allocated to.
     meanBasis: string = 'subjects_done';
+    // Raw Grading-module settings, used to resolve the exam-results grading
+    // category (4-Point/8-Point) per education level.
+    gradingSettings: any[] = [];
 
     filterCurriculumId: any = null;
     filterAcademicYearId: any = null;
@@ -100,27 +103,42 @@ export class BroadsheetComponent implements OnInit {
             this.academicYearSvc.get('/academicYears'),
             this.examTypeSvc.get('/examTypes'),
             this.gradesSvc.get('/grades'),
-            this.globalSettingSvc.getByKey('Grading', 'ExamResults'),
-            this.globalSettingSvc.getByKey('Grading', 'RankingMethod'),
-            this.globalSettingSvc.getByKey('General', 'AverageCalculation'),
-            this.globalSettingSvc.getByKey('Grading', 'MeanBasis')
+            this.globalSettingSvc.getByModule('Grading'),
+            this.globalSettingSvc.getByKey('General', 'AverageCalculation')
         ]).subscribe({
-            next: ([curricula, academicYears, examTypes, allGrades, gradingSetting, rankingSetting, avgSetting, meanBasisSetting]) => {
+            next: ([curricula, academicYears, examTypes, allGrades, gradingSettings, avgSetting]) => {
+                this.gradingSettings = (gradingSettings as any[]) || [];
                 this.averageMethod = (avgSetting as any)?.settingValue || 'students_with_scores';
-                this.meanBasis = (meanBasisSetting as any)?.settingValue || 'subjects_done';
+                this.meanBasis = this.settingVal('MeanBasis') || 'subjects_done';
+                this.rankingMethod = this.settingVal('RankingMethod') || 'mean_marks';
                 this.curricula = curricula.sort((a, b) => a.rank - b.rank);
                 this.academicYears = academicYears.sort((a, b) => b.rank - a.rank);
                 this.examTypes = examTypes.sort((a, b) => a.rank - b.rank);
-                let settingResponse = gradingSetting as any;
-                this.gradingCategory = settingResponse?.settingValue || '4-Point';
-                this.selectedGradingCategory = this.gradingCategory;
                 this.allGrades = allGrades;
-                this.grades = allGrades.filter(g => g.category === this.gradingCategory).sort((a, b) => a.rank - b.rank);
-                this.rankingMethod = (rankingSetting as any)?.settingValue || 'mean_marks';
+                // Until a class is loaded, show the global default; loadBroadsheet
+                // re-resolves it against the selected class's education level.
+                this.applyExamGrading(null);
             },
             error: (err) => this.toastr.error(err.error)
         });
     }
+
+    private settingVal = (key: string): string =>
+        this.gradingSettings.find((s) => s.settingKey === key)?.settingValue || '';
+
+    // Effective exam-results grading category for an education level: the level's
+    // own override if set, else the global default, else 4-Point.
+    private examGradingCategoryFor = (edLevelId: any): string => {
+        let globalVal = this.settingVal('ExamResults') || '4-Point';
+        if (!edLevelId) return globalVal;
+        return this.settingVal(`ExamResults:${edLevelId}`) || globalVal;
+    };
+
+    private applyExamGrading = (edLevelId: any) => {
+        this.gradingCategory = this.examGradingCategoryFor(edLevelId);
+        this.selectedGradingCategory = this.gradingCategory;
+        this.grades = this.allGrades.filter((g) => g.category === this.gradingCategory).sort((a, b) => a.rank - b.rank);
+    };
 
     onGradingCategoryChange = () => {
         this.grades = this.allGrades.filter(g => g.category === this.selectedGradingCategory).sort((a, b) => a.rank - b.rank);
@@ -219,6 +237,13 @@ export class BroadsheetComponent implements OnInit {
 
         this.isLoading = true;
         this.loaded = false;
+
+        // Resolve the grading category for this class's education level so the
+        // broadsheet uses the right 4-Point/8-Point scale.
+        let selClass = this.schoolClasses.find((sc) => +sc.id === +this.filterSchoolClassId);
+        let edLevelId = selClass?.learningLevel?.educationLevelId
+            ?? this.learningLevels.find((ll) => +ll.id === +(selClass?.learningLevelId))?.educationLevelId;
+        this.applyExamGrading(edLevelId);
 
         let url = `/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}&schoolClassId=${this.filterSchoolClassId}&examTypeId=${this.filterExamTypeId}`;
 

@@ -65,6 +65,9 @@ export class ReportFormComponent implements OnInit {
     // 'subjects_done' (default) divides totals/averages by subjects with marks;
     // 'subjects_expected' divides by all subjects the student is allocated to.
     meanBasis: string = 'subjects_done';
+    // Raw Grading-module settings, used to resolve the exam-results grading
+    // category (4-Point/8-Point) per education level.
+    gradingSettings: any[] = [];
     learningLevels: any[] = [];
     educationLevels: any[] = [];
 
@@ -133,27 +136,25 @@ export class ReportFormComponent implements OnInit {
             this.responsibilitySvc.get('/responsibilities'),
             this.globalSettingSvc.getByModule('ReportForm'),
             this.coCurrScoreSvc.get('/coCurriculumScores'),
-            this.globalSettingSvc.getByKey('Grading', 'ExamResults'),
-            this.globalSettingSvc.getByKey('Grading', 'RankingMethod'),
-            this.globalSettingSvc.getByKey('Grading', 'MeanBasis')
+            this.globalSettingSvc.getByModule('Grading')
         ]).subscribe({
-            next: ([curricula, academicYears, examTypes, allGrades, values, valueScores, responsibilities, reportSettings, coCurrScores, gradingSetting, rankingSetting, meanBasisSetting]) => {
-                this.meanBasis = (meanBasisSetting as any)?.settingValue || 'subjects_done';
+            next: ([curricula, academicYears, examTypes, allGrades, values, valueScores, responsibilities, reportSettings, coCurrScores, gradingSettings]) => {
+                this.gradingSettings = (gradingSettings as any[]) || [];
+                this.meanBasis = this.settingVal('MeanBasis') || 'subjects_done';
                 this.curricula = curricula.sort((a, b) => a.rank - b.rank);
                 this.academicYears = academicYears.sort((a, b) => b.rank - a.rank);
                 this.examTypes = examTypes.filter((et) => et.internal).sort((a, b) => a.rank - b.rank);
-                let settingResponse = gradingSetting as any;
-                this.gradingCategory = settingResponse?.settingValue || '4-Point';
-                this.selectedGradingCategory = this.gradingCategory;
                 this.allGrades = allGrades;
-                this.grades = allGrades.filter(g => g.category === this.gradingCategory).sort((a, b) => a.rank - b.rank);
+                // Global default until a student's class (hence education level)
+                // is known; generateReportForStudent re-resolves it per report.
+                this.applyExamGrading(null);
                 this.values = values.sort((a, b) => a.rank - b.rank);
                 this.valueScores = valueScores.sort((a, b) => a.rank - b.rank);
                 let allResp = responsibilities.sort((a, b) => a.rank - b.rank);
                 this.responsibilities = allResp.filter((r) => r.category === 'Responsibility');
                 this.socialSkills = allResp.filter((r) => r.category === 'Social Skill');
                 this.allCoCurriculumScores = coCurrScores.sort((a, b) => a.rank - b.rank);
-                this.rankingMethod = (rankingSetting as any)?.settingValue || 'mean_points';
+                this.rankingMethod = this.settingVal('RankingMethod') || 'mean_points';
 
                 // Apply global settings
                 (reportSettings as any[]).forEach((s) => {
@@ -171,6 +172,23 @@ export class ReportFormComponent implements OnInit {
 
     onGradingCategoryChange = () => {
         this.grades = this.allGrades.filter(g => g.category === this.selectedGradingCategory).sort((a, b) => a.rank - b.rank);
+    };
+
+    private settingVal = (key: string): string =>
+        this.gradingSettings.find((s) => s.settingKey === key)?.settingValue || '';
+
+    // Effective exam-results grading category for an education level: the level's
+    // own override if set, else the global default, else 4-Point.
+    private examGradingCategoryFor = (edLevelId: any): string => {
+        let globalVal = this.settingVal('ExamResults') || '4-Point';
+        if (!edLevelId) return globalVal;
+        return this.settingVal(`ExamResults:${edLevelId}`) || globalVal;
+    };
+
+    private applyExamGrading = (edLevelId: any) => {
+        this.gradingCategory = this.examGradingCategoryFor(edLevelId);
+        this.selectedGradingCategory = this.gradingCategory;
+        this.grades = this.allGrades.filter((g) => g.category === this.gradingCategory).sort((a, b) => a.rank - b.rank);
     };
 
     onCurriculumChange = () => {
@@ -312,6 +330,12 @@ export class ReportFormComponent implements OnInit {
         let schoolClass = this.schoolClasses.find((sc) => sc.id == this.filterSchoolClassId);
         let year = this.academicYears.find((y) => y.id == this.filterAcademicYearId);
         let studentId = +student.id;
+
+        // Resolve the grading category for this class's education level before
+        // any grades are computed for the report.
+        let edLevelId = schoolClass?.learningLevel?.educationLevelId
+            ?? this.learningLevels.find((ll) => +ll.id === +(schoolClass?.learningLevelId))?.educationLevelId;
+        this.applyExamGrading(edLevelId);
 
         let examRequests = this.examTypes.map((et) =>
             this.examSvc.get(`/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}&schoolClassId=${this.filterSchoolClassId}&examTypeId=${et.id}`)

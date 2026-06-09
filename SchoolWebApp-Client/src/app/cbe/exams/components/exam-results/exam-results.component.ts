@@ -44,6 +44,8 @@ export class ExamResultsComponent implements OnInit {
     subjects: any[] = [];
     exams: any[] = [];
     grades: any[] = [];
+    allGrades: any[] = [];
+    gradingSettings: any[] = [];
     learningLevels: any[] = [];
     gradingCategory: string = '4-Point';
 
@@ -184,18 +186,36 @@ export class ExamResultsComponent implements OnInit {
             this.curriculaSvc.get('/curricula'),
             this.academicYearSvc.get('/academicYears'),
             this.gradesSvc.get('/grades'),
-            this.globalSettingSvc.getByKey('Grading', 'ExamResults')
+            this.globalSettingSvc.getByModule('Grading')
         ]).subscribe({
-            next: ([curricula, academicYears, allGrades, gradingSetting]) => {
+            next: ([curricula, academicYears, allGrades, gradingSettings]) => {
                 this.curricula = curricula.sort((a, b) => a.rank - b.rank);
                 this.academicYears = academicYears.filter((y) => y.status === true).sort((a, b) => a.rank - b.rank);
-                let settingResponse = gradingSetting as any;
-                this.gradingCategory = settingResponse?.settingValue || '4-Point';
-                this.grades = allGrades.filter(g => g.category === this.gradingCategory).sort((a, b) => a.rank - b.rank);
+                this.gradingSettings = (gradingSettings as any[]) || [];
+                this.allGrades = allGrades;
+                // Global default until a class (hence education level) is chosen;
+                // loadStudents re-resolves it for the selected class.
+                this.applyExamGrading(null);
             },
             error: (err) => this.toastr.error(err.error)
         });
     }
+
+    private settingVal = (key: string): string =>
+        this.gradingSettings.find((s) => s.settingKey === key)?.settingValue || '';
+
+    // Effective exam-results grading category for an education level: the level's
+    // own override if set, else the global default, else 4-Point.
+    private examGradingCategoryFor = (edLevelId: any): string => {
+        let globalVal = this.settingVal('ExamResults') || '4-Point';
+        if (!edLevelId) return globalVal;
+        return this.settingVal(`ExamResults:${edLevelId}`) || globalVal;
+    };
+
+    private applyExamGrading = (edLevelId: any) => {
+        this.gradingCategory = this.examGradingCategoryFor(edLevelId);
+        this.grades = this.allGrades.filter((g) => g.category === this.gradingCategory).sort((a, b) => a.rank - b.rank);
+    };
 
     getExamName = (exam: any): string => {
         let year = this.academicYears.find((y) => y.id == this.filterAcademicYearId);
@@ -295,6 +315,10 @@ export class ExamResultsComponent implements OnInit {
         this.selectedExam = this.exams.find((e) => e.id == this.filterExamId);
         this.scoringRows = [];
         this.studentsLoaded = false;
+
+        // Use the selected class's education-level grading scale (4/8-Point).
+        let selectedClass = this.schoolClasses.find((sc) => sc.id == this.filterSchoolClassId);
+        this.applyExamGrading(selectedClass?.learningLevel?.educationLevelId);
 
         // Load students allocated to this subject in this class, plus existing results
         forkJoin([

@@ -78,16 +78,31 @@ namespace SchoolWebApp.API.Controllers.Dashboard
                     .FirstOrDefaultAsync();
                 var useAllAllocated = string.Equals(averageMethod, "all_allocated_students", StringComparison.OrdinalIgnoreCase);
 
-                var gradingCategory = await _db.GlobalSettings
-                    .Where(g => g.Module == "Grading" && g.SettingKey == "ExamResults")
-                    .Select(g => g.SettingValue)
-                    .FirstOrDefaultAsync() ?? "4-Point";
-
-                var grades = await _db.Grades
-                    .AsNoTracking()
-                    .Where(g => g.Category == gradingCategory)
-                    .OrderByDescending(g => g.MinScore)
+                // Exam-results grading can be set per education level. Load the
+                // global default plus any per-level overrides (key "ExamResults:<id>").
+                var gradingSettings = await _db.GlobalSettings
+                    .Where(g => g.Module == "Grading"
+                                && (g.SettingKey == "ExamResults" || g.SettingKey.StartsWith("ExamResults:")))
+                    .Select(g => new {g.SettingKey, g.SettingValue})
                     .ToListAsync();
+                var globalCategory = gradingSettings
+                    .FirstOrDefault(s => s.SettingKey == "ExamResults")?.SettingValue ?? "4-Point";
+                var categoryByLevel = new Dictionary<int, string>();
+                foreach (var s in gradingSettings)
+                {
+                    if (!s.SettingKey.StartsWith("ExamResults:") || string.IsNullOrEmpty(s.SettingValue)) continue;
+                    if (int.TryParse(s.SettingKey.Substring("ExamResults:".Length), out var levelId))
+                        categoryByLevel[levelId] = s.SettingValue;
+                }
+
+                // All grades, grouped by category, so each class can be scored
+                // against its education level's scale.
+                var gradesByCategory = (await _db.Grades
+                        .AsNoTracking()
+                        .OrderByDescending(g => g.MinScore)
+                        .ToListAsync())
+                    .GroupBy(g => g.Category ?? "")
+                    .ToDictionary(g => g.Key, g => g.ToList());
 
                 // 2. Single query for all matching exams. Filtering on the
                 //    Session FK gives us the academicYearId + curriculumId
@@ -148,6 +163,12 @@ namespace SchoolWebApp.API.Controllers.Dashboard
                 {
                     var schoolClass = schoolClasses.FirstOrDefault(c => c.Id == classId);
                     if (schoolClass == null) continue;
+
+                    // Grade scale for this class's education level (falls back to global).
+                    var edLevelId = schoolClass.LearningLevel?.EducationLevelId ?? 0;
+                    var category = (edLevelId > 0 && categoryByLevel.TryGetValue(edLevelId, out var c))
+                        ? c : globalCategory;
+                    var grades = gradesByCategory.TryGetValue(category, out var gl) ? gl : new List<Grade>();
 
                     var className = (schoolClass.LearningLevel?.Name ?? string.Empty);
                     if (!string.IsNullOrEmpty(schoolClass.SchoolStream?.Name))

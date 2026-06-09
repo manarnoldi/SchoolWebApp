@@ -4,6 +4,9 @@ import {ToastrService} from 'ngx-toastr';
 import {GlobalSettingService} from '../../services/global-setting.service';
 import {ExamTypeService} from '@/cbe/exams/services/exam-type.service';
 import {AccountService} from '@/finance/services/finance-services';
+import {CurriculumService} from '@/academics/services/curriculum.service';
+import {EducationLevelService} from '@/school/services/education-level.service';
+import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -100,7 +103,7 @@ export class GlobalSettingsComponent implements OnInit {
                 {key: 'ExamResults', label: 'Exam Results', type: 'select', options: [
                     {value: '4-Point', label: '4-Point (EE, ME, AE, BE)'},
                     {value: '8-Point', label: '8-Point (EE1, EE2, ME1, ME2, AE1, AE2, BE1, BE2)'}
-                ], description: 'Grading for exam results entry, report form and broadsheet'},
+                ], description: 'Default grading for exam results entry, report form and broadsheet. Can be overridden per education level below.'},
                 {key: 'StudentAssessment', label: 'Student Assessment', type: 'select', options: [
                     {value: '4-Point', label: '4-Point (EE, ME, AE, BE)'},
                     {value: '8-Point', label: '8-Point (EE1, EE2, ME1, ME2, AE1, AE2, BE1, BE2)'}
@@ -152,7 +155,9 @@ export class GlobalSettingsComponent implements OnInit {
         private toastr: ToastrService,
         private globalSettingSvc: GlobalSettingService,
         private examTypeSvc: ExamTypeService,
-        private accountSvc: AccountService
+        private accountSvc: AccountService,
+        private curriculaSvc: CurriculumService,
+        private educationLevelSvc: EducationLevelService
     ) {}
 
     ngOnInit(): void {
@@ -160,8 +165,44 @@ export class GlobalSettingsComponent implements OnInit {
         this.modules.slice(1).forEach((m) => this.collapsedModules.add(m.name));
         this.loadExamTypes();
         this.loadAccounts();
-        this.loadSettings();
+        // Inject the per-education-level "Exam Results" rows, THEN load values -
+        // loadSettings() must run after the dynamic settings exist so their
+        // saved values/defaults are mapped.
+        this.loadGradingPerLevel();
     }
+
+    // Appends one "Exam Results" grading selector per education level to the
+    // Grading module. Each defaults to "Use global default" (empty value), so a
+    // level only overrides the global Exam Results setting when explicitly set.
+    loadGradingPerLevel = () => {
+        forkJoin([
+            this.curriculaSvc.get('/curricula'),
+            this.educationLevelSvc.get('/educationLevels')
+        ]).subscribe({
+            next: ([curricula, edLevels]: any[]) => {
+                let currName = (id: any) => curricula.find((c: any) => +c.id === +id)?.name || '';
+                let grading = this.modules.find((m) => m.name === 'Grading');
+                let levels = (edLevels || []).slice().sort((a: any, b: any) =>
+                    (+a.curriculumId - +b.curriculumId) || ((a.rank || 0) - (b.rank || 0)));
+                levels.forEach((el: any) => {
+                    let cn = currName(el.curriculumId);
+                    grading?.settings.push({
+                        key: `ExamResults:${el.id}`,
+                        label: `Exam Results — ${cn ? cn + ': ' : ''}${el.name}`,
+                        type: 'select',
+                        options: [
+                            {value: '', label: 'Use global default'},
+                            {value: '4-Point', label: '4-Point (EE, ME, AE, BE)'},
+                            {value: '8-Point', label: '8-Point (EE1, EE2, ME1, ME2, AE1, AE2, BE1, BE2)'}
+                        ],
+                        description: "Exam results grading for this education level. 'Use global default' inherits the global Exam Results setting above."
+                    } as any);
+                });
+                this.loadSettings();
+            },
+            error: () => this.loadSettings()
+        });
+    };
 
     loadAccounts = () => {
         this.accountSvc.get('/accounts').subscribe({
