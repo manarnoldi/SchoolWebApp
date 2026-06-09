@@ -68,8 +68,8 @@ export class GlobalSettingsComponent implements OnInit {
                 {key: 'DepartmentCodePrefix', label: 'Department Code Prefix', type: 'text', description: 'Prefix used when auto-generating department codes (e.g. DEPT produces DEPT001, DEPT002). Default: DEPT.'},
                 {key: 'BudgetMasterCodePrefix', label: 'Budget Plan Code Prefix', type: 'text', description: 'Prefix used when auto-generating budget plan codes (e.g. BUD produces BUD001). Default: BUD.'},
                 {key: 'ApprovalEditLockPolicy', label: 'Approval Edit Lock Policy', type: 'select', options: [
-                    {value: 'Strict', label: 'Strict — lock as soon as the request is submitted'},
-                    {value: 'AfterFirstApproval', label: 'Lenient — allow edits until the first step is approved'}
+                    {value: 'Strict', label: 'Strict - lock as soon as the request is submitted'},
+                    {value: 'AfterFirstApproval', label: 'Lenient - allow edits until the first step is approved'}
                 ], description: 'Strict locks the record as soon as it is submitted. Lenient keeps it editable until the first approval step is approved. Approved records are always locked.'}
             ]
         },
@@ -188,7 +188,7 @@ export class GlobalSettingsComponent implements OnInit {
                     let cn = currName(el.curriculumId);
                     grading?.settings.push({
                         key: `ExamResults:${el.id}`,
-                        label: `Exam Results — ${cn ? cn + ': ' : ''}${el.name}`,
+                        label: `Exam Results - ${cn ? cn + ': ' : ''}${el.name}`,
                         type: 'select',
                         options: [
                             {value: '', label: 'Use global default'},
