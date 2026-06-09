@@ -12,6 +12,7 @@ import { AppService } from './app.service';
 export class AuthService {
     headers = new HttpHeaders().set('Content-Type', 'application/json');
     public currentUser: User;
+    private loggingOut = false;
 
     constructor(
         private http: HttpClient,
@@ -62,6 +63,8 @@ export class AuthService {
     setCurrentUser(user) {
         this.currentUser = user;
         localStorage.setItem('current_user', JSON.stringify(user));
+        // A fresh sign-in re-arms logout so a later expiry can fire the audit.
+        this.loggingOut = false;
     }
 
     getCurrentUser() {
@@ -78,22 +81,30 @@ export class AuthService {
     }
 
     doLogout() {
+        // Collapse the burst of concurrent 401s (one per in-flight request)
+        // into a single logout so we don't fire N audit POSTs and N navigations.
+        if (this.loggingOut) {
+            return;
+        }
+        this.loggingOut = true;
+
         // Fire the audit POST BEFORE we strip the token from
         // localStorage - the auth interceptor reads the token at
         // request time, so as long as the request leaves the queue
-        // first it carries a valid JWT. Errors are swallowed because
-        // an audit-recording failure must not block sign-out.
-        this.http
-            .post('/auditevents/logout', {})
-            .subscribe({error: () => {}});
-
-        let removeToken = localStorage.removeItem('ssw_token');
-        localStorage.removeItem('current_user');
-        this.appService.setUserLoggedIn(false);
-        if (removeToken == null) {
-            this.router.navigate(['/login']);
+        // first it carries a valid JWT. Skip it entirely when there is
+        // no token (already expired/cleared): the POST would just bounce
+        // 401/403 and add noise. Errors are swallowed because an
+        // audit-recording failure must not block sign-out.
+        if (this.getToken()) {
+            this.http
+                .post('/auditevents/logout', {})
+                .subscribe({error: () => {}});
         }
 
+        localStorage.removeItem('ssw_token');
+        localStorage.removeItem('current_user');
+        this.appService.setUserLoggedIn(false);
+        this.router.navigate(['/login']);
     }
 
     // autoLogout(expirationDate: number) {

@@ -30,7 +30,14 @@ export class AuthInterceptor implements HttpInterceptor {
                 // complete (network blip, hard refresh cancelling in-flight
                 // XHRs, ERR_NETWORK_CHANGED, brief server unreachability) and
                 // previously caused users to be bounced to /login mid-session.
-                if (error.status === 401) {
+                // Never force-logout off the audit-logout request itself -
+                // it rides the same (now-expired) token, comes back 401, and
+                // would re-enter doLogout() forever, flooding the console with
+                // 401/403 POSTs to /auditevents/logout.
+                if (
+                    error.status === 401 &&
+                    !req.url.endsWith('/auditevents/logout')
+                ) {
                     this.authService.doLogout();
                 } else if (error.status === 409) {
                     // console.log(error);
