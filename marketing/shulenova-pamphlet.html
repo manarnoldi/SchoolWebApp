@@ -13,7 +13,7 @@
            pinned to y=0 was getting trimmed. 5mm at the top is
            enough to clear that zone; sides and bottom stay at 0
            so the horizontal layout is unchanged. */
-        margin: 0;
+        margin: 5mm 0 0 0;
     }
 
     body {
@@ -40,7 +40,7 @@
         /* 210mm A4 minus the 5mm @page top margin so the layout
            still fits one printed page. Horizontal stays at 297mm
            (full width) since the @page margin is 0 on the sides. */
-        height: 210mm;
+        height: 205mm;
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 0;
