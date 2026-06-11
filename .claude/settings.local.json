@@ -23,7 +23,9 @@
       "Bash(git commit -q -m 'Single env-based deploy workflow; build Angular into the API wwwroot *)",
       "Bash(git ls-tree *)",
       "Bash(git commit *)",
-      "Bash(rm -f .git/COMMIT_MSG.txt)"
+      "Bash(rm -f .git/COMMIT_MSG.txt)",
+      "Bash(ls -la \"/c/Personal/Documents/KODETEK INVESTMENT LIMITED/HosiNova/marketing/\" 2>&1)",
+      "Read(//c/Personal/Documents/KODETEK INVESTMENT LIMITED/HosiNova/marketing//**)"
     ]
   }
 }
