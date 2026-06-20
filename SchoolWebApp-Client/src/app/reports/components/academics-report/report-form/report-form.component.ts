@@ -88,6 +88,13 @@ export class ReportFormComponent implements OnInit {
     isLoading: boolean = false;
     studentsLoaded: boolean = false;
 
+    // When printing several students, each report's content is collected here
+    // and emitted as ONE PDF (one tab / one print job) instead of one per
+    // student. bulkMode tells the per-student builder to collect rather than
+    // render immediately.
+    private bulkMode: boolean = false;
+    private bulkDocs: any[] = [];
+
     studentRows: {
         studentId: number;
         upi: string;
@@ -271,6 +278,7 @@ export class ReportFormComponent implements OnInit {
     };
 
     previewStudent = (row: any, mode: string = 'preview') => {
+        this.bulkMode = false;
         this.generateReportForStudent(row.student, null, mode);
     };
 
@@ -281,11 +289,13 @@ export class ReportFormComponent implements OnInit {
             return;
         }
         this.isGenerating = true;
+        this.bulkMode = true;
+        this.bulkDocs = [];
         let idx = 0;
         let generateNext = () => {
             if (idx >= selected.length) {
-                this.isGenerating = false;
-                this.toastr.success(`${selected.length} report(s) generated.`);
+                this.bulkMode = false;
+                this.emitBulkReport(mode, selected.length);
                 return;
             }
             this.generateReportForStudent(selected[idx].student, () => {
@@ -294,6 +304,35 @@ export class ReportFormComponent implements OnInit {
             }, mode);
         };
         generateNext();
+    };
+
+    // Merge every collected per-student report into a single PDF, with each
+    // student starting on a new page, then render or print it once.
+    private emitBulkReport = (mode: string, count: number) => {
+        let docs = this.bulkDocs;
+        this.bulkDocs = [];
+        if (docs.length === 0) { this.isGenerating = false; return; }
+
+        let base = docs[0];
+        let merged: any[] = [];
+        docs.forEach((doc, i) => {
+            if (i > 0) merged.push({text: '', pageBreak: 'before'});
+            merged = merged.concat(doc.content);
+        });
+        base.content = merged;
+        base.info = {...(base.info || {}), title: `Report Cards (${count})`};
+
+        let pdfDoc = pdfMake.createPdf(base);
+        let done = () => { this.isGenerating = false; this.toastr.success(`${count} report(s) generated.`); };
+        if (mode === 'print') {
+            pdfDoc.print();
+            done();
+        } else {
+            pdfDoc.getBlob((pdfBlob) => {
+                window.open(URL.createObjectURL(pdfBlob), '_blank');
+                done();
+            });
+        }
     };
 
     sectionBox = (title: string, content: any, color: string): any => {
@@ -311,8 +350,8 @@ export class ReportFormComponent implements OnInit {
             table: {
                 widths: ['*'],
                 body: [
-                    [{text: title, bold: true, fontSize: 8, color: color}],
-                    [typeof content === 'string' ? {text: content || 'None', fontSize: 8} : (content || {text: 'None', fontSize: 8})]
+                    [{text: title, bold: true, fontSize: 9, color: color}],
+                    [typeof content === 'string' ? {text: content || '', fontSize: 9} : (content || {text: '', fontSize: 9})]
                 ]
             },
             marginBottom: 4
@@ -525,10 +564,10 @@ export class ReportFormComponent implements OnInit {
 
                         this.buildAndPrintReport(student, session, schoolClass, year, subjects, subjectScores, valueScores, coCurrActivities, studentResponsibilities, communityService, schoolDetails[0], classLeadersText, callback, mode, positionData, expectedByType);
                     },
-                    error: (err) => { this.isGenerating = false; this.toastr.error(err.error); }
+                    error: (err) => { this.isGenerating = false; this.bulkMode = false; this.toastr.error(err.error); }
                 });
             },
-            error: (err) => { this.isGenerating = false; this.toastr.error(err.error); }
+            error: (err) => { this.isGenerating = false; this.bulkMode = false; this.toastr.error(err.error); }
         });
     };
 
@@ -541,16 +580,16 @@ export class ReportFormComponent implements OnInit {
 
                     // Grading key table
                     let gradingKey = this.grades.map((g) => [
-                        {text: `${g.name} (${g.abbr}) ${g.points}`, alignment: 'center', fontSize: 7},
-                        {text: `${g.minScore}%-${g.maxScore}%`, alignment: 'center', fontSize: 7}
+                        {text: `${g.name} (${g.abbr}) ${g.points}`, alignment: 'center', fontSize: 8},
+                        {text: `${g.minScore}%-${g.maxScore}%`, alignment: 'center', fontSize: 8}
                     ]);
                     let gradingKeyTable = {
                         layout: 'lightHorizontalLines',
                         table: {
                             widths: this.grades.map(() => '*'),
                             body: [
-                                this.grades.map((g) => ({text: `${g.name}\n(${g.abbr}) ${g.points}`, alignment: 'center', fontSize: 7, bold: true})),
-                                this.grades.map((g) => ({text: `${g.minScore}%-${g.maxScore}%`, alignment: 'center', fontSize: 7}))
+                                this.grades.map((g) => ({text: `${g.name}\n(${g.abbr}) ${g.points}`, alignment: 'center', fontSize: 8, bold: true})),
+                                this.grades.map((g) => ({text: `${g.minScore}%-${g.maxScore}%`, alignment: 'center', fontSize: 8}))
                             ]
                         },
                         marginBottom: 5
@@ -567,11 +606,11 @@ export class ReportFormComponent implements OnInit {
                             subjectHeaders.push({text: et.abbreviation || et.name, style: 'tableHeader', colSpan: 2, alignment: 'center'});
                             subjectHeaders.push({text: ''});
                             if (this.displayMode === 'marks_grades') {
-                                subHeaders.push({text: 'MKS', alignment: 'center', bold: true, fontSize: 7});
-                                subHeaders.push({text: 'GRD', alignment: 'center', bold: true, fontSize: 7});
+                                subHeaders.push({text: 'MKS', alignment: 'center', bold: true, fontSize: 8});
+                                subHeaders.push({text: 'GRD', alignment: 'center', bold: true, fontSize: 8});
                             } else {
-                                subHeaders.push({text: 'PTS', alignment: 'center', bold: true, fontSize: 7});
-                                subHeaders.push({text: 'GRD', alignment: 'center', bold: true, fontSize: 7});
+                                subHeaders.push({text: 'PTS', alignment: 'center', bold: true, fontSize: 8});
+                                subHeaders.push({text: 'GRD', alignment: 'center', bold: true, fontSize: 8});
                             }
                         } else {
                             subjectHeaders.push({text: et.abbreviation || et.name, style: 'tableHeader', alignment: 'center'});
@@ -585,35 +624,35 @@ export class ReportFormComponent implements OnInit {
                     this.examTypes.forEach((et) => { totalsByType[et.id] = 0; countsByType[et.id] = 0; outOfByType[et.id] = 0; });
 
                     subjects.forEach(([key, subj]) => {
-                        let row: any[] = [{text: subj.name, fontSize: 8}];
+                        let row: any[] = [{text: subj.name, fontSize: 9}];
                         this.examTypes.forEach((et) => {
                             let entry = subjectScores[key]?.[et.id];
                             if (entry) {
                                 let pctStr = entry.examMark > 0 ? Math.round((entry.score / entry.examMark) * 100) + '%' : entry.score;
                                 if (this.displayMode === 'marks') {
-                                    row.push({text: pctStr, alignment: 'center', fontSize: 8});
+                                    row.push({text: pctStr, alignment: 'center', fontSize: 9});
                                 } else if (this.displayMode === 'grades') {
-                                    row.push({text: entry.grade, alignment: 'center', fontSize: 8});
+                                    row.push({text: entry.grade, alignment: 'center', fontSize: 9});
                                 } else if (this.displayMode === 'points_grades') {
-                                    row.push({text: entry.points, alignment: 'center', fontSize: 8});
-                                    row.push({text: entry.grade, alignment: 'center', fontSize: 8});
+                                    row.push({text: entry.points, alignment: 'center', fontSize: 9});
+                                    row.push({text: entry.grade, alignment: 'center', fontSize: 9});
                                 } else {
-                                    row.push({text: pctStr, alignment: 'center', fontSize: 8});
-                                    row.push({text: entry.grade, alignment: 'center', fontSize: 8});
+                                    row.push({text: pctStr, alignment: 'center', fontSize: 9});
+                                    row.push({text: entry.grade, alignment: 'center', fontSize: 9});
                                 }
                                 totalsByType[et.id] += entry.score;
                                 outOfByType[et.id] += entry.examMark || 0;
                                 countsByType[et.id]++;
                             } else {
-                                row.push({text: '-', alignment: 'center', fontSize: 8});
-                                if (isTwoCol) row.push({text: '', alignment: 'center', fontSize: 8});
+                                row.push({text: '-', alignment: 'center', fontSize: 9});
+                                if (isTwoCol) row.push({text: '', alignment: 'center', fontSize: 9});
                             }
                         });
                         subjectBody.push(row);
                     });
 
                     // Total Score row (e.g., 440/600)
-                    let totalRow: any[] = [{text: 'Total Score', bold: true, fontSize: 8}];
+                    let totalRow: any[] = [{text: 'Total Score', bold: true, fontSize: 9}];
                     this.examTypes.forEach((et) => {
                         let exp = expectedByType?.[et.id];
                         let outOf = exp ? exp.outOf : outOfByType[et.id];
@@ -624,57 +663,60 @@ export class ReportFormComponent implements OnInit {
                             ? `${Math.round(totalsByType[et.id])}/${outOf}`
                             : '-';
                         if (isTwoCol) {
-                            totalRow.push({text: totalText, alignment: 'center', bold: true, fontSize: 8, colSpan: 2});
+                            totalRow.push({text: totalText, alignment: 'center', bold: true, fontSize: 9, colSpan: 2});
                             totalRow.push({text: ''});
                         } else {
-                            totalRow.push({text: totalText, alignment: 'center', bold: true, fontSize: 8});
+                            totalRow.push({text: totalText, alignment: 'center', bold: true, fontSize: 9});
                         }
                     });
                     subjectBody.push(totalRow);
 
                     // Average row
-                    let avgRow: any[] = [{text: 'Average Score', bold: true, fontSize: 8}];
+                    let avgRow: any[] = [{text: 'Average Score', bold: true, fontSize: 9}];
                     this.examTypes.forEach((et) => {
                         let exp = expectedByType?.[et.id];
                         let denomCount = exp ? exp.count : countsByType[et.id];
-                        let avg = denomCount > 0 ? Math.round(totalsByType[et.id] / denomCount) : 0;
-                        let grade = this.getGradeForPercent(avg);
-                        let avgStr = avg > 0 ? avg + '%' : '-';
+                        // No marks entered for this exam type -> leave it blank
+                        // rather than showing a 0% / lowest-grade (e.g. BE 2).
+                        let hasMarks = countsByType[et.id] > 0;
+                        let avg = (hasMarks && denomCount > 0) ? Math.round(totalsByType[et.id] / denomCount) : 0;
+                        let grade = hasMarks ? this.getGradeForPercent(avg) : null;
+                        let avgStr = hasMarks ? avg + '%' : '-';
                         if (this.displayMode === 'marks') {
-                            avgRow.push({text: avgStr, alignment: 'center', bold: true, fontSize: 8});
+                            avgRow.push({text: avgStr, alignment: 'center', bold: true, fontSize: 9});
                         } else if (this.displayMode === 'grades') {
-                            avgRow.push({text: grade?.abbr || '-', alignment: 'center', bold: true, fontSize: 8});
+                            avgRow.push({text: grade?.abbr || '-', alignment: 'center', bold: true, fontSize: 9});
                         } else {
-                            avgRow.push({text: avgStr, alignment: 'center', bold: true, fontSize: 8});
-                            avgRow.push({text: grade?.abbr || '', alignment: 'center', bold: true, fontSize: 8});
+                            avgRow.push({text: avgStr, alignment: 'center', bold: true, fontSize: 9});
+                            avgRow.push({text: grade?.abbr || '', alignment: 'center', bold: true, fontSize: 9});
                         }
                     });
                     subjectBody.push(avgRow);
 
                     // Position row (combined position/total, e.g. 4/13)
                     if (this.showPosition && positionData) {
-                        let posRow: any[] = [{text: 'Position', bold: true, fontSize: 8}];
+                        let posRow: any[] = [{text: 'Position', bold: true, fontSize: 9}];
                         this.examTypes.forEach((et) => {
                             let etPos = positionData.positionsByType?.[et.id];
                             let posText = etPos && etPos.position > 0 && etPos.totalStudents > 0
                                 ? `${etPos.position}/${etPos.totalStudents}`
                                 : '-';
                             if (isTwoCol) {
-                                posRow.push({text: posText, alignment: 'center', bold: true, fontSize: 8, colSpan: 2});
+                                posRow.push({text: posText, alignment: 'center', bold: true, fontSize: 9, colSpan: 2});
                                 posRow.push({text: ''});
                             } else {
-                                posRow.push({text: posText, alignment: 'center', bold: true, fontSize: 8});
+                                posRow.push({text: posText, alignment: 'center', bold: true, fontSize: 9});
                             }
                         });
                         subjectBody.push(posRow);
 
                         // Overall position row
                         if (positionData.overall && positionData.overall.totalStudents > 0) {
-                            let overallRow: any[] = [{text: 'Overall Position', bold: true, fontSize: 8, fillColor: '#fff3cd'}];
+                            let overallRow: any[] = [{text: 'Overall Position', bold: true, fontSize: 9, fillColor: '#fff3cd'}];
                             let colCount = isTwoCol ? this.examTypes.length * 2 : this.examTypes.length;
                             overallRow.push({
                                 text: `${positionData.overall.position}/${positionData.overall.totalStudents}`,
-                                alignment: 'center', bold: true, fontSize: 8, colSpan: colCount, fillColor: '#fff3cd'
+                                alignment: 'center', bold: true, fontSize: 9, colSpan: colCount, fillColor: '#fff3cd'
                             });
                             for (let c = 1; c < colCount; c++) overallRow.push({text: ''});
                             subjectBody.push(overallRow);
@@ -696,24 +738,24 @@ export class ReportFormComponent implements OnInit {
                         if (!sv) return;
                         let score = this.valueScores.find((vs) => vs.id == sv.valueScoreId);
                         if (!score) return;
-                        if (ratedCount > 0) valuesRichText.push({text: ', ', fontSize: 8});
-                        valuesRichText.push({text: `${v.name}: ${score.name}`, fontSize: 8});
-                        if (score.abbreviation) valuesRichText.push({text: ` (${score.abbreviation})`, fontSize: 8, bold: true});
+                        if (ratedCount > 0) valuesRichText.push({text: ', ', fontSize: 9});
+                        valuesRichText.push({text: `${v.name}: ${score.name}`, fontSize: 9});
+                        if (score.abbreviation) valuesRichText.push({text: ` (${score.abbreviation})`, fontSize: 9, bold: true});
                         ratedCount++;
                     });
-                    let valuesContent: any = ratedCount > 0 ? {text: valuesRichText, fontSize: 8} : {text: 'No ratings', fontSize: 8};
+                    let valuesContent: any = ratedCount > 0 ? {text: valuesRichText, fontSize: 9} : {text: '', fontSize: 9};
 
                     // Co-curricular section
-                    let coCurrText = (coCurrActivities as any[]).map((a) => a.coCurriculumActivity?.name || '').filter(Boolean).join(', ') || 'None';
+                    let coCurrText = (coCurrActivities as any[]).map((a) => a.coCurriculumActivity?.name || '').filter(Boolean).join(', ');
 
                     // Responsibilities section
                     let respText = (studentResponsibilities as any[]).map((sr) => {
                         let item = sr.responsibilitySocialSkill;
                         return item ? `${item.name} (${item.category || ''})` : '';
-                    }).filter(Boolean).join(', ') || 'None';
+                    }).filter(Boolean).join(', ');
 
                     // Community service section
-                    let commText = (communityService as any[]).map((cs) => cs.communityServiceActivity?.name || '').filter(Boolean).join(', ') || 'None';
+                    let commText = (communityService as any[]).map((cs) => cs.communityServiceActivity?.name || '').filter(Boolean).join(', ');
 
                     let sessionName = session?.sessionName || '';
                     let termEndDate = session?.endDate ? new Date(session.endDate).toLocaleDateString('en-GB') : '..............................';
@@ -736,7 +778,7 @@ export class ReportFormComponent implements OnInit {
                         footer: this.reportSvc.getFooter('portrait'),
                         images: { systemLogo: base64data, schoolLogo: school?.logoAsBase64 },
                         styles: {
-                            tableHeader: {bold: true, fontSize: 8, fillColor: '#d4edda', color: '#155724'}
+                            tableHeader: {bold: true, fontSize: 9, fillColor: '#d4edda', color: '#155724'}
                         },
                         content: [
                             {...this.reportSvc.getDIVIDER()},
@@ -760,28 +802,28 @@ export class ReportFormComponent implements OnInit {
                                     widths: ['auto', 'auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
                                     body: [
                                         [
-                                            {text: 'Adm No:', fontSize: 8, bold: true},
-                                            {text: student.upi || '', fontSize: 9, bold: true},
-                                            {text: 'Name:', fontSize: 8, bold: true},
-                                            {text: student.fullName, fontSize: 9, bold: true, noWrap: true},
-                                            {text: 'Grade:', fontSize: 8, bold: true},
-                                            {text: gradeName, fontSize: 9},
-                                            {text: 'Stream:', fontSize: 8, bold: true},
-                                            {text: streamName, fontSize: 9},
-                                            {text: 'Term:', fontSize: 8, bold: true},
-                                            {text: sessionName, fontSize: 9}
+                                            {text: 'Adm No:', fontSize: 9, bold: true},
+                                            {text: student.upi || '', fontSize: 10, bold: true},
+                                            {text: 'Name:', fontSize: 9, bold: true},
+                                            {text: student.fullName, fontSize: 10, bold: true, noWrap: true},
+                                            {text: 'Grade:', fontSize: 9, bold: true},
+                                            {text: gradeName, fontSize: 10},
+                                            {text: 'Stream:', fontSize: 9, bold: true},
+                                            {text: streamName, fontSize: 10},
+                                            {text: 'Term:', fontSize: 9, bold: true},
+                                            {text: sessionName, fontSize: 10}
                                         ],
                                         [
-                                            {text: 'Year:', fontSize: 8, bold: true},
-                                            {text: year?.name || '', fontSize: 9},
-                                            {text: 'Class Leaders:', fontSize: 8, bold: true},
-                                            {text: classLeadersText || '..............................', fontSize: 8, noWrap: true},
-                                            {text: '', fontSize: 8},
-                                            {text: '', fontSize: 8},
-                                            {text: '', fontSize: 8},
-                                            {text: '', fontSize: 8},
-                                            {text: '', fontSize: 8},
-                                            {text: '', fontSize: 8}
+                                            {text: 'Year:', fontSize: 9, bold: true},
+                                            {text: year?.name || '', fontSize: 10},
+                                            {text: 'Class Leaders:', fontSize: 9, bold: true},
+                                            {text: classLeadersText || '..............................', fontSize: 9, noWrap: true},
+                                            {text: '', fontSize: 9},
+                                            {text: '', fontSize: 9},
+                                            {text: '', fontSize: 9},
+                                            {text: '', fontSize: 9},
+                                            {text: '', fontSize: 9},
+                                            {text: '', fontSize: 9}
                                         ]
                                     ]
                                 },
@@ -824,8 +866,8 @@ export class ReportFormComponent implements OnInit {
                                 table: {
                                     widths: ['*'],
                                     body: [
-                                        [{text: "Class teacher's comments: .............................................................................................................................................", fontSize: 8}],
-                                        [{text: 'Signature: ..............................................                                        Date: ..............................................', fontSize: 8}]
+                                        [{text: "Class teacher's comments: .............................................................................................................................................", fontSize: 9}],
+                                        [{text: 'Signature: ..............................................                                        Date: ..............................................', fontSize: 9}]
                                     ]
                                 },
                                 marginTop: 5
@@ -845,8 +887,8 @@ export class ReportFormComponent implements OnInit {
                                 table: {
                                     widths: ['*'],
                                     body: [
-                                        [{text: "Head teacher's comments: ..............................................................................................................................................", fontSize: 8}],
-                                        [{text: 'Signature: ..............................................                                        Date: ..............................................', fontSize: 8}]
+                                        [{text: "Head teacher's comments: ..............................................................................................................................................", fontSize: 9}],
+                                        [{text: 'Signature: ..............................................                                        Date: ..............................................', fontSize: 9}]
                                     ]
                                 },
                                 marginTop: 3
@@ -866,7 +908,7 @@ export class ReportFormComponent implements OnInit {
                                 table: {
                                     widths: ['*'],
                                     body: [
-                                        [{text: "Parent/Guardian's signature: ..............................................                                        Date: ..............................................", fontSize: 8}]
+                                        [{text: "Parent/Guardian's signature: ..............................................                                        Date: ..............................................", fontSize: 9}]
                                     ]
                                 },
                                 marginTop: 3
@@ -878,11 +920,11 @@ export class ReportFormComponent implements OnInit {
                                     widths: ['auto', 'auto', '*', 'auto', 'auto'],
                                     body: [
                                         [
-                                            {text: 'This term ends on:', fontSize: 8, bold: true},
-                                            {text: termEndDate, fontSize: 8, decoration: 'underline'},
-                                            {text: '', fontSize: 8},
-                                            {text: 'Next term begins on:', fontSize: 8, bold: true},
-                                            {text: nextTermStartDate, fontSize: 8, decoration: 'underline'}
+                                            {text: 'This term ends on:', fontSize: 9, bold: true},
+                                            {text: termEndDate, fontSize: 9, decoration: 'underline'},
+                                            {text: '', fontSize: 9},
+                                            {text: 'Next term begins on:', fontSize: 9, bold: true},
+                                            {text: nextTermStartDate, fontSize: 9, decoration: 'underline'}
                                         ]
                                     ]
                                 },
@@ -891,7 +933,7 @@ export class ReportFormComponent implements OnInit {
                             // System generated note
                             {
                                 text: `This is a system generated document. Printed on ${new Date().toLocaleString('en-GB')}`,
-                                fontSize: 7,
+                                fontSize: 8,
                                 color: '#999999',
                                 italics: true,
                                 alignment: 'center',
@@ -899,6 +941,14 @@ export class ReportFormComponent implements OnInit {
                             }
                         ]
                     };
+
+                    // Bulk: stash this student's document and let the loop
+                    // continue; emitBulkReport merges them into one PDF at the end.
+                    if (this.bulkMode) {
+                        this.bulkDocs.push(docDefinition);
+                        if (callback) callback();
+                        return;
+                    }
 
                     let pdfDoc = pdfMake.createPdf(docDefinition);
                     if (mode === 'print') {
@@ -916,7 +966,7 @@ export class ReportFormComponent implements OnInit {
                 };
                 reader.readAsDataURL(blob);
             },
-            error: () => { this.isGenerating = false; this.toastr.error('Error loading logo.'); }
+            error: () => { this.isGenerating = false; this.bulkMode = false; this.toastr.error('Error loading logo.'); }
         });
     };
 }

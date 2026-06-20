@@ -60,6 +60,13 @@ export class AssessmentReportComponent implements OnInit {
     isGenerating: boolean = false;
     studentsLoaded: boolean = false;
 
+    // When printing several students, each report's content is collected here
+    // and emitted as ONE PDF (one tab / one print job) instead of one per
+    // student. bulkMode tells the per-student builder to collect rather than
+    // render immediately.
+    private bulkMode: boolean = false;
+    private bulkDocs: any[] = [];
+
     studentRows: {
         studentId: number;
         upi: string;
@@ -199,18 +206,49 @@ export class AssessmentReportComponent implements OnInit {
     allSelected = (): boolean => this.studentRows.length > 0 && this.studentRows.every((r) => r.selected);
     getSelectedCount = (): number => this.studentRows.filter((r) => r.selected).length;
 
-    previewStudent = (row: any, mode: string = 'preview') => { this.generateForStudent(row.student, null, mode); };
+    previewStudent = (row: any, mode: string = 'preview') => { this.bulkMode = false; this.generateForStudent(row.student, null, mode); };
 
-    printSelected = () => {
+    printSelected = (mode: string = 'preview') => {
         let selected = this.studentRows.filter((r) => r.selected);
         if (selected.length === 0) { this.toastr.info('Select at least one student.'); return; }
         this.isGenerating = true;
+        this.bulkMode = true;
+        this.bulkDocs = [];
         let idx = 0;
         let next = () => {
-            if (idx >= selected.length) { this.isGenerating = false; this.toastr.success(`${selected.length} report(s) generated.`); return; }
-            this.generateForStudent(selected[idx].student, () => { idx++; next(); });
+            if (idx >= selected.length) { this.bulkMode = false; this.emitBulkReport(mode, selected.length); return; }
+            this.generateForStudent(selected[idx].student, () => { idx++; next(); }, mode);
         };
         next();
+    };
+
+    // Merge every collected per-student report into a single PDF, with each
+    // student starting on a new page, then render or print it once.
+    private emitBulkReport = (mode: string, count: number) => {
+        let docs = this.bulkDocs;
+        this.bulkDocs = [];
+        if (docs.length === 0) { this.isGenerating = false; return; }
+
+        let base = docs[0];
+        let merged: any[] = [];
+        docs.forEach((doc, i) => {
+            if (i > 0) merged.push({text: '', pageBreak: 'before'});
+            merged = merged.concat(doc.content);
+        });
+        base.content = merged;
+        base.info = {...(base.info || {}), title: `Assessment Reports (${count})`};
+
+        let pdfDoc = pdfMake.createPdf(base);
+        let done = () => { this.isGenerating = false; this.toastr.success(`${count} report(s) generated.`); };
+        if (mode === 'print') {
+            pdfDoc.print();
+            done();
+        } else {
+            pdfDoc.getBlob((pdfBlob) => {
+                window.open(URL.createObjectURL(pdfBlob), '_blank');
+                done();
+            });
+        }
     };
 
     generateForStudent = (student: any, callback?: () => void, mode: string = 'preview') => {
@@ -331,16 +369,16 @@ export class AssessmentReportComponent implements OnInit {
 
                                         this.buildPdf(student, session, year, selectedClass, schoolDetails[0], assessments as any[], structure, classLeadersText, callback, mode);
                                     },
-                                    error: (err) => { this.isGenerating = false; this.toastr.error(err.error); }
+                                    error: (err) => { this.isGenerating = false; this.bulkMode = false; this.toastr.error(err.error); }
                                 });
                             },
-                            error: (err) => { this.isGenerating = false; this.toastr.error(err.error); }
+                            error: (err) => { this.isGenerating = false; this.bulkMode = false; this.toastr.error(err.error); }
                         });
                     },
-                    error: (err) => { this.isGenerating = false; this.toastr.error(err.error); }
+                    error: (err) => { this.isGenerating = false; this.bulkMode = false; this.toastr.error(err.error); }
                 });
             },
-            error: (err) => { this.isGenerating = false; this.toastr.error(err.error); }
+            error: (err) => { this.isGenerating = false; this.bulkMode = false; this.toastr.error(err.error); }
         });
     };
 
@@ -529,6 +567,14 @@ export class AssessmentReportComponent implements OnInit {
                         ]
                     };
 
+                    // Bulk: stash this student's document and let the loop
+                    // continue; emitBulkReport merges them into one PDF at the end.
+                    if (this.bulkMode) {
+                        this.bulkDocs.push(docDefinition);
+                        if (callback) callback();
+                        return;
+                    }
+
                     let pdfDoc = pdfMake.createPdf(docDefinition);
                     if (mode === 'print') {
                         pdfDoc.print();
@@ -545,7 +591,7 @@ export class AssessmentReportComponent implements OnInit {
                 };
                 reader.readAsDataURL(blob);
             },
-            error: () => { this.isGenerating = false; this.toastr.error('Error loading logo.'); }
+            error: () => { this.isGenerating = false; this.bulkMode = false; this.toastr.error('Error loading logo.'); }
         });
     };
 }
