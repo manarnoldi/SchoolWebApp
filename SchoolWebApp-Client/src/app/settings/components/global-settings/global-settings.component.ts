@@ -123,7 +123,11 @@ export class GlobalSettingsComponent implements OnInit {
                 {key: 'MeanBasis', label: 'Totals & Means Basis', type: 'select', options: [
                     {value: 'subjects_done', label: 'Subjects with results recorded'},
                     {value: 'subjects_expected', label: 'All subjects allocated to the student'}
-                ], description: "How a student's totals, means and grade are divided: by subjects with marks recorded, or by all subjects they are allocated to (missing ones count as zero). Affects broadsheet and report forms."}
+                ], description: "How a student's totals, means and grade are divided: by subjects with marks recorded, or by all subjects they are allocated to (missing ones count as zero). Affects broadsheet and report forms."},
+                {key: 'BroadsheetCombinedColumns', label: 'Combined Broadsheet Columns', type: 'select', options: [
+                    {value: 'MGP', label: 'Marks, Grade & Points (M/G/P)'},
+                    {value: 'MG', label: 'Marks & Grade only (M/G)'}
+                ], description: 'For the combined broadsheet print, show Marks + Grade + Points per subject, or omit Points and show only Marks + Grade.'}
             ]
         },
         {

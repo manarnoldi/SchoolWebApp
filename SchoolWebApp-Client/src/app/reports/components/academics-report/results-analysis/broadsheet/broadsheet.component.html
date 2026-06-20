@@ -70,6 +70,9 @@
                     <button class="btn btn-info" (click)="printBroadsheet('grades')" title="Print Grades" [disabled]="!loaded">
                         <i class="fas fa-print"></i> GRD
                     </button>
+                    <button class="btn btn-secondary" (click)="printBroadsheet('mgp')" [title]="'Print Combined Broadsheet (' + combinedColsLabel + ')'" [disabled]="!loaded">
+                        <i class="fas fa-print"></i> {{ combinedColsLabel }}
+                    </button>
                 </div>
             </div>
         </div>

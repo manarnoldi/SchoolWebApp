@@ -140,6 +140,15 @@ export class BroadsheetComponent implements OnInit {
         this.grades = this.allGrades.filter((g) => g.category === this.gradingCategory).sort((a, b) => a.rank - b.rank);
     };
 
+    // Combined broadsheet column setting: 'MG' omits the Points sub-column,
+    // anything else (default) includes it (M/G/P).
+    get combinedIncludesPoints(): boolean {
+        return this.settingVal('BroadsheetCombinedColumns') !== 'MG';
+    }
+    get combinedColsLabel(): string {
+        return this.combinedIncludesPoints ? 'M/G/P' : 'M/G';
+    }
+
     onGradingCategoryChange = () => {
         this.grades = this.allGrades.filter(g => g.category === this.selectedGradingCategory).sort((a, b) => a.rank - b.rank);
     };
@@ -397,22 +406,45 @@ export class BroadsheetComponent implements OnInit {
                         const reader = new FileReader();
                         reader.onloadend = () => {
                             const base64data: string = reader.result as string;
-                            let modeLabel = mode === 'points' ? 'POINTS' : mode === 'grades' ? 'GRADES' : 'MARKS';
+                            // 'mgp' = combined report: each subject shows Marks,
+                            // Grade and (optionally) Points under single-letter
+                            // M G [P] sub-columns. Points is dropped when the
+                            // BroadsheetCombinedColumns setting is 'MG'.
+                            let mgp = mode === 'mgp';
+                            let includePoints = this.combinedIncludesPoints;
+                            let modeLabel = mgp ? this.combinedColsLabel : mode === 'points' ? 'POINTS' : mode === 'grades' ? 'GRADES' : 'MARKS';
                             let reportTitle = `BROADSHEET (${modeLabel}) - ${this.getFilterName('year')} ${this.getFilterName('session')} - ${this.getFilterName('examType')} - ${this.getFilterName('class')}`.toUpperCase();
 
+                            let summaryTitles = ['Total M', 'Total P', 'Mean M', 'Mean P', 'Mean G', 'Rank'];
                             let headers: any[] = [
-                                {text: '#', style: 'tableHeader'},
-                                {text: 'Adm#', style: 'tableHeader'},
-                                {text: 'Student Name', style: 'tableHeader'}
+                                {text: '#', style: 'tableHeader', ...(mgp ? {rowSpan: 2} : {})},
+                                {text: 'Adm#', style: 'tableHeader', ...(mgp ? {rowSpan: 2} : {})},
+                                {text: 'Student Name', style: 'tableHeader', ...(mgp ? {rowSpan: 2} : {})}
                             ];
-                            this.subjects.forEach((s) => headers.push({text: s, style: 'tableHeader'}));
-                            headers.push({text: 'Total M', style: 'tableHeader'}, {text: 'Total P', style: 'tableHeader'}, {text: 'Mean M', style: 'tableHeader'}, {text: 'Mean P', style: 'tableHeader'}, {text: 'Mean G', style: 'tableHeader'}, {text: 'Rank', style: 'tableHeader'});
-
                             let widths: any[] = ['auto', 'auto', '*'];
-                            this.subjects.forEach(() => widths.push('auto'));
-                            widths.push('auto', 'auto', 'auto', 'auto', 'auto', 'auto');
+                            let body: any[] = [];
 
-                            let body: any[] = [headers];
+                            if (mgp) {
+                                // Row 1: subject spanning the sub-columns. Row 2: M | G [| P].
+                                let span = includePoints ? 3 : 2;
+                                let subHeaders: any[] = [{}, {}, {}];
+                                this.subjects.forEach((s) => {
+                                    headers.push({text: s, style: 'tableHeader', colSpan: span, alignment: 'center'});
+                                    for (let i = 1; i < span; i++) headers.push({});
+                                    subHeaders.push(
+                                        {text: 'M', style: 'tableHeader', alignment: 'center'},
+                                        {text: 'G', style: 'tableHeader', alignment: 'center'}
+                                    );
+                                    if (includePoints) subHeaders.push({text: 'P', style: 'tableHeader', alignment: 'center'});
+                                    for (let i = 0; i < span; i++) widths.push('auto');
+                                });
+                                summaryTitles.forEach((t) => { headers.push({text: t, style: 'tableHeader', rowSpan: 2}); subHeaders.push({}); widths.push('auto'); });
+                                body.push(headers, subHeaders);
+                            } else {
+                                this.subjects.forEach((s) => { headers.push({text: s, style: 'tableHeader'}); widths.push('auto'); });
+                                summaryTitles.forEach((t) => { headers.push({text: t, style: 'tableHeader'}); widths.push('auto'); });
+                                body.push(headers);
+                            }
                             this.broadsheetRows.forEach((row, idx) => {
                                 let rowData: any[] = [
                                     {text: idx + 1, noWrap: true},
@@ -421,6 +453,19 @@ export class BroadsheetComponent implements OnInit {
                                 ];
                                 this.subjects.forEach((subj) => {
                                     let entry = row.scores[subj];
+                                    if (mgp) {
+                                        if (entry.score != null) {
+                                            rowData.push(
+                                                {text: `${entry.score}`, alignment: 'center', noWrap: true},
+                                                {text: entry.grade, alignment: 'center', noWrap: true}
+                                            );
+                                            if (includePoints) rowData.push({text: `${entry.points}`, alignment: 'center', noWrap: true});
+                                        } else {
+                                            rowData.push({text: '-', alignment: 'center'}, {text: '-', alignment: 'center'});
+                                            if (includePoints) rowData.push({text: '-', alignment: 'center'});
+                                        }
+                                        return;
+                                    }
                                     let cellText = '-';
                                     if (entry.score != null) {
                                         if (mode === 'points') {
@@ -458,7 +503,25 @@ export class BroadsheetComponent implements OnInit {
                             lowRow[0] = {text: 'Lowest', colSpan: 3, bold: true, alignment: 'right', fillColor: '#f8d7da'};
 
                             this.subjects.forEach((subj) => {
-                                if (mode === 'points') {
+                                if (mgp) {
+                                    avgRow.push(
+                                        {text: this.getSubjectAvg(subj), alignment: 'center', bold: true, fillColor: '#fff3cd'},
+                                        {text: '', fillColor: '#fff3cd'}
+                                    );
+                                    highRow.push(
+                                        {text: this.getSubjectMax(subj), alignment: 'center', bold: true, fillColor: '#d1e7dd'},
+                                        {text: '', fillColor: '#d1e7dd'}
+                                    );
+                                    lowRow.push(
+                                        {text: this.getSubjectMin(subj), alignment: 'center', bold: true, fillColor: '#f8d7da'},
+                                        {text: '', fillColor: '#f8d7da'}
+                                    );
+                                    if (includePoints) {
+                                        avgRow.push({text: this.getSubjectPointsAvg(subj), alignment: 'center', bold: true, fillColor: '#fff3cd'});
+                                        highRow.push({text: this.getSubjectPointsMax(subj), alignment: 'center', bold: true, fillColor: '#d1e7dd'});
+                                        lowRow.push({text: this.getSubjectPointsMin(subj), alignment: 'center', bold: true, fillColor: '#f8d7da'});
+                                    }
+                                } else if (mode === 'points') {
                                     avgRow.push({text: this.getSubjectPointsAvg(subj), alignment: 'center', bold: true, fillColor: '#fff3cd'});
                                     highRow.push({text: this.getSubjectPointsMax(subj), alignment: 'center', bold: true, fillColor: '#d1e7dd'});
                                     lowRow.push({text: this.getSubjectPointsMin(subj), alignment: 'center', bold: true, fillColor: '#f8d7da'});
@@ -521,9 +584,16 @@ export class BroadsheetComponent implements OnInit {
                                     this.reportSvc.getReportTitle(reportTitle),
                                     {...this.reportSvc.getDIVIDER('landscape'), marginBottom: 1},
                                     {
-                                        layout: this.reportSvc.getTableLayout(),
-                                        table: { headerRows: 1, widths, body },
-                                        marginBottom: 2, color: '#002D62', fontSize: 8
+                                        // Combined mode packs 3x the columns, so use a
+                                        // tighter layout and smaller font to help it fit.
+                                        layout: mgp ? {
+                                            hLineWidth: () => 0.4, vLineWidth: () => 0.4,
+                                            hLineColor: () => '#aaa', vLineColor: () => '#aaa',
+                                            paddingLeft: () => 2, paddingRight: () => 2,
+                                            paddingTop: () => 1, paddingBottom: () => 1
+                                        } : this.reportSvc.getTableLayout(),
+                                        table: { headerRows: mgp ? 2 : 1, widths, body },
+                                        marginBottom: 2, color: '#002D62', fontSize: mgp ? 7 : 8
                                     },
                                     {...this.reportSvc.getDIVIDER('landscape')},
                                     this.reportSvc.getPrintDetails(
