@@ -19,6 +19,9 @@ import {GlobalSettingService} from '@/settings/services/global-setting.service';
 import {StudentClassService} from '@/students/services/student-class.service';
 import {StudentSubjectsService} from '@/students/services/student-subjects.service';
 import {Status} from '@/core/enums/status';
+import {AuthService} from '@/core/services/auth.service';
+import {StaffSubjectsService} from '@/staff/services/staff-subjects.service';
+import {StaffSubject} from '@/staff/models/staff-subject';
 
 @Component({
     selector: 'app-exam-results-bulk',
@@ -28,9 +31,9 @@ import {Status} from '@/core/enums/status';
 export class ExamResultsBulkComponent implements OnInit {
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Dashboard'},
-        {link: ['/cbe/exams/exam-results-bulk'], title: 'CBE Exams: Bulk Results Entry'}
+        {link: ['/cbe/exams/exam-results-bulk'], title: 'CBE Exams: Results Entry'}
     ];
-    dashboardTitle = 'CBE Exams: Bulk Results Entry';
+    dashboardTitle = 'CBE Exams: Results Entry';
 
     curricula: any[] = [];
     academicYears: any[] = [];
@@ -42,6 +45,30 @@ export class ExamResultsBulkComponent implements OnInit {
     gradingSettings: any[] = [];
     learningLevels: any[] = [];
     gradingCategory: string = '4-Point';
+
+    // Teachers see only the subjects they are allocated to in the selected
+    // class; administrators (and other non-teacher roles) see every subject.
+    currentUserIsTeacher: boolean = false;
+    currentUserStaffId: number | null = null;
+    teacherAllocations: StaffSubject[] = [];
+
+    /**
+     * True when today (date-only) is strictly AFTER the selected school exam's
+     * mark-entry end date. The deadline is defined once at the school-exam
+     * level, so we can check it before loading the grid. Teachers are blocked
+     * past the deadline; administrators are never blocked and can still correct.
+     */
+    get isPastMarkEntryDeadline(): boolean {
+        let se = this.schoolExams.find((s) => s.id == this.filterSchoolExamId);
+        let raw = se?.examMarkEntryEndDate;
+        if (!raw) return false;
+        let deadline = new Date(raw);
+        if (isNaN(deadline.getTime())) return false;
+        deadline.setHours(0, 0, 0, 0);
+        let today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return today.getTime() > deadline.getTime();
+    }
 
     filterCurriculumId: any = null;
     filterAcademicYearId: any = null;
@@ -83,10 +110,16 @@ export class ExamResultsBulkComponent implements OnInit {
         private gradesSvc: GradesService,
         private globalSettingSvc: GlobalSettingService,
         private studentClassSvc: StudentClassService,
-        private studentSubjectsSvc: StudentSubjectsService
+        private studentSubjectsSvc: StudentSubjectsService,
+        private authService: AuthService,
+        private staffSubjectsSvc: StaffSubjectsService
     ) {}
 
     ngOnInit(): void {
+        let user = this.authService.getCurrentUser();
+        this.currentUserIsTeacher = !!user?.currentUserTeacher;
+        this.currentUserStaffId = user?.staffId ?? null;
+
         forkJoin([
             this.curriculaSvc.get('/curricula'),
             this.academicYearSvc.get('/academicYears'),
@@ -141,6 +174,7 @@ export class ExamResultsBulkComponent implements OnInit {
         this.filterSessionId = this.filterSchoolClassId = null;
         this.filterSchoolExamId = this.filterExamTypeId = null;
         this.clearGrid();
+        this.loadTeacherAllocations();
         if (!this.filterAcademicYearId || !this.filterCurriculumId) return;
         forkJoin([
             this.sessionsSvc.get(`/sessions/byCurriculumYearId?curriculumId=${this.filterCurriculumId}&academicYearId=${this.filterAcademicYearId}`),
@@ -154,6 +188,25 @@ export class ExamResultsBulkComponent implements OnInit {
             error: (err) => this.toastr.error(err.error)
         });
     };
+
+    /**
+     * Pulls the current user's StaffSubject allocations for the selected
+     * academic year, cached on the component so loadGrid can restrict the
+     * teacher's columns with a local filter. Non-teachers keep an empty list
+     * and are never filtered.
+     */
+    private loadTeacherAllocations() {
+        if (!this.currentUserIsTeacher || !this.currentUserStaffId || !this.filterAcademicYearId) {
+            this.teacherAllocations = [];
+            return;
+        }
+        this.staffSubjectsSvc
+            .getByStaffYearId(this.currentUserStaffId, this.filterAcademicYearId)
+            .subscribe({
+                next: (allocations) => { this.teacherAllocations = allocations || []; },
+                error: () => { this.teacherAllocations = []; }
+            });
+    }
 
     // Session drives the School Exam list (a school exam carries the exam type
     // the grid still filters by).
@@ -194,6 +247,13 @@ export class ExamResultsBulkComponent implements OnInit {
     loadGrid = () => {
         if (!this.filterSessionId || !this.filterSchoolClassId || !this.filterSchoolExamId) {
             this.toastr.info('Please select Session, Class, and School Exam.');
+            return;
+        }
+
+        // Mark-entry deadline (set on the school exam) locks teachers out once
+        // it passes; administrators are never blocked and can still correct.
+        if (this.currentUserIsTeacher && this.isPastMarkEntryDeadline) {
+            this.toastr.warning('The mark entry deadline for this exam has passed. Contact the administrator for any corrections.');
             return;
         }
 
@@ -246,9 +306,22 @@ export class ExamResultsBulkComponent implements OnInit {
                         examMark: e.examMark
                     }));
 
+                // Teachers may only enter results for subjects they are allocated
+                // to in THIS class; administrators see every subject.
+                if (this.currentUserIsTeacher) {
+                    let teacherSubjectIds = new Set(
+                        this.teacherAllocations
+                            .filter((sa) => +sa.schoolClassId === +this.filterSchoolClassId)
+                            .map((sa) => +sa.subjectId)
+                    );
+                    this.subjects = this.subjects.filter((s) => teacherSubjectIds.has(+s.subjectId));
+                }
+
                 if (this.subjects.length === 0) {
                     this.isLoading = false;
-                    this.toastr.info('No exams found for subjects allocated to this class.');
+                    this.toastr.info(this.currentUserIsTeacher
+                        ? 'You are not allocated to any subjects in this class.'
+                        : 'No exams found for subjects allocated to this class.');
                     return;
                 }
 

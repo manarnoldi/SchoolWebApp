@@ -133,8 +133,7 @@ export const MENU = [
             {name: 'Values', iconClasses: 'fas fa-bullseye text-danger', path: ['/cbe/values/student-assignments']},
             {name: 'School Exams', iconClasses: 'fas fa-calendar-check text-info', path: ['/cbe/exams/school-exams']},
             {name: 'Register Exams', iconClasses: 'fas fa-bullseye text-warning', path: ['/cbe/exams/exams']},
-            {name: 'Results (Subject)', iconClasses: 'fas fa-bullseye text-warning', path: ['/cbe/exams/exam-results']},
-            {name: 'Results (Bulk)', iconClasses: 'fas fa-bullseye text-warning', path: ['/cbe/exams/exam-results-bulk']}
+            {name: 'Results Entry', iconClasses: 'fas fa-bullseye text-warning', path: ['/cbe/exams/exam-results-bulk']}
         ]
     },
     {
