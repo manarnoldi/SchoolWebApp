@@ -12,6 +12,7 @@ import {GradesService} from '@/academics/services/grades.service';
 import {SchoolDetailsService} from '@/school/services/school-details.service';
 import {ExamService} from '@/cbe/exams/services/exam.service';
 import {ExamTypeService} from '@/cbe/exams/services/exam-type.service';
+import {SchoolExamService} from '@/cbe/exams/services/school-exam.service';
 import {ExamResultService} from '@/cbe/exams/services/exam-result.service';
 import {StudentClassService} from '@/students/services/student-class.service';
 import {StudentSubjectsService} from '@/students/services/student-subjects.service';
@@ -78,6 +79,13 @@ export class ReportFormComponent implements OnInit {
     showResponsibilities: boolean = true;
     showCommunityService: boolean = true;
     showPosition: boolean = false;
+    // The word in the title (e.g. SUMMATIVE / PERFORMANCE) and whether the
+    // term-dates line is shown - both configurable in Report Form settings.
+    reportTypeLabel: string = 'SUMMATIVE';
+    showTermDates: boolean = true;
+    // Master list of internal exam types; this.examTypes is narrowed to the
+    // ones with a registered school exam for the selected session.
+    allExamTypes: any[] = [];
 
     filterCurriculumId: any = null;
     filterAcademicYearId: any = null;
@@ -115,6 +123,7 @@ export class ReportFormComponent implements OnInit {
         private schoolSvc: SchoolDetailsService,
         private examSvc: ExamService,
         private examTypeSvc: ExamTypeService,
+        private schoolExamSvc: SchoolExamService,
         private examResultSvc: ExamResultService,
         private studentClassSvc: StudentClassService,
         private studentSubjectsSvc: StudentSubjectsService,
@@ -151,6 +160,7 @@ export class ReportFormComponent implements OnInit {
                 this.curricula = curricula.sort((a, b) => a.rank - b.rank);
                 this.academicYears = academicYears.sort((a, b) => b.rank - a.rank);
                 this.examTypes = examTypes.filter((et) => et.internal).sort((a, b) => a.rank - b.rank);
+                this.allExamTypes = this.examTypes;
                 this.allGrades = allGrades;
                 // Global default until a student's class (hence education level)
                 // is known; generateReportForStudent re-resolves it per report.
@@ -171,6 +181,8 @@ export class ReportFormComponent implements OnInit {
                     if (s.settingKey === 'ShowResponsibilities') this.showResponsibilities = s.settingValue === 'true';
                     if (s.settingKey === 'ShowCommunityService') this.showCommunityService = s.settingValue === 'true';
                     if (s.settingKey === 'ShowPosition') this.showPosition = s.settingValue === 'true';
+                    if (s.settingKey === 'ReportTypeLabel') this.reportTypeLabel = s.settingValue || 'SUMMATIVE';
+                    if (s.settingKey === 'ShowTermDates') this.showTermDates = s.settingValue !== 'false';
                 });
             },
             error: (err) => this.toastr.error(err.error)
@@ -244,8 +256,22 @@ export class ReportFormComponent implements OnInit {
         }
         this.isLoading = true;
         this.studentsLoaded = false;
-        this.studentClassSvc.getBySchoolClassId(this.filterSchoolClassId, Status.Active).subscribe({
-            next: (studentClasses) => {
+        forkJoin([
+            this.studentClassSvc.getBySchoolClassId(this.filterSchoolClassId, Status.Active),
+            this.schoolExamSvc.get(`/schoolExams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}`)
+        ]).subscribe({
+            next: ([studentClasses, schoolExams]) => {
+                // Only show exam-type columns that actually have a school exam
+                // registered for this session (e.g. hide END until it is set up).
+                let registeredTypeIds = new Set(
+                    (schoolExams || [])
+                        .map((se: any) => +(se.examTypeId ?? se.examType?.id))
+                        .filter((id: number) => !!id)
+                );
+                this.examTypes = registeredTypeIds.size > 0
+                    ? this.allExamTypes.filter((et) => registeredTypeIds.has(+et.id))
+                    : this.allExamTypes;
+
                 this.studentRows = studentClasses
                     .map((sc) => sc.student)
                     .filter(Boolean)
@@ -444,6 +470,8 @@ export class ReportFormComponent implements OnInit {
                     if (s.settingKey === 'ShowResponsibilities') this.showResponsibilities = s.settingValue === 'true';
                     if (s.settingKey === 'ShowCommunityService') this.showCommunityService = s.settingValue === 'true';
                     if (s.settingKey === 'ShowPosition') this.showPosition = s.settingValue === 'true';
+                    if (s.settingKey === 'ReportTypeLabel') this.reportTypeLabel = s.settingValue || 'SUMMATIVE';
+                    if (s.settingKey === 'ShowTermDates') this.showTermDates = s.settingValue !== 'false';
                 });
 
                 // Get unique subjects from exams - filtered to only those the student is allocated to
@@ -766,7 +794,7 @@ export class ReportFormComponent implements OnInit {
                     let edLevelId = schoolClass?.learningLevel?.educationLevelId;
                     let educationLevel = this.educationLevels.find((el) => el.id == edLevelId);
                     let educationLevelName = educationLevel?.name || '';
-                    let reportTitle = `${sessionName.toUpperCase()} ${(year?.name || '').toUpperCase()} SUMMATIVE REPORT FOR ${educationLevelName.toUpperCase()}`;
+                    let reportTitle = `${sessionName.toUpperCase()} ${(year?.name || '').toUpperCase()} ${(this.reportTypeLabel || 'SUMMATIVE').toUpperCase()} REPORT FOR ${educationLevelName.toUpperCase()}`;
 
                     const docDefinition: any = {
                         pageMargins: [25, 20, 25, 30],
@@ -913,8 +941,8 @@ export class ReportFormComponent implements OnInit {
                                 },
                                 marginTop: 3
                             },
-                            // Term dates
-                            {
+                            // Term dates (toggle via the ShowTermDates setting)
+                            ...(this.showTermDates ? [{
                                 layout: 'noBorders',
                                 table: {
                                     widths: ['auto', 'auto', '*', 'auto', 'auto'],
@@ -929,7 +957,7 @@ export class ReportFormComponent implements OnInit {
                                     ]
                                 },
                                 marginTop: 5
-                            },
+                            }] : []),
                             // System generated note
                             {
                                 text: `This is a system generated document. Printed on ${new Date().toLocaleString('en-GB')}`,

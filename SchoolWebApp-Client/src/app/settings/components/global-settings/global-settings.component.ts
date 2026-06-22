@@ -154,7 +154,9 @@ export class GlobalSettingsComponent implements OnInit {
                 {key: 'ShowCoCurricular', label: 'Show Co-Curricular Section', type: 'boolean', description: 'Show co-curricular activities on the report form'},
                 {key: 'ShowResponsibilities', label: 'Show Responsibilities Section', type: 'boolean', description: 'Show responsibilities & social skills on the report form'},
                 {key: 'ShowCommunityService', label: 'Show Community Service Section', type: 'boolean', description: 'Show community service activities on the report form'},
-                {key: 'ShowPosition', label: 'Show Position/Rank', type: 'boolean', description: 'Show student position and out of on the report form'}
+                {key: 'ShowPosition', label: 'Show Position/Rank', type: 'boolean', description: 'Show student position and out of on the report form'},
+                {key: 'ReportTypeLabel', label: 'Report Title Wording', type: 'text', description: 'The word used in the report-form title - e.g. SUMMATIVE (end term) or PERFORMANCE (mid term). Title reads: TERM 2 2026 <this> REPORT FOR ...'},
+                {key: 'ShowTermDates', label: 'Show Term Dates', type: 'boolean', description: 'Show the "This term ends on / Next term begins on" line at the bottom of the report form. Turn off for mid-term reports.'}
             ]
         }
     ];
@@ -260,6 +262,7 @@ export class GlobalSettingsComponent implements OnInit {
                             else if (s.type === 'select' && s.options?.length > 0) this.settingValues[key] = s.options[0].value;
                             else if (s.type === 'text' && s.key === 'DepartmentCodePrefix') this.settingValues[key] = 'DEPT';
                             else if (s.type === 'text' && s.key === 'BudgetMasterCodePrefix') this.settingValues[key] = 'BUD';
+                            else if (s.type === 'text' && s.key === 'ReportTypeLabel') this.settingValues[key] = 'SUMMATIVE';
                         }
                     });
                 });
