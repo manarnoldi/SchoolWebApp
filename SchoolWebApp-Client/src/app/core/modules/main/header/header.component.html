@@ -30,6 +30,13 @@
 
 <ul class="navbar-nav ml-auto align-items-center">
     <!-- <app-messages></app-messages> -->
+    <li class="nav-item" *ngIf="isSuperAdmin">
+        <a class="nav-link" [routerLink]="['/security/active-users']" role="button"
+            title="Users currently logged in">
+            <i class="fas fa-user-clock"></i>
+            <span class="badge badge-success navbar-badge" *ngIf="activeUsersCount > 0">{{ activeUsersCount }}</span>
+        </a>
+    </li>
     <app-notifications></app-notifications>
     <!-- <app-language></app-language> -->
     <app-user></app-user>

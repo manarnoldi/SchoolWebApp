@@ -18,3 +18,10 @@ export interface AuditLogPage {
     total: number;
     items: AuditLog[];
 }
+
+export interface ActiveUser {
+    userId: string | null;
+    userName: string | null;
+    lastLogin: string;
+    ipAddress: string | null;
+}

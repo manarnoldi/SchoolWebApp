@@ -1,7 +1,7 @@
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {AuditLogPage} from '../models/audit-log';
+import {AuditLogPage, ActiveUser} from '../models/audit-log';
 
 export interface AuditLogsQuery {
     userName?: string | null;
@@ -40,6 +40,13 @@ export class AuditLogsService {
 
     entityTypes(): Observable<string[]> {
         return this.http.get<string[]>('/auditlogs/entitytypes');
+    }
+
+    // Users inferred to be currently signed in (latest auth event within the
+    // token lifetime is a Login). Used by the active-users page and the
+    // dashboard count card.
+    activeUsers(): Observable<ActiveUser[]> {
+        return this.http.get<ActiveUser[]>('/auditlogs/active-users');
     }
 
     // Fire-and-forget print recording. Subscribers don't care about the

@@ -33,6 +33,14 @@ namespace SchoolWebApp.API.Controllers
             public AuditLog[] Items { get; set; }
         }
 
+        public class ActiveUser
+        {
+            public string UserId { get; set; }
+            public string UserName { get; set; }
+            public DateTime LastLogin { get; set; }
+            public string IpAddress { get; set; }
+        }
+
         // GET: api/auditlogs
         //   userName    : exact match on the actor (e.g. "emily").
         //   action      : exact match on the verb (Create/Update/Delete/
@@ -139,6 +147,44 @@ namespace SchoolWebApp.API.Controllers
                 .OrderBy(a => a)
                 .ToArrayAsync();
             return Ok(entityTypes);
+        }
+
+        // GET: api/auditlogs/active-users
+        // "Currently logged in" is inferred from the audit trail because JWT
+        // auth is stateless. Within the token lifetime (600 min), a user whose
+        // most recent Login/Logout event is a Login is treated as still signed
+        // in. Closing the browser without an explicit logout means a user
+        // lingers here until their token would have expired.
+        [HttpGet("active-users")]
+        public async Task<ActionResult<ActiveUser[]>> GetActiveUsers()
+        {
+            const int tokenLifetimeMinutes = 600;
+            var windowStart = DateTime.UtcNow.AddMinutes(-tokenLifetimeMinutes);
+
+            var events = await _db.AuditLogs
+                .AsNoTracking()
+                .Where(a => (a.Action == "Login" || a.Action == "Logout")
+                            && a.UserId != null
+                            && a.Timestamp >= windowStart)
+                .OrderByDescending(a => a.Timestamp)
+                .Select(a => new {a.UserId, a.UserName, a.Action, a.Timestamp, a.IpAddress})
+                .ToListAsync();
+
+            var active = events
+                .GroupBy(a => a.UserId)
+                .Select(g => g.First())          // latest event per user (already ordered desc)
+                .Where(a => a.Action == "Login")  // still signed in (no later logout)
+                .Select(a => new ActiveUser
+                {
+                    UserId = a.UserId,
+                    UserName = a.UserName,
+                    LastLogin = DateTime.SpecifyKind(a.Timestamp, DateTimeKind.Utc),
+                    IpAddress = a.IpAddress
+                })
+                .OrderByDescending(a => a.LastLogin)
+                .ToArray();
+
+            return Ok(active);
         }
     }
 }

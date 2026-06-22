@@ -5,6 +5,7 @@ import {Component, HostBinding, OnInit} from '@angular/core';
 import {UntypedFormGroup, UntypedFormControl} from '@angular/forms';
 import {Store} from '@ngrx/store';
 import { AuthService } from '@/core/services/auth.service';
+import {AuditLogsService} from '@/security/services/audit-logs.service';
 import {Observable} from 'rxjs';
 
 const BASE_CLASSES = 'main-header navbar navbar-expand';
@@ -18,8 +19,13 @@ export class HeaderComponent implements OnInit {
     public ui: Observable<UiState>;
     public searchForm: UntypedFormGroup;
 
+    // Super administrators see a live count of who is currently signed in.
+    isSuperAdmin = false;
+    activeUsersCount = 0;
+
     constructor(
         private authService: AuthService,
+        private auditLogsSvc: AuditLogsService,
         private store: Store<AppState>
     ) {}
 
@@ -30,6 +36,18 @@ export class HeaderComponent implements OnInit {
         });
         this.searchForm = new UntypedFormGroup({
             search: new UntypedFormControl(null)
+        });
+        this.loadActiveUsers();
+    }
+
+    private loadActiveUsers() {
+        let user = this.authService.getCurrentUser();
+        this.isSuperAdmin = (user?.roles || [])
+            .some((r: any) => String(r).toLowerCase() === 'superadministrator');
+        if (!this.isSuperAdmin) return;
+        this.auditLogsSvc.activeUsers().subscribe({
+            next: (users) => { this.activeUsersCount = (users || []).length; },
+            error: () => {}
         });
     }
 

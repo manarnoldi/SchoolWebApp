@@ -86,6 +86,7 @@ import { MissingMarksPageComponent } from './reports/components/pages/missing-ma
 import { ResultsAnalysisPageComponent } from './reports/components/pages/results-analysis-page.component';
 import { ReportFormsPageComponent } from './reports/components/pages/report-forms-page.component';
 import { AssessmentReportComponent } from './reports/components/academics-report/assessment-report/assessment-report.component';
+import { SubjectPerformanceComponent } from './reports/components/academics-report/subject-performance/subject-performance.component';
 import { ExamNamesComponent } from './academics/components/exam-names/exam-names.component';
 import { CbeComponent } from './cbe/cbe.component';
 import { AssessmentTypesComponent } from './cbe/assessments/components/assessment-types/assessment-types.component';
@@ -127,6 +128,7 @@ import { RolesComponent as SecurityRolesComponent } from './security/components/
 import { MenuPermissionsComponent } from './security/components/menu-permissions/menu-permissions.component';
 import { LogsComponent } from './security/components/logs/logs.component';
 import { AuditLogsComponent } from './security/components/audit-logs/audit-logs.component';
+import { ActiveUsersComponent } from './security/components/active-users/active-users.component';
 import { FinanceComponent } from './finance/finance.component';
 import { FinanceAccountsComponent } from './finance/components/accounts/accounts.component';
 import { FeeCategoriesComponent } from './finance/components/fee-categories/fee-categories.component';
@@ -359,6 +361,7 @@ const routes: Routes = [
             {path: 'academics/exam-results', component: ResultsAnalysisPageComponent},
             {path: 'academics/report-forms', component: ReportFormsPageComponent},
             {path: 'academics/assessment-report', component: AssessmentReportComponent},
+            {path: 'academics/subject-performance', component: SubjectPerformanceComponent},
             {path: 'academics/student-subject-allocation', component: StudentSubjectPageComponent}
         ]
     },
@@ -373,7 +376,8 @@ const routes: Routes = [
             {path: 'user-roles', redirectTo: 'users', pathMatch: 'full'},
             {path: 'menu-permissions', component: MenuPermissionsComponent},
             {path: 'logs', component: LogsComponent},
-            {path: 'audit-logs', component: AuditLogsComponent}
+            {path: 'audit-logs', component: AuditLogsComponent},
+            {path: 'active-users', component: ActiveUsersComponent}
         ]
     },
     {

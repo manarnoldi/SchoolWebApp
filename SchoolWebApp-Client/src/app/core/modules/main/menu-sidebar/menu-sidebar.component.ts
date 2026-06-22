@@ -275,6 +275,11 @@ export const MENU = [
                         path: ['/reports/academics/assessment-report']
                     },
                     {
+                        name: 'Subject Performance',
+                        iconClasses: 'fas fa-bullseye text-warning',
+                        path: ['/reports/academics/subject-performance']
+                    },
+                    {
                         name: 'Student Subject Allocation',
                         iconClasses: 'fas fa-bullseye text-warning',
                         path: ['/reports/academics/student-subject-allocation']
@@ -291,7 +296,8 @@ export const MENU = [
             {name: 'Roles', iconClasses: 'fas fa-user-shield text-success', path: ['/security/roles']},
             {name: 'Menu Permissions', iconClasses: 'fas fa-bars text-danger', path: ['/security/menu-permissions']},
             {name: 'Error Logs', iconClasses: 'fas fa-bug text-warning', path: ['/security/logs']},
-            {name: 'Audit Logs', iconClasses: 'fas fa-clipboard-list text-info', path: ['/security/audit-logs']}
+            {name: 'Audit Logs', iconClasses: 'fas fa-clipboard-list text-info', path: ['/security/audit-logs']},
+            {name: 'Active Users', iconClasses: 'fas fa-user-clock text-info', path: ['/security/active-users']}
         ]
     }
 ];

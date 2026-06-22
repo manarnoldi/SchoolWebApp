@@ -127,7 +127,15 @@ export class GlobalSettingsComponent implements OnInit {
                 {key: 'BroadsheetCombinedColumns', label: 'Combined Broadsheet Columns', type: 'select', options: [
                     {value: 'MGP', label: 'Marks, Grade & Points (M/G/P)'},
                     {value: 'MG', label: 'Marks & Grade only (M/G)'}
-                ], description: 'For the combined broadsheet print, show Marks + Grade + Points per subject, or omit Points and show only Marks + Grade.'}
+                ], description: 'For the combined broadsheet print, show Marks + Grade + Points per subject, or omit Points and show only Marks + Grade.'},
+                {key: 'SubjectTopStudentsCap', label: 'Top Students Shown (Subject Performance)', type: 'select', options: [
+                    {value: '1', label: '1'},
+                    {value: '2', label: '2'},
+                    {value: '3', label: '3 (default)'},
+                    {value: '5', label: '5'},
+                    {value: '10', label: '10'},
+                    {value: '0', label: 'All (no cap)'}
+                ], description: 'On the Subject Performance report, the maximum number of tied top students listed per subject before showing +N more. Choose All to list every tied student.'}
             ]
         },
         {

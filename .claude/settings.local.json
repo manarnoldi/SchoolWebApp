@@ -25,7 +25,11 @@
       "Bash(git commit *)",
       "Bash(rm -f .git/COMMIT_MSG.txt)",
       "Bash(ls -la \"/c/Personal/Documents/KODETEK INVESTMENT LIMITED/HosiNova/marketing/\" 2>&1)",
-      "Read(//c/Personal/Documents/KODETEK INVESTMENT LIMITED/HosiNova/marketing//**)"
+      "Read(//c/Personal/Documents/KODETEK INVESTMENT LIMITED/HosiNova/marketing//**)",
+      "Bash(xargs grep -l \"AuditEvent\")",
+      "Bash(xargs grep -l \"LastLogin\\\\|LastSeen\\\\|LastActivity\")",
+      "Bash(xargs grep -l \"middleware\\\\|IMiddleware\")",
+      "PowerShell(dotnet build \"C:\\\\Personal\\\\SchoolWebApp\\\\SchoolWebApp-API\\\\Project.API\\\\SchoolWebApp.API.csproj\" -o \"$env:TEMP\\\\apiverify2\" -nologo -clp:ErrorsOnly 2>&1 | Select-Object -Last 12; \"EXIT=$LASTEXITCODE\")"
     ]
   }
 }
