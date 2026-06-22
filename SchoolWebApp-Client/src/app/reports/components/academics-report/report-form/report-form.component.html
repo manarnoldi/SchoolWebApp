@@ -54,6 +54,18 @@
     </div>
 </div>
 
+<!-- Generation progress, shown between the filters and the table. -->
+<div class="mb-1" *ngIf="isGenerating">
+    <div class="d-flex justify-content-between small text-muted mb-1">
+        <span><i class="fas fa-spinner fa-spin me-1"></i>Generating report {{ genCurrent }} of {{ genTotal }}...</span>
+        <span>{{ genTotal ? ((genCurrent / genTotal) * 100 | number:'1.0-0') : 0 }}%</span>
+    </div>
+    <div class="progress" style="height: 8px;">
+        <div class="progress-bar progress-bar-striped progress-bar-animated bg-info"
+            [style.width.%]="genTotal ? (genCurrent / genTotal) * 100 : 0"></div>
+    </div>
+</div>
+
 <div class="card" *ngIf="studentsLoaded">
     <div class="card-header bg-success text-white p-1 d-flex justify-content-between align-items-center">
         <strong>Students - {{ getSelectedCount() }} of {{ studentRows.length }} selected</strong>
@@ -86,13 +98,13 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let row of studentRows; index as i"
+                <tr *ngFor="let row of studentRows | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i"
                     [class.table-success]="row.selected">
                     <td>
                         <div class="icheck-success">
                             <input type="checkbox" [id]="'stu_' + row.studentId"
                                 [(ngModel)]="row.selected" />
-                            <label [for]="'stu_' + row.studentId">{{ i + 1 }}</label>
+                            <label [for]="'stu_' + row.studentId">{{ (page-1) * pageSize + i + 1 }}</label>
                         </div>
                     </td>
                     <td>{{ row.upi }}</td>
@@ -112,10 +124,19 @@
                 </tr>
             </tbody>
         </table>
+        <app-table-paging *ngIf="studentRows.length > pageSize"
+            (pageChangedEvent)="pageChanged($event)"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"
+            [collectionSize]="studentRows.length"
+            [pageSize]="pageSize"></app-table-paging>
     </div>
 </div>
 
 <div class="text-center p-3" *ngIf="isGenerating">
     <i class="fas fa-spinner fa-spin fa-2x text-info"></i>
-    <p class="mt-2">Generating report(s)... Please wait.</p>
+    <p class="mt-2">Generating report {{ genCurrent }} of {{ genTotal }}... Please wait.</p>
+    <div class="progress mx-auto" style="height: 8px; max-width: 400px;" *ngIf="genTotal > 1">
+        <div class="progress-bar progress-bar-striped progress-bar-animated bg-info"
+            [style.width.%]="genTotal ? (genCurrent / genTotal) * 100 : 0"></div>
+    </div>
 </div>

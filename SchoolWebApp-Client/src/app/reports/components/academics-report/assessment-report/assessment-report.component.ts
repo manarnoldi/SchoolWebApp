@@ -67,6 +67,10 @@ export class AssessmentReportComponent implements OnInit {
     private bulkMode: boolean = false;
     private bulkDocs: any[] = [];
 
+    // Client-side paging for the students table.
+    page: number = 1;
+    pageSize: number = 20;
+
     studentRows: {
         studentId: number;
         upi: string;
@@ -192,12 +196,16 @@ export class AssessmentReportComponent implements OnInit {
                         selected: false,
                         student: s
                     }));
+                this.page = 1;
                 this.studentsLoaded = true;
                 this.isLoading = false;
             },
             error: (err) => { this.isLoading = false; this.toastr.error(err.error); }
         });
     };
+
+    pageChanged = (page: number) => { this.page = page; };
+    pageSizeChanged = (pageSize: number) => { this.pageSize = pageSize; this.page = 1; };
 
     toggleSelectAll = () => {
         let all = this.studentRows.every((r) => r.selected);

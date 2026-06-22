@@ -30,6 +30,9 @@
       "Bash(xargs grep -l \"LastLogin\\\\|LastSeen\\\\|LastActivity\")",
       "Bash(xargs grep -l \"middleware\\\\|IMiddleware\")",
       "PowerShell(dotnet build \"C:\\\\Personal\\\\SchoolWebApp\\\\SchoolWebApp-API\\\\Project.API\\\\SchoolWebApp.API.csproj\" -o \"$env:TEMP\\\\apiverify2\" -nologo -clp:ErrorsOnly 2>&1 | Select-Object -Last 12; \"EXIT=$LASTEXITCODE\")"
+    ],
+    "additionalDirectories": [
+      "C:\\Personal\\SchoolWebApp\\.git"
     ]
   }
 }

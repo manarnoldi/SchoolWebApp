@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
-import {forkJoin} from 'rxjs';
+import {forkJoin, of, map, switchMap} from 'rxjs';
 import {CurriculumService} from '@/academics/services/curriculum.service';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {SessionsService} from '@/class/services/sessions.service';
@@ -86,6 +86,20 @@ export class ReportFormComponent implements OnInit {
     // Master list of internal exam types; this.examTypes is narrowed to the
     // ones with a registered school exam for the selected session.
     allExamTypes: any[] = [];
+
+    // Class-wide data fetched ONCE per Load and reused for every student's
+    // report (exams, all exam results, school details, settings, class
+    // leaders, value scores, and the precomputed ranking totals). This is the
+    // main speed-up: it removes the per-student re-fetching of class data.
+    private shared: any = null;
+
+    // Generation progress (shown on the spinner).
+    genCurrent: number = 0;
+    genTotal: number = 0;
+
+    // Client-side paging for the students table.
+    page: number = 1;
+    pageSize: number = 20;
 
     filterCurriculumId: any = null;
     filterAcademicYearId: any = null;
@@ -256,6 +270,7 @@ export class ReportFormComponent implements OnInit {
         }
         this.isLoading = true;
         this.studentsLoaded = false;
+        this.shared = null; // new class/session -> rebuild the class-wide cache
         forkJoin([
             this.studentClassSvc.getBySchoolClassId(this.filterSchoolClassId, Status.Active),
             this.schoolExamSvc.get(`/schoolExams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}`)
@@ -283,6 +298,7 @@ export class ReportFormComponent implements OnInit {
                         selected: false,
                         student: s
                     }));
+                this.page = 1;
                 this.studentsLoaded = true;
                 this.isLoading = false;
             },
@@ -295,6 +311,9 @@ export class ReportFormComponent implements OnInit {
         this.studentRows.forEach((r) => r.selected = !all);
     };
 
+    pageChanged = (page: number) => { this.page = page; };
+    pageSizeChanged = (pageSize: number) => { this.pageSize = pageSize; this.page = 1; };
+
     allSelected = (): boolean => {
         return this.studentRows.length > 0 && this.studentRows.every((r) => r.selected);
     };
@@ -305,6 +324,8 @@ export class ReportFormComponent implements OnInit {
 
     previewStudent = (row: any, mode: string = 'preview') => {
         this.bulkMode = false;
+        this.genTotal = 1;
+        this.genCurrent = 1;
         this.generateReportForStudent(row.student, null, mode);
     };
 
@@ -317,6 +338,8 @@ export class ReportFormComponent implements OnInit {
         this.isGenerating = true;
         this.bulkMode = true;
         this.bulkDocs = [];
+        this.genTotal = selected.length;
+        this.genCurrent = 0;
         let idx = 0;
         let generateNext = () => {
             if (idx >= selected.length) {
@@ -324,6 +347,7 @@ export class ReportFormComponent implements OnInit {
                 this.emitBulkReport(mode, selected.length);
                 return;
             }
+            this.genCurrent = idx + 1;
             this.generateReportForStudent(selected[idx].student, () => {
                 idx++;
                 generateNext();
@@ -402,201 +426,220 @@ export class ReportFormComponent implements OnInit {
             ?? this.learningLevels.find((ll) => +ll.id === +(schoolClass?.learningLevelId))?.educationLevelId;
         this.applyExamGrading(edLevelId);
 
+        let proceed = () => {
+            let shared = this.shared;
+            // Only THIS student's own data is fetched per report; the heavy
+            // class-wide data (exams, all results, settings...) is cached.
+            forkJoin([
+                this.studentCoCurrActivitySvc.get(`/studentCoCurriculumActivities/byStudentId/${studentId}`),
+                this.studentResponsibilitySvc.get(`/studentResponsibilities/byStudentId/${studentId}`),
+                this.studentCommServiceSvc.get(`/studentCommunityServiceActivities/byStudentId/${studentId}`),
+                this.studentSubjectsSvc.get(`/studentSubjects/byStudentId/${studentId}`)
+            ]).subscribe({
+                next: ([coCurrActivities, studentResponsibilities, communityService, studentSubjects]) => {
+                    let examsByType = shared.examsByType as any[][];
+
+                    // Build a set of subject IDs the student is allocated to
+                    let allocatedSubjectIds = new Set(
+                        ((studentSubjects as any[]) || []).map((ss: any) => +ss.subjectId)
+                    );
+
+                    // Under the "expected subjects" basis, the Total Score and Average
+                    // per exam type are divided by every allocated subject examined in
+                    // that type (missing ones count as zero), not just the ones with
+                    // marks. Null entries mean "use the recorded-subject count" (the
+                    // default basis, or when the student has no allocation data).
+                    let useExpected = this.meanBasis === 'subjects_expected';
+                    let expectedByType: any = {};
+                    this.examTypes.forEach((et, typeIdx) => {
+                        let exams = examsByType[typeIdx] || [];
+                        if (useExpected && allocatedSubjectIds.size > 0) {
+                            let allocExams = exams.filter((e: any) => allocatedSubjectIds.has(+e.subjectId));
+                            expectedByType[et.id] = {
+                                count: allocExams.length,
+                                outOf: allocExams.reduce((s: number, e: any) => s + (e.examMark || 0), 0)
+                            };
+                        } else {
+                            expectedByType[et.id] = null;
+                        }
+                    });
+
+                    // Get unique subjects from exams - filtered to only those the student is allocated to
+                    let subjectMap = new Map<string, {name: string, abbr: string, rank: number}>();
+                    examsByType.forEach((exams) => {
+                        exams.forEach((e: any) => {
+                            if (!e.subject) return;
+                            if (allocatedSubjectIds.size > 0 && !allocatedSubjectIds.has(+e.subjectId)) return;
+                            if (!subjectMap.has(e.subject.abbr || e.subject.name)) {
+                                subjectMap.set(e.subject.abbr || e.subject.name, {
+                                    name: e.subject.name, abbr: e.subject.abbr, rank: e.subject.rank || 0
+                                });
+                            }
+                        });
+                    });
+                    let subjects = [...subjectMap.entries()].sort((a, b) => a[1].rank - b[1].rank);
+
+                    // Subject scores read from the cached class-wide results.
+                    let subjectScores: any = {};
+                    examsByType.forEach((exams, typeIdx) => {
+                        exams.forEach((exam: any) => {
+                            let results = (shared.resultsByExamId.get(+exam.id) || []) as any[];
+                            let studentResult = results.find((r: any) => r.studentId == studentId);
+                            let key = exam.subject?.abbr || exam.subject?.name;
+                            if (!subjectScores[key]) subjectScores[key] = {};
+                            if (studentResult) {
+                                let pct = exam.examMark > 0 ? (studentResult.score / exam.examMark) * 100 : 0;
+                                let grade = this.getGradeForPercent(pct);
+                                subjectScores[key][this.examTypes[typeIdx].id] = {
+                                    score: studentResult.score,
+                                    examMark: exam.examMark,
+                                    grade: grade?.abbr || '',
+                                    points: grade?.points || 0
+                                };
+                            }
+                        });
+                    });
+
+                    // Positions are a cheap lookup against the cached class totals.
+                    let positionsByType: any = {};
+                    this.examTypes.forEach((et) => {
+                        positionsByType[et.id] = shared.studentTotalsByType[et.id]
+                            ? this.computeRank(shared.studentTotalsByType[et.id], studentId)
+                            : {position: 0, totalStudents: 0};
+                    });
+                    let overallPosition = this.computeRank(shared.studentOverallTotals, studentId);
+                    let positionData = {positionsByType, overall: overallPosition};
+
+                    this.buildAndPrintReport(student, session, schoolClass, year, subjects, subjectScores, shared.valueScores, coCurrActivities, studentResponsibilities, communityService, shared.schoolDetails, shared.classLeadersText, callback, mode, positionData, expectedByType);
+                },
+                error: (err) => { this.isGenerating = false; this.bulkMode = false; this.toastr.error(err.error); }
+            });
+        };
+
+        if (this.shared) {
+            proceed();
+        } else {
+            this.loadSharedData().subscribe({
+                next: () => proceed(),
+                error: (err) => { this.isGenerating = false; this.bulkMode = false; this.toastr.error(err.error); }
+            });
+        }
+    };
+
+    // Fetch and cache the class-wide data used by EVERY student's report:
+    // exams per type, all exam results (fetched once and reused), value scores,
+    // school details, class leaders, report settings, and the ranking totals.
+    private loadSharedData = () => {
         let examRequests = this.examTypes.map((et) =>
             this.examSvc.get(`/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}&schoolClassId=${this.filterSchoolClassId}&examTypeId=${et.id}`)
         );
-
-        forkJoin([
+        return forkJoin([
             ...examRequests,
             this.studentValueScoreSvc.get(`/studentValueScores/bySessionId/${this.filterSessionId}`),
-            this.studentCoCurrActivitySvc.get(`/studentCoCurriculumActivities/byStudentId/${studentId}`),
-            this.studentResponsibilitySvc.get(`/studentResponsibilities/byStudentId/${studentId}`),
-            this.studentCommServiceSvc.get(`/studentCommunityServiceActivities/byStudentId/${studentId}`),
             this.schoolSvc.get('/schooldetails'),
             this.globalSettingSvc.getByModule('ReportForm'),
-            this.schoolClassesSvc.get(`/schoolClassLeaders/bySchoolClassId/${this.filterSchoolClassId}`),
-            this.studentSubjectsSvc.get(`/studentSubjects/byStudentId/${studentId}`)
-        ]).subscribe({
-            next: (results) => {
-                let examsByType = results.slice(0, this.examTypes.length);
-                let valueScores = results[this.examTypes.length] as any[];
-                let coCurrActivities = results[this.examTypes.length + 1] as any[];
-                let studentResponsibilities = results[this.examTypes.length + 2] as any[];
-                let communityService = results[this.examTypes.length + 3] as any[];
-                let schoolDetails = results[this.examTypes.length + 4] as any[];
-                let freshSettings = results[this.examTypes.length + 5] as any[];
-                let classLeaders = results[this.examTypes.length + 6] as any[];
-                let studentSubjects = results[this.examTypes.length + 7] as any[];
+            this.schoolClassesSvc.get(`/schoolClassLeaders/bySchoolClassId/${this.filterSchoolClassId}`)
+        ]).pipe(
+            switchMap((results: any[]) => {
+                let n = this.examTypes.length;
+                let examsByType = results.slice(0, n) as any[][];
+                let valueScores = results[n] as any[];
+                let schoolDetails = (results[n + 1] as any[])?.[0];
+                let reportSettings = results[n + 2] as any[];
+                let classLeaders = results[n + 3] as any[];
 
-                // Build a set of subject IDs the student is allocated to
-                let allocatedSubjectIds = new Set(
-                    (studentSubjects || []).map((ss: any) => +ss.subjectId)
-                );
+                this.applyReportSettings(reportSettings);
+                let classLeadersText = this.buildClassLeadersText(classLeaders);
 
-                // Under the "expected subjects" basis, the Total Score and Average
-                // per exam type are divided by every allocated subject examined in
-                // that type (missing ones count as zero), not just the ones with
-                // marks. Null entries mean "use the recorded-subject count" (the
-                // default basis, or when the student has no allocation data).
-                let useExpected = this.meanBasis === 'subjects_expected';
-                let expectedByType: any = {};
-                this.examTypes.forEach((et, typeIdx) => {
-                    let exams = (examsByType as any[][])[typeIdx] || [];
-                    if (useExpected && allocatedSubjectIds.size > 0) {
-                        let allocExams = exams.filter((e: any) => allocatedSubjectIds.has(+e.subjectId));
-                        expectedByType[et.id] = {
-                            count: allocExams.length,
-                            outOf: allocExams.reduce((s: number, e: any) => s + (e.examMark || 0), 0)
+                let examIds: number[] = [];
+                examsByType.forEach((exams) => exams.forEach((e: any) => examIds.push(+e.id)));
+                let results$ = examIds.length
+                    ? forkJoin(examIds.map((id) => this.examResultSvc.get(`/examResults/byExamId/${id}`)))
+                    : of([] as any[]);
+
+                return results$.pipe(
+                    map((allResults: any[]) => {
+                        let resultsByExamId = new Map<number, any[]>();
+                        examIds.forEach((id, i) => resultsByExamId.set(id, (allResults[i] as any[]) || []));
+                        let totals = this.computeTotals(examsByType, resultsByExamId);
+                        this.shared = {
+                            examsByType, resultsByExamId, valueScores, schoolDetails, classLeadersText,
+                            studentTotalsByType: totals.studentTotalsByType,
+                            studentOverallTotals: totals.studentOverallTotals
                         };
-                    } else {
-                        expectedByType[et.id] = null;
-                    }
-                });
-
-                // Find class leaders with Teacher personType
-                let teacherLeaders = (classLeaders || []).filter(
-                    (cl) => cl.classLeadershipRole?.personType === 1 || cl.classLeadershipRole?.personType === 'Teacher'
+                        return this.shared;
+                    })
                 );
-                let classLeadersText = teacherLeaders
-                    .map((cl) => `${cl.person?.fullName || ''} [${cl.classLeadershipRole?.name || ''}]`)
-                    .filter(Boolean)
-                    .join(', ') || '';
+            })
+        );
+    };
 
-                // Apply fresh settings
-                (freshSettings || []).forEach((s) => {
-                    if (s.settingKey === 'DisplayMode') this.displayMode = s.settingValue;
-                    if (s.settingKey === 'ShowValues') this.showValues = s.settingValue === 'true';
-                    if (s.settingKey === 'ShowCoCurricular') this.showCoCurricular = s.settingValue === 'true';
-                    if (s.settingKey === 'ShowResponsibilities') this.showResponsibilities = s.settingValue === 'true';
-                    if (s.settingKey === 'ShowCommunityService') this.showCommunityService = s.settingValue === 'true';
-                    if (s.settingKey === 'ShowPosition') this.showPosition = s.settingValue === 'true';
-                    if (s.settingKey === 'ReportTypeLabel') this.reportTypeLabel = s.settingValue || 'SUMMATIVE';
-                    if (s.settingKey === 'ShowTermDates') this.showTermDates = s.settingValue !== 'false';
-                });
-
-                // Get unique subjects from exams - filtered to only those the student is allocated to
-                let subjectMap = new Map<string, {name: string, abbr: string, rank: number}>();
-                (examsByType as any[][]).forEach((exams) => {
-                    exams.forEach((e) => {
-                        if (!e.subject) return;
-                        // Skip if this subject isn't allocated to the student
-                        if (allocatedSubjectIds.size > 0 && !allocatedSubjectIds.has(+e.subjectId)) return;
-                        if (!subjectMap.has(e.subject.abbr || e.subject.name)) {
-                            subjectMap.set(e.subject.abbr || e.subject.name, {
-                                name: e.subject.name, abbr: e.subject.abbr, rank: e.subject.rank || 0
-                            });
-                        }
-                    });
-                });
-                let subjects = [...subjectMap.entries()].sort((a, b) => a[1].rank - b[1].rank);
-
-                // For each subject and exam type, get the student's result
-                let resultRequests: any[] = [];
-                (examsByType as any[][]).forEach((exams) => {
-                    exams.forEach((exam) => {
-                        resultRequests.push(this.examResultSvc.get(`/examResults/byExamId/${exam.id}`));
-                    });
-                });
-
-                if (resultRequests.length === 0) {
-                    this.buildAndPrintReport(student, session, schoolClass, year, subjects, [], valueScores, coCurrActivities, studentResponsibilities, communityService, schoolDetails[0], classLeadersText, callback, mode, {positionsByType: {}, overall: {position: 0, totalStudents: 0}}, expectedByType);
-                    return;
-                }
-
-                forkJoin(resultRequests).subscribe({
-                    next: (allResults) => {
-                        // Build subject scores map: subject -> examType -> {score, examMark, grade}
-                        let subjectScores: any = {};
-                        let resultIdx = 0;
-                        (examsByType as any[][]).forEach((exams, typeIdx) => {
-                            exams.forEach((exam) => {
-                                let results = allResults[resultIdx] as any[];
-                                let studentResult = results.find((r) => r.studentId == studentId);
-                                let key = exam.subject?.abbr || exam.subject?.name;
-                                if (!subjectScores[key]) subjectScores[key] = {};
-                                if (studentResult) {
-                                    let pct = exam.examMark > 0 ? (studentResult.score / exam.examMark) * 100 : 0;
-                                    let grade = this.getGradeForPercent(pct);
-                                    subjectScores[key][this.examTypes[typeIdx].id] = {
-                                        score: studentResult.score,
-                                        examMark: exam.examMark,
-                                        grade: grade?.abbr || '',
-                                        points: grade?.points || 0
-                                    };
-                                }
-                                resultIdx++;
-                            });
-                        });
-
-                        // Compute per-exam-type positions and overall position
-                        let usePoints = this.rankingMethod === 'mean_points';
-                        let studentTotalsByType: any = {}; // {examTypeId: {studentId: total}}
-                        let studentOverallTotals: any = {}; // {studentId: total}
-                        let resultIdx2 = 0;
-                        (examsByType as any[][]).forEach((exams, typeIdx) => {
-                            let etId = this.examTypes[typeIdx].id;
-                            if (!studentTotalsByType[etId]) studentTotalsByType[etId] = {};
-                            exams.forEach((exam) => {
-                                let results = allResults[resultIdx2] as any[];
-                                let examObj = exam as any;
-                                results.forEach((r) => {
-                                    let val = r.score || 0;
-                                    if (usePoints) {
-                                        let percent = examObj.examMark > 0 ? (val / examObj.examMark) * 100 : 0;
-                                        let grade = this.grades.find((g) => percent >= g.minScore && percent <= g.maxScore);
-                                        val = grade ? grade.points : 0;
-                                    }
-                                    if (!studentTotalsByType[etId][r.studentId]) studentTotalsByType[etId][r.studentId] = 0;
-                                    studentTotalsByType[etId][r.studentId] += val;
-                                    if (!studentOverallTotals[r.studentId]) studentOverallTotals[r.studentId] = 0;
-                                    studentOverallTotals[r.studentId] += val;
-                                });
-                                resultIdx2++;
-                            });
-                        });
-
-                        // Helper to compute rank with ties
-                        let computeRank = (totals: any, targetId: number) => {
-                            let sorted = Object.entries(totals).sort((a: any, b: any) => b[1] - a[1]);
-                            let total = sorted.length;
-                            let pos = 0;
-                            for (let i = 0; i < sorted.length; i++) {
-                                if (+sorted[i][0] == targetId) {
-                                    pos = i + 1;
-                                    if (i > 0 && sorted[i][1] === sorted[i - 1][1]) {
-                                        for (let j = i - 1; j >= 0; j--) {
-                                            if (sorted[j][1] === sorted[i][1]) pos = j + 1;
-                                            else break;
-                                        }
-                                    }
-                                    break;
-                                }
-                            }
-                            return {position: pos, totalStudents: total};
-                        };
-
-                        // Per exam type positions
-                        let positionsByType: any = {};
-                        this.examTypes.forEach((et) => {
-                            if (studentTotalsByType[et.id]) {
-                                positionsByType[et.id] = computeRank(studentTotalsByType[et.id], studentId);
-                            } else {
-                                positionsByType[et.id] = {position: 0, totalStudents: 0};
-                            }
-                        });
-
-                        // Overall position
-                        let overallPosition = computeRank(studentOverallTotals, studentId);
-
-                        let positionData = {positionsByType, overall: overallPosition};
-
-                        this.buildAndPrintReport(student, session, schoolClass, year, subjects, subjectScores, valueScores, coCurrActivities, studentResponsibilities, communityService, schoolDetails[0], classLeadersText, callback, mode, positionData, expectedByType);
-                    },
-                    error: (err) => { this.isGenerating = false; this.bulkMode = false; this.toastr.error(err.error); }
-                });
-            },
-            error: (err) => { this.isGenerating = false; this.bulkMode = false; this.toastr.error(err.error); }
+    private applyReportSettings = (settings: any[]) => {
+        (settings || []).forEach((s) => {
+            if (s.settingKey === 'DisplayMode') this.displayMode = s.settingValue;
+            if (s.settingKey === 'ShowValues') this.showValues = s.settingValue === 'true';
+            if (s.settingKey === 'ShowCoCurricular') this.showCoCurricular = s.settingValue === 'true';
+            if (s.settingKey === 'ShowResponsibilities') this.showResponsibilities = s.settingValue === 'true';
+            if (s.settingKey === 'ShowCommunityService') this.showCommunityService = s.settingValue === 'true';
+            if (s.settingKey === 'ShowPosition') this.showPosition = s.settingValue === 'true';
+            if (s.settingKey === 'ReportTypeLabel') this.reportTypeLabel = s.settingValue || 'SUMMATIVE';
+            if (s.settingKey === 'ShowTermDates') this.showTermDates = s.settingValue !== 'false';
         });
+    };
+
+    private buildClassLeadersText = (classLeaders: any[]): string => {
+        let teacherLeaders = (classLeaders || []).filter(
+            (cl: any) => cl.classLeadershipRole?.personType === 1 || cl.classLeadershipRole?.personType === 'Teacher'
+        );
+        return teacherLeaders
+            .map((cl: any) => `${cl.person?.fullName || ''} [${cl.classLeadershipRole?.name || ''}]`)
+            .filter(Boolean)
+            .join(', ') || '';
+    };
+
+    // Sum each student's marks (or points) per exam type and overall - once for
+    // the whole class - so per-student ranking is a cheap lookup.
+    private computeTotals = (examsByType: any[][], resultsByExamId: Map<number, any[]>) => {
+        let usePoints = this.rankingMethod === 'mean_points';
+        let studentTotalsByType: any = {};
+        let studentOverallTotals: any = {};
+        examsByType.forEach((exams, typeIdx) => {
+            let etId = this.examTypes[typeIdx].id;
+            if (!studentTotalsByType[etId]) studentTotalsByType[etId] = {};
+            exams.forEach((exam: any) => {
+                let results = resultsByExamId.get(+exam.id) || [];
+                results.forEach((r: any) => {
+                    let val = r.score || 0;
+                    if (usePoints) {
+                        let percent = exam.examMark > 0 ? (val / exam.examMark) * 100 : 0;
+                        let grade = this.grades.find((g) => percent >= g.minScore && percent <= g.maxScore);
+                        val = grade ? grade.points : 0;
+                    }
+                    studentTotalsByType[etId][r.studentId] = (studentTotalsByType[etId][r.studentId] || 0) + val;
+                    studentOverallTotals[r.studentId] = (studentOverallTotals[r.studentId] || 0) + val;
+                });
+            });
+        });
+        return {studentTotalsByType, studentOverallTotals};
+    };
+
+    private computeRank = (totals: any, targetId: number) => {
+        let sorted = Object.entries(totals).sort((a: any, b: any) => b[1] - a[1]);
+        let total = sorted.length;
+        let pos = 0;
+        for (let i = 0; i < sorted.length; i++) {
+            if (+sorted[i][0] == targetId) {
+                pos = i + 1;
+                if (i > 0 && sorted[i][1] === sorted[i - 1][1]) {
+                    for (let j = i - 1; j >= 0; j--) {
+                        if (sorted[j][1] === sorted[i][1]) pos = j + 1;
+                        else break;
+                    }
+                }
+                break;
+            }
+        }
+        return {position: pos, totalStudents: total};
     };
 
     buildAndPrintReport = (student, session, schoolClass, year, subjects, subjectScores, valueScores, coCurrActivities, studentResponsibilities, communityService, school, classLeadersText: string, callback?: () => void, mode: string = 'preview', positionData?: any, expectedByType?: any) => {

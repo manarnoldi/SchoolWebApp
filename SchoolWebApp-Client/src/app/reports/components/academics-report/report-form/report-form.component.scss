@@ -1,0 +1,22 @@
+// Compact rows for the students table - tighter cell padding and a slimmer
+// checkbox label so the list is denser.
+.table-sm > :not(caption) > * > * {
+    padding: 0.12rem 0.5rem;
+    vertical-align: middle;
+}
+
+.table-sm .icheck-success {
+    min-height: 0;
+    // icheck-bootstrap sets 6px top/bottom margin with !important, so we must
+    // match it to remove the per-row spacing.
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+
+    label {
+        min-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        margin-bottom: 0;
+        line-height: 1.25;
+    }
+}

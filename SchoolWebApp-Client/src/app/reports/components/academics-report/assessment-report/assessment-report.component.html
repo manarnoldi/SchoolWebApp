@@ -82,13 +82,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let row of studentRows; index as i"
+                        <tr *ngFor="let row of studentRows | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i"
                             [class.table-success]="row.selected">
                             <td>
                                 <div class="icheck-success">
                                     <input type="checkbox" [id]="'ar_' + row.studentId"
                                         [(ngModel)]="row.selected" />
-                                    <label [for]="'ar_' + row.studentId">{{ i + 1 }}</label>
+                                    <label [for]="'ar_' + row.studentId">{{ (page-1) * pageSize + i + 1 }}</label>
                                 </div>
                             </td>
                             <td>{{ row.upi }}</td>
@@ -108,6 +108,11 @@
                         </tr>
                     </tbody>
                 </table>
+                <app-table-paging *ngIf="studentRows.length > pageSize"
+                    (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"
+                    [collectionSize]="studentRows.length"
+                    [pageSize]="pageSize"></app-table-paging>
             </div>
         </div>
 
