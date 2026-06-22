@@ -51,11 +51,18 @@ export class LoginComponent implements OnInit, OnDestroy {
     loginByAuth() {
         if (this.loginForm.valid) {
             this.isAuthLoading = true;
+            // Trim stray leading/trailing spaces from the credentials - users
+            // sometimes paste/auto-fill a username (or password) with spaces and
+            // get an "invalid credentials" error.
+            let credentials: any = {
+                username: (this.loginForm.value.username || '').trim(),
+                password: (this.loginForm.value.password || '').trim()
+            };
             // Cold-start mitigation: shared-host workers go idle and the first
             // request after that window dies with ERR_NETWORK_CHANGED while the
             // worker is spinning up. Auto-retry once after 2s so the user
             // doesn't have to click Login twice. The retry hits a warm worker.
-            this.authService.signIn(this.loginForm.value).pipe(
+            this.authService.signIn(credentials).pipe(
                 retry({
                     count: 1,
                     delay: (err: any) => {
