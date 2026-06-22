@@ -23,5 +23,36 @@
     </div>
 </div>
 
-<app-exam-results-table [tableTitle]="'Examination missing marks report'" [pageSize]="20"
-    [examResults]="missingMarksResults" [isReport]="true"></app-exam-results-table>
+<div class="card my-1" *ngIf="groupedMissing.length > 0">
+    <div class="card-header bg-info text-white p-1">
+        <strong>Examination missing marks report</strong>
+        <span class="float-end">{{ groupedMissing.length }} student(s) with missing marks</span>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-sm table-bordered table-striped mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 50px;">#</th>
+                    <th>Class</th>
+                    <th style="width: 100px;">Adm #</th>
+                    <th>Student name</th>
+                    <th>Missing subjects (codes)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let g of groupedMissing | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i">
+                    <td>{{ (page-1) * pageSize + i + 1 }}.</td>
+                    <td class="text-nowrap">{{ g.className }}</td>
+                    <td>{{ g.upi }}</td>
+                    <td>{{ g.studentName }}</td>
+                    <td>{{ g.subjectCodes.join(', ') }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <app-table-paging *ngIf="groupedMissing.length > pageSize"
+            (pageChangedEvent)="pageChanged($event)"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"
+            [collectionSize]="groupedMissing.length"
+            [pageSize]="pageSize"></app-table-paging>
+    </div>
+</div>

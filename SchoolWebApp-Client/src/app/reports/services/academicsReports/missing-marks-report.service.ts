@@ -1,8 +1,8 @@
-import {ExamResult} from '@/academics/models/exam-result';
 import {SchoolDetails} from '@/school/models/school-details';
 import {Injectable} from '@angular/core';
 import {ReportsService} from '../reports.service';
 import {AuthService} from '@/core/services/auth.service';
+import {MissingMarksStudent} from '@/reports/models/missing-marks-student';
 
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -19,7 +19,7 @@ export class MissingMarksReportService {
 
     generateReport = (
         schoolDetails: SchoolDetails,
-        missingResults: ExamResult[],
+        missingResults: MissingMarksStudent[],
         reportTitle: string
     ) => {
         this.reportSvc
@@ -29,57 +29,58 @@ export class MissingMarksReportService {
                     const reader = new FileReader();
                     reader.onloadend = () => {
                         const base64data: string = reader.result as string;
-                        const colHeaders = [
-                            {text: '#', style: 'tableHeader'},
-                            {text: 'Class', style: 'tableHeader'},
-                            {text: 'Subject', style: 'tableHeader'},
-                            {text: 'Adm#', style: 'tableHeader'},
-                            {text: 'Student name', style: 'tableHeader'},
-                            {text: 'Exam Type', style: 'tableHeader'},
-                            {text: 'Out of', style: 'tableHeader'}
-                        ];
-                        const tableWidths = [
-                            'auto',
-                            'auto',
-                            '*',
-                            'auto',
-                            '*',
-                            100,
-                            'auto'
-                        ];
-                        const tableBody = [
-                            [...colHeaders],
-                            ...missingResults.map((mmR, indexNum) => [
-                                {
-                                    text: indexNum + 1,
-                                    noWrap: true
+                        // Group students by class so each class prints on its own
+                        // page. Incoming rows are already ordered by class rank
+                        // then admission no, so a class's rows are contiguous.
+                        const classGroups: {className: string; rows: MissingMarksStudent[]}[] = [];
+                        missingResults.forEach((r) => {
+                            let last = classGroups[classGroups.length - 1];
+                            if (!last || last.className !== r.className) {
+                                last = {className: r.className, rows: []};
+                                classGroups.push(last);
+                            }
+                            last.rows.push(r);
+                        });
+
+                        const classBlocks: any[] = [];
+                        classGroups.forEach((cg, ci) => {
+                            const body: any[] = [
+                                [
+                                    {text: '#', style: 'tableHeader'},
+                                    {text: 'Adm#', style: 'tableHeader'},
+                                    {text: 'Student name', style: 'tableHeader'},
+                                    {text: 'Missing subjects (codes)', style: 'tableHeader'}
+                                ]
+                            ];
+                            cg.rows.forEach((r, idx) =>
+                                body.push([
+                                    {text: idx + 1, noWrap: true},
+                                    {text: r.upi, noWrap: true},
+                                    {text: r.studentName, noWrap: false},
+                                    {text: (r.subjectCodes || []).join(', '), noWrap: false}
+                                ])
+                            );
+                            // Each class (after the first) starts on a new page.
+                            classBlocks.push({
+                                text: `${cg.className}  (${cg.rows.length} student(s))`,
+                                bold: true,
+                                fontSize: 11,
+                                color: '#002D62',
+                                marginBottom: 2,
+                                pageBreak: ci === 0 ? undefined : 'before'
+                            });
+                            classBlocks.push({
+                                layout: this.reportSvc.getTableLayout(),
+                                table: {
+                                    headerRows: 1,
+                                    widths: ['auto', 'auto', '*', '*'],
+                                    body
                                 },
-                                {
-                                    text: mmR.exam?.schoolClass?.name,
-                                    noWrap: true
-                                },
-                                {
-                                    text: mmR.exam?.subject?.name,
-                                    noWrap: false
-                                },
-                                {
-                                    text: mmR.student?.upi,
-                                    noWrap: true
-                                },
-                                {
-                                    text: mmR.student?.fullName,
-                                    noWrap: false
-                                },
-                                {
-                                    text: mmR.exam?.examType?.name,
-                                    noWrap: true
-                                },
-                                {
-                                    text: mmR.exam?.examMark,
-                                    noWrap: true
-                                }
-                            ])
-                        ];
+                                marginBottom: 2,
+                                color: '#002D62',
+                                fontSize: 10
+                            });
+                        });
 
                         const docDefinition = {
                             pageOrientation: 'landscape',
@@ -116,17 +117,7 @@ export class MissingMarksReportService {
                                     ...this.reportSvc.getDIVIDER('landscape'),
                                     marginBottom: 1
                                 },
-                                {
-                                    layout: this.reportSvc.getTableLayout(),
-                                    table: {
-                                        headerRows: 1,
-                                        widths: tableWidths,
-                                        body: tableBody
-                                    },
-                                    marginBottom: 2,
-                                    color: '#002D62',
-                                    fontSize: 10
-                                },
+                                ...classBlocks,
                                 {...this.reportSvc.getDIVIDER('landscape')},
                                 this.reportSvc.getPrintDetails(
                                     this.userSvc?.currentUser?.firstName +

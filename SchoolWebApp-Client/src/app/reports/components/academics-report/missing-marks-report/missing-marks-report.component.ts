@@ -18,6 +18,7 @@ import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
+import {MissingMarksStudent} from '@/reports/models/missing-marks-student';
 
 @Component({
     selector: 'app-missing-marks-report',
@@ -29,6 +30,11 @@ export class MissingMarksReportComponent implements OnInit {
     ssFilterFormComponent: SchoolSoftFilterFormComponent;
 
     missingMarksResults: ExamResult[] = [];
+    groupedMissing: MissingMarksStudent[] = [];
+
+    // Client-side paging for the grouped (one row per student) table.
+    page: number = 1;
+    pageSize: number = 20;
     curricula: Curriculum[] = [];
     academicYears: AcademicYear[] = [];
     sessions: Session[] = [];
@@ -71,14 +77,14 @@ export class MissingMarksReportComponent implements OnInit {
     }
 
     academicYearChanged = (acadYearId: number) => {
-        this.missingMarksResults = [];
+        this.missingMarksResults = []; this.groupedMissing = [];
         if (acadYearId) {
             this.curriculumYearChanged();
         }
     };
 
     curriculumChanged = (curriculumId: number) => {
-        this.missingMarksResults = [];
+        this.missingMarksResults = []; this.groupedMissing = [];
         if (curriculumId) {
             this.curriculumYearChanged();
         }
@@ -86,7 +92,7 @@ export class MissingMarksReportComponent implements OnInit {
 
     curriculumYearChanged = () => {
         this.sessions = [];
-        this.missingMarksResults = [];
+        this.missingMarksResults = []; this.groupedMissing = [];
         this.resetFormControls(true, true);
 
         let curriculumId =
@@ -116,7 +122,7 @@ export class MissingMarksReportComponent implements OnInit {
 
     sessionChanged = (sessionId: number) => {
         this.resetFormControls(false, true);
-        this.missingMarksResults = [];
+        this.missingMarksResults = []; this.groupedMissing = [];
         this.schoolExams = [];
         if (!sessionId) return;
 
@@ -137,11 +143,11 @@ export class MissingMarksReportComponent implements OnInit {
     };
 
     schoolExamChanged = (schoolExamId: number) => {
-        this.missingMarksResults = [];
+        this.missingMarksResults = []; this.groupedMissing = [];
     };
 
     onButtonSearchClick = (ssf: SchoolSoftFilter) => {
-        this.missingMarksResults = [];
+        this.missingMarksResults = []; this.groupedMissing = [];
         if (!ssf?.academicYearId)
             this.toastr.info('Select academic year before searching!');
         else if (!ssf.curriculumId)
@@ -180,6 +186,7 @@ export class MissingMarksReportComponent implements OnInit {
                                 a.exam?.subject.rank - b.exam?.subject.rank ||
                                 a.student.upi.localeCompare(b.student.upi)
                         );
+                        this.buildGroupedMissing();
                     },
                     error: (err) => {
                         this.toastr.error(err.error);
@@ -187,6 +194,43 @@ export class MissingMarksReportComponent implements OnInit {
                 });
         }
     };
+
+    // Collapse the flat (student x subject) rows into one row per student,
+    // listing the subject codes they are missing (deduped, ordered by subject
+    // rank). Greatly reduces the report size.
+    buildGroupedMissing = () => {
+        let map = new Map<string, {className: string; classRank: number; upi: string; studentName: string; codes: Map<string, number>}>();
+        this.missingMarksResults.forEach((r) => {
+            let key = String(r.student?.id ?? r.student?.upi ?? '');
+            let g = map.get(key);
+            if (!g) {
+                g = {
+                    className: r.exam?.schoolClass?.name || '',
+                    classRank: r.exam?.schoolClass?.rank ?? 0,
+                    upi: r.student?.upi || '',
+                    studentName: r.student?.fullName || '',
+                    codes: new Map<string, number>()
+                };
+                map.set(key, g);
+            }
+            let subj = r.exam?.subject;
+            let code = subj?.code || subj?.abbr || subj?.name || '';
+            if (code) g.codes.set(code, subj?.rank ?? 0);
+        });
+        this.groupedMissing = [...map.values()]
+            .map((g) => ({
+                className: g.className,
+                classRank: g.classRank,
+                upi: g.upi,
+                studentName: g.studentName,
+                subjectCodes: [...g.codes.entries()].sort((a, b) => a[1] - b[1]).map((e) => e[0])
+            }))
+            .sort((a, b) => a.classRank - b.classRank || a.upi.localeCompare(b.upi));
+        this.page = 1;
+    };
+
+    pageChanged = (page: number) => { this.page = page; };
+    pageSizeChanged = (pageSize: number) => { this.pageSize = pageSize; this.page = 1; };
 
     printReport = () => {
         this.schoolSvc.get('/schooldetails').subscribe({
@@ -219,7 +263,7 @@ export class MissingMarksReportComponent implements OnInit {
                         ?.name?.toUpperCase();
                 this.missingMarksRptSvc.generateReport(
                     school[0],
-                    this.missingMarksResults,
+                    this.groupedMissing,
                     reportTitle
                 );
             },
