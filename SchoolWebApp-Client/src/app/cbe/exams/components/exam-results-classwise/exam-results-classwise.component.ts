@@ -148,7 +148,7 @@ export class ExamResultsClasswiseComponent implements OnInit {
             next: ([sessions, schoolClasses]) => {
                 this.sessions = sessions.sort((a, b) => a.rank - b.rank);
                 let currLLIds = this.learningLevels.map((ll) => parseInt(ll.id));
-                this.schoolClasses = schoolClasses.filter((sc) => currLLIds.includes(parseInt(sc.learningLevelId)));
+                this.schoolClasses = schoolClasses.filter((sc) => currLLIds.includes(parseInt(sc.learningLevelId))).sort((a, b) => (a.rank || 0) - (b.rank || 0));
             },
             error: (err) => this.toastr.error(err.error)
         });

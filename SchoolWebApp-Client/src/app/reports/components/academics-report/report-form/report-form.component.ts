@@ -227,7 +227,7 @@ export class ReportFormComponent implements OnInit {
             next: ([sessions, schoolClasses]) => {
                 this.sessions = sessions.sort((a, b) => a.rank - b.rank);
                 let currLLIds = this.learningLevels.map((ll) => +ll.id);
-                this.schoolClasses = schoolClasses.filter((sc) => currLLIds.includes(+sc.learningLevelId));
+                this.schoolClasses = schoolClasses.filter((sc) => currLLIds.includes(+sc.learningLevelId)).sort((a, b) => (a.rank || 0) - (b.rank || 0));
             },
             error: (err) => this.toastr.error(err.error)
         });

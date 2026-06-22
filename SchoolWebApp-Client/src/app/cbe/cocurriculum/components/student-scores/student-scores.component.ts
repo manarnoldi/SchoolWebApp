@@ -160,7 +160,7 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
                             const currLLIds = this.learningLevels.map((ll) => +ll.id);
                             this.schoolClasses = schoolClasses.filter((sc) =>
                                 currLLIds.includes(+sc.learningLevelId)
-                            );
+                            ).sort((a, b) => (a.rank || 0) - (b.rank || 0));
                             if (schoolClassId) this.filterSchoolClassId = matchOptionId(this.schoolClasses, schoolClassId);
                             if (activityId) this.filterActivityId = matchOptionId(this.activities, activityId);
 
@@ -198,7 +198,7 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
         this.schoolClassesSvc.get(`/schoolClasses/byAcademicYearId/${this.filterAcademicYearId}`).subscribe({
             next: (schoolClasses) => {
                 let currLLIds = this.learningLevels.map((ll) => +ll.id);
-                this.schoolClasses = schoolClasses.filter((sc) => currLLIds.includes(+sc.learningLevelId));
+                this.schoolClasses = schoolClasses.filter((sc) => currLLIds.includes(+sc.learningLevelId)).sort((a, b) => (a.rank || 0) - (b.rank || 0));
             },
             error: (err) => this.toastr.error(err.error)
         });

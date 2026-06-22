@@ -309,7 +309,7 @@ export class StudentAssessmentsComponent implements OnInit {
             ]).subscribe(([sessions, schoolClasses]: [any[], any[]]) => {
                 this.sessions = sessions.sort((a, b) => a.rank - b.rank);
                 const currLLIds = this.learningLevels.map((ll) => +ll.id);
-                this.schoolClasses = schoolClasses.filter((sc) => currLLIds.includes(+sc.learningLevelId));
+                this.schoolClasses = schoolClasses.filter((sc) => currLLIds.includes(+sc.learningLevelId)).sort((a, b) => (a.rank || 0) - (b.rank || 0));
                 if (sessionId) this.filterSessionId = matchOptionId(this.sessions, sessionId);
                 if (!schoolClassId) return;
                 this.filterSchoolClassId = matchOptionId(this.schoolClasses, schoolClassId);
@@ -438,7 +438,7 @@ export class StudentAssessmentsComponent implements OnInit {
                 let currLearningLevelIds = this.learningLevels.map((ll) => parseInt(ll.id));
                 this.schoolClasses = schoolClasses.filter(
                     (sc) => currLearningLevelIds.includes(parseInt(sc.learningLevelId))
-                );
+                ).sort((a, b) => (a.rank || 0) - (b.rank || 0));
             },
             error: (err) => this.toastr.error(err.error)
         });
