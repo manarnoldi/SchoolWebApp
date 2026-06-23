@@ -51,62 +51,14 @@
                 </div>
 
                 <div *ngIf="activeConfig">
-                    <!-- Add/Edit Form -->
-                    <div class="card card-outline card-success mb-1">
-                        <div class="card-header p-1">
-                            <strong>{{ editMode ? 'Edit' : 'Add' }} {{ activeConfig.label }}</strong>
-                            <button *ngIf="editMode" class="btn btn-sm btn-outline-secondary float-end"
-                                (click)="resetForm()">Cancel Edit</button>
-                        </div>
-                        <div class="card-body p-2">
-                            <div class="row">
-                                <div *ngFor="let field of activeConfig.fields"
-                                    [class]="field.type === 'textarea' ? 'col-md-12' : 'col-md-4'">
-                                    <div class="form-group mb-1">
-                                        <label class="form-label">{{field.label}}:
-                                            <span *ngIf="field.required" class="requiredField">*</span>
-                                        </label>
-                                        <input *ngIf="field.type === 'text'" type="text"
-                                            class="form-control form-control-sm"
-                                            [(ngModel)]="formData[field.key]"
-                                            [placeholder]="field.label" />
-                                        <input *ngIf="field.type === 'number'" type="number"
-                                            class="form-control form-control-sm"
-                                            [(ngModel)]="formData[field.key]" />
-                                        <textarea *ngIf="field.type === 'textarea'"
-                                            class="form-control form-control-sm" rows="2"
-                                            [(ngModel)]="formData[field.key]"
-                                            [placeholder]="field.label"></textarea>
-                                        <select *ngIf="field.type === 'select'"
-                                            class="form-select form-select-sm"
-                                            [(ngModel)]="formData[field.key]">
-                                            <option [ngValue]="null" hidden disabled>Select</option>
-                                            <option [ngValue]="opt.value" *ngFor="let opt of field.options">{{opt.label}}</option>
-                                        </select>
-                                        <div *ngIf="field.type === 'boolean'" class="icheck-success mt-1">
-                                            <input type="checkbox"
-                                                [id]="'fld_' + field.key"
-                                                [checked]="formData[field.key] === true"
-                                                (change)="formData[field.key] = !formData[field.key]" />
-                                            <label [for]="'fld_' + field.key">
-                                                {{ formData[field.key] === true ? 'Yes' : 'No' }}
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="text-end mt-1">
-                                <button class="btn btn-success btn-sm" (click)="saveItem()">
-                                    <i class="fas fa-save"></i> {{ editMode ? 'Update' : 'Save' }}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Items Table -->
                     <div class="card">
-                        <div class="card-header bg-info text-white p-1">
+                        <div class="card-header bg-info text-white p-1 d-flex justify-content-between align-items-center">
                             <strong>{{ activeConfig.label }} - {{ items.length }} items</strong>
+                            <button class="btn btn-sm btn-light" data-bs-toggle="modal"
+                                data-bs-target="#dropdownItemModal" (click)="openAdd()">
+                                <i class="fas fa-plus"></i> Add {{ activeConfig.label }}
+                            </button>
                         </div>
                         <div class="card-body table-responsive p-0">
                             <table class="table table-striped table-hover table-sm mb-0">
@@ -120,7 +72,7 @@
                                 <tbody>
                                     <tr *ngFor="let item of items | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i">
                                         <td>{{ (page-1) * pageSize + i + 1 }}</td>
-                                        <td *ngFor="let field of activeConfig.fields">{{ item[field.key] }}</td>
+                                        <td *ngFor="let field of activeConfig.fields">{{ displayValue(item, field) }}</td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
                                                 <button class="btn btn-outline-primary" (click)="startEdit(item)" title="Edit">
@@ -137,6 +89,73 @@
                             <app-table-paging (pageChangedEvent)="pageChanged($event)"
                                 (pageSizeChangedEvent)="pageSizeChanged($event)"
                                 [collectionSize]="items.length"></app-table-paging>
+                        </div>
+                    </div>
+
+                    <!-- Hidden trigger to open the add/edit modal programmatically (edit). -->
+                    <button #modalTrigger type="button" class="d-none"
+                        data-bs-toggle="modal" data-bs-target="#dropdownItemModal"></button>
+
+                    <!-- Add/Edit modal -->
+                    <div class="modal fade" id="dropdownItemModal" tabindex="-1" aria-hidden="true"
+                        data-bs-backdrop="static" data-bs-keyboard="false">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header bg-success opacity-75 p-2">
+                                    <h5 class="modal-title">{{ editMode ? 'Edit' : 'Add' }} {{ activeConfig.label }}</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                        aria-label="Close" #closeBtn (click)="resetForm()"></button>
+                                </div>
+                                <div class="modal-body p-2">
+                                    <div class="row">
+                                        <div *ngFor="let field of activeConfig.fields"
+                                            [class]="field.type === 'textarea' ? 'col-md-12' : 'col-md-4'">
+                                            <div class="form-group mb-1">
+                                                <label class="form-label">{{field.label}}:
+                                                    <span *ngIf="field.required" class="requiredField">*</span>
+                                                </label>
+                                                <input *ngIf="field.type === 'text'" type="text"
+                                                    class="form-control form-control-sm"
+                                                    [class.bg-light]="field.readonly"
+                                                    [readonly]="field.readonly"
+                                                    [(ngModel)]="formData[field.key]"
+                                                    [placeholder]="field.readonly ? '(auto-generated)' : field.label" />
+                                                <input *ngIf="field.type === 'number'" type="number"
+                                                    class="form-control form-control-sm"
+                                                    [(ngModel)]="formData[field.key]" />
+                                                <textarea *ngIf="field.type === 'textarea'"
+                                                    class="form-control form-control-sm" rows="2"
+                                                    [(ngModel)]="formData[field.key]"
+                                                    [placeholder]="field.label"></textarea>
+                                                <select *ngIf="field.type === 'select'"
+                                                    class="form-select form-select-sm"
+                                                    [(ngModel)]="formData[field.key]">
+                                                    <option [ngValue]="null" hidden disabled>Select</option>
+                                                    <option [ngValue]="opt.value" *ngFor="let opt of (field.options || fieldOptions[field.key] || [])">{{opt.label}}</option>
+                                                </select>
+                                                <div *ngIf="field.type === 'boolean'" class="icheck-success mt-1">
+                                                    <input type="checkbox"
+                                                        [id]="'fld_' + field.key"
+                                                        [checked]="formData[field.key] === true"
+                                                        (change)="formData[field.key] = !formData[field.key]" />
+                                                    <label [for]="'fld_' + field.key">
+                                                        {{ formData[field.key] === true ? 'Yes' : 'No' }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer p-1">
+                                    <button class="btn btn-success btn-sm" (click)="saveItem()">
+                                        <i class="fas fa-save"></i> {{ editMode ? 'Update' : 'Save' }}
+                                    </button>
+                                    <button type="button" class="btn btn-warning btn-sm"
+                                        data-bs-dismiss="modal" (click)="resetForm()">
+                                        <i class="fas fa-times"></i> Close
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
@@ -58,25 +58,31 @@ export class DropdownManagementComponent implements OnInit {
                 {name: 'educationLevelTypes', label: 'Education Level Types', endpoint: '/educationLevelTypes', category: 'System Settings',
                     fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'abbreviation', label: 'Abbreviation', type: 'text'}, {key: 'rank', label: 'Rank', type: 'number', required: true}, {key: 'description', label: 'Description', type: 'textarea'}]},
                 {name: 'classLeadershipRoles', label: 'Leadership Roles', endpoint: '/classLeadershipRoles', category: 'System Settings',
-                    fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'personType', label: 'Person Type', type: 'select', required: true, options: [{value: 0, label: 'Student'}, {value: 1, label: 'Teacher'}, {value: 2, label: 'Parent'}]}, {key: 'rank', label: 'Rank', type: 'number', required: true}, {key: 'description', label: 'Description', type: 'textarea'}]}
+                    fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'personType', label: 'Person Type', type: 'select', required: true, options: [{value: 0, label: 'Student'}, {value: 1, label: 'Teacher'}, {value: 2, label: 'Parent'}]}, {key: 'rank', label: 'Rank', type: 'number', required: true}, {key: 'description', label: 'Description', type: 'textarea'}]},
+                {name: 'departments', label: 'Departments', endpoint: '/departments', category: 'System Settings',
+                    fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'code', label: 'Code (auto)', type: 'text', readonly: true}, {key: 'staffDetailsId', label: 'Head of Department', type: 'select', optionsEndpoint: '/staffDetails', optionValue: 'id', optionLabel: 'fullName'}, {key: 'description', label: 'Description', type: 'textarea'}]},
+                {name: 'educationLevels', label: 'Education Levels', endpoint: '/educationLevels', category: 'System Settings',
+                    fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'abbr', label: 'Abbreviation', type: 'text', required: true}, {key: 'numOfYears', label: 'No. of Years', type: 'number', required: true}, {key: 'educationLevelTypeId', label: 'Education Level Type', type: 'select', required: true, optionsEndpoint: '/educationLevelTypes', optionValue: 'id', optionLabel: 'name'}, {key: 'curriculumId', label: 'Curriculum', type: 'select', required: true, optionsEndpoint: '/curricula', optionValue: 'id', optionLabel: 'name'}, {key: 'rank', label: 'Rank', type: 'number', required: true}, {key: 'description', label: 'Description', type: 'textarea'}]},
+                {name: 'learningLevels', label: 'Learning Levels', endpoint: '/learningLevels', category: 'System Settings',
+                    fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'educationLevelId', label: 'Education Level', type: 'select', required: true, optionsEndpoint: '/educationLevels', optionValue: 'id', optionLabel: 'name'}, {key: 'rank', label: 'Rank', type: 'number', required: true}, {key: 'description', label: 'Description', type: 'textarea'}]},
+                {name: 'schoolStreams', label: 'Streams', endpoint: '/schoolStreams', category: 'System Settings',
+                    fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'abbreviation', label: 'Abbreviation', type: 'text'}, {key: 'rank', label: 'Rank', type: 'number', required: true}, {key: 'description', label: 'Description', type: 'textarea'}]}
             ],
-            links: [
-                {label: 'Departments', path: '/school/departments', icon: 'fas fa-building'},
-                {label: 'Education Levels', path: '/school/educationLevels', icon: 'fas fa-layer-group'},
-                {label: 'Learning Levels', path: '/school/learning-levels', icon: 'fas fa-graduation-cap'},
-                {label: 'Streams', path: '/class/streams', icon: 'fas fa-stream'}
-            ]
+            links: []
         },
         {
             name: 'Finance',
             icon: 'fas fa-coins',
             color: 'info',
-            configs: [],
-            links: [
-                {label: 'Chart of Accounts', path: '/finance/accounts', icon: 'fas fa-book'},
-                {label: 'Fee Categories', path: '/finance/fee-categories', icon: 'fas fa-tags'},
-                {label: 'Expense Categories', path: '/finance/expense-categories', icon: 'fas fa-list'}
-            ]
+            configs: [
+                {name: 'accounts', label: 'Chart of Accounts', endpoint: '/accounts', category: 'Finance',
+                    fields: [{key: 'code', label: 'Code', type: 'text', required: true}, {key: 'name', label: 'Name', type: 'text', required: true}, {key: 'accountType', label: 'Type', type: 'select', required: true, options: [{value: 1, label: 'Asset'}, {value: 2, label: 'Liability'}, {value: 3, label: 'Equity'}, {value: 4, label: 'Income'}, {value: 5, label: 'Expense'}]}, {key: 'parentAccountId', label: 'Parent Account', type: 'select', optionsEndpoint: '/accounts', optionValue: 'id', optionLabel: ['code', 'name']}, {key: 'isActive', label: 'Active', type: 'boolean', default: true}, {key: 'description', label: 'Description', type: 'textarea'}]},
+                {name: 'feeCategories', label: 'Fee Categories', endpoint: '/feeCategories', category: 'Finance',
+                    fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'incomeAccountId', label: 'Income Account', type: 'select', optionsEndpoint: '/accounts', optionValue: 'id', optionLabel: ['code', 'name'], optionFilter: {field: 'accountType', equals: 4}}, {key: 'rank', label: 'Rank', type: 'number'}, {key: 'isActive', label: 'Active', type: 'boolean', default: true}, {key: 'description', label: 'Description', type: 'textarea'}]},
+                {name: 'expenseCategories', label: 'Expense Categories', endpoint: '/expenseCategories', category: 'Finance',
+                    fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'expenseAccountId', label: 'Expense Account', type: 'select', optionsEndpoint: '/accounts', optionValue: 'id', optionLabel: ['code', 'name'], optionFilter: {field: 'accountType', equals: 5}}, {key: 'rank', label: 'Rank', type: 'number'}, {key: 'isActive', label: 'Active', type: 'boolean', default: true}, {key: 'description', label: 'Description', type: 'textarea'}]}
+            ],
+            links: []
         },
         {
             name: 'Academics',
@@ -138,6 +144,15 @@ export class DropdownManagementComponent implements OnInit {
     editMode: boolean = false;
     formData: any = {};
 
+    // Hidden trigger used to open the add/edit modal programmatically (on edit);
+    // closeBtn dismisses it after a successful save.
+    @ViewChild('modalTrigger') modalTrigger: ElementRef;
+    @ViewChild('closeBtn') closeBtn: ElementRef;
+
+    // Server-loaded options for relational (select) fields, keyed by field key.
+    fieldOptions: {[key: string]: {value: any; label: string}[]} = {};
+    private optionsCache: {[endpoint: string]: any[]} = {};
+
     page: number = 1;
     pageSize: number = 10;
     pageChanged = (page: number) => { this.page = page; };
@@ -184,6 +199,7 @@ export class DropdownManagementComponent implements OnInit {
         this.editMode = false;
         this.page = 1;
         this.resetForm();
+        this.loadFieldOptions(config);
         this.loadItems();
     };
 
@@ -196,6 +212,48 @@ export class DropdownManagementComponent implements OnInit {
         });
     };
 
+    // Loads dropdown options for any select field that pulls from a server
+    // endpoint (e.g. Curriculum, Education Level, Account). Responses are cached
+    // so shared endpoints (like /accounts) are fetched once.
+    loadFieldOptions = (config: any) => {
+        this.fieldOptions = {};
+        (config?.fields || [])
+            .filter((f: any) => f.type === 'select' && f.optionsEndpoint)
+            .forEach((f: any) => {
+                let build = (rows: any[]) => {
+                    let filtered = f.optionFilter
+                        ? (rows || []).filter((r) => r[f.optionFilter.field] === f.optionFilter.equals)
+                        : (rows || []);
+                    this.fieldOptions[f.key] = filtered.map((r) => ({
+                        value: r[f.optionValue || 'id'],
+                        label: Array.isArray(f.optionLabel)
+                            ? f.optionLabel.map((k: string) => r[k]).filter((v) => v !== null && v !== undefined && v !== '').join(' - ')
+                            : r[f.optionLabel || 'name']
+                    }));
+                };
+                if (this.optionsCache[f.optionsEndpoint]) {
+                    build(this.optionsCache[f.optionsEndpoint]);
+                } else {
+                    this.http.get<any[]>(f.optionsEndpoint).subscribe({
+                        next: (rows) => { this.optionsCache[f.optionsEndpoint] = rows || []; build(rows || []); },
+                        error: () => { this.fieldOptions[f.key] = []; }
+                    });
+                }
+            });
+    };
+
+    // Human-readable cell value: resolve select ids to their label, booleans to
+    // Yes/No, everything else as-is.
+    displayValue = (item: any, field: any): any => {
+        if (field.type === 'boolean') return item[field.key] ? 'Yes' : 'No';
+        if (field.type === 'select') {
+            let opts = field.options || this.fieldOptions[field.key] || [];
+            let match = opts.find((o: any) => o.value == item[field.key]);
+            if (match) return match.label;
+        }
+        return item[field.key];
+    };
+
     resetForm = () => {
         this.formData = {};
         this.editMode = false;
@@ -203,11 +261,17 @@ export class DropdownManagementComponent implements OnInit {
         if (this.activeConfig) {
             this.activeConfig.fields.forEach((f) => {
                 if (f.type === 'number') this.formData[f.key] = 0;
-                else if (f.type === 'boolean') this.formData[f.key] = false;
+                else if (f.type === 'boolean') this.formData[f.key] = f.default ?? false;
                 else if (f.type === 'select') this.formData[f.key] = null;
                 else this.formData[f.key] = '';
             });
         }
+    };
+
+    // Add: the modal is opened by the "Add" button (data-bs-toggle); we just
+    // clear the form so it starts blank.
+    openAdd = () => {
+        this.resetForm();
     };
 
     startEdit = (item: any) => {
@@ -217,6 +281,12 @@ export class DropdownManagementComponent implements OnInit {
         this.activeConfig.fields.forEach((f) => {
             this.formData[f.key] = item[f.key] ?? '';
         });
+        // Open the same add/edit modal, pre-filled.
+        this.modalTrigger?.nativeElement?.click();
+    };
+
+    private closeModal = () => {
+        this.closeBtn?.nativeElement?.click();
     };
 
     saveItem = () => {
@@ -226,27 +296,20 @@ export class DropdownManagementComponent implements OnInit {
             return;
         }
 
-        Swal.fire({
-            title: `${this.editMode ? 'Update' : 'Add'} ${this.activeConfig.label}?`,
-            width: 400, position: 'top', padding: '1em', icon: 'question',
-            showCancelButton: true, confirmButtonText: this.editMode ? 'Update' : 'Add', cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.value) {
-                let data = {...this.formData};
-                if (this.editMode) {
-                    data.id = this.editItem.id;
-                    this.http.put(this.activeConfig.endpoint, data).subscribe({
-                        next: () => { this.toastr.success('Updated!'); this.resetForm(); this.loadItems(); },
-                        error: (err) => this.toastr.error(err.error?.message || 'Error updating.')
-                    });
-                } else {
-                    this.http.post(this.activeConfig.endpoint, data).subscribe({
-                        next: () => { this.toastr.success('Added!'); this.resetForm(); this.loadItems(); },
-                        error: (err) => this.toastr.error(err.error?.message || 'Error adding.')
-                    });
-                }
-            }
-        });
+        let data = {...this.formData};
+        let done = () => { this.closeModal(); this.resetForm(); this.loadItems(); };
+        if (this.editMode) {
+            data.id = this.editItem.id;
+            this.http.put(this.activeConfig.endpoint, data).subscribe({
+                next: () => { this.toastr.success('Updated!'); done(); },
+                error: (err) => this.toastr.error(err.error?.message || 'Error updating.')
+            });
+        } else {
+            this.http.post(this.activeConfig.endpoint, data).subscribe({
+                next: () => { this.toastr.success('Added!'); done(); },
+                error: (err) => this.toastr.error(err.error?.message || 'Error adding.')
+            });
+        }
     };
 
     deleteItem = (item: any) => {
