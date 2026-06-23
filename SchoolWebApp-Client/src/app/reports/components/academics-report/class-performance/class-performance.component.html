@@ -1,0 +1,101 @@
+<app-dashboard-header
+    [title]="dashboardTitle"
+    [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+        <div class="card card-outline card-info mb-1">
+            <div class="card-body p-1">
+                <div class="row align-items-end">
+                    <div class="col-md-2">
+                        <div class="form-group mb-1">
+                            <label class="form-label">Curriculum: <span class="requiredField">*</span></label>
+                            <select class="form-select form-select-sm"
+                                [(ngModel)]="filterCurriculumId" (change)="onCurriculumChange()">
+                                <option [ngValue]="null" hidden disabled selected>Select curriculum</option>
+                                <option *ngFor="let c of curricula" [ngValue]="c.id">{{ c.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group mb-1">
+                            <label class="form-label">Year: <span class="requiredField">*</span></label>
+                            <select class="form-select form-select-sm"
+                                [(ngModel)]="filterAcademicYearId" (change)="onAcademicYearChange()">
+                                <option [ngValue]="null" hidden disabled selected>Select year</option>
+                                <option *ngFor="let y of academicYears" [ngValue]="y.id">{{ y.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group mb-1">
+                            <label class="form-label">Session: <span class="requiredField">*</span></label>
+                            <select class="form-select form-select-sm"
+                                [(ngModel)]="filterSessionId" (change)="onSessionChange()">
+                                <option [ngValue]="null" hidden disabled selected>Select session</option>
+                                <option *ngFor="let s of sessions" [ngValue]="s.id">{{ s.sessionName }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb-1">
+                            <label class="form-label">School Exam: <span class="requiredField">*</span></label>
+                            <select class="form-select form-select-sm"
+                                [(ngModel)]="filterSchoolExamId" (change)="onSchoolExamChange()">
+                                <option [ngValue]="null" hidden disabled selected>{{ filterSessionId ? 'Select school exam' : 'Select a term first' }}</option>
+                                <option *ngFor="let se of schoolExams" [ngValue]="se.id">{{ se.examType?.name }} ({{ se.examStartDate | date:'mediumDate' }})</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb-1 d-flex gap-1">
+                            <button class="btn btn-primary btn-sm" (click)="loadReport()" [disabled]="isLoading">
+                                <i class="fas fa-search"></i> {{ isLoading ? 'Loading...' : 'Load' }}
+                            </button>
+                            <button class="btn btn-danger btn-sm" (click)="printReport()" [disabled]="!loaded || classRows.length === 0">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-2" *ngIf="loaded && classRows.length > 0">
+            <div class="card-header bg-primary text-white p-1">
+                <strong>Class Performance Summary</strong>
+                <span class="float-end">{{ classRows.length }} class(es) | ranked by class average</span>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-sm table-bordered table-striped mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-center" style="width: 60px;">Rank</th>
+                            <th>Class</th>
+                            <th class="text-center" style="width: 90px;">Students</th>
+                            <th class="text-center" style="width: 100px;">Class Avg</th>
+                            <th class="text-center" style="width: 80px;">Grade</th>
+                            <th>Top Student</th>
+                            <th>Class Teacher / CEO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let c of classRows">
+                            <td class="text-center fw-bold">{{ c.rank }}</td>
+                            <td>{{ c.className }}</td>
+                            <td class="text-center">{{ c.studentCount }}</td>
+                            <td class="text-center fw-bold">{{ c.classValue }}{{ c.method === 'mean_points' ? ' pts' : '%' }}</td>
+                            <td class="text-center fw-bold">{{ c.classGrade }}</td>
+                            <td>{{ c.topStudent }}</td>
+                            <td>{{ c.classTeacher }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div *ngIf="loaded && classRows.length === 0" class="alert alert-info py-2">
+            No exam results found for this selection.
+        </div>
+    </div>
+</section>

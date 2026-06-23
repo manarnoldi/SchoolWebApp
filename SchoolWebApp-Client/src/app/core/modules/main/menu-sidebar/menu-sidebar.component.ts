@@ -280,6 +280,11 @@ export const MENU = [
                         path: ['/reports/academics/subject-performance']
                     },
                     {
+                        name: 'Class Performance',
+                        iconClasses: 'fas fa-bullseye text-warning',
+                        path: ['/reports/academics/class-performance']
+                    },
+                    {
                         name: 'Student Subject Allocation',
                         iconClasses: 'fas fa-bullseye text-warning',
                         path: ['/reports/academics/student-subject-allocation']

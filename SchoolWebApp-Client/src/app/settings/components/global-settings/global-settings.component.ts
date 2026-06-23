@@ -135,7 +135,15 @@ export class GlobalSettingsComponent implements OnInit {
                     {value: '5', label: '5'},
                     {value: '10', label: '10'},
                     {value: '0', label: 'All (no cap)'}
-                ], description: 'On the Subject Performance report, the maximum number of tied top students listed per subject before showing +N more. Choose All to list every tied student.'}
+                ], description: 'On the Subject Performance report, the maximum number of tied top students listed per subject before showing +N more. Choose All to list every tied student.'},
+                {key: 'ClassTopStudentsCap', label: 'Top Students Shown (Class Performance)', type: 'select', options: [
+                    {value: '1', label: '1'},
+                    {value: '2', label: '2'},
+                    {value: '3', label: '3 (default)'},
+                    {value: '5', label: '5'},
+                    {value: '10', label: '10'},
+                    {value: '0', label: 'All (no cap)'}
+                ], description: 'On the Class Performance report, the maximum number of tied top students listed per class before showing +N more. Choose All to list every tied student.'}
             ]
         },
         {
@@ -210,6 +218,17 @@ export class GlobalSettingsComponent implements OnInit {
                             {value: '8-Point', label: '8-Point (EE1, EE2, ME1, ME2, AE1, AE2, BE1, BE2)'}
                         ],
                         description: "Exam results grading for this education level. 'Use global default' inherits the global Exam Results setting above."
+                    } as any);
+                    grading?.settings.push({
+                        key: `RankingMethod:${el.id}`,
+                        label: `Ranking Method - ${cn ? cn + ': ' : ''}${el.name}`,
+                        type: 'select',
+                        options: [
+                            {value: '', label: 'Use global default'},
+                            {value: 'mean_marks', label: 'Mean Marks (Average %)'},
+                            {value: 'mean_points', label: 'Mean Points (Score)'}
+                        ],
+                        description: "Ranking method for this education level. 'Use global default' inherits the global Ranking Method setting above."
                     } as any);
                 });
                 this.loadSettings();

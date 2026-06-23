@@ -32,6 +32,7 @@ import { ReportFormsPageComponent } from './components/pages/report-forms-page.c
 import { ReportFormComponent } from './components/academics-report/report-form/report-form.component';
 import { AssessmentReportComponent } from './components/academics-report/assessment-report/assessment-report.component';
 import { SubjectPerformanceComponent } from './components/academics-report/subject-performance/subject-performance.component';
+import { ClassPerformanceComponent } from './components/academics-report/class-performance/class-performance.component';
 
 @NgModule({
     declarations: [
@@ -65,7 +66,8 @@ import { SubjectPerformanceComponent } from './components/academics-report/subje
         ReportFormsPageComponent,
         ReportFormComponent,
         AssessmentReportComponent,
-        SubjectPerformanceComponent
+        SubjectPerformanceComponent,
+        ClassPerformanceComponent
     ],
     imports: [CoreModule, SharedModule]
 })

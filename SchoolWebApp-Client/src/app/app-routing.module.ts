@@ -87,6 +87,7 @@ import { ResultsAnalysisPageComponent } from './reports/components/pages/results
 import { ReportFormsPageComponent } from './reports/components/pages/report-forms-page.component';
 import { AssessmentReportComponent } from './reports/components/academics-report/assessment-report/assessment-report.component';
 import { SubjectPerformanceComponent } from './reports/components/academics-report/subject-performance/subject-performance.component';
+import { ClassPerformanceComponent } from './reports/components/academics-report/class-performance/class-performance.component';
 import { ExamNamesComponent } from './academics/components/exam-names/exam-names.component';
 import { CbeComponent } from './cbe/cbe.component';
 import { AssessmentTypesComponent } from './cbe/assessments/components/assessment-types/assessment-types.component';
@@ -362,6 +363,7 @@ const routes: Routes = [
             {path: 'academics/report-forms', component: ReportFormsPageComponent},
             {path: 'academics/assessment-report', component: AssessmentReportComponent},
             {path: 'academics/subject-performance', component: SubjectPerformanceComponent},
+            {path: 'academics/class-performance', component: ClassPerformanceComponent},
             {path: 'academics/student-subject-allocation', component: StudentSubjectPageComponent}
         ]
     },

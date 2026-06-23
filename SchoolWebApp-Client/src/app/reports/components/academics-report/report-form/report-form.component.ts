@@ -218,6 +218,14 @@ export class ReportFormComponent implements OnInit {
         return this.settingVal(`ExamResults:${edLevelId}`) || globalVal;
     };
 
+    // Ranking method for an education level: the level's override if set, else
+    // the global default, else mean_points.
+    private rankingMethodFor = (edLevelId: any): string => {
+        let globalVal = this.settingVal('RankingMethod') || 'mean_points';
+        if (!edLevelId) return globalVal;
+        return this.settingVal(`RankingMethod:${edLevelId}`) || globalVal;
+    };
+
     private applyExamGrading = (edLevelId: any) => {
         this.gradingCategory = this.examGradingCategoryFor(edLevelId);
         this.selectedGradingCategory = this.gradingCategory;
@@ -425,6 +433,7 @@ export class ReportFormComponent implements OnInit {
         let edLevelId = schoolClass?.learningLevel?.educationLevelId
             ?? this.learningLevels.find((ll) => +ll.id === +(schoolClass?.learningLevelId))?.educationLevelId;
         this.applyExamGrading(edLevelId);
+        this.rankingMethod = this.rankingMethodFor(edLevelId);
 
         let proceed = () => {
             let shared = this.shared;

@@ -134,6 +134,14 @@ export class BroadsheetComponent implements OnInit {
         return this.settingVal(`ExamResults:${edLevelId}`) || globalVal;
     };
 
+    // Ranking method for an education level: the level's override if set, else
+    // the global default, else mean_marks.
+    private rankingMethodFor = (edLevelId: any): string => {
+        let globalVal = this.settingVal('RankingMethod') || 'mean_marks';
+        if (!edLevelId) return globalVal;
+        return this.settingVal(`RankingMethod:${edLevelId}`) || globalVal;
+    };
+
     private applyExamGrading = (edLevelId: any) => {
         this.gradingCategory = this.examGradingCategoryFor(edLevelId);
         this.selectedGradingCategory = this.gradingCategory;
@@ -253,6 +261,7 @@ export class BroadsheetComponent implements OnInit {
         let edLevelId = selClass?.learningLevel?.educationLevelId
             ?? this.learningLevels.find((ll) => +ll.id === +(selClass?.learningLevelId))?.educationLevelId;
         this.applyExamGrading(edLevelId);
+        this.rankingMethod = this.rankingMethodFor(edLevelId);
 
         let url = `/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}&schoolClassId=${this.filterSchoolClassId}&examTypeId=${this.filterExamTypeId}`;
 
