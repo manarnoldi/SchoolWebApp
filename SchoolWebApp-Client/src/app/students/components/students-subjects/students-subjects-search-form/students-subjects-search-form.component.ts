@@ -56,7 +56,7 @@ export class StudentsSubjectsSearchFormComponent implements OnInit {
     curriculumChanged = () => {
         let curriculumId =
             this.studentsSubjectsSearchForm.get('curriculumId').value;
-        // Always emit — null signals "user cleared the dropdown" so the
+        // Always emit - null signals "user cleared the dropdown" so the
         // parent can drop dependent state instead of holding stale ids.
         if (!curriculumId || curriculumId == '') {
             // Cascade-clear downstream controls so re-selecting an upstream

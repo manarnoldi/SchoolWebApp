@@ -44,7 +44,7 @@
             </small>
         </div>
 
-        <!-- Tabs — only those in the active report group are shown. -->
+        <!-- Tabs - only those in the active report group are shown. -->
         <ul class="nav nav-tabs mb-1 d-print-none">
             <!-- Fee Reports -->
             <li class="nav-item" *ngIf="isInGroup('feeCollection')"><a class="nav-link" [class.active]="activeTab==='feeCollection'" (click)="switchTab('feeCollection')" role="button"><i class="fas fa-cash-register me-1"></i> Fee Collection</a></li>
@@ -572,7 +572,7 @@
 
             <div class="card card-outline card-primary" *ngIf="consolidatedBudget">
                 <div class="card-header py-1 bg-info text-white d-flex justify-content-between">
-                    <strong><i class="fas fa-piggy-bank me-1"></i> Consolidated Budget — {{ consolidatedBudget.academicYearName || '-' }}</strong>
+                    <strong><i class="fas fa-piggy-bank me-1"></i> Consolidated Budget - {{ consolidatedBudget.academicYearName || '-' }}</strong>
                     <span class="badge bg-light text-dark">{{ consolidatedBudget.departments?.length || 0 }} department(s)</span>
                 </div>
                 <div class="card-body p-2">

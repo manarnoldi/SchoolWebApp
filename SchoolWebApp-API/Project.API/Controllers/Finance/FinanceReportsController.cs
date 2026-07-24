@@ -272,7 +272,7 @@ namespace SchoolWebApp.API.Controllers.Finance
         [HttpGet("consolidatedBudget")]
         public async Task<IActionResult> ConsolidatedBudget(int academicYearId)
         {
-            // Only approved/active budgets are included — drafts pending approval must not show in reports.
+            // Only approved/active budgets are included - drafts pending approval must not show in reports.
             var budgets = (await _unitOfWork.Budgets.GetAllWithLines())
                 .Where(b => b.AcademicYearId == academicYearId && b.IsActive)
                 .ToList();
@@ -298,7 +298,7 @@ namespace SchoolWebApp.API.Controllers.Finance
                         : l.Debit - l.Credit)
                 );
 
-            // Sum of approved-amendment deltas per (BudgetId, AccountId) — added on top of each budget line.
+            // Sum of approved-amendment deltas per (BudgetId, AccountId) - added on top of each budget line.
             var budgetIds = budgets.Select(b => b.Id).ToHashSet();
             var approvedAmendments = (await _unitOfWork.BudgetAmendments.Find(
                     a => budgetIds.Contains(a.BudgetId) && a.Status == BudgetAmendmentStatus.Approved,

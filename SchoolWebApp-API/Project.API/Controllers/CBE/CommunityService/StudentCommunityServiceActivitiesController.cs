@@ -114,6 +114,43 @@ namespace SchoolWebApp.API.Controllers.CBE.CommunityService
             return BadRequest(ModelState);
         }
 
+        // POST api/studentCommunityServiceActivities/batch
+        /// <summary>
+        /// Upserts a batch of student community service activities in a single
+        /// request. Rows with Id &gt; 0 are updated; rows with Id &lt;= 0 are
+        /// created. Rows omitted from the payload are left untouched (NOT a
+        /// full-set replace), so the client can send only the records that were
+        /// added or changed.
+        /// </summary>
+        [HttpPost("batch")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreateMany(List<StudentCommunityServiceActivityDto> model)
+        {
+            if (model == null || !model.Any())
+                return BadRequest("No student community service activities provided.");
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            try
+            {
+                foreach (var item in model)
+                {
+                    var _item = _mapper.Map<SchoolWebApp.Core.Entities.CBE.CommunityService.StudentCommunityServiceActivity>(item);
+                    if (item.Id > 0)
+                        _modelSvc.Update(_item);
+                    else
+                        _modelSvc.Create(_item);
+                }
+                await _modelSvc.SaveChangesAsync();
+                return Ok("Student community service activities saved successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while saving the batch of student community service activities.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         // PUT: api/studentCommunityServiceActivities
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]

@@ -28,7 +28,7 @@ export class UsersComponent implements OnInit {
     roles: AppRole[] = [];
     availablePersons: AvailablePerson[] = [];
     // Cached, stable-reference view of availablePersons filtered by personTypeFilter.
-    // Must not be recomputed inside the template — ng-select resets its selection
+    // Must not be recomputed inside the template - ng-select resets its selection
     // every time [items] sees a new array reference.
     availablePersonsView: AvailablePerson[] = [];
     userForm: FormGroup;
@@ -332,7 +332,7 @@ export class UsersComponent implements OnInit {
     // Diff selected vs original role lists, then fire add/removeRole for each
     // delta in parallel. Email is the join key the API uses.
     // Errors on individual role calls are surfaced as toasts but do not abort
-    // the rest — the user is already saved at this point.
+    // the rest - the user is already saved at this point.
     private syncRoles(email: string, done: () => void) {
         const toAdd = this.selectedRoleNames.filter(r => !this.originalRoleNames.includes(r));
         const toRemove = this.originalRoleNames.filter(r => !this.selectedRoleNames.includes(r));

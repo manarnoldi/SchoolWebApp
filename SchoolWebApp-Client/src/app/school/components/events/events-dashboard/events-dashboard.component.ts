@@ -47,7 +47,7 @@ export class EventsDashboardComponent implements OnInit {
 
     /**
      * Admins and SuperAdmins always see the add button. Other roles only see
-     * it when their menu permissions include /school/events — same path the
+     * it when their menu permissions include /school/events - same path the
      * sidebar uses to decide whether to show the Events item, so the two
      * stay in sync without separate configuration.
      */

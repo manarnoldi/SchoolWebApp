@@ -36,7 +36,7 @@ namespace SchoolWebApp.Core.Entities.Identity
         [StringLength(255)]
         public string? MachineName { get; set; }
 
-        // Authenticated user at the time the request was made — pulled from
+        // Authenticated user at the time the request was made - pulled from
         // User.Identity.Name by NLog via ${aspnet-user-identity}. Null for
         // anonymous or background work (startup seeding, hosted services).
         [StringLength(255)]
@@ -44,7 +44,7 @@ namespace SchoolWebApp.Core.Entities.Identity
 
         // Resolution audit. Resolved=true means an operator has triaged this
         // row and it shouldn't surface in the default "open errors" view
-        // anymore. ResolutionNote is optional but strongly encouraged — it
+        // anymore. ResolutionNote is optional but strongly encouraged - it
         // doubles as a runbook the next time the same signature shows up.
         public bool Resolved { get; set; }
 

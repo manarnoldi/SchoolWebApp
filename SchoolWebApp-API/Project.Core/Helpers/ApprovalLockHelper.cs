@@ -6,7 +6,7 @@ namespace SchoolWebApp.Core.Helpers
 {
     public static class ApprovalLockHelper
     {
-        // Policy constants — stored under GlobalSetting (Module=General, SettingKey=ApprovalEditLockPolicy).
+        // Policy constants - stored under GlobalSetting (Module=General, SettingKey=ApprovalEditLockPolicy).
         public const string POLICY_STRICT = "Strict";                   // Lock the moment anything is submitted
         public const string POLICY_AFTER_FIRST_APPROVAL = "AfterFirstApproval"; // Allow edits until the first step is approved
 
@@ -28,7 +28,7 @@ namespace SchoolWebApp.Core.Helpers
             // Anything except Submitted (Draft / Rejected / Returned / Reversed) → not locked, user can edit/delete.
             if (req.Status != ApprovalRequestStatus.Submitted) return false;
 
-            // Submitted — decide based on the global policy.
+            // Submitted - decide based on the global policy.
             var settings = await uow.Repository<GlobalSetting>().Find(s =>
                 s.Module == "General" && s.SettingKey == "ApprovalEditLockPolicy");
             var policy = settings.FirstOrDefault()?.SettingValue ?? POLICY_STRICT;
@@ -45,7 +45,7 @@ namespace SchoolWebApp.Core.Helpers
 
         /// <summary>
         /// Returns true if the given user is an approver on an ACTIVE workflow (Submitted/Approved)
-        /// for this entity. Approvers cannot edit or delete while the workflow is in flight or approved —
+        /// for this entity. Approvers cannot edit or delete while the workflow is in flight or approved -
         /// but once it's been Rejected / Returned / Reversed, past assignments no longer block.
         /// </summary>
         public static async Task<bool> IsApproverAsync(IUnitOfWork uow, string entityType, int entityId, int userId)

@@ -256,7 +256,7 @@ export class FinanceBudgetAmendmentsComponent implements OnInit {
         return this.viewGetLinesByType(type).reduce((s: number, l: any) => s + (+l.delta || 0), 0);
     };
 
-    // Open amendment modal in EDIT mode — submitter can change lines or pick approvers.
+    // Open amendment modal in EDIT mode - submitter can change lines or pick approvers.
     editAmendment = (a: BudgetAmendment) => {
         if (!a.budgetId) return;
         this.budgetSvc.getById(+a.budgetId, '/budgets').subscribe({

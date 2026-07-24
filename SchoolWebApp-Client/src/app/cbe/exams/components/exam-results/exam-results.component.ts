@@ -171,7 +171,7 @@ export class ExamResultsComponent implements OnInit {
             this.isAllocatedToSubject = true;
             return;
         }
-        // Not yet a complete selection — don't show the banner prematurely.
+        // Not yet a complete selection - don't show the banner prematurely.
         if (!this.filterSubjectId || !this.filterSchoolClassId) {
             this.isAllocatedToSubject = true;
             return;

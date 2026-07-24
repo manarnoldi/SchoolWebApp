@@ -123,7 +123,7 @@ namespace SchoolWebApp.API.Controllers.Security
 
         // POST: api/Logs/5/resolve
         // Marks a log entry as resolved (or reopens it). The "who" comes from
-        // the JWT — no separate audit table needed because the row is its own
+        // the JWT - no separate audit table needed because the row is its own
         // audit trail.
         [HttpPost("{id}/resolve")]
         public async Task<IActionResult> SetResolution(int id, [FromBody] ResolveRequest body)

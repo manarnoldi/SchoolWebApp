@@ -97,7 +97,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             }
             if (subjectId == null)
             {
-                // No strand/subject context — can't enforce; fall back to deny
+                // No strand/subject context - can't enforce; fall back to deny
                 // for non-admins (safer than allowing an un-checkable write).
                 return StatusCode(StatusCodes.Status403Forbidden,
                     new { message = "Cannot verify subject allocation for this assessment." });
@@ -213,6 +213,70 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
                 }
             }
             return BadRequest(ModelState);
+        }
+
+        // POST: api/studentAssessments/batch
+        /// <summary>
+        /// Upserts a batch of student assessments in a single request. Rows with
+        /// Id &gt; 0 are updated; rows with Id &lt;= 0 are created (skipping any
+        /// that would duplicate an existing composite key). Rows omitted from the
+        /// payload are left untouched (NOT a full-set replace), so the client can
+        /// send only the records that were added or changed. The same write
+        /// authorization as the single-record endpoints is enforced once per
+        /// distinct (class, strand, sub-strand) tuple in the batch.
+        /// </summary>
+        [HttpPost("batch")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreateMany(List<StudentAssessmentDto> model)
+        {
+            if (model == null || !model.Any())
+                return BadRequest("No student assessments provided.");
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            // Authorize once per distinct (class, strand, sub-strand) tuple
+            // rather than per row, then reject the whole batch if any is blocked.
+            var scopes = model
+                .Select(m => new { m.SchoolClassId, m.StrandId, m.SubStrandId })
+                .Distinct();
+            foreach (var s in scopes)
+            {
+                var authBlock = await CheckCanWriteAsync(s.SchoolClassId, s.StrandId, s.SubStrandId);
+                if (authBlock != null) return authBlock;
+            }
+
+            try
+            {
+                foreach (var item in model)
+                {
+                    if (item.Id > 0)
+                    {
+                        var _item = _mapper.Map<StudentAssessment>(item);
+                        _modelSvc.Update(_item);
+                    }
+                    else
+                    {
+                        // Mirror the single Create's composite-key guard, but in a
+                        // batch we skip duplicates instead of failing the request.
+                        var exists = await _modelSvc.ItemExistsAsync(st => st.StudentId == item.StudentId &&
+                            st.SpecificOutcomeId == item.SpecificOutcomeId && st.SubStrandId == item.SubStrandId &&
+                            st.StrandId == item.StrandId && st.SessionId == item.SessionId &&
+                            st.AssessmentTypeId == item.AssessmentTypeId && st.SchoolClassId == item.SchoolClassId);
+                        if (exists) continue;
+                        var _item = _mapper.Map<StudentAssessment>(item);
+                        _modelSvc.Create(_item);
+                    }
+                }
+                await _modelSvc.SaveChangesAsync();
+                return Ok("Student assessments saved successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while saving the batch of student assessments.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
 
         // PUT: api/studentAssessments

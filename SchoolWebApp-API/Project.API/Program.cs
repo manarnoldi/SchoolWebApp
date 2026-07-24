@@ -22,6 +22,20 @@ nlogLogger.Debug("Starting ShuleNova API");
 
 var builder = WebApplication.CreateBuilder(args);
 
+// The batch endpoints (e.g. /api/examResults/batch, /api/studentValueScores)
+// upload large JSON payloads, often over slow/unstable school links. Kestrel's
+// default MinRequestBodyDataRate (240 bytes/sec after a 5s grace period) aborts
+// those uploads whenever the stream stalls, surfacing as
+// "BadHttpRequestException: Reading the request body timed out due to data
+// arriving too slowly". Disable the minimum data rate and give the body more
+// time so slow-but-progressing uploads can complete.
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MinRequestBodyDataRate = null;
+    options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(2);
+    options.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(1);
+});
+
 string mySqlConnectionStr = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // Cap below site4now's per-MySQL-user limit of 20 concurrent connections.

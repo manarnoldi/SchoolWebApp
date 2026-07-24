@@ -154,7 +154,7 @@ namespace SchoolWebApp.API.Controllers.Finance
             if (amount > original.Amount)
                 return BadRequest("Credit note amount cannot exceed original payment.");
 
-            // Create in Draft status — no invoice update or journal posting until approved
+            // Create in Draft status - no invoice update or journal posting until approved
             var creditNote = new Payment
             {
                 ReceiptNumber = $"CN-{DateTime.Now:yyyyMMddHHmmssfff}",
@@ -182,7 +182,7 @@ namespace SchoolWebApp.API.Controllers.Finance
             if (original == null) return NotFound();
             if (model.Amount <= 0) return BadRequest("Debit note amount must be positive.");
 
-            // Create in Draft status — no invoice update until approved
+            // Create in Draft status - no invoice update until approved
             var debitNote = new Payment
             {
                 ReceiptNumber = $"DN-{DateTime.Now:yyyyMMddHHmmssfff}",

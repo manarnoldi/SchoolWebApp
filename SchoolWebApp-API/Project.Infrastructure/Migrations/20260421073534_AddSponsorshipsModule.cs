@@ -42,7 +42,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
             ");
 
-            // Column may have been added by a partial prior attempt — guard it.
+            // Column may have been added by a partial prior attempt - guard it.
             migrationBuilder.Sql(@"
                 SET @sql = (SELECT IF(COUNT(*) = 0,
                     'ALTER TABLE StudentInvoiceItems ADD COLUMN SponsorshipId int NULL',

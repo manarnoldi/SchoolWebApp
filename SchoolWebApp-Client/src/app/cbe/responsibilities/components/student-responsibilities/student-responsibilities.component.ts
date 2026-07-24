@@ -5,6 +5,7 @@ import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 import {matchOptionId, pushQueryParams, readQueryParam} from '@/shared/utils/query-param-sync';
+import {DirtyTracker} from '@/core/utils/dirty-tracker';
 import {StudentResponsibility} from '../../models/student-responsibility';
 import {StudentResponsibilityService} from '../../services/student-responsibility.service';
 import {ResponsibilityService} from '../../services/responsibility.service';
@@ -54,6 +55,10 @@ export class StudentResponsibilitiesComponent implements OnInit {
 
     studentsLoaded: boolean = false;
     isSaving: boolean = false;
+
+    // Snapshots each saved assignment's description at load so saveAll() sends
+    // only new assignments and ones whose description changed. Keyed by DB id.
+    private dirty = new DirtyTracker();
 
     // Client-side search + paging for the student-row table.
     searchText: string = '';
@@ -204,10 +209,12 @@ export class StudentResponsibilitiesComponent implements OnInit {
                     return;
                 }
 
+                this.dirty.reset();
                 this.studentRows = classStudents.map((student) => {
                     let studentAssignments = allAssignments.filter((a) => a.studentId == +student.id);
                     let assignments = studentAssignments.map((a) => {
                         let item = a.responsibilitySocialSkill;
+                        this.dirty.snapshot(a.id, {description: a.description || ''});
                         return {
                             itemId: a.responsibilitySocialSkillId,
                             itemName: item ? item.name : 'Unknown',
@@ -284,62 +291,56 @@ export class StudentResponsibilitiesComponent implements OnInit {
     };
 
     saveAll = () => {
-        let newItems: any[] = [];
-        let updateItems: any[] = [];
+        // New assignments are always sent; existing ones only when their
+        // description changed since load. Everything else is left untouched
+        // server-side, so we send just the delta as a single batch.
+        let newCount = 0;
+        let updateCount = 0;
+        let batch: StudentResponsibility[] = [];
         this.studentRows.forEach((row) => {
             row.assignments.forEach((a) => {
                 if (!a.existingId) {
-                    newItems.push({studentId: row.studentId, itemId: a.itemId, description: a.description});
+                    newCount++;
+                } else if (this.dirty.hasChanged(a.existingId, {description: a.description || ''})) {
+                    updateCount++;
                 } else {
-                    updateItems.push({studentId: row.studentId, itemId: a.itemId, description: a.description, existingId: a.existingId});
+                    return; // unchanged existing assignment - skip
                 }
+                let sr = new StudentResponsibility({
+                    academicYearId: this.filterAcademicYearId,
+                    studentId: row.studentId,
+                    responsibilitySocialSkillId: a.itemId,
+                    description: a.description
+                });
+                if (a.existingId) sr.id = a.existingId;
+                batch.push(sr);
             });
         });
 
-        if (newItems.length === 0 && updateItems.length === 0) {
+        if (batch.length === 0) {
             this.toastr.info('No changes to save.');
             return;
         }
 
         Swal.fire({
-            title: 'Save all?',
-            text: `${newItems.length} new, ${updateItems.length} updated.`,
+            title: 'Save changes?',
+            text: `${newCount} new, ${updateCount} updated.`,
             width: 400, position: 'top', padding: '1em', icon: 'question',
             showCancelButton: true, confirmButtonText: 'Save', cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.value) {
                 this.isSaving = true;
-                let requests = [];
-                for (let item of newItems) {
-                    let sr = new StudentResponsibility({
-                        academicYearId: this.filterAcademicYearId,
-                        studentId: item.studentId,
-                        responsibilitySocialSkillId: item.itemId,
-                        description: item.description
-                    });
-                    requests.push(this.studentResponsibilitySvc.create('/studentResponsibilities', sr));
-                }
-                for (let item of updateItems) {
-                    let sr = new StudentResponsibility({
-                        academicYearId: this.filterAcademicYearId,
-                        studentId: item.studentId,
-                        responsibilitySocialSkillId: item.itemId,
-                        description: item.description
-                    });
-                    sr.id = item.existingId;
-                    requests.push(this.studentResponsibilitySvc.update('/studentResponsibilities', sr));
-                }
-                forkJoin(requests).subscribe(
-                    () => {
+                this.studentResponsibilitySvc.createBatch('/studentResponsibilities/batch', batch).subscribe({
+                    next: () => {
                         this.isSaving = false;
-                        this.toastr.success('All assignments saved!');
+                        this.toastr.success(`${batch.length} assignment(s) saved!`);
                         this.loadStudents();
                     },
-                    (err) => {
+                    error: (err) => {
                         this.isSaving = false;
-                        this.toastr.error(err.error?.message || 'Error saving.');
+                        this.toastr.error(err.error?.message || err.error || 'Error saving.');
                     }
-                );
+                });
             }
         });
     };

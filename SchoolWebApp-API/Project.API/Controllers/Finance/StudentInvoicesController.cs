@@ -354,7 +354,7 @@ namespace SchoolWebApp.API.Controllers.Finance
                     }
                     else
                     {
-                        // No sponsor AR — income drops by the discount amount (net into revenue line).
+                        // No sponsor AR - income drops by the discount amount (net into revenue line).
                         fullAmount = studentPortion;
                     }
                 }

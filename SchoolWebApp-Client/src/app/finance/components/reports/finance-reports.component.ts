@@ -23,7 +23,7 @@ export class FinanceReportsComponent implements OnInit {
     ];
     dashboardTitle = 'Finance: Reports';
 
-    // Report group — driven by route data. One of 'fees' | 'expenses' | 'statements'.
+    // Report group - driven by route data. One of 'fees' | 'expenses' | 'statements'.
     reportGroup: 'fees' | 'expenses' | 'statements' = 'fees';
 
     // Tab-to-group map; controls which tabs are visible.
@@ -130,7 +130,7 @@ export class FinanceReportsComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        // Pick up the group from the route — 'fees' | 'expenses' | 'statements'.
+        // Pick up the group from the route - 'fees' | 'expenses' | 'statements'.
         let group = this.route.snapshot.data?.['reportGroup'] || 'fees';
         this.reportGroup = group;
         let defaults: any = {fees: 'feeCollection', expenses: 'expenses', statements: 'trialBalance'};
@@ -343,7 +343,7 @@ export class FinanceReportsComponent implements OnInit {
 
     loadOutstanding() {
         this.isLoading = true;
-        // Load without the search — we'll apply search client-side so it's instant as the user types
+        // Load without the search - we'll apply search client-side so it's instant as the user types
         this.reportsSvc.outstandingBalances(this.outstandingYearId, this.outstandingSessionId).subscribe({
             next: (r) => {
                 this.allOutstanding = r || [];

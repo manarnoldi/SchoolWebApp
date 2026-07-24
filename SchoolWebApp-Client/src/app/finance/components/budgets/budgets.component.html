@@ -33,7 +33,7 @@
                             <h6 class="text-info mb-2"><i class="fas fa-info-circle me-1"></i> Budget Details</h6>
                             <div class="row g-1">
                                 <div class="col-md-12">
-                                    <label class="form-label mb-0" style="font-size:0.8rem;">Budget Plan <span class="requiredField">*</span> <small class="text-muted">(select an Open plan — year & dates auto-fill)</small></label>
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Budget Plan <span class="requiredField">*</span> <small class="text-muted">(select an Open plan - year & dates auto-fill)</small></label>
                                     <select class="form-select form-select-sm" [(ngModel)]="item.budgetMasterId" (ngModelChange)="onBudgetPlanChange()" [disabled]="editMode">
                                         <option [ngValue]="null" hidden disabled>Select budget plan</option>
                                         <option [ngValue]="m.id" *ngFor="let m of getAvailableMasters()">{{ m.code }} - {{ m.name }} ({{ m.academicYearName }})</option>
@@ -73,7 +73,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-8">
-                                    <label class="form-label mb-0" style="font-size:0.8rem;">Name <span class="requiredField">*</span> <small class="text-muted" *ngIf="!editMode">(auto-generated — editable)</small></label>
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Name <span class="requiredField">*</span> <small class="text-muted" *ngIf="!editMode">(auto-generated - editable)</small></label>
                                     <input class="form-control form-control-sm" [ngClass]="{'bg-light': editMode}" [(ngModel)]="item.name" [readonly]="editMode" placeholder="Select plan & department to auto-fill" />
                                 </div>
                             </div>

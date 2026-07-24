@@ -122,7 +122,7 @@ namespace SchoolWebApp.API.Controllers.Sponsorships
 
         /// <summary>
         /// Find active sponsorships that apply to a given student on a given date.
-        /// Returns a list sorted by coverage weight — useful for the invoice form to auto-pre-fill.
+        /// Returns a list sorted by coverage weight - useful for the invoice form to auto-pre-fill.
         /// </summary>
         [HttpGet("byStudent/{studentId}")]
         public async Task<IActionResult> ByStudent(int studentId, int? academicYearId, int? sessionId, DateTime? onDate)
@@ -155,7 +155,7 @@ namespace SchoolWebApp.API.Controllers.Sponsorships
         /// <summary>
         /// Retroactively apply this sponsorship to existing open invoices that match its scope
         /// (student or class, year, session, covered fee categories). Posts an adjustment journal
-        /// per invoice — Debit Sponsor Receivable / Credit Student Debtors — transferring the AR
+        /// per invoice - Debit Sponsor Receivable / Credit Student Debtors - transferring the AR
         /// from the student to the sponsor. Skips fully-paid invoices and items already sponsored.
         /// </summary>
         [HttpPost("{id}/applyToExisting")]

@@ -7,6 +7,8 @@ import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {SessionsService} from '@/class/services/sessions.service';
 import {SchoolClassesService} from '@/class/services/school-classes.service';
 import {LearningLevelsService} from '@/class/services/learning-levels.service';
+import {EducationLevelService} from '@/school/services/education-level.service';
+import {EducationLevelTypesService} from '@/school/services/education-level-types.service';
 import {GradesService} from '@/academics/services/grades.service';
 import {GlobalSettingService} from '@/settings/services/global-setting.service';
 import {SchoolDetailsService} from '@/school/services/school-details.service';
@@ -33,6 +35,16 @@ interface ClassRow {
     classGrade: string;
     topStudent: string;
     classTeacher: string;
+    educationLevelId: any; // used to group classes for ranking
+}
+
+// A ranking group (an education level type or an education level, per the
+// ClassPerformanceRankingBasis setting). Rank restarts at 1 within each group.
+interface ClassGroup {
+    key: any;
+    name: string;
+    order: number;
+    rows: ClassRow[];
 }
 
 @Component({
@@ -58,6 +70,14 @@ export class ClassPerformanceComponent implements OnInit {
     gradingSettings: any[] = [];
     averageMethod: string = 'students_with_scores';
 
+    // Ranking-grouping basis + the level lookups used to resolve each class's
+    // group. 'education_level_type' (default) ranks within each education level
+    // type; 'education_level' ranks within each education level.
+    rankingBasis: string = 'education_level_type';
+    educationLevels: any[] = [];
+    educationLevelTypes: any[] = [];
+    groups: ClassGroup[] = [];
+
     filterCurriculumId: any = null;
     filterAcademicYearId: any = null;
     filterSessionId: any = null;
@@ -75,6 +95,8 @@ export class ClassPerformanceComponent implements OnInit {
         private sessionsSvc: SessionsService,
         private schoolClassesSvc: SchoolClassesService,
         private learningLevelSvc: LearningLevelsService,
+        private educationLevelSvc: EducationLevelService,
+        private educationLevelTypeSvc: EducationLevelTypesService,
         private gradesSvc: GradesService,
         private globalSettingSvc: GlobalSettingService,
         private examSvc: ExamService,
@@ -94,15 +116,20 @@ export class ClassPerformanceComponent implements OnInit {
             this.examTypeSvc.get('/examTypes'),
             this.gradesSvc.get('/grades'),
             this.globalSettingSvc.getByModule('Grading'),
-            this.globalSettingSvc.getByKey('General', 'AverageCalculation')
+            this.globalSettingSvc.getByKey('General', 'AverageCalculation'),
+            this.educationLevelSvc.get('/educationLevels'),
+            this.educationLevelTypeSvc.get('/educationLevelTypes')
         ]).subscribe({
-            next: ([curricula, academicYears, examTypes, allGrades, gradingSettings, avgSetting]) => {
+            next: ([curricula, academicYears, examTypes, allGrades, gradingSettings, avgSetting, edLevels, edLevelTypes]) => {
                 this.curricula = curricula.sort((a, b) => a.rank - b.rank);
                 this.academicYears = academicYears.sort((a, b) => b.rank - a.rank);
                 this.examTypes = examTypes.sort((a, b) => a.rank - b.rank);
                 this.allGrades = allGrades;
                 this.gradingSettings = (gradingSettings as any[]) || [];
                 this.averageMethod = (avgSetting as any)?.settingValue || 'students_with_scores';
+                this.educationLevels = (edLevels as any[]) || [];
+                this.educationLevelTypes = (edLevelTypes as any[]) || [];
+                this.rankingBasis = this.settingVal('ClassPerformanceRankingBasis') || 'education_level_type';
             },
             error: (err) => this.toastr.error(err.error)
         });
@@ -295,8 +322,62 @@ export class ClassPerformanceComponent implements OnInit {
             classValue,
             classGrade,
             topStudent,
-            classTeacher
+            classTeacher,
+            educationLevelId: edLevelId ?? null
         };
+    };
+
+    // Partition the class rows into ranking groups per the configured basis,
+    // rank within each group (desc by class value, ties share a rank), and
+    // order the groups by the education level / level-type rank.
+    private buildGroups = (list: ClassRow[]): ClassGroup[] => {
+        let byType = this.rankingBasis === 'education_level_type';
+        let elById = new Map<number, any>();
+        this.educationLevels.forEach((el) => elById.set(+el.id, el));
+        let typeById = new Map<number, any>();
+        this.educationLevelTypes.forEach((t) => typeById.set(+t.id, t));
+
+        // Resolve a row's group key/name/order from its education level.
+        let groupOf = (r: ClassRow): {key: any; name: string; order: number} => {
+            let el = r.educationLevelId != null ? elById.get(+r.educationLevelId) : null;
+            if (byType) {
+                let t = el ? typeById.get(+el.educationLevelTypeId) : null;
+                return t
+                    ? {key: `t${t.id}`, name: t.name || 'Unassigned', order: t.rank ?? 9999}
+                    : {key: 'none', name: 'Unassigned', order: 9999};
+            }
+            return el
+                ? {key: `l${el.id}`, name: el.name || 'Unassigned', order: el.rank ?? 9999}
+                : {key: 'none', name: 'Unassigned', order: 9999};
+        };
+
+        let groupMap = new Map<any, ClassGroup>();
+        list.forEach((r) => {
+            let g = groupOf(r);
+            let existing = groupMap.get(g.key);
+            if (!existing) {
+                existing = {key: g.key, name: g.name, order: g.order, rows: []};
+                groupMap.set(g.key, existing);
+            }
+            existing.rows.push(r);
+        });
+
+        let groups = [...groupMap.values()];
+        groups.forEach((g) => {
+            g.rows.sort((a, b) => b.classValue - a.classValue);
+            let currentRank = 1;
+            g.rows.forEach((r, i) => {
+                if (i > 0 && Math.round(r.classValue * 10) === Math.round(g.rows[i - 1].classValue * 10)) {
+                    r.rank = g.rows[i - 1].rank;
+                } else {
+                    r.rank = currentRank;
+                }
+                currentRank = i + 2;
+            });
+        });
+        // Groups ordered by the level / level-type rank, then name.
+        groups.sort((a, b) => (a.order - b.order) || a.name.localeCompare(b.name));
+        return groups;
     };
 
     loadReport = () => {
@@ -312,7 +393,23 @@ export class ClassPerformanceComponent implements OnInit {
         this.isLoading = true;
         this.loaded = false;
         this.classRows = [];
+        this.groups = [];
 
+        // Re-read the Grading settings on every Load so a change made in another
+        // window (ranking basis, or per-level ranking method) takes effect on the
+        // next Load without a full page refresh. Falls back to the values read at
+        // init if the fetch fails.
+        this.globalSettingSvc.getByModule('Grading').subscribe({
+            next: (gradingSettings) => {
+                this.gradingSettings = (gradingSettings as any[]) || this.gradingSettings;
+                this.rankingBasis = this.settingVal('ClassPerformanceRankingBasis') || 'education_level_type';
+                this.runReportLoad();
+            },
+            error: () => this.runReportLoad()
+        });
+    };
+
+    private runReportLoad = () => {
         let requests = this.schoolClasses.map((cls) => {
             let url = `/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}&schoolClassId=${cls.id}&examTypeId=${this.filterExamTypeId}`;
             return forkJoin([
@@ -333,18 +430,9 @@ export class ClassPerformanceComponent implements OnInit {
         forkJoin(requests).subscribe({
             next: (rows) => {
                 let list = (rows.filter(Boolean) as ClassRow[]);
-                // Rank by the class value (per the ranking method), desc; ties share a rank.
-                list.sort((a, b) => b.classValue - a.classValue);
-                let currentRank = 1;
-                list.forEach((r, i) => {
-                    if (i > 0 && Math.round(r.classValue * 10) === Math.round(list[i - 1].classValue * 10)) {
-                        r.rank = list[i - 1].rank;
-                    } else {
-                        r.rank = currentRank;
-                    }
-                    currentRank = i + 2;
-                });
-                this.classRows = list;
+                // Group by the configured basis and rank within each group.
+                this.groups = this.buildGroups(list);
+                this.classRows = list; // flat list retained for counts / print guard
                 this.loaded = true;
                 this.isLoading = false;
                 if (!this.classRows.length) this.toastr.info('No exam results found for this selection.');
@@ -352,6 +440,14 @@ export class ClassPerformanceComponent implements OnInit {
             error: (err) => { this.isLoading = false; this.toastr.error(err.error); }
         });
     };
+
+    // Label describing the current grouping basis, shown in the report header
+    // and print subtitle.
+    get rankingBasisLabel(): string {
+        return this.rankingBasis === 'education_level'
+            ? 'ranked within each education level'
+            : 'ranked within each education level type';
+    }
 
     printReport = () => {
         if (!this.classRows.length) {
@@ -376,22 +472,31 @@ export class ClassPerformanceComponent implements OnInit {
                                 {text: 'Top Student', style: 'tableHeader'},
                                 {text: 'Class Teacher / CEO', style: 'tableHeader'}
                             ]];
-                            this.classRows.forEach((c) => body.push([
-                                {text: c.rank, alignment: 'center', bold: true, fontSize: 9},
-                                {text: c.className, fontSize: 9},
-                                {text: c.studentCount, alignment: 'center', fontSize: 9},
-                                {text: c.classValue + (c.method === 'mean_points' ? ' pts' : '%'), alignment: 'center', bold: true, fontSize: 9},
-                                {text: c.classGrade, alignment: 'center', bold: true, fontSize: 9},
-                                {text: c.topStudent, fontSize: 9},
-                                {text: c.classTeacher, fontSize: 9}
-                            ]));
+                            // One section per ranking group, with a spanning
+                            // subheading row and the group's ranked classes.
+                            this.groups.forEach((g) => {
+                                body.push([
+                                    {text: `${g.name}  (${g.rows.length} class${g.rows.length === 1 ? '' : 'es'})`,
+                                        colSpan: 7, bold: true, fontSize: 9, fillColor: '#e9ecef', margin: [0, 1, 0, 1]},
+                                    {}, {}, {}, {}, {}, {}
+                                ]);
+                                g.rows.forEach((c) => body.push([
+                                    {text: c.rank, alignment: 'center', bold: true, fontSize: 9},
+                                    {text: c.className, fontSize: 9},
+                                    {text: c.studentCount, alignment: 'center', fontSize: 9},
+                                    {text: c.classValue + (c.method === 'mean_points' ? ' pts' : '%'), alignment: 'center', bold: true, fontSize: 9},
+                                    {text: c.classGrade, alignment: 'center', bold: true, fontSize: 9},
+                                    {text: c.topStudent, fontSize: 9},
+                                    {text: c.classTeacher, fontSize: 9}
+                                ]));
+                            });
 
                             let content: any[] = [
                                 {...this.reportSvc.getDIVIDER('landscape')},
                                 this.reportSvc.getReportHeader(school[0]),
                                 {...this.reportSvc.getDIVIDER('landscape'), marginBottom: 1},
                                 this.reportSvc.getReportTitle(reportTitle),
-                                {text: 'Classes ranked by the ranking method (mean marks or mean points, per education level)', alignment: 'center', italics: true, fontSize: 8, color: '#555', marginBottom: 2},
+                                {text: `Classes ${this.rankingBasisLabel} (mean marks or mean points, per education level)`, alignment: 'center', italics: true, fontSize: 8, color: '#555', marginBottom: 2},
                                 {...this.reportSvc.getDIVIDER('landscape'), marginBottom: 2},
                                 {
                                     layout: this.reportSvc.getTableLayout(),

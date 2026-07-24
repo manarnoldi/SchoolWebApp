@@ -120,6 +120,10 @@ export class GlobalSettingsComponent implements OnInit {
                     {value: 'mean_marks', label: 'Mean Marks (Average %)'},
                     {value: 'mean_points', label: 'Mean Points (Score)'}
                 ], description: 'How students are ranked on broadsheet and report form'},
+                {key: 'ClassPerformanceRankingBasis', label: 'Class Performance Ranking Basis', type: 'select', options: [
+                    {value: 'education_level_type', label: 'Per education level type (e.g. Pre-Primary, Primary)'},
+                    {value: 'education_level', label: 'Per education level (e.g. each grade/level)'}
+                ], description: 'On the Class Performance report and the dashboard Class Exam Performance widget, whether classes are ranked within each education level type or within each education level. Ranking restarts at 1 within each group.'},
                 {key: 'MeanBasis', label: 'Totals & Means Basis', type: 'select', options: [
                     {value: 'subjects_done', label: 'Subjects with results recorded'},
                     {value: 'subjects_expected', label: 'All subjects allocated to the student'}

@@ -11,12 +11,12 @@ namespace SchoolWebApp.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             // ============================================================
-            // Chart of Accounts — Auto-posting accounts
+            // Chart of Accounts - Auto-posting accounts
             // ============================================================
             migrationBuilder.Sql(@"
                 INSERT IGNORE INTO Accounts (Code, Name, AccountType, IsActive, Description, Created)
                 VALUES
-                ('DEBTORS', 'Student Debtors', 1, 1, 'Accounts Receivable — student fees', NOW()),
+                ('DEBTORS', 'Student Debtors', 1, 1, 'Accounts Receivable - student fees', NOW()),
                 ('CASH', 'Cash at Hand', 1, 1, 'Cash account for receipts and payments', NOW()),
                 ('BANK', 'Bank Account', 1, 1, 'Main school bank account', NOW()),
                 ('SALEXP', 'Salary Expense', 5, 1, 'Staff salaries and wages', NOW()),
@@ -27,7 +27,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
             ");
 
             // ============================================================
-            // Payroll — Earning Types
+            // Payroll - Earning Types
             // ============================================================
             migrationBuilder.Sql(@"
                 INSERT IGNORE INTO EarningTypes (Name, Code, IsTaxable, IsActive, Created)
@@ -45,7 +45,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
             ");
 
             // ============================================================
-            // Payroll — Deduction Types
+            // Payroll - Deduction Types
             // ============================================================
             migrationBuilder.Sql(@"
                 INSERT IGNORE INTO DeductionTypes (Name, Code, IsStatutory, IsActive, Created)
@@ -65,7 +65,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
             ");
 
             // ============================================================
-            // Payroll — PAYE Tax Bands (Kenya 2025 Monthly)
+            // Payroll - PAYE Tax Bands (Kenya 2025 Monthly)
             // ============================================================
             migrationBuilder.Sql(@"
                 INSERT IGNORE INTO TaxBands (Description, LowerLimit, UpperLimit, Rate, EffectiveDate, IsActive, Created)
@@ -78,7 +78,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
             ");
 
             // ============================================================
-            // Payroll — Statutory Settings (Kenya 2025)
+            // Payroll - Statutory Settings (Kenya 2025)
             // ============================================================
             migrationBuilder.Sql(@"
                 INSERT IGNORE INTO PayrollSettings (`Key`, Name, Value, Category, Description, EffectiveDate, IsActive, Created)

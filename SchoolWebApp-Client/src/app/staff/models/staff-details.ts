@@ -24,6 +24,7 @@ export class StaffDetails extends ResourceModel<StaffDetails> {
     public dateOfBirth?: Date;
     public upi?: string;
     public idNumber?: string;
+    public staffNo?: string;
     public nhifNo?: string;
     public nssfNo?: string;
     public kraPinNo?: string;

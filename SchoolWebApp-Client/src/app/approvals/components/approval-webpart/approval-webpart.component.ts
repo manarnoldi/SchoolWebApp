@@ -68,7 +68,7 @@ export class ApprovalWebpartComponent implements OnChanges {
                             this.request = r;
                             this.loading = false;
                             this.requestLoaded.emit(r);
-                            // Do not emit statusChanged here — this is a passive load, not a state transition.
+                            // Do not emit statusChanged here - this is a passive load, not a state transition.
                             // Parents listen to statusChanged only for genuine changes (submit/approve/reject/return).
                         },
                         error: () => { this.loading = false; }
@@ -95,7 +95,7 @@ export class ApprovalWebpartComponent implements OnChanges {
         return true;
     }
 
-    // Exposed for parent: submit without confirm — used when parent is doing a combined save+submit
+    // Exposed for parent: submit without confirm - used when parent is doing a combined save+submit
     submitSilently(): Promise<ApprovalRequest | null> {
         return new Promise((resolve) => {
             if (!this.canSubmit()) { resolve(null); return; }

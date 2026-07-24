@@ -10,6 +10,10 @@ namespace SchoolWebApp.Core.DTOs.Staff.StaffDetails
         [Display(Name = "School identity number")]
         [StringLength(255)]
         public string? IdNumber { get; set; }
+
+        [Display(Name = "Staff number")]
+        [StringLength(255)]
+        public string? StaffNo { get; set; }
         public string? NhifNo { get; set; }
         public string? NssfNo { get; set; }
         public string? KraPinNo { get; set; }

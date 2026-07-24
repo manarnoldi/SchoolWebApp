@@ -137,7 +137,7 @@ namespace SchoolWebApp.API.Controllers.Approvals
             var inUse = await _db.ApprovalRequests.AnyAsync(r => r.ApprovalWorkflowId == id);
             if (inUse)
                 return BadRequest(new { message = "This workflow is referenced by approval requests and cannot be deleted." });
-            // Cascade delete is disabled at the DB level — remove owned steps explicitly.
+            // Cascade delete is disabled at the DB level - remove owned steps explicitly.
             _db.ApprovalWorkflowSteps.RemoveRange(wf.Steps);
             _db.ApprovalWorkflows.Remove(wf);
             await _db.SaveChangesAsync();

@@ -147,6 +147,43 @@ namespace SchoolWebApp.API.Controllers.CBE.Responsibilities
             return BadRequest(ModelState);
         }
 
+        // POST api/studentResponsibilities/batch
+        /// <summary>
+        /// Upserts a batch of student responsibilities in a single request.
+        /// Rows with Id &gt; 0 are updated; rows with Id &lt;= 0 are created.
+        /// Rows omitted from the payload are left untouched (NOT a full-set
+        /// replace), so the client can send only the records that were added or
+        /// changed.
+        /// </summary>
+        [HttpPost("batch")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreateMany(List<StudentResponsibilityDto> model)
+        {
+            if (model == null || !model.Any())
+                return BadRequest("No student responsibilities provided.");
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            try
+            {
+                foreach (var item in model)
+                {
+                    var _item = _mapper.Map<StudentResponsibility>(item);
+                    if (item.Id > 0)
+                        _modelSvc.Update(_item);
+                    else
+                        _modelSvc.Create(_item);
+                }
+                await _modelSvc.SaveChangesAsync();
+                return Ok("Student responsibilities saved successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while saving the batch of student responsibilities.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

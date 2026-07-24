@@ -22,7 +22,7 @@
                     style="white-space: normal; cursor: pointer;">
                     <i [ngClass]="iconFor(item.entityType)" class="me-2"></i>
                     <strong>{{ formKeyLabel(item.entityType) }}</strong>
-                    <small class="text-muted"> &mdash; Step {{ item.currentStepRank }}: {{ item.stepName }}</small>
+                    <small class="text-muted"> - Step {{ item.currentStepRank }}: {{ item.stepName }}</small>
                     <div class="text-sm text-muted">
                         From <strong>{{ item.submittedByName }}</strong>
                         <span class="float-end">{{ getTimeAgo(item.submittedAt) }}</span>

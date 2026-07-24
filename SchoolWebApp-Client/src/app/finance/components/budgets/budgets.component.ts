@@ -130,7 +130,7 @@ export class FinanceBudgetsComponent implements OnInit {
     };
 
     // True when the current user is (or was) an approver on this entity's workflow.
-    // Such users cannot edit or delete the item — they can only approve / return / reject.
+    // Such users cannot edit or delete the item - they can only approve / return / reject.
     isApproverForMe = (id: any): boolean => {
         if (!id) return false;
         return this.approvalApproverMap.get(+id) === true;

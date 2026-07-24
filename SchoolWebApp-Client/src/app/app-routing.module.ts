@@ -300,7 +300,7 @@ const routes: Routes = [
             {path: 'assessments/lesson-allocations', component: LessonAllocationsComponent},
             {path: 'assessments/pcis', component: PCIsComponent},
             {path: 'assessments/assessments', component: StudentAssessmentsComponent},
-            // Permission sentinel — see MENU note in menu-sidebar.component.ts.
+            // Permission sentinel - see MENU note in menu-sidebar.component.ts.
             // Reuses the same component; the component reads its mode from the
             // user's MenuPermissions list.
             {path: 'assessments/admin', redirectTo: 'assessments/assessments', pathMatch: 'full'},

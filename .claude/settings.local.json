@@ -29,7 +29,8 @@
       "Bash(xargs grep -l \"AuditEvent\")",
       "Bash(xargs grep -l \"LastLogin\\\\|LastSeen\\\\|LastActivity\")",
       "Bash(xargs grep -l \"middleware\\\\|IMiddleware\")",
-      "PowerShell(dotnet build \"C:\\\\Personal\\\\SchoolWebApp\\\\SchoolWebApp-API\\\\Project.API\\\\SchoolWebApp.API.csproj\" -o \"$env:TEMP\\\\apiverify2\" -nologo -clp:ErrorsOnly 2>&1 | Select-Object -Last 12; \"EXIT=$LASTEXITCODE\")"
+      "PowerShell(dotnet build \"C:\\\\Personal\\\\SchoolWebApp\\\\SchoolWebApp-API\\\\Project.API\\\\SchoolWebApp.API.csproj\" -o \"$env:TEMP\\\\apiverify2\" -nologo -clp:ErrorsOnly 2>&1 | Select-Object -Last 12; \"EXIT=$LASTEXITCODE\")",
+      "PowerShell(Set-Location \"C:\\\\Personal\\\\SchoolWebApp\\\\SchoolWebApp-API\"; $env:DOTNET_CLI_TELEMETRY_OPTOUT=1; dotnet ef migrations add AddStaffNoToStaffDetails --project Project.Infrastructure --startup-project Project.API 2>&1 | Select-Object -Last 25)"
     ],
     "additionalDirectories": [
       "C:\\Personal\\SchoolWebApp\\.git"

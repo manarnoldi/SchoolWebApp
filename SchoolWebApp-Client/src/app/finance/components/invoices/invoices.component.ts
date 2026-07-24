@@ -382,7 +382,7 @@ export class FinanceInvoicesComponent implements OnInit {
                 item.discount = Math.round((amt * (sp.percentage / 100)) * 100) / 100;
                 break;
             case SponsorshipCoverageType.FixedAmount:
-                // Per-line cap equals item amount (bulk's across-line allocation isn't replicated here — manual edit).
+                // Per-line cap equals item amount (bulk's across-line allocation isn't replicated here - manual edit).
                 item.discount = Math.min(sp.fixedAmount || 0, amt);
                 break;
         }
@@ -433,7 +433,7 @@ export class FinanceInvoicesComponent implements OnInit {
             }
         });
 
-        // Append any structure items that aren't yet on the invoice — user can include them.
+        // Append any structure items that aren't yet on the invoice - user can include them.
         let existingCategoryIds = new Set(this.editInvoice.items.map((i: any) => +i.feeCategoryId!));
         structureByCategory.forEach((info, feeCategoryId) => {
             if (existingCategoryIds.has(feeCategoryId)) return;

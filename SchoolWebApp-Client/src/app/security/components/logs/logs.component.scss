@@ -8,7 +8,7 @@ pre {
 
 // Force the table to honour explicit column widths so the cell-clip divs
 // below can actually truncate. Without `table-layout: fixed`, browsers
-// expand columns to fit whatever content lands in them — exactly what
+// expand columns to fit whatever content lands in them - exactly what
 // makes the Message column blow up with a giant stack trace.
 .logs-table {
     table-layout: fixed;

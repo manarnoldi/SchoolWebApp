@@ -24,7 +24,7 @@ export function pushQueryParams(
     });
 }
 
-// Convenience reader (snapshot — fine for component init where we only need
+// Convenience reader (snapshot - fine for component init where we only need
 // the value once). Returns null if absent.
 export function readQueryParam(route: ActivatedRoute, key: string): string | null {
     return route.snapshot.queryParamMap.get(key);

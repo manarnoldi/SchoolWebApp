@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep -livE \"^$\")",
+      "Bash(xargs grep -lE \"CreateMap<.*StudentValueScoreDto|CreateMap<StudentValueScore\")",
+      "Bash(node -e \"const s=require\\('./package.json'\\).scripts; console.log\\(JSON.stringify\\(s,null,2\\)\\)\")",
+      "Bash(git add *)"
+    ]
+  }
+}

@@ -82,7 +82,7 @@ export class LoaderInterceptor implements HttpInterceptor {
     }
 
     private startRequest() {
-        // A new request cancels any pending "hide" — we're not idle anymore.
+        // A new request cancels any pending "hide" - we're not idle anymore.
         if (this.hideTimer) {
             clearTimeout(this.hideTimer);
             this.hideTimer = null;
@@ -90,7 +90,7 @@ export class LoaderInterceptor implements HttpInterceptor {
         this.activeRequests++;
         // Only schedule a "show" if this is the first request and the spinner
         // isn't already visible. Subsequent overlapping requests just increment
-        // the counter — no extra timers, no flicker.
+        // the counter - no extra timers, no flicker.
         if (this.activeRequests === 1 && !this.spinnerVisible && !this.showTimer) {
             this.showTimer = setTimeout(() => {
                 this.showTimer = null;

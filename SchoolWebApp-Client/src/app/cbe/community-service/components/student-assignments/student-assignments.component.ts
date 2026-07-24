@@ -6,6 +6,7 @@ import {forkJoin, of} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import {matchOptionId, pushQueryParams, readQueryParam} from '@/shared/utils/query-param-sync';
+import {DirtyTracker} from '@/core/utils/dirty-tracker';
 import {StudentCommunityServiceActivity} from '../../models/student-community-service-activity';
 import {StudentCommunityServiceActivityService} from '../../services/student-community-service-activity.service';
 import {CommunityServiceActivityService} from '../../services/community-service-activity.service';
@@ -55,6 +56,10 @@ export class CommunityServiceStudentAssignmentsComponent implements OnInit {
 
     studentsLoaded: boolean = false;
     isSaving: boolean = false;
+
+    // Snapshots each saved assignment's description at load so saveAll() sends
+    // only new assignments and ones whose description changed. Keyed by DB id.
+    private dirty = new DirtyTracker();
 
     // Client-side search + paging for the student-row table.
     searchText: string = '';
@@ -212,6 +217,7 @@ export class CommunityServiceStudentAssignmentsComponent implements OnInit {
 
                 forkJoin(assignmentRequests).subscribe({
                     next: (allStudentAssignments: any[][]) => {
+                        this.dirty.reset();
                         this.studentRows = classStudents.map((student, idx) => {
                             let allForStudent = allStudentAssignments[idx] || [];
                             let relevant = allForStudent.filter((a: any) =>
@@ -220,6 +226,7 @@ export class CommunityServiceStudentAssignmentsComponent implements OnInit {
                             );
                             let assignments = relevant.map((a: any) => {
                                 let act = this.activities.find((x) => +x.id == +a.communityServiceActivityId);
+                                this.dirty.snapshot(a.id, {description: a.description || ''});
                                 return {
                                     activityId: a.communityServiceActivityId,
                                     activityName: act ? act.name : 'Unknown',
@@ -287,64 +294,57 @@ export class CommunityServiceStudentAssignmentsComponent implements OnInit {
     };
 
     saveAll = () => {
-        let newItems: any[] = [];
-        let updateItems: any[] = [];
+        // New assignments are always sent; existing ones only when their
+        // description changed since load. Everything else is left untouched
+        // server-side, so we send just the delta as a single batch.
+        let newCount = 0;
+        let updateCount = 0;
+        let batch: StudentCommunityServiceActivity[] = [];
         this.studentRows.forEach((row) => {
             row.assignments.forEach((a) => {
                 if (!a.existingId) {
-                    newItems.push({studentId: row.studentId, activityId: a.activityId, description: a.description});
+                    newCount++;
+                } else if (this.dirty.hasChanged(a.existingId, {description: a.description || ''})) {
+                    updateCount++;
                 } else {
-                    updateItems.push({studentId: row.studentId, activityId: a.activityId, description: a.description, existingId: a.existingId});
+                    return; // unchanged existing assignment - skip
                 }
+                let scsa = new StudentCommunityServiceActivity({
+                    studentId: row.studentId,
+                    communityServiceActivityId: a.activityId,
+                    sessionId: this.filterSessionId,
+                    academicYearId: this.filterAcademicYearId,
+                    description: a.description
+                });
+                if (a.existingId) scsa.id = a.existingId;
+                batch.push(scsa);
             });
         });
 
-        if (newItems.length === 0 && updateItems.length === 0) {
+        if (batch.length === 0) {
             this.toastr.info('No changes to save.');
             return;
         }
 
         Swal.fire({
-            title: 'Save all?',
-            text: `${newItems.length} new, ${updateItems.length} updated.`,
+            title: 'Save changes?',
+            text: `${newCount} new, ${updateCount} updated.`,
             width: 400, position: 'top', padding: '1em', icon: 'question',
             showCancelButton: true, confirmButtonText: 'Save', cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.value) {
                 this.isSaving = true;
-                let requests = [];
-                for (let item of newItems) {
-                    let scsa = new StudentCommunityServiceActivity({
-                        studentId: item.studentId,
-                        communityServiceActivityId: item.activityId,
-                        sessionId: this.filterSessionId,
-                        academicYearId: this.filterAcademicYearId,
-                        description: item.description
-                    });
-                    requests.push(this.studentActivitySvc.create('/studentCommunityServiceActivities', scsa));
-                }
-                for (let item of updateItems) {
-                    let scsa = new StudentCommunityServiceActivity({
-                        studentId: item.studentId,
-                        communityServiceActivityId: item.activityId,
-                        sessionId: this.filterSessionId,
-                        academicYearId: this.filterAcademicYearId,
-                        description: item.description
-                    });
-                    scsa.id = item.existingId;
-                    requests.push(this.studentActivitySvc.update('/studentCommunityServiceActivities', scsa));
-                }
-                forkJoin(requests).subscribe(
-                    () => {
+                this.studentActivitySvc.createBatch('/studentCommunityServiceActivities/batch', batch).subscribe({
+                    next: () => {
                         this.isSaving = false;
-                        this.toastr.success('All assignments saved!');
+                        this.toastr.success(`${batch.length} assignment(s) saved!`);
                         this.loadStudents();
                     },
-                    (err) => {
+                    error: (err) => {
                         this.isSaving = false;
-                        this.toastr.error(err.error?.message || 'Error saving.');
+                        this.toastr.error(err.error?.message || err.error || 'Error saving.');
                     }
-                );
+                });
             }
         });
     };

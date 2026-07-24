@@ -31,7 +31,7 @@
                 'alert-dark': request.status === Status.Reversed
             }">
             <ng-container *ngIf="request.status === Status.Reversed">
-                <strong>Approval Reversed</strong> by a Super Administrator — the record is back to draft and editable.
+                <strong>Approval Reversed</strong> by a Super Administrator - the record is back to draft and editable.
                 <div *ngIf="request.actions && request.actions.length" class="mt-1">
                     <small>Latest action comment: "{{ request.actions[request.actions.length - 1].comment || '-' }}"</small>
                 </div>
@@ -45,7 +45,7 @@
             </ng-container>
         </div>
 
-        <!-- Picker (no request yet OR returned OR rejected OR reversed) — always visible so the user can
+        <!-- Picker (no request yet OR returned OR rejected OR reversed) - always visible so the user can
              pick approvers before OR after saving the record. -->
         <div *ngIf="!loading && workflow && isInPickerMode()">
             <div class="mb-1">
@@ -81,7 +81,7 @@
             </div>
         </div>
 
-        <!-- Submitted / Approved / Rejected (finalized) — show progress + action -->
+        <!-- Submitted / Approved / Rejected (finalized) - show progress + action -->
         <div *ngIf="!loading && workflow && request && !isInPickerMode()">
             <div class="mb-2">
                 <small class="text-muted">

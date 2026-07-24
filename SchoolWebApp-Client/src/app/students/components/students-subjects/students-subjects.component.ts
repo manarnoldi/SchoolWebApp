@@ -121,7 +121,7 @@ export class StudentsSubjectsComponent implements OnInit, AfterViewInit {
 
     curriculumChanged = (curriculumId: number | null) => {
         this.resetClassScopedState();
-        // Upstream control change invalidates downstream selection — buttons
+        // Upstream control change invalidates downstream selection - buttons
         // re-disable until the user picks year + level + class again.
         this.currentEducationLevelId = null;
         this.currentAcademicYearId = null;
@@ -152,7 +152,7 @@ export class StudentsSubjectsComponent implements OnInit, AfterViewInit {
 
     educationLevelYearChanged = (ely: EducationLevelYear | null) => {
         this.resetClassScopedState();
-        // Class belongs to the previous level/year — clear so the Add /
+        // Class belongs to the previous level/year - clear so the Add /
         // Delete buttons disable until the user picks a class again.
         this.currentSchoolClassId = null;
         this.availableSubjects = [];
@@ -192,7 +192,7 @@ export class StudentsSubjectsComponent implements OnInit, AfterViewInit {
                 }
             });
 
-        // Subjects offered for this education level + year — populates the
+        // Subjects offered for this education level + year - populates the
         // Add Allocations modal's subject picker.
         this.educationLevelSubjectSvc
             .getByEducationLevelAndAcademicYear(

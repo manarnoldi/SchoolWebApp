@@ -41,10 +41,10 @@ namespace SchoolWebApp.Core.Entities.Sponsorships
 
         public SponsorshipCoverageType CoverageType { get; set; } = SponsorshipCoverageType.Percentage;
 
-        // Used when CoverageType = FixedAmount — flat cap per invoice.
+        // Used when CoverageType = FixedAmount - flat cap per invoice.
         public decimal FixedAmount { get; set; }
 
-        // Used when CoverageType = Percentage — 0..100 (100 == full coverage).
+        // Used when CoverageType = Percentage - 0..100 (100 == full coverage).
         public decimal Percentage { get; set; }
 
         // If any fee category ids are listed here, the sponsorship only covers those categories.

@@ -147,6 +147,43 @@ namespace SchoolWebApp.API.Controllers.CBE.Values
             return BadRequest(ModelState);
         }
 
+        // POST api/studentValueScores/batch
+        /// <summary>
+        /// Upserts a batch of student value scores in a single request. Rows
+        /// with Id &gt; 0 are updated; rows with Id &lt;= 0 are created. Rows
+        /// omitted from the payload are left untouched (this is NOT a full-set
+        /// replace), so the client can send only the records that were added or
+        /// changed instead of the whole grid.
+        /// </summary>
+        [HttpPost("batch")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreateMany(List<StudentValueScoreDto> model)
+        {
+            if (model == null || !model.Any())
+                return BadRequest("No student value scores provided.");
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            try
+            {
+                foreach (var item in model)
+                {
+                    var _item = _mapper.Map<StudentValueScore>(item);
+                    if (item.Id > 0)
+                        _modelSvc.Update(_item);
+                    else
+                        _modelSvc.Create(_item);
+                }
+                await _modelSvc.SaveChangesAsync();
+                return Ok("Student value scores saved successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while saving the batch of student value scores.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

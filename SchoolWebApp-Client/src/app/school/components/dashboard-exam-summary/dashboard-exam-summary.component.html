@@ -39,6 +39,7 @@
             <table class="table table-sm table-hover table-striped mb-0">
                 <thead>
                     <tr>
+                        <th class="text-center" style="width: 48px;">Rank</th>
                         <th>Class</th>
                         <th class="text-center">Students</th>
                         <th>Class Average</th>
@@ -47,8 +48,16 @@
                         <th *ngIf="showTopStudent">Top Student</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr *ngFor="let cp of classPerformance">
+                <!-- One section per ranking group; Rank restarts within each. -->
+                <tbody *ngFor="let g of groupedPerformance">
+                    <tr class="table-secondary">
+                        <td [attr.colspan]="showTopStudent ? 7 : 6" class="fw-bold py-1">
+                            {{ g.name }}
+                            <span class="text-muted fw-normal">- {{ g.rows.length }} class(es)</span>
+                        </td>
+                    </tr>
+                    <tr *ngFor="let cp of g.rows">
+                        <td class="text-center fw-bold">{{ cp.rank }}</td>
                         <td><strong>{{ cp.className }}</strong></td>
                         <td class="text-center">{{ cp.studentCount }}</td>
                         <td>

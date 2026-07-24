@@ -22,6 +22,7 @@ import {Status} from '@/core/enums/status';
 import {AuthService} from '@/core/services/auth.service';
 import {StaffSubjectsService} from '@/staff/services/staff-subjects.service';
 import {StaffSubject} from '@/staff/models/staff-subject';
+import {DirtyTracker} from '@/core/utils/dirty-tracker';
 
 @Component({
     selector: 'app-exam-results-bulk',
@@ -90,6 +91,10 @@ export class ExamResultsBulkComponent implements OnInit {
     isLoading: boolean = false;
     isSaving: boolean = false;
     isDeleting: boolean = false;
+
+    // Snapshots each saved score at load so saveAll() batches only new/changed
+    // cells instead of every scored cell. Keyed by the exam result's DB id.
+    private dirty = new DirtyTracker();
 
     // Client-side paging for the bulk-grid; default 30 students per page.
     tablePage: number = 1;
@@ -343,6 +348,7 @@ export class ExamResultsBulkComponent implements OnInit {
                         let allResults = allData.slice(0, this.subjects.length);
                         let allStudentSubjects = allData.slice(this.subjects.length);
 
+                        this.dirty.reset();
                         this.studentRows = students.map((student, sIdx) => {
                             let studentSubjects = allStudentSubjects[sIdx] as any[];
                             let allocatedSubjectIds = (studentSubjects || []).map((ss) => +ss.subjectId);
@@ -355,6 +361,9 @@ export class ExamResultsBulkComponent implements OnInit {
                                     existingId: existing ? existing.id : null,
                                     disabled: !isAllocated
                                 };
+                                if (existing) {
+                                    this.dirty.snapshot(existing.id, this.cellKey(existing.score));
+                                }
                             });
                             return {
                                 studentId: +student.id,
@@ -383,13 +392,21 @@ export class ExamResultsBulkComponent implements OnInit {
         }
     };
 
+    // Comparable value for change-detection. Score is coerced to string so a
+    // re-typed-but-identical mark doesn't read as changed. Description is
+    // derived from the score, so the score alone captures a meaningful edit.
+    private cellKey = (score: any) => ({score: score == null ? null : String(score)});
+
     saveAll = () => {
-        // Collect all entries with scores
+        // Collect only cells that are new (no existingId) or whose score changed
+        // since load. The /examResults/batch endpoint upserts by (student, exam)
+        // and leaves omitted cells untouched, so the delta is safe to send alone.
         let batchData: any[] = [];
         this.studentRows.forEach((row) => {
             this.subjects.forEach((subj) => {
                 let entry = row.scores[subj.examId];
-                if (entry.score != null) {
+                if (entry.score != null &&
+                    this.dirty.hasChanged(entry.existingId, this.cellKey(entry.score))) {
                     let pct = subj.examMark > 0 ? (entry.score / subj.examMark) * 100 : 0;
                     let grade = this.getGradeForPercent(pct);
                     batchData.push(new ExamResult({
@@ -403,13 +420,13 @@ export class ExamResultsBulkComponent implements OnInit {
         });
 
         if (batchData.length === 0) {
-            this.toastr.info('No scores to save.');
+            this.toastr.info('No new or changed scores to save.');
             return;
         }
 
         Swal.fire({
-            title: 'Save all results?',
-            text: `${batchData.length} result(s) will be saved.`,
+            title: 'Save results?',
+            text: `${batchData.length} new/updated result(s) will be saved.`,
             width: 400, position: 'top', padding: '1em', icon: 'question',
             showCancelButton: true, confirmButtonText: 'Save', cancelButtonText: 'Cancel'
         }).then((result) => {
@@ -418,7 +435,7 @@ export class ExamResultsBulkComponent implements OnInit {
                 this.examResultSvc.createBatch('/examResults/batch', batchData).subscribe(
                     () => {
                         this.isSaving = false;
-                        this.toastr.success('All results saved!');
+                        this.toastr.success(`${batchData.length} result(s) saved!`);
                         this.loadGrid();
                     },
                     (err) => {

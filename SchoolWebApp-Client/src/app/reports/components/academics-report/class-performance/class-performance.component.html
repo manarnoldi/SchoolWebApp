@@ -64,7 +64,7 @@
         <div class="card mb-2" *ngIf="loaded && classRows.length > 0">
             <div class="card-header bg-primary text-white p-1">
                 <strong>Class Performance Summary</strong>
-                <span class="float-end">{{ classRows.length }} class(es) | ranked by class average</span>
+                <span class="float-end">{{ classRows.length }} class(es) | {{ rankingBasisLabel }}</span>
             </div>
             <div class="card-body p-0">
                 <table class="table table-sm table-bordered table-striped mb-0">
@@ -79,8 +79,16 @@
                             <th>Class Teacher / CEO</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr *ngFor="let c of classRows">
+                    <!-- One <tbody> per ranking group: a spanning subheading row
+                         then the group's classes, with Rank restarting at 1. -->
+                    <tbody *ngFor="let g of groups">
+                        <tr class="table-secondary">
+                            <td colspan="7" class="fw-bold">
+                                {{ g.name }}
+                                <span class="text-muted fw-normal">- {{ g.rows.length }} class(es)</span>
+                            </td>
+                        </tr>
+                        <tr *ngFor="let c of g.rows">
                             <td class="text-center fw-bold">{{ c.rank }}</td>
                             <td>{{ c.className }}</td>
                             <td class="text-center">{{ c.studentCount }}</td>

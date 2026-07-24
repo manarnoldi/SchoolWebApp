@@ -49,7 +49,7 @@ namespace SchoolWebApp.API.Controllers.Finance
                         : l.Debit - l.Credit)
                 );
 
-            // Amendments — apply only Approved ones to produce effective amounts
+            // Amendments - apply only Approved ones to produce effective amounts
             var approvedAmendments = await _unitOfWork.BudgetAmendments.GetByBudgetId(id);
             var approved = approvedAmendments.Where(a => a.Status == BudgetAmendmentStatus.Approved).ToList();
             var amendByAccount = approved

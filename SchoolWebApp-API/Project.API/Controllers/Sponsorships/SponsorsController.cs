@@ -77,7 +77,7 @@ namespace SchoolWebApp.API.Controllers.Sponsorships
             return Ok();
         }
 
-        // GET /api/sponsors/{id}/statement — ledger of sponsor receivable
+        // GET /api/sponsors/{id}/statement - ledger of sponsor receivable
         [HttpGet("{id}/statement")]
         public async Task<IActionResult> Statement(int id, DateTime? from, DateTime? to)
         {

@@ -2,6 +2,8 @@ import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {ToastrService} from 'ngx-toastr';
 import {BreadCrumb} from '@/core/models/bread-crumb';
+import {downloadCsv, exportStamp, CsvColumn} from '@/core/utils/csv-export';
+import {AuthService} from '@/core/services/auth.service';
 import {Log} from '../../models/log';
 import {LogsService} from '../../services/logs.service';
 
@@ -28,9 +30,10 @@ export class LogsComponent implements OnInit {
     page = 1;
     pageSize = 20;
     loading = false;
+    exporting = false;
 
     // For each log id, how many other rows in the same page share the same
-    // (logger, normalized-message) — i.e. the burst this entry belongs to.
+    // (logger, normalized-message) - i.e. the burst this entry belongs to.
     // Used to surface that an error didn't happen once but N times together,
     // so triage can focus on the underlying event rather than each row.
     rowDuplicateCount = new Map<number, number>();
@@ -42,11 +45,17 @@ export class LogsComponent implements OnInit {
     constructor(
         private logsSvc: LogsService,
         private toastr: ToastrService,
-        private fb: FormBuilder
+        private fb: FormBuilder,
+        private authSvc: AuthService
     ) {}
 
+    // CSV export is an administrator-only action.
+    get canExport(): boolean {
+        return this.authSvc.isAdmin;
+    }
+
     ngOnInit(): void {
-        // Default the date window to today only — keeps the initial view
+        // Default the date window to today only - keeps the initial view
         // focused on what's happening right now. Users can widen the range
         // via the From/To inputs or clear it entirely with the Clear button.
         let today = this.iso(new Date());
@@ -100,7 +109,7 @@ export class LogsComponent implements OnInit {
 
     /**
      * Walks the current page of logs and counts how many share the same
-     * (logger, normalized message). Errors usually arrive in clusters — a
+     * (logger, normalized message). Errors usually arrive in clusters - a
      * single bad request fires the same .LogError(...) call multiple times
      * as it bubbles through layers, or a hosted job retries and each retry
      * fails identically. Showing the cluster size in the row helps the
@@ -128,6 +137,60 @@ export class LogsComponent implements OnInit {
     applyFilters = () => {
         this.page = 1;
         this.load();
+    };
+
+    // Export every log row matching the current filters (not just the visible
+    // page) to a CSV that opens in Excel. We re-query with a large page size
+    // rather than exporting this.logs so the file is the full result set.
+    exportCsv = () => {
+        if (this.exporting) return;
+        this.exporting = true;
+        let v = this.filterForm.value;
+        let resolvedParam =
+            v.status === 'resolved' ? true : v.status === 'open' ? false : null;
+        this.logsSvc
+            .list({
+                level: v.level,
+                search: v.search,
+                startDate: v.startDate,
+                endDate: v.endDate,
+                resolved: resolvedParam,
+                page: 1,
+                pageSize: 100000
+            })
+            .subscribe({
+                next: (res) => {
+                    let rows = res.items ?? [];
+                    if (rows.length === 0) {
+                        this.toastr.info('No log entries to export for the current filters.');
+                        this.exporting = false;
+                        return;
+                    }
+                    let columns: CsvColumn<Log>[] = [
+                        {header: 'Id', value: (l) => l.id},
+                        {header: 'Logged', value: (l) => l.logged},
+                        {header: 'Level', value: (l) => l.level},
+                        {header: 'Status', value: (l) => (l.resolved ? 'Resolved' : 'Open')},
+                        {header: 'Logger', value: (l) => l.logger},
+                        {header: 'Message', value: (l) => l.message},
+                        {header: 'URL', value: (l) => l.url},
+                        {header: 'Call site', value: (l) => l.callSite},
+                        {header: 'Machine', value: (l) => l.machineName},
+                        {header: 'User', value: (l) => l.userName},
+                        {header: 'Resolved by', value: (l) => l.resolvedBy},
+                        {header: 'Resolved at', value: (l) => l.resolvedAt},
+                        {header: 'Resolution note', value: (l) => l.resolutionNote},
+                        {header: 'Exception', value: (l) => l.exception}
+                    ];
+                    downloadCsv(`error-logs-${exportStamp()}`, columns, rows);
+                    this.toastr.success(`Exported ${rows.length} log entr${rows.length === 1 ? 'y' : 'ies'}.`);
+                    this.exporting = false;
+                },
+                error: (err) => {
+                    this.toastr.error(err?.error?.message || err?.error || 'Failed to export application logs');
+                    this.exporting = false;
+                }
+            });
     };
 
     clearFilters = () => {

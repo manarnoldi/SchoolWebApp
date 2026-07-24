@@ -27,6 +27,13 @@
                     class="btn btn-sm btn-flat btn-success float-right my-1">
                     <i class="fas fa-plus-circle"></i> Add student
                 </a>
+                <button type="button" *ngIf="canExport"
+                    (click)="exportExcel()"
+                    [disabled]="!students || students.length === 0"
+                    class="btn btn-sm btn-flat btn-outline-success float-right my-1 me-1"
+                    title="Export the current list to Excel (CSV)">
+                    <i class="fas fa-file-excel"></i> Export to Excel
+                </button>
             </div>
         </div>
         <app-students-table *ngIf="students && showTable" [students]="students"

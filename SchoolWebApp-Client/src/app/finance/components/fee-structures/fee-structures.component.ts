@@ -306,7 +306,7 @@ export class FeeStructuresComponent implements OnInit {
             : [{id: this.item.sessionId}];
 
         if (this.editMode) {
-            // Single update — rebuild name from current level + session
+            // Single update - rebuild name from current level + session
             let payload: any = {
                 Name: this.buildName(this.item.learningLevelId, this.item.sessionId),
                 AcademicYearId: this.item.academicYearId,
@@ -326,7 +326,7 @@ export class FeeStructuresComponent implements OnInit {
                 error: (err) => this.toastr.error(err.error?.message || 'Error saving.')
             });
         } else {
-            // Create — cartesian product of sessions × levels
+            // Create - cartesian product of sessions × levels
             let combos: {sessionId: any, levelId: any}[] = [];
             for (let sess of targetSessions) {
                 for (let ll of targetLevels) {

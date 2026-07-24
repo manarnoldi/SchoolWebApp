@@ -30,6 +30,7 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
 
     classPerformance: {
         className: string;
+        groupName: string;
         studentCount: number;
         classAverage: number;
         classAvgGrade: string;
@@ -40,12 +41,17 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
         topStudent: string;
     }[] = [];
 
+    // The same rows grouped into sections (education level type or education
+    // level, per the ClassPerformanceRankingBasis setting), preserving the
+    // server's group-then-average order. Rank restarts at 1 within each section.
+    groupedPerformance: {name: string; rows: any[]}[] = [];
+
     isLoading: boolean = false;
     hasLoaded: boolean = false;
 
     // Signals when the component is being torn down. Every HTTP subscription
     // in this widget pipes through `takeUntil(destroy$)` so navigating away
-    // mid-load cancels the in-flight cascade — otherwise pending requests
+    // mid-load cancels the in-flight cascade - otherwise pending requests
     // would keep firing after `loadingState.resume()` and the global spinner
     // would stay up indefinitely on the page the user moved to.
     private destroy$ = new Subject<void>();
@@ -173,7 +179,34 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
 
     private clearSummary() {
         this.classPerformance = [];
+        this.groupedPerformance = [];
         this.hasLoaded = false;
+    }
+
+    // Partition the (already group-then-average ordered) rows into contiguous
+    // sections by groupName, assigning a within-section rank (ties share a rank).
+    private buildGroups(rows: any[]): {name: string; rows: any[]}[] {
+        let groups: {name: string; rows: any[]}[] = [];
+        let current: {name: string; rows: any[]} | null = null;
+        rows.forEach((r) => {
+            if (!current || current.name !== r.groupName) {
+                current = {name: r.groupName, rows: []};
+                groups.push(current);
+            }
+            current.rows.push(r);
+        });
+        groups.forEach((g) => {
+            let rank = 1;
+            g.rows.forEach((r, i) => {
+                if (i > 0 && Math.round(r.classAverage * 10) === Math.round(g.rows[i - 1].classAverage * 10)) {
+                    r.rank = g.rows[i - 1].rank;
+                } else {
+                    r.rank = rank;
+                }
+                rank = i + 2;
+            });
+        });
+        return groups;
     }
 
     loadClassesAndPerformance() {
@@ -183,7 +216,7 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
         this.classPerformance = [];
         this.hasLoaded = false;
 
-        // Single round-trip — the server does the per-class loop, builds the
+        // Single round-trip - the server does the per-class loop, builds the
         // ranked summary, and caches the result for 5 minutes.
         let params = new HttpParams()
             .set('academicYearId', String(this.selectedAcademicYearId))
@@ -198,6 +231,7 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
                 next: (rows) => {
                     this.classPerformance = (rows || []).map((r: any) => ({
                         className: r.className,
+                        groupName: r.groupName || 'Unassigned',
                         studentCount: r.studentCount,
                         classAverage: r.classAverage,
                         classAvgGrade: r.classAvgGrade,
@@ -207,6 +241,7 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
                         lowestGrade: r.lowestGrade,
                         topStudent: r.topStudent
                     }));
+                    this.groupedPerformance = this.buildGroups(this.classPerformance);
                     this.isLoading = false;
                     this.hasLoaded = true;
                 },

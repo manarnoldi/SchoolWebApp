@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
         }
 
         // If a forced password change is pending, the only route allowed is
-        // /change-password — everything else bounces back there.
+        // /change-password - everything else bounces back there.
         const user = this.authService.getCurrentUser();
         if (user?.mustChangePassword && !state.url.startsWith('/change-password')) {
             return this.router.parseUrl('/change-password');

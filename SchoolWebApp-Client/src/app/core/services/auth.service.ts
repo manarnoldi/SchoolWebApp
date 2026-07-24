@@ -80,6 +80,19 @@ export class AuthService {
         return authToken !== null ? true : false;
     }
 
+    // True when the signed-in user holds an administrator-level role
+    // (Administrator or SuperAdministrator). Used to gate admin-only UI such as
+    // the Excel/CSV export buttons. Falls back to the persisted user so it works
+    // on a fresh page load before `currentUser` is re-populated.
+    get isAdmin(): boolean {
+        let user = this.currentUser || this.getCurrentUser();
+        let roles = (user?.roles || []) as any[];
+        return roles.some((r) => {
+            let name = (r ?? '').toString();
+            return name === 'Administrator' || name === 'SuperAdministrator';
+        });
+    }
+
     doLogout() {
         // Collapse the burst of concurrent 401s (one per in-flight request)
         // into a single logout so we don't fire N audit POSTs and N navigations.

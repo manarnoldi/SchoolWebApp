@@ -61,7 +61,7 @@
             <div class="card">
                 <div class="card-header bg-secondary text-white d-flex align-items-center">
                     <span><i class="fas fa-bug"></i> Application logs</span>
-                    <span class="ms-auto small">
+                    <span class="ms-auto small me-2">
                         <ng-container *ngIf="total > 0; else noMatch">
                             Showing {{ pageStart }}&ndash;{{ pageEnd }} of {{ total }}
                         </ng-container>
@@ -69,6 +69,12 @@
                             No log entries match the current filters.
                         </ng-template>
                     </span>
+                    <button type="button" *ngIf="canExport" class="btn btn-sm btn-outline-light"
+                        (click)="exportCsv()" [disabled]="exporting || total === 0"
+                        title="Export all matching rows to CSV (opens in Excel)">
+                        <i class="fas" [ngClass]="exporting ? 'fa-spinner fa-spin' : 'fa-file-csv'"></i>
+                        Export CSV
+                    </button>
                 </div>
                 <div class="card-body table-responsive p-0">
                     <table class="table table-striped table-hover mb-0 logs-table">
@@ -114,7 +120,7 @@
                                     <div class="cell-clip" [title]="log.message">
                                         <span *ngIf="burstCountFor(log) > 1"
                                             class="badge bg-warning-subtle text-warning-emphasis me-1"
-                                            [title]="'This row repeats ' + burstCountFor(log) + ' times on this page — likely the same incident'">
+                                            [title]="'This row repeats ' + burstCountFor(log) + ' times on this page - likely the same incident'">
                                             <i class="fas fa-layer-group"></i>
                                             &times;{{ burstCountFor(log) }}
                                         </span>
@@ -165,7 +171,7 @@
                         {{ selected.level }} log entry
                         <span *ngIf="burstCountFor(selected) > 1"
                             class="badge bg-white text-warning-emphasis ms-2"
-                            title="This message repeats on the current page — likely the same incident">
+                            title="This message repeats on the current page - likely the same incident">
                             <i class="fas fa-layer-group"></i>
                             &times;{{ burstCountFor(selected) }} on this page
                         </span>

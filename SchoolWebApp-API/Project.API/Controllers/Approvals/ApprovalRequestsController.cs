@@ -39,7 +39,7 @@ namespace SchoolWebApp.API.Controllers.Approvals
             return await _userManager.FindByNameAsync(username);
         }
 
-        // GET api/approvalRequests/myPending — approvals where the current user is the assignee of the current step
+        // GET api/approvalRequests/myPending - approvals where the current user is the assignee of the current step
         [HttpGet("myPending")]
         public async Task<IActionResult> GetMyPending()
         {
@@ -283,7 +283,7 @@ namespace SchoolWebApp.API.Controllers.Approvals
             return Ok(_mapper.Map<ApprovalRequestDto>(saved));
         }
 
-        // POST api/approvalRequests/{id}/reverse — SuperAdministrator only
+        // POST api/approvalRequests/{id}/reverse - SuperAdministrator only
         [HttpPost("{id}/reverse")]
         [Authorize(Policy = "SuperAdminRole")]
         public async Task<IActionResult> Reverse(int id, [FromBody] ReverseApprovalDto model)
@@ -461,7 +461,7 @@ namespace SchoolWebApp.API.Controllers.Approvals
         {
             try
             {
-                // The user who performed the final approval action — used to stamp audit fields on the entity.
+                // The user who performed the final approval action - used to stamp audit fields on the entity.
                 var finalApproverId = request.Actions
                     .Where(a => a.Status == StepActionStatus.Approved && a.ActionedByUserId.HasValue)
                     .OrderByDescending(a => a.StepRank)

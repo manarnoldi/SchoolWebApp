@@ -2,7 +2,7 @@ USE schoolwebappdb;
 SET SQL_SAFE_UPDATES = 0;
 
 -- ============================================================
--- Payroll Seed Data — Kenyan Statutory Rates (2025/2026)
+-- Payroll Seed Data - Kenyan Statutory Rates (2025/2026)
 -- ============================================================
 
 -- Earning Types
@@ -43,12 +43,12 @@ INSERT IGNORE INTO TaxBands (Description, LowerLimit, UpperLimit, Rate, Effectiv
 
 -- Payroll Settings (Kenya 2025)
 INSERT IGNORE INTO PayrollSettings (`Key`, Name, Value, Category, Description, EffectiveDate, IsActive, Created) VALUES
--- NSSF (Tier I & II — New Rates effective Feb 2024)
+-- NSSF (Tier I & II - New Rates effective Feb 2024)
 ('NssfTier1Ceiling', 'NSSF Tier I Ceiling', 7000, 'NSSF', 'Maximum pensionable earnings for Tier I', '2025-01-01', 1, NOW()),
 ('NssfTier1Rate', 'NSSF Tier I Rate (%)', 6, 'NSSF', 'Employee contribution rate for Tier I', '2025-01-01', 1, NOW()),
 ('NssfTier2Ceiling', 'NSSF Tier II Ceiling', 36000, 'NSSF', 'Maximum pensionable earnings for Tier II', '2025-01-01', 1, NOW()),
 ('NssfTier2Rate', 'NSSF Tier II Rate (%)', 6, 'NSSF', 'Employee contribution rate for Tier II', '2025-01-01', 1, NOW()),
--- SHIF (Social Health Insurance Fund — replaced NHIF Oct 2024)
+-- SHIF (Social Health Insurance Fund - replaced NHIF Oct 2024)
 ('ShifRate', 'SHIF Rate (%)', 2.75, 'SHIF', 'Percentage of gross pay', '2025-01-01', 1, NOW()),
 -- AHL (Affordable Housing Levy)
 ('AhlRate', 'AHL Rate (%)', 1.5, 'AHL', 'Percentage of gross pay', '2025-01-01', 1, NOW()),

@@ -61,7 +61,7 @@ namespace Project.Infrastructure.Data
                 .HasForeignKey(a => a.ParentAccountId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Approvals — cascade disabled; callers must remove children first.
+            // Approvals - cascade disabled; callers must remove children first.
             modelBuilder.Entity<ApprovalWorkflowStep>()
                 .HasOne(s => s.ApprovalWorkflow)
                 .WithMany(w => w.Steps)
@@ -117,7 +117,7 @@ namespace Project.Infrastructure.Data
                 .HasForeignKey(er => er.StudentSubjectId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Sponsorships — decimal precision + FK rules
+            // Sponsorships - decimal precision + FK rules
             modelBuilder.Entity<Sponsorship>().Property(p => p.FixedAmount).HasPrecision(18, 2);
             modelBuilder.Entity<Sponsorship>().Property(p => p.Percentage).HasPrecision(5, 2);
             modelBuilder.Entity<SponsorPayment>().Property(p => p.Amount).HasPrecision(18, 2);
@@ -340,7 +340,7 @@ namespace Project.Infrastructure.Data
                 PhoneNumber = "+254724920000",
                 NormalizedUserName = Authorization.default_username.ToUpper(),
                 NormalizedEmail = Authorization.default_email.ToUpper(),
-                // Seeded admin keeps its shipped password — no forced change.
+                // Seeded admin keeps its shipped password - no forced change.
                 MustChangePassword = false,
                 Created = DateTime.Now,
                 CreatedBy = "admin",

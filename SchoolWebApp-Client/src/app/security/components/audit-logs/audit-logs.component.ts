@@ -2,6 +2,8 @@ import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {ToastrService} from 'ngx-toastr';
 import {BreadCrumb} from '@/core/models/bread-crumb';
+import {downloadCsv, exportStamp, CsvColumn} from '@/core/utils/csv-export';
+import {AuthService} from '@/core/services/auth.service';
 import {AuditLog} from '../../models/audit-log';
 import {AuditLogsService} from '../../services/audit-logs.service';
 
@@ -29,6 +31,7 @@ export class AuditLogsComponent implements OnInit {
     page = 1;
     pageSize = 20;
     loading = false;
+    exporting = false;
 
     selected: AuditLog | null = null;
     selectedOld: any = null;
@@ -39,11 +42,17 @@ export class AuditLogsComponent implements OnInit {
     constructor(
         private svc: AuditLogsService,
         private toastr: ToastrService,
-        private fb: FormBuilder
+        private fb: FormBuilder,
+        private authSvc: AuthService
     ) {}
 
+    // CSV export is an administrator-only action.
+    get canExport(): boolean {
+        return this.authSvc.isAdmin;
+    }
+
     ngOnInit(): void {
-        // Default the date window to today only — operators reviewing
+        // Default the date window to today only - operators reviewing
         // activity want "what happened today" by default. They can widen
         // the range via the From/To inputs or clear it entirely.
         let today = this.iso(new Date());
@@ -58,7 +67,7 @@ export class AuditLogsComponent implements OnInit {
         });
 
         // Distinct action verbs + entity types power the two filter
-        // dropdowns. Both are best-effort — if they fail the input
+        // dropdowns. Both are best-effort - if they fail the input
         // controls still accept free text.
         this.svc.actions().subscribe({
             next: (res) => (this.actions = res ?? []),
@@ -106,6 +115,60 @@ export class AuditLogsComponent implements OnInit {
     applyFilters = () => {
         this.page = 1;
         this.load();
+    };
+
+    // Export every audit row matching the current filters (not just the visible
+    // page) to a CSV that opens in Excel. Re-queries with a large page size so
+    // the file is the full result set rather than the current page.
+    exportCsv = () => {
+        if (this.exporting) return;
+        this.exporting = true;
+        let v = this.filterForm.value;
+        this.svc
+            .list({
+                userName: v.userName,
+                action: v.action,
+                entityType: v.entityType,
+                search: v.search,
+                startDate: v.startDate,
+                endDate: v.endDate,
+                page: 1,
+                pageSize: 100000
+            })
+            .subscribe({
+                next: (res) => {
+                    let rows = res.items ?? [];
+                    if (rows.length === 0) {
+                        this.toastr.info('No audit rows to export for the current filters.');
+                        this.exporting = false;
+                        return;
+                    }
+                    let columns: CsvColumn<AuditLog>[] = [
+                        {header: 'Id', value: (r) => r.id},
+                        {header: 'Timestamp', value: (r) => r.timestamp},
+                        {header: 'User', value: (r) => r.userName},
+                        {header: 'User Id', value: (r) => r.userId},
+                        {header: 'Action', value: (r) => r.action},
+                        {header: 'Entity type', value: (r) => r.entityType},
+                        {header: 'Entity Id', value: (r) => r.entityId},
+                        {header: 'Request path', value: (r) => r.requestPath},
+                        {header: 'IP address', value: (r) => r.ipAddress},
+                        {header: 'User agent', value: (r) => r.userAgent},
+                        {header: 'Notes', value: (r) => r.notes},
+                        {header: 'Old values', value: (r) => r.oldValues},
+                        {header: 'New values', value: (r) => r.newValues}
+                    ];
+                    downloadCsv(`audit-logs-${exportStamp()}`, columns, rows);
+                    this.toastr.success(`Exported ${rows.length} audit row${rows.length === 1 ? '' : 's'}.`);
+                    this.exporting = false;
+                },
+                error: (err) => {
+                    this.toastr.error(
+                        err?.error?.message || err?.error || 'Failed to export audit trail'
+                    );
+                    this.exporting = false;
+                }
+            });
     };
 
     clearFilters = () => {

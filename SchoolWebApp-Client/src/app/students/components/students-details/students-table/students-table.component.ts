@@ -34,6 +34,7 @@ export class StudentsTableComponent implements AfterViewInit, OnDestroy {
         'Ref#',
         'Adm#',
         'Full name',
+        'Phone',
         'Admission date',
         'Learning mode',
         'Nationality',
@@ -54,7 +55,7 @@ export class StudentsTableComponent implements AfterViewInit, OnDestroy {
             columnDefs: [
                 {width: 250, targets: 2},
                 {width: 70, targets: 1},
-                {width: 170, targets: 8},
+                {width: 170, targets: 9},
                 {width: 50, targets: 0}
             ]
         };

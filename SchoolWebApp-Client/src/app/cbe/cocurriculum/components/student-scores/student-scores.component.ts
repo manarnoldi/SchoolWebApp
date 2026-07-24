@@ -5,6 +5,7 @@ import {ToastrService} from 'ngx-toastr';
 import {forkJoin, of} from 'rxjs';
 import Swal from 'sweetalert2';
 import {matchOptionId, pushQueryParams, readQueryParam} from '@/shared/utils/query-param-sync';
+import {DirtyTracker} from '@/core/utils/dirty-tracker';
 import {StudentCoCurriculumActivity} from '../../models/student-co-curriculum-activity';
 import {StudentCoCurriculumScore} from '../../models/student-co-curriculum-score';
 import {StudentCoCurriculumScoreService} from '../../services/student-co-curriculum-score.service';
@@ -57,6 +58,11 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
 
     batchLoaded: boolean = false;
     isSaving: boolean = false;
+
+    // Snapshots each saved score at load so saveAll() submits only new/changed
+    // score cells (and only auto-enrols students who actually gained a new
+    // score). Keyed by the score's DB id.
+    private dirty = new DirtyTracker();
 
     // Client-side search + paging for the student-row table.
     searchText: string = '';
@@ -271,6 +277,7 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
                                     }
                                 });
 
+                                this.dirty.reset();
                                 this.batchRows = studentRows.map((r) => {
                                     const existingScores =
                                         r.studentActivityId != null
@@ -290,6 +297,9 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
                                             description: existing ? (existing.description || '') : '',
                                             existingId: existing ? existing.id : null
                                         };
+                                        if (existing) {
+                                            this.dirty.snapshot(existing.id, this.cellKey(existing.coCurriculumScoreId, existing.description));
+                                        }
                                     });
 
                                     return {
@@ -313,10 +323,17 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
         });
     };
 
+    // Comparable value for change-detection. Field order must match the
+    // snapshot taken at load. Ids coerced to string to avoid type drift.
+    private cellKey = (scoreId: any, description: any) => ({
+        scoreId: scoreId == null ? null : String(scoreId),
+        description: description || ''
+    });
+
     saveAll = () => {
-        // Collect all score entries across all rows. Items keep a reference to
-        // their parent row so we can patch in a newly-created studentActivityId
-        // for auto-enrolment before posting the score record.
+        // Collect only score cells that are new (no existingId) or changed since
+        // load. Items keep a reference to their parent row so we can patch in a
+        // newly-created studentActivityId for auto-enrolment before posting.
         const itemsToSave: {
             row: any;
             scoreId: any;
@@ -326,7 +343,8 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
         this.batchRows.forEach((row) => {
             this.scoreTypes.forEach((st) => {
                 const entry = row.scoresByType[st.id];
-                if (entry && entry.scoreId != null) {
+                if (entry && entry.scoreId != null &&
+                    this.dirty.hasChanged(entry.existingId, this.cellKey(entry.scoreId, entry.description))) {
                     itemsToSave.push({
                         row,
                         scoreId: entry.scoreId,
@@ -338,7 +356,7 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
         });
 
         if (itemsToSave.length === 0) {
-            this.toastr.info('Please select at least one score.');
+            this.toastr.info('No new or changed scores to save.');
             return;
         }
 
@@ -382,35 +400,33 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
                         row.isEnrolled = true;
                     });
 
-                    // Phase 2: save (insert or update) each score.
-                    const scoreReqs = itemsToSave.map((item) => {
+                    // Phase 2: save all new/changed scores in a single batch.
+                    // Existing rows carry their id (server updates); new rows
+                    // omit it (server creates).
+                    const scoreBatch = itemsToSave.map((item) => {
                         const score = new StudentCoCurriculumScore({
                             studentCoCurriculumActivityId: item.row.studentActivityId,
                             coCurriculumScoreId: item.scoreId,
                             description: item.description
                         });
-                        if (item.existingId) {
-                            score.id = item.existingId;
-                            return this.studentScoreSvc.update('/studentCoCurriculumScores', score);
-                        } else {
-                            return this.studentScoreSvc.create('/studentCoCurriculumScores', score);
-                        }
+                        if (item.existingId) score.id = item.existingId;
+                        return score;
                     });
 
-                    forkJoin(scoreReqs).subscribe({
+                    this.studentScoreSvc.createBatch('/studentCoCurriculumScores/batch', scoreBatch).subscribe({
                         next: () => {
                             this.isSaving = false;
                             const enrolledCount = enrolReqs.length;
                             const msg =
                                 enrolledCount > 0
                                     ? `Auto-enrolled ${enrolledCount} student(s) and saved ${itemsToSave.length} score(s).`
-                                    : 'All scores saved!';
+                                    : `${itemsToSave.length} score(s) saved!`;
                             this.toastr.success(msg);
                             this.loadBatchScores();
                         },
                         error: (err) => {
                             this.isSaving = false;
-                            this.toastr.error(err.error?.message || 'Error saving scores.');
+                            this.toastr.error(err.error?.message || err.error || 'Error saving scores.');
                         }
                     });
                 },

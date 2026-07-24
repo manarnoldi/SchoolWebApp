@@ -21,7 +21,7 @@ namespace Project.Infrastructure.Data
         /// Creates the Logs table for fresh deploys, or migrates an existing
         /// legacy Serilog-sink table in place. The legacy schema had:
         ///   Id, Timestamp, Level, Template, Message, Exception, Properties, _ts
-        /// (Template and Properties were NOT NULL — which would block NLog's
+        /// (Template and Properties were NOT NULL - which would block NLog's
         /// INSERT that doesn't supply those columns.) We rename Timestamp →
         /// Logged, relax the NOT-NULL constraints on the leftover columns,
         /// and add the new NLog/audit fields. All idempotent so it's safe to
@@ -29,7 +29,7 @@ namespace Project.Infrastructure.Data
         /// </summary>
         private static async Task EnsureLogsTableAsync(ApplicationDbContext db, ILogger logger)
         {
-            // Base table — used only when there's no existing Logs at all.
+            // Base table - used only when there's no existing Logs at all.
             await db.Database.ExecuteSqlRawAsync(@"
                 CREATE TABLE IF NOT EXISTS Logs (
                     Id              INT NOT NULL AUTO_INCREMENT,
@@ -77,7 +77,7 @@ namespace Project.Infrastructure.Data
 
         /// <summary>
         /// Renames a column when the old name exists and the new name doesn't.
-        /// CHANGE COLUMN also retypes, which is intentional — moving from
+        /// CHANGE COLUMN also retypes, which is intentional - moving from
         /// TIMESTAMP to DATETIME(6) preserves all values within the TIMESTAMP
         /// range (1970-2038) without truncation.
         /// </summary>
@@ -119,7 +119,7 @@ namespace Project.Infrastructure.Data
 
         /// <summary>
         /// Drops the NOT NULL constraint on a column when present. Keeps the
-        /// column's existing data type intact — we read it from
+        /// column's existing data type intact - we read it from
         /// information_schema and pass it back in the MODIFY clause so we
         /// don't accidentally widen / narrow the type.
         /// </summary>

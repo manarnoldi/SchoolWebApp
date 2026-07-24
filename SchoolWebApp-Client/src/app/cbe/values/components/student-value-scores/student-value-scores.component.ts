@@ -5,6 +5,7 @@ import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 import {matchOptionId, pushQueryParams, readQueryParam} from '@/shared/utils/query-param-sync';
+import {DirtyTracker} from '@/core/utils/dirty-tracker';
 import {StudentValueScore} from '../../models/student-value-score';
 import {StudentValueScoreService} from '../../services/student-value-score.service';
 import {ValueService} from '../../services/value.service';
@@ -51,6 +52,11 @@ export class StudentValueScoresComponent implements OnInit {
 
     studentsLoaded: boolean = false;
     isSaving: boolean = false;
+
+    // Snapshots each saved cell at load so saveAll() submits only new/changed
+    // scores instead of the whole grid (smaller uploads, no re-PUT of untouched
+    // rows). Keyed by the score's DB id.
+    private dirty = new DirtyTracker();
 
     // Client-side search + paging for the student-row table.
     searchText: string = '';
@@ -209,6 +215,7 @@ export class StudentValueScoresComponent implements OnInit {
                     return;
                 }
 
+                this.dirty.reset();
                 this.studentRows = classStudents.map((student) => {
                     let studentScores = allScores.filter((s) => s.studentId == +student.id);
                     let scoresByValue: any = {};
@@ -219,6 +226,9 @@ export class StudentValueScoresComponent implements OnInit {
                             description: existing ? (existing.description || '') : '',
                             existingId: existing ? existing.id : null
                         };
+                        if (existing) {
+                            this.dirty.snapshot(existing.id, this.cellKey(existing.valueScoreId, existing.description));
+                        }
                     });
                     return {
                         studentId: +student.id,
@@ -237,12 +247,24 @@ export class StudentValueScoresComponent implements OnInit {
         return this.values.some((v) => row.scoresByValue[v.id]?.existingId != null);
     };
 
+    // Comparable value for change-detection. Ids are coerced to string so a
+    // re-selected-but-identical option doesn't read as changed on a number/
+    // string type drift. Field order here must match the snapshot at load.
+    private cellKey = (scoreId: any, description: any) => ({
+        scoreId: scoreId == null ? null : String(scoreId),
+        description: description || ''
+    });
+
     saveAll = () => {
+        // Collect only cells that are new (no existingId) or whose score/
+        // description changed since load - the rest are left untouched server-
+        // side, so we never resend the whole grid.
         let itemsToSave: any[] = [];
         this.studentRows.forEach((row) => {
             this.values.forEach((v) => {
                 let entry = row.scoresByValue[v.id];
-                if (entry && entry.scoreId != null) {
+                if (entry && entry.scoreId != null &&
+                    this.dirty.hasChanged(entry.existingId, this.cellKey(entry.scoreId, entry.description))) {
                     itemsToSave.push({
                         studentId: row.studentId,
                         valueId: +v.id,
@@ -255,19 +277,21 @@ export class StudentValueScoresComponent implements OnInit {
         });
 
         if (itemsToSave.length === 0) {
-            this.toastr.info('Please select at least one score.');
+            this.toastr.info('No new or changed scores to save.');
             return;
         }
 
         Swal.fire({
-            title: 'Save all value scores?',
-            text: `${itemsToSave.length} score(s) will be saved.`,
+            title: 'Save value scores?',
+            text: `${itemsToSave.length} new/updated score(s) will be saved.`,
             width: 400, position: 'top', padding: '1em', icon: 'question',
             showCancelButton: true, confirmButtonText: 'Save', cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.value) {
                 this.isSaving = true;
-                let requests = itemsToSave.map((item) => {
+                // One batch POST carrying only the delta. Existing rows carry
+                // their id (server updates); new rows omit it (server creates).
+                let batch = itemsToSave.map((item) => {
                     let sv = new StudentValueScore({
                         studentId: item.studentId,
                         valueId: item.valueId,
@@ -275,25 +299,21 @@ export class StudentValueScoresComponent implements OnInit {
                         valueScoreId: item.scoreId,
                         description: item.description
                     });
-                    if (item.existingId) {
-                        sv.id = item.existingId;
-                        return this.studentValueScoreSvc.update('/studentValueScores', sv);
-                    } else {
-                        return this.studentValueScoreSvc.create('/studentValueScores', sv);
-                    }
+                    if (item.existingId) sv.id = item.existingId;
+                    return sv;
                 });
 
-                forkJoin(requests).subscribe(
-                    () => {
+                this.studentValueScoreSvc.createBatch('/studentValueScores/batch', batch).subscribe({
+                    next: () => {
                         this.isSaving = false;
-                        this.toastr.success('All value scores saved!');
+                        this.toastr.success(`${batch.length} value score(s) saved!`);
                         this.loadStudents();
                     },
-                    (err) => {
+                    error: (err) => {
                         this.isSaving = false;
-                        this.toastr.error(err.error?.message || 'Error saving.');
+                        this.toastr.error(err.error?.message || err.error || 'Error saving.');
                     }
-                );
+                });
             }
         });
     };

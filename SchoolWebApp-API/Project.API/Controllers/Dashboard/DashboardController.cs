@@ -24,7 +24,7 @@ namespace SchoolWebApp.API.Controllers.Dashboard
         private readonly IMemoryCache _cache;
         private readonly ILogger<DashboardController> _logger;
 
-        // Short TTL — dashboard data is allowed to lag the canonical scores by
+        // Short TTL - dashboard data is allowed to lag the canonical scores by
         // a few minutes in exchange for the rate-limit / round-trip savings.
         // Five minutes is short enough that fresh exam entry feels responsive
         // (one refresh away) and long enough to absorb several dashboard
@@ -65,7 +65,18 @@ namespace SchoolWebApp.API.Controllers.Dashboard
             if (academicYearId <= 0 || curriculumId <= 0 || sessionId <= 0 || examTypeId <= 0)
                 return BadRequest("academicYearId, curriculumId, sessionId and examTypeId are all required.");
 
-            var cacheKey = $"dash.classExamSummary.{academicYearId}.{curriculumId}.{sessionId}.{examTypeId}";
+            // How classes are grouped for ranking: within each education level
+            // type (default) or within each education level. Read BEFORE the cache
+            // lookup and folded into the cache key so changing the setting takes
+            // effect immediately instead of being masked by a stale cached
+            // result. Rows are returned ordered by group then class average.
+            var rankingBasis = await _db.GlobalSettings
+                .Where(g => g.Module == "Grading" && g.SettingKey == "ClassPerformanceRankingBasis")
+                .Select(g => g.SettingValue)
+                .FirstOrDefaultAsync();
+            var groupByType = !string.Equals(rankingBasis, "education_level", StringComparison.OrdinalIgnoreCase);
+
+            var cacheKey = $"dash.classExamSummary.{academicYearId}.{curriculumId}.{sessionId}.{examTypeId}.{(groupByType ? "type" : "level")}";
             if (_cache.TryGetValue<List<ClassExamSummaryDto>>(cacheKey, out var cached) && cached != null)
                 return Ok(cached);
 
@@ -149,6 +160,8 @@ namespace SchoolWebApp.API.Controllers.Dashboard
                 var schoolClasses = await _db.SchoolClasses
                     .AsNoTracking()
                     .Include(c => c.LearningLevel)
+                        .ThenInclude(ll => ll!.EducationLevel)
+                            .ThenInclude(el => el!.EducationLevelType)
                     .Include(c => c.SchoolStream)
                     .Where(c => classIds.Contains(c.Id))
                     .ToListAsync();
@@ -173,6 +186,22 @@ namespace SchoolWebApp.API.Controllers.Dashboard
                     var className = (schoolClass.LearningLevel?.Name ?? string.Empty);
                     if (!string.IsNullOrEmpty(schoolClass.SchoolStream?.Name))
                         className += " - " + schoolClass.SchoolStream.Name;
+
+                    // Resolve the ranking group (education level type or level).
+                    var edLevel = schoolClass.LearningLevel?.EducationLevel;
+                    string groupName;
+                    int groupOrder;
+                    if (groupByType)
+                    {
+                        var edType = edLevel?.EducationLevelType;
+                        groupName = edType?.Name ?? "Unassigned";
+                        groupOrder = edType?.Rank ?? int.MaxValue;
+                    }
+                    else
+                    {
+                        groupName = edLevel?.Name ?? "Unassigned";
+                        groupOrder = edLevel?.Rank ?? int.MaxValue;
+                    }
 
                     var classExams = exams.Where(e => e.SchoolClassId == classId).ToList();
                     var classStudents = studentRows.Where(sc => sc.SchoolClassId == classId).ToList();
@@ -218,6 +247,8 @@ namespace SchoolWebApp.API.Controllers.Dashboard
                     {
                         SchoolClassId = classId,
                         ClassName = className,
+                        GroupName = groupName,
+                        GroupOrder = groupOrder,
                         StudentCount = studentAvgs.Count,
                         ClassAverage = Math.Round(classAvg * 10) / 10,
                         ClassAvgGrade = GetGradeAbbr(classAvg, grades),
@@ -229,9 +260,15 @@ namespace SchoolWebApp.API.Controllers.Dashboard
                     });
                 }
 
-                // Sort by class average descending — matches the previous
-                // client-side behaviour so the table layout stays familiar.
-                summaries = summaries.OrderByDescending(s => s.ClassAverage).ToList();
+                // Order by ranking group, then class average descending within
+                // each group - the widget renders a section per group and the
+                // ranking restarts within each, mirroring the Class Performance
+                // report.
+                summaries = summaries
+                    .OrderBy(s => s.GroupOrder)
+                    .ThenBy(s => s.GroupName)
+                    .ThenByDescending(s => s.ClassAverage)
+                    .ToList();
 
                 _cache.Set(cacheKey, summaries, CacheTtl);
                 return Ok(summaries);

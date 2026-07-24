@@ -14,16 +14,16 @@ In the GitHub repo, go to **Settings → Secrets and variables → Actions → N
 | `FTP_SERVER`                   | all FTP workflows         | `win8082.site4now.net` (from hosting panel → FTP Address)            |
 | `FTP_USERNAME`                 | all FTP workflows         | `smwadwaa-002` (from hosting panel → FTP Login ID)                   |
 | `FTP_PASSWORD`                 | all FTP workflows         | Your FTP password                                                    |
-| `FTP_REMOTE_DIR_SWIKUNDA_API`  | `deploy-swikunda-api.yml` | `/swikunda-api/` — the remote folder the API site is bound to in IIS |
-| `FTP_REMOTE_DIR_SWIKUNDA_UI`   | `deploy-swikunda-ui.yml`  | `/swikunda-ui/`  — the remote folder the UI site is bound to in IIS  |
+| `FTP_REMOTE_DIR_SWIKUNDA_API`  | `deploy-swikunda-api.yml` | `/swikunda-api/` - the remote folder the API site is bound to in IIS |
+| `FTP_REMOTE_DIR_SWIKUNDA_UI`   | `deploy-swikunda-ui.yml`  | `/swikunda-ui/`  - the remote folder the UI site is bound to in IIS  |
 
 When you add shulenova workflows later, follow the same pattern: `FTP_REMOTE_DIR_SHULENOVA_API` → `/shulenova-api/`, `FTP_REMOTE_DIR_SHULENOVA_UI` → `/shulenova-ui/`. The first three secrets are shared across all sites (same FTP account).
 
-> **Find the right remote dir**: Log into FileZilla with these credentials. The root listing shows the named site folders (`swikunda-api`, `swikunda-ui`, `shulenova-api`, …). Each named folder IS the IIS document root — files go directly inside it, with no `wwwroot/` subfolder. Use whichever name matches the site you're deploying to.
+> **Find the right remote dir**: Log into FileZilla with these credentials. The root listing shows the named site folders (`swikunda-api`, `swikunda-ui`, `shulenova-api`, …). Each named folder IS the IIS document root - files go directly inside it, with no `wwwroot/` subfolder. Use whichever name matches the site you're deploying to.
 
 ## How they run
 
-Both workflows are **manual only** — no auto-deploy on push.
+Both workflows are **manual only** - no auto-deploy on push.
 
 To deploy: GitHub repo → **Actions** tab → pick **Deploy Swikunda API to site4now (FTP)** or **Deploy Swikunda UI to site4now (FTP)** → **Run workflow** → pick `master` → **Run workflow**.
 
@@ -61,6 +61,6 @@ Both use `SamKirkland/FTP-Deploy-Action` with a per-site `.ftp-deploy-sync-state
 - **API 500.30** on first request → app failed to start. Check the hosting panel's Application Logs / `stdout` logs. Usually a missing connection string or a migration error.
 - **502.5** → wrong .NET runtime version on the host. Set the site to **.NET 8 (LTS)** in the hosting panel.
 - **CORS errors in the browser** → the IIS `WebDAVModule` intercepts `OPTIONS` preflights on Windows shared hosts. The included [`Project.API/web.config`](../../SchoolWebApp-API/Project.API/web.config) removes WebDAV; if you still see CORS errors after deploy, confirm that web.config landed on the server and contains the `<remove name="WebDAVModule" />` line.
-- **`ECONNRESET (data socket)`** during FTP upload → transient hosting hiccup. Re-run the workflow. If persistent, your hosting quota may be full — clean up orphan folders from earlier mis-targeted deploys.
+- **`ECONNRESET (data socket)`** during FTP upload → transient hosting hiccup. Re-run the workflow. If persistent, your hosting quota may be full - clean up orphan folders from earlier mis-targeted deploys.
 - **Site stuck on the "be right back" offline page after a failed deploy** → `app_offline.htm` wasn't deleted at the end of the workflow. The "Bring app back online" step retries the delete 5 times with HEAD verification and fails the workflow loudly if the file is still present, so this should normally surface as a red Actions run with an `::error::` message telling you exactly what to do. If you still need to recover manually: FTP into `/swikunda-api/` and delete `app_offline.htm`.
 - **FTP connection refused** → if your host requires FTPS, add `protocol: ftps` and `security: loose` to the workflow's FTP-Deploy step.

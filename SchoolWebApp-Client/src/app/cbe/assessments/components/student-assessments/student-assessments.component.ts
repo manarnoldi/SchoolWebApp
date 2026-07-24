@@ -3,6 +3,7 @@ import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
+import {DirtyTracker} from '@/core/utils/dirty-tracker';
 import {StudentAssessment} from '../../models/student-assessment';
 import {StudentAssessmentService} from '../../services/student-assessment.service';
 import {SessionsService} from '@/class/services/sessions.service';
@@ -117,6 +118,21 @@ export class StudentAssessmentsComponent implements OnInit {
     bulkOutcomes: any[] = []; // specific outcomes used as columns
     bulkLoaded: boolean = false;
     isSavingBulk: boolean = false;
+
+    // One snapshot tracker per tab (they load independently) so each save
+    // submits only the new/changed rows for that view. Keyed by assessment id.
+    private dirtyGrading = new DirtyTracker();
+    private dirtySubStrand = new DirtyTracker();
+    private dirtyStrand = new DirtyTracker();
+    private dirtyBulk = new DirtyTracker();
+
+    // Comparable value for change-detection. Field order must match each
+    // snapshot. Grade id coerced to string to avoid number/string drift; bulk
+    // cells have no editable description so it defaults to ''.
+    private cellKey = (gradeId: any, description?: any) => ({
+        gradeId: gradeId == null ? null : String(gradeId),
+        description: description || ''
+    });
     isDeletingBulk: boolean = false;
 
     // Client-side search + paging for the bulk grading grid.
@@ -212,7 +228,7 @@ export class StudentAssessmentsComponent implements OnInit {
         let user = this.authService.getCurrentUser();
         this.currentUserStaffId = user?.staffId ?? null;
 
-        // Role shortcuts — Admins and SuperAdmins always have admin access here.
+        // Role shortcuts - Admins and SuperAdmins always have admin access here.
         let roleAdmin = !!user?.currentUserAdministrator;
         let roleSuperAdmin = (user?.roles || []).some(
             (r: any) => String(r).toLowerCase() === 'superadministrator'
@@ -577,10 +593,14 @@ export class StudentAssessmentsComponent implements OnInit {
                     .filter(Boolean)
                     .sort((a, b) => (a.fullName || '').localeCompare(b.fullName || ''));
 
+                this.dirtyGrading.reset();
                 this.gradingRows = students.map((student) => {
                     let existing = existingAssessments.find(
                         (ea) => ea.studentId == parseInt(student.id)
                     );
+                    if (existing) {
+                        this.dirtyGrading.snapshot(existing.id, this.cellKey(existing.gradeId, existing.description));
+                    }
                     return {
                         studentId: parseInt(student.id),
                         upi: student.upi || '',
@@ -606,15 +626,17 @@ export class StudentAssessmentsComponent implements OnInit {
             this.toastr.warning('You are not allocated to this subject for the selected class. Marks cannot be saved.');
             return;
         }
-        let rowsToSave = this.gradingRows.filter((r) => r.gradeId != null);
+        // Only rows that are new or whose grade/description changed since load.
+        let rowsToSave = this.gradingRows.filter((r) => r.gradeId != null &&
+            this.dirtyGrading.hasChanged(r.existingId, this.cellKey(r.gradeId, r.description)));
         if (rowsToSave.length === 0) {
-            this.toastr.info('Please assign at least one grade before saving.');
+            this.toastr.info('No new or changed assessments to save.');
             return;
         }
 
         Swal.fire({
-            title: 'Save all assessments?',
-            text: `${rowsToSave.length} student assessment(s) will be saved.`,
+            title: 'Save assessments?',
+            text: `${rowsToSave.length} new/updated student assessment(s) will be saved.`,
             width: 400,
             position: 'top',
             padding: '1em',
@@ -625,7 +647,7 @@ export class StudentAssessmentsComponent implements OnInit {
         }).then((result) => {
             if (result.value) {
                 this.isSaving = true;
-                let requests = rowsToSave.map((row) => {
+                let batch = rowsToSave.map((row) => {
                     let sa = new StudentAssessment({
                         studentId: row.studentId,
                         schoolClassId: this.filterSchoolClassId,
@@ -637,26 +659,21 @@ export class StudentAssessmentsComponent implements OnInit {
                         staffDetailsId: this.filterStaffDetailsId,
                         description: row.description
                     });
-
-                    if (row.existingId) {
-                        sa.id = row.existingId;
-                        return this.studentAssessmentSvc.update('/studentAssessments', sa);
-                    } else {
-                        return this.studentAssessmentSvc.create('/studentAssessments', sa);
-                    }
+                    if (row.existingId) sa.id = row.existingId;
+                    return sa;
                 });
 
-                forkJoin(requests).subscribe(
-                    (res) => {
+                this.studentAssessmentSvc.createBatch('/studentAssessments/batch', batch).subscribe({
+                    next: () => {
                         this.isSaving = false;
-                        this.toastr.success(`${rowsToSave.length} assessment(s) saved successfully!`);
+                        this.toastr.success(`${batch.length} assessment(s) saved successfully!`);
                         this.loadStudents();
                     },
-                    (err) => {
+                    error: (err) => {
                         this.isSaving = false;
-                        this.toastr.error(err.error?.message || 'Error saving assessments.');
+                        this.toastr.error(err.error?.message || err.error || 'Error saving assessments.');
                     }
-                );
+                });
             }
         });
     };
@@ -718,6 +735,7 @@ export class StudentAssessmentsComponent implements OnInit {
                     (a) => a.specificOutcomeId && soIds.includes(a.specificOutcomeId)
                 );
 
+                this.dirtySubStrand.reset();
                 this.subStrandRows = this.gradingRows.map((student) => {
                     let studentAssessments = relevantAssessments.filter(
                         (a) => a.studentId == student.studentId
@@ -744,6 +762,9 @@ export class StudentAssessmentsComponent implements OnInit {
                     let existing = existingSubStrandAssessments.find(
                         (ea) => ea.studentId == student.studentId && ea.subStrandId == this.filterSubStrandId
                     );
+                    if (existing) {
+                        this.dirtySubStrand.snapshot(existing.id, this.cellKey(existing.gradeId, existing.description));
+                    }
 
                     return {
                         studentId: student.studentId,
@@ -766,13 +787,15 @@ export class StudentAssessmentsComponent implements OnInit {
             this.toastr.warning('You are not allocated to this subject for the selected class. Marks cannot be saved.');
             return;
         }
-        let rowsToSave = this.subStrandRows.filter((r) => r.gradeId != null);
+        // Only rows that are new or whose computed grade/description changed.
+        let rowsToSave = this.subStrandRows.filter((r) => r.gradeId != null &&
+            this.dirtySubStrand.hasChanged(r.existingId, this.cellKey(r.gradeId, r.description)));
         if (rowsToSave.length === 0) {
-            this.toastr.info('No computed grades to save.');
+            this.toastr.info('No new or changed computed grades to save.');
             return;
         }
         this.isSavingSubStrand = true;
-        let requests = rowsToSave.map((row) => {
+        let batch = rowsToSave.map((row) => {
             let sa = new StudentAssessment({
                 studentId: row.studentId,
                 schoolClassId: this.filterSchoolClassId,
@@ -784,24 +807,20 @@ export class StudentAssessmentsComponent implements OnInit {
                 staffDetailsId: this.filterStaffDetailsId,
                 description: row.description
             });
-            if (row.existingId) {
-                sa.id = row.existingId;
-                return this.studentAssessmentSvc.update('/studentAssessments', sa);
-            } else {
-                return this.studentAssessmentSvc.create('/studentAssessments', sa);
-            }
+            if (row.existingId) sa.id = row.existingId;
+            return sa;
         });
-        forkJoin(requests).subscribe(
-            () => {
+        this.studentAssessmentSvc.createBatch('/studentAssessments/batch', batch).subscribe({
+            next: () => {
                 this.isSavingSubStrand = false;
-                this.toastr.success('Sub-strand assessments saved!');
+                this.toastr.success(`${batch.length} sub-strand assessment(s) saved!`);
                 this.loadSubStrandAssessment();
             },
-            (err) => {
+            error: (err) => {
                 this.isSavingSubStrand = false;
-                this.toastr.error(err.error?.message || 'Error saving sub-strand assessments.');
+                this.toastr.error(err.error?.message || err.error || 'Error saving sub-strand assessments.');
             }
-        );
+        });
     };
 
     // Load Strand assessment: compute average of all specific outcomes under all sub-strands of the selected strand
@@ -831,6 +850,7 @@ export class StudentAssessmentsComponent implements OnInit {
                     (a) => a.subStrandId && ssIds.includes(a.subStrandId)
                 );
 
+                this.dirtyStrand.reset();
                 this.strandRows = this.gradingRows.map((student) => {
                     // Prefer specific outcome assessments for computing strand average
                     let studentAssessments = relevantAssessments.filter(
@@ -865,6 +885,9 @@ export class StudentAssessmentsComponent implements OnInit {
                     let existing = existingStrandAssessments.find(
                         (ea) => ea.studentId == student.studentId && ea.strandId == this.filterStrandId
                     );
+                    if (existing) {
+                        this.dirtyStrand.snapshot(existing.id, this.cellKey(existing.gradeId, existing.description));
+                    }
 
                     return {
                         studentId: student.studentId,
@@ -887,13 +910,15 @@ export class StudentAssessmentsComponent implements OnInit {
             this.toastr.warning('You are not allocated to this subject for the selected class. Marks cannot be saved.');
             return;
         }
-        let rowsToSave = this.strandRows.filter((r) => r.gradeId != null);
+        // Only rows that are new or whose computed grade/description changed.
+        let rowsToSave = this.strandRows.filter((r) => r.gradeId != null &&
+            this.dirtyStrand.hasChanged(r.existingId, this.cellKey(r.gradeId, r.description)));
         if (rowsToSave.length === 0) {
-            this.toastr.info('No computed grades to save.');
+            this.toastr.info('No new or changed computed grades to save.');
             return;
         }
         this.isSavingStrand = true;
-        let requests = rowsToSave.map((row) => {
+        let batch = rowsToSave.map((row) => {
             let sa = new StudentAssessment({
                 studentId: row.studentId,
                 schoolClassId: this.filterSchoolClassId,
@@ -905,24 +930,20 @@ export class StudentAssessmentsComponent implements OnInit {
                 staffDetailsId: this.filterStaffDetailsId,
                 description: row.description
             });
-            if (row.existingId) {
-                sa.id = row.existingId;
-                return this.studentAssessmentSvc.update('/studentAssessments', sa);
-            } else {
-                return this.studentAssessmentSvc.create('/studentAssessments', sa);
-            }
+            if (row.existingId) sa.id = row.existingId;
+            return sa;
         });
-        forkJoin(requests).subscribe(
-            () => {
+        this.studentAssessmentSvc.createBatch('/studentAssessments/batch', batch).subscribe({
+            next: () => {
                 this.isSavingStrand = false;
-                this.toastr.success('Strand assessments saved!');
+                this.toastr.success(`${batch.length} strand assessment(s) saved!`);
                 this.loadStrandAssessment();
             },
-            (err) => {
+            error: (err) => {
                 this.isSavingStrand = false;
-                this.toastr.error(err.error?.message || 'Error saving strand assessments.');
+                this.toastr.error(err.error?.message || err.error || 'Error saving strand assessments.');
             }
-        );
+        });
     };
 
     deleteAssessment = (row: any) => {
@@ -995,6 +1016,7 @@ export class StudentAssessmentsComponent implements OnInit {
                     (a) => a.specificOutcomeId && outcomeIds.includes(a.specificOutcomeId)
                 );
 
+                this.dirtyBulk.reset();
                 this.bulkRows = students.map((student) => {
                     let outcomes: { [outcomeId: number]: { gradeId: any; existingId: string | null } } = {};
                     for (let outcome of this.bulkOutcomes) {
@@ -1005,6 +1027,9 @@ export class StudentAssessmentsComponent implements OnInit {
                             gradeId: existing ? existing.gradeId : null,
                             existingId: existing ? existing.id : null
                         };
+                        if (existing) {
+                            this.dirtyBulk.snapshot(existing.id, this.cellKey(existing.gradeId));
+                        }
                     }
                     return {
                         studentId: parseInt(student.id),
@@ -1030,13 +1055,13 @@ export class StudentAssessmentsComponent implements OnInit {
             this.toastr.warning('You are not allocated to this subject for the selected class. Marks cannot be saved.');
             return;
         }
-        let requests: any[] = [];
-        let count = 0;
-
+        // Only cells that are new or whose grade changed since load.
+        let batch: StudentAssessment[] = [];
         for (let row of this.bulkRows) {
             for (let outcome of this.bulkOutcomes) {
                 let cell = row.outcomes[outcome.id];
                 if (cell.gradeId == null) continue;
+                if (!this.dirtyBulk.hasChanged(cell.existingId, this.cellKey(cell.gradeId))) continue;
 
                 let sa = new StudentAssessment({
                     studentId: row.studentId,
@@ -1049,25 +1074,19 @@ export class StudentAssessmentsComponent implements OnInit {
                     staffDetailsId: this.filterStaffDetailsId,
                     description: ''
                 });
-
-                if (cell.existingId) {
-                    sa.id = cell.existingId;
-                    requests.push(this.studentAssessmentSvc.update('/studentAssessments', sa));
-                } else {
-                    requests.push(this.studentAssessmentSvc.create('/studentAssessments', sa));
-                }
-                count++;
+                if (cell.existingId) sa.id = cell.existingId;
+                batch.push(sa);
             }
         }
 
-        if (requests.length === 0) {
-            this.toastr.info('Please assign at least one grade before saving.');
+        if (batch.length === 0) {
+            this.toastr.info('No new or changed grades to save.');
             return;
         }
 
         Swal.fire({
             title: 'Save bulk assessments?',
-            text: `${count} assessment(s) will be saved.`,
+            text: `${batch.length} new/updated assessment(s) will be saved.`,
             width: 400,
             position: 'top',
             padding: '1em',
@@ -1078,17 +1097,17 @@ export class StudentAssessmentsComponent implements OnInit {
         }).then((result) => {
             if (result.value) {
                 this.isSavingBulk = true;
-                forkJoin(requests).subscribe(
-                    () => {
+                this.studentAssessmentSvc.createBatch('/studentAssessments/batch', batch).subscribe({
+                    next: () => {
                         this.isSavingBulk = false;
-                        this.toastr.success(`${count} assessment(s) saved successfully!`);
+                        this.toastr.success(`${batch.length} assessment(s) saved successfully!`);
                         this.loadBulkAssessment();
                     },
-                    (err) => {
+                    error: (err) => {
                         this.isSavingBulk = false;
-                        this.toastr.error(err.error?.message || 'Error saving bulk assessments.');
+                        this.toastr.error(err.error?.message || err.error || 'Error saving bulk assessments.');
                     }
-                );
+                });
             }
         });
     };

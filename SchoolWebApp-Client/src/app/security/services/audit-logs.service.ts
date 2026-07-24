@@ -50,7 +50,7 @@ export class AuditLogsService {
     }
 
     // Fire-and-forget print recording. Subscribers don't care about the
-    // response — we just want the row in the table. Errors are
+    // response - we just want the row in the table. Errors are
     // swallowed because a failed audit write must never pop a toast in
     // the middle of a user's print job.
     logPrint(
