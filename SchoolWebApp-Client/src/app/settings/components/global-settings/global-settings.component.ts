@@ -170,10 +170,24 @@ export class GlobalSettingsComponent implements OnInit {
                 {key: 'ReportTypeLabel', label: 'Report Title Wording', type: 'text', description: 'The word used in the report-form title - e.g. SUMMATIVE (end term) or PERFORMANCE (mid term). Title reads: TERM 2 2026 <this> REPORT FOR ...'},
                 {key: 'ShowTermDates', label: 'Show Term Dates', type: 'boolean', description: 'Show the "This term ends on / Next term begins on" line at the bottom of the report form. Turn off for mid-term reports.'}
             ]
+        },
+        {
+            name: 'Security',
+            title: 'Security Settings',
+            color: 'danger',
+            icon: 'fas fa-shield-alt',
+            settings: [
+                {key: 'IdleTimeoutMinutes', label: 'Idle timeout (minutes)', type: 'text', description: 'Sign the user out after this many minutes of inactivity. Default: 30.'},
+                {key: 'LogoutWarningSeconds', label: 'Logout warning countdown (seconds)', type: 'text', description: "How long the 'still there?' warning counts down before signing out. Default: 60."}
+            ]
         }
     ];
 
     settingValues: { [key: string]: string } = {};
+    // Snapshot of settingValues as loaded, so saveAll() upserts only the
+    // settings the user actually changed (instead of re-writing every one,
+    // which churned the audit trail).
+    originalValues: { [key: string]: string } = {};
     isSaving: boolean = false;
     accounts: any[] = [];
 
@@ -286,9 +300,13 @@ export class GlobalSettingsComponent implements OnInit {
                             else if (s.type === 'text' && s.key === 'DepartmentCodePrefix') this.settingValues[key] = 'DEPT';
                             else if (s.type === 'text' && s.key === 'BudgetMasterCodePrefix') this.settingValues[key] = 'BUD';
                             else if (s.type === 'text' && s.key === 'ReportTypeLabel') this.settingValues[key] = 'SUMMATIVE';
+                            else if (s.type === 'text' && s.key === 'IdleTimeoutMinutes') this.settingValues[key] = '30';
+                            else if (s.type === 'text' && s.key === 'LogoutWarningSeconds') this.settingValues[key] = '60';
                         }
                     });
                 });
+                // Baseline for change-detection on save.
+                this.originalValues = {...this.settingValues};
             },
             error: (err) => this.toastr.error(err.error)
         });
@@ -308,34 +326,44 @@ export class GlobalSettingsComponent implements OnInit {
     };
 
     saveAll = () => {
+        // Only the settings whose value changed since load - leaves the rest
+        // untouched so a save doesn't re-write (and re-audit) every setting.
+        let requests: any[] = [];
+        this.modules.forEach((m) => {
+            m.settings.forEach((s) => {
+                let key = m.name + '.' + s.key;
+                let value = this.settingValues[key] || '';
+                if (value !== (this.originalValues[key] || '')) {
+                    requests.push(
+                        this.globalSettingSvc.upsert({
+                            module: m.name,
+                            settingKey: s.key,
+                            settingValue: value,
+                            description: s.description
+                        })
+                    );
+                }
+            });
+        });
+
+        if (requests.length === 0) {
+            this.toastr.info('No setting changes to save.');
+            return;
+        }
+
         Swal.fire({
             title: 'Save settings?',
-            text: 'All settings will be updated.',
+            text: `${requests.length} changed setting(s) will be updated.`,
             width: 400, position: 'top', padding: '1em', icon: 'question',
             showCancelButton: true, confirmButtonText: 'Save', cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.value) {
                 this.isSaving = true;
-                let requests: any[] = [];
-                this.modules.forEach((m) => {
-                    m.settings.forEach((s) => {
-                        let value = this.settingValues[m.name + '.' + s.key] || '';
-                        requests.push(
-                            this.globalSettingSvc.upsert({
-                                module: m.name,
-                                settingKey: s.key,
-                                settingValue: value,
-                                description: s.description
-                            })
-                        );
-                    });
-                });
-
                 import('rxjs').then(({forkJoin}) => {
                     forkJoin(requests).subscribe(
                         () => {
                             this.isSaving = false;
-                            this.toastr.success('Settings saved!');
+                            this.toastr.success(`${requests.length} setting(s) saved!`);
                             this.loadSettings();
                         },
                         (err) => {

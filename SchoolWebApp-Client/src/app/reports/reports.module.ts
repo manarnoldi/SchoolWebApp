@@ -33,6 +33,11 @@ import { ReportFormComponent } from './components/academics-report/report-form/r
 import { AssessmentReportComponent } from './components/academics-report/assessment-report/assessment-report.component';
 import { SubjectPerformanceComponent } from './components/academics-report/subject-performance/subject-performance.component';
 import { ClassPerformanceComponent } from './components/academics-report/class-performance/class-performance.component';
+import { SubjectPerformanceTrendComponent } from './components/academics-report/subject-performance-trend/subject-performance-trend.component';
+import { SubjectPerformanceTabsComponent } from './components/academics-report/subject-performance-tabs/subject-performance-tabs.component';
+import { ClassPerformanceTrendComponent } from './components/academics-report/class-performance-trend/class-performance-trend.component';
+import { ClassPerformanceTabsComponent } from './components/academics-report/class-performance-tabs/class-performance-tabs.component';
+import { ExamResultsTabsComponent } from './components/academics-report/exam-results-tabs/exam-results-tabs.component';
 
 @NgModule({
     declarations: [
@@ -67,7 +72,12 @@ import { ClassPerformanceComponent } from './components/academics-report/class-p
         ReportFormComponent,
         AssessmentReportComponent,
         SubjectPerformanceComponent,
-        ClassPerformanceComponent
+        ClassPerformanceComponent,
+        SubjectPerformanceTrendComponent,
+        SubjectPerformanceTabsComponent,
+        ClassPerformanceTrendComponent,
+        ClassPerformanceTabsComponent,
+        ExamResultsTabsComponent
     ],
     imports: [CoreModule, SharedModule]
 })

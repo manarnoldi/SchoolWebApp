@@ -36,6 +36,9 @@ export class MenuPermissionsComponent implements OnInit {
     selectedRole: AppRole = null;
     menuGroups: MenuGroup[] = [];
     selectedPaths: Set<string> = new Set();
+    // Snapshot of the paths as loaded for the selected role, so save() submits
+    // only the added/removed permissions instead of replacing the whole set.
+    originalPaths: Set<string> = new Set();
     isLoading = false;
     isSaving = false;
 
@@ -102,6 +105,8 @@ export class MenuPermissionsComponent implements OnInit {
         this.menuPermSvc.getByRole(role.name).subscribe({
             next: (perms) => {
                 perms.forEach(p => this.selectedPaths.add(p.menuPath));
+                // Baseline for change-detection on save.
+                this.originalPaths = new Set(this.selectedPaths);
                 this.isLoading = false;
             },
             error: () => {
@@ -169,9 +174,19 @@ export class MenuPermissionsComponent implements OnInit {
     save() {
         if (!this.selectedRole) return;
 
+        // Only the delta since the role was loaded: newly-ticked paths to add,
+        // newly-unticked paths to remove. Untouched permissions are left alone.
+        const added = Array.from(this.selectedPaths).filter(p => !this.originalPaths.has(p));
+        const removed = Array.from(this.originalPaths).filter(p => !this.selectedPaths.has(p));
+
+        if (added.length === 0 && removed.length === 0) {
+            this.toastr.info('No permission changes to save.');
+            return;
+        }
+
         Swal.fire({
-            title: 'Save permissions?',
-            text: `Save menu permissions for ${this.selectedRole.name}?`,
+            title: 'Save permission changes?',
+            text: `${added.length} to add, ${removed.length} to remove for ${this.selectedRole.name}.`,
             width: 400, position: 'top', padding: '1em', icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Save',
@@ -179,7 +194,7 @@ export class MenuPermissionsComponent implements OnInit {
         }).then((result) => {
             if (result.value) {
                 this.isSaving = true;
-                const menuPaths = Array.from(this.selectedPaths).map(path => {
+                const addedItems = added.map(path => {
                     let name = path;
                     for (const g of this.menuGroups) {
                         const c = g.children.find(ch => ch.path === path);
@@ -188,9 +203,11 @@ export class MenuPermissionsComponent implements OnInit {
                     return {path, name};
                 });
 
-                this.menuPermSvc.save(this.selectedRole.name, menuPaths).subscribe({
+                this.menuPermSvc.saveChanges(this.selectedRole.name, addedItems, removed).subscribe({
                     next: () => {
-                        this.toastr.success('Permissions saved successfully');
+                        this.toastr.success(`Saved: ${added.length} added, ${removed.length} removed.`);
+                        // The current selection is now the persisted baseline.
+                        this.originalPaths = new Set(this.selectedPaths);
                         this.isSaving = false;
                     },
                     error: (err) => {

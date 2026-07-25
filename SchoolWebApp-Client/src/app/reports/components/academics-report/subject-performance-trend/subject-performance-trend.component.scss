@@ -1,0 +1,19 @@
+.trend-chart {
+    width: 100%;
+    height: auto;
+    max-height: 220px;
+    overflow: visible;
+}
+
+.band-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    margin-right: 2px;
+    vertical-align: middle;
+}
+
+.text-justify {
+    text-align: justify;
+}

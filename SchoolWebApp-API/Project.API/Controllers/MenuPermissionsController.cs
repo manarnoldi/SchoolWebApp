@@ -90,6 +90,12 @@ namespace SchoolWebApp.API.Controllers
         }
 
         // POST: api/menuPermissions/save
+        /// <summary>
+        /// Applies only the changes made in the UI: deletes the deselected paths
+        /// and creates the newly-selected ones for the role. Unchanged rows are
+        /// left untouched (no full delete-and-reinsert), so a save only writes
+        /// the delta.
+        /// </summary>
         [HttpPost("save")]
         [Authorize(Policy = "AdminRole")]
         public async Task<IActionResult> SavePermissions(SaveMenuPermissionsRequest request)
@@ -97,23 +103,34 @@ namespace SchoolWebApp.API.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
-                // Delete existing permissions for this role
-                var existing = await _unitOfWork.Repository<MenuPermission>()
-                    .Find(p => p.RoleId == request.RoleId);
-                foreach (var item in existing)
+                var repo = _unitOfWork.Repository<MenuPermission>();
+
+                // Remove deselected paths.
+                if (request.Removed != null && request.Removed.Any())
                 {
-                    _unitOfWork.Repository<MenuPermission>().Delete(item);
+                    var toRemove = await repo.Find(p => p.RoleId == request.RoleId
+                        && request.Removed.Contains(p.MenuPath));
+                    foreach (var item in toRemove)
+                        repo.Delete(item);
                 }
 
-                // Insert new permissions
-                foreach (var path in request.MenuPaths)
+                // Add newly-selected paths, skipping any that already exist so a
+                // double-save can't create duplicates.
+                if (request.Added != null && request.Added.Any())
                 {
-                    _unitOfWork.Repository<MenuPermission>().Create(new MenuPermission
+                    var existingPaths = (await repo.Find(p => p.RoleId == request.RoleId))
+                        .Select(p => p.MenuPath)
+                        .ToHashSet();
+                    foreach (var path in request.Added)
                     {
-                        RoleId = request.RoleId,
-                        MenuPath = path.Path,
-                        MenuName = path.Name
-                    });
+                        if (existingPaths.Contains(path.Path)) continue;
+                        repo.Create(new MenuPermission
+                        {
+                            RoleId = request.RoleId,
+                            MenuPath = path.Path,
+                            MenuName = path.Name
+                        });
+                    }
                 }
 
                 await _unitOfWork.SaveChangesAsync();
@@ -130,7 +147,10 @@ namespace SchoolWebApp.API.Controllers
     public class SaveMenuPermissionsRequest
     {
         public required string RoleId { get; set; }
-        public List<MenuPathItem> MenuPaths { get; set; } = new();
+        // Paths newly selected in the UI (to create).
+        public List<MenuPathItem> Added { get; set; } = new();
+        // Paths newly deselected in the UI (to delete).
+        public List<string> Removed { get; set; } = new();
     }
 
     public class MenuPathItem

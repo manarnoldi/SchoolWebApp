@@ -4,7 +4,14 @@
       "Bash(xargs grep -livE \"^$\")",
       "Bash(xargs grep -lE \"CreateMap<.*StudentValueScoreDto|CreateMap<StudentValueScore\")",
       "Bash(node -e \"const s=require\\('./package.json'\\).scripts; console.log\\(JSON.stringify\\(s,null,2\\)\\)\")",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(cd \"c:/Personal/Documents/KODETEK INVESTMENT LIMITED\" && echo \"=== HosiNova version-related files ===\" && grep -rilE \"version.?check|versioncheck|new version|version\\\\.json|updateAvailable|new update|reload.*version\" HosiNova --include=*.ts --include=*.cs --include=*.html --include=*.json 2>/dev/null | grep -viE \"node_modules|/dist/|/bin/|/obj/|package-lock\" | head -30)",
+      "Read(//c/Personal/Documents/KODETEK INVESTMENT LIMITED/**)",
+      "Bash(cd \"c:/Personal/Documents/KODETEK INVESTMENT LIMITED/HosiNova\" && echo \"=== structure ===\" && ls -d */ 2>/dev/null | head; echo \"=== find version-check service \\(client src only\\) ===\" && find . -path '*/src/*' -iname \"*version*\" 2>/dev/null | grep -viE \"node_modules|dist\" | head -20)",
+      "Read(//c/Personal/Documents/KODETEK INVESTMENT LIMITED/HosiNova/**)",
+      "Read(//c/Personal/Documents/KODETEK INVESTMENT LIMITED/HosiNova/hmswebui/src/app/core/services/**)",
+      "Bash(dotnet build *)",
+      "Bash(node -e \"console.log\\(require\\('./package.json'\\).dependencies.pdfmake || require\\('./package.json'\\).devDependencies.pdfmake\\)\")"
     ]
   }
 }

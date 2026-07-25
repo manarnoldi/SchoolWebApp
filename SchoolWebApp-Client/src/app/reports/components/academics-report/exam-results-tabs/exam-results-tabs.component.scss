@@ -1,0 +1,5 @@
+// Embedded report components keep their own <section class="content"> wrapper;
+// drop its padding so content sits snugly inside the tab body.
+:host ::ng-deep section.content {
+    padding: 0;
+}

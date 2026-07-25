@@ -1,0 +1,191 @@
+<!-- Header/breadcrumb come from the SubjectPerformanceTabs host that embeds this. -->
+<section class="content">
+    <div class="container-fluid px-1">
+        <!-- Filters -->
+        <div class="card card-outline card-info mb-1">
+            <div class="card-body p-1">
+                <div class="row align-items-end g-2">
+                    <div class="col-md-2">
+                        <label class="form-label mb-1">Curriculum: <span class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm" [(ngModel)]="filterCurriculumId" (change)="onCurriculumChange()">
+                            <option [ngValue]="null" hidden disabled selected>Select curriculum</option>
+                            <option *ngFor="let c of curricula" [ngValue]="c.id">{{ c.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label mb-1">Year: <span class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm" [(ngModel)]="filterAcademicYearId" (change)="onAcademicYearChange()">
+                            <option [ngValue]="null" hidden disabled selected>Select year</option>
+                            <option *ngFor="let y of academicYears" [ngValue]="y.id">{{ y.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label mb-1">Class: <span class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm" [(ngModel)]="filterSchoolClassId" (change)="onSchoolClassChange()">
+                            <option [ngValue]="null" hidden disabled selected>{{ filterAcademicYearId ? 'Select class' : 'Select a year first' }}</option>
+                            <option *ngFor="let c of schoolClasses" [ngValue]="c.id">{{ c.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label mb-1">Subject: <span class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm" [(ngModel)]="filterSubjectId" (change)="onSubjectChange()">
+                            <option [ngValue]="null" hidden disabled selected>{{ filterSchoolClassId ? 'Select subject' : 'Select a class first' }}</option>
+                            <option *ngFor="let s of subjects" [ngValue]="s.subjectId">{{ s.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label mb-1">Term / Exam: <span class="requiredField">*</span></label>
+                        <select class="form-select form-select-sm" [(ngModel)]="focalExamId" (change)="onFocalExamChange()"
+                            [disabled]="!schoolExamsInYear.length">
+                            <option [ngValue]="null" hidden disabled selected>{{ filterAcademicYearId ? 'Select exam' : 'Select a year first' }}</option>
+                            <option *ngFor="let se of schoolExamsInYear" [ngValue]="se.id">{{ se._sessionName }} - {{ se.examType?.name }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row g-2 mt-1">
+                    <div class="col-12 d-flex gap-1 align-items-center flex-wrap">
+                        <button class="btn btn-primary btn-sm" (click)="loadReport()" [disabled]="isLoading">
+                            <i class="fas fa-search"></i> {{ isLoading ? 'Loading...' : 'Load' }}
+                        </button>
+                        <button class="btn btn-danger btn-sm" (click)="previewReport()" [disabled]="!loaded || columns.length === 0">
+                            <i class="fas fa-print"></i> Preview
+                        </button>
+                        <button class="btn btn-success btn-sm" (click)="printAll()"
+                            [disabled]="isPrintingAll || !filterSchoolClassId || !subjects.length || !focalExamId">
+                            <i class="fas" [ngClass]="isPrintingAll ? 'fa-spinner fa-spin' : 'fa-print'"></i>
+                            {{ isPrintingAll ? 'Preparing...' : 'Print All Subjects' }}
+                        </button>
+                        <small class="text-muted ms-2">Print All builds one combined PDF (a page per subject) for every subject in the class, using each subject's action plan for the selected Term / Exam.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ng-container *ngIf="loaded && columns.length > 0">
+            <!-- Summary + distribution tables -->
+            <div class="card mb-2">
+                <div class="card-header bg-primary text-white p-1">
+                    <strong>{{ subjectName }} - {{ className }}</strong>
+                    <span class="float-end">{{ columns.length }} assessment(s) compared</span>
+                </div>
+                <div class="card-body p-2">
+                    <h6 class="fw-bold mb-1">Performance Analysis</h6>
+                    <div class="table-responsive mb-3">
+                        <table class="table table-sm table-bordered mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th></th>
+                                    <th class="text-center" *ngFor="let c of columns">{{ c.label }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Learners sat</td><td class="text-center" *ngFor="let c of columns">{{ c.nSat }}</td></tr>
+                                <tr><td>Highest score</td><td class="text-center" *ngFor="let c of columns">{{ c.highest }}%</td></tr>
+                                <tr><td>Lowest score</td><td class="text-center" *ngFor="let c of columns">{{ c.lowest }}%</td></tr>
+                                <tr><td>Mean score</td><td class="text-center fw-bold" *ngFor="let c of columns">{{ c.mean }}%</td></tr>
+                                <tr><td>Mean grade</td><td class="text-center fw-bold" *ngFor="let c of columns">{{ c.meanGrade }}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h6 class="fw-bold mb-1">Performance Distribution</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Grade</th>
+                                    <th class="text-center" *ngFor="let c of columns">{{ c.label }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let b of bands">
+                                    <td class="fw-bold"><span class="band-dot" [style.background]="b.color"></span> {{ b.abbr }}</td>
+                                    <td class="text-center" *ngFor="let c of columns">{{ c.bandCounts[b.abbr] || 0 }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="card mb-2">
+                <div class="card-header bg-secondary text-white p-1"><strong>Charts</strong></div>
+                <div class="card-body p-2">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="small fw-bold mb-1">Mean score (%) per assessment</div>
+                            <svg [attr.viewBox]="'0 0 ' + chartWidth + ' ' + (chartBottom + 34)" class="trend-chart" preserveAspectRatio="xMinYMin meet">
+                                <!-- gridlines -->
+                                <line [attr.x1]="chartLeft" [attr.y1]="chartPlotTop" [attr.x2]="chartLeft" [attr.y2]="chartBottom" stroke="#ccc" stroke-width="0.5" />
+                                <line [attr.x1]="chartLeft" [attr.y1]="chartBottom" [attr.x2]="chartWidth" [attr.y2]="chartBottom" stroke="#999" stroke-width="0.5" />
+                                <polyline *ngIf="chartMean.length > 1" [attr.points]="meanLinePoints" fill="none" stroke="#4169E1" stroke-width="2" />
+                                <ng-container *ngFor="let m of chartMean">
+                                    <circle [attr.cx]="m.x + 17" [attr.cy]="m.y" r="3" fill="#4169E1">
+                                        <title>{{ m.label }}: {{ m.mean }}%</title>
+                                    </circle>
+                                    <text [attr.x]="m.x + 17" [attr.y]="m.y - 6" text-anchor="middle" font-size="8" fill="#333">{{ m.mean }}%</text>
+                                    <text text-anchor="middle" font-size="6" fill="#555">
+                                        <tspan [attr.x]="m.x + 17" [attr.y]="chartBottom + 10">{{ labelParts(m.label)[0] }}</tspan>
+                                        <tspan [attr.x]="m.x + 17" [attr.y]="chartBottom + 18">{{ labelParts(m.label)[1] }}</tspan>
+                                    </text>
+                                </ng-container>
+                            </svg>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="small fw-bold mb-1">Grade distribution per assessment</div>
+                            <svg [attr.viewBox]="'0 0 ' + chartWidth + ' ' + (chartBottom + 34)" class="trend-chart" preserveAspectRatio="xMinYMin meet">
+                                <line [attr.x1]="chartLeft" [attr.y1]="chartBottom" [attr.x2]="chartWidth" [attr.y2]="chartBottom" stroke="#999" stroke-width="0.5" />
+                                <ng-container *ngFor="let d of chartDist">
+                                    <ng-container *ngFor="let s of d.segments">
+                                        <rect *ngIf="s.h > 0" [attr.x]="d.x" [attr.y]="s.y" width="34" [attr.height]="s.h" [attr.fill]="s.color">
+                                            <title>{{ s.abbr }}: {{ s.count }} learner(s)</title>
+                                        </rect>
+                                        <text *ngIf="s.h >= 11" [attr.x]="d.x + 17" [attr.y]="s.y + s.h / 2 + 3"
+                                            text-anchor="middle" font-size="8" font-weight="bold" fill="#fff" style="pointer-events:none;">{{ s.count }}</text>
+                                    </ng-container>
+                                    <text text-anchor="middle" font-size="6" fill="#555">
+                                        <tspan [attr.x]="d.x + 17" [attr.y]="chartBottom + 10">{{ labelParts(d.label)[0] }}</tspan>
+                                        <tspan [attr.x]="d.x + 17" [attr.y]="chartBottom + 18">{{ labelParts(d.label)[1] }}</tspan>
+                                    </text>
+                                </ng-container>
+                            </svg>
+                            <div class="d-flex flex-wrap gap-2 mt-1">
+                                <span class="small" *ngFor="let b of bands">
+                                    <span class="band-dot" [style.background]="b.color"></span> {{ b.abbr }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Narrative -->
+            <div class="card mb-2">
+                <div class="card-header bg-info text-white p-1"><strong>Analysis</strong></div>
+                <div class="card-body p-2">
+                    <p class="mb-0 text-justify">{{ narrative }}</p>
+                </div>
+            </div>
+
+            <!-- Action plan (saved for the selected Term / Exam) -->
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white p-1 d-flex align-items-center flex-wrap gap-2">
+                    <strong>Conclusion &amp; Action Plan &mdash; {{ focalExamLabel }}</strong>
+                    <button class="btn btn-sm btn-light ms-auto" (click)="saveActionPlan()" [disabled]="isSavingPlan">
+                        <i class="fas" [ngClass]="isSavingPlan ? 'fa-spinner fa-spin' : 'fa-save'"></i> Save
+                    </button>
+                </div>
+                <div class="card-body p-2">
+                    <textarea class="form-control" rows="4" [(ngModel)]="actionPlan"
+                        placeholder="e.g.&#10;1. Continue using strategies that contributed to the improvement.&#10;2. Increase practical activities in weak topics.&#10;3. Monitor learner progress through regular assessment."></textarea>
+                    <small class="text-muted">Saved for {{ subjectName }} - {{ className }}, {{ focalExamLabel }}. Change the Term / Exam at the top to write/update a different exam's plan. The selected exam's plan is included when you print.</small>
+                </div>
+            </div>
+        </ng-container>
+
+        <div *ngIf="loaded && columns.length === 0" class="alert alert-info py-2">
+            No results found for this subject in the selected year.
+        </div>
+    </div>
+</section>

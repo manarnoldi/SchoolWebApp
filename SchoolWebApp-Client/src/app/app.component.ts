@@ -3,6 +3,7 @@ import {DEFAULT_INTERRUPTSOURCES, Idle} from '@ng-idle/core';
 import {AuthService} from './core/services/auth.service';
 import {AppService} from './core/services/app.service';
 import {VersionCheckService} from './core/services/version-check.service';
+import {GlobalSettingService} from './settings/services/global-setting.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Router} from '@angular/router';
 
@@ -29,8 +30,10 @@ export class AppComponent implements OnInit{
         private authService: AuthService,
         private appService: AppService,
         private versionCheck: VersionCheckService,
+        private globalSettingSvc: GlobalSettingService,
         public router: Router
     ) {
+        // Defaults, overridden by the Security global settings in ngOnInit.
         // Consider the user idle after 30 minutes (1800s) of no activity.
         idle.setIdle(1800);
         // After going idle, show a 60s warning countdown before logging out
@@ -89,6 +92,21 @@ export class AppComponent implements OnInit{
     ngOnInit(): void {
         // Prompt to refresh when a newer build is deployed while this tab is open.
         this.versionCheck.init(10);
+
+        // Apply the configurable idle-logout timings from Security global
+        // settings (falling back to the constructor defaults of 30 min / 60 s).
+        this.globalSettingSvc.getByModule('Security').subscribe({
+            next: (settings) => {
+                let num = (key: string, def: number): number => {
+                    let s = (settings as any[])?.find((x) => x.settingKey === key);
+                    let n = parseInt(s?.settingValue, 10);
+                    return isNaN(n) || n <= 0 ? def : n;
+                };
+                this.idle.setIdle(num('IdleTimeoutMinutes', 30) * 60);
+                this.idle.setTimeout(num('LogoutWarningSeconds', 60));
+            },
+            error: () => {} // keep the defaults on failure
+        });
 
         this.appService.getUserLoggedIn().subscribe((userLoggedIn) => {
             if (userLoggedIn) {

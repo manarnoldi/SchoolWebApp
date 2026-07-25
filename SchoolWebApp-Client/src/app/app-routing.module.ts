@@ -86,8 +86,9 @@ import { MissingMarksPageComponent } from './reports/components/pages/missing-ma
 import { ResultsAnalysisPageComponent } from './reports/components/pages/results-analysis-page.component';
 import { ReportFormsPageComponent } from './reports/components/pages/report-forms-page.component';
 import { AssessmentReportComponent } from './reports/components/academics-report/assessment-report/assessment-report.component';
-import { SubjectPerformanceComponent } from './reports/components/academics-report/subject-performance/subject-performance.component';
-import { ClassPerformanceComponent } from './reports/components/academics-report/class-performance/class-performance.component';
+import { SubjectPerformanceTabsComponent } from './reports/components/academics-report/subject-performance-tabs/subject-performance-tabs.component';
+import { ClassPerformanceTabsComponent } from './reports/components/academics-report/class-performance-tabs/class-performance-tabs.component';
+import { ExamResultsTabsComponent } from './reports/components/academics-report/exam-results-tabs/exam-results-tabs.component';
 import { ExamNamesComponent } from './academics/components/exam-names/exam-names.component';
 import { CbeComponent } from './cbe/cbe.component';
 import { AssessmentTypesComponent } from './cbe/assessments/components/assessment-types/assessment-types.component';
@@ -359,11 +360,11 @@ const routes: Routes = [
             {path: 'class/attendance-details', component: ClassAttendanceDetailsPageComponent},
             {path: 'academics/missing-marks', component: MissingMarksPageComponent},
             {path: 'academics/results-analysis', component: ResultsAnalysisPageComponent},
-            {path: 'academics/exam-results', component: ResultsAnalysisPageComponent},
+            {path: 'academics/exam-results', component: ExamResultsTabsComponent},
             {path: 'academics/report-forms', component: ReportFormsPageComponent},
             {path: 'academics/assessment-report', component: AssessmentReportComponent},
-            {path: 'academics/subject-performance', component: SubjectPerformanceComponent},
-            {path: 'academics/class-performance', component: ClassPerformanceComponent},
+            {path: 'academics/subject-performance', component: SubjectPerformanceTabsComponent},
+            {path: 'academics/class-performance', component: ClassPerformanceTabsComponent},
             {path: 'academics/student-subject-allocation', component: StudentSubjectPageComponent}
         ]
     },

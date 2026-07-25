@@ -19,7 +19,13 @@ export class MenuPermissionService {
         return this.http.get<{allAccess: boolean; paths: string[]}>('/menuPermissions/myPermissions');
     }
 
-    save(roleId: string, menuPaths: {path: string; name: string}[]): Observable<any> {
-        return this.http.post('/menuPermissions/save', {roleId, menuPaths});
+    // Applies only the delta: `added` paths are created, `removed` paths are
+    // deleted; unchanged permissions for the role are left untouched.
+    saveChanges(
+        roleId: string,
+        added: {path: string; name: string}[],
+        removed: string[]
+    ): Observable<any> {
+        return this.http.post('/menuPermissions/save', {roleId, added, removed});
     }
 }

@@ -255,19 +255,9 @@ export const MENU = [
                 iconClasses: 'fas fa-circle',
                 children: [
                     {
-                        name: 'Missing Marks',
-                        iconClasses: 'fas fa-bullseye text-warning',
-                        path: ['/reports/academics/missing-marks']
-                    },
-                    {
                         name: 'Exam Results',
                         iconClasses: 'fas fa-bullseye text-warning',
                         path: ['/reports/academics/exam-results']
-                    },
-                    {
-                        name: 'Report Forms',
-                        iconClasses: 'fas fa-bullseye text-warning',
-                        path: ['/reports/academics/report-forms']
                     },
                     {
                         name: 'Assessment Report',

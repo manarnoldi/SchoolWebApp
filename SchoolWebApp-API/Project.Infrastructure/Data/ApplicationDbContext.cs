@@ -62,6 +62,9 @@ namespace Project.Infrastructure.Data
         public DbSet<Exam> Exams { get; set; }
         public DbSet<ExamResult> ExamResults { get; set; }
         public DbSet<ExamType> ExamTypes { get; set; }
+        // Teacher-authored action plan saved against the Subject Performance
+        // Trend report (one per year/class/subject).
+        public DbSet<SubjectAnalysisNote> SubjectAnalysisNotes { get; set; }
         #endregion
 
         #region CBC CoCurriculum

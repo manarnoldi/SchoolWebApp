@@ -4904,6 +4904,50 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Academics.SubjectAnalysisNote", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("AcademicYearId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ActionPlan")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("SchoolClassId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SchoolExamId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AcademicYearId", "SchoolClassId", "SubjectId", "SchoolExamId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_SubjectAnalysisNotes_Year_Class_Subject_Exam");
+
+                    b.ToTable("SubjectAnalysisNotes");
+                });
+
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Settings.GlobalSetting", b =>
                 {
                     b.Property<int>("Id")

@@ -92,7 +92,9 @@ export class DropdownManagementComponent implements OnInit {
                 {name: 'curricula', label: 'Curricula', endpoint: '/curricula', category: 'Academics',
                     fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'code', label: 'Code', type: 'text', required: true}, {key: 'rank', label: 'Rank', type: 'number', required: true}, {key: 'description', label: 'Description', type: 'textarea'}]},
                 {name: 'subjectGroups', label: 'Subject Groups', endpoint: '/subjectGroups', category: 'Academics',
-                    fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'abbreviation', label: 'Abbreviation', type: 'text'}, {key: 'rank', label: 'Rank', type: 'number', required: true}, {key: 'description', label: 'Description', type: 'textarea'}]}
+                    fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'abbreviation', label: 'Abbreviation', type: 'text'}, {key: 'rank', label: 'Rank', type: 'number', required: true}, {key: 'description', label: 'Description', type: 'textarea'}]},
+                {name: 'examTypes', label: 'Exam Types', endpoint: '/examTypes', category: 'Academics',
+                    fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'abbreviation', label: 'Abbreviation', type: 'text', required: true}, {key: 'internal', label: 'Internal', type: 'boolean'}, {key: 'rank', label: 'Rank', type: 'number', required: true}, {key: 'description', label: 'Description', type: 'textarea'}]}
             ],
             links: [
                 {label: 'Subjects', path: '/academics/subjects', icon: 'fas fa-book'},

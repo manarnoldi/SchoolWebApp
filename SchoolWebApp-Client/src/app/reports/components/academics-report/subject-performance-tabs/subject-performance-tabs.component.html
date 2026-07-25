@@ -1,0 +1,32 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+        <div class="card card-primary card-outline mb-1">
+            <div class="card-header p-1">
+                <ul class="nav nav-pills" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button type="button" class="nav-link {{ activeNav === 'performance' ? 'active' : '' }}"
+                            (click)="activeNav = 'performance'">
+                            <i class="fas fa-chart-bar me-1"></i> Subject Performance
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button type="button" class="nav-link {{ activeNav === 'trend' ? 'active' : '' }}"
+                            (click)="activeNav = 'trend'">
+                            <i class="fas fa-chart-line me-1"></i> Subject Performance Trend
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body p-1">
+                <div [hidden]="activeNav !== 'performance'">
+                    <app-subject-performance></app-subject-performance>
+                </div>
+                <div [hidden]="activeNav !== 'trend'">
+                    <app-subject-performance-trend></app-subject-performance-trend>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

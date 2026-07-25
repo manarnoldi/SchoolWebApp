@@ -1,0 +1,6 @@
+// The hosted report components keep their own <section class="content">
+// wrapper; drop its padding so the content sits snugly inside the tab body
+// rather than adding a second layer of page padding.
+:host ::ng-deep section.content {
+    padding: 0;
+}
