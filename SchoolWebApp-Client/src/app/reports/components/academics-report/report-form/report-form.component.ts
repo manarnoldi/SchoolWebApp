@@ -83,6 +83,10 @@ export class ReportFormComponent implements OnInit {
     // term-dates line is shown - both configurable in Report Form settings.
     reportTypeLabel: string = 'SUMMATIVE';
     showTermDates: boolean = true;
+    // How the CBE sections (Values, Co-curricular, Responsibilities, Community
+    // Service) print: 'ratings' (current), 'descriptions' (remarks only), or
+    // 'both'. Configurable in Report Form settings.
+    cbeSectionDisplay: string = 'ratings';
     // Master list of internal exam types; this.examTypes is narrowed to the
     // ones with a registered school exam for the selected session.
     allExamTypes: any[] = [];
@@ -197,6 +201,7 @@ export class ReportFormComponent implements OnInit {
                     if (s.settingKey === 'ShowPosition') this.showPosition = s.settingValue === 'true';
                     if (s.settingKey === 'ReportTypeLabel') this.reportTypeLabel = s.settingValue || 'SUMMATIVE';
                     if (s.settingKey === 'ShowTermDates') this.showTermDates = s.settingValue !== 'false';
+                    if (s.settingKey === 'CbeSectionDisplay') this.cbeSectionDisplay = s.settingValue || 'ratings';
                 });
             },
             error: (err) => this.toastr.error(err.error)
@@ -593,7 +598,27 @@ export class ReportFormComponent implements OnInit {
             if (s.settingKey === 'ShowPosition') this.showPosition = s.settingValue === 'true';
             if (s.settingKey === 'ReportTypeLabel') this.reportTypeLabel = s.settingValue || 'SUMMATIVE';
             if (s.settingKey === 'ShowTermDates') this.showTermDates = s.settingValue !== 'false';
+            if (s.settingKey === 'CbeSectionDisplay') this.cbeSectionDisplay = s.settingValue || 'ratings';
         });
+    };
+
+    // Renders a CBE section's items per the cbeSectionDisplay setting: 'ratings'
+    // keeps the comma-joined ratings (current look); 'descriptions' shows each
+    // item's remark (falling back to the rating when blank); 'both' shows
+    // "rating — remark". The description modes render one item per line.
+    private renderCbeItems = (items: {rating: string; desc: string}[]): any => {
+        let list = (items || []).filter((i) => i.rating || i.desc);
+        if (!list.length) return {text: '', fontSize: 9};
+        if (this.cbeSectionDisplay === 'ratings') {
+            return {text: list.map((i) => i.rating).filter(Boolean).join(', '), fontSize: 9};
+        }
+        let lines = list
+            .map((i) =>
+                this.cbeSectionDisplay === 'descriptions'
+                    ? (i.desc || i.rating)
+                    : i.rating + (i.desc ? ' — ' + i.desc : ''))
+            .filter(Boolean);
+        return {stack: lines.map((l) => ({text: l, fontSize: 9, margin: [0, 0, 0, 1]}))};
     };
 
     private buildClassLeadersText = (classLeaders: any[]): string => {
@@ -809,33 +834,36 @@ export class ReportFormComponent implements OnInit {
                         else { subjectWidths.push(40); }
                     });
 
-                    // Values section - only show values that have a rating
+                    // CBE sections: build each as {rating, desc} items then render
+                    // per the cbeSectionDisplay setting (ratings / descriptions / both).
                     let studentValues = (valueScores as any[]).filter((vs) => vs.studentId == +student.id);
-                    let valuesRichText: any[] = [];
-                    let ratedCount = 0;
+                    let valueItems: {rating: string; desc: string}[] = [];
                     this.values.forEach((v) => {
                         let sv = studentValues.find((s) => s.valueId == +v.id);
                         if (!sv) return;
                         let score = this.valueScores.find((vs) => vs.id == sv.valueScoreId);
                         if (!score) return;
-                        if (ratedCount > 0) valuesRichText.push({text: ', ', fontSize: 9});
-                        valuesRichText.push({text: `${v.name}: ${score.name}`, fontSize: 9});
-                        if (score.abbreviation) valuesRichText.push({text: ` (${score.abbreviation})`, fontSize: 9, bold: true});
-                        ratedCount++;
+                        valueItems.push({
+                            rating: `${v.name}: ${score.name}${score.abbreviation ? ' (' + score.abbreviation + ')' : ''}`,
+                            desc: sv.description || ''
+                        });
                     });
-                    let valuesContent: any = ratedCount > 0 ? {text: valuesRichText, fontSize: 9} : {text: '', fontSize: 9};
+                    let valuesContent: any = this.renderCbeItems(valueItems);
 
-                    // Co-curricular section
-                    let coCurrText = (coCurrActivities as any[]).map((a) => a.coCurriculumActivity?.name || '').filter(Boolean).join(', ');
+                    let coCurrText: any = this.renderCbeItems((coCurrActivities as any[]).map((a) => ({
+                        rating: a.coCurriculumActivity?.name || '',
+                        desc: a.description || ''
+                    })));
 
-                    // Responsibilities section
-                    let respText = (studentResponsibilities as any[]).map((sr) => {
+                    let respText: any = this.renderCbeItems((studentResponsibilities as any[]).map((sr) => {
                         let item = sr.responsibilitySocialSkill;
-                        return item ? `${item.name} (${item.category || ''})` : '';
-                    }).filter(Boolean).join(', ');
+                        return {rating: item ? `${item.name} (${item.category || ''})` : '', desc: sr.description || ''};
+                    }));
 
-                    // Community service section
-                    let commText = (communityService as any[]).map((cs) => cs.communityServiceActivity?.name || '').filter(Boolean).join(', ');
+                    let commText: any = this.renderCbeItems((communityService as any[]).map((cs) => ({
+                        rating: cs.communityServiceActivity?.name || '',
+                        desc: cs.description || ''
+                    })));
 
                     let sessionName = session?.sessionName || '';
                     let termEndDate = session?.endDate ? new Date(session.endDate).toLocaleDateString('en-GB') : '..............................';

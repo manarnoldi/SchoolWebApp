@@ -168,7 +168,12 @@ export class GlobalSettingsComponent implements OnInit {
                 {key: 'ShowCommunityService', label: 'Show Community Service Section', type: 'boolean', description: 'Show community service activities on the report form'},
                 {key: 'ShowPosition', label: 'Show Position/Rank', type: 'boolean', description: 'Show student position and out of on the report form'},
                 {key: 'ReportTypeLabel', label: 'Report Title Wording', type: 'text', description: 'The word used in the report-form title - e.g. SUMMATIVE (end term) or PERFORMANCE (mid term). Title reads: TERM 2 2026 <this> REPORT FOR ...'},
-                {key: 'ShowTermDates', label: 'Show Term Dates', type: 'boolean', description: 'Show the "This term ends on / Next term begins on" line at the bottom of the report form. Turn off for mid-term reports.'}
+                {key: 'ShowTermDates', label: 'Show Term Dates', type: 'boolean', description: 'Show the "This term ends on / Next term begins on" line at the bottom of the report form. Turn off for mid-term reports.'},
+                {key: 'CbeSectionDisplay', label: 'CBE Sections Display', type: 'select', options: [
+                    {value: 'ratings', label: 'Ratings / names only'},
+                    {value: 'descriptions', label: 'Descriptions (remarks) only'},
+                    {value: 'both', label: 'Both ratings and descriptions'}
+                ], description: 'How the Values, Co-curricular, Responsibilities and Community Service sections print on the report form: the ratings/names only, the teacher remarks only, or both.'}
             ]
         },
         {

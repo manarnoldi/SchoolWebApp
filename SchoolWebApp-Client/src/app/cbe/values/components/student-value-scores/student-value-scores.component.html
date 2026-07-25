@@ -78,14 +78,18 @@
                             [class.table-success]="hasAnyExisting(row)">
                             <td>{{ (tablePage-1)*tablePageSize + i + 1 }}</td>
                             <td class="text-nowrap">{{ row.studentName }}</td>
-                            <td *ngFor="let v of values">
-                                <select class="form-select form-select-sm"
+                            <td *ngFor="let v of values" style="min-width: 150px;">
+                                <select class="form-select form-select-sm mb-1"
                                     [(ngModel)]="row.scoresByValue[v.id].scoreId">
                                     <option [ngValue]="null">-Select-</option>
                                     <option [ngValue]="vs.id" *ngFor="let vs of valueScores">
                                         {{vs.name}}
                                     </option>
                                 </select>
+                                <input type="text" class="form-control form-control-sm"
+                                    placeholder="Remark (optional)"
+                                    [(ngModel)]="row.scoresByValue[v.id].description"
+                                    title="Remark / description for this value">
                             </td>
                             <td>
                                 <button *ngIf="hasAnyExisting(row)" class="btn btn-danger btn-sm"

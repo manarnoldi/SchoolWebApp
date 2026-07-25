@@ -69,6 +69,7 @@
                         <tr>
                             <th>#</th>
                             <th>Student</th>
+                            <th style="min-width: 170px;" title="Activity-level remark shown on the report form">Overall remark</th>
                             <th *ngFor="let st of scoreTypes">{{st.name}}</th>
                             <th></th>
                         </tr>
@@ -78,6 +79,11 @@
                             [class.table-success]="hasAnyExisting(row)">
                             <td>{{ (tablePage-1)*tablePageSize + i + 1 }}</td>
                             <td>{{ row.studentName }}</td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" [(ngModel)]="row.remark"
+                                    placeholder="Overall remark (optional)"
+                                    title="Shown on the report form for this activity" />
+                            </td>
                             <td *ngFor="let st of scoreTypes">
                                 <div class="d-flex gap-1">
                                     <select class="form-select form-select-sm" style="flex: 1;"

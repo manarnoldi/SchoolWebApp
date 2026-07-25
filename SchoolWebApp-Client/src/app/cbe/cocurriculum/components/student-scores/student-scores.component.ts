@@ -53,6 +53,10 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
         studentName: string;
         studentActivityId: number | null;
         isEnrolled: boolean;
+        // Activity-level remark (the enrolment record's description), shown on
+        // the report form. originalRemark lets us save only changed remarks.
+        remark: string;
+        originalRemark: string;
         scoresByType: { [scoreTypeId: number]: { scoreId: any; description: string; existingId: string | null } };
     }[] = [];
 
@@ -250,7 +254,8 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
                             return {
                                 student,
                                 studentActivityId: match ? +match.id : null,
-                                isEnrolled: !!match
+                                isEnrolled: !!match,
+                                activityDescription: match?.description || ''
                             };
                         });
 
@@ -307,6 +312,8 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
                                         studentName: `${r.student.upi || ''}-${r.student.fullName || ''}`,
                                         studentActivityId: r.studentActivityId,
                                         isEnrolled: r.isEnrolled,
+                                        remark: r.activityDescription,
+                                        originalRemark: r.activityDescription,
                                         scoresByType
                                     };
                                 });
@@ -355,23 +362,30 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
             });
         });
 
-        if (itemsToSave.length === 0) {
-            this.toastr.info('No new or changed scores to save.');
+        // Rows whose activity-level remark changed since load.
+        const remarkRows = this.batchRows.filter((r) => (r.remark || '') !== (r.originalRemark || ''));
+
+        if (itemsToSave.length === 0 && remarkRows.length === 0) {
+            this.toastr.info('No new or changed scores or remarks to save.');
             return;
         }
 
-        // Distinct rows lacking a studentActivityId need to be enrolled first.
-        const rowsNeedingEnrolment = Array.from(
-            new Set(itemsToSave.filter((i) => i.row.studentActivityId == null).map((i) => i.row))
-        );
+        // Distinct rows lacking a studentActivityId need to be enrolled first
+        // (a score OR a remark implies participation in the activity).
+        const rowsNeedingEnrolment = Array.from(new Set([
+            ...itemsToSave.filter((i) => i.row.studentActivityId == null).map((i) => i.row),
+            ...remarkRows.filter((r) => r.studentActivityId == null)
+        ]));
 
+        let parts: string[] = [];
+        if (itemsToSave.length) parts.push(`${itemsToSave.length} score(s)`);
+        if (remarkRows.length) parts.push(`${remarkRows.length} remark(s)`);
         const confirmText =
-            rowsNeedingEnrolment.length > 0
-                ? `${itemsToSave.length} score(s) will be saved. ${rowsNeedingEnrolment.length} student(s) will be auto-enrolled in this activity.`
-                : `${itemsToSave.length} score(s) will be saved.`;
+            `${parts.join(' and ')} will be saved.` +
+            (rowsNeedingEnrolment.length > 0 ? ` ${rowsNeedingEnrolment.length} student(s) will be auto-enrolled in this activity.` : '');
 
         Swal.fire({
-            title: 'Save all scores?',
+            title: 'Save co-curricular?',
             text: confirmText,
             width: 400, position: 'top', padding: '1em', icon: 'question',
             showCancelButton: true, confirmButtonText: 'Save', cancelButtonText: 'Cancel'
@@ -379,12 +393,13 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
             if (!result.value) return;
             this.isSaving = true;
 
-            // Phase 1: enrol any students that don't yet have a
-            // studentCoCurriculumActivity record for the picked activity.
+            // Phase 1: enrol students that don't yet have a
+            // studentCoCurriculumActivity record, carrying their remark.
             const enrolReqs = rowsNeedingEnrolment.map((row) => {
                 const enrol = new StudentCoCurriculumActivity({
                     studentId: row.studentId,
-                    coCurriculumActivityId: this.filterActivityId
+                    coCurriculumActivityId: this.filterActivityId,
+                    description: row.remark || ''
                 });
                 return this.studentActivitySvc.create('/studentCoCurriculumActivities', enrol);
             });
@@ -393,16 +408,13 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
 
             enrolStream.subscribe({
                 next: (enrolledResponses: any[]) => {
-                    // Patch the new ids back onto the rows so all itemsToSave
-                    // entries now have a usable studentActivityId.
+                    // Patch the new ids back so all items have a studentActivityId.
                     rowsNeedingEnrolment.forEach((row, idx) => {
                         row.studentActivityId = +enrolledResponses[idx].id;
                         row.isEnrolled = true;
                     });
 
-                    // Phase 2: save all new/changed scores in a single batch.
-                    // Existing rows carry their id (server updates); new rows
-                    // omit it (server creates).
+                    // Phase 2a: save all new/changed scores in a single batch.
                     const scoreBatch = itemsToSave.map((item) => {
                         const score = new StudentCoCurriculumScore({
                             studentCoCurriculumActivityId: item.row.studentActivityId,
@@ -413,20 +425,35 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
                         return score;
                     });
 
-                    this.studentScoreSvc.createBatch('/studentCoCurriculumScores/batch', scoreBatch).subscribe({
+                    // Phase 2b: update the enrolment remark for rows that were
+                    // ALREADY enrolled (just-enrolled rows already carry it via
+                    // the create above).
+                    const justEnrolled = new Set(rowsNeedingEnrolment);
+                    const remarkUpdateReqs = remarkRows
+                        .filter((r) => !justEnrolled.has(r) && r.studentActivityId != null)
+                        .map((r) => {
+                            const act = new StudentCoCurriculumActivity({
+                                studentId: r.studentId,
+                                coCurriculumActivityId: this.filterActivityId,
+                                description: r.remark || ''
+                            });
+                            act.id = r.studentActivityId;
+                            return this.studentActivitySvc.update('/studentCoCurriculumActivities', act);
+                        });
+
+                    const saveReqs: any[] = [];
+                    if (scoreBatch.length) saveReqs.push(this.studentScoreSvc.createBatch('/studentCoCurriculumScores/batch', scoreBatch));
+                    saveReqs.push(...remarkUpdateReqs);
+
+                    (saveReqs.length ? forkJoin(saveReqs) : of([])).subscribe({
                         next: () => {
                             this.isSaving = false;
-                            const enrolledCount = enrolReqs.length;
-                            const msg =
-                                enrolledCount > 0
-                                    ? `Auto-enrolled ${enrolledCount} student(s) and saved ${itemsToSave.length} score(s).`
-                                    : `${itemsToSave.length} score(s) saved!`;
-                            this.toastr.success(msg);
+                            this.toastr.success('Co-curricular saved!');
                             this.loadBatchScores();
                         },
                         error: (err) => {
                             this.isSaving = false;
-                            this.toastr.error(err.error?.message || err.error || 'Error saving scores.');
+                            this.toastr.error(err.error?.message || err.error || 'Error saving co-curricular.');
                         }
                     });
                 },
