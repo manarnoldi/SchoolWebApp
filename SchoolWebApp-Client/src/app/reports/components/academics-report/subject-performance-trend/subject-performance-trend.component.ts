@@ -650,7 +650,7 @@ export class SubjectPerformanceTrendComponent implements OnInit {
         (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
     // Stacked distribution bars as an SVG (so the learner count can be stamped
-    // inside each segment — pdfMake's canvas element can't render text).
+    // inside each segment - pdfMake's canvas element can't render text).
     private distChartSvg(columns: ExamColumn[], bands: Band[]): any {
         const colW = 46, left = 24, plotH = 90, base = plotH + 12, barW = 26;
         const iw = left + columns.length * colW + 10;

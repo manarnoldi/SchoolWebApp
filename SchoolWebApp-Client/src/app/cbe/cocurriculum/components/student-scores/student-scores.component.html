@@ -99,8 +99,8 @@
                                 </div>
                             </td>
                             <td>
-                                <button *ngIf="hasAnyExisting(row)" class="btn btn-danger btn-sm"
-                                    (click)="deleteStudentScores(row)" title="Delete all scores for this student">
+                                <button *ngIf="hasAnyExisting(row) || row.studentActivityId" class="btn btn-danger btn-sm"
+                                    (click)="deleteStudentScores(row)" title="Remove this student from the activity (deletes scores and the assignment)">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
@@ -113,7 +113,7 @@
             </div>
             <div class="card-footer p-1 d-flex justify-content-between">
                 <button class="btn btn-danger btn-sm" (click)="deleteAll()"
-                    [disabled]="isSaving || getExistingCount() === 0">
+                    [disabled]="isSaving || !hasAnyToDelete()">
                     <i class="fas fa-trash"></i> Delete All ({{getExistingCount()}})
                 </button>
                 <button class="btn btn-success btn-sm" (click)="saveAll()" [disabled]="isSaving">

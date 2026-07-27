@@ -484,6 +484,14 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
         return count;
     };
 
+    // True when there is anything to delete: existing scores or enrolments.
+    hasAnyToDelete = (): boolean =>
+        this.getExistingCount() > 0 || this.batchRows.some((r) => r.studentActivityId != null);
+
+    // Removes the student from the activity entirely: deletes their scores AND
+    // the enrolment (studentCoCurriculumActivity) record - the latter is what the
+    // report form lists, so leaving it behind made "deleted" activities keep
+    // appearing on report forms.
     deleteStudentScores = (row: any) => {
         let existingIds: string[] = [];
         this.scoreTypes.forEach((st) => {
@@ -491,31 +499,47 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
                 existingIds.push(row.scoresByType[st.id].existingId);
             }
         });
-        if (existingIds.length === 0) return;
+        // Nothing to remove if the student is neither enrolled nor scored.
+        if (existingIds.length === 0 && row.studentActivityId == null) return;
 
         Swal.fire({
-            title: 'Delete scores?',
-            text: `Remove ${existingIds.length} score(s) for ${row.studentName}?`,
+            title: 'Remove from activity?',
+            text: `Remove ${row.studentName} from ${this.getSelectedActivityName()}? This deletes their scores and the assignment.`,
             width: 400, position: 'top', padding: '1em', icon: 'warning',
-            showCancelButton: true, confirmButtonText: 'Delete', cancelButtonText: 'Cancel', confirmButtonColor: '#d33'
+            showCancelButton: true, confirmButtonText: 'Remove', cancelButtonText: 'Cancel', confirmButtonColor: '#d33'
         }).then((result) => {
-            if (result.value) {
-                let requests = existingIds.map((id) =>
-                    this.studentScoreSvc.delete('/studentCoCurriculumScores', +id)
-                );
-                forkJoin(requests).subscribe(
-                    () => {
-                        this.toastr.success(`Scores for ${row.studentName} deleted.`);
+            if (!result.value) return;
+            // Delete scores first (FK), then the enrolment record.
+            let scoreDeletes = existingIds.map((id) =>
+                this.studentScoreSvc.delete('/studentCoCurriculumScores', +id));
+            (scoreDeletes.length ? forkJoin(scoreDeletes) : of(null)).subscribe({
+                next: () => {
+                    let clearRow = () => {
                         this.scoreTypes.forEach((st) => {
                             row.scoresByType[st.id] = {scoreId: null, description: '', existingId: null};
                         });
-                    },
-                    (err) => this.toastr.error(err.error?.message || 'Error deleting.')
-                );
-            }
+                        row.remark = '';
+                        row.originalRemark = '';
+                        row.studentActivityId = null;
+                        row.isEnrolled = false;
+                        this.toastr.success(`${row.studentName} removed from ${this.getSelectedActivityName()}.`);
+                    };
+                    if (row.studentActivityId != null) {
+                        this.studentActivitySvc.delete('/studentCoCurriculumActivities', +row.studentActivityId).subscribe({
+                            next: clearRow,
+                            error: (err) => this.toastr.error(err.error?.message || 'Error removing the assignment.')
+                        });
+                    } else {
+                        clearRow();
+                    }
+                },
+                error: (err) => this.toastr.error(err.error?.message || 'Error deleting.')
+            });
         });
     };
 
+    // Removes every student from this activity: deletes all scores AND all
+    // enrolment records for the activity (so nothing lingers on report forms).
     deleteAll = () => {
         let allExistingIds: string[] = [];
         this.batchRows.forEach((row) => {
@@ -525,31 +549,43 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
                 }
             });
         });
-        if (allExistingIds.length === 0) return;
+        let enrolIds = this.batchRows
+            .filter((r) => r.studentActivityId != null)
+            .map((r) => +r.studentActivityId);
+        if (allExistingIds.length === 0 && enrolIds.length === 0) return;
 
         Swal.fire({
-            title: 'Delete all scores?',
-            text: `${allExistingIds.length} score(s) will be permanently deleted.`,
+            title: 'Delete all?',
+            text: `${allExistingIds.length} score(s) and ${enrolIds.length} assignment(s) for ${this.getSelectedActivityName()} will be permanently deleted.`,
             width: 400, position: 'top', padding: '1em', icon: 'warning',
             showCancelButton: true, confirmButtonText: 'Delete All', cancelButtonText: 'Cancel', confirmButtonColor: '#d33'
         }).then((result) => {
-            if (result.value) {
-                this.isSaving = true;
-                let requests = allExistingIds.map((id) =>
-                    this.studentScoreSvc.delete('/studentCoCurriculumScores', +id)
-                );
-                forkJoin(requests).subscribe(
-                    () => {
-                        this.isSaving = false;
-                        this.toastr.success(`${allExistingIds.length} score(s) deleted.`);
-                        this.loadBatchScores();
-                    },
-                    (err) => {
-                        this.isSaving = false;
-                        this.toastr.error(err.error?.message || 'Error deleting.');
-                    }
-                );
-            }
+            if (!result.value) return;
+            this.isSaving = true;
+            // Delete scores first (FK), then the enrolments.
+            let scoreDeletes = allExistingIds.map((id) =>
+                this.studentScoreSvc.delete('/studentCoCurriculumScores', +id));
+            (scoreDeletes.length ? forkJoin(scoreDeletes) : of(null)).subscribe({
+                next: () => {
+                    let enrolDeletes = enrolIds.map((id) =>
+                        this.studentActivitySvc.delete('/studentCoCurriculumActivities', id));
+                    (enrolDeletes.length ? forkJoin(enrolDeletes) : of(null)).subscribe({
+                        next: () => {
+                            this.isSaving = false;
+                            this.toastr.success(`All ${this.getSelectedActivityName()} records deleted.`);
+                            this.loadBatchScores();
+                        },
+                        error: (err) => {
+                            this.isSaving = false;
+                            this.toastr.error(err.error?.message || 'Error deleting assignments.');
+                        }
+                    });
+                },
+                error: (err) => {
+                    this.isSaving = false;
+                    this.toastr.error(err.error?.message || 'Error deleting.');
+                }
+            });
         });
     };
 }

@@ -605,7 +605,7 @@ export class ReportFormComponent implements OnInit {
     // Renders a CBE section's items per the cbeSectionDisplay setting: 'ratings'
     // keeps the comma-joined ratings (current look); 'descriptions' shows each
     // item's remark (falling back to the rating when blank); 'both' shows
-    // "rating — remark". The description modes render one item per line.
+    // "rating - remark". The description modes render one item per line.
     private renderCbeItems = (items: {rating: string; desc: string}[]): any => {
         let list = (items || []).filter((i) => i.rating || i.desc);
         if (!list.length) return {text: '', fontSize: 9};
@@ -616,7 +616,7 @@ export class ReportFormComponent implements OnInit {
             .map((i) =>
                 this.cbeSectionDisplay === 'descriptions'
                     ? (i.desc || i.rating)
-                    : i.rating + (i.desc ? ' — ' + i.desc : ''))
+                    : i.rating + (i.desc ? ' - ' + i.desc : ''))
             .filter(Boolean);
         return {stack: lines.map((l) => ({text: l, fontSize: 9, margin: [0, 0, 0, 1]}))};
     };
