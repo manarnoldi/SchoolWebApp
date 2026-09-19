@@ -297,8 +297,24 @@ namespace SchoolWebApp.API.Controllers.Finance
             return int.TryParse(val, out var id) ? id : null;
         }
 
+        /// <summary>
+        /// Reads a true/false Finance setting. Anything other than an explicit
+        /// "false" counts as on, so auto-posting is the default when unset.
+        /// </summary>
+        private async Task<bool> IsFinanceSettingOn(string key)
+        {
+            var settings = await _unitOfWork.Repository<SchoolWebApp.Core.Entities.Settings.GlobalSetting>()
+                .Find(s => s.Module == "Finance" && s.SettingKey == key);
+            var val = settings.FirstOrDefault()?.SettingValue;
+            return !string.Equals(val?.Trim(), "false", StringComparison.OrdinalIgnoreCase);
+        }
+
         private async Task AutoPostInvoiceJournal(StudentInvoice invoice)
         {
+            // The Auto-Post Invoice Journal switch on the Finance settings page. It was
+            // shown there but never read, so switching it off did nothing.
+            if (!await IsFinanceSettingOn("AutoPostInvoiceJournal")) return;
+
             var debtorsAccountId = await GetSettingAccountId("DebtorsAccountId");
             if (debtorsAccountId == null) return; // Skip auto-posting if no Debtors account configured
 

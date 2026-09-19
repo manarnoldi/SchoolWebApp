@@ -4,7 +4,7 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {
     EarningType, DeductionType, TaxBand, PayrollSetting,
-    EmployeeSalary, LoanAdvance, PayrollPeriod, Payslip
+    EmployeeSalary, LoanAdvance, PayrollPeriod, Payslip, NssfBand, PayrollRelief
 } from '../models/payroll-models';
 
 @Injectable({providedIn: 'root'})
@@ -23,6 +23,16 @@ export class TaxBandService extends ResourceService<TaxBand> {
 }
 
 @Injectable({providedIn: 'root'})
+export class NssfBandService extends ResourceService<NssfBand> {
+    constructor(private http: HttpClient) { super(http, NssfBand); }
+}
+
+@Injectable({providedIn: 'root'})
+export class PayrollReliefService extends ResourceService<PayrollRelief> {
+    constructor(private http: HttpClient) { super(http, PayrollRelief); }
+}
+
+@Injectable({providedIn: 'root'})
 export class PayrollSettingService extends ResourceService<PayrollSetting> {
     constructor(private http: HttpClient) { super(http, PayrollSetting); }
 }
@@ -32,6 +42,11 @@ export class EmployeeSalaryService extends ResourceService<EmployeeSalary> {
     constructor(private http: HttpClient) { super(http, EmployeeSalary); }
     updateById(id: number, payload: any): Observable<any> {
         return this.http.put(`/employeeSalaries/${id}`, payload);
+    }
+    // Upserts salary headers keyed on staffDetailsId. Line items are left alone,
+    // so only the rows the user actually edited need to be sent.
+    saveBatch(payload: any[]): Observable<any> {
+        return this.http.post(`/employeeSalaries/batch`, payload);
     }
 }
 

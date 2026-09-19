@@ -98,6 +98,7 @@ namespace SchoolWebApp.Infrastructure.Repositories.Payroll
         {
             return await _dbContext.Set<Payslip>()
                 .Include(p => p.StaffDetails).ThenInclude(s => s!.Designation)
+                .Include(p => p.PayrollPeriod)
                 .Include(p => p.Earnings).ThenInclude(e => e.EarningType)
                 .Include(p => p.Deductions).ThenInclude(d => d.DeductionType)
                 .Where(p => p.PayrollPeriodId == periodId)

@@ -52,7 +52,10 @@ export class DropdownManagementComponent implements OnInit {
                 {name: 'sessionTypes', label: 'Session Types', endpoint: '/sessionTypes', category: 'System Settings',
                     fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'rank', label: 'Rank', type: 'number', required: true}, {key: 'description', label: 'Description', type: 'textarea'}]},
                 {name: 'staffCategories', label: 'Staff Categories', endpoint: '/staffCategories', category: 'System Settings',
-                    fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'code', label: 'Code', type: 'text', required: true}, {key: 'forTeaching', label: 'For Teaching', type: 'boolean'}, {key: 'rank', label: 'Rank', type: 'number', required: true}, {key: 'description', label: 'Description', type: 'textarea'}]},
+                    // salaryExpenseAccountId: where this category's salaries are charged in the
+                    // payroll journal, so teaching and non-teaching pay land in their own
+                    // expense accounts. Filtered to expense accounts (accountType 5).
+                    fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'code', label: 'Code', type: 'text', required: true}, {key: 'forTeaching', label: 'For Teaching', type: 'boolean'}, {key: 'salaryExpenseAccountId', label: 'Salary Expense Account', type: 'select', optionsEndpoint: '/accounts', optionValue: 'id', optionLabel: ['code', 'name'], optionFilter: {field: 'accountType', equals: 5}}, {key: 'rank', label: 'Rank', type: 'number', required: true}, {key: 'description', label: 'Description', type: 'textarea'}]},
                 {name: 'learningModes', label: 'Learning Modes', endpoint: '/learningModes', category: 'System Settings',
                     fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'rank', label: 'Rank', type: 'number', required: true}, {key: 'description', label: 'Description', type: 'textarea'}]},
                 {name: 'educationLevelTypes', label: 'Education Level Types', endpoint: '/educationLevelTypes', category: 'System Settings',
@@ -83,6 +86,24 @@ export class DropdownManagementComponent implements OnInit {
                     fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'expenseAccountId', label: 'Expense Account', type: 'select', optionsEndpoint: '/accounts', optionValue: 'id', optionLabel: ['code', 'name'], optionFilter: {field: 'accountType', equals: 5}}, {key: 'rank', label: 'Rank', type: 'number'}, {key: 'isActive', label: 'Active', type: 'boolean', default: true}, {key: 'description', label: 'Description', type: 'textarea'}]}
             ],
             links: []
+        },
+        {
+            // Payroll set-up. These screens carry their own logic - calculation
+            // methods, tax treatment, dated NSSF sets, reliefs tied to deductions - so
+            // they open as full pages rather than in the simple editor here. Listed in
+            // the order a payroll is set up.
+            name: 'Payroll Settings',
+            icon: 'fas fa-money-check-alt',
+            color: 'info',
+            configs: [],
+            links: [
+                {label: 'Earning Types', path: '/payroll/earning-types', icon: 'fas fa-plus-circle'},
+                {label: 'Deduction Types', path: '/payroll/deduction-types', icon: 'fas fa-minus-circle'},
+                {label: 'Tax Bands', path: '/payroll/tax-bands', icon: 'fas fa-percentage'},
+                {label: 'NSSF Bands', path: '/payroll/nssf-bands', icon: 'fas fa-layer-group'},
+                {label: 'Reliefs', path: '/payroll/reliefs', icon: 'fas fa-hand-holding-heart'},
+                {label: 'Rates & Limits', path: '/payroll/settings', icon: 'fas fa-sliders-h'}
+            ]
         },
         {
             name: 'Academics',

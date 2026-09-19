@@ -2,7 +2,6 @@
     [title]="dashboardTitle"
     [breadcrumbs]="breadcrumbs"></app-dashboard-header>
 <hr class="mb-1">
-<a class="btn btn-flat btn-sm btn-warning mb-1" [routerLink]="['/settings/dropdowns']" [queryParams]="{category: 'Academics'}"><i class="fas fa-angle-double-left"></i> Back to Dropdowns</a>
 <div class="modal fade" id="educationLevelSubjectFormModal" tabindex="-1"
     attr.aria-labelledby="educationLevelSubjectItemModalLabel" aria-hidden="true"
     data-bs-backdrop="static"
@@ -24,15 +23,10 @@
 </div>
 <section class="content">
     <div class="container-fluid px-1">
-        <div class="row g-0">
-            <div class="col-8">
-                <app-school-soft-filter-form [showAcademicYear]="true" [showEducationLevel]="true"
-                    [academicYears]="academicYears" [educationLevels]="educationLevels"
-                    (academicYearChangedEvent)="academicYearChanged($event)"
-                    (educationLevelChangedEvent)="educationLevelChanged($event)"
-                    (searchItemEvent)="loadByEducationLevelYear($event)"></app-school-soft-filter-form>
-            </div>
-            <div class="col-4 d-flex justify-content-end align-items-center mt-1 gap-1">
+        <!-- Back to Dropdowns and the actions share one row. -->
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <a class="btn btn-flat btn-sm btn-warning" [routerLink]="['/settings/dropdowns']" [queryParams]="{category: 'Academics'}"><i class="fas fa-angle-double-left"></i> Back to Dropdowns</a>
+            <div class="d-flex gap-1">
                 <button class="btn btn-sm btn-flat btn-info" (click)="showCopyModal = true"
                     *ngIf="educationLevelSubjects.length > 0"
                     [disabled]="isCopying">
@@ -41,6 +35,15 @@
                 <app-table-button btnClasses="btn btn-sm btn-flat btn-success"
                     modelName="educationLevelSubject"
                     buttonTitle="Add Edu-Level Subjects"></app-table-button>
+            </div>
+        </div>
+        <div class="row g-0">
+            <div class="col-8">
+                <app-school-soft-filter-form [showAcademicYear]="true" [showEducationLevel]="true"
+                    [academicYears]="academicYears" [educationLevels]="educationLevels"
+                    (academicYearChangedEvent)="academicYearChanged($event)"
+                    (educationLevelChangedEvent)="educationLevelChanged($event)"
+                    (searchItemEvent)="loadByEducationLevelYear($event)"></app-school-soft-filter-form>
             </div>
         </div>
         <app-education-level-subjects-table

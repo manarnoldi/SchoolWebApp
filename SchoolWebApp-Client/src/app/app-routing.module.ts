@@ -9,8 +9,6 @@ import {DashboardComponent} from './school/components/dashboard/dashboard.compon
 import {LoginComponent} from './core/auth/login/login.component';
 import {NonAuthGuard} from './core/guards/non-auth.guard';
 import {RegisterComponent} from './core/auth/register/register.component';
-import {ForgotPasswordComponent} from './core/auth/forgot-password/forgot-password.component';
-import {RecoverPasswordComponent} from './core/auth/recover-password/recover-password.component';
 import {ChangePasswordComponent} from './core/auth/change-password/change-password.component';
 import {DesignationsComponent} from './settings/components/designations/designations.component';
 import {OccupationsComponent} from './settings/components/occupations/occupations.component';
@@ -156,6 +154,8 @@ import { PayrollEmployeeSalariesComponent } from './payroll/components/employee-
 import { PayrollLoanAdvancesComponent } from './payroll/components/loan-advances/loan-advances.component';
 import { PayrollPeriodsComponent } from './payroll/components/payroll-periods/payroll-periods.component';
 import { PayrollReportsComponent } from './payroll/components/payroll-reports/payroll-reports.component';
+import { PayrollNssfBandsComponent } from './payroll/components/nssf-bands/nssf-bands.component';
+import { PayrollReliefsComponent } from './payroll/components/payroll-reliefs/payroll-reliefs.component';
 
 const routes: Routes = [
     {
@@ -416,10 +416,14 @@ const routes: Routes = [
             {path: 'earning-types', component: PayrollEarningTypesComponent},
             {path: 'deduction-types', component: PayrollDeductionTypesComponent},
             {path: 'tax-bands', component: PayrollTaxBandsComponent},
+            {path: 'nssf-bands', component: PayrollNssfBandsComponent},
+            {path: 'reliefs', component: PayrollReliefsComponent},
             {path: 'settings', component: PayrollSettingsComponent},
             {path: 'employee-salaries', component: PayrollEmployeeSalariesComponent},
             {path: 'loan-advances', component: PayrollLoanAdvancesComponent},
             {path: 'periods', component: PayrollPeriodsComponent},
+            // Payslips are part of the Processing page now; old links land there.
+            {path: 'payslips', redirectTo: 'periods', pathMatch: 'full'},
             {path: 'reports', component: PayrollReportsComponent}
         ]
     },
@@ -431,16 +435,6 @@ const routes: Routes = [
     {
         path: 'register',
         component: RegisterComponent,
-        canActivate: [NonAuthGuard]
-    },
-    {
-        path: 'forgot-password',
-        component: ForgotPasswordComponent,
-        canActivate: [NonAuthGuard]
-    },
-    {
-        path: 'recover-password',
-        component: RecoverPasswordComponent,
         canActivate: [NonAuthGuard]
     },
     {

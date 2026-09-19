@@ -57,6 +57,15 @@
             </div>
         </div>
 
+        <!-- Back to Dropdowns and Add share one row, as on the other pages opened
+             from Settings > Dropdowns. -->
+        <div class="row g-0">
+            <div class="col-12">
+                <a class="btn btn-flat btn-sm btn-warning mb-1" [routerLink]="['/settings/dropdowns']" [queryParams]="{category: 'Payroll Settings'}"><i class="fas fa-angle-double-left"></i> Back to Dropdowns</a>
+                <button class="btn btn-sm btn-flat btn-success float-right mb-1" (click)="addNew()"><i class="fas fa-plus-circle"></i> Add setting</button>
+            </div>
+        </div>
+
         <!-- Filters -->
         <div class="row g-1 mb-1 align-items-end">
             <div class="col-md-3">
@@ -69,16 +78,13 @@
             <div class="col-md-2">
                 <button class="btn btn-sm btn-outline-secondary" (click)="clearFilters()" title="Clear"><i class="fas fa-times"></i> Clear</button>
             </div>
-            <div class="col-md-7 text-end">
-                <button class="btn btn-sm btn-success" (click)="addNew()"><i class="fas fa-plus"></i> Add Setting</button>
-            </div>
         </div>
 
         <!-- List -->
         <div class="card card-outline card-primary">
             <div class="card-header py-1 d-flex justify-content-between align-items-center bg-info text-white">
                 <div>
-                    <strong><i class="fas fa-cog me-1"></i> Payroll Settings</strong>
+                    <strong><i class="fas fa-sliders-h me-1"></i> Rates &amp; Limits</strong>
                     <span class="badge bg-light text-dark ms-2">{{ filtered().length }}</span>
                 </div>
             </div>

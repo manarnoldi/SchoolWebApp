@@ -40,6 +40,10 @@ namespace SchoolWebApp.API.Controllers.Payroll
         public async Task<IActionResult> Create(CreateEarningTypeDto model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
+            // Code is unique in the database - report the clash rather than let the
+            // insert fail with a raw constraint violation.
+            if (await _unitOfWork.EarningTypes.ItemExistsAsync(e => e.Code == model.Code))
+                return Conflict(new { message = $"An earning type with the code '{model.Code}' already exists." });
             var item = _mapper.Map<EarningType>(model);
             _unitOfWork.EarningTypes.Create(item);
             await _unitOfWork.SaveChangesAsync();
@@ -50,10 +54,15 @@ namespace SchoolWebApp.API.Controllers.Payroll
         public async Task<IActionResult> Update(EarningTypeDto model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var exists = await _unitOfWork.EarningTypes.ItemExistsAsync(a => a.Id == model.Id);
-            if (!exists) return NotFound();
-            var item = _mapper.Map<EarningType>(model);
-            _unitOfWork.EarningTypes.Update(item);
+            var existing = await _unitOfWork.EarningTypes.GetById(model.Id);
+            if (existing == null) return NotFound();
+            if (await _unitOfWork.EarningTypes.ItemExistsAsync(e => e.Code == model.Code && e.Id != model.Id))
+                return Conflict(new { message = $"Another earning type already uses the code '{model.Code}'." });
+
+            // Copy the edit onto the record loaded from the database. Mapping the DTO to
+            // a new entity instead lost the Id - the only map from a DTO is the create
+            // map, which has none - so EF Core saw a new record and INSERTed a copy.
+            _mapper.Map<CreateEarningTypeDto, EarningType>(model, existing);
             await _unitOfWork.SaveChangesAsync();
             return Ok();
         }

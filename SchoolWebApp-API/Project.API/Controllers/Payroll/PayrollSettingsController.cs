@@ -50,10 +50,15 @@ namespace SchoolWebApp.API.Controllers.Payroll
         public async Task<IActionResult> Update(PayrollSettingDto model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var exists = await _unitOfWork.PayrollSettings.ItemExistsAsync(a => a.Id == model.Id);
-            if (!exists) return NotFound();
-            var item = _mapper.Map<PayrollSetting>(model);
-            _unitOfWork.PayrollSettings.Update(item);
+            var existing = await _unitOfWork.PayrollSettings.GetById(model.Id);
+            if (existing == null) return NotFound();
+
+            // Copy the edit onto the record loaded from the database. Mapping the DTO to
+            // a new entity instead lost the Id - the only map from a DTO is the create
+            // map, which has none - so EF Core INSERTed a second row with the same key
+            // rather than updating this one, and payroll would read whichever it found
+            // first.
+            _mapper.Map<CreatePayrollSettingDto, PayrollSetting>(model, existing);
             await _unitOfWork.SaveChangesAsync();
             return Ok();
         }

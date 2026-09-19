@@ -1,5 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {RouterModule} from '@angular/router';
 import {SharedModule} from '@/shared/shared.module';
 import {PayrollComponent} from './payroll.component';
 import {PayrollEarningTypesComponent} from './components/earning-types/earning-types.component';
@@ -10,6 +11,9 @@ import {PayrollEmployeeSalariesComponent} from './components/employee-salaries/e
 import {PayrollLoanAdvancesComponent} from './components/loan-advances/loan-advances.component';
 import {PayrollPeriodsComponent} from './components/payroll-periods/payroll-periods.component';
 import {PayrollReportsComponent} from './components/payroll-reports/payroll-reports.component';
+import {PayrollPayslipsComponent} from './components/payslips/payslips.component';
+import {PayrollNssfBandsComponent} from './components/nssf-bands/nssf-bands.component';
+import {PayrollReliefsComponent} from './components/payroll-reliefs/payroll-reliefs.component';
 
 @NgModule({
     declarations: [
@@ -21,8 +25,12 @@ import {PayrollReportsComponent} from './components/payroll-reports/payroll-repo
         PayrollEmployeeSalariesComponent,
         PayrollLoanAdvancesComponent,
         PayrollPeriodsComponent,
+        PayrollPayslipsComponent,
+        PayrollNssfBandsComponent,
+        PayrollReliefsComponent,
         PayrollReportsComponent
     ],
-    imports: [CommonModule, SharedModule]
+    // RouterModule for the "Back to Dropdowns" links on the payroll set-up pages.
+    imports: [CommonModule, RouterModule, SharedModule]
 })
 export class PayrollModule {}

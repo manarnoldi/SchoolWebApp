@@ -1,0 +1,286 @@
+<!-- Payslips for the period chosen on the Processing page. No page header or
+     period filter of its own: the periods table above picks the period. -->
+<!-- Payslip details modal: only the statutory numbers that print on the
+     payslip. Everything else about a staff member stays on Staff Details. -->
+<div class="modal-backdrop fade show d-print-none" *ngIf="showIdentifiers" (click)="cancelIdentifiers()"></div>
+<div class="modal fade show d-block d-print-none" *ngIf="showIdentifiers" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable" style="margin-top: 40px;">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white py-2">
+                <h5 class="modal-title"><i class="fas fa-id-card me-1"></i> Payslip Details</h5>
+                <button type="button" class="close text-white" (click)="cancelIdentifiers()"><span>&times;</span></button>
+            </div>
+            <div class="modal-body p-2">
+                <div class="border border-secondary rounded p-2 mb-2 bg-light">
+                    <strong>{{ identifiersFor?.staffName }}</strong>
+                    <small class="text-muted ms-2">EMP No: {{ identifiersFor?.staffUpi }}</small>
+                </div>
+                <div class="row g-1">
+                    <div class="col-md-6">
+                        <label class="form-label mb-0" style="font-size:0.8rem;">KRA Pin</label>
+                        <input type="text" class="form-control form-control-sm" [(ngModel)]="identifiers.kraPinNo" maxlength="255" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label mb-0" style="font-size:0.8rem;">ID Number</label>
+                        <input type="text" class="form-control form-control-sm" [(ngModel)]="identifiers.idNumber" maxlength="255" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label mb-0" style="font-size:0.8rem;">NSSF No</label>
+                        <input type="text" class="form-control form-control-sm" [(ngModel)]="identifiers.nssfNo" maxlength="255" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label mb-0" style="font-size:0.8rem;">SHA No</label>
+                        <input type="text" class="form-control form-control-sm" [(ngModel)]="identifiers.nhifNo" maxlength="255" />
+                    </div>
+                </div>
+                <hr class="my-2">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="excludeFromPayrollSwitch"
+                        [(ngModel)]="identifiers.excludeFromPayroll">
+                    <label class="form-check-label" for="excludeFromPayrollSwitch">
+                        <strong>Exclude from payroll</strong>
+                    </label>
+                </div>
+                <small class="text-muted d-block">
+                    For people not paid through the payroll, such as suppliers or contractors.
+                    They stay on the staff list but are skipped when payroll is processed, are not
+                    given a salary structure, and their payslip cannot be printed.
+                </small>
+
+                <small class="text-muted d-block mt-2">
+                    <i class="fas fa-info-circle"></i>
+                    Saved against the staff record, so the change shows on every payslip for this
+                    employee straight away - the payroll does not need re-processing. Names,
+                    category and employment details are edited under School &gt; Staff Details.
+                </small>
+            </div>
+            <div class="modal-footer py-1">
+                <button class="btn btn-sm btn-secondary" (click)="cancelIdentifiers()">Cancel</button>
+                <button class="btn btn-sm btn-success" (click)="saveIdentifiers()" [disabled]="savingIdentifiers">
+                    <i class="fas fa-save"></i> {{ savingIdentifiers ? 'Saving...' : 'Save' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and print -->
+<div class="row g-1 mb-1 align-items-end d-print-none">
+    <div class="col-md-4">
+        <div class="input-group input-group-sm">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+            <input type="text" class="form-control form-control-sm" placeholder="Search staff name or EMP No"
+                [(ngModel)]="searchText" (ngModelChange)="page = 1" [disabled]="!selectedPeriod()" />
+        </div>
+    </div>
+    <div class="col-md-1">
+        <button class="btn btn-sm btn-outline-secondary" (click)="clearFilters()" title="Clear search"
+            [disabled]="!searchText">
+            <i class="fas fa-times"></i> Clear
+        </button>
+    </div>
+    <div class="col-md-7 text-end">
+        <button class="btn btn-sm btn-primary" (click)="printAllPayslips()"
+            [disabled]="printable().length === 0"
+            title="Print every listed payslip, two to a sheet. Staff excluded from payroll are skipped.">
+            <i class="fas fa-print"></i> Print All ({{ printable().length }})
+        </button>
+    </div>
+</div>
+
+<!-- Missing statutory numbers block KRA/NSSF/SHA returns, so surface them
+     rather than letting blanks print unnoticed. -->
+<div class="alert alert-warning py-1 px-2 mb-1 d-print-none" style="font-size:0.8rem;" *ngIf="incompleteCount() > 0">
+    <i class="fas fa-exclamation-triangle me-1"></i>
+    {{ incompleteCount() }} of {{ filtered().length }} listed staff are missing a KRA PIN, ID, NSSF or SHA number -
+    those lines will print blank. Use the <i class="fas fa-id-card"></i> button on a row to fill them in.
+</div>
+
+<!-- Payslips that exist from an earlier run but whose staff member has since
+     been taken off the payroll. -->
+<div class="alert alert-secondary py-1 px-2 mb-1 d-print-none" style="font-size:0.8rem;" *ngIf="excludedCount() > 0">
+    <i class="fas fa-ban me-1"></i>
+    {{ excludedCount() }} of {{ filtered().length }} listed staff are excluded from payroll. Their rows are
+    disabled and will not print, and re-processing this period will drop them.
+</div>
+
+<!-- List -->
+<div class="card card-outline card-primary d-print-none">
+    <div class="card-header py-1 d-flex justify-content-between align-items-center bg-info text-white">
+        <div>
+            <strong><i class="fas fa-file-invoice-dollar me-1"></i> Payslips</strong>
+            <span class="badge bg-light text-dark ms-2" *ngIf="periodLabel()">{{ periodLabel() }}</span>
+            <span class="badge bg-light text-dark ms-1">{{ filtered().length }}</span>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover table-sm mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:40px;">#</th>
+                        <th>Staff</th>
+                        <th>EMP No</th>
+                        <th class="text-end">Gross</th>
+                        <th class="text-end">NSSF</th>
+                        <th class="text-end">SHIF</th>
+                        <th class="text-end">Housing Levy</th>
+                        <th class="text-end">P.A.Y.E</th>
+                        <th class="text-end">Deductions</th>
+                        <th class="text-end">Net Pay</th>
+                        <th style="width:70px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let p of filtered() | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i"
+                        [ngClass]="{'payslip-row-excluded': p.excludeFromPayroll}">
+                        <td>{{ (page-1) * pageSize + i + 1 }}</td>
+                        <td>
+                            <strong>{{ p.staffName }}</strong>
+                            <span class="badge bg-secondary ms-1" *ngIf="p.excludeFromPayroll" style="font-size:0.65rem;">
+                                Excluded from payroll
+                            </span>
+                        </td>
+                        <td><small>{{ p.staffUpi }}</small></td>
+                        <td class="text-end">{{ p.grossPay | number:'1.2-2' }}</td>
+                        <td class="text-end">{{ p.nssfEmployee | number:'1.2-2' }}</td>
+                        <td class="text-end">{{ p.shif | number:'1.2-2' }}</td>
+                        <td class="text-end">{{ p.ahl | number:'1.2-2' }}</td>
+                        <td class="text-end">{{ p.paye | number:'1.2-2' }}</td>
+                        <td class="text-end">{{ p.totalDeductions | number:'1.2-2' }}</td>
+                        <td class="text-end fw-bold">{{ p.netPay | number:'1.2-2' }}</td>
+                        <td class="text-nowrap">
+                            <button class="btn btn-outline-secondary btn-sm" (click)="editIdentifiers(p)"
+                                [title]="missingIdentifiers(p).length
+                                    ? 'Missing: ' + missingIdentifiers(p).join(', ')
+                                    : 'Edit payslip details (KRA PIN, ID, NSSF, SHA)'">
+                                <i class="fas" [ngClass]="missingIdentifiers(p).length ? 'fa-exclamation-triangle text-warning' : 'fa-id-card'"></i>
+                            </button>
+                            <button class="btn btn-outline-primary btn-sm ms-1" (click)="print(p)"
+                                [disabled]="p.excludeFromPayroll"
+                                [title]="p.excludeFromPayroll
+                                    ? 'Excluded from payroll - no payslip is issued'
+                                    : 'Print this payslip'">
+                                <i class="fas fa-print"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="filtered().length === 0">
+                        <td colspan="11" class="text-center text-muted p-3">
+                            <i class="fas fa-info-circle"></i>
+                            <span *ngIf="loading">Loading...</span>
+                            <span *ngIf="!loading && !selectedPeriod()">Select a period above to see its payslips.</span>
+                            <span *ngIf="!loading && selectedPeriod() && payslips.length === 0">
+                                No payslips for {{ periodLabel() }} yet. Click <i class="fas fa-cog"></i> Process on the period above.
+                            </span>
+                            <span *ngIf="!loading && payslips.length > 0">No payslips match your search.</span>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot *ngIf="filtered().length > 0" class="table-light">
+                    <tr>
+                        <th colspan="3">Totals ({{ filtered().length }})</th>
+                        <th class="text-end">{{ totalGross() | number:'1.2-2' }}</th>
+                        <th colspan="3"></th>
+                        <th class="text-end">{{ totalPaye() | number:'1.2-2' }}</th>
+                        <th class="text-end">{{ totalDeductions() | number:'1.2-2' }}</th>
+                        <th class="text-end">{{ totalNet() | number:'1.2-2' }}</th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <app-table-paging (pageChangedEvent)="pageChanged($event)"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"
+            [collectionSize]="filtered().length"></app-table-paging>
+    </div>
+</div>
+
+<!-- Print source: never shown. runPrint() copies these slips into a hidden
+     print frame with their own stylesheet, two across each A4 sheet. -->
+<div class="payslip-print-area" #printArea>
+  <div class="payslip-pair" *ngFor="let pair of printPairs(); trackBy: trackByIndex">
+    <div class="payslip" *ngFor="let p of pair">
+
+        <!-- Header -->
+        <div class="payslip-header">
+            <img *ngIf="schoolLogo" [src]="schoolLogo" alt="" class="payslip-logo" />
+            <div class="school-name">{{ schoolName }}</div>
+            <div class="school-pin" *ngIf="employerKraPin">KRA PIN: {{ employerKraPin }}</div>
+            <div class="payslip-title">PAYSLIP - {{ (p.periodName || periodLabel()) | uppercase }}</div>
+        </div>
+
+        <!-- Employee -->
+        <div class="payslip-employee">
+            <div class="emp-name">{{ p.staffName }}</div>
+            <div class="emp-grid">
+                <div><span class="k">EMP No</span><span class="v">{{ p.staffUpi || '-' }}</span></div>
+                <div><span class="k">KRA PIN</span><span class="v">{{ p.kraPin || '-' }}</span></div>
+                <div><span class="k">ID No</span><span class="v">{{ p.idNumber || '-' }}</span></div>
+                <div><span class="k">NSSF No</span><span class="v">{{ p.nssfNumber || '-' }}</span></div>
+                <div><span class="k">SHA No</span><span class="v">{{ p.shaNumber || '-' }}</span></div>
+                <div *ngIf="p.designationName"><span class="k">Role</span><span class="v">{{ p.designationName }}</span></div>
+            </div>
+        </div>
+
+        <!-- 1. Earnings -->
+        <div class="payslip-block">
+            <div class="block-title">Earnings</div>
+            <div class="row-line"><span>Basic Salary</span><span class="amt">{{ p.basicSalary | number:'1.2-2' }}</span></div>
+            <div class="row-line" *ngFor="let a of otherAllowanceLines(p)">
+                <span>{{ a.name }}<em class="note" *ngIf="!a.taxable"> (non-taxable)</em></span>
+                <span class="amt">{{ a.amount | number:'1.2-2' }}</span>
+            </div>
+            <div class="row-line total"><span>Gross Pay</span><span class="amt">{{ p.grossPay | number:'1.2-2' }}</span></div>
+        </div>
+
+        <!-- 2. How PAYE was worked out. Amounts in brackets are taken off. -->
+        <div class="payslip-block">
+            <div class="block-title">P.A.Y.E. Calculation</div>
+            <div class="row-line"><span>Gross Pay</span><span class="amt">{{ p.grossPay | number:'1.2-2' }}</span></div>
+            <ng-container *ngIf="nonTaxableEarnings(p) > 0">
+                <div class="row-line less"><span>Less: Non-taxable earnings</span><span class="amt">({{ nonTaxableEarnings(p) | number:'1.2-2' }})</span></div>
+                <div class="row-line subtotal"><span>Taxable Pay</span><span class="amt">{{ p.taxablePay | number:'1.2-2' }}</span></div>
+            </ng-container>
+            <div class="row-line less"><span>Less: Pension relief (incl. NSSF)</span><span class="amt">({{ p.retirementRelief | number:'1.2-2' }})</span></div>
+            <div class="row-line less"><span>Less: SHIF</span><span class="amt">({{ p.shif | number:'1.2-2' }})</span></div>
+            <div class="row-line less"><span>Less: Housing Levy</span><span class="amt">({{ p.ahl | number:'1.2-2' }})</span></div>
+            <div class="row-line less" *ngIf="(p.otherTaxDeductible || 0) > 0">
+                <span>Less: Other allowable deductions</span><span class="amt">({{ p.otherTaxDeductible | number:'1.2-2' }})</span>
+            </div>
+            <div class="row-line subtotal"><span>Taxable Income</span><span class="amt">{{ p.taxableIncome | number:'1.2-2' }}</span></div>
+            <div class="row-line"><span>Tax Charged</span><span class="amt">{{ p.grossTax | number:'1.2-2' }}</span></div>
+            <div class="row-line less"><span>Less: Personal Relief</span><span class="amt">({{ p.personalRelief | number:'1.2-2' }})</span></div>
+            <div class="row-line less" *ngIf="(p.insuranceRelief || 0) > 0">
+                <span>Less: Insurance Relief</span><span class="amt">({{ p.insuranceRelief | number:'1.2-2' }})</span>
+            </div>
+            <div class="row-line total"><span>P.A.Y.E.</span><span class="amt">{{ p.paye | number:'1.2-2' }}</span></div>
+        </div>
+
+        <!-- 3. Everything taken off pay -->
+        <div class="payslip-block">
+            <div class="block-title">Deductions</div>
+            <div class="row-line"><span>P.A.Y.E.</span><span class="amt">{{ p.paye | number:'1.2-2' }}</span></div>
+            <div class="row-line"><span>NSSF Tier I</span><span class="amt">{{ p.nssfTier1 | number:'1.2-2' }}</span></div>
+            <div class="row-line" *ngIf="(p.nssfTier2 || 0) > 0"><span>NSSF Tier II</span><span class="amt">{{ p.nssfTier2 | number:'1.2-2' }}</span></div>
+            <div class="row-line"><span>SHIF</span><span class="amt">{{ p.shif | number:'1.2-2' }}</span></div>
+            <div class="row-line"><span>Housing Levy</span><span class="amt">{{ p.ahl | number:'1.2-2' }}</span></div>
+            <div class="row-line" *ngFor="let d of otherDeductionLines(p)">
+                <span>{{ d.name }}</span><span class="amt">{{ d.amount | number:'1.2-2' }}</span>
+            </div>
+            <div class="row-line total"><span>Total Deductions</span><span class="amt">{{ p.totalDeductions | number:'1.2-2' }}</span></div>
+        </div>
+
+        <!-- 4. Net pay, with rounding shown so the figures add up -->
+        <div class="payslip-block net-block">
+            <div class="row-line"><span>Gross Pay</span><span class="amt">{{ p.grossPay | number:'1.2-2' }}</span></div>
+            <div class="row-line less"><span>Less: Total Deductions</span><span class="amt">({{ p.totalDeductions | number:'1.2-2' }})</span></div>
+            <ng-container *ngIf="hasRounding(p)">
+                <div class="row-line subtotal"><span>Net before rounding</span><span class="amt">{{ netBeforeRounding(p) | number:'1.2-2' }}</span></div>
+                <div class="row-line"><span>Rounding</span><span class="amt">{{ p.roundingAdjustment | number:'1.2-2' }}</span></div>
+            </ng-container>
+            <div class="row-line net-pay"><span>NET PAY</span><span class="amt">{{ p.netPay | number:'1.2-2' }}</span></div>
+        </div>
+    </div>
+  </div>
+</div>

@@ -35,12 +35,146 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- How the amount is worked out, and who it applies to. -->
+                        <div class="border border-primary rounded p-2 mb-2">
+                            <h6 class="text-primary mb-2"><i class="fas fa-calculator me-1"></i> Calculation</h6>
+                            <div class="alert alert-secondary py-1 px-2 mb-2" style="font-size:0.78rem;"
+                                *ngIf="item.isSystemComputed">
+                                <i class="fas fa-lock me-1"></i>
+                                Payroll works this one out itself from the statutory rates, so it is not
+                                applied from the settings below.
+                            </div>
+                            <div class="row g-1">
+                                <div class="col-md-4">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Method</label>
+                                    <select class="form-select form-select-sm" [(ngModel)]="item.calculationMethod"
+                                        [disabled]="item.isSystemComputed">
+                                        <option [ngValue]="0">Fixed amount</option>
+                                        <option [ngValue]="1">Percentage of gross pay</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">
+                                        {{ item.calculationMethod === 1 ? 'Percentage (%)' : 'Amount' }}
+                                    </label>
+                                    <input type="number" class="form-control form-control-sm"
+                                        [(ngModel)]="item.defaultValue" min="0"
+                                        [disabled]="item.isSystemComputed" />
+                                </div>
+                                <div class="col-md-5 d-flex align-items-center">
+                                    <div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="dtAppliesToAll"
+                                                [(ngModel)]="item.appliesToAll" [disabled]="item.isSystemComputed">
+                                            <label for="dtAppliesToAll" class="form-check-label" style="font-size:0.8rem;">
+                                                <strong>Applies to all staff</strong>
+                                            </label>
+                                        </div>
+                                        <small class="text-muted">
+                                            Deducted from everyone on the payroll without adding it to each
+                                            employee. An employee who has their own line keeps that amount.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- How payroll treats this deduction for tax. Configured here
+                             so a change in the law needs no code change. -->
+                        <div class="border border-success rounded p-2">
+                            <h6 class="text-success mb-2"><i class="fas fa-balance-scale me-1"></i> Tax Treatment</h6>
+
+                            <div class="row g-1 mb-2">
+                                <div class="col-md-12">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="dtRetirement"
+                                            [(ngModel)]="item.isRetirementContribution"
+                                            (ngModelChange)="onRetirementChange()">
+                                        <label for="dtRetirement" class="form-check-label" style="font-size:0.8rem;">
+                                            <strong>Retirement contribution (pension / provident fund)</strong>
+                                        </label>
+                                    </div>
+                                    <small class="text-muted">
+                                        Pooled with the employee's NSSF. The pool comes off taxable income at the
+                                        lowest of the actual total, a percentage of basic pay, and a monthly cap -
+                                        both limits are set under <strong>Payroll Settings &gt; Rates &amp; Limits</strong>.
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="row g-1">
+                                <div class="col-md-5">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="dtTaxDeductible"
+                                            [(ngModel)]="item.isTaxDeductible"
+                                            [disabled]="item.isRetirementContribution">
+                                        <label for="dtTaxDeductible" class="form-check-label" style="font-size:0.8rem;">
+                                            <strong>Tax deductible</strong>
+                                        </label>
+                                    </div>
+                                    <small class="text-muted" *ngIf="!item.isRetirementContribution">
+                                        Comes off gross pay before PAYE is worked out, capped on its own -
+                                        a post-retirement medical fund, for instance.
+                                    </small>
+                                    <small class="text-muted" *ngIf="item.isRetirementContribution">
+                                        Not needed - a retirement contribution is already relieved through
+                                        the NSSF pool above.
+                                    </small>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Monthly cap</label>
+                                    <input type="number" class="form-control form-control-sm"
+                                        [(ngModel)]="item.taxDeductibleCap" min="0"
+                                        [disabled]="!item.isTaxDeductible" placeholder="Uncapped" />
+                                    <small class="text-muted">Leave blank for no cap.</small>
+                                </div>
+                                <div class="col-md-4 d-flex align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle"></i>
+                                        A deduction that attracts a relief - insurance premiums, for
+                                        instance - is named by the relief itself, under
+                                        <strong>Payroll Settings &gt; Reliefs</strong>.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Where the money is credited when an approved payroll posts to the GL. -->
+                        <div class="border border-warning rounded p-2 mt-2" *ngIf="!item.isSystemComputed">
+                            <h6 class="text-warning mb-2"><i class="fas fa-book me-1"></i> Accounting</h6>
+                            <div class="row g-1">
+                                <div class="col-md-7">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Liability account</label>
+                                    <select class="form-select form-select-sm" [(ngModel)]="item.liabilityAccountId">
+                                        <option [ngValue]="null">Use the general Payroll Deductions Payable account</option>
+                                        <option [ngValue]="a.id" *ngFor="let a of liabilityAccounts">{{ a.code }} - {{ a.name }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-5 d-flex align-items-center">
+                                    <small class="text-muted">
+                                        Money deducted from pay is owed onward - to the pension scheme, the SACCO,
+                                        the union. Give each its own account to see what is owed to whom.
+                                        Loan and advance recoveries go to Staff Loans &amp; Advances automatically.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer py-1">
                         <button class="btn btn-sm btn-secondary" (click)="cancel()">Cancel</button>
                         <button class="btn btn-sm btn-success" (click)="save()"><i class="fas fa-save"></i> Save</button>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Back to Dropdowns and Add share one row, as on the other pages opened
+             from Settings > Dropdowns. -->
+        <div class="row g-0">
+            <div class="col-12">
+                <a class="btn btn-flat btn-sm btn-warning mb-1" [routerLink]="['/settings/dropdowns']" [queryParams]="{category: 'Payroll Settings'}"><i class="fas fa-angle-double-left"></i> Back to Dropdowns</a>
+                <button class="btn btn-sm btn-flat btn-success float-right mb-1" (click)="addNew()"><i class="fas fa-plus-circle"></i> Add deduction type</button>
             </div>
         </div>
 
@@ -51,12 +185,11 @@
                     <strong><i class="fas fa-minus-circle me-1"></i> Deduction Types</strong>
                     <span class="badge bg-light text-dark ms-2">{{ items.length }}</span>
                 </div>
-                <button class="btn btn-sm btn-success" (click)="addNew()"><i class="fas fa-plus"></i> Add</button>
             </div>
             <div class="card-body p-0">
                 <table class="table table-striped table-hover table-sm mb-0">
                     <thead class="table-light">
-                        <tr><th>#</th><th>Name</th><th>Code</th><th>Statutory</th><th>Active</th><th>Description</th><th>Action</th></tr>
+                        <tr><th>#</th><th>Name</th><th>Code</th><th>Statutory</th><th>Applied</th><th>Tax Treatment</th><th>Active</th><th>Description</th><th>Action</th></tr>
                     </thead>
                     <tbody>
                         <tr *ngFor="let c of items | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i">
@@ -64,6 +197,28 @@
                             <td><strong>{{ c.name }}</strong></td>
                             <td>{{ c.code }}</td>
                             <td><span *ngIf="c.isStatutory" class="badge bg-warning text-dark">Yes</span><span *ngIf="!c.isStatutory" class="badge bg-secondary">No</span></td>
+                            <td class="text-nowrap">
+                                <span *ngIf="c.isSystemComputed" class="badge bg-dark" title="Computed by payroll from the statutory rates">
+                                    <i class="fas fa-lock"></i> System
+                                </span>
+                                <span *ngIf="!c.isSystemComputed && c.appliesToAll" class="badge bg-primary">
+                                    All staff:
+                                    <span *ngIf="c.calculationMethod === 1">{{ c.defaultValue | number:'1.0-2' }}%</span>
+                                    <span *ngIf="c.calculationMethod !== 1">{{ c.defaultValue | number:'1.0-2' }}</span>
+                                </span>
+                                <span *ngIf="!c.isSystemComputed && !c.appliesToAll" class="text-muted">Per employee</span>
+                            </td>
+                            <td class="text-nowrap">
+                                <span *ngIf="c.isTaxDeductible" class="badge bg-success"
+                                    [title]="c.taxDeductibleCap ? 'Capped at ' + (c.taxDeductibleCap | number:'1.0-2') + ' per month' : 'Uncapped'">
+                                    Tax deductible<span *ngIf="c.taxDeductibleCap"> &le; {{ c.taxDeductibleCap | number:'1.0-0' }}</span>
+                                </span>
+                                <span *ngIf="c.isRetirementContribution" class="badge bg-info"
+                                    title="Pooled with NSSF under the retirement relief limits">
+                                    Retirement (with NSSF)
+                                </span>
+                                <span *ngIf="!c.isTaxDeductible && !c.isRetirementContribution" class="text-muted">-</span>
+                            </td>
                             <td><span *ngIf="c.isActive" class="badge bg-success">Active</span><span *ngIf="!c.isActive" class="badge bg-secondary">Inactive</span></td>
                             <td><small>{{ c.description }}</small></td>
                             <td>

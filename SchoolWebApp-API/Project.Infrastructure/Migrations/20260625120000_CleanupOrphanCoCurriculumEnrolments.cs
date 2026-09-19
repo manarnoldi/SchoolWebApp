@@ -10,7 +10,7 @@ namespace SchoolWebApp.Infrastructure.Migrations
     // scores removed the score rows but left the enrolment
     // (StudentCoCurriculumActivity) behind. The report form lists enrolments, so
     // those "deleted" activities kept appearing. This removes the orphaned
-    // enrolments — ones with no scores AND no remark (description). Enrolments
+    // enrolments - ones with no scores AND no remark (description). Enrolments
     // that still have scores or a remark are kept. Data-only; no schema change.
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20260625120000_CleanupOrphanCoCurriculumEnrolments")]

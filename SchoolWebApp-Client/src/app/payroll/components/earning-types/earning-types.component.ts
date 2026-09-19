@@ -12,12 +12,13 @@ import {EarningTypeService} from '@/payroll/services/payroll-services';
 export class PayrollEarningTypesComponent implements OnInit {
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Dashboard'},
+        {link: ['/settings/dropdowns'], title: 'Dropdowns'},
         {link: ['/payroll/earning-types'], title: 'Earning Types'}
     ];
     dashboardTitle = 'Payroll: Earning Types';
 
     items: EarningType[] = [];
-    item: EarningType = new EarningType({isActive: true, isTaxable: false});
+    item: EarningType = new EarningType({isActive: true, isTaxable: false, calculationMethod: 0, defaultValue: null, appliesToAll: false, isSystemComputed: false});
     editMode: boolean = false;
     showForm: boolean = false;
 
@@ -39,13 +40,20 @@ export class PayrollEarningTypesComponent implements OnInit {
         });
     }
 
-    addNew() { this.item = new EarningType({isActive: true, isTaxable: false}); this.editMode = false; this.showForm = true; }
+    addNew() { this.item = new EarningType({isActive: true, isTaxable: false, calculationMethod: 0, defaultValue: null, appliesToAll: false, isSystemComputed: false}); this.editMode = false; this.showForm = true; }
     edit(x: EarningType) { this.item = new EarningType(x); this.editMode = true; this.showForm = true; }
     cancel() { this.showForm = false; }
 
     save() {
         if (!this.item.name) { this.toastr.warning('Name is required.'); return; }
         if (!this.item.code) { this.toastr.warning('Code is required.'); return; }
+        // An applies-to-all type needs a value, or it would be applied as zero and
+        // quietly do nothing.
+        if (this.item.appliesToAll && !this.item.isSystemComputed &&
+            (this.item.defaultValue == null || +this.item.defaultValue <= 0)) {
+            this.toastr.warning('An earning that applies to all staff needs an amount or percentage greater than zero.');
+            return;
+        }
         let req = this.editMode ? this.svc.update('/earningTypes', this.item) : this.svc.create('/earningTypes', this.item);
         req.subscribe({
             next: () => { this.toastr.success('Saved.'); this.showForm = false; this.load(); },

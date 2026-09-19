@@ -29,9 +29,11 @@
 </div>
 <section class="content">
     <div class="container-fluid px-1">
+        <!-- Back to Dropdowns and Add share one row. -->
         <div class="row g-0">
             <div class="col-12">
                 <a class="btn btn-flat btn-sm btn-warning mb-1" [routerLink]="['/settings/dropdowns']" [queryParams]="{category: 'System Settings'}"><i class="fas fa-angle-double-left"></i> Back to Dropdowns</a>
+                <app-table-button modelName="learningLevel" buttonTitle="Add learning level"></app-table-button>
             </div>
         </div>
         <div class="row g-0">
@@ -40,10 +42,6 @@
                     [showCurriculum]="true" (searchItemEvent)="searchClicked($event)"
                     (curriculumChangedEvent)="curriculumChanged($event)"
                     [curricula]="curricula"></app-school-soft-filter-form>
-            </div>
-            <div class="col-6">
-                <app-table-button modelName="learningLevel"
-                    buttonTitle="Add learning level"></app-table-button>
             </div>
         </div>
         <div class="card">

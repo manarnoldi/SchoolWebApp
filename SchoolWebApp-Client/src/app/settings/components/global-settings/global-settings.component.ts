@@ -85,13 +85,47 @@ export class GlobalSettingsComponent implements OnInit {
                 ], description: 'How payments are allocated to individual invoice items. Auto mode distributes by fee category rank (lowest rank = highest priority). Manual mode lets the finance officer enter amounts per item.'},
                 {key: 'AutoPostInvoiceJournal', label: 'Auto-Post Invoice Journal', type: 'boolean', description: 'Automatically create a journal entry (Debit Debtors, Credit Income) when a student invoice is created.'},
                 {key: 'AutoPostPaymentJournal', label: 'Auto-Post Payment Journal', type: 'boolean', description: 'Automatically create a journal entry (Debit Bank/Cash, Credit Debtors) when a payment is received.'},
+                {key: 'PayrollJournalMode', label: 'Payroll Journal', type: 'select', options: [
+                    {value: 'draft', label: 'Draft for review (recommended)'},
+                    {value: 'auto', label: 'Post automatically on approval'},
+                    {value: 'off', label: 'Off - post manually'}
+                ], description: 'What approving a payroll does in the ledger. Draft for review creates the journal with every figure filled in, waiting under Journal Entries for finance to check, adjust (for example split salaries between teaching and non-teaching accounts) and approve. Post automatically puts it straight into the ledger. Off creates nothing.'},
                 {key: 'DebtorsAccountId', label: 'Student Debtors Account', type: 'account', description: 'Asset account for student receivables (e.g. 1200 Student Debtors).'},
                 {key: 'CashAccountId', label: 'Default Cash/Bank Account', type: 'account', description: 'Default asset account for receiving fee payments (e.g. 1100 Cash at Hand).'},
-                {key: 'SalaryExpenseAccountId', label: 'Salary Expense Account', type: 'account', description: 'Expense account for salary costs (e.g. 5100 Salary Expense).'},
-                {key: 'PayeAccountId', label: 'PAYE Payable Account', type: 'account', description: 'Liability account for PAYE tax (e.g. 2100 PAYE Payable).'},
+                {key: 'SalaryExpenseAccountId', label: 'Default Salary Expense Account', type: 'account', description: 'Fallback only. Salaries are charged to the expense account set on each staff category (Settings > Dropdowns > Staff Categories), so teaching and non-teaching pay stay separate. This is used just for a category that has no account of its own - leave it blank to have payroll approval stop and say so instead.'},
+                {key: 'PayeAccountId', label: 'PAYE Payable Account', type: 'account', description: 'Liability account for PAYE tax (e.g. 2200 PAYE Payable).'},
                 {key: 'NssfAccountId', label: 'NSSF Payable Account', type: 'account', description: 'Liability account for NSSF (e.g. 2110 NSSF Payable).'},
                 {key: 'ShifAccountId', label: 'SHIF Payable Account', type: 'account', description: 'Liability account for SHIF (e.g. 2120 SHIF Payable).'},
-                {key: 'AhlAccountId', label: 'Housing Levy Account', type: 'account', description: 'Liability account for AHL (e.g. 2130 Housing Levy Payable).'}
+                {key: 'AhlAccountId', label: 'Housing Levy Account', type: 'account', description: 'Liability account for AHL (e.g. 2130 Housing Levy Payable).'},
+                {key: 'PayrollDeductionsAccountId', label: 'Payroll Deductions Payable Account', type: 'account', description: 'Liability account for deductions owed onward (pension, SACCO, welfare) where the deduction type has no account of its own (e.g. 2140 Payroll Deductions Payable).'},
+                {key: 'StaffLoansAccountId', label: 'Staff Loans & Advances Account', type: 'account', description: 'Asset account reduced as staff loan and advance instalments are recovered through payroll (e.g. 1310 Staff Loans & Advances).'}
+            ]
+        },
+        {
+            // School policy for payroll. Government rates and limits (tax bands,
+            // NSSF, SHIF, Housing Levy, reliefs) are under Settings > Dropdowns >
+            // Payroll Settings instead, as they change by law, not by choice.
+            name: 'Payroll',
+            title: 'Payroll Settings',
+            color: 'secondary',
+            icon: 'fas fa-money-check-alt',
+            settings: [
+                {key: 'EmployerKraPin', label: 'School KRA PIN', type: 'text', description: "The school's KRA PIN as employer, printed in the payslip header. Leave blank to leave it off the payslip."},
+                // First option is the default shown when nothing is saved - it
+                // matches the API's fallback (whole shillings, nearest).
+                {key: 'NetPayRoundingUnit', label: 'Round Net Pay To', type: 'select', options: [
+                    {value: '1', label: 'Whole shillings (1)'},
+                    {value: '0', label: 'No rounding - keep cents'},
+                    {value: '5', label: 'Nearest 5 shillings'},
+                    {value: '10', label: 'Nearest 10 shillings'},
+                    {value: '50', label: 'Nearest 50 shillings'},
+                    {value: '100', label: 'Nearest 100 shillings'}
+                ], description: 'The unit net pay is rounded to. The difference prints on the payslip as Rounding and is included in the payroll journal, so every slip still adds up. Takes effect the next time a period is processed.'},
+                {key: 'NetPayRoundingMethod', label: 'Net Pay Rounding Method', type: 'select', options: [
+                    {value: 'nearest', label: 'To the nearest unit'},
+                    {value: 'down', label: 'Always down'},
+                    {value: 'up', label: 'Always up'}
+                ], description: 'Nearest rounds half-way amounts up (64,159.50 becomes 64,160). Always down never pays more than earned; always up never pays less. Ignored when net pay is not rounded.'}
             ]
         },
         {

@@ -46,14 +46,22 @@
                     <input type="checkbox" class="form-check-input" id="rememberMe" />
                     <label class="form-check-label" for="rememberMe">Remember me</label>
                 </div>
-                <a [routerLink]="['/forgot-password']"
-                    class="text-decoration-none forgot-password">Forgot password?</a>
             </div>
 
             <button type="submit" class="btn btn-sm btn-gradient w-100 py-2" [disabled]="isAuthLoading">
                 <span *ngIf="!isAuthLoading"><i class="fas fa-sign-in-alt mr-1"></i> Sign In</span>
                 <span *ngIf="isAuthLoading"><i class="fas fa-spinner fa-spin mr-1"></i> Signing in...</span>
             </button>
+
+            <!-- Passwords are reset by an administrator (Security > Users > Reset
+                 Password), not by the user. A self-service reset would hand an account
+                 to whoever controls its email, and staff email here is often shared,
+                 personal or missing, while accounts reach payroll and student records.
+                 The admin reset forces a new password at the next sign-in. -->
+            <p class="login-help text-center mt-3 mb-0">
+                <i class="fas fa-info-circle mr-1"></i>
+                Forgot your password? Contact your system administrator to have it reset.
+            </p>
         </form>
 
         <div class="login-footer">

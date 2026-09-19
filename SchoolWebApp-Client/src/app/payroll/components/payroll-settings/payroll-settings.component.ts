@@ -12,9 +12,10 @@ import {PayrollSettingService} from '@/payroll/services/payroll-services';
 export class PayrollSettingsComponent implements OnInit {
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Dashboard'},
-        {link: ['/payroll/payroll-settings'], title: 'Payroll Settings'}
+        {link: ['/settings/dropdowns'], title: 'Dropdowns'},
+        {link: ['/payroll/settings'], title: 'Rates & Limits'}
     ];
-    dashboardTitle = 'Payroll: Settings';
+    dashboardTitle = 'Payroll: Rates & Limits';
 
     items: PayrollSetting[] = [];
     item: PayrollSetting = new PayrollSetting({isActive: true});

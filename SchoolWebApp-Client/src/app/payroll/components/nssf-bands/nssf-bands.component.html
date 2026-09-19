@@ -1,0 +1,152 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+
+        <!-- Form Modal -->
+        <div class="modal-backdrop fade show" *ngIf="showForm" (click)="cancel()"></div>
+        <div class="modal fade show d-block" *ngIf="showForm" tabindex="-1">
+            <div class="modal-dialog modal-lg" style="margin-top: 50px;">
+                <div class="modal-content">
+                    <div class="modal-header bg-info text-white py-2">
+                        <h5 class="modal-title"><i class="fas fa-layer-group me-1"></i> {{ editMode ? 'Edit' : 'New' }} NSSF Band</h5>
+                        <button type="button" class="close text-white" (click)="cancel()"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body p-2">
+                        <div class="border border-info rounded p-2">
+                            <div class="row g-1">
+                                <div class="col-md-5">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Name <span class="requiredField">*</span></label>
+                                    <input class="form-control form-control-sm" [(ngModel)]="item.name" placeholder="NSSF Tier I" />
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Tier <span class="requiredField">*</span></label>
+                                    <input type="number" class="form-control form-control-sm" [(ngModel)]="item.tier" min="1" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Effective from <span class="requiredField">*</span></label>
+                                    <input type="date" class="form-control form-control-sm" [(ngModel)]="item.effectiveDate" />
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" [(ngModel)]="item.isActive" id="nbAct">
+                                        <label for="nbAct" class="form-check-label" style="font-size:0.8rem;">Active</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-1 mt-1">
+                                <div class="col-md-4">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Lower limit</label>
+                                    <input type="number" class="form-control form-control-sm" [(ngModel)]="item.lowerLimit" min="0" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Upper limit</label>
+                                    <input type="number" class="form-control form-control-sm" [(ngModel)]="item.upperLimit" min="0" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Rate (%)</label>
+                                    <input type="number" class="form-control form-control-sm" [(ngModel)]="item.rate" min="0" step="0.01" />
+                                </div>
+                            </div>
+                            <div class="row g-1 mt-1">
+                                <div class="col-md-12">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Description</label>
+                                    <input class="form-control form-control-sm" [(ngModel)]="item.description" />
+                                </div>
+                            </div>
+                            <small class="text-muted d-block mt-2">
+                                <i class="fas fa-info-circle"></i>
+                                The tier charges its rate on the pay falling between the two limits, so
+                                Tier II's lower limit is normally Tier I's upper limit. Every tier sharing
+                                an effective date forms one set, and payroll uses the most recent set in
+                                force for the period being run.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="modal-footer py-1">
+                        <button class="btn btn-sm btn-secondary" (click)="cancel()">Cancel</button>
+                        <button class="btn btn-sm btn-success" (click)="save()"><i class="fas fa-save"></i> Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Dropdowns and Add share one row, as on the other pages opened
+             from Settings > Dropdowns. -->
+        <div class="row g-0">
+            <div class="col-12">
+                <a class="btn btn-flat btn-sm btn-warning mb-1" [routerLink]="['/settings/dropdowns']" [queryParams]="{category: 'Payroll Settings'}"><i class="fas fa-angle-double-left"></i> Back to Dropdowns</a>
+                <button class="btn btn-sm btn-flat btn-success float-right mb-1" (click)="addNew()"><i class="fas fa-plus-circle"></i> Add band</button>
+            </div>
+        </div>
+
+        <div class="alert alert-secondary py-1 px-2 mb-1" style="font-size:0.8rem;">
+            <i class="fas fa-info-circle me-1"></i>
+            NSSF limits change most Februaries. Rather than editing the figures in place, add a new
+            set dated from the day it takes effect - re-processing an older period then still uses
+            that period's limits.
+        </div>
+
+        <div class="card card-outline card-primary mb-2" *ngFor="let d of effectiveDates()">
+            <div class="card-header py-1 d-flex justify-content-between align-items-center bg-info text-white">
+                <div>
+                    <strong>
+                        <i class="fas fa-layer-group me-1"></i>
+                        {{ d | date:'MMM y' }}
+                        <span *ngIf="endDateFor(d)"> &ndash; {{ endDateFor(d) | date:'MMM y' }}</span>
+                        <span *ngIf="!endDateFor(d)"> onwards</span>
+                    </strong>
+                    <small class="ms-2">
+                        (from {{ d | date:'mediumDate' }}<span *ngIf="endDateFor(d)"> to {{ endDateFor(d) | date:'mediumDate' }}</span>)
+                    </small>
+                    <span class="badge bg-success ms-2" *ngIf="d === currentSet()">In use now</span>
+                    <span class="badge bg-light text-dark ms-1" *ngIf="d > currentSet()!">Not yet in force</span>
+                    <span class="badge bg-secondary ms-1" *ngIf="currentSet() && d < currentSet()!">Superseded</span>
+                </div>
+                <div style="font-size:0.8rem;">
+                    <span class="badge bg-light text-dark">Max {{ maxContributionFor(d) | number:'1.2-2' }} / month</span>
+                    <button class="btn btn-sm btn-outline-light ms-2" (click)="addTierTo(d)" title="Add the next tier to this set">
+                        <i class="fas fa-plus"></i> Tier
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Tier</th><th>Name</th>
+                            <th class="text-end">Lower Limit</th><th class="text-end">Upper Limit</th>
+                            <th class="text-end">Rate</th><th class="text-end">Max</th>
+                            <th>Active</th><th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let b of bandsFor(d)">
+                            <td><strong>{{ b.tier }}</strong></td>
+                            <td>{{ b.name }}</td>
+                            <td class="text-end">{{ b.lowerLimit | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ b.upperLimit | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ b.rate | number:'1.0-2' }}%</td>
+                            <td class="text-end">{{ (b.upperLimit! - b.lowerLimit!) * b.rate! / 100 | number:'1.2-2' }}</td>
+                            <td>
+                                <span *ngIf="b.isActive" class="badge bg-success">Active</span>
+                                <span *ngIf="!b.isActive" class="badge bg-secondary">Inactive</span>
+                            </td>
+                            <td>
+                                <button class="btn btn-outline-primary btn-sm" (click)="edit(b)"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-outline-danger btn-sm ms-1" (click)="delete(b)"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card card-outline card-primary" *ngIf="effectiveDates().length === 0">
+            <div class="card-body text-center text-muted p-3">
+                <i class="fas fa-exclamation-triangle"></i>
+                No NSSF bands are set up. Payroll cannot be processed until at least one set exists.
+            </div>
+        </div>
+    </div>
+</section>

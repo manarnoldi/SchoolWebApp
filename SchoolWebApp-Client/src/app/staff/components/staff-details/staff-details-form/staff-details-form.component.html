@@ -213,6 +213,23 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
+                                            <div class="custom-control custom-switch
+                                                    custom-switch-off-secondary custom-switch-on-warning">
+                                                <input type="checkbox" class="custom-control-input"
+                                                    id="excludeFromPayroll" [readonly]="readonly"
+                                                    formControlName="excludeFromPayroll">
+                                                <label class="custom-control-label"
+                                                    for="excludeFromPayroll">Exclude from
+                                                    payroll?</label>
+                                            </div>
+                                            <small class="text-muted">
+                                                Turn on for people who are not paid through the payroll,
+                                                such as suppliers or contractors. They stay on the staff
+                                                list but are skipped when payroll is processed and are not
+                                                given a salary structure.
+                                            </small>
+                                        </div>
+                                        <div class="form-group">
                                             <label for="employmentTypeId"
                                                 class="form-label">Employment type: <span
                                                     class="requiredField">*</span></label>

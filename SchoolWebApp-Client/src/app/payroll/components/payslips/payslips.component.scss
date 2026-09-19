@@ -1,0 +1,25 @@
+// A payslip whose staff member has since been taken off the payroll. The row is
+// kept visible - the payroll really was run for them - but reads as inactive.
+.payslip-row-excluded {
+    opacity: 0.55;
+    font-style: italic;
+
+    td {
+        text-decoration: line-through;
+    }
+
+    // The badge and action buttons stay legible so the row can be un-excluded.
+    td .badge,
+    td .btn {
+        text-decoration: none;
+        font-style: normal;
+    }
+}
+
+// The slips are rendered here only as the source for printing: runPrint() copies
+// them into a hidden print frame with their own stylesheet
+// (payslip-print.styles.ts). They are never shown on screen, and the page
+// itself never prints them.
+.payslip-print-area {
+    display: none !important;
+}

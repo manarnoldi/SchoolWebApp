@@ -16,6 +16,7 @@ using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Entities.Finance;
 using SchoolWebApp.Core.Entities.Approvals;
 using SchoolWebApp.Core.Entities.Sponsorships;
+using SchoolWebApp.Core.Entities.Payroll;
 
 namespace Project.Infrastructure.Data
 {
@@ -88,6 +89,44 @@ namespace Project.Infrastructure.Data
 
             modelBuilder.Entity<ApprovalRequest>()
                 .HasIndex(r => new { r.EntityType, r.EntityId });
+
+            // Payroll reference data is seeded from more than one place (the
+            // SeedPayrollAndAutoPostAccounts migration and payroll-seed.sql), each
+            // using INSERT IGNORE. Without a unique key on Code there is nothing for
+            // IGNORE to trip over, so every re-seed silently duplicated the whole set.
+            modelBuilder.Entity<EarningType>()
+                .HasIndex(e => e.Code)
+                .IsUnique();
+
+            modelBuilder.Entity<DeductionType>()
+                .HasIndex(d => d.Code)
+                .IsUnique();
+
+            // Where a staff category's salaries are charged in the payroll journal.
+            // Restrict: an account a category still points at must not be deletable.
+            modelBuilder.Entity<StaffCategory>()
+                .HasOne(c => c.SalaryExpenseAccount)
+                .WithMany()
+                .HasForeignKey(c => c.SalaryExpenseAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Where a deduction is credited when payroll posts to the GL. Restrict:
+            // an account a deduction type still points at must not be deletable.
+            modelBuilder.Entity<DeductionType>()
+                .HasOne(d => d.LiabilityAccount)
+                .WithMany()
+                .HasForeignKey(d => d.LiabilityAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // A loan instalment row points back at the loan it paid down, so
+            // re-processing a period can credit the instalment back. Restrict:
+            // deleting a loan that payslips already reference must fail loudly
+            // rather than silently detach the history.
+            modelBuilder.Entity<PayslipDeduction>()
+                .HasOne(d => d.LoanAdvance)
+                .WithMany()
+                .HasForeignKey(d => d.LoanAdvanceId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ApprovalStepAction>()
                 .HasOne(a => a.ApprovalRequest)

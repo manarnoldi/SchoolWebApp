@@ -292,7 +292,12 @@ table.table.dataTable tr.bg-success-subtle > td {
     .d-print-none,
     .nav-tabs,
     aside,
-    #sidebar-overlay {
+    #sidebar-overlay,
+    /* Pop-up notifications ("Payroll re-processed successfully") and the loading
+       overlay float over the page and would otherwise print on top of it. */
+    #toast-container,
+    .toast-container,
+    ngx-spinner {
         display: none !important;
     }
     .content-wrapper {
@@ -317,38 +322,58 @@ table.table.dataTable tr.bg-success-subtle > td {
     .wrapper {
         overflow: visible !important;
     }
+    /* Paper stays white. The app chrome - grey content background, coloured card
+       headers, zebra striping, badge fills - is screen styling and must not be
+       inked; structure on paper comes from borders and weight instead. */
+    html,
+    body,
+    .wrapper,
+    .content-wrapper,
+    section.content,
+    .container-fluid,
+    .card,
+    .card-header,
+    .card-body,
+    .table,
+    .table > :not(caption) > * > * {
+        background: transparent !important;
+        background-color: transparent !important;
+        background-image: none !important;
+        box-shadow: none !important;
+    }
     .card {
         border: 1px solid #dee2e6 !important;
         box-shadow: none !important;
         break-inside: avoid;
     }
-    .card-header.bg-info {
-        background-color: #e9ecef !important;
+    /* A coloured header reads as a plain heading on paper. */
+    .card-header {
         color: #000 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+        border-bottom: 1px solid #999 !important;
+        font-weight: bold;
     }
     .badge {
         border: 1px solid #999;
+        color: #000 !important;
     }
     body {
         font-size: 11px !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+        color: #000;
     }
     table {
         font-size: 10px !important;
     }
+    /* Zebra striping and contextual row fills are decoration - drop the ink. */
+    .table-striped > tbody > tr:nth-of-type(odd) > *,
     .table-warning,
     .table-success,
     .table-danger,
-    .table-info {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
+    .table-info,
+    .table-light,
     .small-box {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+        background: transparent !important;
+        background-color: transparent !important;
+        color: #000 !important;
     }
 }
 

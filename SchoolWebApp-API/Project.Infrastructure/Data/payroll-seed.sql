@@ -1,3 +1,13 @@
+-- SUPERSEDED - do not run this by hand.
+--
+-- The same reference data is seeded by the SeedPayrollAndAutoPostAccounts
+-- migration, which runs automatically. Running this script as well is what
+-- duplicated every earning type and deduction type: both use INSERT IGNORE,
+-- but Code carried no unique key, so IGNORE had nothing to trip over. The
+-- UniquePayrollTypeCodes migration removes the duplicates and adds that key,
+-- which now makes both seeds idempotent - but this file also hardcodes a
+-- database name that does not match every deployment. Kept for reference only.
+
 USE schoolwebappdb;
 SET SQL_SAFE_UPDATES = 0;
 

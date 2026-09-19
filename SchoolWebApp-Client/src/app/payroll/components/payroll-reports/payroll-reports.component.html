@@ -6,11 +6,14 @@
         <!-- Period Selector + Report Type -->
         <div class="row g-1 mb-2 align-items-end">
             <div class="col-md-4">
-                <label class="form-label mb-0" style="font-size:0.8rem;">Payroll Period</label>
+                <label class="form-label mb-0" style="font-size:0.8rem;">Payroll Period <small class="text-muted">(approved only)</small></label>
                 <select class="form-select form-select-sm" [(ngModel)]="selectedPeriodId">
                     <option [ngValue]="null" hidden disabled>Select period</option>
                     <option [ngValue]="p.id" *ngFor="let p of periods">{{ p.name }}</option>
                 </select>
+                <small class="text-muted" *ngIf="periods.length === 0">
+                    <i class="fas fa-info-circle"></i> No approved payroll periods yet.
+                </small>
             </div>
             <div class="col-md-2">
                 <button class="btn btn-sm btn-primary" (click)="loadReport()">
@@ -45,6 +48,10 @@
                     <strong><i class="fas fa-table me-1"></i> Muster Roll: {{ getSelectedPeriodName() }}</strong>
                     <span class="badge bg-light text-dark ms-2">{{ payslips.length }} employees</span>
                 </div>
+                <button class="btn btn-light btn-sm" (click)="printMusterRoll()"
+                    title="Print the full muster roll - every employee, A4 landscape">
+                    <i class="fas fa-print"></i> Print
+                </button>
             </div>
             <div class="card-body p-0" style="overflow-x: auto;">
                 <table class="table table-striped table-hover table-sm mb-0" style="font-size:0.78rem;">
@@ -52,7 +59,7 @@
                         <tr>
                             <th>#</th>
                             <th>Name</th>
-                            <th>UPI</th>
+                            <th>EMP No</th>
                             <th class="text-end">Basic</th>
                             <th class="text-end">House</th>
                             <th class="text-end">Transport</th>
@@ -109,7 +116,7 @@
                 </table>
                 <app-table-paging (pageChangedEvent)="pageChanged($event)"
                     (pageSizeChangedEvent)="pageSizeChanged($event)"
-                    [collectionSize]="payslips.length"></app-table-paging>
+                    [pageSize]="pageSize" [collectionSize]="payslips.length"></app-table-paging>
             </div>
         </div>
 
@@ -119,6 +126,10 @@
                 <div>
                     <strong><i class="fas fa-landmark me-1"></i> Statutory Returns: {{ getSelectedPeriodName() }}</strong>
                 </div>
+                <button class="btn btn-light btn-sm" (click)="printStatutoryReturns()"
+                    title="Print the statutory returns summary (A4 portrait)">
+                    <i class="fas fa-print"></i> Print
+                </button>
             </div>
             <div class="card-body p-2">
                 <div class="border border-info rounded p-2">
@@ -156,15 +167,24 @@
                                 <td class="text-end fw-bold">{{ totalShif | number:'1.2-2' }}</td>
                             </tr>
                             <tr>
-                                <td><strong>AHL</strong></td>
-                                <td>Affordable Housing Levy</td>
+                                <td><strong>AHL (Employee)</strong></td>
+                                <td>Affordable Housing Levy - Employee Contribution</td>
                                 <td class="text-end fw-bold">{{ totalAhl | number:'1.2-2' }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>AHL (Employer)</strong></td>
+                                <td>Affordable Housing Levy - Employer Contribution</td>
+                                <td class="text-end fw-bold">{{ totalAhlEmployer | number:'1.2-2' }}</td>
+                            </tr>
+                            <tr class="table-info">
+                                <td colspan="2" class="text-end"><strong>Total Housing Levy Remittance</strong></td>
+                                <td class="text-end fw-bold">{{ totalAhlRemittance | number:'1.2-2' }}</td>
                             </tr>
                         </tbody>
                         <tfoot>
                             <tr class="table-warning fw-bold">
                                 <td colspan="2" class="text-end">GRAND TOTAL STATUTORY</td>
-                                <td class="text-end">{{ (totalPaye + totalNssf + totalNssfEmployer + totalShif + totalAhl) | number:'1.2-2' }}</td>
+                                <td class="text-end">{{ totalStatutory | number:'1.2-2' }}</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -179,7 +199,7 @@
                         </div>
                         <div class="col-md-3">
                             <small class="text-muted d-block">Total Statutory</small>
-                            <strong class="text-danger">{{ (totalPaye + totalNssf + totalNssfEmployer + totalShif + totalAhl) | number:'1.2-2' }}</strong>
+                            <strong class="text-danger">{{ totalStatutory | number:'1.2-2' }}</strong>
                         </div>
                         <div class="col-md-3">
                             <small class="text-muted d-block">Total Net Pay</small>
@@ -201,6 +221,10 @@
                     <strong><i class="fas fa-university me-1"></i> Bank Schedule: {{ getSelectedPeriodName() }}</strong>
                     <span class="badge bg-light text-dark ms-2">{{ payslips.length }} transfers</span>
                 </div>
+                <button class="btn btn-light btn-sm" (click)="printBankSchedule()"
+                    title="Print the full bank schedule - every transfer, A4 portrait">
+                    <i class="fas fa-print"></i> Print
+                </button>
             </div>
             <div class="card-body p-0">
                 <table class="table table-striped table-hover table-sm mb-0">
@@ -208,7 +232,7 @@
                         <tr>
                             <th>#</th>
                             <th>Employee</th>
-                            <th>UPI</th>
+                            <th>EMP No</th>
                             <th>Bank</th>
                             <th>Account No</th>
                             <th class="text-end">Net Pay</th>
@@ -236,7 +260,216 @@
                 </table>
                 <app-table-paging (pageChangedEvent)="pageChanged($event)"
                     (pageSizeChangedEvent)="pageSizeChanged($event)"
-                    [collectionSize]="payslips.length"></app-table-paging>
+                    [pageSize]="pageSize" [collectionSize]="payslips.length"></app-table-paging>
+            </div>
+        </div>
+
+        <!-- Muster roll print source: never shown. printMusterRoll() prints it
+             from its own frame with payroll-report-print.styles.ts. It lists every
+             employee, not just the page on screen. -->
+        <div #musterPrint style="display:none;" *ngIf="payslips.length > 0">
+            <div class="rp-header">
+                <img *ngIf="schoolLogo" [src]="schoolLogo" alt="" class="rp-logo" />
+                <div class="rp-school">{{ schoolName }}</div>
+                <div class="rp-pin" *ngIf="employerKraPin">KRA PIN: {{ employerKraPin }}</div>
+                <div class="rp-title">PAYROLL MUSTER ROLL - {{ getSelectedPeriodName() | uppercase }}</div>
+                <div class="rp-meta">{{ payslips.length }} employees &middot; Printed {{ printedOn | date:'d MMM yyyy, HH:mm' }}</div>
+            </div>
+            <table class="rp">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>EMP No</th>
+                        <th class="num">Basic</th>
+                        <th class="num">House</th>
+                        <th class="num">Transport</th>
+                        <th class="num">Other Allow.</th>
+                        <th class="num">Gross Pay</th>
+                        <th class="num">NSSF</th>
+                        <th class="num">PAYE</th>
+                        <th class="num">SHIF</th>
+                        <th class="num">Housing Levy</th>
+                        <th class="num">Other Ded.</th>
+                        <th class="num">Loans</th>
+                        <th class="num">Total Ded.</th>
+                        <th class="num">Net Pay</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let ps of payslips; let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td class="name">{{ ps.staffName }}</td>
+                        <td>{{ ps.staffUpi }}</td>
+                        <td class="num">{{ ps.basicSalary | number:'1.2-2' }}</td>
+                        <td class="num">{{ ps.houseAllowance | number:'1.2-2' }}</td>
+                        <td class="num">{{ ps.transportAllowance | number:'1.2-2' }}</td>
+                        <td class="num">{{ ps.otherAllowances | number:'1.2-2' }}</td>
+                        <td class="num strong">{{ ps.grossPay | number:'1.2-2' }}</td>
+                        <td class="num">{{ ps.nssfEmployee | number:'1.2-2' }}</td>
+                        <td class="num">{{ ps.paye | number:'1.2-2' }}</td>
+                        <td class="num">{{ ps.shif | number:'1.2-2' }}</td>
+                        <td class="num">{{ ps.ahl | number:'1.2-2' }}</td>
+                        <td class="num">{{ ps.otherDeductions | number:'1.2-2' }}</td>
+                        <td class="num">{{ ps.loanDeductions | number:'1.2-2' }}</td>
+                        <td class="num">{{ ps.totalDeductions | number:'1.2-2' }}</td>
+                        <td class="num strong">{{ ps.netPay | number:'1.2-2' }}</td>
+                    </tr>
+                    <!-- Totals as the last body row, not a tfoot: browsers repeat a
+                         tfoot under every printed page. -->
+                    <tr class="totals">
+                        <td colspan="3">TOTALS</td>
+                        <td class="num">{{ totalBasic | number:'1.2-2' }}</td>
+                        <td class="num">{{ totalHouse | number:'1.2-2' }}</td>
+                        <td class="num">{{ totalTransport | number:'1.2-2' }}</td>
+                        <td class="num">{{ totalOtherAllow | number:'1.2-2' }}</td>
+                        <td class="num">{{ totalGross | number:'1.2-2' }}</td>
+                        <td class="num">{{ totalNssf | number:'1.2-2' }}</td>
+                        <td class="num">{{ totalPaye | number:'1.2-2' }}</td>
+                        <td class="num">{{ totalShif | number:'1.2-2' }}</td>
+                        <td class="num">{{ totalAhl | number:'1.2-2' }}</td>
+                        <td class="num">{{ totalOtherDed | number:'1.2-2' }}</td>
+                        <td class="num">{{ totalLoans | number:'1.2-2' }}</td>
+                        <td class="num">{{ totalDeductions | number:'1.2-2' }}</td>
+                        <td class="num">{{ totalNet | number:'1.2-2' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- Sign-off, as on a paper muster roll. -->
+            <div class="rp-signoff">
+                <div *ngFor="let role of ['Prepared by', 'Checked by', 'Approved by']">
+                    <div class="role">{{ role }}</div>
+                    <div class="line"></div><div class="label">Name &amp; signature</div>
+                    <div class="line"></div><div class="label">Date</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statutory returns print source: never shown. printStatutoryReturns()
+             prints it from its own frame with payroll-report-print.styles.ts. -->
+        <div #statutoryPrint style="display:none;" *ngIf="payslips.length > 0">
+            <div class="rp-header">
+                <img *ngIf="schoolLogo" [src]="schoolLogo" alt="" class="rp-logo" />
+                <div class="rp-school">{{ schoolName }}</div>
+                <div class="rp-pin" *ngIf="employerKraPin">KRA PIN: {{ employerKraPin }}</div>
+                <div class="rp-title">STATUTORY RETURNS - {{ getSelectedPeriodName() | uppercase }}</div>
+                <div class="rp-meta">{{ payslips.length }} employees &middot; Printed {{ printedOn | date:'d MMM yyyy, HH:mm' }}</div>
+            </div>
+            <table class="rp">
+                <thead>
+                    <tr>
+                        <th>Statutory Deduction</th>
+                        <th>Description</th>
+                        <th class="num">Amount (KES)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="strong">PAYE</td>
+                        <td>Pay As You Earn (Income Tax)</td>
+                        <td class="num">{{ totalPaye | number:'1.2-2' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="strong">NSSF (Employee)</td>
+                        <td>National Social Security Fund - Employee Contribution</td>
+                        <td class="num">{{ totalNssf | number:'1.2-2' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="strong">NSSF (Employer)</td>
+                        <td>National Social Security Fund - Employer Contribution</td>
+                        <td class="num">{{ totalNssfEmployer | number:'1.2-2' }}</td>
+                    </tr>
+                    <tr class="subtotal">
+                        <td colspan="2" style="text-align:right;">Total NSSF Remittance</td>
+                        <td class="num">{{ totalNssfRemittance | number:'1.2-2' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="strong">SHIF</td>
+                        <td>Social Health Insurance Fund</td>
+                        <td class="num">{{ totalShif | number:'1.2-2' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="strong">AHL (Employee)</td>
+                        <td>Affordable Housing Levy - Employee Contribution</td>
+                        <td class="num">{{ totalAhl | number:'1.2-2' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="strong">AHL (Employer)</td>
+                        <td>Affordable Housing Levy - Employer Contribution</td>
+                        <td class="num">{{ totalAhlEmployer | number:'1.2-2' }}</td>
+                    </tr>
+                    <tr class="subtotal">
+                        <td colspan="2" style="text-align:right;">Total Housing Levy Remittance</td>
+                        <td class="num">{{ totalAhlRemittance | number:'1.2-2' }}</td>
+                    </tr>
+                    <tr class="totals">
+                        <td colspan="2" style="text-align:right;">GRAND TOTAL STATUTORY</td>
+                        <td class="num">{{ totalStatutory | number:'1.2-2' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="rp-summary">
+                <div><div class="k">Total Gross Pay</div><div class="v">{{ totalGross | number:'1.2-2' }}</div></div>
+                <div><div class="k">Total Statutory</div><div class="v">{{ totalStatutory | number:'1.2-2' }}</div></div>
+                <div><div class="k">Total Net Pay</div><div class="v">{{ totalNet | number:'1.2-2' }}</div></div>
+                <div><div class="k">Employees</div><div class="v">{{ payslips.length }}</div></div>
+            </div>
+            <div class="rp-signoff">
+                <div *ngFor="let role of ['Prepared by', 'Checked by', 'Approved by']">
+                    <div class="role">{{ role }}</div>
+                    <div class="line"></div><div class="label">Name &amp; signature</div>
+                    <div class="line"></div><div class="label">Date</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bank schedule print source: never shown. printBankSchedule() prints
+             it from its own frame. It lists every transfer, not just the page
+             on screen. -->
+        <div #bankPrint style="display:none;" *ngIf="payslips.length > 0">
+            <div class="rp-header">
+                <img *ngIf="schoolLogo" [src]="schoolLogo" alt="" class="rp-logo" />
+                <div class="rp-school">{{ schoolName }}</div>
+                <div class="rp-pin" *ngIf="employerKraPin">KRA PIN: {{ employerKraPin }}</div>
+                <div class="rp-title">BANK SCHEDULE - {{ getSelectedPeriodName() | uppercase }}</div>
+                <div class="rp-meta">{{ payslips.length }} transfers &middot; Printed {{ printedOn | date:'d MMM yyyy, HH:mm' }}</div>
+            </div>
+            <table class="rp">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Employee</th>
+                        <th>EMP No</th>
+                        <th>Bank</th>
+                        <th>Account No</th>
+                        <th class="num">Net Pay (KES)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let ps of payslips; let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td class="name">{{ ps.staffName }}</td>
+                        <td>{{ ps.staffUpi }}</td>
+                        <td>{{ ps.bankName }}</td>
+                        <td>{{ ps.bankAccountNumber }}</td>
+                        <td class="num">{{ ps.netPay | number:'1.2-2' }}</td>
+                    </tr>
+                    <tr class="totals">
+                        <td colspan="5" style="text-align:right;">TOTAL</td>
+                        <td class="num">{{ totalNet | number:'1.2-2' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="rp-summary">
+                <div><div class="k">Number of Transfers</div><div class="v">{{ payslips.length }}</div></div>
+                <div><div class="k">Total Amount (KES)</div><div class="v">{{ totalNet | number:'1.2-2' }}</div></div>
+            </div>
+            <div class="rp-signoff">
+                <div *ngFor="let role of ['Prepared by', 'Authorised signatory', 'Authorised signatory']">
+                    <div class="role">{{ role }}</div>
+                    <div class="line"></div><div class="label">Name &amp; signature</div>
+                    <div class="line"></div><div class="label">Date</div>
+                </div>
             </div>
         </div>
 

@@ -2,7 +2,6 @@
     [title]="dashboardTitle"
     [breadcrumbs]="breadcrumbs"></app-dashboard-header>
 <hr class="mb-1">
-<a class="btn btn-flat btn-sm btn-warning mb-1" [routerLink]="['/settings/dropdowns']" [queryParams]="{category: 'CBE Settings'}"><i class="fas fa-angle-double-left"></i> Back to Dropdowns</a>
 <div
     class="modal fade"
     id="generalOutcomeFormModal"
@@ -30,16 +29,19 @@
 </div>
 <section class="content">
     <div class="container-fluid px-1">
+        <!-- Back to Dropdowns and Add share one row. -->
+        <div class="row g-0">
+            <div class="col-12">
+                <a class="btn btn-flat btn-sm btn-warning mb-1" [routerLink]="['/settings/dropdowns']" [queryParams]="{category: 'CBE Settings'}"><i class="fas fa-angle-double-left"></i> Back to Dropdowns</a>
+                <app-table-button modelName="generalOutcome" buttonTitle="Add general outcome"></app-table-button>
+            </div>
+        </div>
         <div class="row g-0">
             <div class="col-6">
                 <app-school-soft-filter-form
                     [showEducationLevelType]="true" (searchItemEvent)="searchClicked($event)"
                     (educationLevelTypeChangedEvent)="educationLevelTypeChanged($event)"
                     [educationLevelTypes]="educationLevelTypes"></app-school-soft-filter-form>
-            </div>
-            <div class="col-6">
-                <app-table-button modelName="generalOutcome"
-                    buttonTitle="Add learning level"></app-table-button>
             </div>
         </div>
         <div class="card">

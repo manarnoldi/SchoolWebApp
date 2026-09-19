@@ -3761,8 +3761,29 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<bool>("AppliesToAll")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("CalculationMethod")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("DefaultValue")
+                        .HasColumnType("decimal(65,30)");
+
                     b.Property<bool>("IsStatutory")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsRetirementContribution")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsSystemComputed")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsTaxDeductible")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int?>("LiabilityAccountId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("Modified")
                         .HasColumnType("datetime(6)");
@@ -3776,9 +3797,131 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
+                    b.Property<decimal?>("TaxDeductibleCap")
+                        .HasColumnType("decimal(65,30)");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("LiabilityAccountId");
+
                     b.ToTable("DeductionTypes");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.NssfBand", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<DateTime>("EffectiveDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<decimal>("LowerLimit")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<decimal>("Rate")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<int>("Tier")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UpperLimit")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NssfBands");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.PayrollRelief", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<bool>("AppliesToAll")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("Basis")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("DeductionTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<decimal?>("MonthlyCap")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("DeductionTypeId");
+
+                    b.ToTable("PayrollReliefs");
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.EarningType", b =>
@@ -3803,7 +3946,19 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
+                    b.Property<bool>("AppliesToAll")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("CalculationMethod")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("DefaultValue")
+                        .HasColumnType("decimal(65,30)");
+
                     b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsSystemComputed")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("IsTaxable")
@@ -3822,6 +3977,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
 
                     b.ToTable("EarningTypes");
                 });
@@ -4086,6 +4244,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Property<decimal>("Ahl")
                         .HasColumnType("decimal(65,30)");
 
+                    b.Property<decimal>("AhlEmployer")
+                        .HasColumnType("decimal(65,30)");
+
                     b.Property<decimal>("BasicSalary")
                         .HasColumnType("decimal(65,30)");
 
@@ -4127,10 +4288,19 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Property<decimal>("NssfEmployer")
                         .HasColumnType("decimal(65,30)");
 
+                    b.Property<decimal>("NssfTier1")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("NssfTier2")
+                        .HasColumnType("decimal(65,30)");
+
                     b.Property<decimal>("OtherAllowances")
                         .HasColumnType("decimal(65,30)");
 
                     b.Property<decimal>("OtherDeductions")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("OtherTaxDeductible")
                         .HasColumnType("decimal(65,30)");
 
                     b.Property<decimal>("Paye")
@@ -4142,6 +4312,12 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Property<decimal>("PersonalRelief")
                         .HasColumnType("decimal(65,30)");
 
+                    b.Property<decimal>("RetirementRelief")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("RoundingAdjustment")
+                        .HasColumnType("decimal(65,30)");
+
                     b.Property<decimal>("Shif")
                         .HasColumnType("decimal(65,30)");
 
@@ -4149,6 +4325,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("TaxableIncome")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("TaxablePay")
                         .HasColumnType("decimal(65,30)");
 
                     b.Property<decimal>("TotalDeductions")
@@ -4185,6 +4364,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Property<int>("DeductionTypeId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("LoanAdvanceId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("Modified")
                         .HasColumnType("datetime(6)");
 
@@ -4198,6 +4380,8 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DeductionTypeId");
+
+                    b.HasIndex("LoanAdvanceId");
 
                     b.HasIndex("PayslipId");
 
@@ -5319,7 +5503,12 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Property<int>("Rank")
                         .HasColumnType("int");
 
+                    b.Property<int?>("SalaryExpenseAccountId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("SalaryExpenseAccountId");
 
                     b.ToTable("StaffCategories");
 
@@ -6060,6 +6249,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
 
                     b.Property<DateTime?>("EndofEmploymentDate")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("ExcludeFromPayroll")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("IdNumber")
                         .HasMaxLength(255)
@@ -7246,6 +7438,36 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Navigation("StaffDetails");
                 });
 
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Settings.StaffCategory", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.Account", "SalaryExpenseAccount")
+                        .WithMany()
+                        .HasForeignKey("SalaryExpenseAccountId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("SalaryExpenseAccount");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.DeductionType", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Finance.Account", "LiabilityAccount")
+                        .WithMany()
+                        .HasForeignKey("LiabilityAccountId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("LiabilityAccount");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.PayrollRelief", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Payroll.DeductionType", "DeductionType")
+                        .WithMany()
+                        .HasForeignKey("DeductionTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("DeductionType");
+                });
+
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Payroll.PayslipDeduction", b =>
                 {
                     b.HasOne("SchoolWebApp.Core.Entities.Payroll.DeductionType", "DeductionType")
@@ -7253,12 +7475,19 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasForeignKey("DeductionTypeId")
                         .IsRequired();
 
+                    b.HasOne("SchoolWebApp.Core.Entities.Payroll.LoanAdvance", "LoanAdvance")
+                        .WithMany()
+                        .HasForeignKey("LoanAdvanceId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("SchoolWebApp.Core.Entities.Payroll.Payslip", "Payslip")
                         .WithMany("Deductions")
                         .HasForeignKey("PayslipId")
                         .IsRequired();
 
                     b.Navigation("DeductionType");
+
+                    b.Navigation("LoanAdvance");
 
                     b.Navigation("Payslip");
                 });

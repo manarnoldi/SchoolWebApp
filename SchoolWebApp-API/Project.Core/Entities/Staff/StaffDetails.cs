@@ -24,6 +24,15 @@ namespace SchoolWebApp.Core.Entities.Staff
         public DateTime? EndofEmploymentDate { get; set; }
         public bool CurrentlyEmployed { get; set; }
 
+        /// <summary>
+        /// Set for people held on the staff list who are not paid through the
+        /// payroll - suppliers, contractors, directors on fees. They keep their
+        /// staff record but are skipped when payroll runs and are not offered a
+        /// salary structure.
+        /// </summary>
+        [Display(Name = "Exclude from payroll")]
+        public bool ExcludeFromPayroll { get; set; }
+
         public int StaffCategoryId { get; set; }
         public StaffCategory? StaffCategory { get; set; }
         public int DesignationId { get; set; }

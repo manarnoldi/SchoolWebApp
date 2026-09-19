@@ -9,7 +9,8 @@
             [class.card-success]="module.color === 'success'"
             [class.card-warning]="module.color === 'warning'"
             [class.card-info]="module.color === 'info'"
-            [class.card-danger]="module.color === 'danger'">
+            [class.card-danger]="module.color === 'danger'"
+            [class.card-secondary]="module.color === 'secondary'">
             <div class="card-header p-1 cursor-pointer text-white align-items-center"
                 style="display:flex !important; justify-content:space-between;"
                 (click)="toggleModule(module)"
@@ -17,7 +18,8 @@
                 [class.bg-success]="module.color === 'success'"
                 [class.bg-warning]="module.color === 'warning'"
                 [class.bg-info]="module.color === 'info'"
-                [class.bg-danger]="module.color === 'danger'">
+                [class.bg-danger]="module.color === 'danger'"
+                [class.bg-secondary]="module.color === 'secondary'">
                 <span><i class="{{module.icon}} me-1"></i> <strong>{{ module.title }}</strong></span>
                 <span>
                     <button class="btn btn-light btn-sm me-2"

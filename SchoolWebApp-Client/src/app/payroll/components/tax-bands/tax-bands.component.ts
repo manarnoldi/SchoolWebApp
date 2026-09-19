@@ -12,6 +12,7 @@ import {TaxBandService} from '@/payroll/services/payroll-services';
 export class PayrollTaxBandsComponent implements OnInit {
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Dashboard'},
+        {link: ['/settings/dropdowns'], title: 'Dropdowns'},
         {link: ['/payroll/tax-bands'], title: 'Tax Bands'}
     ];
     dashboardTitle = 'Payroll: Tax Bands';

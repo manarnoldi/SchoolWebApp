@@ -1,0 +1,193 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+
+        <!-- Form Modal -->
+        <div class="modal-backdrop fade show" *ngIf="showForm" (click)="cancel()"></div>
+        <div class="modal fade show d-block" *ngIf="showForm" tabindex="-1">
+            <div class="modal-dialog modal-lg" style="margin-top: 50px;">
+                <div class="modal-content">
+                    <div class="modal-header bg-info text-white py-2">
+                        <h5 class="modal-title"><i class="fas fa-hand-holding-heart me-1"></i> {{ editMode ? 'Edit' : 'New' }} Relief</h5>
+                        <button type="button" class="close text-white" (click)="cancel()"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body p-2">
+                        <div class="border border-info rounded p-2 mb-2">
+                            <div class="row g-1">
+                                <div class="col-md-6">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Name <span class="requiredField">*</span></label>
+                                    <input class="form-control form-control-sm" [(ngModel)]="item.name" placeholder="Personal Relief" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Code <span class="requiredField">*</span></label>
+                                    <input class="form-control form-control-sm" [(ngModel)]="item.code" placeholder="PERSONAL" />
+                                </div>
+                                <div class="col-md-3 d-flex align-items-end">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" [(ngModel)]="item.isActive" id="prAct">
+                                        <label for="prAct" class="form-check-label" style="font-size:0.8rem;">Active</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-1 mt-1">
+                                <div class="col-md-12">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Description</label>
+                                    <input class="form-control form-control-sm" [(ngModel)]="item.description" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border border-success rounded p-2">
+                            <h6 class="text-success mb-2"><i class="fas fa-calculator me-1"></i> How it is worked out</h6>
+                            <div class="row g-1">
+                                <div class="col-md-5">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Basis</label>
+                                    <select class="form-select form-select-sm" [(ngModel)]="item.basis" (ngModelChange)="onBasisChange()">
+                                        <option [ngValue]="0">Fixed amount</option>
+                                        <option [ngValue]="1">Percentage of a deduction</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">
+                                        {{ isPercentage() ? 'Percentage (%)' : 'Amount' }} <span class="requiredField">*</span>
+                                    </label>
+                                    <input type="number" class="form-control form-control-sm" [(ngModel)]="item.value" min="0" step="0.01" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">Monthly cap</label>
+                                    <input type="number" class="form-control form-control-sm" [(ngModel)]="item.monthlyCap"
+                                        min="0" placeholder="Uncapped" />
+                                </div>
+                            </div>
+
+                            <div class="row g-1 mt-1">
+                                <div class="col-md-7">
+                                    <label class="form-label mb-0" style="font-size:0.8rem;">
+                                        Worked out from
+                                        <span class="requiredField" *ngIf="isPercentage()">*</span>
+                                    </label>
+                                    <select class="form-select form-select-sm" [(ngModel)]="item.deductionTypeId">
+                                        <option [ngValue]="null">{{ isPercentage() ? 'Select a deduction' : 'Not linked to a deduction' }}</option>
+                                        <option [ngValue]="d.id" *ngFor="let d of deductionTypes">{{ d.name }}</option>
+                                    </select>
+                                    <small class="text-muted" *ngIf="isPercentage()">
+                                        The relief is that percentage of what the employee paid towards this
+                                        deduction.
+                                    </small>
+                                    <small class="text-muted" *ngIf="!isPercentage()">
+                                        Optional. Linking a fixed relief to a deduction gives it only to
+                                        employees who actually pay that deduction.
+                                    </small>
+                                </div>
+                                <div class="col-md-5 d-flex align-items-center">
+                                    <div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="prAppliesToAll"
+                                                [(ngModel)]="item.appliesToAll" [disabled]="isPercentage()">
+                                            <label for="prAppliesToAll" class="form-check-label" style="font-size:0.8rem;">
+                                                <strong>Applies to all staff</strong>
+                                            </label>
+                                        </div>
+                                        <small class="text-muted" *ngIf="!isPercentage()">
+                                            Given to everyone on the payroll, the way personal relief is.
+                                        </small>
+                                        <small class="text-muted" *ngIf="isPercentage()">
+                                            A percentage relief can only apply where the deduction it is based
+                                            on exists, so this does not apply.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <small class="text-muted d-block mt-2">
+                                <i class="fas fa-info-circle"></i>
+                                A relief comes off the tax itself once the bands have been applied. That is
+                                different from a <strong>tax deductible</strong> deduction, which comes off
+                                income before the bands - that is set on the deduction type.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="modal-footer py-1">
+                        <button class="btn btn-sm btn-secondary" (click)="cancel()">Cancel</button>
+                        <button class="btn btn-sm btn-success" (click)="save()"><i class="fas fa-save"></i> Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Dropdowns and Add share one row, as on the other pages opened
+             from Settings > Dropdowns. -->
+        <div class="row g-0">
+            <div class="col-12">
+                <a class="btn btn-flat btn-sm btn-warning mb-1" [routerLink]="['/settings/dropdowns']" [queryParams]="{category: 'Payroll Settings'}"><i class="fas fa-angle-double-left"></i> Back to Dropdowns</a>
+                <button class="btn btn-sm btn-flat btn-success float-right mb-1" (click)="addNew()"><i class="fas fa-plus-circle"></i> Add relief</button>
+            </div>
+        </div>
+
+        <!-- List -->
+        <div class="card card-outline card-primary">
+            <div class="card-header py-1 d-flex justify-content-between align-items-center bg-info text-white">
+                <div>
+                    <strong><i class="fas fa-hand-holding-heart me-1"></i> Reliefs</strong>
+                    <span class="badge bg-light text-dark ms-2">{{ items.length }}</span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th><th>Name</th><th>Code</th><th>Basis</th>
+                            <th class="text-end">Value</th><th class="text-end">Cap</th>
+                            <th>Worked out from</th><th>Applies to</th><th>Active</th><th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let c of items | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i">
+                            <td>{{ (page-1) * pageSize + i + 1 }}</td>
+                            <td><strong>{{ c.name }}</strong></td>
+                            <td>{{ c.code }}</td>
+                            <td>
+                                <span class="badge" [ngClass]="c.basis === 1 ? 'bg-info' : 'bg-secondary'">
+                                    {{ c.basis === 1 ? 'Percentage' : 'Fixed' }}
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                {{ c.value | number:'1.0-2' }}<span *ngIf="c.basis === 1">%</span>
+                            </td>
+                            <td class="text-end">
+                                <span *ngIf="c.monthlyCap">{{ c.monthlyCap | number:'1.0-2' }}</span>
+                                <span *ngIf="!c.monthlyCap" class="text-muted">-</span>
+                            </td>
+                            <td>
+                                <span *ngIf="c.deductionTypeId">{{ deductionName(c) }}</span>
+                                <span *ngIf="!c.deductionTypeId" class="text-muted">-</span>
+                            </td>
+                            <td>
+                                <span *ngIf="c.appliesToAll" class="badge bg-primary">All staff</span>
+                                <span *ngIf="!c.appliesToAll" class="text-muted">Where it applies</span>
+                            </td>
+                            <td>
+                                <span *ngIf="c.isActive" class="badge bg-success">Active</span>
+                                <span *ngIf="!c.isActive" class="badge bg-secondary">Inactive</span>
+                            </td>
+                            <td>
+                                <button class="btn btn-outline-primary btn-sm" (click)="edit(c)"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-outline-danger btn-sm ms-1" (click)="delete(c)"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="items.length === 0">
+                            <td colspan="10" class="text-center text-muted p-3">
+                                <i class="fas fa-info-circle"></i> No reliefs set up. Without at least a
+                                personal relief, PAYE will be charged on the full tax.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <app-table-paging (pageChangedEvent)="pageChanged($event)"
+                    (pageSizeChangedEvent)="pageSizeChanged($event)"
+                    [collectionSize]="items.length"></app-table-paging>
+            </div>
+        </div>
+    </div>
+</section>

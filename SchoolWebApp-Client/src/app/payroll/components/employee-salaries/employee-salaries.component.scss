@@ -1,0 +1,19 @@
+// A staff member kept on the list but not paid through the payroll. The row is
+// shown rather than hidden so they can be put back on the payroll from here,
+// but it reads as inactive and its inputs are disabled.
+.salary-row-excluded {
+    opacity: 0.55;
+
+    td > strong {
+        font-style: italic;
+        text-decoration: line-through;
+    }
+
+    // Badges and action buttons stay upright and legible - the payroll-details
+    // button is how the exclusion gets undone.
+    td .badge,
+    td .btn {
+        text-decoration: none;
+        font-style: normal;
+    }
+}

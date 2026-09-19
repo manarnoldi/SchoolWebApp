@@ -160,13 +160,14 @@ export const MENU = [
         name: 'Payroll',
         iconClasses: 'fas fa-money-check-alt',
         children: [
-            {name: 'Processing', iconClasses: 'fas fa-cogs text-primary', path: ['/payroll/periods']},
+            // Day-to-day payroll work, in the order it is done: who is paid and
+            // what, then process (which also shows, checks and prints the payslips),
+            // then report. The one-off set-up (earning and deduction types, tax and
+            // NSSF bands, reliefs, rates) lives under Settings > Dropdowns > Payroll
+            // Settings.
             {name: 'Employee Salaries', iconClasses: 'fas fa-user-tie text-success', path: ['/payroll/employee-salaries']},
             {name: 'Loans & Advances', iconClasses: 'fas fa-hand-holding-usd text-warning', path: ['/payroll/loan-advances']},
-            {name: 'Earning Types', iconClasses: 'fas fa-plus-circle text-info', path: ['/payroll/earning-types']},
-            {name: 'Deduction Types', iconClasses: 'fas fa-minus-circle text-danger', path: ['/payroll/deduction-types']},
-            {name: 'Tax Bands', iconClasses: 'fas fa-percentage text-secondary', path: ['/payroll/tax-bands']},
-            {name: 'Payroll Settings', iconClasses: 'fas fa-sliders-h text-primary', path: ['/payroll/settings']},
+            {name: 'Processing', iconClasses: 'fas fa-cogs text-primary', path: ['/payroll/periods']},
             {name: 'Reports', iconClasses: 'fas fa-chart-pie text-info', path: ['/payroll/reports']}
         ]
     },
@@ -189,7 +190,14 @@ export const MENU = [
                     '/academics/educationLevelSubjects',
                     '/academics/grades',
                     '/class/streams',
-                    '/school/learning-levels'
+                    '/school/learning-levels',
+                    // Payroll set-up pages, opened from the Payroll Settings section.
+                    '/payroll/earning-types',
+                    '/payroll/deduction-types',
+                    '/payroll/tax-bands',
+                    '/payroll/nssf-bands',
+                    '/payroll/reliefs',
+                    '/payroll/settings'
                 ]
             },
             {

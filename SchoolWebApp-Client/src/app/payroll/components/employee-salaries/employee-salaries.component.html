@@ -3,7 +3,7 @@
 <section class="content">
     <div class="container-fluid px-1">
 
-        <!-- Form Modal -->
+        <!-- Form Modal: per-employee detail, incl. earnings / deductions line items -->
         <div class="modal-backdrop fade show" *ngIf="showForm" (click)="cancel()"></div>
         <div class="modal fade show d-block" *ngIf="showForm" tabindex="-1">
             <div class="modal-dialog modal-xl modal-dialog-scrollable" style="margin-top: 30px;">
@@ -28,7 +28,7 @@
                             <div class="row g-1">
                                 <div class="col-md-6">
                                     <label class="form-label mb-0" style="font-size:0.8rem;">Staff Member <span class="requiredField">*</span></label>
-                                    <select class="form-select form-select-sm" [ngClass]="{'bg-light': editMode}" [(ngModel)]="item.staffDetailsId" [disabled]="editMode">
+                                    <select class="form-select form-select-sm bg-light" [(ngModel)]="item.staffDetailsId" [disabled]="true">
                                         <option [ngValue]="null" hidden disabled>Select staff</option>
                                         <option [ngValue]="s.id" *ngFor="let s of staffList">{{ s.fullName || (s.firstName + ' ' + s.lastName) }}</option>
                                     </select>
@@ -183,7 +183,71 @@
             </div>
         </div>
 
-        <!-- Filters -->
+        <!-- Payroll details modal: the cleanup that has to happen before payroll is
+             processed - statutory numbers, and taking non-payroll people off. -->
+        <div class="modal-backdrop fade show" *ngIf="showPayrollDetails" (click)="cancelPayrollDetails()"></div>
+        <div class="modal fade show d-block" *ngIf="showPayrollDetails" tabindex="-1">
+            <div class="modal-dialog modal-dialog-scrollable" style="margin-top: 40px;">
+                <div class="modal-content">
+                    <div class="modal-header bg-info text-white py-2">
+                        <h5 class="modal-title"><i class="fas fa-id-card me-1"></i> Payroll Details</h5>
+                        <button type="button" class="close text-white" (click)="cancelPayrollDetails()"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body p-2">
+                        <div class="border border-secondary rounded p-2 mb-2 bg-light">
+                            <strong>{{ detailsFor?.staffName }}</strong>
+                            <small class="text-muted ms-2">EMP No: {{ detailsFor?.staffUpi }}</small>
+                        </div>
+                        <div class="row g-1">
+                            <div class="col-md-6">
+                                <label class="form-label mb-0" style="font-size:0.8rem;">KRA Pin</label>
+                                <input type="text" class="form-control form-control-sm" [(ngModel)]="details.kraPinNo" maxlength="255" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label mb-0" style="font-size:0.8rem;">ID Number</label>
+                                <input type="text" class="form-control form-control-sm" [(ngModel)]="details.idNumber" maxlength="255" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label mb-0" style="font-size:0.8rem;">NSSF No</label>
+                                <input type="text" class="form-control form-control-sm" [(ngModel)]="details.nssfNo" maxlength="255" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label mb-0" style="font-size:0.8rem;">SHA No</label>
+                                <input type="text" class="form-control form-control-sm" [(ngModel)]="details.nhifNo" maxlength="255" />
+                            </div>
+                        </div>
+
+                        <hr class="my-2">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="esExcludeFromPayroll"
+                                [(ngModel)]="details.excludeFromPayroll">
+                            <label class="form-check-label" for="esExcludeFromPayroll">
+                                <strong>Exclude from payroll</strong>
+                            </label>
+                        </div>
+                        <small class="text-muted d-block">
+                            For people not paid through the payroll, such as suppliers or contractors.
+                            They stay on the staff list but drop off this grid, are skipped when payroll
+                            is processed, and get no payslip.
+                        </small>
+
+                        <small class="text-muted d-block mt-2">
+                            <i class="fas fa-info-circle"></i>
+                            Saved against the staff record. Names, category and employment details are
+                            edited under School &gt; Staff Details.
+                        </small>
+                    </div>
+                    <div class="modal-footer py-1">
+                        <button class="btn btn-sm btn-secondary" (click)="cancelPayrollDetails()">Cancel</button>
+                        <button class="btn btn-sm btn-success" (click)="savePayrollDetails()" [disabled]="savingPayrollDetails">
+                            <i class="fas fa-save"></i> {{ savingPayrollDetails ? 'Saving...' : 'Save' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters / toolbar -->
         <div class="row g-1 mb-1 align-items-end">
             <div class="col-md-3">
                 <label class="form-label mb-0" style="font-size:0.8rem;">Staff Member</label>
@@ -193,51 +257,133 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <label class="form-label mb-0" style="font-size:0.8rem;">Status</label>
-                <select class="form-select form-select-sm" [(ngModel)]="filterActive">
+                <label class="form-label mb-0" style="font-size:0.8rem;">Show</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filterHasSalary">
                     <option [ngValue]="null">All</option>
-                    <option [ngValue]="true">Active</option>
-                    <option [ngValue]="false">Inactive</option>
+                    <option [ngValue]="true">With salary</option>
+                    <option [ngValue]="false">Without salary</option>
+                    <option [ngValue]="'excluded'">Excluded from payroll</option>
                 </select>
             </div>
-            <div class="col-md-2">
-                <button class="btn btn-sm btn-outline-secondary" (click)="clearFilters()" title="Clear"><i class="fas fa-times"></i> Clear</button>
+            <div class="col-md-3">
+                <label class="form-label mb-0" style="font-size:0.8rem;">Effective Date</label>
+                <div class="input-group input-group-sm">
+                    <input type="date" class="form-control form-control-sm" [(ngModel)]="bulkEffectiveDate" />
+                    <button class="btn btn-outline-secondary" (click)="applyDateToAll()" title="Apply this date to every row currently listed">
+                        <i class="fas fa-angle-double-down"></i> Apply to all
+                    </button>
+                </div>
             </div>
-            <div class="col-md-5 text-end">
-                <button class="btn btn-sm btn-success" (click)="addNew()"><i class="fas fa-plus"></i> Add Employee Salary</button>
+            <div class="col-md-1">
+                <button class="btn btn-sm btn-outline-secondary" (click)="clearFilters()" title="Clear filters"><i class="fas fa-times"></i> Clear</button>
+            </div>
+            <div class="col-md-3 text-end">
+                <button class="btn btn-sm btn-outline-secondary me-1" (click)="resetChanges()" [disabled]="dirtyRows().length === 0" title="Discard unsaved edits">
+                    <i class="fas fa-undo"></i> Discard
+                </button>
+                <button class="btn btn-sm btn-success" (click)="saveAll()" [disabled]="saving || dirtyRows().length === 0">
+                    <i class="fas fa-save"></i> {{ saving ? 'Saving...' : 'Save All' }}
+                    <span class="badge bg-light text-dark ms-1" *ngIf="dirtyRows().length > 0">{{ dirtyRows().length }}</span>
+                </button>
             </div>
         </div>
 
-        <!-- List -->
+        <!-- Cleanup prompt: these gaps have to be closed before payroll is run,
+             not discovered on the payslips afterwards. -->
+        <div class="alert alert-warning py-1 px-2 mb-1" style="font-size:0.8rem;" *ngIf="incompleteCount() > 0">
+            <i class="fas fa-exclamation-triangle me-1"></i>
+            {{ incompleteCount() }} of {{ rows.length }} staff are missing a KRA PIN, ID, NSSF or SHA number.
+            Fix these before processing payroll - use the <i class="fas fa-id-card"></i> button on a row, which
+            is also where a supplier or contractor can be taken off the payroll.
+        </div>
+
+        <!-- Salary records whose staff member is not shown in the grid -->
+        <div class="alert alert-warning py-1 px-2 mb-1" style="font-size:0.8rem;" *ngIf="orphanedCount > 0">
+            <i class="fas fa-exclamation-triangle me-1"></i>
+            {{ orphanedCount }} salary record(s) belong to staff who are no longer active, so they are not listed below.
+        </div>
+
+        <!-- Grid: one row per active staff member -->
         <div class="card card-outline card-primary">
             <div class="card-header py-1 d-flex justify-content-between align-items-center bg-info text-white">
                 <div>
                     <strong><i class="fas fa-money-check-alt me-1"></i> Employee Salaries</strong>
-                    <span class="badge bg-light text-dark ms-2">{{ filtered().length }}</span>
+                    <span class="badge bg-light text-dark ms-2">{{ filtered().length }} shown</span>
+                </div>
+                <div style="font-size:0.8rem;">
+                    <span class="badge bg-light text-dark">{{ rows.length }} active staff</span>
+                    <span class="badge bg-success ms-1">{{ withSalaryCount() }} with salary</span>
+                    <span class="badge bg-secondary ms-1">{{ withoutSalaryCount() }} without</span>
+                    <span class="badge bg-dark ms-1" *ngIf="excludedCount() > 0">{{ excludedCount() }} excluded</span>
                 </div>
             </div>
             <div class="card-body p-0">
-                <table class="table table-striped table-hover table-sm mb-0">
-                    <thead class="table-light">
-                        <tr><th>#</th><th>Staff</th><th class="text-end">Basic Salary</th><th class="text-end">House Allow.</th><th class="text-end">Transport Allow.</th><th class="text-end">Other Allow.</th><th>Effective Date</th><th>Active</th><th>Action</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let c of filtered() | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i">
-                            <td>{{ (page-1) * pageSize + i + 1 }}</td>
-                            <td><strong>{{ c.staffDetailsName || getStaffName(c.staffDetailsId) }}</strong></td>
-                            <td class="text-end">{{ c.basicSalary | number:'1.2-2' }}</td>
-                            <td class="text-end">{{ c.houseAllowance | number:'1.2-2' }}</td>
-                            <td class="text-end">{{ c.transportAllowance | number:'1.2-2' }}</td>
-                            <td class="text-end">{{ c.otherAllowances | number:'1.2-2' }}</td>
-                            <td><small>{{ c.effectiveDate | date:'mediumDate' }}</small></td>
-                            <td><span *ngIf="c.isActive" class="badge bg-success">Active</span><span *ngIf="!c.isActive" class="badge bg-secondary">Inactive</span></td>
-                            <td>
-                                <button class="btn btn-outline-primary btn-sm" (click)="edit(c)"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-outline-danger btn-sm ms-1" (click)="delete(c)"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover table-sm mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width:40px;">#</th>
+                                <th>Staff</th>
+                                <th class="text-end" style="width:120px;">Basic Salary</th>
+                                <th class="text-end" style="width:120px;">House Allow.</th>
+                                <th class="text-end" style="width:120px;">Transport Allow.</th>
+                                <th class="text-end" style="width:120px;">Other Allow.</th>
+                                <th class="text-end" style="width:110px;">Gross</th>
+                                <th style="width:140px;">Effective Date</th>
+                                <th class="text-center" style="width:60px;">Active</th>
+                                <th style="width:120px;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let r of filtered() | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i"
+                                [ngClass]="{'table-warning': isDirty(r), 'salary-row-excluded': r.excludeFromPayroll}">
+                                <td>{{ (page-1) * pageSize + i + 1 }}</td>
+                                <td>
+                                    <strong>{{ r.staffName }}</strong>
+                                    <span class="badge bg-dark ms-1" *ngIf="r.excludeFromPayroll" style="font-size:0.65rem;">
+                                        Excluded from payroll
+                                    </span>
+                                    <span class="badge bg-secondary ms-1" *ngIf="!r.excludeFromPayroll && r.salaryId == null" style="font-size:0.65rem;">Not set</span>
+                                    <span class="badge bg-info ms-1" *ngIf="r.itemCount > 0" style="font-size:0.65rem;" title="Additional earnings / deductions">
+                                        <i class="fas fa-list-ul"></i> {{ r.itemCount }}
+                                    </span>
+                                </td>
+                                <td><input type="number" class="form-control form-control-sm text-end" [(ngModel)]="r.basicSalary" min="0" [disabled]="r.excludeFromPayroll" /></td>
+                                <td><input type="number" class="form-control form-control-sm text-end" [(ngModel)]="r.houseAllowance" min="0" [disabled]="r.excludeFromPayroll" /></td>
+                                <td><input type="number" class="form-control form-control-sm text-end" [(ngModel)]="r.transportAllowance" min="0" [disabled]="r.excludeFromPayroll" /></td>
+                                <td><input type="number" class="form-control form-control-sm text-end" [(ngModel)]="r.otherAllowances" min="0" [disabled]="r.excludeFromPayroll" /></td>
+                                <td class="text-end"><strong>{{ grossFor(r) | number:'1.2-2' }}</strong></td>
+                                <td><input type="date" class="form-control form-control-sm" [(ngModel)]="r.effectiveDate" [disabled]="r.excludeFromPayroll" /></td>
+                                <td class="text-center"><input class="form-check-input" type="checkbox" [(ngModel)]="r.isActive" [disabled]="r.excludeFromPayroll" /></td>
+                                <td class="text-nowrap">
+                                    <button class="btn btn-outline-secondary btn-sm" (click)="editPayrollDetails(r)"
+                                        [title]="missingIdentifiers(r).length
+                                            ? 'Missing: ' + missingIdentifiers(r).join(', ')
+                                            : 'Payroll details (KRA PIN, ID, NSSF, SHA, exclude from payroll)'">
+                                        <i class="fas" [ngClass]="missingIdentifiers(r).length ? 'fa-exclamation-triangle text-warning' : 'fa-id-card'"></i>
+                                    </button>
+                                    <button class="btn btn-outline-primary btn-sm ms-1" (click)="openDetails(r)"
+                                        [disabled]="r.excludeFromPayroll"
+                                        [title]="r.excludeFromPayroll
+                                            ? 'Excluded from payroll'
+                                            : 'Earnings, deductions and notes for this employee'">
+                                        <i class="fas fa-list-ul"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm ms-1" (click)="delete(r)"
+                                        [disabled]="r.salaryId == null || r.excludeFromPayroll" title="Delete this salary record">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr *ngIf="filtered().length === 0">
+                                <td colspan="10" class="text-center text-muted p-3">
+                                    <i class="fas fa-info-circle"></i>
+                                    {{ loading ? 'Loading...' : 'No active staff match the current filters.' }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <app-table-paging (pageChangedEvent)="pageChanged($event)"
                     (pageSizeChangedEvent)="pageSizeChanged($event)"
                     [collectionSize]="filtered().length"></app-table-paging>

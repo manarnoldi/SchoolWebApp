@@ -33,6 +33,8 @@ export class StaffDetails extends ResourceModel<StaffDetails> {
     public employmentDate?: Date;
     public endofEmploymentDate?: Date;
     public currentlyEmployed?: boolean;
+    // Kept on the staff list but not paid through payroll (suppliers, contractors).
+    public excludeFromPayroll?: boolean;
     public staffCategoryId?: number;
     public staffCategory?: StaffCategory;
     public designationId?: number;

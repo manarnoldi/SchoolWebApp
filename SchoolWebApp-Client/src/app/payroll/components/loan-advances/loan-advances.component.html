@@ -107,7 +107,7 @@
                     <tbody>
                         <tr *ngFor="let c of filtered() | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i">
                             <td>{{ (page-1) * pageSize + i + 1 }}</td>
-                            <td><strong>{{ c.staffDetailsName || getStaffName(c.staffDetailsId) }}</strong></td>
+                            <td><strong>{{ c.staffName || getStaffName(c.staffDetailsId) }}</strong></td>
                             <td><small>{{ c.description }}</small></td>
                             <td class="text-end">{{ c.principalAmount | number:'1.2-2' }}</td>
                             <td class="text-end">{{ c.monthlyDeduction | number:'1.2-2' }}</td>

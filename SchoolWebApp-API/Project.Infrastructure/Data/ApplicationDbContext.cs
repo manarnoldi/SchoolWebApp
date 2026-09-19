@@ -167,6 +167,8 @@ namespace Project.Infrastructure.Data
         public DbSet<EarningType> EarningTypes { get; set; }
         public DbSet<DeductionType> DeductionTypes { get; set; }
         public DbSet<TaxBand> TaxBands { get; set; }
+        public DbSet<NssfBand> NssfBands { get; set; }
+        public DbSet<PayrollRelief> PayrollReliefs { get; set; }
         public DbSet<PayrollSetting> PayrollSettings { get; set; }
         public DbSet<EmployeeSalary> EmployeeSalaries { get; set; }
         public DbSet<EmployeeSalaryItem> EmployeeSalaryItems { get; set; }

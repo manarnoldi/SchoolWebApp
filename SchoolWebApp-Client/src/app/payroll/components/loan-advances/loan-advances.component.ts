@@ -52,7 +52,11 @@ export class PayrollLoanAdvancesComponent implements OnInit {
         ]).subscribe({
             next: ([items, staff]) => {
                 this.items = items || [];
-                this.staffList = (staff || []).sort((a: any, b: any) => (a.fullName || '').localeCompare(b.fullName || ''));
+                // Loan instalments are recovered through the payroll run, so staff
+                // excluded from payroll cannot be issued one here.
+                this.staffList = (staff || [])
+                    .filter((s: any) => !s.excludeFromPayroll)
+                    .sort((a: any, b: any) => (a.fullName || '').localeCompare(b.fullName || ''));
             },
             error: (err) => this.toastr.error(err.error)
         });

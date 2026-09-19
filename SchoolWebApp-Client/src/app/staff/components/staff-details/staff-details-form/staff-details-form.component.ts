@@ -161,6 +161,7 @@ export class StaffDetailsFormComponent implements OnInit {
             employmentDate: [null],
             endofEmploymentDate: [null],
             currentlyEmployed: [true],
+            excludeFromPayroll: [false],
             staffCategoryId: [null, [Validators.required]],
             designationId: [null, [Validators.required]],
             employmentTypeId: [null, [Validators.required]],
@@ -284,6 +285,7 @@ export class StaffDetailsFormComponent implements OnInit {
                   )
                 : null,
             currentlyEmployed: this.staff?.currentlyEmployed,
+            excludeFromPayroll: this.staff?.excludeFromPayroll ?? false,
             staffCategoryId: this.staff?.staffCategoryId,
             designationId: this.staff?.designationId,
             employmentTypeId: this.staff?.employmentTypeId,

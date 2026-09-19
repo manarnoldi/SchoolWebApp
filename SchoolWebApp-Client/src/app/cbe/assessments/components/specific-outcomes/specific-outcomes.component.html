@@ -2,7 +2,6 @@
     [title]="dashboardTitle"
     [breadcrumbs]="breadcrumbs"></app-dashboard-header>
 <hr class="mb-1">
-<a class="btn btn-flat btn-sm btn-warning mb-1" [routerLink]="['/settings/dropdowns']" [queryParams]="{category: 'CBE Settings'}"><i class="fas fa-angle-double-left"></i> Back to Dropdowns</a>
 <div
     class="modal fade"
     id="specificOutcomeFormModal"
@@ -41,6 +40,13 @@
 </div>
 <section class="content">
     <div class="container-fluid px-1">
+        <!-- Back to Dropdowns and Add share one row. -->
+        <div class="row g-0">
+            <div class="col-12">
+                <a class="btn btn-flat btn-sm btn-warning mb-1" [routerLink]="['/settings/dropdowns']" [queryParams]="{category: 'CBE Settings'}"><i class="fas fa-angle-double-left"></i> Back to Dropdowns</a>
+                <app-table-button modelName="specificOutcome" buttonTitle="Add specific outcome"></app-table-button>
+            </div>
+        </div>
         <div class="row g-0">
             <div class="col-10">
                 <div class="row g-0">
@@ -77,10 +83,6 @@
                         </select>
                     </div>
                 </div>
-            </div>
-            <div class="col-2">
-                <app-table-button modelName="specificOutcome"
-                    buttonTitle="Add specific outcome"></app-table-button>
             </div>
         </div>
         <div class="card">

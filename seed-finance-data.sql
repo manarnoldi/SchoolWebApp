@@ -148,8 +148,11 @@ INSERT IGNORE INTO `Accounts` (`Code`, `Name`, `AccountType`, `Description`, `Is
 ('2000', 'Accounts Payable', 2, 'Amounts owed to suppliers', 1, NOW(), NOW()),
 ('2100', 'Accrued Salaries', 2, 'Salaries owed but not yet paid', 1, NOW(), NOW()),
 ('2200', 'PAYE Payable', 2, 'Pay As You Earn tax due to KRA', 1, NOW(), NOW()),
-('2210', 'NHIF Payable', 2, 'NHIF deductions due', 1, NOW(), NOW()),
-('2220', 'NSSF Payable', 2, 'NSSF deductions due', 1, NOW(), NOW()),
+-- No NHIF or NSSF Payable here. NHIF was replaced by SHIF, and the
+-- UpdateAccountCodesToNumeric migration creates the statutory payables itself:
+-- 2110 NSSF, 2120 SHIF and 2130 Housing Levy Payable. Seeding 2210 NHIF and 2220
+-- NSSF as well left an obsolete account and a second NSSF Payable that payroll
+-- never posted to.
 ('2300', 'Deferred Revenue (Fees in Advance)', 2, 'Fees paid in advance of service', 1, NOW(), NOW()),
 
 -- Equity (3000-3999)

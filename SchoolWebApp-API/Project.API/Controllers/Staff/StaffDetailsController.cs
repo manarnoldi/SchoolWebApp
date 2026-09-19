@@ -290,6 +290,53 @@ namespace SchoolWebApp.API.Controllers.Staff
             return BadRequest(ModelState);
         }
 
+        // PUT api/staffDetails/5/payrollDetails
+        /// <summary>
+        /// Updates only what the payroll screens may change: the statutory numbers
+        /// that appear on a payslip (KRA PIN, ID number, NSSF number, SHA number)
+        /// and whether the person is paid through the payroll at all. Used rather
+        /// than the full Edit endpoint, which maps a whole StaffDetailDto onto the
+        /// entity and would blank every field the caller did not send.
+        /// </summary>
+        /// <param name="id">The staff member being updated</param>
+        /// <param name="model">The payroll details to store</param>
+        [HttpPut("{id}/payrollDetails")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdatePayrollDetails(int id, UpdateStaffPayrollDetailsDto model)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (id <= 0) return BadRequest(id);
+
+            try
+            {
+                var _item = await _unitOfWork.StaffDetails.GetById(id);
+                if (_item == null) return NotFound();
+
+                // Blank strings are stored as null so an emptied box does not leave
+                // an empty value printing on the payslip.
+                _item.KraPinNo = Blank(model.KraPinNo);
+                _item.IdNumber = Blank(model.IdNumber);
+                _item.NssfNo = Blank(model.NssfNo);
+                _item.NhifNo = Blank(model.NhifNo);
+                _item.ExcludeFromPayroll = model.ExcludeFromPayroll;
+
+                _unitOfWork.StaffDetails.Update(_item);
+                await _unitOfWork.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while updating the payroll details for staff {id}.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+
+            static string? Blank(string? value) =>
+                string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+        }
+
         // DELETE api/staffDetails/5
         /// <summary>
         /// A method for deleting the staff details record by Id.

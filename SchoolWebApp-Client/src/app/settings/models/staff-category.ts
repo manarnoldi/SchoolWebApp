@@ -7,6 +7,8 @@ export class StaffCategory extends ResourceModel<StaffCategory> {
     public rank?: number;
     public description?: string;
     public abbreviation?: string;
+    // Expense account this category's salaries are charged to in the payroll journal.
+    public salaryExpenseAccountId?: number | null;
 
     constructor(model?: Partial<StaffCategory>) {
         super(model);

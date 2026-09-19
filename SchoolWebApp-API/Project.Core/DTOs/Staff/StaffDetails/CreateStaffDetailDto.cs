@@ -21,6 +21,9 @@ namespace SchoolWebApp.Core.DTOs.Staff.StaffDetails
         public DateTime? EndofEmploymentDate { get; set; }
         public bool CurrentlyEmployed { get; set; }
 
+        [Display(Name = "Exclude from payroll")]
+        public bool ExcludeFromPayroll { get; set; }
+
         public int StaffCategoryId { get; set; }
         public StaffCategoryDto? StaffCategory { get; set; }
         public int DesignationId { get; set; }
