@@ -313,7 +313,7 @@ export class StudentsSubjectsComponent implements OnInit, AfterViewInit {
         const items = results
             .map(
                 (r) =>
-                    `<li>${r.exam?.examType?.name ?? 'Exam'} (${fmtDate(r.exam?.examStartDate)}) – ${r.exam?.subject?.name ?? ''}: <b>${r.score}</b></li>`
+                    `<li>${r.exam?.examType?.name ?? 'Exam'} (${fmtDate(r.exam?.examStartDate)}) - ${r.exam?.subject?.name ?? ''}: <b>${r.score}</b></li>`
             )
             .join('');
         return (

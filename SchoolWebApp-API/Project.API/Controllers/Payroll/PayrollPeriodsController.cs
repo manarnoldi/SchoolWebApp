@@ -808,7 +808,10 @@ namespace SchoolWebApp.API.Controllers.Payroll
 
             return (new JournalEntry
             {
-                ReferenceNumber = $"PAY-JNL-{period.Name?.Replace(" ", "-") ?? $"{period.Month}-{period.Year}"}",
+                // PRL (payroll), not PAY: fee payment journals are PAY-JNL-<receipt>,
+                // and sharing the prefix made payroll journals impossible to pick
+                // out by reference alone.
+                ReferenceNumber = $"PRL-JNL-{period.Name?.Replace(" ", "-") ?? $"{period.Month}-{period.Year}"}",
                 EntryDate = approvedAt,
                 Description = $"Auto-posted: Payroll {period.Name}",
                 IsPosted = true,

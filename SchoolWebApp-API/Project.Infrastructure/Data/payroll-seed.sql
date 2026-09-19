@@ -46,9 +46,9 @@ INSERT IGNORE INTO DeductionTypes (Name, Code, IsStatutory, IsActive, Created) V
 -- Tax Bands (Kenya 2025 Monthly PAYE Bands)
 INSERT IGNORE INTO TaxBands (Description, LowerLimit, UpperLimit, Rate, EffectiveDate, IsActive, Created) VALUES
 ('Up to KES 24,000', 0, 24000, 10.00, '2025-01-01', 1, NOW()),
-('KES 24,001 – 32,333', 24000, 32333, 25.00, '2025-01-01', 1, NOW()),
-('KES 32,334 – 500,000', 32333, 500000, 30.00, '2025-01-01', 1, NOW()),
-('KES 500,001 – 800,000', 500000, 800000, 32.50, '2025-01-01', 1, NOW()),
+('KES 24,001 - 32,333', 24000, 32333, 25.00, '2025-01-01', 1, NOW()),
+('KES 32,334 - 500,000', 32333, 500000, 30.00, '2025-01-01', 1, NOW()),
+('KES 500,001 - 800,000', 500000, 800000, 32.50, '2025-01-01', 1, NOW()),
 ('Above KES 800,000', 800000, 99999999, 35.00, '2025-01-01', 1, NOW());
 
 -- Payroll Settings (Kenya 2025)

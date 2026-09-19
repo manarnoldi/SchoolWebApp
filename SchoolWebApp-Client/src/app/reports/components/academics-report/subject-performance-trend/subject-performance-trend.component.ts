@@ -406,7 +406,7 @@ export class SubjectPerformanceTrendComponent implements OnInit {
         this.columns.forEach((c, i) => {
             let x = this.chartLeft + i * this.chartW_col + (this.chartW_col - 34) / 2;
 
-            // Mean bar (0–100%).
+            // Mean bar (0-100%).
             let mh = (c.mean / 100) * this.chartPlotH;
             this.chartMean.push({label: c.label, mean: c.mean, x, y: bottom - mh, h: mh});
 
