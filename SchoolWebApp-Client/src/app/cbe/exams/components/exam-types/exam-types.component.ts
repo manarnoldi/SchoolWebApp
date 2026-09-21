@@ -27,7 +27,7 @@ export class ExamTypesComponent implements OnInit {
     ];
     dashboardTitle = 'CBE Exams: Exam Types';
     tableTitle: string = 'Exam types list';
-    tableHeaders: string[] = ['Ref#', 'Name', 'Abbreviation', 'Internal', 'Rank', 'Description', 'Action'];
+    tableHeaders: string[] = ['Ref#', 'Name', 'Abbreviation', 'On report form', 'Several per term', 'Rank', 'Description', 'Action'];
 
     editMode = false;
     examType: ExamType;
@@ -53,7 +53,8 @@ export class ExamTypesComponent implements OnInit {
         this.examTypeForm = this.formBuilder.group({
             name: ['', [Validators.required]],
             abbreviation: ['', [Validators.required]],
-            internal: [false],
+            showOnReportForm: [false],
+            allowMultiplePerTerm: [false],
             rank: [0, [Validators.required]],
             description: ['']
         });
@@ -81,7 +82,8 @@ export class ExamTypesComponent implements OnInit {
                 this.examTypeForm.setValue({
                     name: this.examType.name,
                     abbreviation: this.examType.abbreviation ?? '',
-                    internal: this.examType.internal ?? false,
+                    showOnReportForm: this.examType.showOnReportForm ?? false,
+                    allowMultiplePerTerm: this.examType.allowMultiplePerTerm ?? false,
                     rank: this.examType.rank,
                     description: this.examType.description ?? ''
                 });
@@ -122,7 +124,7 @@ export class ExamTypesComponent implements OnInit {
     resetForm() {
         this.editMode = false;
         this.examTypeForm.reset();
-        this.examTypeForm.patchValue({internal: false, rank: 0});
+        this.examTypeForm.patchValue({showOnReportForm: false, allowMultiplePerTerm: false, rank: 0});
     }
 
     onSubmit = () => {
@@ -150,7 +152,7 @@ export class ExamTypesComponent implements OnInit {
                         this.refreshItems();
                         this.toastr.success('Exam type saved successfully!');
                         this.examTypeForm.reset();
-                        this.examTypeForm.patchValue({internal: false, rank: 0});
+                        this.examTypeForm.patchValue({showOnReportForm: false, allowMultiplePerTerm: false, rank: 0});
                     },
                     (err) => this.toastr.error(err.error?.message || err.error)
                 );

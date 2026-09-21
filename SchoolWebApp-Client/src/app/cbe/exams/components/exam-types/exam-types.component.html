@@ -57,9 +57,21 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <div class="icheck-success">
-                                        <input type="checkbox" id="internal" formControlName="internal" />
-                                        <label for="internal">Internal</label>
+                                        <input type="checkbox" id="showOnReportForm" formControlName="showOnReportForm" />
+                                        <label for="showOnReportForm">Show on report form</label>
                                     </div>
+                                    <small class="text-muted d-block">
+                                        Results get their own column on the report form. Leave off for
+                                        exams tracked internally only, such as weekly marathons.
+                                    </small>
+                                    <div class="icheck-success mt-2">
+                                        <input type="checkbox" id="allowMultiplePerTerm" formControlName="allowMultiplePerTerm" />
+                                        <label for="allowMultiplePerTerm">Allow several exams per term</label>
+                                    </div>
+                                    <small class="text-muted d-block">
+                                        A term can hold many exams of this type, e.g. one a week.
+                                        Off means one exam a term, as for opening, mid-term and end-term.
+                                    </small>
                                 </div>
                             </div>
                         </div>
@@ -109,7 +121,8 @@
                             <td>{{ item.id }}</td>
                             <td>{{ item.name }}</td>
                             <td>{{ item.abbreviation }}</td>
-                            <td>{{ item.internal ? 'Yes' : 'No' }}</td>
+                            <td>{{ item.showOnReportForm ? 'Yes' : 'No' }}</td>
+                            <td>{{ item.allowMultiplePerTerm ? 'Yes' : 'No' }}</td>
                             <td>{{ item.rank }}</td>
                             <td>{{ item.description }}</td>
                             <app-table-action

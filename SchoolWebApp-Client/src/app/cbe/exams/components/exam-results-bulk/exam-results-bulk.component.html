@@ -57,7 +57,7 @@
                                     {{ filterSessionId ? 'Select school exam' : 'Select a session first' }}
                                 </option>
                                 <option [ngValue]="se.id" *ngFor="let se of schoolExams">
-                                    {{ se.examType?.name }} ({{ se.examStartDate | date:'mediumDate' }})
+                                    {{ se.examType?.name }}{{ se.description ? ' - ' + se.description : '' }} ({{ se.examStartDate | date:'mediumDate' }})
                                 </option>
                             </select>
                         </div>

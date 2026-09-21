@@ -365,6 +365,8 @@ const routes: Routes = [
             {path: 'academics/assessment-report', component: AssessmentReportComponent},
             {path: 'academics/subject-performance', component: SubjectPerformanceTabsComponent},
             {path: 'academics/class-performance', component: ClassPerformanceTabsComponent},
+            // Exam progress now lives as two tabs under Exam Results; keep old links working.
+            {path: 'academics/exam-progress', redirectTo: 'academics/exam-results', pathMatch: 'full'},
             {path: 'academics/student-subject-allocation', component: StudentSubjectPageComponent}
         ]
     },

@@ -265,7 +265,7 @@ export class ExamResultsBulkComponent implements OnInit {
         this.isLoading = true;
         this.loaded = false;
 
-        let url = `/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}&schoolClassId=${this.filterSchoolClassId}&examTypeId=${this.filterExamTypeId}`;
+        let url = `/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}&schoolClassId=${this.filterSchoolClassId}&examTypeId=${this.filterExamTypeId}&schoolExamId=${this.filterSchoolExamId}`;
 
         // Find education level for the selected class
         let selectedClass = this.schoolClasses.find((sc) => +sc.id === +this.filterSchoolClassId);

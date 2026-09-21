@@ -1938,6 +1938,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<bool>("AllowMultiplePerTerm")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<DateTime?>("Created")
                         .HasColumnType("datetime(6)");
 
@@ -1948,9 +1951,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
-
-                    b.Property<bool>("Internal")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime?>("Modified")
                         .HasColumnType("datetime(6)");
@@ -1966,6 +1966,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
 
                     b.Property<int>("Rank")
                         .HasColumnType("int");
+
+                    b.Property<bool>("ShowOnReportForm")
+                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("Id");
 

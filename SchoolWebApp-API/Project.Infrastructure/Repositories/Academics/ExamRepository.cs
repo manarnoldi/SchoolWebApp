@@ -33,7 +33,7 @@ namespace SchoolWebApp.Infrastructure.Repositories.Academics
         }
 
         public async Task<List<Exam>> SearchForExam(int academicYearId, int curriculumId, int sessionId,
-            int? schoolClassId, int? subjectId, int? examTypeId)
+            int? schoolClassId, int? subjectId, int? examTypeId, int? schoolExamId = null)
         {
             // Term/year/curriculum scoping now lives on the SchoolExam header.
             var query = _dbContext.Exams
@@ -51,6 +51,11 @@ namespace SchoolWebApp.Infrastructure.Repositories.Academics
                 query = query.Where(s => s.SubjectId == subjectId);
             if (examTypeId != null)
                 query = query.Where(s => s.SchoolExam.ExamTypeId == examTypeId);
+            // One particular exam rather than every exam of its type: a type that
+            // allows several exams a term (a weekly marathon) would otherwise return
+            // all of that term's weeks merged together.
+            if (schoolExamId != null)
+                query = query.Where(s => s.SchoolExamId == schoolExamId);
 
             var exams = await query.ToListAsync();
             return exams;

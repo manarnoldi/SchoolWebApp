@@ -372,7 +372,7 @@ export class SubjectPerformanceTrendComponent implements OnInit {
     private computeColumns(subjectId: number, grades: any[], bands: Band[], studentCount: number): Observable<ExamColumn[]> {
         if (!this.schoolExamsInYear.length) return of([]);
         let reqs = this.schoolExamsInYear.map((se) => {
-            let url = `/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${se._sessionId}&schoolClassId=${this.filterSchoolClassId}&examTypeId=${se.examTypeId ?? se.examType?.id}`;
+            let url = `/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${se._sessionId}&schoolClassId=${this.filterSchoolClassId}&examTypeId=${se.examTypeId ?? se.examType?.id}&schoolExamId=${se.id}`;
             return this.examSvc.get(url).pipe(
                 switchMap((exams: any[]) => {
                     let exam = (exams || []).find((e) => +e.subjectId === +subjectId);

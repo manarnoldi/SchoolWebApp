@@ -263,7 +263,7 @@ export class BroadsheetComponent implements OnInit {
         this.applyExamGrading(edLevelId);
         this.rankingMethod = this.rankingMethodFor(edLevelId);
 
-        let url = `/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}&schoolClassId=${this.filterSchoolClassId}&examTypeId=${this.filterExamTypeId}`;
+        let url = `/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}&schoolClassId=${this.filterSchoolClassId}&examTypeId=${this.filterExamTypeId}&schoolExamId=${this.filterSchoolExamId}`;
 
         forkJoin([
             this.examSvc.get(url),

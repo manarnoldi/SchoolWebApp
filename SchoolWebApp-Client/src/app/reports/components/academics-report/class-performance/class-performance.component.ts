@@ -411,7 +411,7 @@ export class ClassPerformanceComponent implements OnInit {
 
     private runReportLoad = () => {
         let requests = this.schoolClasses.map((cls) => {
-            let url = `/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}&schoolClassId=${cls.id}&examTypeId=${this.filterExamTypeId}`;
+            let url = `/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}&schoolClassId=${cls.id}&examTypeId=${this.filterExamTypeId}&schoolExamId=${this.filterSchoolExamId}`;
             return forkJoin([
                 this.examSvc.get(url),
                 this.studentClassSvc.getBySchoolClassId(cls.id, Status.Active),

@@ -40,7 +40,7 @@
                             <select class="form-select form-select-sm"
                                 [(ngModel)]="filterSchoolExamId" (change)="onSchoolExamChange()">
                                 <option [ngValue]="null" hidden disabled selected>{{ filterSessionId ? 'Select school exam' : 'Select a term first' }}</option>
-                                <option *ngFor="let se of schoolExams" [ngValue]="se.id">{{ se.examType?.name }} ({{ se.examStartDate | date:'mediumDate' }})</option>
+                                <option *ngFor="let se of schoolExams" [ngValue]="se.id">{{ se.examType?.name }}{{ se.description ? ' - ' + se.description : '' }} ({{ se.examStartDate | date:'mediumDate' }})</option>
                             </select>
                         </div>
                     </div>

@@ -5,7 +5,10 @@ export class ExamType extends ResourceModel<ExamType> {
     public description?: string;
     public rank?: number;
     public abbreviation?: string;
-    public internal?: boolean;
+    // Results appear on the report form, in a column of their own.
+    public showOnReportForm?: boolean;
+    // A term may hold more than one exam of this type (e.g. weekly marathons).
+    public allowMultiplePerTerm?: boolean;
 
     constructor(model?: Partial<ExamType>) {
         super(model);

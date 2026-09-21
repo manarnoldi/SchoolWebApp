@@ -10,7 +10,10 @@ namespace SchoolWebApp.Core.DTOs.Academics.ExamType
         [StringLength(255)]
         public required string Abbreviation { get; set; }
 
-        [Required(ErrorMessage = "Select if exam type is internal")]
-        public bool Internal { get; set; }
+        /// <summary>Results show on the report form, in a column of their own.</summary>
+        public bool ShowOnReportForm { get; set; }
+
+        /// <summary>A term may hold more than one exam of this type (weekly marathons).</summary>
+        public bool AllowMultiplePerTerm { get; set; }
     }
 }

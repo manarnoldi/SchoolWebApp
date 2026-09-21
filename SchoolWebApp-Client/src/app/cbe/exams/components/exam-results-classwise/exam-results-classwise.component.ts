@@ -7,6 +7,7 @@ import {ExamResult} from '../../models/exam-result';
 import {ExamResultService} from '../../services/exam-result.service';
 import {ExamService} from '../../services/exam.service';
 import {ExamTypeService} from '../../services/exam-type.service';
+import {SchoolExamService} from '../../services/school-exam.service';
 import {CurriculumService} from '@/academics/services/curriculum.service';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {SessionsService} from '@/class/services/sessions.service';
@@ -37,6 +38,7 @@ export class ExamResultsClasswiseComponent implements OnInit {
     sessions: any[] = [];
     schoolClasses: any[] = [];
     examTypes: any[] = [];
+    schoolExams: any[] = [];
     grades: any[] = [];
     allGrades: any[] = [];
     gradingSettings: any[] = [];
@@ -49,6 +51,9 @@ export class ExamResultsClasswiseComponent implements OnInit {
     filterAcademicYearId: any = null;
     filterSessionId: any = null;
     filterSchoolClassId: any = null;
+    // The exam sat, e.g. one week of a weekly marathon. The exam type follows
+    // from it; results are read for this exam alone.
+    filterSchoolExamId: any = null;
     filterExamTypeId: any = null;
     filterStudentId: any = null;
 
@@ -71,6 +76,7 @@ export class ExamResultsClasswiseComponent implements OnInit {
         private examResultSvc: ExamResultService,
         private examSvc: ExamService,
         private examTypeSvc: ExamTypeService,
+        private schoolExamSvc: SchoolExamService,
         private curriculaSvc: CurriculumService,
         private academicYearSvc: AcademicYearsService,
         private sessionsSvc: SessionsService,
@@ -127,7 +133,8 @@ export class ExamResultsClasswiseComponent implements OnInit {
     onCurriculumChange = () => {
         this.sessions = this.schoolClasses = this.students = [];
         this.filterAcademicYearId = this.filterSessionId = this.filterSchoolClassId = null;
-        this.filterExamTypeId = this.filterStudentId = null;
+        this.filterExamTypeId = this.filterStudentId = this.filterSchoolExamId = null;
+        this.schoolExams = [];
         this.studentLoaded = false;
         if (!this.filterCurriculumId) return;
         this.learningLevelSvc.getLearningLevelsByCurriculum(this.filterCurriculumId).subscribe({
@@ -139,6 +146,8 @@ export class ExamResultsClasswiseComponent implements OnInit {
     onAcademicYearChange = () => {
         this.sessions = this.schoolClasses = this.students = [];
         this.filterSessionId = this.filterSchoolClassId = this.filterExamTypeId = this.filterStudentId = null;
+        this.filterSchoolExamId = null;
+        this.schoolExams = [];
         this.studentLoaded = false;
         if (!this.filterAcademicYearId || !this.filterCurriculumId) return;
         forkJoin([
@@ -152,6 +161,26 @@ export class ExamResultsClasswiseComponent implements OnInit {
             },
             error: (err) => this.toastr.error(err.error)
         });
+    };
+
+    // The term drives the School Exam list; the chosen exam carries its type.
+    onSessionChange = () => {
+        this.schoolExams = [];
+        this.filterSchoolExamId = this.filterExamTypeId = null;
+        this.studentLoaded = false;
+        if (!this.filterSessionId || !this.filterCurriculumId || !this.filterAcademicYearId) return;
+        this.schoolExamSvc
+            .get(`/schoolExams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}`)
+            .subscribe({
+                next: (items) => { this.schoolExams = items; },
+                error: (err) => this.toastr.error(err.error)
+            });
+    };
+
+    onSchoolExamChange = () => {
+        this.studentLoaded = false;
+        let se = this.schoolExams.find((s) => s.id == this.filterSchoolExamId);
+        this.filterExamTypeId = se?.examTypeId ?? se?.examType?.id ?? null;
     };
 
     onClassChange = () => {
@@ -175,12 +204,16 @@ export class ExamResultsClasswiseComponent implements OnInit {
         let year = this.academicYears.find((y) => y.id == this.filterAcademicYearId);
         let session = this.sessions.find((s) => s.id == this.filterSessionId);
         let examType = this.examTypes.find((et) => et.id == this.filterExamTypeId);
-        return `${year?.name || ''}-${session?.sessionName || ''}-${examType?.name || ''}`;
+        // The exam's own description ("Week 3") tells repeated exams of one type
+        // apart, so the heading says which sitting these marks belong to.
+        let schoolExam = this.schoolExams.find((se) => se.id == this.filterSchoolExamId);
+        let examName = `${examType?.name || ''}${schoolExam?.description ? ' - ' + schoolExam.description : ''}`;
+        return `${year?.name || ''}-${session?.sessionName || ''}-${examName}`;
     };
 
     loadStudentResults = () => {
-        if (!this.filterSessionId || !this.filterSchoolClassId || !this.filterExamTypeId || !this.filterStudentId) {
-            this.toastr.info('Please select Session, Class, Exam Type, and Student.');
+        if (!this.filterSessionId || !this.filterSchoolClassId || !this.filterSchoolExamId || !this.filterStudentId) {
+            this.toastr.info('Please select Term, Class, School Exam, and Student.');
             return;
         }
 
@@ -201,7 +234,7 @@ export class ExamResultsClasswiseComponent implements OnInit {
         }
 
         // Load exams and student's allocated subjects in parallel
-        let url = `/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}&schoolClassId=${this.filterSchoolClassId}&examTypeId=${this.filterExamTypeId}`;
+        let url = `/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}&schoolClassId=${this.filterSchoolClassId}&examTypeId=${this.filterExamTypeId}&schoolExamId=${this.filterSchoolExamId}`;
 
         forkJoin([
             this.examSvc.get(url),

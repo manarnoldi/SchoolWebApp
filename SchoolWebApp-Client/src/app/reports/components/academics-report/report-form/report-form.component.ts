@@ -87,7 +87,7 @@ export class ReportFormComponent implements OnInit {
     // Service) print: 'ratings' (current), 'descriptions' (remarks only), or
     // 'both'. Configurable in Report Form settings.
     cbeSectionDisplay: string = 'ratings';
-    // Master list of internal exam types; this.examTypes is narrowed to the
+    // Master list of report-form exam types; this.examTypes is narrowed to the
     // ones with a registered school exam for the selected session.
     allExamTypes: any[] = [];
 
@@ -177,7 +177,7 @@ export class ReportFormComponent implements OnInit {
                 this.meanBasis = this.settingVal('MeanBasis') || 'subjects_done';
                 this.curricula = curricula.sort((a, b) => a.rank - b.rank);
                 this.academicYears = academicYears.sort((a, b) => b.rank - a.rank);
-                this.examTypes = examTypes.filter((et) => et.internal).sort((a, b) => a.rank - b.rank);
+                this.examTypes = examTypes.filter((et) => et.showOnReportForm).sort((a, b) => a.rank - b.rank);
                 this.allExamTypes = this.examTypes;
                 this.allGrades = allGrades;
                 // Global default until a student's class (hence education level)

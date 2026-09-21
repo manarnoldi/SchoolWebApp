@@ -36,6 +36,7 @@ import { ClassPerformanceComponent } from './components/academics-report/class-p
 import { SubjectPerformanceTrendComponent } from './components/academics-report/subject-performance-trend/subject-performance-trend.component';
 import { SubjectPerformanceTabsComponent } from './components/academics-report/subject-performance-tabs/subject-performance-tabs.component';
 import { ClassPerformanceTrendComponent } from './components/academics-report/class-performance-trend/class-performance-trend.component';
+import { ExamProgressComponent } from './components/academics-report/exam-progress/exam-progress.component';
 import { ClassPerformanceTabsComponent } from './components/academics-report/class-performance-tabs/class-performance-tabs.component';
 import { ExamResultsTabsComponent } from './components/academics-report/exam-results-tabs/exam-results-tabs.component';
 
@@ -76,6 +77,7 @@ import { ExamResultsTabsComponent } from './components/academics-report/exam-res
         SubjectPerformanceTrendComponent,
         SubjectPerformanceTabsComponent,
         ClassPerformanceTrendComponent,
+        ExamProgressComponent,
         ClassPerformanceTabsComponent,
         ExamResultsTabsComponent
     ],

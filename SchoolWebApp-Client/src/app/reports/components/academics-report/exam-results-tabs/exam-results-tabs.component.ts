@@ -2,8 +2,9 @@ import {Component} from '@angular/core';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 
 /**
- * Combines the three exam-output reports under one menu item as tabs: Exam
- * Results (broadsheet), Report Forms and Missing Marks.
+ * Combines the exam-output reports under one menu item as tabs: Exam Results
+ * (broadsheet), Report Forms, Missing Marks, and progress across repeated
+ * exams of one type (weekly marathons) by class and by learner.
  *
  * Each tab's component is heavy (large per-class data loads), so a tab is only
  * mounted the first time it is opened (`visited`), then kept alive with
@@ -21,10 +22,12 @@ export class ExamResultsTabsComponent {
         {link: ['/reports/academics/exam-results'], title: 'Academics: Exam Results'}
     ];
 
-    activeNav: 'exam' | 'reportForm' | 'missing' = 'exam';
-    visited: {[k: string]: boolean} = {exam: true, reportForm: false, missing: false};
+    activeNav: 'exam' | 'reportForm' | 'missing' | 'classProgress' | 'studentProgress' = 'exam';
+    visited: {[k: string]: boolean} = {
+        exam: true, reportForm: false, missing: false, classProgress: false, studentProgress: false
+    };
 
-    setTab(tab: 'exam' | 'reportForm' | 'missing') {
+    setTab(tab: 'exam' | 'reportForm' | 'missing' | 'classProgress' | 'studentProgress') {
         this.activeNav = tab;
         this.visited[tab] = true;
     }

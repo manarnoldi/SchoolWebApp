@@ -109,9 +109,18 @@ namespace SchoolWebApp.API.Controllers.CBE.Exams
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (await _unitOfWork.SchoolExams.ItemExistsAsync(s => s.SessionId == model.SessionId
-                && s.ExamTypeId == model.ExamTypeId))
-                return Conflict(new { message = "A school exam for this term and exam type already exists." });
+            // One exam per type per term, unless the type allows several - a weekly
+            // marathon, say. The single-exam rule keeps one report-form column per
+            // exam type unambiguous; types that allow several are the ones kept off
+            // the report form.
+            var examType = await _unitOfWork.ExamTypes.GetById(model.ExamTypeId);
+            if (examType == null)
+                return BadRequest(new { message = "The selected exam type no longer exists." });
+
+            if (!examType.AllowMultiplePerTerm
+                && await _unitOfWork.SchoolExams.ItemExistsAsync(s => s.SessionId == model.SessionId
+                    && s.ExamTypeId == model.ExamTypeId))
+                return Conflict(new { message = $"A school exam for this term and '{examType.Name}' already exists. To register several {examType.Name} exams in a term, tick 'Allow several exams per term' on the exam type." });
             try
             {
                 var _item = _mapper.Map<SchoolExam>(model);
@@ -139,6 +148,18 @@ namespace SchoolWebApp.API.Controllers.CBE.Exams
             var existing = await _unitOfWork.SchoolExams.GetById(model.Id);
             if (existing == null)
                 return BadRequest($"The school exam of Id - '{model.Id}' does not exist hence cannot be updated.");
+
+            // Same rule as Create: moving an exam to another term or type must not
+            // leave two exams of a type that allows only one a term.
+            var examType = await _unitOfWork.ExamTypes.GetById(model.ExamTypeId);
+            if (examType == null)
+                return BadRequest(new { message = "The selected exam type no longer exists." });
+
+            if (!examType.AllowMultiplePerTerm
+                && await _unitOfWork.SchoolExams.ItemExistsAsync(s => s.SessionId == model.SessionId
+                    && s.ExamTypeId == model.ExamTypeId && s.Id != model.Id))
+                return Conflict(new { message = $"Another school exam for this term and '{examType.Name}' already exists." });
+
             try
             {
                 // Editing the schedule must not silently change release state;

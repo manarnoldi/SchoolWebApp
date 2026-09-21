@@ -115,7 +115,7 @@ export class DropdownManagementComponent implements OnInit {
                 {name: 'subjectGroups', label: 'Subject Groups', endpoint: '/subjectGroups', category: 'Academics',
                     fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'abbreviation', label: 'Abbreviation', type: 'text'}, {key: 'rank', label: 'Rank', type: 'number', required: true}, {key: 'description', label: 'Description', type: 'textarea'}]},
                 {name: 'examTypes', label: 'Exam Types', endpoint: '/examTypes', category: 'Academics',
-                    fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'abbreviation', label: 'Abbreviation', type: 'text', required: true}, {key: 'internal', label: 'Internal', type: 'boolean'}, {key: 'rank', label: 'Rank', type: 'number', required: true}, {key: 'description', label: 'Description', type: 'textarea'}]}
+                    fields: [{key: 'name', label: 'Name', type: 'text', required: true}, {key: 'abbreviation', label: 'Abbreviation', type: 'text', required: true}, {key: 'showOnReportForm', label: 'Show on report form', type: 'boolean'}, {key: 'allowMultiplePerTerm', label: 'Allow several exams per term', type: 'boolean'}, {key: 'rank', label: 'Rank', type: 'number', required: true}, {key: 'description', label: 'Description', type: 'textarea'}]}
             ],
             links: [
                 {label: 'Subjects', path: '/academics/subjects', icon: 'fas fa-book'},

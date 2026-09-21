@@ -7,7 +7,7 @@ namespace SchoolWebApp.Core.Interfaces.IRepositories.Academics
     {
         Task<List<Exam>> GetBySessionId(int sessionId);
         Task<List<Exam>> GetBySchoolClassId(int schoolClassId);
-        Task<List<Exam>> SearchForExam(int academicYearId, int curriculumId, int sessionId, 
-            int? schoolClassId, int? subjectId, int? examTypeId);
+        Task<List<Exam>> SearchForExam(int academicYearId, int curriculumId, int sessionId,
+            int? schoolClassId, int? subjectId, int? examTypeId, int? schoolExamId = null);
     }
 }
