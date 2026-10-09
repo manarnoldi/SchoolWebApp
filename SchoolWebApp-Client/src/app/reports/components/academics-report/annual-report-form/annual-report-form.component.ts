@@ -57,6 +57,7 @@ export class AnnualReportFormComponent implements OnInit {
     showPosition: boolean = false;
     showCoCurricular: boolean = true;
     cbeSectionDisplay: string = 'ratings';
+    showTermDates: boolean = true;
     rankingMethod: string = 'mean_points';
 
     // Class-wide data fetched once per Load: each term's exams and results,
@@ -133,6 +134,7 @@ export class AnnualReportFormComponent implements OnInit {
             if (s.settingKey === 'ShowPosition') this.showPosition = s.settingValue === 'true';
             if (s.settingKey === 'ShowCoCurricular') this.showCoCurricular = s.settingValue === 'true';
             if (s.settingKey === 'CbeSectionDisplay') this.cbeSectionDisplay = s.settingValue || 'ratings';
+            if (s.settingKey === 'ShowTermDates') this.showTermDates = s.settingValue !== 'false';
         });
     };
 
@@ -310,13 +312,20 @@ export class AnnualReportFormComponent implements OnInit {
                 let examReqs = pairs.map((p) =>
                     this.examSvc.get(`/exams/examSearch?${base}&sessionId=${this.sessions[p.sIdx].id}&schoolClassId=${this.filterSchoolClassId}&examTypeId=${p.et.id}`)
                 );
+                // "Next term begins on" is the first term of the following year.
+                let year = this.academicYears.find((y) => y.id == this.filterAcademicYearId);
+                let nextYear = this.academicYears.find((y) => y.rank == (year?.rank || 0) + 1);
+                let nextSessions$ = nextYear
+                    ? this.sessionsSvc.get(`/sessions/byCurriculumYearId?curriculumId=${this.filterCurriculumId}&academicYearId=${nextYear.id}`)
+                    : of([] as any[]);
                 return forkJoin([
                     examReqs.length ? forkJoin(examReqs) : of([] as any[]),
                     this.schoolSvc.get('/schooldetails'),
                     this.globalSettingSvc.getByModule('ReportForm'),
-                    this.schoolClassesSvc.get(`/schoolClassLeaders/bySchoolClassId/${this.filterSchoolClassId}`)
+                    this.schoolClassesSvc.get(`/schoolClassLeaders/bySchoolClassId/${this.filterSchoolClassId}`),
+                    nextSessions$
                 ]).pipe(
-                    switchMap(([examLists, schoolDetails, reportSettings, classLeaders]: any[]) => {
+                    switchMap(([examLists, schoolDetails, reportSettings, classLeaders, nextSessions]: any[]) => {
                         this.applyReportSettings(reportSettings);
                         // examsBySession[sIdx] = every report-form exam (all subjects) of that term.
                         let examsBySession: any[][] = this.sessions.map(() => []);
@@ -332,7 +341,8 @@ export class AnnualReportFormComponent implements OnInit {
                             this.shared = {
                                 examsBySession, resultsByExamId,
                                 schoolDetails: (schoolDetails as any[])?.[0],
-                                classTeacherText: this.buildClassTeacherText(classLeaders as any[])
+                                classTeacherText: this.buildClassTeacherText(classLeaders as any[]),
+                                nextTermStartDate: ((nextSessions as any[]) || []).sort((a, b) => a.rank - b.rank)[0]?.startDate
                             };
                             this.shared.ranking = this.computeClassRanking();
                             return this.shared;
@@ -450,6 +460,28 @@ export class AnnualReportFormComponent implements OnInit {
         return {stack: lines.map((l) => ({text: l, fontSize: 9, margin: [0, 0, 0, 1]}))};
     };
 
+    private signLayout = {
+        hLineWidth: () => 0.4, vLineWidth: () => 0.4,
+        hLineColor: () => '#ccc', vLineColor: () => '#ccc',
+        paddingLeft: () => 6, paddingRight: () => 6, paddingTop: () => 8, paddingBottom: () => 8
+    };
+
+    // A comments line with signature and date beneath, as on the term report form.
+    private commentBox = (commentLine: string, marginTop: number): any => ({
+        layout: {...this.signLayout, hLineWidth: (i) => (i === 0 || i === 2) ? 0.4 : 0},
+        table: {
+            widths: ['*'],
+            body: [
+                [{text: commentLine, fontSize: 9}],
+                [{text: 'Signature: ..............................................                                        Date: ..............................................', fontSize: 9}]
+            ]
+        },
+        marginTop
+    });
+
+    private formatDate = (d: any): string =>
+        d ? new Date(d).toLocaleDateString('en-GB') : '..............................';
+
     private ageOf = (dob: any): string => {
         if (!dob) return '';
         let birth = new Date(dob);
@@ -545,7 +577,8 @@ export class AnnualReportFormComponent implements OnInit {
                         hLineColor: () => '#aaa', vLineColor: () => '#aaa',
                         paddingLeft: () => 5, paddingRight: () => 5, paddingTop: () => 3, paddingBottom: () => 3
                     };
-                    let reportTitle = `${(year?.name || '').toUpperCase()} ANNUAL SUMMATIVE REPORT FOR ${(educationLevel?.name || '').toUpperCase()}`;
+                    let signLayout = this.signLayout;
+                    let reportTitle =`${(year?.name || '').toUpperCase()} ANNUAL SUMMATIVE REPORT FOR ${(educationLevel?.name || '').toUpperCase()}`;
 
                     const docDefinition: any = {
                         pageMargins: [25, 20, 25, 30],
@@ -612,21 +645,33 @@ export class AnnualReportFormComponent implements OnInit {
                                 table: {widths: [130, '*'], body: summaryRows},
                                 marginBottom: 6
                             },
-                            // Signatures
+                            // Signing section - same boxes as the term report form.
+                            this.commentBox("Class teacher's comments: .............................................................................................................................................", 5),
+                            this.commentBox("Head teacher's comments: ..............................................................................................................................................", 3),
                             {
-                                layout: {...boxLayout, paddingTop: () => 6, paddingBottom: () => 6},
+                                layout: signLayout,
                                 table: {
-                                    widths: ['*', '*', '*'],
-                                    body: [
-                                        [
-                                            {text: "Class Teacher's Signature:", fontSize: 9, bold: true, fillColor: '#e8f5e9'},
-                                            {text: "Head Teacher's Signature:", fontSize: 9, bold: true, fillColor: '#e8f5e9'},
-                                            {text: "Parent / Guardian's Signature:", fontSize: 9, bold: true, fillColor: '#e8f5e9'}
-                                        ],
-                                        [0, 1, 2].map(() => ({text: '\n\nDate: ..............................', fontSize: 9}))
-                                    ]
-                                }
+                                    widths: ['*'],
+                                    body: [[{text: "Parent/Guardian's signature: ..............................................                                        Date: ..............................................", fontSize: 9}]]
+                                },
+                                marginTop: 3
                             },
+                            // Term dates (toggle via the ShowTermDates setting): the year's
+                            // last term end and the first term of the following year.
+                            ...(this.showTermDates ? [{
+                                layout: 'noBorders',
+                                table: {
+                                    widths: ['auto', 'auto', '*', 'auto', 'auto'],
+                                    body: [[
+                                        {text: 'This term ends on:', fontSize: 9, bold: true},
+                                        {text: this.formatDate(this.sessions[this.sessions.length - 1]?.endDate), fontSize: 9, decoration: 'underline'},
+                                        {text: '', fontSize: 9},
+                                        {text: 'Next term begins on:', fontSize: 9, bold: true},
+                                        {text: this.formatDate(this.shared.nextTermStartDate), fontSize: 9, decoration: 'underline'}
+                                    ]]
+                                },
+                                marginTop: 5
+                            }] : []),
                             {
                                 text: `This is a system generated document. Printed on ${new Date().toLocaleString('en-GB')}`,
                                 fontSize: 8, color: '#999999', italics: true, alignment: 'center', marginTop: 8
