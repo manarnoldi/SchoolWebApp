@@ -30,6 +30,7 @@ import { MissingMarksPageComponent } from './components/pages/missing-marks-page
 import { ResultsAnalysisPageComponent } from './components/pages/results-analysis-page.component';
 import { ReportFormsPageComponent } from './components/pages/report-forms-page.component';
 import { ReportFormComponent } from './components/academics-report/report-form/report-form.component';
+import { AnnualReportFormComponent } from './components/academics-report/annual-report-form/annual-report-form.component';
 import { AssessmentReportComponent } from './components/academics-report/assessment-report/assessment-report.component';
 import { SubjectPerformanceComponent } from './components/academics-report/subject-performance/subject-performance.component';
 import { ClassPerformanceComponent } from './components/academics-report/class-performance/class-performance.component';
@@ -71,6 +72,7 @@ import { ExamResultsTabsComponent } from './components/academics-report/exam-res
         ResultsAnalysisPageComponent,
         ReportFormsPageComponent,
         ReportFormComponent,
+        AnnualReportFormComponent,
         AssessmentReportComponent,
         SubjectPerformanceComponent,
         ClassPerformanceComponent,

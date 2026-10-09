@@ -3,7 +3,8 @@ import {BreadCrumb} from '@/core/models/bread-crumb';
 
 /**
  * Combines the exam-output reports under one menu item as tabs: Exam Results
- * (broadsheet), Report Forms, Missing Marks, and progress across repeated
+ * (broadsheet), Report Forms, Annual Report Forms (all the year's terms on one
+ * form), Missing Marks, and progress across repeated
  * exams of one type (weekly marathons) by class and by learner.
  *
  * Each tab's component is heavy (large per-class data loads), so a tab is only
@@ -22,12 +23,12 @@ export class ExamResultsTabsComponent {
         {link: ['/reports/academics/exam-results'], title: 'Academics: Exam Results'}
     ];
 
-    activeNav: 'exam' | 'reportForm' | 'missing' | 'classProgress' | 'studentProgress' = 'exam';
+    activeNav: 'exam' | 'reportForm' | 'annualReportForm' | 'missing' | 'classProgress' | 'studentProgress' = 'exam';
     visited: {[k: string]: boolean} = {
-        exam: true, reportForm: false, missing: false, classProgress: false, studentProgress: false
+        exam: true, reportForm: false, annualReportForm: false, missing: false, classProgress: false, studentProgress: false
     };
 
-    setTab(tab: 'exam' | 'reportForm' | 'missing' | 'classProgress' | 'studentProgress') {
+    setTab(tab: 'exam' | 'reportForm' | 'annualReportForm' | 'missing' | 'classProgress' | 'studentProgress') {
         this.activeNav = tab;
         this.visited[tab] = true;
     }

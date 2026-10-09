@@ -1,0 +1,126 @@
+<!-- Header/breadcrumb come from the ExamResultsTabs host that embeds this. -->
+<div class="card card-outline card-info mb-1">
+    <div class="card-body p-1">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group mb-1">
+                    <label class="form-label">Curriculum: <span class="requiredField">*</span></label>
+                    <select class="form-select form-select-sm"
+                        [(ngModel)]="filterCurriculumId" (change)="onCurriculumChange()">
+                        <option [ngValue]="null" hidden disabled selected>Select curriculum</option>
+                        <option [ngValue]="c.id" *ngFor="let c of curricula">{{c.name}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group mb-1">
+                    <label class="form-label">Year: <span class="requiredField">*</span></label>
+                    <select class="form-select form-select-sm"
+                        [(ngModel)]="filterAcademicYearId" (change)="onAcademicYearChange()">
+                        <option [ngValue]="null" hidden disabled selected>Select year</option>
+                        <option [ngValue]="y.id" *ngFor="let y of academicYears">{{y.name}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group mb-1">
+                    <label class="form-label">Class: <span class="requiredField">*</span></label>
+                    <select class="form-select form-select-sm"
+                        [(ngModel)]="filterSchoolClassId" (change)="onClassChange()">
+                        <option [ngValue]="null" hidden disabled selected>Select class</option>
+                        <option [ngValue]="sc.id" *ngFor="let sc of schoolClasses">{{sc.name}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-1 d-flex align-items-end mb-1">
+                <button class="btn btn-sm btn-info" (click)="loadStudents()" [disabled]="isLoading">
+                    <i class="fas fa-users"></i> {{ isLoading ? '...' : 'Load' }}
+                </button>
+            </div>
+            <div class="col-md-3 d-flex align-items-end mb-1">
+                <small class="text-muted">
+                    <i class="fas fa-info-circle text-info me-1"></i>
+                    Each term is the average of that term's report-form exams; Overall is the average of the terms.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Generation progress, shown between the filters and the table. -->
+<div class="mb-1" *ngIf="isGenerating">
+    <div class="d-flex justify-content-between small text-muted mb-1">
+        <span><i class="fas fa-spinner fa-spin me-1"></i>Generating report {{ genCurrent }} of {{ genTotal }}...</span>
+        <span>{{ genTotal ? ((genCurrent / genTotal) * 100 | number:'1.0-0') : 0 }}%</span>
+    </div>
+    <div class="progress" style="height: 8px;">
+        <div class="progress-bar progress-bar-striped progress-bar-animated bg-info"
+            [style.width.%]="genTotal ? (genCurrent / genTotal) * 100 : 0"></div>
+    </div>
+</div>
+
+<div class="card" *ngIf="studentsLoaded">
+    <div class="card-header bg-success text-white p-1 d-flex justify-content-between align-items-center">
+        <strong>Students - {{ getSelectedCount() }} of {{ studentRows.length }} selected</strong>
+        <div class="btn-group btn-group-sm">
+            <button class="btn btn-warning btn-sm" (click)="printSelected('preview')"
+                [disabled]="getSelectedCount() === 0 || isGenerating">
+                <i class="fas fa-eye"></i> Preview ({{ getSelectedCount() }})
+            </button>
+            <button class="btn btn-danger btn-sm" (click)="printSelected('print')"
+                [disabled]="getSelectedCount() === 0 || isGenerating">
+                <i class="fas fa-print"></i> Print ({{ getSelectedCount() }})
+            </button>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-striped table-hover table-sm mb-0">
+            <thead>
+                <tr>
+                    <th>
+                        <div class="icheck-success">
+                            <input type="checkbox" id="annualSelectAll"
+                                [checked]="allSelected()"
+                                (change)="toggleSelectAll()" />
+                            <label for="annualSelectAll">#</label>
+                        </div>
+                    </th>
+                    <th>Adm No.</th>
+                    <th>Student Name</th>
+                    <th>Preview</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let row of studentRows | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i"
+                    [class.table-success]="row.selected">
+                    <td>
+                        <div class="icheck-success">
+                            <input type="checkbox" [id]="'annual_stu_' + row.studentId"
+                                [(ngModel)]="row.selected" />
+                            <label [for]="'annual_stu_' + row.studentId">{{ (page-1) * pageSize + i + 1 }}</label>
+                        </div>
+                    </td>
+                    <td>{{ row.upi }}</td>
+                    <td>{{ row.fullName }}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-info" (click)="previewStudent(row, 'preview')"
+                                [disabled]="isGenerating" title="Preview">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-danger" (click)="previewStudent(row, 'print')"
+                                [disabled]="isGenerating" title="Print">
+                                <i class="fas fa-print"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <app-table-paging *ngIf="studentRows.length > pageSize"
+            (pageChangedEvent)="pageChanged($event)"
+            (pageSizeChangedEvent)="pageSizeChanged($event)"
+            [collectionSize]="studentRows.length"
+            [pageSize]="pageSize"></app-table-paging>
+    </div>
+</div>
