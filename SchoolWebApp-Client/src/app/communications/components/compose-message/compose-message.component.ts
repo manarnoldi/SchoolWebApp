@@ -26,7 +26,8 @@ import {apiError} from '../communication-settings/communication-settings.compone
 /** Compose a custom message to a group of parents or staff, preview it, and queue it. */
 @Component({
     selector: 'app-compose-message',
-    templateUrl: './compose-message.component.html'
+    templateUrl: './compose-message.component.html',
+    styleUrls: ['./compose-message.component.scss']
 })
 export class ComposeMessageComponent implements OnInit {
     breadcrumbs: BreadCrumb[] = [

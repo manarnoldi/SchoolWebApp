@@ -1,0 +1,33 @@
+// The recipient pickers are ng-selects carrying Bootstrap's form-select /
+// form-select-sm, so they match the page's other dropdowns: the form-select
+// supplies the border, arrow, size and focus ring; ng-select's own container
+// border and arrow are hidden so they are not drawn twice.
+:host ::ng-deep .ng-select.form-select {
+    padding: 0.125rem 2rem 0.125rem 0.25rem;
+    min-height: calc(1.5em + 0.5rem + 2px);
+    height: auto;
+
+    .ng-select-container {
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+        min-height: 0;
+    }
+
+    .ng-arrow-wrapper {
+        display: none;
+    }
+
+    .ng-value-container {
+        padding-left: 0.25rem;
+    }
+
+    &.ng-select-multiple .ng-select-container .ng-value-container {
+        padding-top: 0;
+    }
+
+    &.ng-select-focused {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+}

@@ -27,37 +27,37 @@
                         <ng-container [ngSwitch]="msg.recipients.group">
                             <div *ngSwitchCase="RecipientGroup.ParentsOfClasses">
                                 <label class="form-label mb-0 small">Classes</label>
-                                <ng-select [items]="options.classes" bindLabel="name" bindValue="id" [multiple]="true"
+                                <ng-select class="form-select form-select-sm" [items]="options.classes" bindLabel="name" bindValue="id" [multiple]="true"
                                     [closeOnSelect]="false" placeholder="Choose classes" [(ngModel)]="msg.recipients.schoolClassIds" (change)="groupChanged()">
                                     <ng-template ng-option-tmp let-item="item">{{ item.name }} <small class="text-muted">({{ item.learners }} learners)</small></ng-template>
                                 </ng-select>
                             </div>
                             <div *ngSwitchCase="RecipientGroup.ParentsOfEducationLevels">
                                 <label class="form-label mb-0 small">Education levels</label>
-                                <ng-select [items]="options.levels" bindLabel="name" bindValue="id" [multiple]="true"
+                                <ng-select class="form-select form-select-sm" [items]="options.levels" bindLabel="name" bindValue="id" [multiple]="true"
                                     [closeOnSelect]="false" placeholder="Choose levels" [(ngModel)]="msg.recipients.educationLevelIds" (change)="groupChanged()"></ng-select>
                             </div>
                             <div *ngSwitchCase="RecipientGroup.ParentsOfStudents">
                                 <div class="row g-1">
                                     <div class="col-md-4">
                                         <label class="form-label mb-0 small">Filter by class</label>
-                                        <ng-select [items]="options.classes" bindLabel="name" bindValue="id" placeholder="All classes" [(ngModel)]="studentClassFilter"></ng-select>
+                                        <ng-select class="form-select form-select-sm" [items]="options.classes" bindLabel="name" bindValue="id" placeholder="All classes" [(ngModel)]="studentClassFilter"></ng-select>
                                     </div>
                                     <div class="col-md-8">
                                         <label class="form-label mb-0 small">Learners</label>
-                                        <ng-select [items]="studentsForPicker" bindLabel="label" bindValue="id" [multiple]="true"
+                                        <ng-select class="form-select form-select-sm" [items]="studentsForPicker" bindLabel="label" bindValue="id" [multiple]="true"
                                             [closeOnSelect]="false" placeholder="Search learners" [(ngModel)]="msg.recipients.studentIds" (change)="groupChanged()"></ng-select>
                                     </div>
                                 </div>
                             </div>
                             <div *ngSwitchCase="RecipientGroup.StaffByCategory">
                                 <label class="form-label mb-0 small">Staff categories</label>
-                                <ng-select [items]="options.categories" bindLabel="name" bindValue="id" [multiple]="true"
+                                <ng-select class="form-select form-select-sm" [items]="options.categories" bindLabel="name" bindValue="id" [multiple]="true"
                                     placeholder="e.g. Teaching" [(ngModel)]="msg.recipients.staffCategoryIds" (change)="groupChanged()"></ng-select>
                             </div>
                             <div *ngSwitchCase="RecipientGroup.SelectedStaff">
                                 <label class="form-label mb-0 small">Staff members</label>
-                                <ng-select [items]="options.staff" bindLabel="fullName" bindValue="id" [multiple]="true"
+                                <ng-select class="form-select form-select-sm" [items]="options.staff" bindLabel="fullName" bindValue="id" [multiple]="true"
                                     [closeOnSelect]="false" placeholder="Search staff" [(ngModel)]="msg.recipients.staffIds" (change)="groupChanged()">
                                     <ng-template ng-option-tmp let-item="item">{{ item.fullName }}
                                         <small class="text-danger" *ngIf="!item.hasPhone && !item.hasEmail">(no phone or email)</small></ng-template>
