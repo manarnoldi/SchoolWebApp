@@ -18,12 +18,15 @@ namespace SchoolWebApp.API.Services.Communications
         private readonly ApplicationDbContext _db;
         private readonly RecipientResolver _resolver;
         private readonly CommunicationService _communications;
+        private readonly ExamResultsCalculator _calculator;
 
-        public StandardMessageService(ApplicationDbContext db, RecipientResolver resolver, CommunicationService communications)
+        public StandardMessageService(ApplicationDbContext db, RecipientResolver resolver, CommunicationService communications,
+            ExamResultsCalculator calculator)
         {
             _db = db;
             _resolver = resolver;
             _communications = communications;
+            _calculator = calculator;
         }
 
         /// <summary>
@@ -82,6 +85,29 @@ namespace SchoolWebApp.API.Services.Communications
                         .SetProperty(e => e.ParentsNotifiedDate, DateTime.UtcNow), ct);
             }
             return queued;
+        }
+
+        /// <summary>
+        /// A school exam's results for all its classes, computed here as the
+        /// broadsheet would (see <see cref="ExamResultsCalculator"/>), in one send.
+        /// </summary>
+        public async Task<object> SchoolExamResultsAsync(SchoolExamResultsMessageDto dto, CancellationToken ct = default)
+        {
+            var computed = await _calculator.ComputeAsync(dto.SchoolExamId, dto.SchoolClassIds, ct)
+                ?? throw new CommunicationException("The school exam was not found.");
+            var withMarks = computed.Classes.Where(c => c.Results.Count > 0).ToList();
+            if (withMarks.Count == 0)
+                throw new CommunicationException("No learner has marks in this exam yet, so there are no results to send.");
+
+            return await ExamResultsAsync(new ExamResultsMessageDto
+            {
+                Preview = dto.Preview,
+                SchoolExamId = dto.SchoolExamId,
+                ExamName = computed.ExamName,
+                TermName = computed.TermName,
+                ClassName = withMarks.Count == 1 ? withMarks[0].ClassName : $"{withMarks.Count} classes",
+                Results = withMarks.SelectMany(c => c.Results).ToList()
+            }, ct);
         }
 
         public async Task<object> InvoicesAsync(InvoiceMessageDto dto, CancellationToken ct = default)

@@ -109,8 +109,16 @@
                                 Released
                             </span>
                             <span *ngIf="!item.isReleased" class="badge bg-secondary">Draft</span>
+                            <span *ngIf="item.parentsNotified" class="badge bg-info ms-1"
+                                [title]="'Results sent to parents on ' + (item.parentsNotifiedDate | date:'medium')">
+                                <i class="fas fa-paper-plane"></i> Parents notified
+                            </span>
                         </td>
                         <td class="text-end" style="white-space:nowrap;">
+                            <button *ngIf="item.isReleased" class="btn btn-outline-success btn-sm me-1" (click)="sendResults(item)"
+                                [title]="item.parentsNotified ? 'Send the results to parents again' : 'Send the results to parents'">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
                             <button class="btn btn-sm me-1"
                                 [ngClass]="item.isReleased ? 'btn-outline-warning' : 'btn-success'"
                                 (click)="toggleRelease(item)"

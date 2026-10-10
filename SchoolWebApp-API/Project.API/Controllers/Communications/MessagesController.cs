@@ -98,6 +98,10 @@ namespace SchoolWebApp.API.Controllers.Communications
         [Authorize(Roles = SenderRoles)]
         public Task<IActionResult> ExamResults(ExamResultsMessageDto model) => Standard(() => _standard.ExamResultsAsync(model));
 
+        [HttpPost("schoolExamResults")]
+        [Authorize(Roles = SenderRoles)]
+        public Task<IActionResult> SchoolExamResults(SchoolExamResultsMessageDto model) => Standard(() => _standard.SchoolExamResultsAsync(model));
+
         [HttpPost("feeInvoices")]
         [Authorize(Roles = SenderRoles)]
         public Task<IActionResult> FeeInvoices(InvoiceMessageDto model) => Standard(() => _standard.InvoicesAsync(model));

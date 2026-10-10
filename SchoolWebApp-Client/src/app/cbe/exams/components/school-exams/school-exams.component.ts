@@ -9,6 +9,7 @@ import {ExamTypeService} from '../../services/exam-type.service';
 import {CurriculumService} from '@/academics/services/curriculum.service';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {SessionsService} from '@/class/services/sessions.service';
+import {StandardMessageSender} from '@/communications/services/standard-message-sender.service';
 
 /**
  * Manage the exam "event" headers (SchoolExam): create / edit the type, term
@@ -64,7 +65,8 @@ export class SchoolExamsComponent implements OnInit {
         private examTypeSvc: ExamTypeService,
         private curriculaSvc: CurriculumService,
         private academicYearSvc: AcademicYearsService,
-        private sessionsSvc: SessionsService
+        private sessionsSvc: SessionsService,
+        private messageSender: StandardMessageSender
     ) {}
 
     parseInt = parseInt;
@@ -225,24 +227,39 @@ export class SchoolExamsComponent implements OnInit {
         Swal.fire({
             title: releasing ? 'Release this exam?' : 'Revert release?',
             text: releasing
-                ? 'Released results become visible on the dashboard summary and will be sent to parents (once notifications are enabled).'
-                : 'Reverting will hide the results from the dashboard summary again.',
+                ? 'Released results become visible on the dashboard summary.'
+                : 'Reverting will hide the results from the dashboard summary again. Results already sent to parents are not recalled.',
             width: 460, position: 'top', padding: '1em', icon: 'question',
+            // Releasing can send each learner's results to their parents straight
+            // away (the Exam Results message type, on its chosen channel).
+            ...(releasing ? {
+                input: 'checkbox' as const,
+                inputValue: 0,
+                inputPlaceholder: 'Send the results to parents now'
+            } : {}),
             showCancelButton: true,
             confirmButtonText: releasing ? 'Release' : 'Revert',
             cancelButtonText: 'Cancel'
         }).then((result) => {
-            if (!result.value) return;
+            if (!result.isConfirmed) return;
+            let notify = releasing && !!result.value;
             this.schoolExamSvc.release(parseInt(item.id), releasing).subscribe({
                 next: (updated) => {
                     item.isReleased = updated.isReleased;
                     item.releasedBy = updated.releasedBy;
                     item.releasedDate = updated.releasedDate;
                     this.toastr.success(releasing ? 'Exam released.' : 'Release reverted.');
+                    if (notify) this.messageSender.sendNow('schoolExamResults', {schoolExamId: parseInt(item.id)});
                 },
                 error: (err) => this.toastr.error(err.error?.message || err.error || 'Error updating release state.')
             });
         });
+    };
+
+    // Send (or send again) a released exam's results to parents - every class
+    // that sat it - after a preview of what will go out.
+    sendResults = (item: any) => {
+        this.messageSender.send('schoolExamResults', {schoolExamId: parseInt(item.id)});
     };
 
     // ---- Delete ---------------------------------------------------------------

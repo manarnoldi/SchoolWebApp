@@ -279,3 +279,18 @@ namespace SchoolWebApp.Core.DTOs.Communications
         public List<int> PaymentIds { get; set; } = new();
     }
 }
+
+namespace SchoolWebApp.Core.DTOs.Communications
+{
+    /// <summary>
+    /// A school exam's results for every class sitting it (or the classes given),
+    /// worked out on the server - used when the exam is released and from the
+    /// School Exams list afterwards.
+    /// </summary>
+    public class SchoolExamResultsMessageDto
+    {
+        public bool Preview { get; set; }
+        public int SchoolExamId { get; set; }
+        public List<int> SchoolClassIds { get; set; } = new();
+    }
+}

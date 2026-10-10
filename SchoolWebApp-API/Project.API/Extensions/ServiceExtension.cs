@@ -209,6 +209,7 @@ namespace Project.API.Extensions
             services.AddScoped<SmtpEmailGateway>();
             services.AddScoped<RecipientResolver>();
             services.AddScoped<CommunicationService>();
+            services.AddScoped<ExamResultsCalculator>();
             services.AddScoped<StandardMessageService>();
             services.AddSingleton<MessageDispatchSignal>();
             services.AddHostedService<MessageDispatchWorker>();

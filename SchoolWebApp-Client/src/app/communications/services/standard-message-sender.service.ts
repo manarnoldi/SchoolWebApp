@@ -6,10 +6,11 @@ import Swal from 'sweetalert2';
 import {ComposePreview, QueueResult} from '../models/communication-models';
 import {escapeHtml} from '@/shared/utils/print-frame';
 
-export type StandardMessageKind = 'examResults' | 'feeInvoices' | 'feeBalances' | 'feePayments';
+export type StandardMessageKind = 'examResults' | 'schoolExamResults' | 'feeInvoices' | 'feeBalances' | 'feePayments';
 
 const KIND_LABELS: {[k in StandardMessageKind]: string} = {
     examResults: 'exam results',
+    schoolExamResults: 'exam results',
     feeInvoices: 'invoice',
     feeBalances: 'fee balance reminder',
     feePayments: 'payment acknowledgement'
@@ -31,6 +32,25 @@ export class StandardMessageSender {
             next: (p) => this.confirm(kind, body, p),
             error: (err) => this.toastr.error(this.error(err))
         });
+    }
+
+    /**
+     * Queues straight away, without the preview - for a send the user has
+     * already asked for, such as the "send results to parents" tick when an
+     * exam is released. Reports the outcome as a toast.
+     */
+    sendNow(kind: StandardMessageKind, body: any): void {
+        this.http.post<QueueResult>(`/messages/${kind}`, {...body, preview: false}).subscribe({
+            next: (q) => this.queued(q),
+            error: (err) => this.toastr.error(this.error(err), 'Results not sent')
+        });
+    }
+
+    private queued(q: QueueResult) {
+        let skipped = q.skipped ? ` ${q.skipped} without a parent contact skipped.` : '';
+        let t = this.toastr.success(
+            `${q.queued} message(s) queued${q.testMode ? ' (test mode)' : ''}.${skipped} Click to open the message queue.`);
+        t.onTap.subscribe(() => this.router.navigate(['/communications/queue'], {queryParams: {batchId: q.batchId}}));
     }
 
     private confirm(kind: StandardMessageKind, body: any, p: ComposePreview) {
@@ -64,11 +84,7 @@ export class StandardMessageSender {
         }).then((r) => {
             if (!r.isConfirmed) return;
             this.http.post<QueueResult>(`/messages/${kind}`, {...body, preview: false}).subscribe({
-                next: (q) => {
-                    let t = this.toastr.success(
-                        `${q.queued} message(s) queued${q.testMode ? ' (test mode)' : ''}. Click to open the message queue.`);
-                    t.onTap.subscribe(() => this.router.navigate(['/communications/queue'], {queryParams: {batchId: q.batchId}}));
-                },
+                next: (q) => this.queued(q),
                 error: (err) => this.toastr.error(this.error(err))
             });
         });
