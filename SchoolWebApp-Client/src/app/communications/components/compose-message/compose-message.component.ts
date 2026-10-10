@@ -80,7 +80,7 @@ export class ComposeMessageComponent implements OnInit {
     ngOnInit(): void {
         this.settingsSvc.status().subscribe({next: (s) => this.status = s});
         this.messageSvc.recipientOptions().subscribe({
-            next: (o) => this.options = o,
+            next: (o) => { this.options = o; this.buildStudentPicker(); },
             error: (err) => this.toastr.error(apiError(err, 'Could not load classes and staff.'))
         });
         this.templateSvc.getAll().subscribe({
@@ -107,10 +107,15 @@ export class ComposeMessageComponent implements OnInit {
     get usesEmail() { return this.msg.channel === MessageChannel.Email || this.msg.channel === MessageChannel.Both; }
     get sms() { return smsInfo(this.msg.smsBody); }
 
-    get studentsForPicker() {
+    // Built once per class-filter change, not in a getter: a fresh array on every
+    // change detection made ng-select reset its items mid-click, so a clicked
+    // learner was never selected.
+    studentsForPicker: {id: number; fullName: string; admissionNo: string; schoolClassId: number; label: string}[] = [];
+
+    buildStudentPicker() {
         let list = this.options.students;
         if (this.studentClassFilter) list = list.filter((s) => s.schoolClassId === this.studentClassFilter);
-        return list.map((s) => ({...s, label: `${s.fullName} (${s.admissionNo})`}));
+        this.studentsForPicker = list.map((s) => ({...s, label: `${s.fullName} (${s.admissionNo})`}));
     }
 
     get channelWarning(): string | null {
@@ -219,5 +224,6 @@ export class ComposeMessageComponent implements OnInit {
         this.msg = this.blank();
         this.preview = null;
         this.studentClassFilter = null;
+        this.buildStudentPicker();
     }
 }

@@ -41,7 +41,7 @@
                                 <div class="row g-1">
                                     <div class="col-md-4">
                                         <label class="form-label mb-0 small">Filter by class</label>
-                                        <ng-select class="form-select form-select-sm" [items]="options.classes" bindLabel="name" bindValue="id" placeholder="All classes" [(ngModel)]="studentClassFilter"></ng-select>
+                                        <ng-select class="form-select form-select-sm" [items]="options.classes" bindLabel="name" bindValue="id" placeholder="All classes" [(ngModel)]="studentClassFilter" (change)="buildStudentPicker()"></ng-select>
                                     </div>
                                     <div class="col-md-8">
                                         <label class="form-label mb-0 small">Learners</label>
