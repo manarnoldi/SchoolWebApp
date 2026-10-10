@@ -219,3 +219,63 @@ namespace SchoolWebApp.Core.DTOs.Communications
         public List<OutboundMessageDto> Details { get; set; } = new();
     }
 }
+
+namespace SchoolWebApp.Core.DTOs.Communications
+{
+    // Standard messages: each request previews (Preview = true) or queues the
+    // message type's template for the learners given.
+
+    public class SubjectScoreDto
+    {
+        public required string Subject { get; set; }
+        public string? SubjectName { get; set; }
+        public string? Score { get; set; }
+        public string? Grade { get; set; }
+    }
+
+    /// <summary>
+    /// One learner's results as the broadsheet computed them - with the school's
+    /// grading, ranking and mean-basis settings - so the message matches the
+    /// printed broadsheet.
+    /// </summary>
+    public class StudentResultDto
+    {
+        public int StudentId { get; set; }
+        public List<SubjectScoreDto> Subjects { get; set; } = new();
+        public string? TotalMarks { get; set; }
+        public string? MeanScore { get; set; }
+        public string? MeanGrade { get; set; }
+        public int? Position { get; set; }
+        public int? ClassSize { get; set; }
+    }
+
+    public class ExamResultsMessageDto
+    {
+        public bool Preview { get; set; }
+        public int? SchoolExamId { get; set; }
+        public required string ExamName { get; set; }
+        public string? TermName { get; set; }
+        public string? ClassName { get; set; }
+        public List<StudentResultDto> Results { get; set; } = new();
+    }
+
+    public class InvoiceMessageDto
+    {
+        public bool Preview { get; set; }
+        public List<int> InvoiceIds { get; set; } = new();
+    }
+
+    public class FeeBalanceMessageDto
+    {
+        public bool Preview { get; set; }
+        public List<int> StudentIds { get; set; } = new();
+        /// <summary>Only learners owing more than this are reminded.</summary>
+        public decimal MinBalance { get; set; }
+    }
+
+    public class PaymentMessageDto
+    {
+        public bool Preview { get; set; }
+        public List<int> PaymentIds { get; set; } = new();
+    }
+}

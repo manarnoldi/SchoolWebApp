@@ -13,6 +13,7 @@ import {LearningLevelsService} from '@/class/services/learning-levels.service';
 import {StudentClassService} from '@/students/services/student-class.service';
 import {Status} from '@/core/enums/status';
 import {formatDate} from '@angular/common';
+import {StandardMessageSender} from '@/communications/services/standard-message-sender.service';
 
 @Component({
     selector: 'app-finance-invoices',
@@ -77,7 +78,8 @@ export class FinanceInvoicesComponent implements OnInit {
         private llSvc: LearningLevelsService,
         private schoolClassesSvc: SchoolClassesService,
         private studentClassSvc: StudentClassService,
-        private sponsorshipSvc: SponsorshipService
+        private sponsorshipSvc: SponsorshipService,
+        private messageSender: StandardMessageSender
     ) {}
 
     ngOnInit(): void {
@@ -240,6 +242,18 @@ export class FinanceInvoicesComponent implements OnInit {
             error: () => {}
         });
     };
+
+    // Send invoices to parents by the Fee Invoice message type's channel. The
+    // header button sends every invoice the filters show; cancelled ones are skipped.
+    sendInvoice(inv: StudentInvoice) {
+        this.messageSender.send('feeInvoices', {invoiceIds: [inv.id]});
+    }
+
+    sendFiltered() {
+        let ids = this.filtered().filter((i) => i.status !== InvoiceStatus.Cancelled).map((i) => i.id);
+        if (!ids.length) { this.toastr.info('No invoices to send.'); return; }
+        this.messageSender.send('feeInvoices', {invoiceIds: ids});
+    }
 
     runBulk() {
         if (!this.bulkFeeStructureId || !this.bulkClassId || !this.bulkInvoiceDate) {

@@ -73,6 +73,9 @@
                     <button class="btn btn-secondary" (click)="printBroadsheet('mgp')" [title]="'Print Combined Broadsheet (' + combinedColsLabel + ')'" [disabled]="!loaded">
                         <i class="fas fa-print"></i> {{ combinedColsLabel }}
                     </button>
+                    <button class="btn btn-success" (click)="sendResults()" title="Send each learner's results to their parents" [disabled]="!loaded">
+                        <i class="fas fa-paper-plane"></i> Send
+                    </button>
                 </div>
             </div>
         </div>

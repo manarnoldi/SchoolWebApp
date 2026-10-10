@@ -23,11 +23,14 @@ namespace SchoolWebApp.API.Controllers.Communications
         private readonly CommunicationService _communications;
         private readonly RecipientResolver _resolver;
         private readonly MessageDispatchSignal _signal;
+        private readonly StandardMessageService _standard;
 
         public MessagesController(ILogger<MessagesController> logger, ApplicationDbContext db,
-            CommunicationService communications, RecipientResolver resolver, MessageDispatchSignal signal)
+            CommunicationService communications, RecipientResolver resolver, MessageDispatchSignal signal,
+            StandardMessageService standard)
         {
             _logger = logger; _db = db; _communications = communications; _resolver = resolver; _signal = signal;
+            _standard = standard;
         }
 
         /// <summary>Everything the compose screen's recipient pickers need, in one call.</summary>
@@ -85,6 +88,31 @@ namespace SchoolWebApp.API.Controllers.Communications
                 var spec = await _communications.CustomSpecAsync(model);
                 return Ok(await _communications.QueueAsync(spec, targets));
             }
+            catch (CommunicationException ex) { return BadRequest(ex.Message); }
+        }
+
+        // Standard messages. Each takes Preview = true to return what would go out
+        // (counts, the first rendered message, recipients) without queueing.
+
+        [HttpPost("examResults")]
+        [Authorize(Roles = SenderRoles)]
+        public Task<IActionResult> ExamResults(ExamResultsMessageDto model) => Standard(() => _standard.ExamResultsAsync(model));
+
+        [HttpPost("feeInvoices")]
+        [Authorize(Roles = SenderRoles)]
+        public Task<IActionResult> FeeInvoices(InvoiceMessageDto model) => Standard(() => _standard.InvoicesAsync(model));
+
+        [HttpPost("feeBalances")]
+        [Authorize(Roles = SenderRoles)]
+        public Task<IActionResult> FeeBalances(FeeBalanceMessageDto model) => Standard(() => _standard.FeeBalancesAsync(model));
+
+        [HttpPost("feePayments")]
+        [Authorize(Roles = SenderRoles)]
+        public Task<IActionResult> FeePayments(PaymentMessageDto model) => Standard(() => _standard.PaymentsAsync(model));
+
+        private async Task<IActionResult> Standard(Func<Task<object>> run)
+        {
+            try { return Ok(await run()); }
             catch (CommunicationException ex) { return BadRequest(ex.Message); }
         }
 

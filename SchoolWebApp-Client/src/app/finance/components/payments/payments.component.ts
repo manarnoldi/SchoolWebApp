@@ -14,6 +14,7 @@ import {SchoolClassesService} from '@/class/services/school-classes.service';
 import {StudentClassService} from '@/students/services/student-class.service';
 import {Status} from '@/core/enums/status';
 import {formatDate} from '@angular/common';
+import {StandardMessageSender} from '@/communications/services/standard-message-sender.service';
 import {AuthService} from '@/core/services/auth.service';
 import {ViewChild} from '@angular/core';
 import {ApprovalWebpartComponent} from '@/approvals/components/approval-webpart/approval-webpart.component';
@@ -100,7 +101,8 @@ export class PaymentsComponent implements OnInit {
         private studentClassSvc: StudentClassService,
         private authSvc: AuthService,
         private approvalSvc: ApprovalService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private messageSender: StandardMessageSender
     ) {
         let cu = this.authSvc.getCurrentUser();
         this.currentUserId = cu?.id || null;
@@ -544,6 +546,11 @@ export class PaymentsComponent implements OnInit {
         if (t == 2) return 'bg-danger';
         return 'bg-success';
     };
+
+    // Thanks the parents for an approved receipt (the Fee Payment message type).
+    sendAcknowledgement(p: any) {
+        this.messageSender.send('feePayments', {paymentIds: [p.id]});
+    }
 
     getApprovalStatusLabel = (s: any): string => {
         let labels: any = {0: 'Draft', 1: 'Submitted', 2: 'Approved', 3: 'Rejected'};

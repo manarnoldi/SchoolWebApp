@@ -379,6 +379,7 @@
                             <td><span class="badge bg-secondary">{{ getMethodLabel(p.paymentMethod) }}</span></td>
                             <td>
                                 <button class="btn btn-outline-info btn-sm" (click)="viewPayment(p)" title="View"><i class="fas fa-eye"></i></button>
+                                <button class="btn btn-outline-success btn-sm ms-1" (click)="sendAcknowledgement(p)" title="Send payment acknowledgement to parents" *ngIf="p.paymentType == 0 && (p.approvalStatus == null || p.approvalStatus == 2)"><i class="fas fa-paper-plane"></i></button>
                                 <!-- Receipt: raise credit/debit note -->
                                 <button class="btn btn-outline-warning btn-sm ms-1" (click)="openCreditNote(p)" title="Credit Note" *ngIf="p.paymentType == 0"><i class="fas fa-minus-circle"></i></button>
                                 <button class="btn btn-outline-danger btn-sm ms-1" (click)="openDebitNote(p)" title="Debit Note" *ngIf="p.paymentType == 0"><i class="fas fa-plus-circle"></i></button>

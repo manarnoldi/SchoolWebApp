@@ -18,6 +18,7 @@ import {StudentSubjectsService} from '@/students/services/student-subjects.servi
 import {AuthService} from '@/core/services/auth.service';
 import {ReportsService} from '@/reports/services/reports.service';
 import {Status} from '@/core/enums/status';
+import {StandardMessageSender} from '@/communications/services/standard-message-sender.service';
 
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -57,6 +58,8 @@ export class BroadsheetComponent implements OnInit {
     schoolExams: any[] = [];
 
     subjects: string[] = [];
+    // Subject display key (abbreviation) to full name, for results emails.
+    subjectNames = new Map<string, string>();
     broadsheetRows: {
         rank: number;
         upi: string;
@@ -94,7 +97,8 @@ export class BroadsheetComponent implements OnInit {
         private studentSubjectsSvc: StudentSubjectsService,
         private schoolSvc: SchoolDetailsService,
         private userSvc: AuthService,
-        private reportSvc: ReportsService
+        private reportSvc: ReportsService,
+        private messageSender: StandardMessageSender
     ) {}
 
     ngOnInit(): void {
@@ -287,6 +291,7 @@ export class BroadsheetComponent implements OnInit {
                     let key = e.subject?.abbr || e.subject?.name;
                     if (!key) return;
                     if (!subjectMap.has(key)) subjectMap.set(key, e.subject?.rank || 0);
+                    if (!this.subjectNames.has(key)) this.subjectNames.set(key, e.subject?.name || key);
                     if (!subjectIdByKey.has(key)) subjectIdByKey.set(key, +e.subjectId);
                     if (!examMarkByKey.has(key)) examMarkByKey.set(key, e.examMark || 0);
                 });
@@ -368,7 +373,7 @@ export class BroadsheetComponent implements OnInit {
                             let meanGrade = this.getGradeForPoints(meanPoints);
                             let totalPointsOutOf = denomCount * maxGradePoints;
                             return {
-                                rank: 0, upi: student.upi || '', fullName: student.fullName || '',
+                                rank: 0, studentId: +student.id, hasMarks: count > 0, upi: student.upi || '', fullName: student.fullName || '',
                                 scores, total: Math.round(total * 10) / 10, totalOutOf: outOf, totalPoints, totalPointsOutOf, average, meanPoints, averageGrade: meanGrade
                             };
                         });
@@ -396,6 +401,39 @@ export class BroadsheetComponent implements OnInit {
                 });
             },
             error: (err) => { this.isLoading = false; this.toastr.error(err.error); }
+        });
+    };
+
+    // Sends each learner's results, as this broadsheet computed them (the school's
+    // grading, ranking and mean-basis settings), to their parents. Learners with
+    // no marks in this exam are left out, and are not counted in the class size.
+    sendResults = () => {
+        let marked = this.broadsheetRows.filter((r: any) => r.hasMarks);
+        if (!marked.length) { this.toastr.info('No learner has marks in this exam.'); return; }
+        let se = this.schoolExams.find((s) => s.id == this.filterSchoolExamId);
+        let examName = se
+            ? `${se.examType?.name || this.getFilterName('examType')}${se.description ? ' - ' + se.description : ''}`
+            : this.getFilterName('examType');
+        let term = [this.getFilterName('session'), this.getFilterName('year')].filter((x) => !!x).join(' ');
+        this.messageSender.send('examResults', {
+            schoolExamId: this.filterSchoolExamId || null,
+            examName,
+            termName: term,
+            className: this.getFilterName('class'),
+            results: marked.map((r: any) => ({
+                studentId: r.studentId,
+                subjects: this.subjects.map((s) => ({
+                    subject: s,
+                    subjectName: this.subjectNames.get(s) || s,
+                    score: r.scores[s]?.score != null ? String(r.scores[s].score) : '',
+                    grade: r.scores[s]?.grade || ''
+                })),
+                totalMarks: `${r.total}/${r.totalOutOf}`,
+                meanScore: String(r.average),
+                meanGrade: r.averageGrade || '',
+                position: r.rank,
+                classSize: marked.length
+            }))
         });
     };
 

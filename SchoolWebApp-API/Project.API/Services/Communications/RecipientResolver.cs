@@ -19,6 +19,12 @@ namespace SchoolWebApp.API.Services.Communications
         public string? Phone { get; set; }
         public string? Email { get; set; }
         public Dictionary<string, string?> Values { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Values that read differently in an email - a results list one subject
+        /// per line instead of the SMS's compact "MAT 78, ENG 65".
+        /// </summary>
+        public Dictionary<string, string?> EmailValues { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     }
 
     public class StudentInfo

@@ -1,3 +1,4 @@
+import {StandardMessageSender} from '@/communications/services/standard-message-sender.service';
 import {Component, OnInit} from '@angular/core';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
@@ -126,7 +127,8 @@ export class FinanceReportsComponent implements OnInit {
         private sessionSvc: SessionsService,
         private classSvc: SchoolClassesService,
         private studentClassSvc: StudentClassService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private messageSender: StandardMessageSender
     ) {}
 
     ngOnInit(): void {
@@ -339,6 +341,20 @@ export class FinanceReportsComponent implements OnInit {
             : [];
         let activeSession = this.outstandingSessions.find((s: any) => s.status === true);
         this.outstandingSessionId = activeSession ? activeSession.id : null;
+    }
+
+    // Fee balance reminders to the parents of the learners listed. The message
+    // states each learner's whole outstanding balance (all invoices), whatever
+    // year or session the report is filtered to.
+    remindOutstanding() {
+        this.messageSender.send('feeBalances', {studentIds: this.outstanding.map((r) => r.studentId)});
+    }
+
+    remindFeeBalances(cls?: any) {
+        let classes = cls ? [cls] : (this.feeBalancesReport?.classes || []);
+        let ids = classes.flatMap((c: any) => (c.students || []).map((s: any) => s.studentId));
+        if (!ids.length) { this.toastr.info('No learners with a balance.'); return; }
+        this.messageSender.send('feeBalances', {studentIds: ids});
     }
 
     loadOutstanding() {

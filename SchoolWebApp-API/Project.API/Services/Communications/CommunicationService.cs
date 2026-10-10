@@ -147,6 +147,8 @@ namespace SchoolWebApp.API.Services.Communications
         {
             var values = new Dictionary<string, string?>(school, StringComparer.OrdinalIgnoreCase);
             foreach (var kv in p.Target.Values) values[kv.Key] = kv.Value;
+            if (p.Channel == MessageChannel.Email)
+                foreach (var kv in p.Target.EmailValues) values[kv.Key] = kv.Value;
             if (p.Merged.Count > 1)
             {
                 // One message for several learners: list them all.

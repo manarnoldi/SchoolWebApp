@@ -275,6 +275,8 @@
                 <button class="btn btn-sm btn-outline-secondary" (click)="clearFilters()" title="Clear"><i class="fas fa-times"></i></button>
             </div>
             <div class="col text-end">
+                <button class="btn btn-sm btn-outline-primary me-1" (click)="sendFiltered()" [disabled]="filtered().length === 0"
+                    title="Send the invoices listed below to the learners' parents"><i class="fas fa-paper-plane"></i> Send to parents</button>
                 <button class="btn btn-sm btn-success" (click)="showBulk=true"><i class="fas fa-bolt"></i> Bulk Generate</button>
             </div>
         </div>
@@ -321,6 +323,7 @@
                             <td><span class="badge" [ngClass]="statusBadge(inv.status)">{{ statusLabel(inv.status) }}</span></td>
                             <td>
                                 <button class="btn btn-outline-primary btn-sm" (click)="editItems(inv)" title="Edit items"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-outline-success btn-sm ms-1" *ngIf="inv.status !== 4" (click)="sendInvoice(inv)" title="Send to parents"><i class="fas fa-paper-plane"></i></button>
                                 <button class="btn btn-outline-danger btn-sm ms-1" (click)="delete(inv)" title="Delete"><i class="fas fa-trash"></i></button>
                             </td>
                         </tr>

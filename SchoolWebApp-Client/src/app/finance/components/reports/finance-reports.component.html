@@ -268,7 +268,11 @@
                 </div>
                 <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadOutstanding()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
                 <div class="col-auto"><button class="btn btn-sm btn-outline-secondary" (click)="clearOutstandingFilters()" title="Clear"><i class="fas fa-times"></i></button></div>
-                <div class="col text-end" *ngIf="outstanding.length > 0"><button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button></div>
+                <div class="col text-end" *ngIf="outstanding.length > 0">
+                    <button class="btn btn-sm btn-outline-success me-1" (click)="remindOutstanding()"
+                        title="Send a fee balance reminder to the parents of every learner listed. The message states each learner's total outstanding balance."><i class="fas fa-paper-plane"></i> Send reminders</button>
+                    <button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button>
+                </div>
             </div>
             <div class="card card-outline card-primary" *ngIf="outstanding.length > 0">
                 <div class="card-header py-1 bg-info text-white d-flex justify-content-between">
@@ -370,7 +374,11 @@
                 </div>
                 <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadFeeBalancesByClass()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
                 <div class="col-auto"><button class="btn btn-sm btn-outline-secondary" (click)="clearFeeBalanceFilters()" title="Clear"><i class="fas fa-times"></i></button></div>
-                <div class="col text-end" *ngIf="feeBalancesReport"><button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button></div>
+                <div class="col text-end" *ngIf="feeBalancesReport">
+                    <button class="btn btn-sm btn-outline-success me-1" (click)="remindFeeBalances()" *ngIf="feeBalancesReport.totalClasses > 0"
+                        title="Send a fee balance reminder to the parents of every learner in the report. The message states each learner's total outstanding balance."><i class="fas fa-paper-plane"></i> Send reminders</button>
+                    <button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button>
+                </div>
             </div>
 
             <div *ngIf="feeBalancesReport">
@@ -391,7 +399,11 @@
                     <div class="card card-outline card-primary mb-3">
                         <div class="card-header py-1 bg-info text-white d-flex justify-content-between">
                             <strong><i class="fas fa-users me-1"></i> {{ cls.className }}</strong>
-                            <span class="badge bg-light text-dark">{{ cls.studentCount }} student(s) | Balance: {{ cls.totalBalance | number:'1.2-2' }}</span>
+                            <span>
+                                <span class="badge bg-light text-dark">{{ cls.studentCount }} student(s) | Balance: {{ cls.totalBalance | number:'1.2-2' }}</span>
+                                <button class="btn btn-xs btn-light py-0 px-1 ms-1 d-print-none" style="font-size: 0.75rem;" (click)="remindFeeBalances(cls)"
+                                    title="Send fee balance reminders to this class's parents"><i class="fas fa-paper-plane"></i> Remind</button>
+                            </span>
                         </div>
                         <div class="card-body p-0">
                             <table class="table table-striped table-sm mb-0">
