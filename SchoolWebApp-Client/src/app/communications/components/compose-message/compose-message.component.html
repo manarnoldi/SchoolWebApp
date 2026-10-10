@@ -1,0 +1,188 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+
+        <div class="alert alert-warning py-1 mb-2" *ngIf="status?.testMode">
+            <i class="fas fa-flask me-1"></i> <strong>Test mode is on</strong> - messages are recorded but do not reach real recipients.
+        </div>
+
+        <div class="row g-2">
+            <!-- Left: recipients and message -->
+            <div class="col-lg-7">
+                <div class="card card-outline card-primary mb-2">
+                    <div class="card-header py-1 bg-primary text-white"><strong><i class="fas fa-users me-1"></i> 1. Recipients</strong></div>
+                    <div class="card-body p-2">
+                        <div class="row g-1 mb-2">
+                            <div class="col-6 col-md-3" *ngFor="let g of groups">
+                                <button class="btn btn-sm w-100 text-start h-100"
+                                    [class.btn-primary]="msg.recipients.group === g.value"
+                                    [class.btn-outline-secondary]="msg.recipients.group !== g.value"
+                                    (click)="msg.recipients.group = g.value; groupChanged()">
+                                    <i [class]="g.icon"></i> {{ g.label }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <ng-container [ngSwitch]="msg.recipients.group">
+                            <div *ngSwitchCase="RecipientGroup.ParentsOfClasses">
+                                <label class="form-label mb-0 small">Classes</label>
+                                <ng-select [items]="options.classes" bindLabel="name" bindValue="id" [multiple]="true"
+                                    [closeOnSelect]="false" placeholder="Choose classes" [(ngModel)]="msg.recipients.schoolClassIds" (change)="groupChanged()">
+                                    <ng-template ng-option-tmp let-item="item">{{ item.name }} <small class="text-muted">({{ item.learners }} learners)</small></ng-template>
+                                </ng-select>
+                            </div>
+                            <div *ngSwitchCase="RecipientGroup.ParentsOfEducationLevels">
+                                <label class="form-label mb-0 small">Education levels</label>
+                                <ng-select [items]="options.levels" bindLabel="name" bindValue="id" [multiple]="true"
+                                    [closeOnSelect]="false" placeholder="Choose levels" [(ngModel)]="msg.recipients.educationLevelIds" (change)="groupChanged()"></ng-select>
+                            </div>
+                            <div *ngSwitchCase="RecipientGroup.ParentsOfStudents">
+                                <div class="row g-1">
+                                    <div class="col-md-4">
+                                        <label class="form-label mb-0 small">Filter by class</label>
+                                        <ng-select [items]="options.classes" bindLabel="name" bindValue="id" placeholder="All classes" [(ngModel)]="studentClassFilter"></ng-select>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label class="form-label mb-0 small">Learners</label>
+                                        <ng-select [items]="studentsForPicker" bindLabel="label" bindValue="id" [multiple]="true"
+                                            [closeOnSelect]="false" placeholder="Search learners" [(ngModel)]="msg.recipients.studentIds" (change)="groupChanged()"></ng-select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngSwitchCase="RecipientGroup.StaffByCategory">
+                                <label class="form-label mb-0 small">Staff categories</label>
+                                <ng-select [items]="options.categories" bindLabel="name" bindValue="id" [multiple]="true"
+                                    placeholder="e.g. Teaching" [(ngModel)]="msg.recipients.staffCategoryIds" (change)="groupChanged()"></ng-select>
+                            </div>
+                            <div *ngSwitchCase="RecipientGroup.SelectedStaff">
+                                <label class="form-label mb-0 small">Staff members</label>
+                                <ng-select [items]="options.staff" bindLabel="fullName" bindValue="id" [multiple]="true"
+                                    [closeOnSelect]="false" placeholder="Search staff" [(ngModel)]="msg.recipients.staffIds" (change)="groupChanged()">
+                                    <ng-template ng-option-tmp let-item="item">{{ item.fullName }}
+                                        <small class="text-danger" *ngIf="!item.hasPhone && !item.hasEmail">(no phone or email)</small></ng-template>
+                                </ng-select>
+                            </div>
+                            <div *ngSwitchCase="RecipientGroup.CustomContacts">
+                                <label class="form-label mb-0 small">Phone numbers and / or emails - one per line, or separated by commas</label>
+                                <textarea class="form-control form-control-sm" rows="4" [(ngModel)]="msg.recipients.customContacts" (ngModelChange)="groupChanged()"
+                                    placeholder="0712345678&#10;someone@example.com"></textarea>
+                            </div>
+                            <div *ngSwitchDefault class="small text-muted">
+                                <ng-container *ngIf="msg.recipients.group === RecipientGroup.AllParents">Parents of every active learner.</ng-container>
+                                <ng-container *ngIf="msg.recipients.group === RecipientGroup.AllStaff">Every active, currently employed staff member.</ng-container>
+                            </div>
+                        </ng-container>
+                        <div class="small text-muted mt-1" *ngIf="isParentGroup">
+                            A parent with several learners in the selection gets one message, listing the learners.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-outline card-info mb-2">
+                    <div class="card-header py-1 bg-info text-white"><strong><i class="fas fa-pen me-1"></i> 2. Message</strong></div>
+                    <div class="card-body p-2">
+                        <div class="row g-1">
+                            <div class="col-md-4">
+                                <label class="form-label mb-0 small">Send by</label>
+                                <select class="form-select form-select-sm" [(ngModel)]="msg.channel" (ngModelChange)="preview = null">
+                                    <option *ngFor="let c of channels" [ngValue]="c">{{ channelLabels[c] }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label mb-0 small">Start from a saved template</label>
+                                <select class="form-select form-select-sm" [ngModel]="msg.messageTemplateId ?? null" (ngModelChange)="applyTemplate($event)">
+                                    <option [ngValue]="null">- None -</option>
+                                    <option *ngFor="let t of templates" [ngValue]="t.id">{{ t.name }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label mb-0 small">Title (for the queue - not sent)</label>
+                                <input class="form-control form-control-sm" [(ngModel)]="msg.title" placeholder="e.g. Closing day notice">
+                            </div>
+                        </div>
+                        <div class="alert alert-danger py-1 mt-2 mb-0 small" *ngIf="channelWarning">{{ channelWarning }}</div>
+
+                        <div class="mt-2" *ngIf="usesSms">
+                            <label class="form-label mb-0 small"><i class="fas fa-sms"></i> SMS text</label>
+                            <textarea class="form-control form-control-sm" rows="4" [(ngModel)]="msg.smsBody" (ngModelChange)="preview = null"
+                                (click)="track('smsBody', $event)" (keyup)="track('smsBody', $event)"></textarea>
+                            <small class="text-muted">{{ sms.length }} characters - about {{ sms.parts }} SMS part(s) per recipient
+                                <span class="text-danger" *ngIf="sms.unicode"> - contains characters outside the SMS alphabet, which more than doubles the cost</span></small>
+                        </div>
+
+                        <div class="mt-2" *ngIf="usesEmail">
+                            <label class="form-label mb-0 small"><i class="fas fa-envelope"></i> Email subject</label>
+                            <input class="form-control form-control-sm" [(ngModel)]="msg.emailSubject" (ngModelChange)="preview = null"
+                                (click)="track('emailSubject', $event)" (keyup)="track('emailSubject', $event)">
+                            <label class="form-label mb-0 mt-1 small">Email body</label>
+                            <textarea class="form-control form-control-sm" rows="7" [(ngModel)]="msg.emailBody" (ngModelChange)="preview = null"
+                                (click)="track('emailBody', $event)" (keyup)="track('emailBody', $event)"></textarea>
+                        </div>
+
+                        <div class="mt-2">
+                            <span class="small text-muted me-1">Insert:</span>
+                            <button *ngFor="let p of placeholders" class="btn btn-outline-secondary py-0 px-1 me-1 mb-1" style="font-size: 0.75rem;"
+                                [title]="p.description" (click)="insert(p)">{{ p.key }}</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <button class="btn btn-sm btn-outline-secondary" (click)="reset()"><i class="fas fa-undo"></i> Clear</button>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-1" (click)="doPreview()" [disabled]="busy"><i class="fas fa-eye"></i> Preview</button>
+                        <button class="btn btn-sm btn-success" (click)="send()" [disabled]="busy"><i class="fas fa-paper-plane"></i> Send</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: preview -->
+            <div class="col-lg-5">
+                <div class="card card-outline card-secondary">
+                    <div class="card-header py-1"><strong><i class="fas fa-eye me-1"></i> Preview</strong></div>
+                    <div class="card-body p-2">
+                        <div *ngIf="!preview" class="text-muted small">Choose recipients, write the message and click Preview
+                            to see who it goes to and how it reads.</div>
+                        <ng-container *ngIf="preview">
+                            <div class="row g-1 text-center mb-2">
+                                <div class="col-3"><div class="border rounded p-1"><div class="h5 mb-0">{{ preview.recipients }}</div><small>Recipients</small></div></div>
+                                <div class="col-3"><div class="border rounded p-1"><div class="h5 mb-0">{{ preview.smsCount }}</div><small>SMS</small></div></div>
+                                <div class="col-3"><div class="border rounded p-1"><div class="h5 mb-0">{{ preview.smsParts }}</div><small>SMS parts</small></div></div>
+                                <div class="col-3"><div class="border rounded p-1"><div class="h5 mb-0">{{ preview.emailCount }}</div><small>Emails</small></div></div>
+                            </div>
+                            <div class="alert alert-warning py-1 small" *ngIf="preview.missingContact">
+                                {{ preview.missingContact }} recipient(s) have no phone number / email for the chosen channel and will be skipped.
+                            </div>
+                            <div *ngIf="preview.sampleSms" class="mb-2">
+                                <small class="text-muted">SMS, as the first recipient gets it:</small>
+                                <div class="border rounded p-2 bg-light small" style="white-space: pre-wrap;">{{ preview.sampleSms }}</div>
+                            </div>
+                            <div *ngIf="preview.sampleEmailBody" class="mb-2">
+                                <small class="text-muted">Email, as the first recipient gets it:</small>
+                                <div class="border rounded p-2 bg-light small">
+                                    <strong>{{ preview.sampleEmailSubject }}</strong>
+                                    <div style="white-space: pre-wrap;">{{ preview.sampleEmailBody }}</div>
+                                </div>
+                            </div>
+
+                            <table class="table table-sm table-striped mb-0 small">
+                                <thead class="table-light"><tr><th>Name</th><th>Learner(s)</th><th>Phone</th><th>Email</th></tr></thead>
+                                <tbody>
+                                    <tr *ngFor="let r of preview.recipientList | slice: (previewPage-1) * previewPageSize : previewPage * previewPageSize">
+                                        <td>{{ r.name }} <span class="badge bg-light text-dark">{{ recipientTypeLabels[r.recipientType] }}</span></td>
+                                        <td>{{ r.studentNames }}</td>
+                                        <td [class.text-danger]="!r.phone">{{ r.phone || '-' }}</td>
+                                        <td [class.text-danger]="!r.email">{{ r.email || '-' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <app-table-paging (pageChangedEvent)="previewPage = $event" (pageSizeChangedEvent)="previewPageSize = $event"
+                                [collectionSize]="preview.recipientList.length"></app-table-paging>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,182 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+
+        <div class="alert alert-warning py-2" *ngIf="loadError">
+            <i class="fas fa-lock me-1"></i> {{ loadError }}
+        </div>
+
+        <ng-container *ngIf="s">
+            <div class="alert py-2 mb-2" [class.alert-warning]="s.testMode" [class.alert-success]="!s.testMode">
+                <ng-container *ngIf="s.testMode">
+                    <i class="fas fa-flask me-1"></i> <strong>Test mode is on.</strong>
+                    No message reaches a real parent or staff member. Up to 3 messages per send go to the test
+                    number / email below; the rest are only recorded. Test messages are not counted in the SMS report.
+                </ng-container>
+                <ng-container *ngIf="!s.testMode">
+                    <i class="fas fa-broadcast-tower me-1"></i> <strong>Live.</strong> Messages go to their real recipients.
+                </ng-container>
+            </div>
+
+            <div class="row g-2">
+                <!-- SMS -->
+                <div class="col-lg-6">
+                    <div class="card card-outline card-primary mb-2">
+                        <div class="card-header py-1 bg-primary text-white d-flex justify-content-between align-items-center">
+                            <strong><i class="fas fa-sms me-1"></i> SMS gateway (TextSMS)</strong>
+                            <div class="form-check form-switch mb-0">
+                                <input class="form-check-input" type="checkbox" id="smsOn" [(ngModel)]="s.smsEnabled">
+                                <label class="form-check-label" for="smsOn">Enabled</label>
+                            </div>
+                        </div>
+                        <div class="card-body p-2">
+                            <div class="row g-1">
+                                <div class="col-md-12">
+                                    <label class="form-label mb-0 small">API URL</label>
+                                    <input class="form-control form-control-sm" [(ngModel)]="s.smsApiUrl" placeholder="https://sms.textsms.co.ke/api/services/">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label mb-0 small">API key
+                                        <span class="badge bg-success ms-1" *ngIf="s.hasSmsApiKey">stored</span></label>
+                                    <input class="form-control form-control-sm" type="password" autocomplete="new-password"
+                                        [(ngModel)]="s.smsApiKey" [placeholder]="s.hasSmsApiKey ? 'Leave blank to keep the stored key' : ''">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label mb-0 small">Partner ID</label>
+                                    <input class="form-control form-control-sm" [(ngModel)]="s.smsPartnerId">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label mb-0 small">Sender ID</label>
+                                    <input class="form-control form-control-sm" [(ngModel)]="s.smsSenderId" maxlength="11">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label mb-0 small">Price per SMS part (KES)</label>
+                                    <input class="form-control form-control-sm" type="number" min="0" step="0.01" [(ngModel)]="s.smsUnitPrice">
+                                    <small class="text-muted">Used to value the monthly SMS report.</small>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <button class="btn btn-sm btn-outline-primary" (click)="checkBalance()"><i class="fas fa-coins"></i> Check SMS balance</button>
+                                <span class="ms-2 small" *ngIf="balance">{{ balance }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="col-lg-6">
+                    <div class="card card-outline card-info mb-2">
+                        <div class="card-header py-1 bg-info text-white d-flex justify-content-between align-items-center">
+                            <strong><i class="fas fa-envelope me-1"></i> Email (SMTP)</strong>
+                            <div class="form-check form-switch mb-0">
+                                <input class="form-check-input" type="checkbox" id="emailOn" [(ngModel)]="s.emailEnabled">
+                                <label class="form-check-label" for="emailOn">Enabled</label>
+                            </div>
+                        </div>
+                        <div class="card-body p-2">
+                            <div class="row g-1">
+                                <div class="col-md-6">
+                                    <label class="form-label mb-0 small">SMTP host</label>
+                                    <input class="form-control form-control-sm" [(ngModel)]="s.smtpHost" placeholder="mail.example.com">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0 small">Port</label>
+                                    <input class="form-control form-control-sm" type="number" [(ngModel)]="s.smtpPort">
+                                </div>
+                                <div class="col-md-3 d-flex align-items-end">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="ssl" [(ngModel)]="s.smtpUseSsl">
+                                        <label class="form-check-label small" for="ssl">SSL / TLS</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label mb-0 small">Username</label>
+                                    <input class="form-control form-control-sm" autocomplete="off" [(ngModel)]="s.smtpUsername">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label mb-0 small">Password
+                                        <span class="badge bg-success ms-1" *ngIf="s.hasSmtpPassword">stored</span></label>
+                                    <input class="form-control form-control-sm" type="password" autocomplete="new-password"
+                                        [(ngModel)]="s.smtpPassword" [placeholder]="s.hasSmtpPassword ? 'Leave blank to keep the stored password' : ''">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label mb-0 small">From email</label>
+                                    <input class="form-control form-control-sm" [(ngModel)]="s.fromEmail">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label mb-0 small">From name</label>
+                                    <input class="form-control form-control-sm" [(ngModel)]="s.fromName" placeholder="School name">
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label mb-0 small">Reply-to email (optional)</label>
+                                    <input class="form-control form-control-sm" [(ngModel)]="s.replyToEmail">
+                                </div>
+                            </div>
+                            <small class="text-muted">Port 465 uses SSL from the start; 587 upgrades with STARTTLS.</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Test mode -->
+                <div class="col-lg-12">
+                    <div class="card card-outline card-warning mb-2">
+                        <div class="card-header py-1 bg-warning d-flex justify-content-between align-items-center">
+                            <strong><i class="fas fa-flask me-1"></i> Test mode</strong>
+                            <div class="form-check form-switch mb-0">
+                                <input class="form-check-input" type="checkbox" id="testOn" [(ngModel)]="s.testMode">
+                                <label class="form-check-label" for="testOn">On</label>
+                            </div>
+                        </div>
+                        <div class="card-body p-2">
+                            <div class="row g-1 align-items-end">
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0 small">Test phone number</label>
+                                    <input class="form-control form-control-sm" [(ngModel)]="s.testPhoneNumber" placeholder="07XXXXXXXX">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label mb-0 small">Test email</label>
+                                    <input class="form-control form-control-sm" [(ngModel)]="s.testEmail">
+                                </div>
+                                <div class="col-md-6">
+                                    <small class="text-muted">With test mode on and no test number / email, nothing leaves the system at all;
+                                        messages are only marked as sent so the queue and wording can be checked.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end mb-2">
+                <button class="btn btn-sm btn-success" (click)="save()" [disabled]="saving">
+                    <i class="fas fa-save"></i> {{ saving ? 'Saving...' : 'Save settings' }}
+                </button>
+            </div>
+
+            <!-- Direct gateway tests -->
+            <div class="card card-outline card-secondary">
+                <div class="card-header py-1"><strong><i class="fas fa-vial me-1"></i> Try the gateways</strong>
+                    <small class="text-muted ms-2">Sends one real message straight away (save the settings first). Recorded in the queue as a test.</small></div>
+                <div class="card-body p-2">
+                    <div class="row g-1 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label mb-0 small">Phone</label>
+                            <input class="form-control form-control-sm" [(ngModel)]="testPhone" placeholder="07XXXXXXXX">
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-sm btn-outline-primary w-100" (click)="sendTestSms()" [disabled]="testing"><i class="fas fa-paper-plane"></i> Send test SMS</button>
+                        </div>
+                        <div class="col-md-3 offset-md-1">
+                            <label class="form-label mb-0 small">Email</label>
+                            <input class="form-control form-control-sm" [(ngModel)]="testEmailTo">
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-sm btn-outline-info w-100" (click)="sendTestEmail()" [disabled]="testing"><i class="fas fa-paper-plane"></i> Send test email</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</section>

@@ -172,6 +172,18 @@ export const MENU = [
         ]
     },
     {
+        name: 'Communications',
+        iconClasses: 'fas fa-comment-dots',
+        children: [
+            {name: 'Send Message', iconClasses: 'fas fa-paper-plane text-success', path: ['/communications/compose']},
+            {name: 'Message Queue', iconClasses: 'fas fa-stream text-primary', path: ['/communications/queue']},
+            {name: 'Templates', iconClasses: 'fas fa-file-alt text-info', path: ['/communications/templates']},
+            {name: 'SMS Report', iconClasses: 'fas fa-chart-bar text-warning', path: ['/communications/sms-report']},
+            // Gateway credentials - the API serves them to SuperAdministrators only.
+            {name: 'Gateway Settings', iconClasses: 'fas fa-plug text-danger', path: ['/communications/settings']}
+        ]
+    },
+    {
         name: 'Settings',
         iconClasses: 'fas fa-wrench',
         children: [

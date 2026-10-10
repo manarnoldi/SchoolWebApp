@@ -1,0 +1,105 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+        <div class="row g-1 mb-2 align-items-end">
+            <div class="col-md-2">
+                <label class="form-label mb-0 small">Month</label>
+                <select class="form-select form-select-sm" [(ngModel)]="month" (ngModelChange)="load()">
+                    <option *ngFor="let m of months; index as i" [ngValue]="i + 1">{{ m }}</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label mb-0 small">Year</label>
+                <select class="form-select form-select-sm" [(ngModel)]="year" (ngModelChange)="load()">
+                    <option *ngFor="let y of years" [ngValue]="y">{{ y }}</option>
+                </select>
+            </div>
+            <div class="col-md-8 text-end">
+                <button class="btn btn-sm btn-outline-secondary me-1" (click)="exportCsv()" [disabled]="!report?.details?.length"><i class="fas fa-file-csv"></i> Export CSV</button>
+                <button class="btn btn-sm btn-primary" (click)="print()" [disabled]="!report"><i class="fas fa-print"></i> Print</button>
+            </div>
+        </div>
+
+        <ng-container *ngIf="report">
+            <div class="row g-2 mb-2">
+                <div class="col-6 col-md-3">
+                    <div class="small-box bg-info mb-0"><div class="inner"><h3>{{ report.messages | number }}</h3><p>SMS sent</p></div>
+                        <div class="icon"><i class="fas fa-sms"></i></div></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="small-box bg-primary mb-0"><div class="inner"><h3>{{ report.parts | number }}</h3><p>SMS parts (billable)</p></div>
+                        <div class="icon"><i class="fas fa-calculator"></i></div></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="small-box bg-success mb-0"><div class="inner"><h3>{{ report.delivered | number }}</h3>
+                        <p>Delivered <small>({{ report.undelivered }} not delivered, {{ report.awaitingReport }} awaiting report)</small></p></div>
+                        <div class="icon"><i class="fas fa-check-double"></i></div></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="small-box bg-secondary mb-0"><div class="inner">
+                        <h3>{{ report.unitPrice ? ('KES ' + (report.amount | number:'1.2-2')) : '-' }}</h3>
+                        <p>Amount <small *ngIf="report.unitPrice">at KES {{ report.unitPrice | number:'1.2-2' }} / part</small>
+                            <small *ngIf="!report.unitPrice">(set the price per part in the settings)</small></p></div>
+                        <div class="icon"><i class="fas fa-coins"></i></div></div>
+                </div>
+            </div>
+            <div class="small text-muted mb-2">
+                Not counted: {{ report.testMessages }} test message(s) and {{ report.failed }} SMS that failed to send.
+                Months run in East Africa Time.
+            </div>
+
+            <div class="row g-2">
+                <div class="col-md-5">
+                    <div class="card card-outline card-primary mb-2">
+                        <div class="card-header py-1"><strong>By message type</strong></div>
+                        <div class="card-body p-0">
+                            <table class="table table-sm table-striped mb-0">
+                                <thead class="table-light"><tr><th>Type</th><th class="text-end">SMS</th><th class="text-end">Parts</th></tr></thead>
+                                <tbody>
+                                    <tr *ngIf="!report.byMessageType.length"><td colspan="3" class="text-muted small text-center">No SMS sent this month.</td></tr>
+                                    <tr *ngFor="let r of report.byMessageType"><td>{{ typeLabels[r.label] || r.label }}</td>
+                                        <td class="text-end">{{ r.messages | number }}</td><td class="text-end">{{ r.parts | number }}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card card-outline card-info">
+                        <div class="card-header py-1"><strong>By day</strong></div>
+                        <div class="card-body p-0" style="max-height: 360px; overflow-y: auto;">
+                            <table class="table table-sm table-striped mb-0">
+                                <thead class="table-light"><tr><th>Date</th><th class="text-end">SMS</th><th class="text-end">Parts</th></tr></thead>
+                                <tbody>
+                                    <tr *ngFor="let r of report.byDay"><td>{{ r.label | date:'EEE dd MMM' }}</td>
+                                        <td class="text-end">{{ r.messages | number }}</td><td class="text-end">{{ r.parts | number }}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="card card-outline card-secondary">
+                        <div class="card-header py-1"><strong>Every SMS</strong> <span class="badge bg-light text-dark">{{ report.details.length }}</span></div>
+                        <div class="card-body p-0">
+                            <table class="table table-sm table-striped mb-0 small">
+                                <thead class="table-light"><tr><th>Sent</th><th>Recipient</th><th>Phone</th><th>Type</th><th>Status</th><th class="text-end">Parts</th></tr></thead>
+                                <tbody>
+                                    <tr *ngFor="let m of report.details | slice: (detailPage-1) * detailPageSize : detailPage * detailPageSize">
+                                        <td class="text-nowrap">{{ m.sentAt | date:'dd MMM HH:mm' }}</td>
+                                        <td>{{ m.recipientName }}</td>
+                                        <td>{{ m.destination }}</td>
+                                        <td>{{ typeLabels[m.messageTypeCode] || m.messageTypeCode }}</td>
+                                        <td>{{ statusLabels[m.status] }}</td>
+                                        <td class="text-end">{{ m.smsParts }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <app-table-paging [pageSize]="detailPageSize" [collectionSize]="report.details.length"
+                                (pageChangedEvent)="detailPage = $event" (pageSizeChangedEvent)="detailPageSize = $event; detailPage = 1"></app-table-paging>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</section>

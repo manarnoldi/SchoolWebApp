@@ -156,6 +156,12 @@ import { PayrollPeriodsComponent } from './payroll/components/payroll-periods/pa
 import { PayrollReportsComponent } from './payroll/components/payroll-reports/payroll-reports.component';
 import { PayrollNssfBandsComponent } from './payroll/components/nssf-bands/nssf-bands.component';
 import { PayrollReliefsComponent } from './payroll/components/payroll-reliefs/payroll-reliefs.component';
+import { CommunicationsComponent } from './communications/communications.component';
+import { CommunicationSettingsComponent } from './communications/components/communication-settings/communication-settings.component';
+import { MessageTemplatesComponent } from './communications/components/message-templates/message-templates.component';
+import { ComposeMessageComponent } from './communications/components/compose-message/compose-message.component';
+import { MessageQueueComponent } from './communications/components/message-queue/message-queue.component';
+import { SmsReportComponent } from './communications/components/sms-report/sms-report.component';
 
 const routes: Routes = [
     {
@@ -427,6 +433,19 @@ const routes: Routes = [
             // Payslips are part of the Processing page now; old links land there.
             {path: 'payslips', redirectTo: 'periods', pathMatch: 'full'},
             {path: 'reports', component: PayrollReportsComponent}
+        ]
+    },
+    {
+        path: 'communications',
+        component: CommunicationsComponent,
+        canActivate: [AuthGuard],
+        canActivateChild: [AuthGuard],
+        children: [
+            {path: 'compose', component: ComposeMessageComponent},
+            {path: 'queue', component: MessageQueueComponent},
+            {path: 'templates', component: MessageTemplatesComponent},
+            {path: 'sms-report', component: SmsReportComponent},
+            {path: 'settings', component: CommunicationSettingsComponent}
         ]
     },
     {

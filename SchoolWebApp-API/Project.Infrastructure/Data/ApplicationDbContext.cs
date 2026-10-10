@@ -21,6 +21,7 @@ using SchoolWebApp.Core.Entities.Payroll;
 using SchoolWebApp.Core.Entities.Approvals;
 using SchoolWebApp.Core.Entities.Sponsorships;
 using SchoolWebApp.Core.Entities.Security;
+using SchoolWebApp.Core.Entities.Communications;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json;
 using System.Security.Claims;
@@ -179,6 +180,13 @@ namespace Project.Infrastructure.Data
         public DbSet<PayslipDeduction> PayslipDeductions { get; set; }
         #endregion
 
+        #region Communications
+        public DbSet<CommunicationSetting> CommunicationSettings { get; set; }
+        public DbSet<MessageTemplate> MessageTemplates { get; set; }
+        public DbSet<MessageBatch> MessageBatches { get; set; }
+        public DbSet<OutboundMessage> OutboundMessages { get; set; }
+        #endregion
+
         #region Approvals
         public DbSet<ApprovalWorkflow> ApprovalWorkflows { get; set; }
         public DbSet<ApprovalWorkflowStep> ApprovalWorkflowSteps { get; set; }
@@ -258,7 +266,12 @@ namespace Project.Infrastructure.Data
         private static readonly HashSet<Type> _auditExcluded = new HashSet<Type>
         {
             typeof(AuditLog),
-            typeof(Log)
+            typeof(Log),
+            // Thousands of rows per send, each re-saved as its status moves;
+            // the MessageBatch row already records who sent what.
+            typeof(OutboundMessage),
+            // Would copy the gateway API key and SMTP password into AuditLog.
+            typeof(CommunicationSetting)
         };
 
         // Property names skipped when computing field-level diffs - they

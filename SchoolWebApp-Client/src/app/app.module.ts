@@ -28,6 +28,7 @@ import { CbeModule } from './cbe/cbe.module';
 import { SecurityModule } from './security/security.module';
 import { FinanceModule } from './finance/finance.module';
 import { PayrollModule } from './payroll/payroll.module';
+import { CommunicationsModule } from './communications/communications.module';
 import { ApprovalsModule } from './approvals/approvals.module';
 registerLocaleData(localeEn, 'en-EN');
 
@@ -47,6 +48,7 @@ registerLocaleData(localeEn, 'en-EN');
         SecurityModule,
         FinanceModule,
         PayrollModule,
+        CommunicationsModule,
         ApprovalsModule,
         ToastrModule.forRoot({
             timeOut: 10000,

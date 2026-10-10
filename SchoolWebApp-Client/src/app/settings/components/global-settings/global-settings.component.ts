@@ -129,6 +129,21 @@ export class GlobalSettingsComponent implements OnInit {
             ]
         },
         {
+            // The SMS gateway and SMTP account are under Communications > Settings
+            // (SuperAdministrator only); this is the school's own choice.
+            name: 'Communications',
+            title: 'Communications Settings',
+            color: 'info',
+            icon: 'fas fa-comment-dots',
+            settings: [
+                {key: 'ParentContactSource', label: 'Parent Contact Source', type: 'select', options: [
+                    {value: 'ParentThenStudent', label: 'Parent record, else student record'},
+                    {value: 'ParentRecord', label: 'Parent record only'},
+                    {value: 'StudentRecord', label: 'Student record only'}
+                ], description: "Where the phone number and email for messages to parents come from. 'Parent record, else student record' uses the linked parents' contacts and falls back to the contact on the learner's own record when no linked parent has one."}
+            ]
+        },
+        {
             name: 'Grading',
             title: 'Grading System Settings',
             color: 'success',

@@ -1,4 +1,5 @@
-﻿using SchoolWebApp.Core.Interfaces.IRepositories;
+﻿using SchoolWebApp.API.Services.Communications;
+using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.Interfaces.IRepositories.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories.Security;
 using SchoolWebApp.Core.Services;
@@ -199,6 +200,17 @@ namespace Project.API.Extensions
             services.AddTransient<IPayslipRepository, PayslipRepository>();
             services.AddTransient<IPayslipEarningRepository, PayslipEarningRepository>();
             services.AddTransient<IPayslipDeductionRepository, PayslipDeductionRepository>();
+            #endregion
+
+            #region Communications
+            // SMS / email queue: services render and queue, the hosted worker sends.
+            services.AddHttpClient(nameof(TextSmsGateway), c => c.Timeout = TimeSpan.FromSeconds(60));
+            services.AddScoped<TextSmsGateway>();
+            services.AddScoped<SmtpEmailGateway>();
+            services.AddScoped<RecipientResolver>();
+            services.AddScoped<CommunicationService>();
+            services.AddSingleton<MessageDispatchSignal>();
+            services.AddHostedService<MessageDispatchWorker>();
             #endregion
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

@@ -17,6 +17,7 @@ using SchoolWebApp.Core.Entities.Finance;
 using SchoolWebApp.Core.Entities.Approvals;
 using SchoolWebApp.Core.Entities.Sponsorships;
 using SchoolWebApp.Core.Entities.Payroll;
+using SchoolWebApp.Core.Entities.Communications;
 
 namespace Project.Infrastructure.Data
 {
@@ -190,6 +191,33 @@ namespace Project.Infrastructure.Data
                 .WithMany()
                 .HasForeignKey(p => p.SponsorId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Communications. The dispatch worker polls by status and due time;
+            // the queue view and the monthly SMS report filter by channel and date.
+            modelBuilder.Entity<MessageTemplate>()
+                .HasIndex(t => t.Code)
+                .IsUnique();
+
+            modelBuilder.Entity<MessageBatch>()
+                .HasOne(b => b.MessageTemplate)
+                .WithMany()
+                .HasForeignKey(b => b.MessageTemplateId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<OutboundMessage>()
+                .HasOne(m => m.MessageBatch)
+                .WithMany(b => b.Messages)
+                .HasForeignKey(m => m.MessageBatchId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<OutboundMessage>()
+                .HasIndex(m => new { m.Status, m.NextAttemptAt });
+
+            modelBuilder.Entity<OutboundMessage>()
+                .HasIndex(m => new { m.Channel, m.Created });
+
+            modelBuilder.Entity<OutboundMessage>()
+                .HasIndex(m => m.ProviderMessageId);
         }
 
         public static void SeedData(ModelBuilder modelBuilder)

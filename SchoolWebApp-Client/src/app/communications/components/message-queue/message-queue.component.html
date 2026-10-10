@@ -1,0 +1,168 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+
+        <!-- Message detail -->
+        <div class="modal-backdrop fade show" *ngIf="selected" (click)="selected = null"></div>
+        <div class="modal fade show d-block" *ngIf="selected" tabindex="-1">
+            <div class="modal-dialog modal-lg" style="margin-top: 50px;">
+                <div class="modal-content">
+                    <div class="modal-header bg-info text-white py-2">
+                        <h5 class="modal-title"><i class="fas fa-envelope-open-text me-1"></i> Message #{{ selected.id }}</h5>
+                        <button type="button" class="close text-white" (click)="selected = null"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body p-2 small">
+                        <table class="table table-sm mb-2">
+                            <tr><th style="width: 160px;">Send</th><td>{{ selected.batchTitle }}</td></tr>
+                            <tr><th>Recipient</th><td>{{ selected.recipientName }} <span class="badge bg-light text-dark">{{ recipientTypeLabels[selected.recipientType] }}</span></td></tr>
+                            <tr><th>{{ channelLabels[selected.channel] }} to</th><td>{{ selected.destination }}
+                                <span *ngIf="selected.originalDestination" class="text-warning"> (test mode - real recipient {{ selected.originalDestination }})</span></td></tr>
+                            <tr><th>Status</th><td><span class="badge" [ngClass]="statusBadges[selected.status]">{{ statusLabels[selected.status] }}</span>
+                                <span *ngIf="selected.isTest" class="badge bg-warning text-dark ms-1">Test</span></td></tr>
+                            <tr><th>Queued</th><td>{{ selected.created | date:'medium' }} by {{ selected.createdBy }}</td></tr>
+                            <tr *ngIf="selected.sentAt"><th>Sent</th><td>{{ selected.sentAt | date:'medium' }}</td></tr>
+                            <tr *ngIf="selected.deliveredAt"><th>Delivered</th><td>{{ selected.deliveredAt | date:'medium' }}</td></tr>
+                            <tr *ngIf="selected.nextAttemptAt && selected.status === MessageStatus.Queued"><th>Next attempt</th><td>{{ selected.nextAttemptAt | date:'medium' }}</td></tr>
+                            <tr><th>Attempts</th><td>{{ selected.attempts }}</td></tr>
+                            <tr *ngIf="selected.channel === MessageChannel.Sms"><th>SMS parts</th><td>{{ selected.smsParts }}</td></tr>
+                            <tr *ngIf="selected.providerMessageId"><th>Gateway message ID</th><td><code>{{ selected.providerMessageId }}</code></td></tr>
+                            <tr *ngIf="selected.providerStatus"><th>Gateway status</th><td>{{ selected.providerStatus }}</td></tr>
+                            <tr *ngIf="selected.errorMessage"><th>Error</th><td class="text-danger">{{ selected.errorMessage }}</td></tr>
+                        </table>
+                        <div *ngIf="selected.subject"><strong>{{ selected.subject }}</strong></div>
+                        <div class="border rounded p-2 bg-light" style="white-space: pre-wrap;">{{ selected.body }}</div>
+                    </div>
+                    <div class="modal-footer py-1">
+                        <button class="btn btn-sm btn-outline-danger" *ngIf="selected.status === MessageStatus.Queued" (click)="cancel(selected)"><i class="fas fa-ban"></i> Cancel</button>
+                        <button class="btn btn-sm btn-outline-primary" *ngIf="selected.status === MessageStatus.Failed || selected.status === MessageStatus.Cancelled" (click)="retry(selected)"><i class="fas fa-redo"></i> Retry</button>
+                        <button class="btn btn-sm btn-secondary" (click)="selected = null">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs mb-2">
+            <li class="nav-item"><a class="nav-link" href="javascript:void(0)" [class.active]="tab === 'batches'" (click)="setTab('batches')"><i class="fas fa-layer-group"></i> Sends</a></li>
+            <li class="nav-item"><a class="nav-link" href="javascript:void(0)" [class.active]="tab === 'messages'" (click)="setTab('messages')"><i class="fas fa-list"></i> Messages</a></li>
+            <li class="nav-item ms-auto"><button class="btn btn-sm btn-outline-secondary" (click)="refresh()"><i class="fas fa-sync"></i> Refresh</button></li>
+        </ul>
+
+        <!-- Sends -->
+        <div *ngIf="tab === 'batches'" class="card card-outline card-primary">
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead class="table-light">
+                        <tr><th>Queued</th><th>Send</th><th>Type</th><th>By</th><th class="text-end">Messages</th><th style="width: 180px;">Progress</th>
+                            <th class="text-end">Delivered</th><th class="text-end">Failed</th><th class="text-end">SMS parts</th><th style="width: 110px;"></th></tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="batches.length === 0"><td colspan="10" class="text-center text-muted small py-2">Nothing has been sent yet.</td></tr>
+                        <tr *ngFor="let b of batches">
+                            <td class="small text-nowrap">{{ b.created | date:'dd MMM yyyy HH:mm' }}</td>
+                            <td><a href="javascript:void(0)" (click)="openBatch(b)"><strong>{{ b.title }}</strong></a>
+                                <span *ngIf="b.isTest" class="badge bg-warning text-dark ms-1">Test</span>
+                                <div class="small text-muted">{{ b.recipientSummary }} - {{ channelLabels[b.channel] }}</div></td>
+                            <td class="small">{{ typeLabels[b.messageTypeCode] || b.messageTypeCode }}</td>
+                            <td class="small">{{ b.createdBy }}</td>
+                            <td class="text-end">{{ b.totalMessages }}</td>
+                            <td>
+                                <div class="progress" style="height: 14px;">
+                                    <div class="progress-bar" [class.bg-success]="b.queued === 0" [style.width.%]="progress(b)">{{ progress(b) }}%</div>
+                                </div>
+                                <small class="text-muted" *ngIf="b.queued">{{ b.queued }} waiting</small>
+                            </td>
+                            <td class="text-end">{{ b.delivered }}</td>
+                            <td class="text-end" [class.text-danger]="b.failed">{{ b.failed }}</td>
+                            <td class="text-end">{{ b.smsParts }}</td>
+                            <td class="text-nowrap">
+                                <button class="btn btn-outline-primary btn-sm" title="Retry failed" *ngIf="b.failed" (click)="retryBatch(b)"><i class="fas fa-redo"></i></button>
+                                <button class="btn btn-outline-danger btn-sm ms-1" title="Cancel waiting messages" *ngIf="b.queued" (click)="cancelBatch(b)"><i class="fas fa-ban"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <app-table-paging [pageSize]="batchPageSize" [collectionSize]="batchTotal"
+                    (pageChangedEvent)="batchPage = $event; loadBatches()" (pageSizeChangedEvent)="batchPageSize = $event; batchPage = 1; loadBatches()"></app-table-paging>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <ng-container *ngIf="tab === 'messages'">
+            <div class="mb-2">
+                <button class="btn btn-sm me-1 mb-1" [class.btn-dark]="filters.status === null" [class.btn-outline-dark]="filters.status !== null"
+                    (click)="filterStatus(null)">All <span class="badge bg-light text-dark">{{ totalAcrossStatuses }}</span></button>
+                <button *ngFor="let s of statuses" class="btn btn-sm me-1 mb-1"
+                    [class.btn-outline-secondary]="filters.status !== s" [class.btn-secondary]="filters.status === s" (click)="filterStatus(s)">
+                    {{ statusLabels[s] }} <span class="badge" [ngClass]="statusBadges[s]">{{ statusCounts[s] || 0 }}</span>
+                </button>
+            </div>
+
+            <div class="row g-1 mb-1 align-items-end">
+                <div class="col-md-2">
+                    <label class="form-label mb-0 small">Channel</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="filters.channel" (ngModelChange)="applyFilters()">
+                        <option [ngValue]="null">All</option>
+                        <option [ngValue]="MessageChannel.Sms">SMS</option>
+                        <option [ngValue]="MessageChannel.Email">Email</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-0 small">Type</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="filters.messageTypeCode" (ngModelChange)="applyFilters()">
+                        <option [ngValue]="null">All</option>
+                        <option *ngFor="let c of typeCodes" [ngValue]="c">{{ typeLabels[c] }}</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-0 small">From</label>
+                    <input type="date" class="form-control form-control-sm" [(ngModel)]="filters.from" (change)="applyFilters()">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-0 small">To</label>
+                    <input type="date" class="form-control form-control-sm" [(ngModel)]="filters.to" (change)="applyFilters()">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-0 small">Search</label>
+                    <input class="form-control form-control-sm" [(ngModel)]="filters.search" (keyup.enter)="applyFilters()" placeholder="Name or number">
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-sm btn-outline-secondary" (click)="clearFilters()"><i class="fas fa-times"></i> Clear</button>
+                </div>
+            </div>
+            <div class="small mb-1" *ngIf="filters.batchId">
+                Showing one send only. <a href="javascript:void(0)" (click)="filters.batchId = null; applyFilters()">Show all messages</a>
+            </div>
+
+            <div class="card card-outline card-info">
+                <div class="card-body p-0">
+                    <table class="table table-striped table-hover table-sm mb-0 small">
+                        <thead class="table-light">
+                            <tr><th>Queued</th><th>Recipient</th><th>To</th><th>Message</th><th>Status</th><th class="text-end">Parts</th><th></th></tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngIf="messages.length === 0"><td colspan="7" class="text-center text-muted py-2">No messages match.</td></tr>
+                            <tr *ngFor="let m of messages" style="cursor: pointer;" (click)="selected = m">
+                                <td class="text-nowrap">{{ m.created | date:'dd MMM HH:mm' }}</td>
+                                <td>{{ m.recipientName }}</td>
+                                <td class="text-nowrap"><i class="fas" [class.fa-sms]="m.channel === MessageChannel.Sms" [class.fa-envelope]="m.channel === MessageChannel.Email"></i>
+                                    {{ m.destination }}</td>
+                                <td><span class="d-inline-block text-truncate" style="max-width: 380px;">{{ m.subject ? m.subject + ' - ' : '' }}{{ m.body }}</span>
+                                    <div class="text-danger text-truncate" style="max-width: 380px;" *ngIf="m.errorMessage">{{ m.errorMessage }}</div></td>
+                                <td class="text-nowrap"><span class="badge" [ngClass]="statusBadges[m.status]">{{ statusLabels[m.status] }}</span>
+                                    <span *ngIf="m.isTest" class="badge bg-warning text-dark ms-1">Test</span></td>
+                                <td class="text-end">{{ m.channel === MessageChannel.Sms ? m.smsParts : '' }}</td>
+                                <td class="text-nowrap" (click)="$event.stopPropagation()">
+                                    <button class="btn btn-outline-primary btn-sm py-0" title="Retry" *ngIf="m.status === MessageStatus.Failed || m.status === MessageStatus.Cancelled" (click)="retry(m)"><i class="fas fa-redo"></i></button>
+                                    <button class="btn btn-outline-danger btn-sm py-0" title="Cancel" *ngIf="m.status === MessageStatus.Queued" (click)="cancel(m)"><i class="fas fa-ban"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <app-table-paging [pageSize]="messagePageSize" [collectionSize]="messageTotal"
+                        (pageChangedEvent)="messagePage = $event; loadMessages()" (pageSizeChangedEvent)="messagePageSize = $event; messagePage = 1; loadMessages()"></app-table-paging>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</section>
