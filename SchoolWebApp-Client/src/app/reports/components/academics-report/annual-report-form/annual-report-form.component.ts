@@ -313,8 +313,11 @@ export class AnnualReportFormComponent implements OnInit {
                     this.examSvc.get(`/exams/examSearch?${base}&sessionId=${this.sessions[p.sIdx].id}&schoolClassId=${this.filterSchoolClassId}&examTypeId=${p.et.id}`)
                 );
                 // "Next term begins on" is the first term of the following year.
+                // The year ranked next after this one (ranks need not be consecutive).
                 let year = this.academicYears.find((y) => y.id == this.filterAcademicYearId);
-                let nextYear = this.academicYears.find((y) => y.rank == (year?.rank || 0) + 1);
+                let nextYear = this.academicYears
+                    .filter((y) => (y.rank || 0) > (year?.rank || 0))
+                    .sort((a, b) => a.rank - b.rank)[0];
                 let nextSessions$ = nextYear
                     ? this.sessionsSvc.get(`/sessions/byCurriculumYearId?curriculumId=${this.filterCurriculumId}&academicYearId=${nextYear.id}`)
                     : of([] as any[]);

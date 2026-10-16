@@ -547,12 +547,29 @@ export class ReportFormComponent implements OnInit {
         let examRequests = this.examTypes.map((et) =>
             this.examSvc.get(`/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}&schoolClassId=${this.filterSchoolClassId}&examTypeId=${et.id}`)
         );
+        // "Next term begins on": the next term of this year; after the year's last
+        // term, the first term of the following year (as on the annual report form).
+        // Looking only for rank + 1 in this year left the date blank on every
+        // last-term report.
+        let current = this.sessions.find((s) => s.id == this.filterSessionId);
+        let laterThisYear = this.sessions
+            .filter((s) => (s.rank || 0) > (current?.rank || 0))
+            .sort((a, b) => a.rank - b.rank)[0];
+        let nextYear = this.academicYears
+            .filter((y) => (y.rank || 0) > (this.academicYears.find((x) => x.id == this.filterAcademicYearId)?.rank || 0))
+            .sort((a, b) => a.rank - b.rank)[0];
+        let nextTerm$ = laterThisYear
+            ? of([laterThisYear])
+            : nextYear
+                ? this.sessionsSvc.get(`/sessions/byCurriculumYearId?curriculumId=${this.filterCurriculumId}&academicYearId=${nextYear.id}`)
+                : of([] as any[]);
         return forkJoin([
             ...examRequests,
             this.studentValueScoreSvc.get(`/studentValueScores/bySessionId/${this.filterSessionId}`),
             this.schoolSvc.get('/schooldetails'),
             this.globalSettingSvc.getByModule('ReportForm'),
-            this.schoolClassesSvc.get(`/schoolClassLeaders/bySchoolClassId/${this.filterSchoolClassId}`)
+            this.schoolClassesSvc.get(`/schoolClassLeaders/bySchoolClassId/${this.filterSchoolClassId}`),
+            nextTerm$
         ]).pipe(
             switchMap((results: any[]) => {
                 let n = this.examTypes.length;
@@ -561,6 +578,7 @@ export class ReportFormComponent implements OnInit {
                 let schoolDetails = (results[n + 1] as any[])?.[0];
                 let reportSettings = results[n + 2] as any[];
                 let classLeaders = results[n + 3] as any[];
+                let nextTerm = ((results[n + 4] as any[]) || []).sort((a, b) => a.rank - b.rank)[0];
 
                 this.applyReportSettings(reportSettings);
                 let classLeadersText = this.buildClassLeadersText(classLeaders);
@@ -579,7 +597,8 @@ export class ReportFormComponent implements OnInit {
                         this.shared = {
                             examsByType, resultsByExamId, valueScores, schoolDetails, classLeadersText,
                             studentTotalsByType: totals.studentTotalsByType,
-                            studentOverallTotals: totals.studentOverallTotals
+                            studentOverallTotals: totals.studentOverallTotals,
+                            nextTermStartDate: nextTerm?.startDate
                         };
                         return this.shared;
                     })
@@ -867,8 +886,8 @@ export class ReportFormComponent implements OnInit {
 
                     let sessionName = session?.sessionName || '';
                     let termEndDate = session?.endDate ? new Date(session.endDate).toLocaleDateString('en-GB') : '..............................';
-                    let nextSession = this.sessions.find((s) => s.rank == (session?.rank || 0) + 1);
-                    let nextTermStartDate = nextSession?.startDate ? new Date(nextSession.startDate).toLocaleDateString('en-GB') : '..............................';
+                    let nextStart = this.shared?.nextTermStartDate;
+                    let nextTermStartDate = nextStart ? new Date(nextStart).toLocaleDateString('en-GB') : '..............................';
                     let gradeName = schoolClass?.learningLevel?.name || '';
                     let streamName = schoolClass?.schoolStream?.name || '';
                     let edLevelId = schoolClass?.learningLevel?.educationLevelId;
