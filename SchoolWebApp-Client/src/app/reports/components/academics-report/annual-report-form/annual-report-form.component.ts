@@ -520,8 +520,8 @@ export class AnnualReportFormComponent implements OnInit {
                         marginBottom: 5
                     };
 
-                    // Learning areas: TERM 1..n and OVERALL, each as % and P.L.
-                    let groups = [...this.sessions.map((s) => (s.sessionName || '').toUpperCase()), 'OVERALL'];
+                    // Learning areas: TERM 1..n and AVERAGE (of the terms), each as % and P.L.
+                    let groups = [...this.sessions.map((s) => (s.sessionName || '').toUpperCase()), 'AVERAGE'];
                     let headRow: any[] = [{text: 'LEARNING AREAS', style: 'tableHeader', rowSpan: 2}];
                     let subHeadRow: any[] = [{text: ''}];
                     groups.forEach((g) => {
