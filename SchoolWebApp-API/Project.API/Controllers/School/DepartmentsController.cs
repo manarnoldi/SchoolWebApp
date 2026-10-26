@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SchoolWebApp.API.Services.TeachingDocuments;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.School.Department;
 using SchoolWebApp.Core.Entities.School;
@@ -17,8 +18,11 @@ namespace SchoolWebApp.API.Controllers.School
         private readonly ILogger<DepartmentsController> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public DepartmentsController(ILogger<DepartmentsController> logger, IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly HeadOfDepartmentRoleSync _hodRoles;
+        public DepartmentsController(ILogger<DepartmentsController> logger, IUnitOfWork unitOfWork, IMapper mapper,
+            HeadOfDepartmentRoleSync hodRoles)
         {
+            _hodRoles = hodRoles;
             _logger = logger;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -138,6 +142,7 @@ namespace SchoolWebApp.API.Controllers.School
 
                     _unitOfWork.Departments.Create(_item);
                     await _unitOfWork.SaveChangesAsync();
+                    await _hodRoles.SyncAsync(_item.StaffDetailsId);
                     var returnItem = _mapper.Map<DepartmentDto>(_item);
                     return Ok(returnItem);
                 }
@@ -169,9 +174,11 @@ namespace SchoolWebApp.API.Controllers.School
                     return BadRequest($"The department of Id- '{model.Id}' does not exist hence cannot be updated.");
                 try
                 {
+                    var previousHead = await _hodRoles.SavedHeadAsync(model.Id);
                     var _item = _mapper.Map<Department>(model);
                     _unitOfWork.Departments.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
+                    await _hodRoles.SyncAsync(previousHead, _item.StaffDetailsId);
                     return Ok();
                 }
                 catch (Exception ex)
@@ -200,8 +207,10 @@ namespace SchoolWebApp.API.Controllers.School
                 if (itemExists == null)
                     return BadRequest($"The department of Id- '{id}' does not exist hence cannot be deleted.");
                 var entity = await _unitOfWork.Departments.GetById(id);
+                var previousHead = entity.StaffDetailsId;
                 _unitOfWork.Departments.Delete(entity);
                 await _unitOfWork.SaveChangesAsync();
+                await _hodRoles.SyncAsync(previousHead);
                 return Ok();
             }
             catch (Exception ex)

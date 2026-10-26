@@ -219,6 +219,7 @@ namespace Project.API.Extensions
             #region Teaching documents
             services.AddScoped<TeachingDocumentService>();
             services.AddScoped<SchemeWorkbookService>();
+            services.AddScoped<HeadOfDepartmentRoleSync>();
             services.AddScoped<SchoolWebApp.API.Services.CBE.CurriculumWorkbookService>();
             #endregion
 
