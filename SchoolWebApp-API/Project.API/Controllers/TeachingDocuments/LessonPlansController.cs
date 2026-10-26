@@ -10,9 +10,9 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
 {
     /// <summary>
     /// Lesson plans, a week at a time. A week is prepared from the scheme's
-    /// lessons for that week and submitted for approval as one. Summary,
-    /// reflection and whether the lesson was taught are written afterwards and
-    /// stay editable once the week is approved; they feed the record of work.
+    /// lessons for that week and submitted for approval as one. Whether each
+    /// lesson was taught is recorded on the record of work, and shown back here
+    /// once the week is approved.
     /// </summary>
     [Route("api/lessonPlans")]
     [ApiController]
@@ -229,11 +229,13 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
             Reflection = p.Reflection,
             Steps = p.Steps.OrderBy(x => x.StepNo).Select(x => new LessonPlanStepDto { Id = x.Id, StepNo = x.StepNo, Activity = x.Activity }).ToList(),
             TaughtStatus = p.SchemeOfWorkLesson?.RecordOfWorkEntry?.Status ?? LessonTaughtStatus.NotRecorded,
-            TaughtOn = p.SchemeOfWorkLesson?.RecordOfWorkEntry?.TaughtOn
+            TaughtOn = p.SchemeOfWorkLesson?.RecordOfWorkEntry?.TaughtOn,
+            WorkCovered = p.SchemeOfWorkLesson?.RecordOfWorkEntry?.WorkCovered,
+            Remarks = p.SchemeOfWorkLesson?.RecordOfWorkEntry?.Remarks
         };
 
-        /// <summary>Loads a week for a change, enforcing ownership and (unless afterLesson) the approval lock.</summary>
-        private async Task<(LessonPlanWeek? Week, SchemeOfWork? Scheme, IActionResult? Error)> LoadWeekForEditAsync(int weekId, bool afterLesson = false)
+        /// <summary>Loads a week for a change, enforcing ownership and the approval lock.</summary>
+        private async Task<(LessonPlanWeek? Week, SchemeOfWork? Scheme, IActionResult? Error)> LoadWeekForEditAsync(int weekId)
         {
             var me = await _svc.CurrentAsync();
             if (me == null) return (null, null, Unauthorized());
@@ -243,7 +245,7 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
             var s = await _svc.LoadSchemeAsync(week.SchemeOfWorkId);
             if (s == null) return (null, null, NotFound());
             if (!me.CanEdit(s)) return (null, null, StatusCode(403, new { message = "Only the teacher who owns these lesson plans can change them." }));
-            if (!afterLesson && await _svc.IsLockedAsync(TeachingDocumentService.EntityLessonPlanWeek, week.Id))
+            if (await _svc.IsLockedAsync(TeachingDocumentService.EntityLessonPlanWeek, week.Id))
                 return (null, null, BadRequest(new { message = "This week's plans have been submitted or approved and can no longer be edited." }));
             return (week, s, null);
         }
@@ -317,39 +319,6 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
             var (week, _, error) = await LoadWeekForEditAsync(weekId.Value);
             if (error != null) return error;
             _db.LessonPlans.Remove(week!.Plans.First(p => p.Id == id));
-            await _db.SaveChangesAsync();
-            return await GetWeek(week.Id);
-        }
-
-        /// <summary>
-        /// After the lesson: summary, reflection and whether it was taught. The
-        /// taught status and date go to the record of work of the scheme lesson
-        /// the plan came from, with the summary as work covered and the
-        /// reflection as remarks.
-        /// </summary>
-        [HttpPut("plans/{id}/afterLesson")]
-        public async Task<IActionResult> AfterLesson(int id, LessonPlanAfterLessonDto model)
-        {
-            var weekId = await WeekIdOfPlanAsync(id);
-            if (weekId == null) return NotFound();
-            var (week, s, error) = await LoadWeekForEditAsync(weekId.Value, afterLesson: true);
-            if (error != null) return error;
-            var plan = week!.Plans.First(p => p.Id == id);
-            plan.Summary = model.Summary;
-            plan.Reflection = model.Reflection;
-
-            if (plan.SchemeOfWorkLessonId is int lessonId && model.TaughtStatus != LessonTaughtStatus.NotRecorded)
-            {
-                var lesson = await _db.SchemeOfWorkLessons.Include(l => l.RecordOfWorkEntry).FirstAsync(l => l.Id == lessonId);
-                if (await _db.RecordOfWorkChecks.AnyAsync(c => c.SchemeOfWorkId == s!.Id && c.WeekNo == lesson.WeekNo))
-                    return BadRequest(new { message = $"Week {lesson.WeekNo}'s record of work has been checked; ask your HOD to remove the check to change it." });
-                var entry = lesson.RecordOfWorkEntry ?? new RecordOfWorkEntry { SchemeOfWorkLessonId = lessonId };
-                if (entry.Id == 0) _db.RecordOfWorkEntries.Add(entry);
-                entry.Status = model.TaughtStatus;
-                entry.TaughtOn = model.TaughtOn?.Date ?? plan.LessonDate;
-                if (!string.IsNullOrWhiteSpace(model.Summary)) entry.WorkCovered = model.Summary;
-                if (!string.IsNullOrWhiteSpace(model.Reflection)) entry.Remarks = model.Reflection;
-            }
             await _db.SaveChangesAsync();
             return await GetWeek(week.Id);
         }

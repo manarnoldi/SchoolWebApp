@@ -209,8 +209,11 @@ export interface LessonPlan {
     summary: string | null;
     reflection: string | null;
     steps: LessonPlanStep[];
+    // From the record of work (read-only here).
     taughtStatus: LessonTaughtStatus;
     taughtOn: string | null;
+    workCovered: string | null;
+    remarks: string | null;
 }
 
 export interface LessonPlanWeek {

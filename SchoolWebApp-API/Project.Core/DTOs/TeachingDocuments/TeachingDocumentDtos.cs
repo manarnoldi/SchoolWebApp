@@ -255,9 +255,12 @@ namespace SchoolWebApp.Core.DTOs.TeachingDocuments
         public string? Summary { get; set; }
         public string? Reflection { get; set; }
         public List<LessonPlanStepDto> Steps { get; set; } = new();
-        // The record of work entry of the scheme lesson this plan was prepared from.
+        // The record of work entry of the scheme lesson this plan was prepared from
+        // (read-only here - it is written on the Record of Work page).
         public LessonTaughtStatus TaughtStatus { get; set; }
         public DateTime? TaughtOn { get; set; }
+        public string? WorkCovered { get; set; }
+        public string? Remarks { get; set; }
     }
 
     public class LessonPlanWeekDto
@@ -278,15 +281,6 @@ namespace SchoolWebApp.Core.DTOs.TeachingDocuments
     {
         public int SchemeOfWorkId { get; set; }
         public int WeekNo { get; set; }
-    }
-
-    // Written after the lesson; allowed once the week is approved.
-    public class LessonPlanAfterLessonDto
-    {
-        public string? Summary { get; set; }
-        public string? Reflection { get; set; }
-        public LessonTaughtStatus TaughtStatus { get; set; }
-        public DateTime? TaughtOn { get; set; }
     }
 
     // ---------- Record of work ----------

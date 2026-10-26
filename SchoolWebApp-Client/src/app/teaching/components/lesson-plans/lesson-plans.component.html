@@ -79,7 +79,7 @@
                             <span class="ms-2">{{ p.subStrandName || p.strandName || '(no sub-strand)' }}</span>
                             <span *ngIf="dirtyPlans.has(p.id)" class="badge bg-warning text-dark ms-2">unsaved</span>
                         </div>
-                        <span class="badge" [ngClass]="p.taughtStatus === 1 ? 'bg-success' : p.taughtStatus === 2 ? 'bg-info' : p.taughtStatus === 3 ? 'bg-danger' : 'bg-light text-dark'">
+                        <span *ngIf="week.status === 'Approved'" class="badge" [ngClass]="p.taughtStatus === 1 ? 'bg-success' : p.taughtStatus === 2 ? 'bg-info' : p.taughtStatus === 3 ? 'bg-danger' : 'bg-light text-dark'">
                             {{ taughtLabels[p.taughtStatus] }}</span>
                     </div>
 
@@ -217,52 +217,24 @@
                             </table>
                         </ng-container>
 
-                        <!-- After the lesson: open to the teacher even once approved -->
-                        <div class="border rounded mt-2">
-                            <div class="d-flex justify-content-between align-items-center px-2 py-1" style="cursor: pointer;" (click)="toggleSection(p, 'after')">
-                                <strong class="small">
-                                    <i class="fas me-1" [ngClass]="isOpen(p, 'after') ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
-                                    <i class="fas fa-clipboard-check"></i> After the lesson
-                                </strong>
-                                <small class="text-muted">{{ p.summary || p.reflection ? 'notes written' : 'summary, reflection and whether it was taught' }}</small>
+                        <!-- After the lesson: what the record of work says, once the week is approved. Written on the Record of Work page. -->
+                        <div *ngIf="week.status === 'Approved'" class="border rounded mt-2 px-2 py-1 small">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong><i class="fas fa-clipboard-check"></i> After the lesson</strong>
+                                <a *ngIf="p.schemeOfWorkLessonId" href="javascript:void(0)" (click)="openRecordOfWork()">
+                                    {{ week.canEdit ? 'Record in Record of Work' : 'Open Record of Work' }} <i class="fas fa-arrow-right"></i></a>
                             </div>
-                            <div *ngIf="isOpen(p, 'after')" class="px-2 pb-2">
-                            <ng-container *ngIf="week.canEdit">
-                                <div class="row g-1">
-                                    <div class="col-md-3">
-                                        <label class="form-label mb-0 small">Taught?</label>
-                                        <select class="form-select form-select-sm" [(ngModel)]="p.taughtStatus" [disabled]="!p.schemeOfWorkLessonId">
-                                            <option *ngFor="let t of taughtOptions" [ngValue]="t">{{ taughtLabels[t] }}</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label mb-0 small">Date taught</label>
-                                        <input type="date" class="form-control form-control-sm" [(ngModel)]="p.taughtOn" [disabled]="!p.schemeOfWorkLessonId"
-                                            [placeholder]="p.lessonDate || ''">
-                                    </div>
-                                    <div class="col-md-6 small text-muted d-flex align-items-end">
-                                        {{ p.schemeOfWorkLessonId ? 'Goes to the record of work: summary as work covered, reflection as remarks.'
-                                            : 'This lesson was added to the week, not taken from the scheme, so it is not in the record of work.' }}
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label mb-0 small">Summary</label>
-                                        <textarea class="form-control form-control-sm" rows="2" [(ngModel)]="p.summary"
-                                            placeholder="e.g. Learners were able to..."></textarea>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label mb-0 small">Reflection / self-remarks</label>
-                                        <textarea class="form-control form-control-sm" rows="2" [(ngModel)]="p.reflection"></textarea>
-                                    </div>
-                                </div>
-                                <div class="text-end mt-1">
-                                    <button class="btn btn-sm btn-outline-success" (click)="saveAfterLesson(p)"><i class="fas fa-check"></i> Save after-lesson notes</button>
+                            <ng-container *ngIf="p.schemeOfWorkLessonId; else notInRecord">
+                                <div *ngIf="p.taughtStatus === 0" class="text-muted">Not recorded yet.</div>
+                                <div *ngIf="p.taughtStatus !== 0" class="row">
+                                    <div class="col-md-3"><b>{{ taughtLabels[p.taughtStatus] }}</b>{{ p.taughtOn ? ' on ' + (p.taughtOn | date:'EEE d MMM') : '' }}</div>
+                                    <div class="col-md-5"><b>Work covered</b><div class="pre">{{ p.workCovered || '-' }}</div></div>
+                                    <div class="col-md-4"><b>Remarks</b><div class="pre">{{ p.remarks || '-' }}</div></div>
                                 </div>
                             </ng-container>
-                            <div *ngIf="!week.canEdit" class="row small">
-                                <div class="col-md-6"><b>Summary</b><div class="pre">{{ p.summary }}</div></div>
-                                <div class="col-md-6"><b>Reflection</b><div class="pre">{{ p.reflection }}</div></div>
-                            </div>
-                            </div>
+                            <ng-template #notInRecord>
+                                <div class="text-muted">This lesson was added to the week, not taken from the scheme, so it is not in the record of work.</div>
+                            </ng-template>
                         </div>
                     </div>
                 </div>

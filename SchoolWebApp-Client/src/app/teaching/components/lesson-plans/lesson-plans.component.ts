@@ -12,7 +12,6 @@ import {
     LessonPlan,
     LessonPlanWeek,
     LessonPlanWeekSummary,
-    LessonTaughtStatus,
     SchemeOfWork,
     STATUS_BADGES,
     STATUS_CLASSES,
@@ -28,8 +27,8 @@ import {PrintSchool, printLessonPlans} from '@/teaching/utils/teaching-print';
  * Lesson plans, a week at a time. A week is prepared from the scheme's lessons
  * for it (strand, sub-strand, outcomes, key question, resources, and the
  * learning experiences as steps), completed by the teacher and submitted as one.
- * After each lesson the teacher records whether it was taught, a summary and a
- * reflection - these feed the record of work and stay open after approval.
+ * Whether each lesson was taught is recorded on the Record of Work page and
+ * shown back here, read-only, once the week is approved.
  */
 @Component({
     selector: 'app-lesson-plans',
@@ -58,7 +57,6 @@ export class LessonPlansComponent implements OnInit {
     statusBadges = STATUS_BADGES;
     statusClasses = STATUS_CLASSES;
     taughtLabels = TAUGHT_LABELS;
-    taughtOptions = [LessonTaughtStatus.NotRecorded, LessonTaughtStatus.Taught, LessonTaughtStatus.PartlyTaught, LessonTaughtStatus.NotTaught];
 
     constructor(private route: ActivatedRoute, private router: Router, private toastr: ToastrService,
                 private teachingSvc: TeachingDocumentsService, private schemeSvc: SchemesOfWorkService,
@@ -308,23 +306,9 @@ export class LessonPlansComponent implements OnInit {
         if (this.dirtyPlans.size) e.preventDefault();
     }
 
-    saveAfterLesson(p: LessonPlan) {
-        if ((p.taughtStatus === LessonTaughtStatus.Taught || p.taughtStatus === LessonTaughtStatus.PartlyTaught) && !p.taughtOn && !p.lessonDate) {
-            this.toastr.info('Enter the date the lesson was taught.');
-            return;
-        }
-        this.svc.afterLesson(p.id, {summary: p.summary, reflection: p.reflection, taughtStatus: +p.taughtStatus, taughtOn: p.taughtOn || p.lessonDate})
-            .subscribe({
-                next: (w) => {
-                    let saved = w.plans.find((x) => x.id === p.id);
-                    if (saved) {
-                        normalise(saved);
-                        Object.assign(p, {summary: saved.summary, reflection: saved.reflection, taughtStatus: saved.taughtStatus, taughtOn: saved.taughtOn});
-                    }
-                    this.toastr.success('After-lesson notes saved' + (p.schemeOfWorkLessonId ? ' to the record of work.' : '.'));
-                },
-                error: (err) => this.toastr.error(err.error?.message || 'Error saving the notes.')
-            });
+    // Whether lessons were taught is recorded there, against the scheme.
+    openRecordOfWork() {
+        this.router.navigate(['/teaching/record-of-work'], {queryParams: {schemeId: this.week!.scheme.id}});
     }
 
     addPlan() {
@@ -347,7 +331,7 @@ export class LessonPlansComponent implements OnInit {
             title: 'Refresh from the scheme?',
             html: '<div class="text-start small">Takes the strand, sub-strand, learning outcomes, key inquiry questions, ' +
                 'learning resources and lesson development steps from the scheme of work, and adds plans for any scheme ' +
-                'lessons this week is missing. Dates, times, the rest of the lesson flow and after-lesson notes stay as they are.' +
+                'lessons this week is missing. Dates, times and the rest of the lesson flow stay as they are.' +
                 '<br><br><b>Fill blanks</b> keeps what you have typed and only fills empty fields.<br>' +
                 '<b>Replace</b> overwrites those fields with the scheme\'s current wording.</div>',
             width: 520, position: 'top', icon: 'question',

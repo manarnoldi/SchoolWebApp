@@ -143,11 +143,6 @@ export class LessonPlansService {
     deletePlan(id: number): Observable<LessonPlanWeek> {
         return this.http.delete<LessonPlanWeek>(`/lessonPlans/plans/${id}`);
     }
-
-    afterLesson(id: number, body: {summary: string | null; reflection: string | null;
-        taughtStatus: LessonTaughtStatus; taughtOn: string | null}): Observable<LessonPlanWeek> {
-        return this.http.put<LessonPlanWeek>(`/lessonPlans/plans/${id}/afterLesson`, body);
-    }
 }
 
 @Injectable({providedIn: 'root'})

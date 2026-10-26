@@ -124,8 +124,8 @@ export function printLessonPlans(week: LessonPlanWeek, school: PrintSchool): voi
                 <tr><td></td><td><b>Extended activities</b><br>${text(p.extendedActivities)}</td></tr>
                 <tr><td>${mins(p.conclusionMinutes)}</td><td><b>Conclusion</b><br>${text(p.conclusion)}</td></tr>
             </table>
-            <div class="block"><b>Summary:</b> ${text(p.summary)}</div>
-            <div class="block"><b>Reflection on the lesson / self-remarks:</b> ${text(p.reflection) || '.....................................................................'}</div>
+            <div class="block"><b>Summary:</b> ${text(p.workCovered) || '.....................................................................'}</div>
+            <div class="block"><b>Reflection on the lesson / self-remarks:</b> ${text(p.remarks) || '.....................................................................'}</div>
             <div class="sign"><div>Teacher: ${escapeHtml(s.staffName)}</div><div>HOD's signature &amp; date</div></div>
         </div>`;
     }).join('');
