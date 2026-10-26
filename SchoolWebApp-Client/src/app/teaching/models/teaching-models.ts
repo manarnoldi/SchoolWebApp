@@ -80,6 +80,7 @@ export interface TeachingAssignment {
     className: string;
     learningLevelId: number;
     learningLevelName: string;
+    learningLevelRank: number;
     departmentId: number;
     departmentName: string | null;
     schemeOfWorkId: number | null;
@@ -276,6 +277,7 @@ export interface TrackerRow {
     className: string;
     learningLevelId: number;
     learningLevelName: string;
+    learningLevelRank: number;
     departmentId: number;
     departmentName: string | null;
     scheme: TrackerCell;

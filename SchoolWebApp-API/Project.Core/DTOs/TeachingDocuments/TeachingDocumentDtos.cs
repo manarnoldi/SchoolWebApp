@@ -39,6 +39,7 @@ namespace SchoolWebApp.Core.DTOs.TeachingDocuments
         public string ClassName { get; set; } = "";
         public int LearningLevelId { get; set; }
         public string LearningLevelName { get; set; } = "";
+        public int LearningLevelRank { get; set; }
         public int DepartmentId { get; set; }
         public string? DepartmentName { get; set; }
         public int? SchemeOfWorkId { get; set; }
@@ -364,6 +365,7 @@ namespace SchoolWebApp.Core.DTOs.TeachingDocuments
         public string ClassName { get; set; } = "";
         public int LearningLevelId { get; set; }
         public string LearningLevelName { get; set; } = "";
+        public int LearningLevelRank { get; set; }
         public int DepartmentId { get; set; }
         public string? DepartmentName { get; set; }
         public TrackerCellDto Scheme { get; set; } = new();

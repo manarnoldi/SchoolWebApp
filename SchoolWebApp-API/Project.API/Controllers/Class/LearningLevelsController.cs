@@ -36,7 +36,9 @@ namespace SchoolWebApp.API.Controllers.Class
         {
             try
             {
-                return Ok(_mapper.Map<List<LearningLevelDto>>(await _unitOfWork.LearningLevels.Find(includeProperties: "EducationLevel")));
+                // In their set order (Rank), so every grade dropdown lists them that way.
+                return Ok(_mapper.Map<List<LearningLevelDto>>(await _unitOfWork.LearningLevels.Find(
+                    orderBy: q => q.OrderBy(l => l.Rank).ThenBy(l => l.Name), includeProperties: "EducationLevel")));
             }
             catch (Exception ex)
             {

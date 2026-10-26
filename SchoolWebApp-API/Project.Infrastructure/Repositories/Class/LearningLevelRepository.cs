@@ -22,7 +22,7 @@ namespace SchoolWebApp.Infrastructure.Repositories.Class
             if (curriculumId != null)
                 query = query.Where(e => e.EducationLevel.CurriculumId == curriculumId);
 
-            var learningLevels = await query.ToListAsync();
+            var learningLevels = await query.OrderBy(l => l.Rank).ThenBy(l => l.Name).ToListAsync();
             return learningLevels;
         }
     }

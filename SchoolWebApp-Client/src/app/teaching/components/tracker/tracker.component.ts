@@ -80,7 +80,8 @@ export class TrackerComponent implements OnInit {
 
     // Filter options come from the rows themselves.
     get departments() { return this.distinct((r) => r.departmentId, (r) => r.departmentName || '-'); }
-    get grades() { return this.distinct((r) => r.learningLevelId, (r) => r.learningLevelName); }
+    // Grades in their set order (Learning Levels > Rank).
+    get grades() { return this.distinct((r) => r.learningLevelId, (r) => r.learningLevelName, (r) => r.learningLevelRank); }
     // Subjects in their set order (Subjects > Rank).
     get subjects() { return this.distinct((r) => r.subjectId, (r) => r.subjectName, (r) => r.subjectRank); }
 

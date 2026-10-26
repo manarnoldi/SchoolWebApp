@@ -110,7 +110,8 @@ export class TeachingAssignmentsComponent implements OnInit {
 
     get teachers() { return this.options((r) => r.staffDetailsId, (r) => r.staffName); }
     get departments() { return this.options((r) => r.departmentId, (r) => r.departmentName || '-'); }
-    get grades() { return this.options((r) => r.learningLevelId, (r) => r.learningLevelName); }
+    // Grades in their set order (Learning Levels > Rank).
+    get grades() { return this.options((r) => r.learningLevelId, (r) => r.learningLevelName, () => true, (r) => r.learningLevelRank); }
     // Subjects in their set order (Subjects > Rank), narrowed to the chosen department.
     get subjects() {
         return this.options((r) => r.subjectId, (r) => r.subjectName,

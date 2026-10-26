@@ -127,6 +127,7 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
                     ClassName = cls?.Name ?? "",
                     LearningLevelId = cls?.LearningLevelId ?? 0,
                     LearningLevelName = cls?.LearningLevel?.Name ?? "",
+                    LearningLevelRank = cls?.LearningLevel?.Rank ?? 0,
                     DepartmentId = subject?.DepartmentId ?? 0,
                     DepartmentName = subject?.Department?.Name,
                     SchemeOfWorkId = scheme?.Id,
@@ -224,6 +225,7 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
                     ClassName = a.ClassName,
                     LearningLevelId = a.LearningLevelId,
                     LearningLevelName = a.LearningLevelName,
+                    LearningLevelRank = a.LearningLevelRank,
                     DepartmentId = a.DepartmentId,
                     DepartmentName = a.DepartmentName
                 };
