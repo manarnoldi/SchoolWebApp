@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import Swal from 'sweetalert2';
@@ -241,7 +241,7 @@ export class LessonPlansComponent implements OnInit {
 
     // ---------- Saving ----------
 
-    savePlan(p: LessonPlan, after?: () => void) {
+    savePlan(p: LessonPlan, after?: () => void, failed?: () => void) {
         this.svc.savePlan(p).subscribe({
             next: (w) => {
                 // Keep the other lessons' unsaved edits: take only this plan back.
@@ -251,14 +251,34 @@ export class LessonPlansComponent implements OnInit {
                 this.toastr.success(`Lesson ${p.lessonNo} saved.`);
                 after?.();
             },
-            error: (err) => this.toastr.error(err.error?.message || 'Error saving the lesson plan.')
+            error: (err) => {
+                this.toastr.error(err.error?.message || 'Error saving the lesson plan.');
+                failed?.();
+            }
         });
     }
 
-    saveAll() {
+    // Saves every lesson with unsaved edits, one after another; true when all saved.
+    saveAll(): Promise<boolean> {
         let plans = this.week!.plans.filter((p) => this.dirtyPlans.has(p.id));
-        let next = () => { let p = plans.shift(); if (p) this.savePlan(p, next); };
-        next();
+        return new Promise((resolve) => {
+            let next = () => {
+                let p = plans.shift();
+                if (p) this.savePlan(p, next, () => resolve(false));
+                else resolve(true);
+            };
+            next();
+        });
+    }
+
+    // Submitting sends the week as saved, so unsaved lessons are saved first;
+    // a failed save stops the submit rather than losing the edits.
+    saveBeforeSubmit = (): Promise<boolean> => this.dirtyPlans.size ? this.saveAll() : Promise.resolve(true);
+
+    // Closing or reloading the tab with unsaved lessons asks first.
+    @HostListener('window:beforeunload', ['$event'])
+    warnUnsaved(e: BeforeUnloadEvent) {
+        if (this.dirtyPlans.size) e.preventDefault();
     }
 
     saveAfterLesson(p: LessonPlan) {

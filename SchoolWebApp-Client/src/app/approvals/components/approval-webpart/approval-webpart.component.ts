@@ -17,6 +17,9 @@ export class ApprovalWebpartComponent implements OnChanges {
     // Users to pre-select as approvers (e.g. the subject's head of department):
     // a step gets one pre-selected when exactly one of them holds its role.
     @Input() preferredApproverIds: number[] = [];
+    // Run after the user confirms Submit and before the request is sent - e.g. to
+    // save edits still on screen. Resolve false to cancel the submit.
+    @Input() beforeSubmit: (() => Promise<boolean>) | null = null;
     @Output() statusChanged = new EventEmitter<ApprovalRequest | null>();
     @Output() workflowLoaded = new EventEmitter<ApprovalWorkflow | null>();
     @Output() requestLoaded = new EventEmitter<ApprovalRequest | null>();
@@ -161,8 +164,10 @@ export class ApprovalWebpartComponent implements OnChanges {
             title: 'Submit for approval?',
             width: 400, position: 'top', padding: '1em', icon: 'question',
             showCancelButton: true, confirmButtonText: 'Submit'
-        }).then(r => {
+        }).then(async r => {
             if (!r.value) return;
+            // Let the page save unsaved edits first; a failed save stops the submit.
+            if (this.beforeSubmit && !(await this.beforeSubmit())) return;
             this.svc.submit(payload).subscribe({
                 next: (req) => {
                     this.request = req;

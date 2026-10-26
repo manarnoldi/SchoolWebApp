@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import Swal from 'sweetalert2';
@@ -337,7 +337,7 @@ export class SchemesOfWorkComponent implements OnInit {
 
     // ---------- Actions ----------
 
-    save(after?: () => void) {
+    save(after?: () => void, failed?: () => void) {
         if (!this.scheme) return;
         if (this.weeksChanged) this.applyGrid();
         this.saving = true;
@@ -348,8 +348,23 @@ export class SchemesOfWorkComponent implements OnInit {
                 this.toastr.success('Scheme of work saved.');
                 after?.();
             },
-            error: (err) => { this.saving = false; this.toastr.error(err.error?.message || 'Error saving the scheme.'); }
+            error: (err) => {
+                this.saving = false;
+                this.toastr.error(err.error?.message || 'Error saving the scheme.');
+                failed?.();
+            }
         });
+    }
+
+    // Submitting sends the scheme as saved, so unsaved edits are saved first;
+    // a failed save stops the submit rather than losing the edits.
+    saveBeforeSubmit = (): Promise<boolean> =>
+        this.dirty ? new Promise((resolve) => this.save(() => resolve(true), () => resolve(false))) : Promise.resolve(true);
+
+    // Closing or reloading the tab with unsaved edits asks first.
+    @HostListener('window:beforeunload', ['$event'])
+    warnUnsaved(e: BeforeUnloadEvent) {
+        if (this.dirty) e.preventDefault();
     }
 
     generate() {

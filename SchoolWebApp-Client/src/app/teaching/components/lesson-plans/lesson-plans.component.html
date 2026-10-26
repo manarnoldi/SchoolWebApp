@@ -275,6 +275,7 @@
                             [entityId]="week.id"
                             [currentUserId]="context?.userId || null"
                             [preferredApproverIds]="preferredApprovers"
+                            [beforeSubmit]="saveBeforeSubmit"
                             (statusChanged)="onApprovalChanged()"></app-approval-webpart>
                     </div>
                     <div class="col-lg-6">
