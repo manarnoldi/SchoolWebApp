@@ -884,7 +884,7 @@ namespace SchoolWebApp.API.Services.CBE
         }
 
         // The subject a link names: "Environmental activities" -> "Environmental Activities (including ...)".
-        private static int? SubjectFor(string area, IEnumerable<(int Id, string Name)> subjects)
+        public static int? SubjectFor(string area, IEnumerable<(int Id, string Name)> subjects)
         {
             var key = Key(area);
             if (key.Length < 4) return null;
@@ -907,7 +907,7 @@ namespace SchoolWebApp.API.Services.CBE
         }
 
         // Comparison key: case, spacing and punctuation ignored.
-        private static string Key(string? s) => Regex.Replace((s ?? "").ToLowerInvariant(), @"[^a-z0-9]", "");
+        public static string Key(string? s) => Regex.Replace((s ?? "").ToLowerInvariant(), @"[^a-z0-9]", "");
 
         // "1.0" / "1" / "1.0." compare equal; "1.1" stays distinct from "11".
         private static string NumKey(string? s)

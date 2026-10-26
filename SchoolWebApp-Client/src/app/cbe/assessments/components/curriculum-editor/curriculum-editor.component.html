@@ -1,0 +1,245 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+        <div class="card card-outline card-primary mb-2">
+            <div class="card-body p-2">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-5">
+                        <label class="form-label mb-0 small">Subject / learning area</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="subjectId" (ngModelChange)="pick()">
+                            <option [ngValue]="null">- choose -</option>
+                            <option *ngFor="let s of subjects" [ngValue]="s.id">{{ s.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label mb-0 small">Grade</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="learningLevelId" (ngModelChange)="pick()">
+                            <option [ngValue]="null">- choose -</option>
+                            <option *ngFor="let l of levels" [ngValue]="l.id">{{ l.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 small text-muted">
+                        Strands, sub-strands, outcomes, experiences, questions and PCIs have their own pages under CBE Settings.
+                        <a *ngIf="data" [routerLink]="['/teaching/curriculum']" [queryParams]="{subjectId: subjectId, learningLevelId: learningLevelId}">
+                            View the whole design</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="!data" class="text-center text-muted p-3">Choose a subject and grade.</div>
+
+        <ng-container *ngIf="data">
+            <ul class="nav nav-tabs mb-2">
+                <li class="nav-item" *ngFor="let t of tabs">
+                    <a class="nav-link py-1" href="javascript:void(0)" [class.active]="tab === t.id" (click)="setTab(t.id)">{{ t.label }}</a>
+                </li>
+                <li class="nav-item ms-auto" *ngIf="dirty"><span class="badge bg-warning text-dark mt-2">unsaved changes</span></li>
+            </ul>
+
+            <!-- ===== Design ===== -->
+            <div *ngIf="tab === 'design'" class="card">
+                <div class="card-body p-2">
+                    <div class="row g-2">
+                        <div class="col-md-8">
+                            <label class="form-label mb-0 small">Title</label>
+                            <input class="form-control form-control-sm" [(ngModel)]="data.title" (ngModelChange)="touch()"
+                                placeholder="e.g. Pre Primary School Curriculum Design - Christian Religious Education - Pre Primary I">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label mb-0 small">Lessons per week</label>
+                            <input type="number" min="1" max="40" class="form-control form-control-sm" [(ngModel)]="data.lessonsPerWeek" (ngModelChange)="touch()">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label mb-0 small">Source (publisher, edition)</label>
+                            <input class="form-control form-control-sm" [(ngModel)]="data.source" (ngModelChange)="touch()">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label mb-0 small">Essence statement</label>
+                            <textarea class="form-control form-control-sm" rows="8" [(ngModel)]="data.essenceStatement" (ngModelChange)="touch()"></textarea>
+                        </div>
+                    </div>
+                    <small class="text-muted">Lessons per week also becomes the subject's lesson allocation for the grade, which schemes of work use.</small>
+                    <div class="text-end mt-2">
+                        <button class="btn btn-sm btn-success" [disabled]="saving || !dirty" (click)="saveDesign()"><i class="fas fa-save"></i> Save design</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== Sub-strand details ===== -->
+            <div *ngIf="tab === 'substrands'" class="card">
+                <div class="card-body p-2">
+                    <div *ngIf="data.strands.length === 0" class="text-muted">This subject and grade has no strands yet.</div>
+                    <div class="row g-2 align-items-end mb-2" *ngIf="data.strands.length">
+                        <div class="col-md-6">
+                            <label class="form-label mb-0 small">Sub-strand</label>
+                            <select class="form-select form-select-sm" [ngModel]="subStrandId" (ngModelChange)="selectSubStrand($event)">
+                                <optgroup *ngFor="let s of data.strands" [label]="(s.code || '') + ' ' + s.name">
+                                    <option *ngFor="let ss of s.subStrands" [ngValue]="ss.id">{{ ss.code }} {{ ss.name }}</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+
+                    <ng-container *ngIf="subStrand as ss">
+                        <ng-container *ngTemplateOutlet="statements; context: {title: 'Core Competencies to be developed', list: ss.coreCompetencies,
+                            lookup: data.competencies, lookupLabel: 'Core competency', example: 'Communication and Collaboration: Speaking engagingly'}"></ng-container>
+                        <ng-container *ngTemplateOutlet="statements; context: {title: 'Values', list: ss.values,
+                            lookup: data.values, lookupLabel: 'National value', example: 'Unity: Cooperation'}"></ng-container>
+                        <ng-container *ngTemplateOutlet="statements; context: {title: 'Link to other Learning Areas', list: ss.learningAreaLinks,
+                            lookup: data.subjects, lookupLabel: 'Subject', example: 'Environmental Activities'}"></ng-container>
+
+                        <div class="border rounded p-2 mb-2">
+                            <strong class="small">Suggestions for this sub-strand</strong>
+                            <small class="text-muted"> - where the design gives them per sub-strand (upper grades); one per line</small>
+                            <div class="row g-2 mt-0">
+                                <div class="col-md-4">
+                                    <label class="form-label mb-0 small">Suggested learning resources</label>
+                                    <textarea class="form-control form-control-sm" rows="4" [(ngModel)]="ss.suggestedResources" (ngModelChange)="touch()"></textarea>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label mb-0 small">Suggested assessment methods</label>
+                                    <textarea class="form-control form-control-sm" rows="4" [(ngModel)]="ss.suggestedAssessmentMethods" (ngModelChange)="touch()"></textarea>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label mb-0 small">Suggested non-formal activities</label>
+                                    <textarea class="form-control form-control-sm" rows="4" [(ngModel)]="ss.suggestedNonFormalActivities" (ngModelChange)="touch()"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <button class="btn btn-sm btn-success" [disabled]="saving || !dirty" (click)="saveSubStrand()">
+                                <i class="fas fa-save"></i> Save {{ ss.code }} {{ ss.name }}</button>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+
+            <!-- ===== Rubrics ===== -->
+            <div *ngIf="tab === 'rubrics'" class="card">
+                <div class="card-body p-2">
+                    <div *ngIf="data.strands.length === 0" class="text-muted">This subject and grade has no strands yet.</div>
+                    <div class="row g-2 align-items-end mb-2" *ngIf="data.strands.length">
+                        <div class="col-md-6">
+                            <label class="form-label mb-0 small">Strand</label>
+                            <select class="form-select form-select-sm" [ngModel]="strandId" (ngModelChange)="selectStrand($event)">
+                                <option *ngFor="let s of data.strands" [ngValue]="s.id">{{ s.code }} {{ s.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <ng-container *ngIf="strand as s">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered small mb-1">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="min-width: 130px;">For</th>
+                                        <th style="min-width: 180px;">Indicator</th>
+                                        <th style="min-width: 170px;">Exceeds Expectations</th>
+                                        <th style="min-width: 170px;">Meets Expectations</th>
+                                        <th style="min-width: 170px;">Approaches Expectations</th>
+                                        <th style="min-width: 170px;">Below Expectations</th>
+                                        <th style="width: 70px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let r of s.rubrics; let i = index">
+                                        <td>
+                                            <select class="form-select form-select-sm" [(ngModel)]="r.subStrandId" (ngModelChange)="touch()">
+                                                <option [ngValue]="null">Whole strand</option>
+                                                <option *ngFor="let ss of s.subStrands" [ngValue]="ss.id">{{ ss.code }} {{ ss.name }}</option>
+                                            </select>
+                                        </td>
+                                        <td><textarea class="form-control form-control-sm" rows="4" [(ngModel)]="r.indicator" (ngModelChange)="touch()"></textarea></td>
+                                        <td><textarea class="form-control form-control-sm" rows="4" [(ngModel)]="r.exceedsExpectations" (ngModelChange)="touch()"></textarea></td>
+                                        <td><textarea class="form-control form-control-sm" rows="4" [(ngModel)]="r.meetsExpectations" (ngModelChange)="touch()"></textarea></td>
+                                        <td><textarea class="form-control form-control-sm" rows="4" [(ngModel)]="r.approachesExpectations" (ngModelChange)="touch()"></textarea></td>
+                                        <td><textarea class="form-control form-control-sm" rows="4" [(ngModel)]="r.belowExpectations" (ngModelChange)="touch()"></textarea></td>
+                                        <td class="text-center">
+                                            <button class="btn btn-xs btn-link p-0" (click)="move(s.rubrics, i, -1)" [disabled]="i === 0" title="Move up"><i class="fas fa-arrow-up"></i></button>
+                                            <button class="btn btn-xs btn-link p-0 ms-1" (click)="move(s.rubrics, i, 1)" [disabled]="i === s.rubrics.length - 1" title="Move down"><i class="fas fa-arrow-down"></i></button>
+                                            <button class="btn btn-xs btn-link text-danger p-0 ms-1" (click)="confirmRemove(s.rubrics, i, 'rubric row')" title="Remove"><i class="fas fa-times"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="s.rubrics.length === 0"><td colspan="7" class="text-muted">No rubric for this strand yet.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-sm btn-outline-primary" (click)="add(s.rubrics, blankRubric())"><i class="fas fa-plus"></i> Indicator</button>
+                            <button class="btn btn-sm btn-success" [disabled]="saving || !dirty" (click)="saveRubrics()"><i class="fas fa-save"></i> Save strand {{ s.code }} rubrics</button>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+
+            <!-- ===== Appendix ===== -->
+            <div *ngIf="tab === 'appendix'" class="card">
+                <div class="card-body p-2">
+                    <div class="row g-2">
+                        <div class="col-lg-6" *ngFor="let c of categories">
+                            <div class="border rounded p-2 h-100">
+                                <strong class="small">{{ c.label }}</strong>
+                                <div *ngFor="let item of itemsOf(c.value)" class="input-group input-group-sm mt-1">
+                                    <input class="form-control" [(ngModel)]="item.name" (ngModelChange)="touch()">
+                                    <button class="btn btn-outline-danger" (click)="removeItem(item)" title="Remove"><i class="fas fa-times"></i></button>
+                                </div>
+                                <button class="btn btn-xs btn-link px-0" (click)="addItem(c.value)"><i class="fas fa-plus"></i> Add</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-end mt-2">
+                        <button class="btn btn-sm btn-success" [disabled]="saving || !dirty" (click)="saveDesign()"><i class="fas fa-save"></i> Save appendix</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== Other sections ===== -->
+            <div *ngIf="tab === 'sections'" class="card">
+                <div class="card-body p-2">
+                    <small class="text-muted">Any other part of the design, word for word - national goals of education, level learning outcomes,
+                        introduction, community service learning appendix ...</small>
+                    <div *ngFor="let sec of data.sections; let i = index" class="border rounded p-2 mt-2">
+                        <div class="d-flex gap-2 align-items-center">
+                            <input class="form-control form-control-sm" [(ngModel)]="sec.title" (ngModelChange)="touch()" placeholder="Heading">
+                            <button class="btn btn-sm btn-outline-secondary" (click)="move(data.sections, i, -1)" [disabled]="i === 0" title="Move up"><i class="fas fa-arrow-up"></i></button>
+                            <button class="btn btn-sm btn-outline-secondary" (click)="move(data.sections, i, 1)" [disabled]="i === data.sections.length - 1" title="Move down"><i class="fas fa-arrow-down"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" (click)="confirmRemove(data.sections, i, 'section')" title="Remove"><i class="fas fa-times"></i></button>
+                        </div>
+                        <textarea class="form-control form-control-sm mt-1" rows="8" [(ngModel)]="sec.content" (ngModelChange)="touch()"></textarea>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <button class="btn btn-sm btn-outline-primary" (click)="add(data.sections, {title: '', content: null})"><i class="fas fa-plus"></i> Section</button>
+                        <button class="btn btn-sm btn-success" [disabled]="saving || !dirty" (click)="saveDesign()"><i class="fas fa-save"></i> Save sections</button>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</section>
+
+<!-- A sub-strand's list of "Name: statement" entries, each linked by dropdown. -->
+<ng-template #statements let-title="title" let-list="list" let-lookup="lookup" let-lookupLabel="lookupLabel" let-example="example">
+    <div class="border rounded p-2 mb-2">
+        <strong class="small">{{ title }}</strong>
+        <div *ngFor="let x of list; let i = index" class="row g-1 mt-1 align-items-start">
+            <div class="col-md-3">
+                <input class="form-control form-control-sm" [(ngModel)]="x.name" (ngModelChange)="touch()" [placeholder]="'e.g. ' + example">
+            </div>
+            <div class="col-md-2">
+                <select class="form-select form-select-sm" [(ngModel)]="x.linkId" (ngModelChange)="touch()" [title]="lookupLabel">
+                    <option [ngValue]="null">- {{ lookupLabel }}: by name -</option>
+                    <option *ngFor="let l of lookup" [ngValue]="l.id">{{ l.name }}</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <textarea class="form-control form-control-sm" rows="2" [(ngModel)]="x.description" (ngModelChange)="touch()" placeholder="The learner ..."></textarea>
+            </div>
+            <div class="col-md-1 text-end">
+                <button class="btn btn-xs btn-link p-0" (click)="move(list, i, -1)" [disabled]="i === 0" title="Move up"><i class="fas fa-arrow-up"></i></button>
+                <button class="btn btn-xs btn-link text-danger p-0 ms-1" (click)="remove(list, i)" title="Remove"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+        <button class="btn btn-xs btn-link px-0" (click)="add(list, blankStatement())"><i class="fas fa-plus"></i> Add</button>
+    </div>
+</ng-template>

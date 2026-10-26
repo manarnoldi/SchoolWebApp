@@ -199,6 +199,7 @@ export const MENU = [
                     '/cbe/assessments/themes',
                     '/cbe/assessments/strands',
                     '/cbe/assessments/curriculum-upload',
+                    '/cbe/assessments/curriculum-editor',
                     '/cbe/assessments/sub-strands',
                     '/cbe/assessments/specific-outcomes',
                     '/cbe/assessments/general-outcomes',

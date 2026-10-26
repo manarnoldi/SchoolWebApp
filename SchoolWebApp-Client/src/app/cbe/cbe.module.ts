@@ -1,4 +1,6 @@
 import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { CurriculumEditorComponent } from './assessments/components/curriculum-editor/curriculum-editor.component';
 import { CurriculumUploadComponent } from './assessments/components/curriculum-upload/curriculum-upload.component';
 import { CommonModule } from '@angular/common';
 import { CompetenciesComponent } from './assessments/components/competencies/competencies.component';
@@ -49,6 +51,7 @@ import { PCIAddFormComponent } from './assessments/components/pcis/pci-add-form/
 
 @NgModule({
   declarations: [
+    CurriculumEditorComponent,
     CurriculumUploadComponent,
     CbeComponent,
     CompetenciesComponent,
@@ -96,7 +99,7 @@ import { PCIAddFormComponent } from './assessments/components/pcis/pci-add-form/
     PCIAddFormComponent
   ],
   imports: [
-    CommonModule, SharedModule
+    CommonModule, SharedModule, RouterModule
   ]
 })
 export class CbeModule { }

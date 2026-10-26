@@ -103,6 +103,7 @@ import { ScoreTypesComponent } from './cbe/cocurriculum/components/score-types/s
 import { CommunityServiceActivitiesComponent } from './cbe/community-service/components/activities/activities.component';
 import { SubStrandsComponent } from './cbe/assessments/components/sub-strands/sub-strands.component';
 import { CurriculumUploadComponent } from './cbe/assessments/components/curriculum-upload/curriculum-upload.component';
+import { CurriculumEditorComponent } from './cbe/assessments/components/curriculum-editor/curriculum-editor.component';
 import { BroadOutcomesComponent } from './cbe/assessments/components/broad-outcomes/broad-outcomes.component';
 import { SpecificOutcomesComponent } from './cbe/assessments/components/specific-outcomes/specific-outcomes.component';
 import { KeyQuestionsComponent } from './cbe/assessments/components/key-questions/key-questions.component';
@@ -308,6 +309,7 @@ const routes: Routes = [
             {path: 'community-service/activities', component: CommunityServiceActivitiesComponent},
             {path: 'assessments/sub-strands', component: SubStrandsComponent},
             {path: 'assessments/curriculum-upload', component: CurriculumUploadComponent},
+            {path: 'assessments/curriculum-editor', component: CurriculumEditorComponent},
             {path: 'assessments/broad-outcomes', component: BroadOutcomesComponent},
             {path: 'assessments/specific-outcomes', component: SpecificOutcomesComponent},
             {path: 'assessments/key-questions', component: KeyQuestionsComponent},
