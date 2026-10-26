@@ -124,21 +124,14 @@ export class SchemesOfWorkComponent implements OnInit {
         this.regroup();
     }
 
-    // ---------- Collapsible weeks ----------
+    // ---------- Collapsible weeks: one open at a time ----------
 
     openWeeks = new Set<number>();
     private openedSchemeId: number | null = null;
 
+    // Opening a week closes the one that was open; clicking the open week closes it.
     toggleWeek(weekNo: number) {
-        this.openWeeks.has(weekNo) ? this.openWeeks.delete(weekNo) : this.openWeeks.add(weekNo);
-    }
-
-    get allWeeksOpen(): boolean {
-        return this.groups.length > 0 && this.groups.every((g) => this.openWeeks.has(g.weekNo));
-    }
-
-    toggleAllWeeks() {
-        this.openWeeks = this.allWeeksOpen ? new Set() : new Set(this.groups.map((g) => g.weekNo));
+        this.openWeeks = this.openWeeks.has(weekNo) ? new Set() : new Set([weekNo]);
     }
 
     filledIn(g: WeekGroup): number {
@@ -234,7 +227,7 @@ export class SchemesOfWorkComponent implements OnInit {
     addLesson(g: WeekGroup) {
         let next = g.lessons.reduce((m, l) => Math.max(m, l.lessonNo), 0) + 1;
         this.scheme!.lessons.push(blankLesson(g.weekNo, next));
-        this.openWeeks.add(g.weekNo);
+        this.openWeeks = new Set([g.weekNo]);
         this.dirty = true;
         this.regroup();
     }

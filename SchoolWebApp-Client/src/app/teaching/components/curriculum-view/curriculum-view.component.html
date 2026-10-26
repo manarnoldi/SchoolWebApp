@@ -57,12 +57,7 @@
                 </div>
             </div>
 
-            <!-- Strand by strand: click a strand to open or close it -->
-            <div class="text-end mb-1">
-                <button class="btn btn-xs btn-link py-0" (click)="toggleAll()">
-                    <i class="fas" [ngClass]="allOpen ? 'fa-compress-alt' : 'fa-expand-alt'"></i>
-                    {{ allOpen ? 'Collapse all strands' : 'Expand all strands' }}</button>
-            </div>
+            <!-- Strand by strand, one open at a time: click a strand to open it -->
             <div *ngFor="let s of view.strands" class="card mb-2">
                 <div class="card-header p-2 bg-light d-flex justify-content-between align-items-center" style="cursor: pointer;"
                     (click)="toggleStrand(s.id)" [attr.aria-expanded]="openStrands.has(s.id)">

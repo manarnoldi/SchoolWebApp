@@ -137,16 +137,9 @@ export class CurriculumViewComponent implements OnInit {
         return s.subStrands.reduce((n, ss) => n + (ss.lessons || 0), 0);
     }
 
+    // One strand open at a time: opening one closes the other; clicking the open one closes it.
     toggleStrand(id: number) {
-        this.openStrands.has(id) ? this.openStrands.delete(id) : this.openStrands.add(id);
-    }
-
-    get allOpen(): boolean {
-        return !!this.view && this.view.strands.every((s) => this.openStrands.has(s.id));
-    }
-
-    toggleAll() {
-        this.openStrands = this.allOpen ? new Set() : new Set(this.view!.strands.map((s) => s.id));
+        this.openStrands = this.openStrands.has(id) ? new Set() : new Set([id]);
     }
 
     // The subject outcome's letter, as the design numbers them.
