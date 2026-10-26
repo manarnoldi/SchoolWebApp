@@ -168,6 +168,7 @@ import { SchemesOfWorkComponent } from './teaching/components/schemes-of-work/sc
 import { LessonPlansComponent } from './teaching/components/lesson-plans/lesson-plans.component';
 import { RecordOfWorkComponent } from './teaching/components/record-of-work/record-of-work.component';
 import { TrackerComponent } from './teaching/components/tracker/tracker.component';
+import { CurriculumViewComponent } from './teaching/components/curriculum-view/curriculum-view.component';
 
 const routes: Routes = [
     {
@@ -465,6 +466,7 @@ const routes: Routes = [
             {path: 'lesson-plans', component: LessonPlansComponent},
             {path: 'record-of-work', component: RecordOfWorkComponent},
             {path: 'tracker', component: TrackerComponent},
+            {path: 'curriculum', component: CurriculumViewComponent},
             // Permission flag only (whole-school access), not a page.
             {path: 'admin', redirectTo: 'tracker', pathMatch: 'full'}
         ]

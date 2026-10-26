@@ -147,7 +147,9 @@ export const MENU = [
             // Permission flag (not a navigable feature). A role holding it sees
             // and opens every teacher's documents, as Administrators do. Heads of
             // department see their own departments without it.
-            {name: 'Whole-school Access (Admin)', iconClasses: 'fas fa-user-shield text-warning', path: ['/teaching/admin']}
+            {name: 'Whole-school Access (Admin)', iconClasses: 'fas fa-user-shield text-warning', path: ['/teaching/admin']},
+            // Read-only: the full curriculum design of a subject and grade.
+            {name: 'Curriculum', iconClasses: 'fas fa-book text-info', path: ['/teaching/curriculum']}
         ]
     },
     {

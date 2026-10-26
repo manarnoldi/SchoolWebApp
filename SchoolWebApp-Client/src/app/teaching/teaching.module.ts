@@ -10,6 +10,7 @@ import {LessonPlansComponent} from './components/lesson-plans/lesson-plans.compo
 import {RecordOfWorkComponent} from './components/record-of-work/record-of-work.component';
 import {TrackerComponent} from './components/tracker/tracker.component';
 import {SchemeImportComponent} from './components/scheme-import/scheme-import.component';
+import {CurriculumViewComponent} from './components/curriculum-view/curriculum-view.component';
 
 @NgModule({
     declarations: [
@@ -19,7 +20,8 @@ import {SchemeImportComponent} from './components/scheme-import/scheme-import.co
         LessonPlansComponent,
         RecordOfWorkComponent,
         TrackerComponent,
-        SchemeImportComponent
+        SchemeImportComponent,
+        CurriculumViewComponent
     ],
     imports: [CommonModule, RouterModule, SharedModule, ApprovalsModule]
 })
