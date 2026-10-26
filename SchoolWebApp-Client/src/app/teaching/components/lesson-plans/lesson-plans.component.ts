@@ -188,6 +188,33 @@ export class LessonPlansComponent implements OnInit {
         this.dirtyPlans.add(p.id);
     }
 
+    // Folded parts of a lesson ('flow', 'after'), keyed "planId:section"; all start folded.
+    openSections = new Set<string>();
+
+    isOpen(p: LessonPlan, section: string): boolean {
+        return this.openSections.has(`${p.id}:${section}`);
+    }
+
+    toggleSection(p: LessonPlan, section: string) {
+        let key = `${p.id}:${section}`;
+        this.openSections.has(key) ? this.openSections.delete(key) : this.openSections.add(key);
+    }
+
+    // What a folded lesson flow holds, e.g. "6 steps · 40 min".
+    flowSummary(p: LessonPlan): string {
+        let parts = [`${p.steps.length} step${p.steps.length === 1 ? '' : 's'}`];
+        let mins = this.totalMinutes(p);
+        parts.push(mins ? `${mins} min` : 'no timings');
+        if (!p.introduction?.trim() || !p.conclusion?.trim()) parts.push('introduction / conclusion to fill');
+        return parts.join(' · ');
+    }
+
+    // Text boxes as tall as their text (about 110 characters a line), 1 to 6 rows.
+    rowsFor(text: string | null | undefined): number {
+        let lines = (text || '').split('\n').reduce((n, l) => n + Math.max(1, Math.ceil(l.length / 110)), 0);
+        return Math.min(6, Math.max(1, lines));
+    }
+
     // ---------- Curriculum pickers ----------
 
     subStrandsOf(strandId: number | null): CurriculumSubStrand[] {

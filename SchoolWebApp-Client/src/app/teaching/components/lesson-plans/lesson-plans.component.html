@@ -128,68 +128,62 @@
                             <div class="row g-1 mt-1">
                                 <div class="col-md-6">
                                     <label class="form-label mb-0 small">Specific learning outcomes</label>
-                                    <textarea class="form-control form-control-sm" rows="4" [(ngModel)]="p.learningOutcomes" (ngModelChange)="touch(p)"></textarea>
+                                    <textarea class="form-control form-control-sm" [rows]="rowsFor(p.learningOutcomes)" [(ngModel)]="p.learningOutcomes" (ngModelChange)="touch(p)"></textarea>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label mb-0 small">Key inquiry question(s)</label>
-                                    <textarea class="form-control form-control-sm" rows="4" [(ngModel)]="p.keyInquiryQuestions" (ngModelChange)="touch(p)"></textarea>
+                                    <textarea class="form-control form-control-sm" [rows]="rowsFor(p.keyInquiryQuestions)" [(ngModel)]="p.keyInquiryQuestions" (ngModelChange)="touch(p)"></textarea>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label mb-0 small">Learning resources</label>
-                                    <textarea class="form-control form-control-sm" rows="3" [(ngModel)]="p.learningResources" (ngModelChange)="touch(p)"></textarea>
+                                    <textarea class="form-control form-control-sm" [rows]="rowsFor(p.learningResources)" [(ngModel)]="p.learningResources" (ngModelChange)="touch(p)"></textarea>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label mb-0 small">Organisation of learning</label>
-                                    <textarea class="form-control form-control-sm" rows="3" [(ngModel)]="p.organisationOfLearning" (ngModelChange)="touch(p)"
+                                    <textarea class="form-control form-control-sm" [rows]="rowsFor(p.organisationOfLearning)" [(ngModel)]="p.organisationOfLearning" (ngModelChange)="touch(p)"
                                         placeholder="e.g. In the classroom, individual and group work"></textarea>
                                 </div>
                             </div>
 
-                            <div class="border rounded p-2 mt-2 bg-light">
-                                <div class="d-flex justify-content-between">
-                                    <strong class="small">Lesson flow</strong>
-                                    <small class="text-muted">{{ totalMinutes(p) }} minutes in all</small>
+                            <!-- Lesson flow: folded by default, the header says how far it has got. -->
+                            <div class="border rounded mt-2 bg-light">
+                                <div class="d-flex justify-content-between align-items-center px-2 py-1" style="cursor: pointer;" (click)="toggleSection(p, 'flow')">
+                                    <strong class="small">
+                                        <i class="fas me-1" [ngClass]="isOpen(p, 'flow') ? 'fa-chevron-down' : 'fa-chevron-right'"></i>Lesson flow
+                                    </strong>
+                                    <small class="text-muted">{{ flowSummary(p) }}</small>
                                 </div>
-                                <div class="row g-1 mt-1">
-                                    <div class="col-md-10">
+                                <div *ngIf="isOpen(p, 'flow')" class="px-2 pb-2">
+                                    <div class="lp-flow-head">
                                         <label class="form-label mb-0 small">Introduction</label>
-                                        <textarea class="form-control form-control-sm" rows="2" [(ngModel)]="p.introduction" (ngModelChange)="touch(p)"></textarea>
+                                        <input type="number" min="0" class="form-control form-control-sm lp-min" placeholder="min" title="Minutes"
+                                            [(ngModel)]="p.introductionMinutes" (ngModelChange)="touch(p)">
                                     </div>
-                                    <div class="col-md-2">
-                                        <label class="form-label mb-0 small">Minutes</label>
-                                        <input type="number" min="0" class="form-control form-control-sm" [(ngModel)]="p.introductionMinutes" (ngModelChange)="touch(p)">
-                                    </div>
-                                </div>
-                                <div class="row g-1 mt-1">
-                                    <div class="col-md-10">
+                                    <textarea class="form-control form-control-sm" [rows]="rowsFor(p.introduction)" [(ngModel)]="p.introduction" (ngModelChange)="touch(p)"></textarea>
+
+                                    <div class="lp-flow-head mt-2">
                                         <label class="form-label mb-0 small">Lesson development</label>
-                                        <div *ngFor="let st of p.steps; let i = index" class="input-group input-group-sm mb-1">
-                                            <span class="input-group-text">Step {{ st.stepNo }}</span>
-                                            <textarea class="form-control" rows="2" [(ngModel)]="st.activity" (ngModelChange)="touch(p)"></textarea>
-                                            <button class="btn btn-outline-secondary" (click)="moveStep(p, i, -1)" [disabled]="i === 0" title="Move up"><i class="fas fa-arrow-up"></i></button>
-                                            <button class="btn btn-outline-secondary" (click)="moveStep(p, i, 1)" [disabled]="i === p.steps.length - 1" title="Move down"><i class="fas fa-arrow-down"></i></button>
-                                            <button class="btn btn-outline-danger" (click)="removeStep(p, i)" title="Remove step"><i class="fas fa-times"></i></button>
-                                        </div>
-                                        <button class="btn btn-xs btn-outline-primary py-0" (click)="addStep(p)"><i class="fas fa-plus"></i> Step</button>
+                                        <input type="number" min="0" class="form-control form-control-sm lp-min" placeholder="min" title="Minutes"
+                                            [(ngModel)]="p.developmentMinutes" (ngModelChange)="touch(p)">
                                     </div>
-                                    <div class="col-md-2">
-                                        <label class="form-label mb-0 small">Minutes</label>
-                                        <input type="number" min="0" class="form-control form-control-sm" [(ngModel)]="p.developmentMinutes" (ngModelChange)="touch(p)">
+                                    <div *ngFor="let st of p.steps; let i = index" class="input-group input-group-sm mb-1">
+                                        <span class="input-group-text">{{ st.stepNo }}</span>
+                                        <textarea class="form-control" [rows]="rowsFor(st.activity)" [(ngModel)]="st.activity" (ngModelChange)="touch(p)"></textarea>
+                                        <button class="btn btn-outline-secondary" (click)="moveStep(p, i, -1)" [disabled]="i === 0" title="Move up"><i class="fas fa-arrow-up"></i></button>
+                                        <button class="btn btn-outline-secondary" (click)="moveStep(p, i, 1)" [disabled]="i === p.steps.length - 1" title="Move down"><i class="fas fa-arrow-down"></i></button>
+                                        <button class="btn btn-outline-danger" (click)="removeStep(p, i)" title="Remove step"><i class="fas fa-times"></i></button>
                                     </div>
-                                </div>
-                                <div class="row g-1 mt-1">
-                                    <div class="col-md-10">
+                                    <button class="btn btn-xs btn-outline-primary py-0" (click)="addStep(p)"><i class="fas fa-plus"></i> Step</button>
+
+                                    <div class="lp-flow-head mt-2">
                                         <label class="form-label mb-0 small">Conclusion</label>
-                                        <textarea class="form-control form-control-sm" rows="2" [(ngModel)]="p.conclusion" (ngModelChange)="touch(p)"></textarea>
+                                        <input type="number" min="0" class="form-control form-control-sm lp-min" placeholder="min" title="Minutes"
+                                            [(ngModel)]="p.conclusionMinutes" (ngModelChange)="touch(p)">
                                     </div>
-                                    <div class="col-md-2">
-                                        <label class="form-label mb-0 small">Minutes</label>
-                                        <input type="number" min="0" class="form-control form-control-sm" [(ngModel)]="p.conclusionMinutes" (ngModelChange)="touch(p)">
-                                    </div>
-                                </div>
-                                <div class="mt-1">
-                                    <label class="form-label mb-0 small">Extended activities</label>
-                                    <textarea class="form-control form-control-sm" rows="2" [(ngModel)]="p.extendedActivities" (ngModelChange)="touch(p)"
+                                    <textarea class="form-control form-control-sm" [rows]="rowsFor(p.conclusion)" [(ngModel)]="p.conclusion" (ngModelChange)="touch(p)"></textarea>
+
+                                    <label class="form-label mb-0 mt-2 small">Extended activities</label>
+                                    <textarea class="form-control form-control-sm" [rows]="rowsFor(p.extendedActivities)" [(ngModel)]="p.extendedActivities" (ngModelChange)="touch(p)"
                                         placeholder="e.g. With the help of a parent / guardian at home..."></textarea>
                                 </div>
                             </div>
@@ -224,8 +218,15 @@
                         </ng-container>
 
                         <!-- After the lesson: open to the teacher even once approved -->
-                        <div class="border-top mt-2 pt-2">
-                            <strong class="small"><i class="fas fa-clipboard-check"></i> After the lesson</strong>
+                        <div class="border rounded mt-2">
+                            <div class="d-flex justify-content-between align-items-center px-2 py-1" style="cursor: pointer;" (click)="toggleSection(p, 'after')">
+                                <strong class="small">
+                                    <i class="fas me-1" [ngClass]="isOpen(p, 'after') ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+                                    <i class="fas fa-clipboard-check"></i> After the lesson
+                                </strong>
+                                <small class="text-muted">{{ p.summary || p.reflection ? 'notes written' : 'summary, reflection and whether it was taught' }}</small>
+                            </div>
+                            <div *ngIf="isOpen(p, 'after')" class="px-2 pb-2">
                             <ng-container *ngIf="week.canEdit">
                                 <div class="row g-1">
                                     <div class="col-md-3">
@@ -260,6 +261,7 @@
                             <div *ngIf="!week.canEdit" class="row small">
                                 <div class="col-md-6"><b>Summary</b><div class="pre">{{ p.summary }}</div></div>
                                 <div class="col-md-6"><b>Reflection</b><div class="pre">{{ p.reflection }}</div></div>
+                            </div>
                             </div>
                         </div>
                     </div>
