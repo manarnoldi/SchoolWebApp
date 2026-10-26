@@ -94,26 +94,74 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
 
         private static LessonPlan FromScheme(SchemeOfWorkLesson l, DateTime? date)
         {
-            var plan = new LessonPlan
+            var plan = new LessonPlan { SchemeOfWorkLessonId = l.Id, LessonNo = l.LessonNo, LessonDate = date };
+            ApplyScheme(plan, l, replace: true);
+            return plan;
+        }
+
+        /// <summary>
+        /// Copies what a plan takes from its scheme lesson: strand, sub-strand,
+        /// outcomes, key inquiry questions, resources, and the learning
+        /// experiences as lesson development steps. Without replace only blank
+        /// fields are filled, so the teacher's own wording stays.
+        /// </summary>
+        private static void ApplyScheme(LessonPlan plan, SchemeOfWorkLesson l, bool replace)
+        {
+            string? Take(string? current, string? fromScheme) =>
+                string.IsNullOrWhiteSpace(fromScheme) || (!replace && !string.IsNullOrWhiteSpace(current)) ? current : fromScheme;
+
+            if (replace || (plan.StrandId == null && string.IsNullOrWhiteSpace(plan.StrandName)))
             {
-                SchemeOfWorkLessonId = l.Id,
-                LessonNo = l.LessonNo,
-                LessonDate = date,
-                StrandId = l.StrandId,
-                SubStrandId = l.SubStrandId,
-                StrandName = l.StrandName,
-                SubStrandName = l.SubStrandName,
-                LearningOutcomes = l.LearningOutcomes,
-                KeyInquiryQuestions = l.KeyInquiryQuestions,
-                LearningResources = l.LearningResources
-            };
+                plan.StrandId = l.StrandId;
+                plan.SubStrandId = l.SubStrandId;
+                plan.StrandName = l.StrandName;
+                plan.SubStrandName = l.SubStrandName;
+            }
+            plan.LearningOutcomes = Take(plan.LearningOutcomes, l.LearningOutcomes);
+            plan.KeyInquiryQuestions = Take(plan.KeyInquiryQuestions, l.KeyInquiryQuestions);
+            plan.LearningResources = Take(plan.LearningResources, l.LearningResources);
+
             // The scheme's learning experiences become the lesson development steps.
             var steps = (l.LearningExperiences ?? "").Split('\n')
                 .Select(x => x.Trim().TrimStart('-', '•', '●', '*').Trim())
                 .Where(x => x.Length > 0 && !x.EndsWith(":"))
                 .ToList();
-            for (var i = 0; i < steps.Count; i++) plan.Steps.Add(new LessonPlanStep { StepNo = i + 1, Activity = steps[i] });
-            return plan;
+            if (steps.Count > 0 && (replace || plan.Steps.Count == 0)
+                && !plan.Steps.OrderBy(x => x.StepNo).Select(x => x.Activity).SequenceEqual(steps))
+            {
+                plan.Steps.Clear();
+                for (var i = 0; i < steps.Count; i++) plan.Steps.Add(new LessonPlanStep { StepNo = i + 1, Activity = steps[i] });
+            }
+        }
+
+        /// <summary>
+        /// POST api/lessonPlans/weeks/{id}/refreshFromScheme?replace=false -
+        /// brings a prepared week up to date with its scheme: plans take the
+        /// scheme lesson's current content (blank fields only, or everything the
+        /// scheme supplies with replace) and scheme lessons added since get a
+        /// plan. Dates, times, lesson flow and after-lesson notes are untouched.
+        /// </summary>
+        [HttpPost("weeks/{id}/refreshFromScheme")]
+        public async Task<IActionResult> RefreshFromScheme(int id, bool replace = false)
+        {
+            var (week, s, error) = await LoadWeekForEditAsync(id);
+            if (error != null) return error;
+            var lessons = await _db.SchemeOfWorkLessons.AsNoTracking()
+                .Where(l => l.SchemeOfWorkId == s!.Id && l.WeekNo == week!.WeekNo)
+                .OrderBy(l => l.LessonNo).ToListAsync();
+
+            foreach (var plan in week!.Plans.Where(p => p.SchemeOfWorkLessonId != null))
+            {
+                var lesson = lessons.FirstOrDefault(l => l.Id == plan.SchemeOfWorkLessonId);
+                if (lesson != null) ApplyScheme(plan, lesson, replace);
+            }
+            var (weekStart, _) = TeachingDocumentService.WeekRange(s!.Session!, week.WeekNo);
+            foreach (var lesson in lessons.Where(l => !week.Plans.Any(p => p.SchemeOfWorkLessonId == l.Id)))
+            {
+                week.Plans.Add(FromScheme(lesson, SuggestedDate(weekStart, lesson.LessonNo, s.LessonsPerWeek)));
+            }
+            await _db.SaveChangesAsync();
+            return await GetWeek(week.Id);
         }
 
         [HttpGet("weeks/{id}")]

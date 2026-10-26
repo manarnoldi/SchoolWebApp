@@ -56,6 +56,8 @@
                             <small class="ms-2 text-muted">Due {{ week.dueAt | date:'EEE d MMM HH:mm' }}</small>
                         </div>
                         <div>
+                            <button *ngIf="editable" class="btn btn-sm btn-outline-secondary me-1" (click)="refreshFromScheme()"
+                                title="Pull in changes made to the scheme of work since this week was prepared"><i class="fas fa-sync-alt"></i> Refresh from scheme</button>
                             <button *ngIf="editable" class="btn btn-sm btn-outline-secondary me-1" (click)="addPlan()"><i class="fas fa-plus"></i> Lesson</button>
                             <button class="btn btn-sm btn-outline-primary me-1" (click)="print()"><i class="fas fa-print"></i> Print week</button>
                             <button *ngIf="editable" class="btn btn-sm btn-outline-danger me-1" (click)="deleteWeek()"><i class="fas fa-trash"></i></button>

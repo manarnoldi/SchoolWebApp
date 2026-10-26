@@ -313,6 +313,35 @@ export class LessonPlansComponent implements OnInit {
         });
     }
 
+    // Pulls the scheme's current content into the week, e.g. resources added to
+    // the scheme after the week was prepared. Unsaved edits are saved first.
+    refreshFromScheme() {
+        Swal.fire({
+            title: 'Refresh from the scheme?',
+            html: '<div class="text-start small">Takes the strand, sub-strand, learning outcomes, key inquiry questions, ' +
+                'learning resources and lesson development steps from the scheme of work, and adds plans for any scheme ' +
+                'lessons this week is missing. Dates, times, the rest of the lesson flow and after-lesson notes stay as they are.' +
+                '<br><br><b>Fill blanks</b> keeps what you have typed and only fills empty fields.<br>' +
+                '<b>Replace</b> overwrites those fields with the scheme\'s current wording.</div>',
+            width: 520, position: 'top', icon: 'question',
+            showCancelButton: true, showDenyButton: true,
+            confirmButtonText: 'Fill blanks', denyButtonText: 'Replace', denyButtonColor: '#d33'
+        }).then(async (r) => {
+            if (!r.isConfirmed && !r.isDenied) return;
+            if (this.dirtyPlans.size && !(await this.saveAll())) return;
+            let before = new Set(this.week!.plans.map((p) => p.id));
+            this.svc.refreshFromScheme(this.week!.id, r.isDenied).subscribe({
+                next: (w) => {
+                    let added = w.plans.filter((p) => !before.has(p.id)).length;
+                    this.setWeek(w);
+                    this.toastr.success('Refreshed from the scheme' + (added ? ` - ${added} lesson(s) added.` : '.'));
+                    this.loadWeeks();
+                },
+                error: (err) => this.toastr.error(err.error?.message || 'Error refreshing from the scheme.')
+            });
+        });
+    }
+
     deletePlan(p: LessonPlan) {
         Swal.fire({title: `Remove lesson ${p.lessonNo}'s plan?`, width: 400, position: 'top', icon: 'warning',
             showCancelButton: true, confirmButtonText: 'Remove', confirmButtonColor: '#d33'}).then((r) => {

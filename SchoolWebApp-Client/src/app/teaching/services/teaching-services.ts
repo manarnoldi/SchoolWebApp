@@ -135,6 +135,11 @@ export class LessonPlansService {
         return this.http.post<LessonPlanWeek>(`/lessonPlans/weeks/${weekId}/plans`, {});
     }
 
+    // Brings the week up to date with its scheme; replace overwrites what the scheme supplies, else blanks only.
+    refreshFromScheme(weekId: number, replace: boolean): Observable<LessonPlanWeek> {
+        return this.http.post<LessonPlanWeek>(`/lessonPlans/weeks/${weekId}/refreshFromScheme?replace=${replace}`, {});
+    }
+
     deletePlan(id: number): Observable<LessonPlanWeek> {
         return this.http.delete<LessonPlanWeek>(`/lessonPlans/plans/${id}`);
     }
