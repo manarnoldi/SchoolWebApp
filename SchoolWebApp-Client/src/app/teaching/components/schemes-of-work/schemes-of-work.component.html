@@ -277,22 +277,18 @@
                 <i class="fas fa-exclamation-triangle"></i> You have unsaved changes - save before submitting for approval.
             </div>
 
-            <div class="row">
-                <div class="col-lg-6">
-                    <app-approval-webpart
-                        formKey="SchemeOfWork"
-                        entityType="SchemeOfWork"
-                        [entityId]="scheme.id"
-                        [currentUserId]="context?.userId || null"
-                        [preferredApproverIds]="preferredApprovers"
-                        [beforeSubmit]="saveBeforeSubmit"
-                        (statusChanged)="onApprovalChanged()"></app-approval-webpart>
-                </div>
-                <div class="col-lg-6">
-                    <!-- Re-created after an approval action so it shows the new step. -->
-                    <app-approval-history *ngFor="let v of [historyVersion]" entityType="SchemeOfWork" [entityId]="scheme.id"></app-approval-history>
-                </div>
-            </div>
+            <app-approval-webpart
+                    formKey="SchemeOfWork"
+                    entityType="SchemeOfWork"
+                    [entityId]="scheme.id"
+                    [currentUserId]="context?.userId || null"
+                    [preferredApproverIds]="preferredApprovers"
+                    [beforeSubmit]="saveBeforeSubmit"
+                    (statusChanged)="onApprovalChanged()"></app-approval-webpart>
+            <!-- Re-created after an approval action so it sees the new status. -->
+            <app-approval-history *ngFor="let v of [historyVersion]" entityType="SchemeOfWork" [entityId]="scheme.id"
+                [reverseOnly]="true" reverseNote="The scheme goes back to the teacher as a draft so it can be edited and resubmitted."
+                (reversed)="onApprovalChanged()"></app-approval-history>
         </ng-container>
     </div>
 </section>

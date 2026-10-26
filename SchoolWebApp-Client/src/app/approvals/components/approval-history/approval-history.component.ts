@@ -12,6 +12,11 @@ import Swal from 'sweetalert2';
 export class ApprovalHistoryComponent implements OnChanges {
     @Input() entityType!: string;
     @Input() entityId: number | null = null;
+    // Just the Super Administrator's Reverse Approval button, for pages that
+    // already show the steps in the approval webpart.
+    @Input() reverseOnly = false;
+    // What reversing does to this kind of record, shown in the confirmation.
+    @Input() reverseNote = 'This will undo the side effects (journal posting, invoice updates, etc.) and return the record to Draft.';
     @Output() reversed = new EventEmitter<ApprovalRequest>();
 
     request: ApprovalRequest | null = null;
@@ -43,7 +48,7 @@ export class ApprovalHistoryComponent implements OnChanges {
         if (!this.request) return;
         Swal.fire({
             title: 'Reverse this approval?',
-            html: 'This will undo the side effects (journal posting, invoice updates, etc.) and return the record to Draft.<br/><br/>' +
+            html: this.reverseNote + '<br/><br/>' +
                   '<textarea id="swal-reverse-reason" class="swal2-textarea" placeholder="Reason for reversal (required)"></textarea>',
             width: 500, position: 'top', padding: '1em', icon: 'warning',
             showCancelButton: true, confirmButtonText: 'Reverse',

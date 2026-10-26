@@ -1,4 +1,9 @@
-<div class="border border-secondary rounded p-2 mt-2" *ngIf="!loading && request">
+<div *ngIf="reverseOnly && !loading && isSuperAdmin && request?.status === Status.Approved" class="text-end mt-2">
+    <button class="btn btn-sm btn-outline-danger" (click)="reverse()" title="Reopen the approved record for editing (Super Admin)">
+        <i class="fas fa-undo"></i> Reverse Approval
+    </button>
+</div>
+<div class="border border-secondary rounded p-2 mt-2" *ngIf="!reverseOnly && !loading && request">
     <h6 class="text-secondary mb-2 d-flex justify-content-between align-items-center">
         <span>
             <i class="fas fa-history me-1"></i> Approval History
@@ -43,6 +48,6 @@
         </tbody>
     </table>
 </div>
-<div *ngIf="!loading && !request" class="alert alert-light py-1 mt-2 mb-0">
+<div *ngIf="!reverseOnly && !loading && !request" class="alert alert-light py-1 mt-2 mb-0">
     <small class="text-muted"><i class="fas fa-info-circle me-1"></i> No approval request has been submitted for this record.</small>
 </div>
