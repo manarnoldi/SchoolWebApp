@@ -47,6 +47,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
             case 'CreditDebitNote': return 'Credit / Debit Note';
             case 'BudgetAmendment': return 'Budget Amendment';
             case 'Budget': return 'Budget';
+            case 'SchemeOfWork': return 'Scheme of Work';
+            case 'LessonPlanWeek': return 'Lesson Plans';
             default: return key;
         }
     }
@@ -58,6 +60,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
             case 'CreditDebitNote': return 'fas fa-file-invoice text-warning';
             case 'BudgetAmendment': return 'fas fa-edit text-warning';
             case 'Budget': return 'fas fa-piggy-bank text-success';
+            case 'SchemeOfWork': return 'fas fa-table text-primary';
+            case 'LessonPlanWeek': return 'fas fa-chalkboard-teacher text-info';
             default: return 'fas fa-check-double text-secondary';
         }
     }
@@ -69,6 +73,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
             case 'CreditDebitNote': return '/finance/payments';
             case 'BudgetAmendment': return '/finance/budget-amendments';
             case 'Budget': return '/finance/budgets';
+            case 'SchemeOfWork': return '/teaching/schemes';
+            case 'LessonPlanWeek': return '/teaching/lesson-plans';
             default: return null;
         }
     }

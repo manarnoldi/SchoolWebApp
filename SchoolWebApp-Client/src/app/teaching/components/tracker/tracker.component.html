@@ -1,0 +1,107 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+        <div class="card card-outline card-primary mb-2">
+            <div class="card-body p-2">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-2">
+                        <label class="form-label mb-0 small">Term</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="sessionId" (ngModelChange)="load()">
+                            <option *ngFor="let s of context?.sessions" [ngValue]="s.id">{{ s.name }} {{ s.academicYearName }}{{ s.isCurrent ? ' (current)' : '' }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2" *ngIf="tracker && tracker.scope !== 'own'">
+                        <label class="form-label mb-0 small">Department</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="departmentId">
+                            <option [ngValue]="null">All</option>
+                            <option *ngFor="let d of departments" [ngValue]="d.id">{{ d.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label mb-0 small">Grade</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="learningLevelId">
+                            <option [ngValue]="null">All</option>
+                            <option *ngFor="let g of grades" [ngValue]="g.id">{{ g.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label mb-0 small">Subject</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="subjectId">
+                            <option [ngValue]="null">All</option>
+                            <option *ngFor="let s of subjects" [ngValue]="s.id">{{ s.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label mb-0 small">Search</label>
+                        <input class="form-control form-control-sm" [(ngModel)]="search" placeholder="Teacher, subject, class">
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <div class="form-check form-check-inline small">
+                            <input class="form-check-input" type="checkbox" id="onlyOverdue" [(ngModel)]="onlyOverdue">
+                            <label class="form-check-label" for="onlyOverdue">Overdue only</label>
+                        </div>
+                        <button class="btn btn-sm btn-outline-secondary me-1" [disabled]="!tracker" (click)="exportCsv()"><i class="fas fa-file-csv"></i></button>
+                        <button class="btn btn-sm btn-outline-primary" [disabled]="!tracker" (click)="print()"><i class="fas fa-print"></i></button>
+                    </div>
+                </div>
+                <div class="td-legend mt-2">
+                    <span *ngFor="let s of legend" [ngClass]="statusClasses[s]">{{ statusLabels[s] }}</span>
+                    <span class="td-notstarted td-overdue">Overdue</span>
+                    <small class="text-muted ms-2" *ngIf="tracker">
+                        Showing {{ tracker.scope === 'school' ? 'the whole school' : tracker.scope === 'department' ? 'your department(s) and your own subjects' : 'your own subjects' }}.
+                        Schemes due {{ tracker.schemeDueAt | date:'EEE d MMM' }}. Click a cell to open it.
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-2">
+            <div class="card-body p-0 table-responsive td-scroll">
+                <table class="table table-sm table-bordered mb-0 small">
+                    <thead class="td-sticky">
+                        <tr>
+                            <th style="min-width: 150px;">Teacher</th>
+                            <th style="min-width: 120px;">Subject</th>
+                            <th style="min-width: 100px;">Class</th>
+                            <th class="text-center">Scheme</th>
+                            <th *ngFor="let w of tracker?.weeks" class="text-center" [title]="(w.startDate | date:'d MMM':'UTC') + ' - ' + (w.endDate | date:'d MMM':'UTC')">W{{ w.weekNo }}</th>
+                            <th class="text-center" style="min-width: 110px;">Record of work</th>
+                        </tr>
+                        <tr class="text-muted" style="font-size: 0.7rem;" *ngIf="tracker && rows.length">
+                            <th colspan="3" class="text-end fw-normal">submitted or approved</th>
+                            <th class="text-center fw-normal">{{ schemeCount }}</th>
+                            <th *ngFor="let w of tracker.weeks; let i = index" class="text-center fw-normal">{{ weekCount(i) }}</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="loading"><td [attr.colspan]="5 + (tracker?.weeks?.length || 0)" class="text-center text-muted"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr>
+                        <tr *ngIf="!loading && tracker && rows.length === 0">
+                            <td [attr.colspan]="5 + tracker.weeks.length" class="text-center text-muted">No subject allocations to show for this term.</td>
+                        </tr>
+                        <tr *ngFor="let r of rows">
+                            <td>{{ r.staffName }}</td>
+                            <td>{{ r.subjectName }}</td>
+                            <td>{{ r.className }}</td>
+                            <td class="td-cell" [class.clickable]="r.scheme.id"
+                                [ngClass]="[statusClasses[r.scheme.status], r.scheme.overdue ? 'td-overdue' : '']"
+                                [title]="cellTitle(r.scheme, 'Scheme of work', tracker?.schemeDueAt)" (click)="openScheme(r)">{{ short(r.scheme) }}</td>
+                            <td *ngFor="let c of r.weeks; let i = index" class="td-cell" [class.clickable]="c.id || (r.scheme.id && c.status !== 'NotApplicable')"
+                                [ngClass]="[statusClasses[c.status], c.overdue ? 'td-overdue' : '']"
+                                [title]="cellTitle(c, 'Week ' + (i + 1) + ' lesson plans', tracker?.weeks?.[i]?.dueAt)" (click)="openWeek(r, c)">{{ short(c) }}</td>
+                            <td [class.clickable]="r.scheme.id" style="cursor: pointer;" (click)="openRecord(r)"
+                                [title]="r.taughtLessons + ' of ' + r.plannedLessons + ' planned lessons taught; ' + r.checkedWeeks + ' week(s) checked by the HOD'">
+                                <div class="progress" style="height: 12px;" *ngIf="r.plannedLessons">
+                                    <div class="progress-bar bg-success" [style.width.%]="percent(r)"></div>
+                                </div>
+                                <small>{{ r.plannedLessons ? r.taughtLessons + '/' + r.plannedLessons : '-' }}
+                                    <span *ngIf="r.checkedWeeks" class="text-success ms-1"><i class="fas fa-check"></i>{{ r.checkedWeeks }}</span></small>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>

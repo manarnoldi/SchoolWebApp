@@ -1,4 +1,5 @@
 ﻿using SchoolWebApp.API.Services.Communications;
+using SchoolWebApp.API.Services.TeachingDocuments;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.Interfaces.IRepositories.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories.Security;
@@ -213,6 +214,10 @@ namespace Project.API.Extensions
             services.AddScoped<StandardMessageService>();
             services.AddSingleton<MessageDispatchSignal>();
             services.AddHostedService<MessageDispatchWorker>();
+            #endregion
+
+            #region Teaching documents
+            services.AddScoped<TeachingDocumentService>();
             #endregion
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

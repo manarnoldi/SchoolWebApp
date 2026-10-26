@@ -1,0 +1,76 @@
+<div class="card card-outline card-primary mb-2">
+    <div class="card-body p-2">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label mb-0 small">Term</label>
+                <select class="form-select form-select-sm" [(ngModel)]="sessionId" (ngModelChange)="load()">
+                    <option *ngFor="let s of context?.sessions" [ngValue]="s.id">
+                        {{ s.name }} {{ s.academicYearName }}{{ s.isCurrent ? ' (current)' : '' }}
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-4" *ngIf="canOversee">
+                <label class="form-label mb-0 small">Show</label>
+                <div class="btn-group btn-group-sm d-flex">
+                    <button class="btn" [disabled]="!context?.staffDetailsId"
+                        [ngClass]="scope === 'mine' ? 'btn-primary' : 'btn-outline-primary'"
+                        (click)="scope = 'mine'; load()">My subjects</button>
+                    <button class="btn" [ngClass]="scope === 'oversee' ? 'btn-primary' : 'btn-outline-primary'"
+                        (click)="scope = 'oversee'; load()">
+                        {{ context?.wholeSchool ? 'Whole school' : 'My department(s)' }}
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label mb-0 small">Search</label>
+                <input class="form-control form-control-sm" [(ngModel)]="search" placeholder="Teacher, subject or class">
+            </div>
+            <div class="col-md-2 text-end small text-muted" *ngIf="session">
+                {{ session.startDate | date:'d MMM':'UTC' }} - {{ session.endDate | date:'d MMM y':'UTC' }}<br>
+                {{ session.weeks }} weeks
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="context && !context.staffDetailsId && !canOversee" class="alert alert-warning py-1">
+    Your account is not linked to a staff record, so you have no subject allocations. Ask the administrator to link it under Security &rarr; Users.
+</div>
+
+<div class="card mb-2">
+    <div class="card-body p-0 table-responsive">
+        <table class="table table-sm table-hover table-striped mb-0">
+            <thead>
+                <tr>
+                    <th *ngIf="scope === 'oversee'">Teacher</th>
+                    <th>Subject</th>
+                    <th>Class</th>
+                    <th *ngIf="scope === 'oversee'">Department</th>
+                    <th>Scheme of work</th>
+                    <th class="text-end">Lessons planned</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngIf="loading"><td colspan="7" class="text-center text-muted"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr>
+                <tr *ngIf="!loading && filtered.length === 0">
+                    <td colspan="7" class="text-center text-muted">
+                        {{ scope === 'mine' ? 'You have no subjects allocated for this term. Allocations are made under School → Staff Subjects.' : 'Nothing to show.' }}
+                    </td>
+                </tr>
+                <tr *ngFor="let a of filtered">
+                    <td *ngIf="scope === 'oversee'">{{ a.staffName }}</td>
+                    <td>{{ a.subjectName }}</td>
+                    <td>{{ a.className }}</td>
+                    <td *ngIf="scope === 'oversee'"><small>{{ a.departmentName }}</small></td>
+                    <td><span class="badge" [ngClass]="statusBadges[a.schemeStatus]">{{ statusLabels[a.schemeStatus] }}</span></td>
+                    <td class="text-end">{{ a.schemeLessons || '' }}</td>
+                    <td class="text-end">
+                        <button *ngIf="action(a) as label" class="btn btn-xs btn-outline-primary py-0 px-2" (click)="open(a)">{{ label }}</button>
+                        <small *ngIf="!action(a)" class="text-muted">No scheme yet</small>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

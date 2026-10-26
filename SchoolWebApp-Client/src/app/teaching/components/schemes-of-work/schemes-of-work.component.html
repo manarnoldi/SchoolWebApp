@@ -1,0 +1,204 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+
+        <app-teaching-assignments *ngIf="!scheme" purpose="schemes" (opened)="onOpened($event)"></app-teaching-assignments>
+
+        <ng-container *ngIf="scheme">
+            <div class="card card-outline card-primary mb-2">
+                <div class="card-header p-2">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-1">
+                        <div>
+                            <button class="btn btn-sm btn-outline-secondary me-2" (click)="back()"><i class="fas fa-arrow-left"></i> Back</button>
+                            <strong>{{ scheme.subjectName }} &middot; {{ scheme.className }}</strong>
+                            <span class="text-muted"> &middot; {{ scheme.sessionName }} {{ scheme.academicYearName }} &middot; {{ scheme.staffName }}</span>
+                            <span class="badge ms-2" [ngClass]="statusBadges[scheme.status]">{{ statusLabels[scheme.status] }}</span>
+                            <small class="ms-2 text-muted">Due {{ scheme.dueAt | date:'EEE d MMM' }}</small>
+                        </div>
+                        <div>
+                            <ng-container *ngIf="editable">
+                                <button class="btn btn-sm btn-outline-info me-1" (click)="generate()" title="Lay the curriculum's sub-strands out across the weeks">
+                                    <i class="fas fa-magic"></i> Fill from curriculum</button>
+                                <button class="btn btn-sm btn-outline-info me-1" (click)="openCopy()" title="Start from another stream's or an earlier year's scheme">
+                                    <i class="fas fa-copy"></i> Copy from&hellip;</button>
+                            </ng-container>
+                            <button class="btn btn-sm btn-outline-primary me-1" (click)="print()"><i class="fas fa-print"></i> Print</button>
+                            <button *ngIf="editable" class="btn btn-sm btn-outline-danger me-1" (click)="delete()"><i class="fas fa-trash"></i></button>
+                            <button *ngIf="editable" class="btn btn-sm btn-success" [disabled]="saving" (click)="save()">
+                                <i class="fas fa-save"></i> Save{{ dirty ? ' *' : '' }}</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-2">
+                    <div class="row g-2 align-items-end" *ngIf="editable">
+                        <div class="col-md-6">
+                            <label class="form-label mb-0 small">References (books and guides this scheme follows)</label>
+                            <input class="form-control form-control-sm" [(ngModel)]="scheme.references" (ngModelChange)="dirty = true"
+                                placeholder="e.g. KLB Visionary Social Studies Grade 6 Teacher's Guide and Learner's Book">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label mb-0 small">Weeks</label>
+                            <input type="number" min="1" max="20" class="form-control form-control-sm" [(ngModel)]="scheme.numberOfWeeks" (ngModelChange)="dirty = true">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label mb-0 small">Lessons per week</label>
+                            <input type="number" min="1" max="20" class="form-control form-control-sm" [(ngModel)]="scheme.lessonsPerWeek" (ngModelChange)="dirty = true">
+                        </div>
+                        <div class="col-md-2">
+                            <button *ngIf="weeksChanged" class="btn btn-sm btn-outline-primary w-100" (click)="applyGrid()">
+                                <i class="fas fa-th"></i> Apply to the table</button>
+                        </div>
+                    </div>
+                    <div *ngIf="!editable" class="small">
+                        <span *ngIf="scheme.references"><b>References:</b> {{ scheme.references }} &middot; </span>
+                        {{ scheme.numberOfWeeks }} weeks, {{ scheme.lessonsPerWeek }} lessons a week
+                        <span class="text-muted" *ngIf="scheme.modified"> &middot; last saved {{ scheme.modified | date:'d MMM y, HH:mm' }} by {{ scheme.modifiedBy }}</span>
+                    </div>
+                    <div *ngIf="scheme.isLocked && scheme.status !== 'Approved'" class="alert alert-info py-1 mb-0 mt-2 small">
+                        <i class="fas fa-lock"></i> Submitted for approval - editing is locked unless the approver returns it.
+                    </div>
+                    <div *ngIf="scheme.status === 'Approved'" class="alert alert-success py-1 mb-0 mt-2 small">
+                        <i class="fas fa-check-circle"></i> Approved. Lesson plans for each week are prepared from it under Lesson Plans.
+                    </div>
+                    <div *ngIf="editable && strands.length === 0" class="alert alert-warning py-1 mb-0 mt-2 small">
+                        No curriculum strands are set up for {{ scheme.subjectName }} {{ scheme.learningLevelName }} yet - type the strands and sub-strands in.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Copy from another scheme -->
+            <div class="modal-backdrop fade show" *ngIf="copySources?.length" (click)="copySources = null"></div>
+            <div class="modal fade show d-block" *ngIf="copySources?.length" tabindex="-1">
+                <div class="modal-dialog modal-lg" style="margin-top: 60px;">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info text-white py-2">
+                            <h5 class="modal-title"><i class="fas fa-copy me-1"></i> Copy a {{ scheme.subjectName }} {{ scheme.learningLevelName }} scheme</h5>
+                            <button type="button" class="close text-white" (click)="copySources = null"><span>&times;</span></button>
+                        </div>
+                        <div class="modal-body p-0">
+                            <table class="table table-sm table-hover mb-0">
+                                <thead><tr><th>Teacher</th><th>Class</th><th>Term</th><th class="text-end">Lessons</th><th>Status</th><th></th></tr></thead>
+                                <tbody>
+                                    <tr *ngFor="let src of copySources">
+                                        <td>{{ src.staffName }}</td>
+                                        <td>{{ src.className }}</td>
+                                        <td>{{ src.sessionName }} {{ src.academicYearName }}</td>
+                                        <td class="text-end">{{ src.lessons }}</td>
+                                        <td><span class="badge" [ngClass]="statusBadges[src.status]">{{ statusLabels[src.status] }}</span></td>
+                                        <td class="text-end"><button class="btn btn-xs btn-outline-primary py-0 px-2" (click)="copyFrom(src)">Copy</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-2">
+                <div class="card-body p-0 table-responsive td-scroll">
+                    <table class="table table-sm table-bordered mb-0 td-grid">
+                        <thead class="td-sticky">
+                            <tr>
+                                <th style="width: 40px;">Lsn</th>
+                                <th style="min-width: 150px;">Strand</th>
+                                <th style="min-width: 170px;">Sub-strand</th>
+                                <th style="min-width: 220px;">Lesson learning outcomes</th>
+                                <th style="min-width: 220px;">Learning experiences</th>
+                                <th style="min-width: 160px;">Key inquiry question(s)</th>
+                                <th style="min-width: 150px;">Learning resources</th>
+                                <th style="min-width: 130px;">Assessment methods</th>
+                                <th style="min-width: 110px;">Reflection</th>
+                                <th *ngIf="editable" style="width: 34px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ng-container *ngFor="let g of groups">
+                                <tr class="td-week">
+                                    <td [attr.colspan]="editable ? 10 : 9">
+                                        <b>Week {{ g.weekNo }}</b>
+                                        <small class="text-muted ms-1" *ngIf="g.startDate">{{ g.startDate | date:'d MMM':'UTC' }} - {{ g.endDate | date:'d MMM':'UTC' }}</small>
+                                        <small class="text-danger ms-1" *ngIf="g.weekNo > scheme.numberOfWeeks">(outside the scheme's weeks)</small>
+                                        <button *ngIf="editable" class="btn btn-xs btn-link py-0" (click)="addLesson(g)"><i class="fas fa-plus"></i> lesson</button>
+                                    </td>
+                                </tr>
+                                <tr *ngFor="let l of g.lessons; let i = index">
+                                    <td class="text-center align-middle"><b>{{ l.lessonNo }}</b></td>
+                                    <ng-container *ngIf="editable">
+                                        <td>
+                                            <select class="form-select form-select-sm" [(ngModel)]="l.strandId" (ngModelChange)="onStrand(l)">
+                                                <option [ngValue]="null">{{ strands.length ? '- other (type) -' : '- type below -' }}</option>
+                                                <option *ngFor="let s of strands" [ngValue]="s.id">{{ s.name }}</option>
+                                            </select>
+                                            <input *ngIf="!l.strandId" class="form-control form-control-sm mt-1" [(ngModel)]="l.strandName"
+                                                (ngModelChange)="dirty = true" placeholder="Strand">
+                                        </td>
+                                        <td>
+                                            <select *ngIf="l.strandId" class="form-select form-select-sm" [(ngModel)]="l.subStrandId" (ngModelChange)="onSubStrand(l)">
+                                                <option [ngValue]="null">- other (type) -</option>
+                                                <option *ngFor="let ss of subStrandsOf(l.strandId)" [ngValue]="ss.id">
+                                                    {{ ss.name }} ({{ ss.lessons }}){{ ss.scheduledIn.length ? ' - ' + ss.scheduledIn.join(', ') : '' }}
+                                                </option>
+                                            </select>
+                                            <input *ngIf="!l.subStrandId" class="form-control form-control-sm" [class.mt-1]="l.strandId"
+                                                [(ngModel)]="l.subStrandName" (ngModelChange)="dirty = true" placeholder="Sub-strand">
+                                            <div class="mt-1">
+                                                <button class="btn btn-xs btn-link p-0 me-2" (click)="copyAbove(g, i)" title="Same as the lesson before">
+                                                    <i class="fas fa-level-up-alt"></i> same as above</button>
+                                                <button *ngIf="l.subStrandId" class="btn btn-xs btn-link p-0" (click)="refill(l)" title="Refill the text from the curriculum">
+                                                    <i class="fas fa-sync-alt"></i> refill</button>
+                                            </div>
+                                        </td>
+                                        <td><textarea class="form-control form-control-sm" rows="4" [(ngModel)]="l.learningOutcomes" (ngModelChange)="dirty = true"></textarea></td>
+                                        <td><textarea class="form-control form-control-sm" rows="4" [(ngModel)]="l.learningExperiences" (ngModelChange)="dirty = true"></textarea></td>
+                                        <td><textarea class="form-control form-control-sm" rows="4" [(ngModel)]="l.keyInquiryQuestions" (ngModelChange)="dirty = true"></textarea></td>
+                                        <td><textarea class="form-control form-control-sm" rows="4" [(ngModel)]="l.learningResources" (ngModelChange)="dirty = true"></textarea></td>
+                                        <td><textarea class="form-control form-control-sm" rows="4" [(ngModel)]="l.assessmentMethods" (ngModelChange)="dirty = true"
+                                            placeholder="e.g. Oral questions, observation"></textarea></td>
+                                        <td><textarea class="form-control form-control-sm" rows="4" [(ngModel)]="l.reflection" (ngModelChange)="dirty = true"></textarea></td>
+                                        <td class="text-center align-middle">
+                                            <button class="btn btn-xs btn-outline-danger py-0 px-1" (click)="removeLesson(l)" title="Remove this lesson"><i class="fas fa-times"></i></button>
+                                        </td>
+                                    </ng-container>
+                                    <ng-container *ngIf="!editable">
+                                        <td class="pre">{{ l.strandName }}</td>
+                                        <td class="pre">{{ l.subStrandName }}</td>
+                                        <td class="pre">{{ l.learningOutcomes }}</td>
+                                        <td class="pre">{{ l.learningExperiences }}</td>
+                                        <td class="pre">{{ l.keyInquiryQuestions }}</td>
+                                        <td class="pre">{{ l.learningResources }}</td>
+                                        <td class="pre">{{ l.assessmentMethods }}</td>
+                                        <td class="pre">{{ l.reflection }}</td>
+                                    </ng-container>
+                                </tr>
+                                <tr *ngIf="g.lessons.length === 0">
+                                    <td [attr.colspan]="editable ? 10 : 9" class="text-muted small">No lessons this week (e.g. half-term or exams).</td>
+                                </tr>
+                            </ng-container>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div *ngIf="dirty" class="alert alert-warning py-1 mb-2 small">
+                <i class="fas fa-exclamation-triangle"></i> You have unsaved changes - save before submitting for approval.
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <app-approval-webpart
+                        formKey="SchemeOfWork"
+                        entityType="SchemeOfWork"
+                        [entityId]="scheme.id"
+                        [currentUserId]="context?.userId || null"
+                        [preferredApproverIds]="preferredApprovers"
+                        (statusChanged)="onApprovalChanged()"></app-approval-webpart>
+                </div>
+                <div class="col-lg-6">
+                    <!-- Re-created after an approval action so it shows the new step. -->
+                    <app-approval-history *ngFor="let v of [historyVersion]" entityType="SchemeOfWork" [entityId]="scheme.id"></app-approval-history>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</section>

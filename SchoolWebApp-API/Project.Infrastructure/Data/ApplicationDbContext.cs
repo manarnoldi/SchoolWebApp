@@ -22,6 +22,7 @@ using SchoolWebApp.Core.Entities.Approvals;
 using SchoolWebApp.Core.Entities.Sponsorships;
 using SchoolWebApp.Core.Entities.Security;
 using SchoolWebApp.Core.Entities.Communications;
+using SchoolWebApp.Core.Entities.TeachingDocuments;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json;
 using System.Security.Claims;
@@ -187,6 +188,16 @@ namespace Project.Infrastructure.Data
         public DbSet<OutboundMessage> OutboundMessages { get; set; }
         #endregion
 
+        #region Teaching documents
+        public DbSet<SchemeOfWork> SchemesOfWork { get; set; }
+        public DbSet<SchemeOfWorkLesson> SchemeOfWorkLessons { get; set; }
+        public DbSet<LessonPlanWeek> LessonPlanWeeks { get; set; }
+        public DbSet<LessonPlan> LessonPlans { get; set; }
+        public DbSet<LessonPlanStep> LessonPlanSteps { get; set; }
+        public DbSet<RecordOfWorkEntry> RecordOfWorkEntries { get; set; }
+        public DbSet<RecordOfWorkCheck> RecordOfWorkChecks { get; set; }
+        #endregion
+
         #region Approvals
         public DbSet<ApprovalWorkflow> ApprovalWorkflows { get; set; }
         public DbSet<ApprovalWorkflowStep> ApprovalWorkflowSteps { get; set; }
@@ -271,7 +282,13 @@ namespace Project.Infrastructure.Data
             // the MessageBatch row already records who sent what.
             typeof(OutboundMessage),
             // Would copy the gateway API key and SMTP password into AuditLog.
-            typeof(CommunicationSetting)
+            typeof(CommunicationSetting),
+            // Pages of lesson text, re-saved as teachers type; the scheme / week
+            // rows and the approval history record who did what.
+            typeof(SchemeOfWorkLesson),
+            typeof(LessonPlan),
+            typeof(LessonPlanStep),
+            typeof(RecordOfWorkEntry)
         };
 
         // Property names skipped when computing field-level diffs - they

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project.Infrastructure.Data;
+using SchoolWebApp.API.Services.TeachingDocuments;
 using SchoolWebApp.Core.DTOs.Approvals;
 using SchoolWebApp.Core.Entities.Approvals;
 using SchoolWebApp.Core.Entities.Finance;
@@ -22,14 +23,17 @@ namespace SchoolWebApp.API.Controllers.Approvals
         private readonly IMapper _mapper;
         private readonly UserManager<AppUser> _userManager;
         private readonly ILogger<ApprovalRequestsController> _logger;
+        private readonly TeachingDocumentService _teachingDocs;
 
         public ApprovalRequestsController(ApplicationDbContext db, IMapper mapper,
-            UserManager<AppUser> userManager, ILogger<ApprovalRequestsController> logger)
+            UserManager<AppUser> userManager, ILogger<ApprovalRequestsController> logger,
+            TeachingDocumentService teachingDocs)
         {
             _db = db;
             _mapper = mapper;
             _userManager = userManager;
             _logger = logger;
+            _teachingDocs = teachingDocs;
         }
 
         private async Task<AppUser?> GetCurrentUserAsync()
@@ -147,6 +151,10 @@ namespace SchoolWebApp.API.Controllers.Approvals
 
             if (wf.Steps.Count == 0)
                 return BadRequest(new { message = "Workflow has no steps configured." });
+
+            // Teaching documents: only their teacher submits them, and not empty.
+            var invalid = await _teachingDocs.ValidateSubmitAsync(model.EntityType, model.EntityId);
+            if (invalid != null) return BadRequest(new { message = invalid });
 
             // Validate step assignments match workflow steps
             var assignmentByRank = model.StepAssignments.ToDictionary(a => a.StepRank, a => a.AssignedToUserId);

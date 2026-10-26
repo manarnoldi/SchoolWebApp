@@ -1,0 +1,74 @@
+// Shared by the teaching document screens.
+
+.pre {
+    white-space: pre-wrap;
+    font-size: 0.8rem;
+}
+
+// The scheme / record grids: long tables scroll inside the card with the
+// header kept in view.
+.td-scroll {
+    max-height: 72vh;
+    overflow: auto;
+}
+
+.td-sticky th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #f4f6f9;
+}
+
+.td-grid {
+    font-size: 0.82rem;
+
+    textarea {
+        font-size: 0.8rem;
+        min-height: 70px;
+    }
+
+    td {
+        vertical-align: top;
+    }
+}
+
+.td-week td {
+    background: #e9ecef;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+// Tracker cells: grey not started, amber draft, blue submitted, red returned
+// or rejected, green approved; overdue is a red outline on top.
+.td-cell {
+    min-width: 34px;
+    height: 26px;
+    text-align: center;
+    vertical-align: middle;
+    cursor: default;
+    font-size: 0.72rem;
+    border: 1px solid #fff !important;
+
+    &.clickable {
+        cursor: pointer;
+    }
+}
+
+.td-notstarted { background: #e2e3e5; color: #6c757d; }
+.td-draft { background: #ffe08a; color: #6b4f00; }
+.td-submitted { background: #9ec5fe; color: #052c65; }
+.td-returned { background: #f1aeb5; color: #58151c; }
+.td-approved { background: #75b798; color: #fff; }
+.td-na { background: #fff; color: #ccc; }
+
+.td-overdue {
+    box-shadow: inset 0 0 0 2px #dc3545;
+}
+
+.td-legend span {
+    display: inline-block;
+    padding: 1px 8px;
+    margin-right: 6px;
+    border-radius: 3px;
+    font-size: 0.75rem;
+}

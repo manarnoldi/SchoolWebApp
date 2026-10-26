@@ -14,6 +14,9 @@ export class ApprovalWebpartComponent implements OnChanges {
     @Input() entityType!: string;
     @Input() entityId: number | null = null;
     @Input() currentUserId: number | null = null;
+    // Users to pre-select as approvers (e.g. the subject's head of department):
+    // a step gets one pre-selected when exactly one of them holds its role.
+    @Input() preferredApproverIds: number[] = [];
     @Output() statusChanged = new EventEmitter<ApprovalRequest | null>();
     @Output() workflowLoaded = new EventEmitter<ApprovalWorkflow | null>();
     @Output() requestLoaded = new EventEmitter<ApprovalRequest | null>();
@@ -57,6 +60,7 @@ export class ApprovalWebpartComponent implements OnChanges {
                                 ...u,
                                 fullName: (u.firstName || '') + ' ' + (u.lastName || '')
                             }));
+                            this.preselect(w, rid);
                         },
                         error: () => { this.usersByRole[rid] = []; }
                     });
@@ -84,6 +88,15 @@ export class ApprovalWebpartComponent implements OnChanges {
                 if (err.status !== 404) this.toastr.error('Error loading workflow.');
             }
         });
+    }
+
+    private preselect(w: ApprovalWorkflow, roleId: number) {
+        let preferred = (this.preferredApproverIds || []).filter(id =>
+            !(w.isMakerChecker && id === this.currentUserId)
+            && (this.usersByRole[roleId] || []).some(u => u.id === id));
+        if (preferred.length !== 1) return;
+        w.steps.filter(s => s.roleId === roleId && !this.stepSelections[s.rank])
+            .forEach(s => this.stepSelections[s.rank] = preferred[0]);
     }
 
     canSubmit(): boolean {

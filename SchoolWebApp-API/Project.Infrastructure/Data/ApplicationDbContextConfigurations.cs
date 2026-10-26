@@ -18,6 +18,7 @@ using SchoolWebApp.Core.Entities.Approvals;
 using SchoolWebApp.Core.Entities.Sponsorships;
 using SchoolWebApp.Core.Entities.Payroll;
 using SchoolWebApp.Core.Entities.Communications;
+using SchoolWebApp.Core.Entities.TeachingDocuments;
 
 namespace Project.Infrastructure.Data
 {
@@ -218,6 +219,65 @@ namespace Project.Infrastructure.Data
 
             modelBuilder.Entity<OutboundMessage>()
                 .HasIndex(m => m.ProviderMessageId);
+
+            // Teaching documents. A teacher has one scheme per subject, class and
+            // term. Deleting a scheme takes its lessons, lesson plans and record of
+            // work with it; editing or removing curriculum (strands / sub-strands)
+            // only unlinks, because the documents keep their own copy of the text.
+            modelBuilder.Entity<SchemeOfWork>()
+                .HasIndex(s => new { s.StaffDetailsId, s.SubjectId, s.SchoolClassId, s.SessionId })
+                .IsUnique();
+            modelBuilder.Entity<SchemeOfWork>().HasOne(s => s.StaffDetails).WithMany()
+                .HasForeignKey(s => s.StaffDetailsId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<SchemeOfWork>().HasOne(s => s.Subject).WithMany()
+                .HasForeignKey(s => s.SubjectId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<SchemeOfWork>().HasOne(s => s.SchoolClass).WithMany()
+                .HasForeignKey(s => s.SchoolClassId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<SchemeOfWork>().HasOne(s => s.Session).WithMany()
+                .HasForeignKey(s => s.SessionId).OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SchemeOfWorkLesson>().HasOne(l => l.SchemeOfWork).WithMany(s => s.Lessons)
+                .HasForeignKey(l => l.SchemeOfWorkId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<SchemeOfWorkLesson>().HasOne(l => l.Strand).WithMany()
+                .HasForeignKey(l => l.StrandId).OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<SchemeOfWorkLesson>().HasOne(l => l.SubStrand).WithMany()
+                .HasForeignKey(l => l.SubStrandId).OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<SchemeOfWorkLesson>()
+                .HasIndex(l => new { l.SchemeOfWorkId, l.WeekNo, l.LessonNo });
+
+            modelBuilder.Entity<LessonPlanWeek>()
+                .HasIndex(w => new { w.SchemeOfWorkId, w.WeekNo })
+                .IsUnique();
+            modelBuilder.Entity<LessonPlanWeek>().HasOne(w => w.SchemeOfWork).WithMany()
+                .HasForeignKey(w => w.SchemeOfWorkId).OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<LessonPlan>().HasOne(p => p.LessonPlanWeek).WithMany(w => w.Plans)
+                .HasForeignKey(p => p.LessonPlanWeekId).OnDelete(DeleteBehavior.Cascade);
+            // A plan outlives the scheme row it was prepared from - removing the row
+            // from the scheme only unlinks the plan.
+            modelBuilder.Entity<LessonPlan>().HasOne(p => p.SchemeOfWorkLesson).WithMany()
+                .HasForeignKey(p => p.SchemeOfWorkLessonId).OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<LessonPlan>().HasOne(p => p.Strand).WithMany()
+                .HasForeignKey(p => p.StrandId).OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<LessonPlan>().HasOne(p => p.SubStrand).WithMany()
+                .HasForeignKey(p => p.SubStrandId).OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<LessonPlanStep>().HasOne(s => s.LessonPlan).WithMany(p => p.Steps)
+                .HasForeignKey(s => s.LessonPlanId).OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<RecordOfWorkEntry>()
+                .HasIndex(e => e.SchemeOfWorkLessonId)
+                .IsUnique();
+            modelBuilder.Entity<RecordOfWorkEntry>().HasOne(e => e.SchemeOfWorkLesson).WithOne(l => l.RecordOfWorkEntry)
+                .HasForeignKey<RecordOfWorkEntry>(e => e.SchemeOfWorkLessonId).OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<RecordOfWorkCheck>()
+                .HasIndex(c => new { c.SchemeOfWorkId, c.WeekNo })
+                .IsUnique();
+            modelBuilder.Entity<RecordOfWorkCheck>().HasOne(c => c.SchemeOfWork).WithMany()
+                .HasForeignKey(c => c.SchemeOfWorkId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<RecordOfWorkCheck>().HasOne(c => c.CheckedBy).WithMany()
+                .HasForeignKey(c => c.CheckedByUserId).OnDelete(DeleteBehavior.Restrict);
         }
 
         public static void SeedData(ModelBuilder modelBuilder)

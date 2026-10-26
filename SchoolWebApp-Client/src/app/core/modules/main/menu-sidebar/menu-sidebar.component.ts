@@ -137,6 +137,20 @@ export const MENU = [
         ]
     },
     {
+        name: 'Teaching Documents',
+        iconClasses: 'fas fa-chalkboard-teacher',
+        children: [
+            {name: 'Schemes of Work', iconClasses: 'fas fa-table text-primary', path: ['/teaching/schemes']},
+            {name: 'Lesson Plans', iconClasses: 'fas fa-book-open text-info', path: ['/teaching/lesson-plans']},
+            {name: 'Record of Work', iconClasses: 'fas fa-clipboard-check text-success', path: ['/teaching/record-of-work']},
+            {name: 'Tracker', iconClasses: 'fas fa-th text-warning', path: ['/teaching/tracker']},
+            // Permission flag (not a navigable feature). A role holding it sees
+            // and opens every teacher's documents, as Administrators do. Heads of
+            // department see their own departments without it.
+            {name: 'Whole-school Access (Admin)', iconClasses: 'fas fa-user-shield text-warning', path: ['/teaching/admin']}
+        ]
+    },
+    {
         name: 'Finance',
         iconClasses: 'fas fa-coins',
         children: [

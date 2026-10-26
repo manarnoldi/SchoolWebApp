@@ -162,6 +162,11 @@ import { MessageTemplatesComponent } from './communications/components/message-t
 import { ComposeMessageComponent } from './communications/components/compose-message/compose-message.component';
 import { MessageQueueComponent } from './communications/components/message-queue/message-queue.component';
 import { SmsReportComponent } from './communications/components/sms-report/sms-report.component';
+import { TeachingComponent } from './teaching/teaching.component';
+import { SchemesOfWorkComponent } from './teaching/components/schemes-of-work/schemes-of-work.component';
+import { LessonPlansComponent } from './teaching/components/lesson-plans/lesson-plans.component';
+import { RecordOfWorkComponent } from './teaching/components/record-of-work/record-of-work.component';
+import { TrackerComponent } from './teaching/components/tracker/tracker.component';
 
 const routes: Routes = [
     {
@@ -446,6 +451,20 @@ const routes: Routes = [
             {path: 'templates', component: MessageTemplatesComponent},
             {path: 'sms-report', component: SmsReportComponent},
             {path: 'settings', component: CommunicationSettingsComponent}
+        ]
+    },
+    {
+        path: 'teaching',
+        component: TeachingComponent,
+        canActivate: [AuthGuard],
+        canActivateChild: [AuthGuard],
+        children: [
+            {path: 'schemes', component: SchemesOfWorkComponent},
+            {path: 'lesson-plans', component: LessonPlansComponent},
+            {path: 'record-of-work', component: RecordOfWorkComponent},
+            {path: 'tracker', component: TrackerComponent},
+            // Permission flag only (whole-school access), not a page.
+            {path: 'admin', redirectTo: 'tracker', pathMatch: 'full'}
         ]
     },
     {

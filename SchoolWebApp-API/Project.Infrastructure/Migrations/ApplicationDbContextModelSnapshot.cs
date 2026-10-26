@@ -6673,6 +6673,399 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasDiscriminator().HasValue("Student");
                 });
 
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.TeachingDocuments.LessonPlan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Conclusion")
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("ConclusionMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("DevelopmentMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EndTime")
+                        .HasMaxLength(5)
+                        .HasColumnType("varchar(5)");
+
+                    b.Property<string>("ExtendedActivities")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Introduction")
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("IntroductionMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<string>("KeyInquiryQuestions")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LearningOutcomes")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LearningResources")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("LessonDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("LessonNo")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LessonPlanWeekId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("OrganisationOfLearning")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Reflection")
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("Roll")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SchemeOfWorkLessonId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StartTime")
+                        .HasMaxLength(5)
+                        .HasColumnType("varchar(5)");
+
+                    b.Property<int?>("StrandId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StrandName")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("SubStrandId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SubStrandName")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Summary")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LessonPlanWeekId");
+
+                    b.HasIndex("SchemeOfWorkLessonId");
+
+                    b.HasIndex("StrandId");
+
+                    b.HasIndex("SubStrandId");
+
+                    b.ToTable("LessonPlans");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.TeachingDocuments.LessonPlanStep", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Activity")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("LessonPlanId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("StepNo")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LessonPlanId");
+
+                    b.ToTable("LessonPlanSteps");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.TeachingDocuments.LessonPlanWeek", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("SchemeOfWorkId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WeekNo")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SchemeOfWorkId", "WeekNo")
+                        .IsUnique();
+
+                    b.ToTable("LessonPlanWeeks");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.TeachingDocuments.RecordOfWorkCheck", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CheckedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("CheckedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("SchemeOfWorkId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WeekNo")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CheckedByUserId");
+
+                    b.HasIndex("SchemeOfWorkId", "WeekNo")
+                        .IsUnique();
+
+                    b.ToTable("RecordOfWorkChecks");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.TeachingDocuments.RecordOfWorkEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("SchemeOfWorkLessonId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("TaughtOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("WorkCovered")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SchemeOfWorkLessonId")
+                        .IsUnique();
+
+                    b.ToTable("RecordOfWorkEntries");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.TeachingDocuments.SchemeOfWork", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("LessonsPerWeek")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("NumberOfWeeks")
+                        .HasColumnType("int");
+
+                    b.Property<string>("References")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int>("SchoolClassId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SessionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StaffDetailsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SchoolClassId");
+
+                    b.HasIndex("SessionId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.HasIndex("StaffDetailsId", "SubjectId", "SchoolClassId", "SessionId")
+                        .IsUnique();
+
+                    b.ToTable("SchemesOfWork");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.TeachingDocuments.SchemeOfWorkLesson", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("AssessmentMethods")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("KeyInquiryQuestions")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LearningExperiences")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LearningOutcomes")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LearningResources")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("LessonNo")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Reflection")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("SchemeOfWorkId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StrandId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StrandName")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("SubStrandId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SubStrandName")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("WeekNo")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StrandId");
+
+                    b.HasIndex("SubStrandId");
+
+                    b.HasIndex("SchemeOfWorkId", "WeekNo", "LessonNo");
+
+                    b.ToTable("SchemeOfWorkLessons");
+                });
+
             modelBuilder.Entity("CompetencySpecificOutcome", b =>
                 {
                     b.HasOne("SchoolWebApp.Core.Entities.CBE.Assessments.Competency", null)
@@ -8193,6 +8586,150 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Navigation("LearningMode");
                 });
 
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.TeachingDocuments.LessonPlan", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.TeachingDocuments.LessonPlanWeek", "LessonPlanWeek")
+                        .WithMany("Plans")
+                        .HasForeignKey("LessonPlanWeekId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.TeachingDocuments.SchemeOfWorkLesson", "SchemeOfWorkLesson")
+                        .WithMany()
+                        .HasForeignKey("SchemeOfWorkLessonId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("SchoolWebApp.Core.Entities.CBE.Assessments.Strand", "Strand")
+                        .WithMany()
+                        .HasForeignKey("StrandId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("SchoolWebApp.Core.Entities.CBE.Assessments.SubStrand", "SubStrand")
+                        .WithMany()
+                        .HasForeignKey("SubStrandId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("LessonPlanWeek");
+
+                    b.Navigation("SchemeOfWorkLesson");
+
+                    b.Navigation("Strand");
+
+                    b.Navigation("SubStrand");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.TeachingDocuments.LessonPlanStep", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.TeachingDocuments.LessonPlan", "LessonPlan")
+                        .WithMany("Steps")
+                        .HasForeignKey("LessonPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LessonPlan");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.TeachingDocuments.LessonPlanWeek", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.TeachingDocuments.SchemeOfWork", "SchemeOfWork")
+                        .WithMany()
+                        .HasForeignKey("SchemeOfWorkId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SchemeOfWork");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.TeachingDocuments.RecordOfWorkCheck", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Identity.AppUser", "CheckedBy")
+                        .WithMany()
+                        .HasForeignKey("CheckedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.TeachingDocuments.SchemeOfWork", "SchemeOfWork")
+                        .WithMany()
+                        .HasForeignKey("SchemeOfWorkId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CheckedBy");
+
+                    b.Navigation("SchemeOfWork");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.TeachingDocuments.RecordOfWorkEntry", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.TeachingDocuments.SchemeOfWorkLesson", "SchemeOfWorkLesson")
+                        .WithOne("RecordOfWorkEntry")
+                        .HasForeignKey("SchoolWebApp.Core.Entities.TeachingDocuments.RecordOfWorkEntry", "SchemeOfWorkLessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SchemeOfWorkLesson");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.TeachingDocuments.SchemeOfWork", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Class.SchoolClass", "SchoolClass")
+                        .WithMany()
+                        .HasForeignKey("SchoolClassId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Class.Session", "Session")
+                        .WithMany()
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Staff.StaffDetails", "StaffDetails")
+                        .WithMany()
+                        .HasForeignKey("StaffDetailsId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Academics.Subject", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("SchoolClass");
+
+                    b.Navigation("Session");
+
+                    b.Navigation("StaffDetails");
+
+                    b.Navigation("Subject");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.TeachingDocuments.SchemeOfWorkLesson", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.TeachingDocuments.SchemeOfWork", "SchemeOfWork")
+                        .WithMany("Lessons")
+                        .HasForeignKey("SchemeOfWorkId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.CBE.Assessments.Strand", "Strand")
+                        .WithMany()
+                        .HasForeignKey("StrandId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("SchoolWebApp.Core.Entities.CBE.Assessments.SubStrand", "SubStrand")
+                        .WithMany()
+                        .HasForeignKey("SubStrandId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("SchemeOfWork");
+
+                    b.Navigation("Strand");
+
+                    b.Navigation("SubStrand");
+                });
+
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Academics.AcademicYear", b =>
                 {
                     b.Navigation("SchoolClasses");
@@ -8604,6 +9141,26 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Navigation("StudentResponsibilities");
 
                     b.Navigation("StudentValues");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.TeachingDocuments.LessonPlan", b =>
+                {
+                    b.Navigation("Steps");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.TeachingDocuments.LessonPlanWeek", b =>
+                {
+                    b.Navigation("Plans");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.TeachingDocuments.SchemeOfWork", b =>
+                {
+                    b.Navigation("Lessons");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.TeachingDocuments.SchemeOfWorkLesson", b =>
+                {
+                    b.Navigation("RecordOfWorkEntry");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,0 +1,109 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+
+        <app-teaching-assignments *ngIf="!record" purpose="record" (opened)="onOpened($event)"></app-teaching-assignments>
+
+        <ng-container *ngIf="record">
+            <div class="card card-outline card-primary mb-2">
+                <div class="card-header p-2 d-flex flex-wrap justify-content-between align-items-center gap-1">
+                    <div>
+                        <button class="btn btn-sm btn-outline-secondary me-2" (click)="back()"><i class="fas fa-arrow-left"></i> Back</button>
+                        <strong>{{ record.scheme.subjectName }} &middot; {{ record.scheme.className }}</strong>
+                        <span class="text-muted"> &middot; {{ record.scheme.sessionName }} {{ record.scheme.academicYearName }} &middot; {{ record.scheme.staffName }}</span>
+                        <span class="ms-2 small">Scheme: <span class="badge" [ngClass]="statusBadges[record.scheme.status]">{{ statusLabels[record.scheme.status] }}</span></span>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-1" (click)="print()"><i class="fas fa-print"></i> Print</button>
+                        <button *ngIf="editable" class="btn btn-sm btn-success" [disabled]="!dirty.size" (click)="save()">
+                            <i class="fas fa-save"></i> Save{{ dirty.size ? ' (' + dirty.size + ')' : '' }}</button>
+                    </div>
+                </div>
+                <div class="card-body p-2">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-6">
+                            <div class="progress" style="height: 18px;" [title]="coverage + '% of the planned lessons taught (partly taught counts half)'">
+                                <div class="progress-bar bg-success" [style.width.%]="record.planned ? 100 * record.taught / record.planned : 0">{{ record.taught || '' }}</div>
+                                <div class="progress-bar bg-info" [style.width.%]="record.planned ? 100 * record.partlyTaught / record.planned : 0">{{ record.partlyTaught || '' }}</div>
+                                <div class="progress-bar bg-danger" [style.width.%]="record.planned ? 100 * record.notTaught / record.planned : 0">{{ record.notTaught || '' }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 small">
+                            <b>{{ coverage }}%</b> covered &middot;
+                            <span class="text-success">{{ record.taught }} taught</span>,
+                            <span class="text-info">{{ record.partlyTaught }} partly</span>,
+                            <span class="text-danger">{{ record.notTaught }} not taught</span>
+                            of {{ record.planned }} planned &middot; {{ record.checks.length }} week(s) checked
+                        </div>
+                    </div>
+                    <div class="small text-muted mt-1" *ngIf="editable">
+                        Lessons marked taught in the lesson plans' after-lesson notes appear here. A week the HOD has checked is locked.
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-2">
+                <div class="card-body p-0 table-responsive td-scroll">
+                    <table class="table table-sm table-bordered mb-0 td-grid">
+                        <thead class="td-sticky">
+                            <tr>
+                                <th style="width: 40px;">Lsn</th>
+                                <th style="min-width: 200px;">Planned (strand / sub-strand)</th>
+                                <th style="width: 140px;">Status</th>
+                                <th style="width: 140px;">Date taught</th>
+                                <th style="min-width: 220px;">Work covered</th>
+                                <th style="min-width: 200px;">Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ng-container *ngFor="let w of weeks">
+                                <tr class="td-week">
+                                    <td colspan="6">
+                                        <b>Week {{ w.weekNo }}</b>
+                                        <ng-container *ngIf="w.check as c">
+                                            <span class="badge bg-success ms-2"><i class="fas fa-check"></i> Checked</span>
+                                            <small class="ms-1">by {{ c.checkedByName }} on {{ c.checkedAt | date:'d MMM y' }}</small>
+                                            <small class="ms-1 fst-italic" *ngIf="c.comment">"{{ c.comment }}"</small>
+                                            <button *ngIf="canRemoveCheck(c)" class="btn btn-xs btn-link text-danger py-0" (click)="removeCheck(c)">remove check</button>
+                                        </ng-container>
+                                        <button *ngIf="!w.check && record.canCheck" class="btn btn-xs btn-outline-success py-0 ms-2" (click)="check(w)">
+                                            <i class="fas fa-check"></i> Check week {{ w.weekNo }}</button>
+                                    </td>
+                                </tr>
+                                <tr *ngFor="let r of w.rows" [class.table-warning]="dirty.has(r.schemeOfWorkLessonId)">
+                                    <td class="text-center"><b>{{ r.lessonNo }}</b></td>
+                                    <td>
+                                        <div class="small text-muted">{{ r.strandName }}</div>
+                                        <div>{{ r.subStrandName || '-' }}</div>
+                                    </td>
+                                    <ng-container *ngIf="editable && !w.check">
+                                        <td>
+                                            <select class="form-select form-select-sm" [(ngModel)]="r.status" (ngModelChange)="touch(r)">
+                                                <option *ngFor="let t of taughtOptions" [ngValue]="t">{{ taughtLabels[t] }}</option>
+                                            </select>
+                                        </td>
+                                        <td><input type="date" class="form-control form-control-sm" [(ngModel)]="r.taughtOn" (ngModelChange)="touch(r)"></td>
+                                        <td><textarea class="form-control form-control-sm" rows="2" [(ngModel)]="r.workCovered" (ngModelChange)="touch(r)"></textarea></td>
+                                        <td><textarea class="form-control form-control-sm" rows="2" [(ngModel)]="r.remarks" (ngModelChange)="touch(r)"
+                                            placeholder="e.g. Not taught - sports day; carried to next week"></textarea></td>
+                                    </ng-container>
+                                    <ng-container *ngIf="!editable || w.check">
+                                        <td>
+                                            <span class="badge" [ngClass]="r.status === 1 ? 'bg-success' : r.status === 2 ? 'bg-info' : r.status === 3 ? 'bg-danger' : 'bg-light text-dark'">
+                                                {{ taughtLabels[r.status] }}</span>
+                                        </td>
+                                        <td>{{ r.taughtOn | date:'EEE d MMM' }}</td>
+                                        <td class="pre">{{ r.workCovered }}</td>
+                                        <td class="pre">{{ r.remarks }}</td>
+                                    </ng-container>
+                                </tr>
+                            </ng-container>
+                            <tr *ngIf="weeks.length === 0"><td colspan="6" class="text-center text-muted">The scheme has no lessons.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</section>

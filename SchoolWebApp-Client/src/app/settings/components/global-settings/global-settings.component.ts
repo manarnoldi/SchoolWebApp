@@ -144,6 +144,24 @@ export class GlobalSettingsComponent implements OnInit {
             ]
         },
         {
+            // Due dates only drive the tracker's "overdue" marking; nothing is
+            // blocked when a teacher submits late.
+            name: 'TeachingDocuments',
+            title: 'Teaching Documents Settings',
+            color: 'primary',
+            icon: 'fas fa-chalkboard-teacher',
+            settings: [
+                {key: 'SchemeDueDays', label: 'Schemes of Work Due (days after term opens)', type: 'text', description: 'A scheme of work is overdue on the tracker if it has not been submitted by the end of this many days after the term starts. Default: 7.'},
+                {key: 'LessonPlanDueDaysBefore', label: 'Lesson Plans Due', type: 'select', options: [
+                    {value: '0', label: 'On the Monday of the week'},
+                    {value: '3', label: 'The Friday before the week'},
+                    {value: '4', label: 'The Thursday before the week'},
+                    {value: '7', label: 'The Monday before the week'}
+                ], description: "When a week's lesson plans fall due. Unsubmitted weeks past this point show as overdue on the tracker."},
+                {key: 'LessonPlanDueTime', label: 'Lesson Plans Due Time (HH:mm)', type: 'text', description: 'Time of day, 24-hour, that lesson plans fall due on the day above. Default: 08:00.'}
+            ]
+        },
+        {
             name: 'Grading',
             title: 'Grading System Settings',
             color: 'success',
