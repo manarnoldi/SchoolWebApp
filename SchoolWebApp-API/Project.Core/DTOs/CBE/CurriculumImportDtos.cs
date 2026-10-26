@@ -23,6 +23,12 @@ namespace SchoolWebApp.Core.DTOs.CBE
         public int LearningExperiences { get; set; }
         public int KeyQuestions { get; set; }
         public int Pcis { get; set; }
+        public int CoreCompetencies { get; set; }
+        public int Values { get; set; }
+        public int LearningAreaLinks { get; set; }
+        public int Rubrics { get; set; }
+        public int AppendixItems { get; set; }
+        public int Sections { get; set; }
         // Counts of rows created / updated / removed on save, e.g. "Strands created": 5.
         public Dictionary<string, int> Changes { get; set; } = new();
         public List<CurriculumImportIssueDto> Errors { get; set; } = new();

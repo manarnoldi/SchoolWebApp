@@ -30,5 +30,16 @@ namespace SchoolWebApp.Core.Entities.CBE.Assessments
         public List<LessonAllocation> LessonAllocations { get; set; } = new(); 
         public List<LearningExperience> LearningExperiences { get; set; } = new();
         public List<PCI> PCIs { get; set; } = new();
+
+        // From the design: the competencies, values and links under the sub-strand,
+        // and (upper grades) its suggested resources, assessment methods and
+        // non-formal activities, one per line.
+        public List<SubStrandCompetency> CoreCompetencies { get; set; } = new();
+        public List<SubStrandValue> Values { get; set; } = new();
+        public List<SubStrandLearningAreaLink> LearningAreaLinks { get; set; } = new();
+        public List<AssessmentRubric> Rubrics { get; set; } = new();
+        public string? SuggestedResources { get; set; }
+        public string? SuggestedAssessmentMethods { get; set; }
+        public string? SuggestedNonFormalActivities { get; set; }
     }
 }

@@ -23,5 +23,6 @@ namespace SchoolWebApp.Core.Entities.CBE.Assessments
         public Theme? Theme { get; set; } = null;
 
         public List<SubStrand> SubStrands { get; set; } = new();
+        public List<AssessmentRubric> Rubrics { get; set; } = new();
     }
 }

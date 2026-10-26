@@ -1436,6 +1436,15 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Property<int?>("SubjectId")
                         .HasColumnType("int");
 
+                    b.Property<string>("SuggestedAssessmentMethods")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SuggestedNonFormalActivities")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SuggestedResources")
+                        .HasColumnType("longtext");
+
                     b.Property<int>("Version")
                         .HasColumnType("int");
 
@@ -7066,6 +7075,332 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.ToTable("SchemeOfWorkLessons");
                 });
 
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.AssessmentRubric", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("ApproachesExpectations")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("BelowExpectations")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ExceedsExpectations")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Indicator")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("MeetsExpectations")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StrandId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SubStrandId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StrandId");
+
+                    b.HasIndex("SubStrandId");
+
+                    b.ToTable("AssessmentRubrics");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.CurriculumDesign", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("EssenceStatement")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("LearningLevelId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("LessonsPerWeek")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Source")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LearningLevelId");
+
+                    b.HasIndex("SubjectId", "LearningLevelId")
+                        .IsUnique();
+
+                    b.ToTable("CurriculumDesigns");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.CurriculumDesignItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("CurriculumDesignId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CurriculumDesignId");
+
+                    b.ToTable("CurriculumDesignItems");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.CurriculumDesignSection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("CurriculumDesignId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CurriculumDesignId");
+
+                    b.ToTable("CurriculumDesignSections");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.SubStrandCompetency", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CompetencyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubStrandId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompetencyId");
+
+                    b.HasIndex("SubStrandId");
+
+                    b.ToTable("SubStrandCompetencies");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.SubStrandLearningAreaLink", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LearningArea")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubStrandId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubStrandId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.ToTable("SubStrandLearningAreaLinks");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.SubStrandValue", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubStrandId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ValueId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubStrandId");
+
+                    b.HasIndex("ValueId");
+
+                    b.ToTable("SubStrandValues");
+                });
+
             modelBuilder.Entity("CompetencySpecificOutcome", b =>
                 {
                     b.HasOne("SchoolWebApp.Core.Entities.CBE.Assessments.Competency", null)
@@ -8730,6 +9065,119 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Navigation("SubStrand");
                 });
 
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.AssessmentRubric", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.CBE.Assessments.Strand", "Strand")
+                        .WithMany("Rubrics")
+                        .HasForeignKey("StrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.CBE.Assessments.SubStrand", "SubStrand")
+                        .WithMany("Rubrics")
+                        .HasForeignKey("SubStrandId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Strand");
+
+                    b.Navigation("SubStrand");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.CurriculumDesign", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Class.LearningLevel", "LearningLevel")
+                        .WithMany()
+                        .HasForeignKey("LearningLevelId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Academics.Subject", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("LearningLevel");
+
+                    b.Navigation("Subject");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.CurriculumDesignItem", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.CBE.Assessments.CurriculumDesign", "CurriculumDesign")
+                        .WithMany("Items")
+                        .HasForeignKey("CurriculumDesignId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CurriculumDesign");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.CurriculumDesignSection", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.CBE.Assessments.CurriculumDesign", "CurriculumDesign")
+                        .WithMany("Sections")
+                        .HasForeignKey("CurriculumDesignId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CurriculumDesign");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.SubStrandCompetency", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.CBE.Assessments.Competency", "Competency")
+                        .WithMany()
+                        .HasForeignKey("CompetencyId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("SchoolWebApp.Core.Entities.CBE.Assessments.SubStrand", "SubStrand")
+                        .WithMany("CoreCompetencies")
+                        .HasForeignKey("SubStrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Competency");
+
+                    b.Navigation("SubStrand");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.SubStrandLearningAreaLink", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.CBE.Assessments.SubStrand", "SubStrand")
+                        .WithMany("LearningAreaLinks")
+                        .HasForeignKey("SubStrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Academics.Subject", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("SubStrand");
+
+                    b.Navigation("Subject");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.SubStrandValue", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.CBE.Assessments.SubStrand", "SubStrand")
+                        .WithMany("Values")
+                        .HasForeignKey("SubStrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.CBE.Values.Value", "Value")
+                        .WithMany()
+                        .HasForeignKey("ValueId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("SubStrand");
+
+                    b.Navigation("Value");
+                });
+
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Academics.AcademicYear", b =>
                 {
                     b.Navigation("SchoolClasses");
@@ -8816,11 +9264,17 @@ namespace SchoolWebApp.Infrastructure.Migrations
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.Strand", b =>
                 {
+                    b.Navigation("Rubrics");
+
                     b.Navigation("SubStrands");
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.SubStrand", b =>
                 {
+                    b.Navigation("CoreCompetencies");
+
+                    b.Navigation("LearningAreaLinks");
+
                     b.Navigation("LearningExperiences");
 
                     b.Navigation("LessonAllocations");
@@ -8829,7 +9283,11 @@ namespace SchoolWebApp.Infrastructure.Migrations
 
                     b.Navigation("Questions");
 
+                    b.Navigation("Rubrics");
+
                     b.Navigation("SpecificOutcomes");
+
+                    b.Navigation("Values");
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.SubjectOutcome", b =>
@@ -9161,6 +9619,13 @@ namespace SchoolWebApp.Infrastructure.Migrations
             modelBuilder.Entity("SchoolWebApp.Core.Entities.TeachingDocuments.SchemeOfWorkLesson", b =>
                 {
                     b.Navigation("RecordOfWorkEntry");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.CurriculumDesign", b =>
+                {
+                    b.Navigation("Items");
+
+                    b.Navigation("Sections");
                 });
 #pragma warning restore 612, 618
         }

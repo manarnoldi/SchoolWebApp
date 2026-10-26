@@ -188,6 +188,16 @@ namespace Project.Infrastructure.Data
         public DbSet<OutboundMessage> OutboundMessages { get; set; }
         #endregion
 
+        #region Curriculum design
+        public DbSet<CurriculumDesign> CurriculumDesigns { get; set; }
+        public DbSet<CurriculumDesignItem> CurriculumDesignItems { get; set; }
+        public DbSet<CurriculumDesignSection> CurriculumDesignSections { get; set; }
+        public DbSet<SubStrandCompetency> SubStrandCompetencies { get; set; }
+        public DbSet<SubStrandValue> SubStrandValues { get; set; }
+        public DbSet<SubStrandLearningAreaLink> SubStrandLearningAreaLinks { get; set; }
+        public DbSet<AssessmentRubric> AssessmentRubrics { get; set; }
+        #endregion
+
         #region Teaching documents
         public DbSet<SchemeOfWork> SchemesOfWork { get; set; }
         public DbSet<SchemeOfWorkLesson> SchemeOfWorkLessons { get; set; }

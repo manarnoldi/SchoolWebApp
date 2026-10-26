@@ -278,6 +278,38 @@ namespace Project.Infrastructure.Data
                 .HasForeignKey(c => c.SchemeOfWorkId).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<RecordOfWorkCheck>().HasOne(c => c.CheckedBy).WithMany()
                 .HasForeignKey(c => c.CheckedByUserId).OnDelete(DeleteBehavior.Restrict);
+
+            // Curriculum design: what the KICD design says beyond strands and outcomes.
+            // Everything hangs off its strand / sub-strand / design and goes with it;
+            // links to competencies, values and subjects only unlink.
+            modelBuilder.Entity<CurriculumDesign>()
+                .HasIndex(d => new { d.SubjectId, d.LearningLevelId })
+                .IsUnique();
+            modelBuilder.Entity<CurriculumDesign>().HasOne(d => d.Subject).WithMany()
+                .HasForeignKey(d => d.SubjectId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<CurriculumDesign>().HasOne(d => d.LearningLevel).WithMany()
+                .HasForeignKey(d => d.LearningLevelId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<CurriculumDesignItem>().HasOne(i => i.CurriculumDesign).WithMany(d => d.Items)
+                .HasForeignKey(i => i.CurriculumDesignId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<CurriculumDesignSection>().HasOne(s => s.CurriculumDesign).WithMany(d => d.Sections)
+                .HasForeignKey(s => s.CurriculumDesignId).OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<SubStrandCompetency>().HasOne(c => c.SubStrand).WithMany(s => s.CoreCompetencies)
+                .HasForeignKey(c => c.SubStrandId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<SubStrandCompetency>().HasOne(c => c.Competency).WithMany()
+                .HasForeignKey(c => c.CompetencyId).OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<SubStrandValue>().HasOne(v => v.SubStrand).WithMany(s => s.Values)
+                .HasForeignKey(v => v.SubStrandId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<SubStrandValue>().HasOne(v => v.Value).WithMany()
+                .HasForeignKey(v => v.ValueId).OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<SubStrandLearningAreaLink>().HasOne(l => l.SubStrand).WithMany(s => s.LearningAreaLinks)
+                .HasForeignKey(l => l.SubStrandId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<SubStrandLearningAreaLink>().HasOne(l => l.Subject).WithMany()
+                .HasForeignKey(l => l.SubjectId).OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<AssessmentRubric>().HasOne(r => r.Strand).WithMany(s => s.Rubrics)
+                .HasForeignKey(r => r.StrandId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<AssessmentRubric>().HasOne(r => r.SubStrand).WithMany(s => s.Rubrics)
+                .HasForeignKey(r => r.SubStrandId).OnDelete(DeleteBehavior.Cascade);
         }
 
         public static void SeedData(ModelBuilder modelBuilder)

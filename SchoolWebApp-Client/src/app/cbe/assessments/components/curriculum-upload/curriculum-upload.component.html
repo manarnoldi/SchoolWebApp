@@ -26,9 +26,10 @@
                         <button class="btn btn-sm btn-success mt-2" [disabled]="!subjectId || !learningLevelId || busy" (click)="download()">
                             <i class="fas fa-file-excel"></i> Download template</button>
                         <p class="small text-muted mt-2 mb-0">
-                            One workbook per subject and grade, laid out like the KICD curriculum design: a row per sub-strand with its
-                            specific learning outcomes, learning experiences, key inquiry questions, core competencies and PCIs, and a sheet
-                            for the subject's general learning outcomes. It comes pre-filled with anything already saved, so it can also be
+                            One workbook per subject and grade that holds the whole KICD curriculum design: a row per sub-strand with its
+                            specific learning outcomes, learning experiences, key inquiry questions, core competencies, values, PCIs and links
+                            to other learning areas; the assessment rubrics; the subject general learning outcomes; the essence statement and
+                            time allocation; the appendix lists; and every other section word for word. It comes pre-filled with anything already saved, so it can also be
                             used to correct a subject. The Instructions sheet explains each column.
                         </p>
                     </div>
@@ -56,6 +57,12 @@
                                         <td>Learning experiences</td><td class="text-end">{{ r.learningExperiences }}</td></tr>
                                     <tr><td>Key inquiry questions</td><td class="text-end">{{ r.keyQuestions }}</td>
                                         <td>PCIs</td><td class="text-end">{{ r.pcis }}</td></tr>
+                                    <tr><td>Core competency statements</td><td class="text-end">{{ r.coreCompetencies }}</td>
+                                        <td>Values</td><td class="text-end">{{ r.values }}</td></tr>
+                                    <tr><td>Links to other learning areas</td><td class="text-end">{{ r.learningAreaLinks }}</td>
+                                        <td>Rubric indicators</td><td class="text-end">{{ r.rubrics }}</td></tr>
+                                    <tr><td>Appendix items</td><td class="text-end">{{ r.appendixItems }}</td>
+                                        <td>Other sections</td><td class="text-end">{{ r.sections }}</td></tr>
                                 </table>
                             </div>
 

@@ -23,6 +23,12 @@ interface CurriculumImportResult {
     learningExperiences: number;
     keyQuestions: number;
     pcis: number;
+    coreCompetencies: number;
+    values: number;
+    learningAreaLinks: number;
+    rubrics: number;
+    appendixItems: number;
+    sections: number;
     changes: {[what: string]: number};
     errors: ImportIssue[];
     warnings: ImportIssue[];
