@@ -207,9 +207,9 @@ export class SchemesOfWorkComponent implements OnInit {
             .then((r) => { if (r.value) this.onSubStrand(l, true); });
     }
 
-    // The sub-strand from the lesson before, for "same as above".
-    copyAbove(g: WeekGroup, index: number) {
-        let l = g.lessons[index];
+    // The sub-strand from the lesson before, for "same as above". `l` is the row,
+    // or the pop-up form's working copy of it.
+    copyAbove(g: WeekGroup, index: number, l: SchemeLesson = g.lessons[index]) {
         let prev = index > 0 ? g.lessons[index - 1]
             : this.groups.filter((x) => x.weekNo < g.weekNo && x.lessons.length).slice(-1)[0]?.lessons.slice(-1)[0];
         if (!prev) return;
@@ -220,6 +220,66 @@ export class SchemesOfWorkComponent implements OnInit {
             assessmentMethods: prev.assessmentMethods
         });
         this.dirty = true;
+    }
+
+    // ---------- One lesson in a pop-up form ----------
+    // For those who prefer a form to the grid: a working copy of the row, put
+    // back into the scheme on Apply (still saved with the scheme's Save).
+
+    form: {lesson: SchemeLesson; original: SchemeLesson; group: WeekGroup; index: number} | null = null;
+    private dirtyBeforeForm = false;
+
+    openForm(g: WeekGroup, index: number) {
+        let original = g.lessons[index];
+        this.dirtyBeforeForm = this.dirty;
+        this.form = {lesson: {...original}, original, group: g, index};
+    }
+
+    // Lessons in scheme order, for Previous / Next.
+    private get ordered(): {group: WeekGroup; index: number}[] {
+        return this.groups.flatMap((g) => g.lessons.map((_, index) => ({group: g, index})));
+    }
+
+    private formPosition(): number {
+        return this.ordered.findIndex((x) => x.group.lessons[x.index] === this.form?.original);
+    }
+
+    get hasPrevious(): boolean { return this.formPosition() > 0; }
+
+    get hasNext(): boolean { return this.formPosition() < this.ordered.length - 1; }
+
+    private formChanged(): boolean {
+        let f = this.form;
+        return !!f && JSON.stringify(f.lesson) !== JSON.stringify(f.original);
+    }
+
+    // Puts the form's text into the row; then optionally moves to the lesson before / after.
+    applyForm(move = 0) {
+        let f = this.form!;
+        if (this.formChanged()) {
+            Object.assign(f.original, f.lesson);
+            this.dirty = true;
+        } else {
+            // The pickers mark the scheme changed as they fill the copy; nothing changed.
+            this.dirty = this.dirtyBeforeForm;
+        }
+        if (move === 0) { this.form = null; return; }
+        let next = this.ordered[this.formPosition() + move];
+        if (!next) { this.form = null; return; }
+        // Keep the grid in step: open the week of the lesson now in the form.
+        this.openWeeks = new Set([next.group.weekNo]);
+        this.openForm(next.group, next.index);
+    }
+
+    cancelForm() {
+        let close = () => {
+            this.form = null;
+            // The pickers mark the scheme changed as they fill the copy; nothing reached it.
+            this.dirty = this.dirtyBeforeForm;
+        };
+        if (!this.formChanged()) { close(); return; }
+        Swal.fire({title: 'Discard the changes to this lesson?', width: 380, position: 'top', icon: 'warning',
+            showCancelButton: true, confirmButtonText: 'Discard'}).then((r) => { if (r.value) close(); });
     }
 
     // ---------- Rows ----------

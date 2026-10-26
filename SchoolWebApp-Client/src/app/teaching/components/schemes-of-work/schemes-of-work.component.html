@@ -75,6 +75,91 @@
 
             <app-scheme-import *ngIf="showImport" (closed)="onImportClosed($event)"></app-scheme-import>
 
+            <!-- One lesson in a form -->
+            <ng-container *ngIf="form as f">
+                <div class="modal-backdrop fade show"></div>
+                <div class="modal fade show d-block" tabindex="-1">
+                    <div class="modal-dialog modal-xl" style="margin-top: 30px;">
+                        <div class="modal-content">
+                            <div class="modal-header bg-primary text-white py-2">
+                                <h5 class="modal-title">
+                                    <i class="fas fa-edit me-1"></i> Week {{ f.lesson.weekNo }}, lesson {{ f.lesson.lessonNo }}
+                                    <small class="ms-2" *ngIf="f.group.startDate">{{ f.group.startDate | date:'d MMM':'UTC' }} - {{ f.group.endDate | date:'d MMM':'UTC' }}</small>
+                                </h5>
+                                <button type="button" class="close text-white" (click)="cancelForm()"><span>&times;</span></button>
+                            </div>
+                            <div class="modal-body p-2">
+                                <div class="row g-2">
+                                    <div class="col-md-6">
+                                        <label class="form-label mb-0 small">Strand</label>
+                                        <select class="form-select form-select-sm" [(ngModel)]="f.lesson.strandId" (ngModelChange)="onStrand(f.lesson)">
+                                            <option [ngValue]="null">{{ strands.length ? '- other (type) -' : '- type below -' }}</option>
+                                            <option *ngFor="let s of strands" [ngValue]="s.id">{{ s.name }}</option>
+                                        </select>
+                                        <input *ngIf="!f.lesson.strandId" class="form-control form-control-sm mt-1" [(ngModel)]="f.lesson.strandName" placeholder="Strand">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label mb-0 small">Sub-strand</label>
+                                        <select *ngIf="f.lesson.strandId" class="form-select form-select-sm" [(ngModel)]="f.lesson.subStrandId" (ngModelChange)="onSubStrand(f.lesson)">
+                                            <option [ngValue]="null">- other (type) -</option>
+                                            <option *ngFor="let ss of subStrandsOf(f.lesson.strandId)" [ngValue]="ss.id">
+                                                {{ ss.name }} ({{ ss.lessons }}){{ ss.scheduledIn.length ? ' - ' + ss.scheduledIn.join(', ') : '' }}
+                                            </option>
+                                        </select>
+                                        <input *ngIf="!f.lesson.subStrandId" class="form-control form-control-sm" [class.mt-1]="f.lesson.strandId"
+                                            [(ngModel)]="f.lesson.subStrandName" placeholder="Sub-strand">
+                                        <div class="mt-1">
+                                            <button class="btn btn-xs btn-link p-0 me-2" (click)="copyAbove(f.group, f.index, f.lesson)" title="Same as the lesson before">
+                                                <i class="fas fa-level-up-alt"></i> same as above</button>
+                                            <button *ngIf="f.lesson.subStrandId" class="btn btn-xs btn-link p-0" (click)="refill(f.lesson)" title="Refill the text from the curriculum">
+                                                <i class="fas fa-sync-alt"></i> refill</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label mb-0 small">Lesson learning outcomes</label>
+                                        <textarea class="form-control form-control-sm" rows="9" [(ngModel)]="f.lesson.learningOutcomes"></textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label mb-0 small">Learning experiences</label>
+                                        <textarea class="form-control form-control-sm" rows="9" [(ngModel)]="f.lesson.learningExperiences"></textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label mb-0 small">Key inquiry question(s)</label>
+                                        <textarea class="form-control form-control-sm" rows="4" [(ngModel)]="f.lesson.keyInquiryQuestions"></textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label mb-0 small">Learning resources</label>
+                                        <textarea class="form-control form-control-sm" rows="4" [(ngModel)]="f.lesson.learningResources"></textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label mb-0 small">Assessment methods</label>
+                                        <textarea class="form-control form-control-sm" rows="3" [(ngModel)]="f.lesson.assessmentMethods"
+                                            placeholder="e.g. Oral questions, observation"></textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label mb-0 small">Reflection</label>
+                                        <textarea class="form-control form-control-sm" rows="3" [(ngModel)]="f.lesson.reflection"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer py-1 justify-content-between">
+                                <div>
+                                    <button class="btn btn-sm btn-outline-secondary me-1" [disabled]="!hasPrevious" (click)="applyForm(-1)" title="Apply and open the lesson before">
+                                        <i class="fas fa-chevron-left"></i> Previous</button>
+                                    <button class="btn btn-sm btn-outline-secondary" [disabled]="!hasNext" (click)="applyForm(1)" title="Apply and open the next lesson">
+                                        Next <i class="fas fa-chevron-right"></i></button>
+                                </div>
+                                <div>
+                                    <small class="text-muted me-2">Apply puts this into the scheme; Save on the page saves the scheme.</small>
+                                    <button class="btn btn-sm btn-secondary me-1" (click)="cancelForm()">Cancel</button>
+                                    <button class="btn btn-sm btn-primary" (click)="applyForm()"><i class="fas fa-check"></i> Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+
             <!-- Copy from another scheme -->
             <div class="modal-backdrop fade show" *ngIf="copySources?.length" (click)="copySources = null"></div>
             <div class="modal fade show d-block" *ngIf="copySources?.length" tabindex="-1">
@@ -169,6 +254,8 @@
                                             placeholder="e.g. Oral questions, observation"></textarea></td>
                                         <td><textarea class="form-control form-control-sm" rows="6" [(ngModel)]="l.reflection" (ngModelChange)="dirty = true"></textarea></td>
                                         <td class="text-center align-middle">
+                                            <button class="btn btn-xs btn-outline-primary py-0 px-1 mb-1" (click)="openForm(g, i)" title="Open this lesson in a form">
+                                                <i class="fas fa-external-link-alt"></i></button>
                                             <button class="btn btn-xs btn-outline-danger py-0 px-1" (click)="removeLesson(l)" title="Remove this lesson"><i class="fas fa-times"></i></button>
                                         </td>
                                     </ng-container>
