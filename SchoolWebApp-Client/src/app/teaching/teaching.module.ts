@@ -11,6 +11,7 @@ import {RecordOfWorkComponent} from './components/record-of-work/record-of-work.
 import {TrackerComponent} from './components/tracker/tracker.component';
 import {SchemeImportComponent} from './components/scheme-import/scheme-import.component';
 import {CurriculumViewComponent} from './components/curriculum-view/curriculum-view.component';
+import {TermPickerComponent} from './components/term-picker/term-picker.component';
 
 @NgModule({
     declarations: [
@@ -21,7 +22,8 @@ import {CurriculumViewComponent} from './components/curriculum-view/curriculum-v
         RecordOfWorkComponent,
         TrackerComponent,
         SchemeImportComponent,
-        CurriculumViewComponent
+        CurriculumViewComponent,
+        TermPickerComponent
     ],
     imports: [CommonModule, RouterModule, SharedModule, ApprovalsModule]
 })

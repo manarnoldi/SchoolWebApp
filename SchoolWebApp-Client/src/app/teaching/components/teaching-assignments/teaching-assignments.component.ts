@@ -76,6 +76,15 @@ export class TeachingAssignmentsComponent implements OnInit {
         return !!this.context && (this.context.wholeSchool || this.context.hodDepartmentIds.length > 0);
     }
 
+    get overseeLabel(): string {
+        return this.context?.wholeSchool ? 'Whole school' : 'My department(s)';
+    }
+
+    toggleScope() {
+        this.scope = this.scope === 'mine' ? 'oversee' : 'mine';
+        this.load();
+    }
+
     get session(): TeachingSession | undefined {
         return this.context?.sessions.find((s) => s.id === this.sessionId);
     }

@@ -5,11 +5,8 @@
         <div class="card card-outline card-primary mb-2">
             <div class="card-body p-2">
                 <div class="row g-2 align-items-end">
-                    <div class="col-md-2">
-                        <label class="form-label mb-0 small">Term</label>
-                        <select class="form-select form-select-sm" [(ngModel)]="sessionId" (ngModelChange)="load()">
-                            <option *ngFor="let s of context?.sessions" [ngValue]="s.id">{{ s.name }} {{ s.academicYearName }}{{ s.isCurrent ? ' (current)' : '' }}</option>
-                        </select>
+                    <div class="col-md-3">
+                        <app-term-picker [sessions]="context?.sessions || []" [(sessionId)]="sessionId" (sessionIdChange)="load()"></app-term-picker>
                     </div>
                     <div class="col-md-2" *ngIf="tracker && tracker.scope !== 'own'">
                         <label class="form-label mb-0 small">Department</label>
@@ -18,7 +15,7 @@
                             <option *ngFor="let d of departments" [ngValue]="d.id">{{ d.name }}</option>
                         </select>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-1">
                         <label class="form-label mb-0 small">Grade</label>
                         <select class="form-select form-select-sm" [(ngModel)]="learningLevelId">
                             <option [ngValue]="null">All</option>

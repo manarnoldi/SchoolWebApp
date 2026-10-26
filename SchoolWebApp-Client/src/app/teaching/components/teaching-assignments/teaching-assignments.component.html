@@ -1,27 +1,19 @@
 <div class="card card-outline card-primary mb-2">
     <div class="card-body p-2">
         <div class="row g-2 align-items-end">
-            <div class="col-md-3">
-                <label class="form-label mb-0 small">Term</label>
-                <select class="form-select form-select-sm" [(ngModel)]="sessionId" (ngModelChange)="load()">
-                    <option *ngFor="let s of context?.sessions" [ngValue]="s.id">
-                        {{ s.name }} {{ s.academicYearName }}{{ s.isCurrent ? ' (current)' : '' }}
-                    </option>
-                </select>
+            <div class="col-md-4">
+                <app-term-picker [sessions]="context?.sessions || []" [(sessionId)]="sessionId" (sessionIdChange)="load()"></app-term-picker>
             </div>
-            <div class="col-md-4" *ngIf="canOversee">
-                <label class="form-label mb-0 small">Show</label>
-                <div class="btn-group btn-group-sm d-flex">
-                    <button class="btn" [disabled]="!context?.staffDetailsId"
-                        [ngClass]="scope === 'mine' ? 'btn-primary' : 'btn-outline-primary'"
-                        (click)="scope = 'mine'; load()">My subjects</button>
-                    <button class="btn" [ngClass]="scope === 'oversee' ? 'btn-primary' : 'btn-outline-primary'"
-                        (click)="scope = 'oversee'; load()">
-                        {{ context?.wholeSchool ? 'Whole school' : 'My department(s)' }}
-                    </button>
-                </div>
+            <!-- Your own subjects, or everything you oversee; one button that switches between them. -->
+            <div class="col-md-2" *ngIf="canOversee">
+                <label class="form-label mb-0 small">Showing</label>
+                <button class="btn btn-sm btn-outline-primary w-100 text-truncate" (click)="toggleScope()"
+                    [disabled]="scope === 'oversee' && !context?.staffDetailsId"
+                    [title]="'Click to show ' + (scope === 'mine' ? overseeLabel.toLowerCase() : 'only your own subjects')">
+                    <i class="fas fa-exchange-alt me-1"></i>{{ scope === 'mine' ? 'My subjects' : overseeLabel }}
+                </button>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <label class="form-label mb-0 small">Search</label>
                 <input class="form-control form-control-sm" [(ngModel)]="search" (ngModelChange)="page = 1" placeholder="Teacher, subject or class">
             </div>
