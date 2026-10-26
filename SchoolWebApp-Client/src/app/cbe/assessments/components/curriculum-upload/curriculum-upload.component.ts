@@ -66,7 +66,7 @@ export class CurriculumUploadComponent implements OnInit {
     constructor(private http: HttpClient, private toastr: ToastrService) {}
 
     ngOnInit(): void {
-        this.http.get<any[]>('/subjects').subscribe({next: (s) => this.subjects = (s || []).sort((a, b) => a.name.localeCompare(b.name))});
+        this.http.get<any[]>('/subjects').subscribe({next: (s) => this.subjects = (s || []).sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0) || a.name.localeCompare(b.name))});
         this.http.get<any[]>('/learningLevels').subscribe({next: (l) => this.levels = (l || []).sort((a, b) => a.rank - b.rank)});
     }
 

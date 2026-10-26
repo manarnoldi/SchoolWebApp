@@ -81,12 +81,19 @@ export class TrackerComponent implements OnInit {
     // Filter options come from the rows themselves.
     get departments() { return this.distinct((r) => r.departmentId, (r) => r.departmentName || '-'); }
     get grades() { return this.distinct((r) => r.learningLevelId, (r) => r.learningLevelName); }
-    get subjects() { return this.distinct((r) => r.subjectId, (r) => r.subjectName); }
+    // Subjects in their set order (Subjects > Rank).
+    get subjects() { return this.distinct((r) => r.subjectId, (r) => r.subjectName, (r) => r.subjectRank); }
 
-    private distinct(id: (r: TrackerRow) => number, name: (r: TrackerRow) => string): {id: number; name: string}[] {
-        let map = new Map<number, string>();
-        (this.tracker?.rows || []).forEach((r) => { if (!map.has(id(r))) map.set(id(r), name(r)); });
-        return Array.from(map, ([k, v]) => ({id: k, name: v})).sort((a, b) => a.name.localeCompare(b.name));
+    // Sorted by rank when one is given, else by name.
+    private distinct(id: (r: TrackerRow) => number, name: (r: TrackerRow) => string,
+                     rank?: (r: TrackerRow) => number): {id: number; name: string}[] {
+        let map = new Map<number, {id: number; name: string; rank: number}>();
+        (this.tracker?.rows || []).forEach((r) => {
+            if (!map.has(id(r))) map.set(id(r), {id: id(r), name: name(r), rank: rank ? rank(r) : 0});
+        });
+        return Array.from(map.values())
+            .sort((a, b) => a.rank - b.rank || a.name.localeCompare(b.name, undefined, {numeric: true}))
+            .map(({id, name}) => ({id, name}));
     }
 
     get rows(): TrackerRow[] {

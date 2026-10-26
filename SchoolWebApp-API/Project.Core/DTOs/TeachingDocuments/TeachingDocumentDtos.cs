@@ -34,6 +34,7 @@ namespace SchoolWebApp.Core.DTOs.TeachingDocuments
         public string StaffName { get; set; } = "";
         public int SubjectId { get; set; }
         public string SubjectName { get; set; } = "";
+        public int SubjectRank { get; set; }
         public int SchoolClassId { get; set; }
         public string ClassName { get; set; } = "";
         public int LearningLevelId { get; set; }
@@ -359,6 +360,7 @@ namespace SchoolWebApp.Core.DTOs.TeachingDocuments
         public string StaffName { get; set; } = "";
         public int SubjectId { get; set; }
         public string SubjectName { get; set; } = "";
+        public int SubjectRank { get; set; }
         public int SchoolClassId { get; set; }
         public string ClassName { get; set; } = "";
         public int LearningLevelId { get; set; }

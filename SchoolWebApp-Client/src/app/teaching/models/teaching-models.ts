@@ -75,6 +75,7 @@ export interface TeachingAssignment {
     staffName: string;
     subjectId: number;
     subjectName: string;
+    subjectRank: number;
     schoolClassId: number;
     className: string;
     learningLevelId: number;
@@ -271,6 +272,7 @@ export interface TrackerRow {
     staffName: string;
     subjectId: number;
     subjectName: string;
+    subjectRank: number;
     schoolClassId: number;
     className: string;
     learningLevelId: number;

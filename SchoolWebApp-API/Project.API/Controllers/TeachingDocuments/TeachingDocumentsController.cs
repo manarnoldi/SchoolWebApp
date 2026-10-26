@@ -122,6 +122,7 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
                     StaffName = staff.GetValueOrDefault(k.Item1) ?? "",
                     SubjectId = k.Item2,
                     SubjectName = subject?.Name ?? "",
+                    SubjectRank = subject?.Rank ?? 0,
                     SchoolClassId = k.Item3,
                     ClassName = cls?.Name ?? "",
                     LearningLevelId = cls?.LearningLevelId ?? 0,
@@ -133,7 +134,8 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
                     SchemeLessons = scheme?.Lessons ?? 0
                 };
             })
-            .OrderBy(a => a.StaffName).ThenBy(a => ClassRank(a)).ThenBy(a => a.SubjectName)
+            // A teacher's subjects in their set order (Subjects > Rank), then by class.
+            .OrderBy(a => a.StaffName).ThenBy(a => a.SubjectRank).ThenBy(a => a.SubjectName).ThenBy(a => ClassRank(a))
             .ToList();
 
             int ClassRank(TeachingAssignmentDto a) => classes.GetValueOrDefault(a.SchoolClassId)?.Rank ?? 0;
@@ -217,6 +219,7 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
                     StaffName = a.StaffName,
                     SubjectId = a.SubjectId,
                     SubjectName = a.SubjectName,
+                    SubjectRank = a.SubjectRank,
                     SchoolClassId = a.SchoolClassId,
                     ClassName = a.ClassName,
                     LearningLevelId = a.LearningLevelId,

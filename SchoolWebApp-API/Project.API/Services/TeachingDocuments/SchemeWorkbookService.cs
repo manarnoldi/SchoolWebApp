@@ -61,6 +61,7 @@ namespace SchoolWebApp.API.Services.TeachingDocuments
             public int SubjectId { get; set; }
             public string SubjectName { get; set; } = "";
             public string SubjectAbbr { get; set; } = "";
+            public int SubjectRank { get; set; }
             public int DepartmentId { get; set; }
             public int SchoolClassId { get; set; }
             public string ClassName { get; set; } = "";
@@ -97,7 +98,7 @@ namespace SchoolWebApp.API.Services.TeachingDocuments
             }
             if (targets.Count == 0) return null;
             targets = targets.OrderBy(t => t.LearningLevelName, StringComparer.OrdinalIgnoreCase)
-                .ThenBy(t => t.ClassName).ThenBy(t => t.SubjectName).ToList();
+                .ThenBy(t => t.ClassName).ThenBy(t => t.SubjectRank).ThenBy(t => t.SubjectName).ToList();
             return (await BuildAsync(targets), $"Schemes of work - {staffName} - {session.SessionName} {session.AcademicYear?.Name}.xlsx");
         }
 
@@ -122,7 +123,7 @@ namespace SchoolWebApp.API.Services.TeachingDocuments
             return new Target
             {
                 StaffDetailsId = staffId, StaffName = staff,
-                SubjectId = subject.Id, SubjectName = subject.Name, SubjectAbbr = subject.Abbr, DepartmentId = subject.DepartmentId,
+                SubjectId = subject.Id, SubjectName = subject.Name, SubjectAbbr = subject.Abbr, SubjectRank = subject.Rank, DepartmentId = subject.DepartmentId,
                 SchoolClassId = cls.Id, ClassName = cls.Name, LearningLevelId = cls.LearningLevelId,
                 LearningLevelName = cls.LearningLevel?.Name ?? "", Session = session
             };

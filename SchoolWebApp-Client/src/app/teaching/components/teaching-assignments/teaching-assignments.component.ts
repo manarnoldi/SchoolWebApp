@@ -102,18 +102,23 @@ export class TeachingAssignmentsComponent implements OnInit {
     get teachers() { return this.options((r) => r.staffDetailsId, (r) => r.staffName); }
     get departments() { return this.options((r) => r.departmentId, (r) => r.departmentName || '-'); }
     get grades() { return this.options((r) => r.learningLevelId, (r) => r.learningLevelName); }
-    // Subjects narrow to the chosen department.
+    // Subjects in their set order (Subjects > Rank), narrowed to the chosen department.
     get subjects() {
         return this.options((r) => r.subjectId, (r) => r.subjectName,
-            (r) => this.departmentId == null || r.departmentId === this.departmentId);
+            (r) => this.departmentId == null || r.departmentId === this.departmentId, (r) => r.subjectRank);
     }
 
+    // Sorted by rank when one is given, else by name.
     private options(id: (r: TeachingAssignment) => number, name: (r: TeachingAssignment) => string,
-                    where: (r: TeachingAssignment) => boolean = () => true): {id: number; name: string}[] {
-        let map = new Map<number, string>();
-        this.rows.filter(where).forEach((r) => { if (!map.has(id(r))) map.set(id(r), name(r)); });
-        return Array.from(map, ([k, v]) => ({id: k, name: v}))
-            .sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true}));
+                    where: (r: TeachingAssignment) => boolean = () => true,
+                    rank?: (r: TeachingAssignment) => number): {id: number; name: string}[] {
+        let map = new Map<number, {id: number; name: string; rank: number}>();
+        this.rows.filter(where).forEach((r) => {
+            if (!map.has(id(r))) map.set(id(r), {id: id(r), name: name(r), rank: rank ? rank(r) : 0});
+        });
+        return Array.from(map.values())
+            .sort((a, b) => a.rank - b.rank || a.name.localeCompare(b.name, undefined, {numeric: true}))
+            .map(({id, name}) => ({id, name}));
     }
 
     get filtered(): TeachingAssignment[] {
