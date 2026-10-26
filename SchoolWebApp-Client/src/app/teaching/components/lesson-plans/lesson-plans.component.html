@@ -125,22 +125,21 @@
                                         [(ngModel)]="p.subStrandName" (ngModelChange)="touch(p)" placeholder="Sub-strand">
                                 </div>
                             </div>
+                            <!-- Three columns: outcomes | resources | inquiry questions over organisation. -->
                             <div class="row g-1 mt-1">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label class="form-label mb-0 small">Specific learning outcomes</label>
-                                    <textarea class="form-control form-control-sm" [rows]="rowsFor(p.learningOutcomes)" [(ngModel)]="p.learningOutcomes" (ngModelChange)="touch(p)"></textarea>
+                                    <textarea class="form-control form-control-sm" [rows]="rowsFor(p.learningOutcomes, 55, 5, 10)" [(ngModel)]="p.learningOutcomes" (ngModelChange)="touch(p)"></textarea>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label mb-0 small">Key inquiry question(s)</label>
-                                    <textarea class="form-control form-control-sm" [rows]="rowsFor(p.keyInquiryQuestions)" [(ngModel)]="p.keyInquiryQuestions" (ngModelChange)="touch(p)"></textarea>
-                                </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label class="form-label mb-0 small">Learning resources</label>
-                                    <textarea class="form-control form-control-sm" [rows]="rowsFor(p.learningResources)" [(ngModel)]="p.learningResources" (ngModelChange)="touch(p)"></textarea>
+                                    <textarea class="form-control form-control-sm" [rows]="rowsFor(p.learningResources, 55, 5, 10)" [(ngModel)]="p.learningResources" (ngModelChange)="touch(p)"></textarea>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label mb-0 small">Organisation of learning</label>
-                                    <textarea class="form-control form-control-sm" [rows]="rowsFor(p.organisationOfLearning)" [(ngModel)]="p.organisationOfLearning" (ngModelChange)="touch(p)"
+                                <div class="col-md-4">
+                                    <label class="form-label mb-0 small">Key inquiry question(s)</label>
+                                    <textarea class="form-control form-control-sm" [rows]="rowsFor(p.keyInquiryQuestions, 55, 2, 4)" [(ngModel)]="p.keyInquiryQuestions" (ngModelChange)="touch(p)"></textarea>
+                                    <label class="form-label mb-0 mt-1 small">Organisation of learning</label>
+                                    <textarea class="form-control form-control-sm" [rows]="rowsFor(p.organisationOfLearning, 55, 1, 4)" [(ngModel)]="p.organisationOfLearning" (ngModelChange)="touch(p)"
                                         placeholder="e.g. In the classroom, individual and group work"></textarea>
                                 </div>
                             </div>
@@ -202,10 +201,12 @@
                                 <div class="col-md-6"><b>Strand:</b> {{ p.strandName }} &middot; <b>Sub-strand:</b> {{ p.subStrandName }}</div>
                             </div>
                             <div class="row small mt-1">
-                                <div class="col-md-6"><b>Specific learning outcomes</b><div class="pre">{{ p.learningOutcomes }}</div></div>
-                                <div class="col-md-6"><b>Key inquiry question(s)</b><div class="pre">{{ p.keyInquiryQuestions }}</div></div>
-                                <div class="col-md-6 mt-1"><b>Learning resources</b><div class="pre">{{ p.learningResources }}</div></div>
-                                <div class="col-md-6 mt-1"><b>Organisation of learning</b><div class="pre">{{ p.organisationOfLearning }}</div></div>
+                                <div class="col-md-4"><b>Specific learning outcomes</b><div class="pre">{{ p.learningOutcomes }}</div></div>
+                                <div class="col-md-4"><b>Learning resources</b><div class="pre">{{ p.learningResources }}</div></div>
+                                <div class="col-md-4">
+                                    <b>Key inquiry question(s)</b><div class="pre">{{ p.keyInquiryQuestions }}</div>
+                                    <b class="d-block mt-1">Organisation of learning</b><div class="pre">{{ p.organisationOfLearning }}</div>
+                                </div>
                             </div>
                             <table class="table table-sm table-bordered small mt-2 mb-0">
                                 <tr><th style="width: 90px;">Time</th><th>Content</th></tr>

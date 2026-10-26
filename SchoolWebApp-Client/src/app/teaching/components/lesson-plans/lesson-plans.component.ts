@@ -207,10 +207,11 @@ export class LessonPlansComponent implements OnInit {
         return parts.join(' · ');
     }
 
-    // Text boxes as tall as their text (about 110 characters a line), 1 to 6 rows.
-    rowsFor(text: string | null | undefined): number {
-        let lines = (text || '').split('\n').reduce((n, l) => n + Math.max(1, Math.ceil(l.length / 110)), 0);
-        return Math.min(6, Math.max(1, lines));
+    // Text boxes as tall as their text: perLine is roughly how many characters fit
+    // across the box, and the height stays between min and max rows.
+    rowsFor(text: string | null | undefined, perLine = 110, min = 1, max = 6): number {
+        let lines = (text || '').split('\n').reduce((n, l) => n + Math.max(1, Math.ceil(l.length / perLine)), 0);
+        return Math.min(max, Math.max(min, lines));
     }
 
     // ---------- Curriculum pickers ----------
