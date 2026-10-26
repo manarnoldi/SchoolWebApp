@@ -47,6 +47,10 @@
             <div class="col-3">
                 <app-table-button modelName="schoolClass"
                     buttonTitle="Add school class"></app-table-button>
+                <!-- Administrators: copy another year's classes into the year chosen above. -->
+                <button *ngIf="auth.isAdmin" type="button" class="btn btn-sm btn-outline-primary float-end me-1"
+                    title="Copy another year's classes into the year chosen (learners and class leaders are not copied)"
+                    (click)="copyClasses()"><i class="fas fa-copy"></i> Copy classes from another year</button>
             </div>
         </div>
         <div class="card">

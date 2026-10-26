@@ -29,6 +29,8 @@ import { SchoolSoftFilterFormComponent } from '@/shared/components/school-soft-f
 import { StudentClassService } from '@/students/services/student-class.service';
 import { StudentDetailsService } from '@/students/services/student-details.service';
 import { Status } from '@/core/enums/status';
+import { AuthService } from '@/core/services/auth.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
     selector: 'app-school-class',
@@ -95,8 +97,53 @@ export class SchoolClassComponent implements OnInit {
         private educationLevelSvc: EducationLevelService,
         private curriculumSvc: CurriculumService,
         private studentClassSvc: StudentClassService,
-        private studentDetailsSvc: StudentDetailsService
+        private studentDetailsSvc: StudentDetailsService,
+        public auth: AuthService,
+        private http: HttpClient
     ) {}
+
+    /**
+     * Copies another year's classes into the year chosen in the filter - level,
+     * stream, rank and description, with the year in the names changed.
+     * Learners move by promotion and class leaders are registered per class,
+     * so neither is copied. Administrators only.
+     */
+    copyClasses() {
+        let toId = +this.ssFilterFormComponent?.schoolSoftFilterForm.get('academicYearId')?.value || 0;
+        let to = this.academicYears.find((y) => +y.id === toId);
+        if (!to) {
+            this.toastr.info('Choose the academic year to copy the classes into first.');
+            return;
+        }
+        let options: {[id: string]: string} = {};
+        this.academicYears.filter((y) => +y.id !== toId).forEach((y) => options[y.id] = y.name);
+        if (!Object.keys(options).length) {
+            this.toastr.info('There is no other academic year to copy classes from.');
+            return;
+        }
+        Swal.fire({
+            title: `Copy classes into ${to.name}`,
+            html: 'Each class is copied with its level, stream and rank, the year in its name changed. '
+                + 'Learners and class leaders are not copied. Classes ' + to.name + ' already has are left as they are.',
+            input: 'select',
+            inputOptions: options,
+            inputPlaceholder: 'Copy from…',
+            inputValidator: (v) => (v ? null : 'Choose the year to copy from'),
+            width: 460, position: 'top', icon: 'question', showCancelButton: true, confirmButtonText: 'Copy classes'
+        }).then((r) => {
+            if (!r.isConfirmed) return;
+            this.http.post<{copied: string[]; skipped: string[]}>('/schoolClasses/copyYear', {},
+                {params: {fromAcademicYearId: r.value, toAcademicYearId: toId}}).subscribe({
+                next: (res) => {
+                    let msg = `${res.copied.length} class(es) copied into ${to!.name}.`;
+                    if (res.skipped.length) msg += ` ${res.skipped.length} already there, left as they were.`;
+                    res.copied.length ? this.toastr.success(msg) : this.toastr.info(msg);
+                    this.loadSchoolClasses(this.ssFilterFormComponent.schoolSoftFilterForm.value);
+                },
+                error: (err) => this.toastr.error(err.error?.message || 'Error copying the classes.')
+            });
+        });
+    }
 
     ngOnInit(): void {
         this.refreshItems();

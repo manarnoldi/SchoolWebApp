@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.API.Utils;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Class.SchoolClass;
+using SchoolWebApp.Core.Entities.Academics;
 using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
@@ -246,6 +247,62 @@ namespace SchoolWebApp.API.Controllers.Class
                 }
             }
             return BadRequest(ModelState);
+        }
+
+        // POST api/schoolClasses/copyYear?fromAcademicYearId=8&toAcademicYearId=9
+        /// <summary>
+        /// Copies a year's classes into another year - learning level, stream, rank
+        /// and description, with the year in the class name changed ("Grade 1E 2026"
+        /// becomes "Grade 1E 2027"). Learners move through promotion and class
+        /// leaders are registered per class, so neither is copied. A class the
+        /// target year already has (same level and stream) is left as it is.
+        /// </summary>
+        [HttpPost("copyYear")]
+        [Authorize(Roles = "Administrator,SuperAdministrator")]
+        public async Task<IActionResult> CopyYear(int fromAcademicYearId, int toAcademicYearId)
+        {
+            try
+            {
+                if (fromAcademicYearId == toAcademicYearId)
+                    return BadRequest(new { message = "Choose a different year to copy the classes from." });
+                var from = await _unitOfWork.Repository<AcademicYear>().GetById(fromAcademicYearId);
+                var to = await _unitOfWork.Repository<AcademicYear>().GetById(toAcademicYearId);
+                if (from == null || to == null) return NotFound(new { message = "Academic year not found." });
+
+                var source = (await _unitOfWork.SchoolClasses.Find(c => c.AcademicYearId == fromAcademicYearId)).ToList();
+                if (source.Count == 0) return BadRequest(new { message = $"{from.Name} has no classes to copy." });
+                var existing = (await _unitOfWork.SchoolClasses.Find(c => c.AcademicYearId == toAcademicYearId)).ToList();
+
+                var copied = new List<string>();
+                var skipped = new List<string>();
+                foreach (var c in source.OrderBy(c => c.Rank).ThenBy(c => c.Name))
+                {
+                    var name = c.Name.Contains(from.Name) ? c.Name.Replace(from.Name, to.Name) : c.Name;
+                    if (existing.Any(e => e.LearningLevelId == c.LearningLevelId && e.SchoolStreamId == c.SchoolStreamId))
+                    {
+                        skipped.Add(name);
+                        continue;
+                    }
+                    _unitOfWork.SchoolClasses.Create(new SchoolClass
+                    {
+                        Name = name,
+                        // Notes left by the data migration describe the old record, not the copy.
+                        Description = c.Description?.StartsWith("Legacy ", StringComparison.OrdinalIgnoreCase) == true ? null : c.Description,
+                        LearningLevelId = c.LearningLevelId,
+                        SchoolStreamId = c.SchoolStreamId,
+                        AcademicYearId = toAcademicYearId,
+                        Rank = c.Rank
+                    });
+                    copied.Add(name);
+                }
+                await _unitOfWork.SaveChangesAsync();
+                return Ok(new { copied, skipped });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while copying the classes to another year.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = $"An error occurred while copying the classes - {ex.Message}" });
+            }
         }
 
         // PUT api/schoolClasses/5
