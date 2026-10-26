@@ -15,19 +15,19 @@ namespace SchoolWebApp.Infrastructure.Repositories.Academics
 
         public async Task<List<Subject>> GetByCurriculumId(int curriculumId)
         {
-            var subjects = await _dbContext.Subjects.Where(s => s.SubjectGroup.CurriculumId == curriculumId).ToListAsync();
+            var subjects = await _dbContext.Subjects.Where(s => s.SubjectGroup.CurriculumId == curriculumId).OrderBy(s => s.Rank).ThenBy(s => s.Name).ToListAsync();
             return subjects;
         }
 
         public async Task<List<Subject>> GetByDepartmentId(int departmentId)
         {
-            var subjects = await _dbContext.Subjects.Where(e => e.DepartmentId == departmentId).ToListAsync();
+            var subjects = await _dbContext.Subjects.Where(e => e.DepartmentId == departmentId).OrderBy(s => s.Rank).ThenBy(s => s.Name).ToListAsync();
             return subjects;
         }
 
         public async Task<List<Subject>> GetBySubjectGroupId(int subjectGroupId)
         {
-            var subjects = await _dbContext.Subjects.Where(e => e.SubjectGroupId == subjectGroupId).ToListAsync();
+            var subjects = await _dbContext.Subjects.Where(e => e.SubjectGroupId == subjectGroupId).OrderBy(s => s.Rank).ThenBy(s => s.Name).ToListAsync();
             return subjects;
         }
     }

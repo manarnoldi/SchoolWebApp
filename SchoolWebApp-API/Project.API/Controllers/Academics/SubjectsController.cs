@@ -36,7 +36,10 @@ namespace SchoolWebApp.API.Controllers.Academics
         {
             try
             {
-                return Ok(_mapper.Map<List<SubjectDto>>(await _unitOfWork.Subjects.Find(includeProperties: "Department,StaffDetails,SubjectGroup")));
+                // In their set order (Rank), so every subject dropdown lists them that way.
+                return Ok(_mapper.Map<List<SubjectDto>>(await _unitOfWork.Subjects.Find(
+                    orderBy: q => q.OrderBy(s => s.Rank).ThenBy(s => s.Name),
+                    includeProperties: "Department,StaffDetails,SubjectGroup")));
             }
             catch (Exception ex)
             {
