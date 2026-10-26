@@ -57,10 +57,25 @@
                 </div>
             </div>
 
-            <!-- Strand by strand -->
+            <!-- Strand by strand: click a strand to open or close it -->
+            <div class="text-end mb-1">
+                <button class="btn btn-xs btn-link py-0" (click)="toggleAll()">
+                    <i class="fas" [ngClass]="allOpen ? 'fa-compress-alt' : 'fa-expand-alt'"></i>
+                    {{ allOpen ? 'Collapse all strands' : 'Expand all strands' }}</button>
+            </div>
             <div *ngFor="let s of view.strands" class="card mb-2">
-                <div class="card-header p-2 bg-light"><strong>Strand {{ s.code }}: {{ s.name }}</strong></div>
-                <div class="card-body p-2">
+                <div class="card-header p-2 bg-light d-flex justify-content-between align-items-center" style="cursor: pointer;"
+                    (click)="toggleStrand(s.id)" [attr.aria-expanded]="openStrands.has(s.id)">
+                    <strong>
+                        <i class="fas fa-fw me-1" [ngClass]="openStrands.has(s.id) ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+                        Strand {{ s.code }}: {{ s.name }}
+                    </strong>
+                    <small class="text-muted">
+                        {{ s.subStrands.length }} sub-strand{{ s.subStrands.length === 1 ? '' : 's' }}
+                        &middot; {{ lessonsOf(s) }} lessons
+                    </small>
+                </div>
+                <div class="card-body p-2" *ngIf="openStrands.has(s.id)">
                     <div *ngFor="let ss of s.subStrands" class="mb-3">
                         <div class="table-responsive">
                             <table class="table table-sm table-bordered small mb-0">

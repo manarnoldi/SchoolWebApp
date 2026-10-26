@@ -91,6 +91,8 @@ export class CurriculumViewComponent implements OnInit {
     view: CurriculumView | null = null;
     loading = false;
     letters = 'abcdefghijklmnopqrstuvwxyz';
+    // Strands shown open; the first opens on load, the rest on click.
+    openStrands = new Set<number>();
 
     constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router,
                 private toastr: ToastrService) {}
@@ -122,9 +124,29 @@ export class CurriculumViewComponent implements OnInit {
         this.router.navigate([], {relativeTo: this.route, queryParams: pick, replaceUrl: true});
         this.loading = true;
         this.http.get<CurriculumView>('/curriculum', {params: pick}).subscribe({
-            next: (v) => { this.view = v; this.loading = false; },
+            next: (v) => {
+                this.view = v;
+                this.loading = false;
+                this.openStrands = new Set(v.strands.slice(0, 1).map((s) => s.id));
+            },
             error: (err) => { this.loading = false; this.toastr.error(err.error?.message || 'Error loading the curriculum.'); }
         });
+    }
+
+    lessonsOf(s: CurriculumStrandView): number {
+        return s.subStrands.reduce((n, ss) => n + (ss.lessons || 0), 0);
+    }
+
+    toggleStrand(id: number) {
+        this.openStrands.has(id) ? this.openStrands.delete(id) : this.openStrands.add(id);
+    }
+
+    get allOpen(): boolean {
+        return !!this.view && this.view.strands.every((s) => this.openStrands.has(s.id));
+    }
+
+    toggleAll() {
+        this.openStrands = this.allOpen ? new Set() : new Set(this.view!.strands.map((s) => s.id));
     }
 
     // The subject outcome's letter, as the design numbers them.
