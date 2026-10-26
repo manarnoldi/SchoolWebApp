@@ -225,8 +225,6 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
             Conclusion = p.Conclusion,
             ConclusionMinutes = p.ConclusionMinutes,
             ExtendedActivities = p.ExtendedActivities,
-            Summary = p.Summary,
-            Reflection = p.Reflection,
             Steps = p.Steps.OrderBy(x => x.StepNo).Select(x => new LessonPlanStepDto { Id = x.Id, StepNo = x.StepNo, Activity = x.Activity }).ToList(),
             TaughtStatus = p.SchemeOfWorkLesson?.RecordOfWorkEntry?.Status ?? LessonTaughtStatus.NotRecorded,
             TaughtOn = p.SchemeOfWorkLesson?.RecordOfWorkEntry?.TaughtOn,
@@ -282,8 +280,6 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
             plan.Conclusion = model.Conclusion;
             plan.ConclusionMinutes = Minutes(model.ConclusionMinutes);
             plan.ExtendedActivities = model.ExtendedActivities;
-            plan.Summary = model.Summary;
-            plan.Reflection = model.Reflection;
 
             _db.LessonPlanSteps.RemoveRange(plan.Steps);
             var steps = model.Steps.Where(x => !string.IsNullOrWhiteSpace(x.Activity)).OrderBy(x => x.StepNo).ToList();

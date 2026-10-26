@@ -6745,9 +6745,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Property<string>("OrganisationOfLearning")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Reflection")
-                        .HasColumnType("longtext");
-
                     b.Property<int?>("Roll")
                         .HasColumnType("int");
 
@@ -6771,9 +6768,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Property<string>("SubStrandName")
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
-
-                    b.Property<string>("Summary")
-                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 

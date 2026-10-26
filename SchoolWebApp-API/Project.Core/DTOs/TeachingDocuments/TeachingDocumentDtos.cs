@@ -252,8 +252,6 @@ namespace SchoolWebApp.Core.DTOs.TeachingDocuments
         public string? Conclusion { get; set; }
         public int? ConclusionMinutes { get; set; }
         public string? ExtendedActivities { get; set; }
-        public string? Summary { get; set; }
-        public string? Reflection { get; set; }
         public List<LessonPlanStepDto> Steps { get; set; } = new();
         // The record of work entry of the scheme lesson this plan was prepared from
         // (read-only here - it is written on the Record of Work page).

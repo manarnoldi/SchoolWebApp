@@ -54,8 +54,6 @@ namespace SchoolWebApp.Core.Entities.TeachingDocuments
         public string? Conclusion { get; set; }
         public int? ConclusionMinutes { get; set; }
         public string? ExtendedActivities { get; set; }
-        public string? Summary { get; set; }
-        public string? Reflection { get; set; }
         public List<LessonPlanStep> Steps { get; set; } = new();
     }
 

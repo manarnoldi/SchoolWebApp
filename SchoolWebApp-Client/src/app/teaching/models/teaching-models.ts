@@ -206,8 +206,6 @@ export interface LessonPlan {
     conclusion: string | null;
     conclusionMinutes: number | null;
     extendedActivities: string | null;
-    summary: string | null;
-    reflection: string | null;
     steps: LessonPlanStep[];
     // From the record of work (read-only here).
     taughtStatus: LessonTaughtStatus;
