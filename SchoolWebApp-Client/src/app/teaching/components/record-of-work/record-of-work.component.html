@@ -38,7 +38,7 @@
                         </div>
                     </div>
                     <div class="small text-muted mt-1" *ngIf="editable">
-                        Lessons marked taught in the lesson plans' after-lesson notes appear here. A week the HOD has checked is locked.
+                        Record each lesson after teaching it; approved lesson plans show what is recorded here. A week the HOD has checked is locked.
                     </div>
                 </div>
             </div>
@@ -58,19 +58,25 @@
                         </thead>
                         <tbody>
                             <ng-container *ngFor="let w of weeks">
-                                <tr class="td-week">
+                                <!-- One week open at a time; click the week to open or fold it. -->
+                                <tr class="td-week" style="cursor: pointer;" (click)="toggleWeek(w)">
                                     <td colspan="6">
+                                        <i class="fas me-1" [ngClass]="openWeek === w.weekNo ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
                                         <b>Week {{ w.weekNo }}</b>
+                                        <small class="ms-2" [ngClass]="recorded(w) === w.rows.length ? 'text-success' : 'text-muted'">
+                                            {{ recorded(w) }} of {{ w.rows.length }} recorded</small>
+                                        <span *ngIf="hasUnsaved(w)" class="badge bg-warning text-dark ms-2">unsaved</span>
                                         <ng-container *ngIf="w.check as c">
                                             <span class="badge bg-success ms-2"><i class="fas fa-check"></i> Checked</span>
                                             <small class="ms-1">by {{ c.checkedByName }} on {{ c.checkedAt | date:'d MMM y' }}</small>
                                             <small class="ms-1 fst-italic" *ngIf="c.comment">"{{ c.comment }}"</small>
-                                            <button *ngIf="canRemoveCheck(c)" class="btn btn-xs btn-link text-danger py-0" (click)="removeCheck(c)">remove check</button>
+                                            <button *ngIf="canRemoveCheck(c)" class="btn btn-xs btn-link text-danger py-0" (click)="$event.stopPropagation(); removeCheck(c)">remove check</button>
                                         </ng-container>
-                                        <button *ngIf="!w.check && record.canCheck" class="btn btn-xs btn-outline-success py-0 ms-2" (click)="check(w)">
+                                        <button *ngIf="!w.check && record.canCheck" class="btn btn-xs btn-outline-success py-0 ms-2" (click)="$event.stopPropagation(); check(w)">
                                             <i class="fas fa-check"></i> Check week {{ w.weekNo }}</button>
                                     </td>
                                 </tr>
+                                <ng-container *ngIf="openWeek === w.weekNo">
                                 <tr *ngFor="let r of w.rows" [class.table-warning]="dirty.has(r.schemeOfWorkLessonId)">
                                     <td class="text-center"><b>{{ r.lessonNo }}</b></td>
                                     <td>
@@ -84,8 +90,8 @@
                                             </select>
                                         </td>
                                         <td><input type="date" class="form-control form-control-sm" [(ngModel)]="r.taughtOn" (ngModelChange)="touch(r)"></td>
-                                        <td><textarea class="form-control form-control-sm" rows="2" [(ngModel)]="r.workCovered" (ngModelChange)="touch(r)"></textarea></td>
-                                        <td><textarea class="form-control form-control-sm" rows="2" [(ngModel)]="r.remarks" (ngModelChange)="touch(r)"
+                                        <td><textarea class="form-control form-control-sm" rows="6" [(ngModel)]="r.workCovered" (ngModelChange)="touch(r)"></textarea></td>
+                                        <td><textarea class="form-control form-control-sm" rows="6" [(ngModel)]="r.remarks" (ngModelChange)="touch(r)"
                                             placeholder="e.g. Not taught - sports day; carried to next week"></textarea></td>
                                     </ng-container>
                                     <ng-container *ngIf="!editable || w.check">
@@ -98,6 +104,7 @@
                                         <td class="pre">{{ r.remarks }}</td>
                                     </ng-container>
                                 </tr>
+                                </ng-container>
                             </ng-container>
                             <tr *ngIf="weeks.length === 0"><td colspan="6" class="text-center text-muted">The scheme has no lessons.</td></tr>
                         </tbody>

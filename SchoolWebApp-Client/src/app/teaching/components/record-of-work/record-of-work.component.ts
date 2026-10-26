@@ -48,6 +48,8 @@ export class RecordOfWorkComponent implements OnInit {
     weeks: WeekRows[] = [];
     school: PrintSchool = {name: ''};
     dirty = new Set<number>();
+    // The one week shown open; the rest are folded.
+    openWeek: number | null = null;
 
     statusLabels = STATUS_LABELS;
     statusBadges = STATUS_BADGES;
@@ -98,6 +100,20 @@ export class RecordOfWorkComponent implements OnInit {
             rows: r.rows.filter((x) => x.weekNo === w),
             check: r.checks.find((c) => c.weekNo === w)
         }));
+        // Open the first week with a lesson still to record.
+        this.openWeek = this.weeks.find((w) => this.recorded(w) < w.rows.length)?.weekNo ?? null;
+    }
+
+    toggleWeek(w: WeekRows) {
+        this.openWeek = this.openWeek === w.weekNo ? null : w.weekNo;
+    }
+
+    recorded(w: WeekRows): number {
+        return w.rows.filter((x) => +x.status !== LessonTaughtStatus.NotRecorded).length;
+    }
+
+    hasUnsaved(w: WeekRows): boolean {
+        return w.rows.some((x) => this.dirty.has(x.schemeOfWorkLessonId));
     }
 
     back() {
