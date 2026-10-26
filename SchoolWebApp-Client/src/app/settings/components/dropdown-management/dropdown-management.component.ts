@@ -145,6 +145,7 @@ export class DropdownManagementComponent implements OnInit {
             ],
             links: [
                 {label: 'Themes', path: '/cbe/assessments/themes', icon: 'fas fa-layer-group'},
+                {label: 'Curriculum Upload (Excel)', path: '/cbe/assessments/curriculum-upload', icon: 'fas fa-file-excel'},
                 {label: 'Strands', path: '/cbe/assessments/strands', icon: 'fas fa-stream'},
                 {label: 'Sub-Strands', path: '/cbe/assessments/sub-strands', icon: 'fas fa-list-ul'},
                 {label: 'Specific Outcomes', path: '/cbe/assessments/specific-outcomes', icon: 'fas fa-bullseye'},

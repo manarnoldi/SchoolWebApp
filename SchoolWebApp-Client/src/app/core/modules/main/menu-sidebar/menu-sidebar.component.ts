@@ -196,6 +196,7 @@ export const MENU = [
                 extraActivePaths: [
                     '/cbe/assessments/themes',
                     '/cbe/assessments/strands',
+                    '/cbe/assessments/curriculum-upload',
                     '/cbe/assessments/sub-strands',
                     '/cbe/assessments/specific-outcomes',
                     '/cbe/assessments/general-outcomes',

@@ -1,0 +1,95 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+        <div class="row g-2">
+            <div class="col-lg-5">
+                <div class="card card-outline card-success mb-2">
+                    <div class="card-header p-2"><strong><i class="fas fa-file-download text-success"></i> 1. Download the template</strong></div>
+                    <div class="card-body p-2">
+                        <div class="row g-2">
+                            <div class="col-md-7">
+                                <label class="form-label mb-0 small">Subject / learning area</label>
+                                <select class="form-select form-select-sm" [(ngModel)]="subjectId">
+                                    <option [ngValue]="null">- choose -</option>
+                                    <option *ngFor="let s of subjects" [ngValue]="s.id">{{ s.name }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label mb-0 small">Grade</label>
+                                <select class="form-select form-select-sm" [(ngModel)]="learningLevelId">
+                                    <option [ngValue]="null">- choose -</option>
+                                    <option *ngFor="let l of levels" [ngValue]="l.id">{{ l.name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-success mt-2" [disabled]="!subjectId || !learningLevelId || busy" (click)="download()">
+                            <i class="fas fa-file-excel"></i> Download template</button>
+                        <p class="small text-muted mt-2 mb-0">
+                            One workbook per subject and grade, laid out like the KICD curriculum design: a row per sub-strand with its
+                            specific learning outcomes, learning experiences, key inquiry questions, core competencies and PCIs, and a sheet
+                            for the subject's general learning outcomes. It comes pre-filled with anything already saved, so it can also be
+                            used to correct a subject. The Instructions sheet explains each column.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="card card-outline card-primary mb-2">
+                    <div class="card-header p-2"><strong><i class="fas fa-file-upload text-primary"></i> 2. Upload the filled workbook</strong></div>
+                    <div class="card-body p-2">
+                        <input type="file" class="form-control form-control-sm" accept=".xlsx" (change)="onFile($event)" [disabled]="busy">
+                        <small class="text-muted">The workbook is checked first - nothing is saved until you confirm. Fixed something? Choose the file again.</small>
+
+                        <div *ngIf="busy" class="text-center text-muted p-2"><i class="fas fa-spinner fa-spin"></i> Working…</div>
+
+                        <ng-container *ngIf="shown as r">
+                            <div class="mt-2" *ngIf="r.subjectName">
+                                <h6 class="mb-1">{{ r.subjectName }} &middot; {{ r.learningLevelName }}</h6>
+                                <table class="table table-sm table-bordered small mb-2" style="max-width: 520px;">
+                                    <tr><td>Subject general learning outcomes</td><td class="text-end">{{ r.subjectOutcomes }}</td>
+                                        <td>Strands</td><td class="text-end">{{ r.strands }}</td></tr>
+                                    <tr><td>Sub-strands</td><td class="text-end">{{ r.subStrands }}</td>
+                                        <td>Lessons</td><td class="text-end">{{ r.lessons }}</td></tr>
+                                    <tr><td>Specific learning outcomes</td><td class="text-end">{{ r.specificOutcomes }}</td>
+                                        <td>Learning experiences</td><td class="text-end">{{ r.learningExperiences }}</td></tr>
+                                    <tr><td>Key inquiry questions</td><td class="text-end">{{ r.keyQuestions }}</td>
+                                        <td>PCIs</td><td class="text-end">{{ r.pcis }}</td></tr>
+                                </table>
+                            </div>
+
+                            <div *ngIf="r.errors.length" class="alert alert-danger py-1 mb-2">
+                                <b>{{ r.errors.length }} problem(s) to fix in the workbook before it can be saved:</b>
+                                <ul class="mb-0 small ps-3">
+                                    <li *ngFor="let e of r.errors">
+                                        <span *ngIf="e.sheet || e.row">{{ e.sheet }}{{ e.row ? ' row ' + e.row : '' }}: </span>{{ e.message }}</li>
+                                </ul>
+                            </div>
+                            <div *ngIf="r.warnings.length" class="alert alert-warning py-1 mb-2">
+                                <b>Notes</b> (saved anyway):
+                                <ul class="mb-0 small ps-3">
+                                    <li *ngFor="let w of r.warnings">
+                                        <span *ngIf="w.sheet || w.row">{{ w.sheet }}{{ w.row ? ' row ' + w.row : '' }}: </span>{{ w.message }}</li>
+                                </ul>
+                            </div>
+
+                            <div *ngIf="result?.saved" class="alert alert-success py-1 mb-2">
+                                <i class="fas fa-check-circle"></i> Saved.
+                                <span *ngFor="let c of changeList(r); let last = last">{{ c.what }}: {{ c.n }}{{ last ? '.' : ', ' }}</span>
+                            </div>
+
+                            <div class="text-end" *ngIf="!result">
+                                <button class="btn btn-sm btn-primary" [disabled]="busy || r.errors.length > 0" (click)="save()">
+                                    <i class="fas fa-save"></i> Save {{ r.subjectName }} {{ r.learningLevelName }} curriculum</button>
+                            </div>
+                            <div class="text-end" *ngIf="result">
+                                <button class="btn btn-sm btn-outline-secondary" (click)="reset()">Upload another</button>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

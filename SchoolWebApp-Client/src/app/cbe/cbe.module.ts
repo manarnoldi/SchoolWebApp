@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { CurriculumUploadComponent } from './assessments/components/curriculum-upload/curriculum-upload.component';
 import { CommonModule } from '@angular/common';
 import { CompetenciesComponent } from './assessments/components/competencies/competencies.component';
 import { AssessmentTypesComponent } from './assessments/components/assessment-types/assessment-types.component';
@@ -48,6 +49,7 @@ import { PCIAddFormComponent } from './assessments/components/pcis/pci-add-form/
 
 @NgModule({
   declarations: [
+    CurriculumUploadComponent,
     CbeComponent,
     CompetenciesComponent,
     AssessmentTypesComponent,
