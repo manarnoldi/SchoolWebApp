@@ -23,11 +23,52 @@
             </div>
             <div class="col-md-3">
                 <label class="form-label mb-0 small">Search</label>
-                <input class="form-control form-control-sm" [(ngModel)]="search" placeholder="Teacher, subject or class">
+                <input class="form-control form-control-sm" [(ngModel)]="search" (ngModelChange)="page = 1" placeholder="Teacher, subject or class">
             </div>
             <div class="col-md-2 text-end small text-muted" *ngIf="session">
                 {{ session.startDate | date:'d MMM':'UTC' }} - {{ session.endDate | date:'d MMM y':'UTC' }}<br>
                 {{ session.weeks }} weeks
+            </div>
+        </div>
+
+        <div class="row g-2 align-items-end mt-0">
+            <div class="col-md-3" *ngIf="scope === 'oversee'">
+                <label class="form-label mb-0 small">Teacher</label>
+                <select class="form-select form-select-sm" [(ngModel)]="staffDetailsId" (ngModelChange)="page = 1">
+                    <option [ngValue]="null">All teachers</option>
+                    <option *ngFor="let t of teachers" [ngValue]="t.id">{{ t.name }}</option>
+                </select>
+            </div>
+            <div class="col-md-2" *ngIf="scope === 'oversee'">
+                <label class="form-label mb-0 small">Department</label>
+                <select class="form-select form-select-sm" [(ngModel)]="departmentId" (ngModelChange)="subjectId = null; page = 1">
+                    <option [ngValue]="null">All departments</option>
+                    <option *ngFor="let d of departments" [ngValue]="d.id">{{ d.name }}</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label mb-0 small">Grade</label>
+                <select class="form-select form-select-sm" [(ngModel)]="learningLevelId" (ngModelChange)="page = 1">
+                    <option [ngValue]="null">All grades</option>
+                    <option *ngFor="let g of grades" [ngValue]="g.id">{{ g.name }}</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label mb-0 small">Subject</label>
+                <select class="form-select form-select-sm" [(ngModel)]="subjectId" (ngModelChange)="page = 1">
+                    <option [ngValue]="null">All subjects</option>
+                    <option *ngFor="let s of subjects" [ngValue]="s.id">{{ s.name }}</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label mb-0 small">Scheme status</label>
+                <select class="form-select form-select-sm" [(ngModel)]="status" (ngModelChange)="page = 1">
+                    <option [ngValue]="null">Any status</option>
+                    <option *ngFor="let s of statusOptions" [ngValue]="s">{{ statusLabels[s] }}</option>
+                </select>
+            </div>
+            <div class="col-md-1 text-end" *ngIf="hasFilters">
+                <button class="btn btn-sm btn-link px-0" (click)="clearFilters()">Clear</button>
             </div>
         </div>
     </div>
@@ -55,10 +96,12 @@
                 <tr *ngIf="loading"><td colspan="7" class="text-center text-muted"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr>
                 <tr *ngIf="!loading && filtered.length === 0">
                     <td colspan="7" class="text-center text-muted">
-                        {{ scope === 'mine' ? 'You have no subjects allocated for this term. Allocations are made under School → Staff Subjects.' : 'Nothing to show.' }}
+                        {{ hasFilters ? 'Nothing matches the filters.'
+                            : scope === 'mine' ? 'You have no subjects allocated for this term. Allocations are made under School → Staff Subjects.'
+                            : 'Nothing to show.' }}
                     </td>
                 </tr>
-                <tr *ngFor="let a of filtered">
+                <tr *ngFor="let a of paged">
                     <td *ngIf="scope === 'oversee'">{{ a.staffName }}</td>
                     <td>{{ a.subjectName }}</td>
                     <td>{{ a.className }}</td>
@@ -72,5 +115,18 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+    <div class="card-footer p-1 d-flex flex-wrap justify-content-between align-items-center" *ngIf="filtered.length > 0">
+        <small class="text-muted ms-1">
+            {{ (page - 1) * pageSize + 1 }}-{{ (page * pageSize < filtered.length) ? page * pageSize : filtered.length }}
+            of {{ filtered.length }}{{ filtered.length !== rows.length ? ' (filtered from ' + rows.length + ')' : '' }}
+        </small>
+        <div class="d-flex align-items-center gap-2">
+            <select class="form-select form-select-sm" style="width: auto;" [(ngModel)]="pageSize" (ngModelChange)="page = 1">
+                <option *ngFor="let n of [15, 30, 50, 100]" [ngValue]="n">{{ n }} per page</option>
+            </select>
+            <ngb-pagination *ngIf="filtered.length > pageSize" class="mb-0" [collectionSize]="filtered.length" [(page)]="page"
+                [pageSize]="pageSize" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" size="sm"></ngb-pagination>
+        </div>
     </div>
 </div>
