@@ -57,7 +57,6 @@ namespace SchoolWebApp.Core.Entities.TeachingDocuments
         public string? KeyInquiryQuestions { get; set; }
         public string? LearningResources { get; set; }
         public string? AssessmentMethods { get; set; }
-        public string? Reflection { get; set; }
         public RecordOfWorkEntry? RecordOfWorkEntry { get; set; }
     }
 }

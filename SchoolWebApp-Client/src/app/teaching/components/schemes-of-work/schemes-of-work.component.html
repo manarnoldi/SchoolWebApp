@@ -131,14 +131,10 @@
                                         <label class="form-label mb-0 small">Learning resources</label>
                                         <textarea class="form-control form-control-sm" rows="4" [(ngModel)]="f.lesson.learningResources"></textarea>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <label class="form-label mb-0 small">Assessment methods</label>
                                         <textarea class="form-control form-control-sm" rows="3" [(ngModel)]="f.lesson.assessmentMethods"
                                             placeholder="e.g. Oral questions, observation"></textarea>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label mb-0 small">Reflection</label>
-                                        <textarea class="form-control form-control-sm" rows="3" [(ngModel)]="f.lesson.reflection"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -201,7 +197,6 @@
                                 <th style="min-width: 160px;">Key inquiry question(s)</th>
                                 <th style="min-width: 150px;">Learning resources</th>
                                 <th style="min-width: 130px;">Assessment methods</th>
-                                <th style="min-width: 110px;">Reflection</th>
                                 <th *ngIf="editable" style="width: 34px;"></th>
                             </tr>
                         </thead>
@@ -209,7 +204,7 @@
                             <ng-container *ngFor="let g of groups">
                                 <!-- Click a week to open or close its lessons -->
                                 <tr class="td-week" style="cursor: pointer;" (click)="toggleWeek(g.weekNo)" [attr.aria-expanded]="openWeeks.has(g.weekNo)">
-                                    <td [attr.colspan]="editable ? 10 : 9">
+                                    <td [attr.colspan]="editable ? 9 : 8">
                                         <i class="fas fa-fw" [ngClass]="openWeeks.has(g.weekNo) ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
                                         <b>Week {{ g.weekNo }}</b>
                                         <small class="text-muted ms-1" *ngIf="g.startDate">{{ g.startDate | date:'d MMM':'UTC' }} - {{ g.endDate | date:'d MMM':'UTC' }}</small>
@@ -252,7 +247,6 @@
                                         <td><textarea class="form-control form-control-sm" rows="6" [(ngModel)]="l.learningResources" (ngModelChange)="dirty = true"></textarea></td>
                                         <td><textarea class="form-control form-control-sm" rows="6" [(ngModel)]="l.assessmentMethods" (ngModelChange)="dirty = true"
                                             placeholder="e.g. Oral questions, observation"></textarea></td>
-                                        <td><textarea class="form-control form-control-sm" rows="6" [(ngModel)]="l.reflection" (ngModelChange)="dirty = true"></textarea></td>
                                         <td class="text-center align-middle">
                                             <button class="btn btn-xs btn-outline-primary py-0 px-1 mb-1" (click)="openForm(g, i)" title="Open this lesson in a form">
                                                 <i class="fas fa-external-link-alt"></i></button>
@@ -267,11 +261,10 @@
                                         <td class="pre">{{ l.keyInquiryQuestions }}</td>
                                         <td class="pre">{{ l.learningResources }}</td>
                                         <td class="pre">{{ l.assessmentMethods }}</td>
-                                        <td class="pre">{{ l.reflection }}</td>
                                     </ng-container>
                                 </tr>
                                 <tr *ngIf="g.lessons.length === 0">
-                                    <td [attr.colspan]="editable ? 10 : 9" class="text-muted small">No lessons this week (e.g. half-term or exams).</td>
+                                    <td [attr.colspan]="editable ? 9 : 8" class="text-muted small">No lessons this week (e.g. half-term or exams).</td>
                                 </tr>
                                 </ng-container>
                             </ng-container>

@@ -453,7 +453,7 @@ function blankLesson(weekNo: number, lessonNo: number): SchemeLesson {
     return {
         id: 0, weekNo, lessonNo, strandId: null, subStrandId: null, strandName: null, subStrandName: null,
         learningOutcomes: null, learningExperiences: null, keyInquiryQuestions: null, learningResources: null,
-        assessmentMethods: null, reflection: null
+        assessmentMethods: null
     };
 }
 

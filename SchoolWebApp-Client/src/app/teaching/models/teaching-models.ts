@@ -125,7 +125,6 @@ export interface SchemeLesson {
     keyInquiryQuestions: string | null;
     learningResources: string | null;
     assessmentMethods: string | null;
-    reflection: string | null;
 }
 
 export interface SchemeOfWork {

@@ -36,10 +36,10 @@ namespace SchoolWebApp.API.Services.TeachingDocuments
         {
             ("Week", 6), ("Lesson", 7), ("Strand", 22), ("Sub-strand", 26),
             ("Lesson Learning Outcomes", 45), ("Learning Experiences", 45), ("Key Inquiry Question(s)", 30),
-            ("Learning Resources", 30), ("Assessment Methods", 24), ("Reflection", 20)
+            ("Learning Resources", 30), ("Assessment Methods", 24)
         };
         private const int ColWeek = 1, ColLesson = 2, ColStrand = 3, ColSub = 4, ColOutcomes = 5, ColExperiences = 6,
-            ColQuestions = 7, ColResources = 8, ColAssessment = 9, ColReflection = 10;
+            ColQuestions = 7, ColResources = 8, ColAssessment = 9;
 
         private const string OutcomesHeading = "By the end of the lesson, the learner should be able to:";
         private const string ExperiencesHeading = "The learner is guided to:";
@@ -292,7 +292,6 @@ namespace SchoolWebApp.API.Services.TeachingDocuments
                 ws.Cell(row, ColQuestions).Value = l.KeyInquiryQuestions ?? "";
                 ws.Cell(row, ColResources).Value = l.LearningResources ?? "";
                 ws.Cell(row, ColAssessment).Value = l.AssessmentMethods ?? "";
-                ws.Cell(row, ColReflection).Value = l.Reflection ?? "";
                 // Shade alternate weeks so the weeks read apart.
                 if (l.WeekNo % 2 == 0) ws.Range(row, 1, row, Columns.Length).Style.Fill.SetBackgroundColor(XLColor.FromHtml("#F2F6FC"));
                 row++;
@@ -467,11 +466,10 @@ namespace SchoolWebApp.API.Services.TeachingDocuments
                     LearningExperiences = Cell(ColExperiences),
                     KeyInquiryQuestions = Cell(ColQuestions),
                     LearningResources = Cell(ColResources),
-                    AssessmentMethods = Cell(ColAssessment),
-                    Reflection = Cell(ColReflection)
+                    AssessmentMethods = Cell(ColAssessment)
                 };
                 var hasText = new[] { dto.StrandName, dto.SubStrandName, dto.LearningOutcomes, dto.LearningExperiences,
-                    dto.KeyInquiryQuestions, dto.LearningResources, dto.AssessmentMethods, dto.Reflection }.Any(v => v.Length > 0);
+                    dto.KeyInquiryQuestions, dto.LearningResources, dto.AssessmentMethods }.Any(v => v.Length > 0);
                 if (!hasText && weekText.Length == 0 && lessonText.Length == 0) continue;
 
                 if (!int.TryParse(weekText, out var week) || week < 1 || week > MaxWeeks)
@@ -600,7 +598,6 @@ namespace SchoolWebApp.API.Services.TeachingDocuments
                 row.KeyInquiryQuestions = Blank(d.KeyInquiryQuestions);
                 row.LearningResources = Blank(d.LearningResources);
                 row.AssessmentMethods = Blank(d.AssessmentMethods);
-                row.Reflection = Blank(d.Reflection);
             }
             _db.SchemeOfWorkLessons.RemoveRange(scheme.Lessons.Where(l => !kept.Contains(l) && l.Id > 0));
             await _db.SaveChangesAsync();

@@ -135,7 +135,6 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
             row.KeyInquiryQuestions = dto.KeyInquiryQuestions;
             row.LearningResources = dto.LearningResources;
             row.AssessmentMethods = dto.AssessmentMethods;
-            row.Reflection = dto.Reflection;
         }
 
         private static string? Trim(string? s, int max)

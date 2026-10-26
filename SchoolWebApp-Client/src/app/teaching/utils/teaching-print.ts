@@ -77,7 +77,6 @@ export function printScheme(s: SchemeOfWork, school: PrintSchool): void {
                 <td>${text(l.keyInquiryQuestions)}</td>
                 <td>${text(l.learningResources)}</td>
                 <td>${text(l.assessmentMethods)}</td>
-                <td>${text(l.reflection)}</td>
             </tr>`;
         });
     });
@@ -91,10 +90,9 @@ export function printScheme(s: SchemeOfWork, school: PrintSchool): void {
                 <th style="width:3%">Wk</th><th style="width:3%">Lsn</th><th style="width:9%">Strand</th>
                 <th style="width:10%">Sub-strand</th><th style="width:17%">Lesson Learning Outcomes</th>
                 <th style="width:17%">Learning Experiences</th><th style="width:11%">Key Inquiry Question(s)</th>
-                <th style="width:11%">Learning Resources</th><th style="width:10%">Assessment Methods</th>
-                <th style="width:9%">Refl.</th>
+                <th style="width:14%">Learning Resources</th><th style="width:16%">Assessment Methods</th>
             </tr></thead>
-            <tbody>${rows || '<tr><td colspan="10" class="c muted">No lessons filled in.</td></tr>'}</tbody>
+            <tbody>${rows || '<tr><td colspan="9" class="c muted">No lessons filled in.</td></tr>'}</tbody>
         </table>
         <div class="sign"><div>Teacher's signature &amp; date</div><div>HOD's signature &amp; date</div><div>Head Teacher's signature &amp; date</div></div>`;
     printInFrame(title, baseCss('landscape'), body, 'landscape');

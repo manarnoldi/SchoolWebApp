@@ -105,7 +105,6 @@ namespace SchoolWebApp.Core.DTOs.TeachingDocuments
         public string? KeyInquiryQuestions { get; set; }
         public string? LearningResources { get; set; }
         public string? AssessmentMethods { get; set; }
-        public string? Reflection { get; set; }
     }
 
     public class SchemeOfWorkDto

@@ -306,8 +306,7 @@ namespace SchoolWebApp.API.Services.TeachingDocuments
             LearningExperiences = l.LearningExperiences,
             KeyInquiryQuestions = l.KeyInquiryQuestions,
             LearningResources = l.LearningResources,
-            AssessmentMethods = l.AssessmentMethods,
-            Reflection = l.Reflection
+            AssessmentMethods = l.AssessmentMethods
         };
 
         // Same rule as ApprovalLockHelper (global edit-lock policy), on this context.

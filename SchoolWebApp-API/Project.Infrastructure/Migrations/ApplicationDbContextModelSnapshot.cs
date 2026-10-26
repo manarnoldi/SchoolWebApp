@@ -7041,9 +7041,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("Reflection")
-                        .HasColumnType("longtext");
-
                     b.Property<int>("SchemeOfWorkId")
                         .HasColumnType("int");
 
