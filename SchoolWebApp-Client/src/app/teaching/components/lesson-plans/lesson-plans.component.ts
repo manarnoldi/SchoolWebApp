@@ -179,7 +179,13 @@ export class LessonPlansComponent implements OnInit {
     }
 
     toggle(p: LessonPlan) {
-        this.expanded.has(p.id) ? this.expanded.delete(p.id) : this.expanded.add(p.id);
+        // One lesson open at a time: opening one closes the rest.
+        this.open(this.expanded.has(p.id) ? null : p);
+    }
+
+    private open(p: LessonPlan | null) {
+        this.expanded.clear();
+        if (p) this.expanded.add(p.id);
     }
 
     touch(p: LessonPlan) {
@@ -303,10 +309,9 @@ export class LessonPlansComponent implements OnInit {
         let plans = this.week!.plans.filter((p) => this.dirtyPlans.has(p.id));
         let incomplete = plans.filter((p) => this.missingToSave(p));
         if (incomplete.length) {
-            incomplete.forEach((p) => {
-                this.expanded.add(p.id);
-                if (!this.totalMinutes(p)) this.openSections.add(`${p.id}:flow`);
-            });
+            // Open the first one that needs attention; the message lists them all.
+            this.open(incomplete[0]);
+            if (!this.totalMinutes(incomplete[0])) this.openSections.add(`${incomplete[0].id}:flow`);
             this.toastr.warning(incomplete.map((p) => `Lesson ${p.lessonNo}: enter ${this.missingToSave(p)}.`).join('<br>'),
                 'Not saved', {enableHtml: true});
             return Promise.resolve(false);
@@ -343,7 +348,7 @@ export class LessonPlansComponent implements OnInit {
                 let added = w.plans.find((p) => !known.has(p.id));
                 normalise(added!);
                 this.week!.plans.push(added!);
-                this.expanded.add(added!.id);
+                this.open(added!);
             },
             error: (err) => this.toastr.error(err.error?.message || 'Error adding a lesson.')
         });
