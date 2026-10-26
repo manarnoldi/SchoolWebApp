@@ -77,8 +77,16 @@
                             <strong>Lesson {{ p.lessonNo }}</strong>
                             <span class="text-muted ms-2" *ngIf="p.lessonDate">{{ p.lessonDate | date:'EEE d MMM' }}</span>
                             <span class="ms-2">{{ p.subStrandName || p.strandName || '(no sub-strand)' }}</span>
-                            <span *ngIf="dirtyPlans.has(p.id)" class="badge bg-warning text-dark ms-2">unsaved</span>
                         </div>
+                        <!-- Where the lesson stands before approval: unsaved edits, saved but incomplete, or ready to submit. -->
+                        <ng-container *ngIf="week.status !== 'Approved'">
+                            <span *ngIf="dirtyPlans.has(p.id)" class="badge bg-warning text-dark" title="Changes not saved yet">
+                                <i class="fas fa-pen"></i> Unsaved changes</span>
+                            <span *ngIf="!dirtyPlans.has(p.id) && missingToSave(p)" class="badge bg-danger" [title]="'Still needs ' + missingToSave(p)">
+                                <i class="fas fa-exclamation-circle"></i> Incomplete</span>
+                            <span *ngIf="!dirtyPlans.has(p.id) && !missingToSave(p)" class="badge bg-success" title="Saved and complete">
+                                <i class="fas fa-check"></i> Ready</span>
+                        </ng-container>
                         <span *ngIf="week.status === 'Approved'" class="badge" [ngClass]="p.taughtStatus === 1 ? 'bg-success' : p.taughtStatus === 2 ? 'bg-info' : p.taughtStatus === 3 ? 'bg-danger' : 'bg-light text-dark'">
                             {{ taughtLabels[p.taughtStatus] }}</span>
                     </div>
