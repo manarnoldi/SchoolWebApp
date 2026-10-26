@@ -8,7 +8,8 @@ import {
     TeachingContext,
     TeachingSession
 } from '@/teaching/models/teaching-models';
-import {TeachingDocumentsService} from '@/teaching/services/teaching-services';
+import {SchemesOfWorkService, TeachingDocumentsService} from '@/teaching/services/teaching-services';
+import {blobError, safeFileName, saveBlob} from '@/teaching/utils/download';
 
 export interface AssignmentOpened {
     assignment: TeachingAssignment;
@@ -52,7 +53,8 @@ export class TeachingAssignmentsComponent implements OnInit {
     statusLabels = STATUS_LABELS;
     statusBadges = STATUS_BADGES;
 
-    constructor(private svc: TeachingDocumentsService, private toastr: ToastrService) {}
+    constructor(private svc: TeachingDocumentsService, private schemeSvc: SchemesOfWorkService,
+                private toastr: ToastrService) {}
 
     ngOnInit(): void {
         this.svc.context().subscribe({
@@ -153,6 +155,44 @@ export class TeachingAssignmentsComponent implements OnInit {
         }
         if (this.purpose === 'schemes' && (this.isMine(a) || this.context?.isAdmin)) return 'Start scheme';
         return null;
+    }
+
+    // ---------- Excel workbook (schemes) ----------
+
+    showImport = false;
+    downloading = false;
+
+    // Whose workbook: your own on "My subjects", the teacher picked in the filter otherwise.
+    get workbookStaffId(): number | null {
+        return this.scope === 'mine' ? this.context?.staffDetailsId ?? null : this.staffDetailsId;
+    }
+
+    get workbookTitle(): string {
+        if (this.workbookStaffId) return 'Every subject and class this term, one sheet each, to fill in Excel';
+        return 'Pick a teacher in the filter first - the workbook holds one teacher\'s subjects';
+    }
+
+    downloadWorkbook() {
+        let staffId = this.workbookStaffId;
+        let session = this.session;
+        if (!staffId || !session) return;
+        let teacher = this.rows.find((r) => r.staffDetailsId === staffId)?.staffName || this.context?.staffName || 'teacher';
+        this.downloading = true;
+        this.schemeSvc.teacherWorkbook(session.id, this.scope === 'mine' ? null : staffId).subscribe({
+            next: (blob) => {
+                this.downloading = false;
+                saveBlob(blob, safeFileName(`Schemes of work - ${teacher} - ${session!.name} ${session!.academicYearName}`) + '.xlsx');
+            },
+            error: async (err) => {
+                this.downloading = false;
+                this.toastr.error(await blobError(err, 'Error preparing the workbook.'));
+            }
+        });
+    }
+
+    onImportClosed(saved: boolean) {
+        this.showImport = false;
+        if (saved) this.load();
     }
 
     open(a: TeachingAssignment) {

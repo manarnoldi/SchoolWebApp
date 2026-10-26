@@ -9,6 +9,7 @@ import {SchemesOfWorkComponent} from './components/schemes-of-work/schemes-of-wo
 import {LessonPlansComponent} from './components/lesson-plans/lesson-plans.component';
 import {RecordOfWorkComponent} from './components/record-of-work/record-of-work.component';
 import {TrackerComponent} from './components/tracker/tracker.component';
+import {SchemeImportComponent} from './components/scheme-import/scheme-import.component';
 
 @NgModule({
     declarations: [
@@ -17,7 +18,8 @@ import {TrackerComponent} from './components/tracker/tracker.component';
         SchemesOfWorkComponent,
         LessonPlansComponent,
         RecordOfWorkComponent,
-        TrackerComponent
+        TrackerComponent,
+        SchemeImportComponent
     ],
     imports: [CommonModule, RouterModule, SharedModule, ApprovalsModule]
 })

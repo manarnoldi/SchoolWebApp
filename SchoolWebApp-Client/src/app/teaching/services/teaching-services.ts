@@ -9,6 +9,7 @@ import {
     LessonTaughtStatus,
     RecordOfWork,
     SchemeCopySource,
+    SchemeImportResult,
     SchemeOfWork,
     TeachingAssignment,
     TeachingContext,
@@ -85,6 +86,24 @@ export class SchemesOfWorkService {
 
     delete(id: number): Observable<any> {
         return this.http.delete(`/schemesOfWork/${id}`);
+    }
+
+    // ---- Excel workbooks ----
+
+    /** Every subject and class the teacher has that term; without staffDetailsId, the caller's own. */
+    teacherWorkbook(sessionId: number, staffDetailsId?: number | null): Observable<Blob> {
+        return this.http.get('/schemeImports/teacherWorkbook', {params: toParams({sessionId, staffDetailsId}), responseType: 'blob'});
+    }
+
+    schemeWorkbook(id: number): Observable<Blob> {
+        return this.http.get(`/schemeImports/schemeWorkbook/${id}`, {responseType: 'blob'});
+    }
+
+    /** Checks the workbook (commit false) or saves its sheets without errors (commit true). */
+    upload(file: File, commit: boolean): Observable<SchemeImportResult> {
+        let form = new FormData();
+        form.append('file', file, file.name);
+        return this.http.post<SchemeImportResult>('/schemeImports', form, {params: toParams({commit})});
     }
 }
 

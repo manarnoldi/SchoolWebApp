@@ -1,0 +1,77 @@
+<div class="modal-backdrop fade show"></div>
+<div class="modal fade show d-block" tabindex="-1">
+    <div class="modal-dialog modal-xl" style="margin-top: 40px;">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white py-2">
+                <h5 class="modal-title"><i class="fas fa-file-upload me-1"></i> Upload schemes of work (Excel)</h5>
+                <button type="button" class="close text-white" (click)="close()"><span>&times;</span></button>
+            </div>
+            <div class="modal-body p-2">
+                <div class="row g-2 align-items-end" *ngIf="!result">
+                    <div class="col-md-8">
+                        <label class="form-label mb-0 small">Workbook (.xlsx) downloaded from ShuleNova and filled in</label>
+                        <input type="file" class="form-control form-control-sm" accept=".xlsx" (change)="onFile($event)" [disabled]="busy">
+                    </div>
+                    <div class="col-md-4 small text-muted">
+                        The workbook is checked first - nothing is saved until you confirm.
+                        Fixed something in Excel? Choose the file again.
+                    </div>
+                </div>
+
+                <div *ngIf="busy" class="text-center text-muted p-3"><i class="fas fa-spinner fa-spin"></i> {{ preview ? 'Saving…' : 'Checking the workbook…' }}</div>
+
+                <ng-container *ngIf="(result || preview) as r">
+                    <div *ngFor="let e of r.fileErrors" class="alert alert-danger py-1 mt-2 mb-0">{{ e }}</div>
+
+                    <div *ngIf="!r.fileErrors.length" class="mt-2">
+                        <div class="small mb-1" *ngIf="!result">
+                            <b>{{ toSave }}</b> scheme(s) ready to save<span *ngIf="withErrors">,
+                            <b class="text-danger">{{ withErrors }}</b> with errors that will not be saved until fixed and uploaded again</span>.
+                            <span *ngIf="emptySheets" class="text-muted">{{ emptySheets }} sheet(s) left empty are passed over.</span>
+                        </div>
+                        <div class="small mb-1" *ngIf="result">
+                            Done. <span *ngIf="emptySheets" class="text-muted">{{ emptySheets }} empty sheet(s) passed over.</span>
+                            Submit each scheme for approval from its page when you are ready.
+                        </div>
+                        <div *ngIf="filledSheets.length === 0" class="alert alert-warning py-1 mb-0">
+                            Every sheet in the workbook is empty - fill in the lessons and upload it again.
+                        </div>
+
+                        <div *ngFor="let s of filledSheets" class="border rounded mb-1">
+                            <div class="d-flex justify-content-between align-items-center p-1 px-2" style="cursor: pointer;" (click)="toggle(s)">
+                                <div>
+                                    <i class="fas me-1" [ngClass]="expanded.has(s.sheetName) ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+                                    <b>{{ s.subjectName || s.sheetName }}</b> &middot; {{ s.className }}
+                                    <small class="text-muted">&middot; {{ s.staffName }} &middot; sheet "{{ s.sheetName }}"</small>
+                                </div>
+                                <div class="small">
+                                    {{ s.lessonsFilled }} lesson(s) filled, {{ s.curriculumMatched }} matched to the curriculum
+                                    <span *ngIf="s.errors.length" class="badge bg-danger ms-1">{{ s.errors.length }} error(s)</span>
+                                    <span *ngIf="s.warnings.length" class="badge bg-warning text-dark ms-1">{{ s.warnings.length }} note(s)</span>
+                                    <span class="badge ms-1" [ngClass]="actionBadge(s)">{{ actionLabel(s) }}</span>
+                                </div>
+                            </div>
+                            <div *ngIf="expanded.has(s.sheetName) && (s.errors.length || s.warnings.length)" class="px-2 pb-1">
+                                <table class="table table-sm mb-0 small">
+                                    <tr *ngFor="let e of s.errors" class="text-danger">
+                                        <td style="width: 70px;"><i class="fas fa-times-circle"></i> {{ e.row ? 'Row ' + e.row : 'Sheet' }}</td>
+                                        <td>{{ e.message }}</td>
+                                    </tr>
+                                    <tr *ngFor="let w of s.warnings" class="text-muted">
+                                        <td><i class="fas fa-info-circle text-warning"></i> {{ w.row ? 'Row ' + w.row : 'Sheet' }}</td>
+                                        <td>{{ w.message }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+            <div class="modal-footer py-1">
+                <button class="btn btn-sm btn-secondary" (click)="close()">{{ result ? 'Close' : 'Cancel' }}</button>
+                <button *ngIf="preview && !result" class="btn btn-sm btn-success" [disabled]="busy || !toSave" (click)="save()">
+                    <i class="fas fa-save"></i> Save {{ toSave }} scheme(s)</button>
+            </div>
+        </div>
+    </div>
+</div>

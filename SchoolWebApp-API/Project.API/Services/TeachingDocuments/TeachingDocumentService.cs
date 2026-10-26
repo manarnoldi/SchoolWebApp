@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Project.Infrastructure.Data;
 using SchoolWebApp.Core.DTOs.TeachingDocuments;
 using SchoolWebApp.Core.Entities.Approvals;
+using SchoolWebApp.Core.Entities.CBE.Assessments;
 using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Entities.Identity;
 using SchoolWebApp.Core.Entities.TeachingDocuments;
@@ -35,6 +36,11 @@ namespace SchoolWebApp.API.Services.TeachingDocuments
 
         // Checking your own record of work would defeat the point of the check.
         public bool CanCheck(SchemeOfWork s) => !Owns(s) && Oversees(s.Subject!.DepartmentId);
+
+        // Uploading a scheme workbook: the teacher, an administrator, or the head
+        // of the subject's department (e.g. a typist entering paper schemes).
+        public bool CanUploadFor(int staffDetailsId, int departmentId) =>
+            IsAdmin || StaffDetailsId == staffDetailsId || HodDepartmentIds.Contains(departmentId);
     }
 
     public class TeachingDocumentService
@@ -123,6 +129,20 @@ namespace SchoolWebApp.API.Services.TeachingDocuments
             var offset = ((int)start.DayOfWeek + 6) % 7;
             return start.AddDays(-offset);
         }
+
+        /// <summary>Lessons a week: the Lesson Allocation for the subject and grade, else the subject's lessons.</summary>
+        public async Task<int> DefaultLessonsPerWeekAsync(int subjectId, int learningLevelId)
+        {
+            var perWeek = await _db.Set<LessonAllocation>()
+                .Where(a => a.SubjectId == subjectId && a.LearningLevelId == learningLevelId)
+                .Select(a => (int?)a.LessonsPerWeek).FirstOrDefaultAsync();
+            var subjectLessons = await _db.Subjects.Where(s => s.Id == subjectId).Select(s => s.NumOfLessons).FirstOrDefaultAsync();
+            return Math.Clamp(perWeek ?? subjectLessons, 1, 20);
+        }
+
+        public static List<SchemeOfWorkLesson> BlankGrid(int weeks, int perWeek) =>
+            Enumerable.Range(1, weeks).SelectMany(w => Enumerable.Range(1, perWeek)
+                .Select(l => new SchemeOfWorkLesson { WeekNo = w, LessonNo = l })).ToList();
 
         public static int TermWeeks(Session session)
         {
@@ -332,6 +352,66 @@ namespace SchoolWebApp.API.Services.TeachingDocuments
                     !string.IsNullOrWhiteSpace(l.SubStrandName) || !string.IsNullOrWhiteSpace(l.LearningOutcomes)))
                 return "Fill in at least one lesson before submitting the scheme.";
             return null;
+        }
+
+        /// <summary>
+        /// Strands and sub-strands of a subject at a grade with their outcomes,
+        /// experiences and key questions. With a term, each sub-strand says which
+        /// terms of that year already have it in a scheme.
+        /// </summary>
+        public async Task<List<CurriculumStrandDto>> CurriculumAsync(int subjectId, int learningLevelId, int? sessionId)
+        {
+            var strands = await _db.Strands.AsNoTracking()
+                .Where(s => s.SubjectId == subjectId && s.LearningLevelId == learningLevelId)
+                .OrderBy(s => s.Rank).ThenBy(s => s.Code).ThenBy(s => s.Id)
+                .Select(s => new { s.Id, s.Name, s.Code })
+                .ToListAsync();
+            var strandIds = strands.Select(s => s.Id).ToList();
+            var subStrands = await _db.SubStrands.AsNoTracking()
+                .Where(s => strandIds.Contains(s.StrandId))
+                .OrderBy(s => s.Rank).ThenBy(s => s.Code).ThenBy(s => s.Id)
+                .Select(s => new { s.Id, s.StrandId, s.Name, s.Code, s.LessonNo })
+                .ToListAsync();
+            var subIds = subStrands.Select(s => s.Id).ToList();
+            var outcomes = await _db.SpecificOutcomes.AsNoTracking().Where(o => subIds.Contains(o.SubStrandId))
+                .OrderBy(o => o.Rank).ThenBy(o => o.Id).Select(o => new { o.SubStrandId, o.Name }).ToListAsync();
+            var experiences = await _db.Set<LearningExperience>().AsNoTracking().Where(o => subIds.Contains(o.SubStrandId))
+                .OrderBy(o => o.Rank).ThenBy(o => o.Id).Select(o => new { o.SubStrandId, o.Name }).ToListAsync();
+            var questions = await _db.Set<KeyQuestion>().AsNoTracking().Where(o => subIds.Contains(o.SubStrandId))
+                .OrderBy(o => o.Rank).ThenBy(o => o.Id).Select(o => new { o.SubStrandId, o.Name }).ToListAsync();
+
+            var scheduled = new Dictionary<int, List<string>>();
+            if (sessionId.HasValue)
+            {
+                var yearId = await _db.Sessions.Where(s => s.Id == sessionId).Select(s => s.AcademicYearId).FirstOrDefaultAsync();
+                var used = await _db.SchemeOfWorkLessons.AsNoTracking()
+                    .Where(l => l.SubStrandId != null && subIds.Contains(l.SubStrandId.Value)
+                        && l.SchemeOfWork!.SubjectId == subjectId
+                        && l.SchemeOfWork.SchoolClass!.LearningLevelId == learningLevelId
+                        && l.SchemeOfWork.Session!.AcademicYearId == yearId)
+                    .Select(l => new { SubStrandId = l.SubStrandId!.Value, l.SchemeOfWork!.Session!.SessionName, l.SchemeOfWork.Session.StartDate })
+                    .Distinct().ToListAsync();
+                scheduled = used.GroupBy(u => u.SubStrandId)
+                    .ToDictionary(g => g.Key, g => g.OrderBy(u => u.StartDate).Select(u => u.SessionName).Distinct().ToList());
+            }
+
+            return strands.Select(s => new CurriculumStrandDto
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Code = s.Code,
+                SubStrands = subStrands.Where(ss => ss.StrandId == s.Id).Select(ss => new CurriculumSubStrandDto
+                {
+                    Id = ss.Id,
+                    Name = ss.Name,
+                    Code = ss.Code,
+                    Lessons = ss.LessonNo,
+                    SpecificOutcomes = outcomes.Where(o => o.SubStrandId == ss.Id).Select(o => o.Name).ToList(),
+                    LearningExperiences = experiences.Where(o => o.SubStrandId == ss.Id).Select(o => o.Name).ToList(),
+                    KeyQuestions = questions.Where(o => o.SubStrandId == ss.Id).Select(o => o.Name).ToList(),
+                    ScheduledIn = scheduled.GetValueOrDefault(ss.Id) ?? new()
+                }).ToList()
+            }).ToList();
         }
 
         /// <summary>The users to pre-select as approvers: the head of the subject's department.</summary>

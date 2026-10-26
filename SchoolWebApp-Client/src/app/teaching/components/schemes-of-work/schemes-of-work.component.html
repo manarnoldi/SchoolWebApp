@@ -23,6 +23,12 @@
                                 <button class="btn btn-sm btn-outline-info me-1" (click)="openCopy()" title="Start from another stream's or an earlier year's scheme">
                                     <i class="fas fa-copy"></i> Copy from&hellip;</button>
                             </ng-container>
+                            <ng-container *ngIf="canExcel">
+                                <button class="btn btn-sm btn-outline-success me-1" (click)="downloadExcel()" title="Download this scheme to fill in Excel">
+                                    <i class="fas fa-file-download"></i> Excel</button>
+                                <button class="btn btn-sm btn-outline-success me-1" (click)="showImport = true" title="Upload the filled Excel workbook">
+                                    <i class="fas fa-file-upload"></i> Upload</button>
+                            </ng-container>
                             <button class="btn btn-sm btn-outline-primary me-1" (click)="print()"><i class="fas fa-print"></i> Print</button>
                             <button *ngIf="editable" class="btn btn-sm btn-outline-danger me-1" (click)="delete()"><i class="fas fa-trash"></i></button>
                             <button *ngIf="editable" class="btn btn-sm btn-success" [disabled]="saving" (click)="save()">
@@ -66,6 +72,8 @@
                     </div>
                 </div>
             </div>
+
+            <app-scheme-import *ngIf="showImport" (closed)="onImportClosed($event)"></app-scheme-import>
 
             <!-- Copy from another scheme -->
             <div class="modal-backdrop fade show" *ngIf="copySources?.length" (click)="copySources = null"></div>

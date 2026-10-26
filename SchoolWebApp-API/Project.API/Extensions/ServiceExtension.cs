@@ -218,6 +218,7 @@ namespace Project.API.Extensions
 
             #region Teaching documents
             services.AddScoped<TeachingDocumentService>();
+            services.AddScoped<SchemeWorkbookService>();
             #endregion
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

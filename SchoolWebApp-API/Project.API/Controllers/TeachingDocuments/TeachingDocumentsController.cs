@@ -144,60 +144,8 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
         // questions, for the scheme and lesson plan pickers. With a term, each
         // sub-strand says which terms of that year already have it in a scheme.
         [HttpGet("curriculum")]
-        public async Task<IActionResult> Curriculum(int subjectId, int learningLevelId, int? sessionId)
-        {
-            var strands = await _db.Strands.AsNoTracking()
-                .Where(s => s.SubjectId == subjectId && s.LearningLevelId == learningLevelId)
-                .OrderBy(s => s.Rank).ThenBy(s => s.Code).ThenBy(s => s.Id)
-                .Select(s => new { s.Id, s.Name, s.Code })
-                .ToListAsync();
-            var strandIds = strands.Select(s => s.Id).ToList();
-            var subStrands = await _db.SubStrands.AsNoTracking()
-                .Where(s => strandIds.Contains(s.StrandId))
-                .OrderBy(s => s.Rank).ThenBy(s => s.Code).ThenBy(s => s.Id)
-                .Select(s => new { s.Id, s.StrandId, s.Name, s.Code, s.LessonNo })
-                .ToListAsync();
-            var subIds = subStrands.Select(s => s.Id).ToList();
-            var outcomes = await _db.SpecificOutcomes.AsNoTracking().Where(o => subIds.Contains(o.SubStrandId))
-                .OrderBy(o => o.Rank).ThenBy(o => o.Id).Select(o => new { o.SubStrandId, o.Name }).ToListAsync();
-            var experiences = await _db.Set<LearningExperience>().AsNoTracking().Where(o => subIds.Contains(o.SubStrandId))
-                .OrderBy(o => o.Rank).ThenBy(o => o.Id).Select(o => new { o.SubStrandId, o.Name }).ToListAsync();
-            var questions = await _db.Set<KeyQuestion>().AsNoTracking().Where(o => subIds.Contains(o.SubStrandId))
-                .OrderBy(o => o.Rank).ThenBy(o => o.Id).Select(o => new { o.SubStrandId, o.Name }).ToListAsync();
-
-            var scheduled = new Dictionary<int, List<string>>();
-            if (sessionId.HasValue)
-            {
-                var yearId = await _db.Sessions.Where(s => s.Id == sessionId).Select(s => s.AcademicYearId).FirstOrDefaultAsync();
-                var used = await _db.SchemeOfWorkLessons.AsNoTracking()
-                    .Where(l => l.SubStrandId != null && subIds.Contains(l.SubStrandId.Value)
-                        && l.SchemeOfWork!.SubjectId == subjectId
-                        && l.SchemeOfWork.SchoolClass!.LearningLevelId == learningLevelId
-                        && l.SchemeOfWork.Session!.AcademicYearId == yearId)
-                    .Select(l => new { SubStrandId = l.SubStrandId!.Value, l.SchemeOfWork!.Session!.SessionName, l.SchemeOfWork.Session.StartDate })
-                    .Distinct().ToListAsync();
-                scheduled = used.GroupBy(u => u.SubStrandId)
-                    .ToDictionary(g => g.Key, g => g.OrderBy(u => u.StartDate).Select(u => u.SessionName).Distinct().ToList());
-            }
-
-            return Ok(strands.Select(s => new CurriculumStrandDto
-            {
-                Id = s.Id,
-                Name = s.Name,
-                Code = s.Code,
-                SubStrands = subStrands.Where(ss => ss.StrandId == s.Id).Select(ss => new CurriculumSubStrandDto
-                {
-                    Id = ss.Id,
-                    Name = ss.Name,
-                    Code = ss.Code,
-                    Lessons = ss.LessonNo,
-                    SpecificOutcomes = outcomes.Where(o => o.SubStrandId == ss.Id).Select(o => o.Name).ToList(),
-                    LearningExperiences = experiences.Where(o => o.SubStrandId == ss.Id).Select(o => o.Name).ToList(),
-                    KeyQuestions = questions.Where(o => o.SubStrandId == ss.Id).Select(o => o.Name).ToList(),
-                    ScheduledIn = scheduled.GetValueOrDefault(ss.Id) ?? new()
-                }).ToList()
-            }));
-        }
+        public async Task<IActionResult> Curriculum(int subjectId, int learningLevelId, int? sessionId) =>
+            Ok(await _svc.CurriculumAsync(subjectId, learningLevelId, sessionId));
 
         // GET api/teachingDocuments/preferredApprovers?subjectId=1
         [HttpGet("preferredApprovers")]

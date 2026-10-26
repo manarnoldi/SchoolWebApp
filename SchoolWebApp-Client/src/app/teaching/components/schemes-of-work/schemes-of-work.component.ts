@@ -18,6 +18,7 @@ import {
 import {SchemesOfWorkService, TeachingDocumentsService} from '@/teaching/services/teaching-services';
 import {AssignmentOpened} from '../teaching-assignments/teaching-assignments.component';
 import {PrintSchool, printScheme} from '@/teaching/utils/teaching-print';
+import {blobError, safeFileName, saveBlob} from '@/teaching/utils/download';
 
 interface WeekGroup {
     weekNo: number;
@@ -323,6 +324,32 @@ export class SchemesOfWorkComponent implements OnInit {
                     error: (err) => this.toastr.error(err.error?.message || 'Error deleting the scheme.')
                 });
             });
+    }
+
+    // ---------- Excel ----------
+
+    showImport = false;
+
+    // The teacher, the head of the subject's department and administrators, while it is not locked.
+    get canExcel(): boolean {
+        let s = this.scheme;
+        if (!s || s.isLocked || !this.context) return false;
+        return s.canEdit || this.context.hodDepartmentIds.includes(s.departmentId);
+    }
+
+    downloadExcel() {
+        let s = this.scheme!;
+        let go = () => this.svc.schemeWorkbook(s.id).subscribe({
+            next: (blob) => saveBlob(blob, safeFileName(`Scheme of work - ${s.subjectName} ${s.className} - ${s.sessionName} ${s.academicYearName}`) + '.xlsx'),
+            error: async (err) => this.toastr.error(await blobError(err, 'Error preparing the workbook.'))
+        });
+        // The workbook holds what is saved.
+        if (this.dirty) this.save(go); else go();
+    }
+
+    onImportClosed(saved: boolean) {
+        this.showImport = false;
+        if (saved) this.openScheme(this.scheme!.id);
     }
 
     print() {

@@ -71,8 +71,22 @@
                 <button class="btn btn-sm btn-link px-0" (click)="clearFilters()">Clear</button>
             </div>
         </div>
+
+        <!-- Schemes in Excel: one workbook per teacher and term -->
+        <div class="d-flex flex-wrap align-items-center gap-2 border-top mt-2 pt-2" *ngIf="purpose === 'schemes' && (context?.staffDetailsId || canOversee)">
+            <small class="text-muted"><i class="fas fa-file-excel text-success"></i> Prefer Excel?</small>
+            <span [title]="workbookTitle">
+                <button class="btn btn-sm btn-outline-success" [disabled]="!workbookStaffId || downloading" (click)="downloadWorkbook()">
+                    <i class="fas" [ngClass]="downloading ? 'fa-spinner fa-spin' : 'fa-file-download'"></i>
+                    Download {{ scope === 'mine' ? 'my' : 'the teacher\'s' }} workbook</button>
+            </span>
+            <button class="btn btn-sm btn-success" (click)="showImport = true"><i class="fas fa-file-upload"></i> Upload workbook</button>
+            <small class="text-muted" *ngIf="scope === 'oversee' && !workbookStaffId">Pick a teacher in the filter to download their workbook.</small>
+        </div>
     </div>
 </div>
+
+<app-scheme-import *ngIf="showImport" (closed)="onImportClosed($event)"></app-scheme-import>
 
 <div *ngIf="context && !context.staffDetailsId && !canOversee" class="alert alert-warning py-1">
     Your account is not linked to a staff record, so you have no subject allocations. Ask the administrator to link it under Security &rarr; Users.

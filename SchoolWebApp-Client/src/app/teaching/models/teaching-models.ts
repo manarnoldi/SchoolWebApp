@@ -296,3 +296,31 @@ export interface Tracker {
 export function dateOnly(value: string | null | undefined): string | null {
     return value ? value.substring(0, 10) : null;
 }
+
+// ---------- Scheme workbook upload ----------
+
+export interface ImportIssue {
+    row: number | null;
+    message: string;
+}
+
+export interface SchemeImportSheet {
+    sheetName: string;
+    staffName: string | null;
+    subjectName: string | null;
+    className: string | null;
+    schemeOfWorkId: number | null;
+    action: 'Create' | 'Update' | 'Skip' | 'Empty';
+    rows: number;
+    lessonsFilled: number;
+    curriculumMatched: number;
+    errors: ImportIssue[];
+    warnings: ImportIssue[];
+    saved: boolean;
+}
+
+export interface SchemeImportResult {
+    committed: boolean;
+    sheets: SchemeImportSheet[];
+    fileErrors: string[];
+}

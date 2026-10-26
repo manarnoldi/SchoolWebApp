@@ -170,6 +170,41 @@ namespace SchoolWebApp.Core.DTOs.TeachingDocuments
         public string Status { get; set; } = DocumentStatus.Draft;
     }
 
+    // ---------- Scheme workbook upload ----------
+
+    public class ImportIssueDto
+    {
+        // Excel row number, or null for the sheet as a whole.
+        public int? Row { get; set; }
+        public string Message { get; set; } = "";
+    }
+
+    public class SchemeImportSheetDto
+    {
+        public string SheetName { get; set; } = "";
+        public string? StaffName { get; set; }
+        public string? SubjectName { get; set; }
+        public string? ClassName { get; set; }
+        public int? SchemeOfWorkId { get; set; }
+        // "Create" a new scheme, "Update" an existing one, "Skip" (errors), or
+        // "Empty" (left as downloaded - passed over).
+        public string Action { get; set; } = "Skip";
+        public int Rows { get; set; }
+        public int LessonsFilled { get; set; }
+        public int CurriculumMatched { get; set; }
+        public List<ImportIssueDto> Errors { get; set; } = new();
+        public List<ImportIssueDto> Warnings { get; set; } = new();
+        public bool Saved { get; set; }
+    }
+
+    public class SchemeImportResultDto
+    {
+        public bool Committed { get; set; }
+        public List<SchemeImportSheetDto> Sheets { get; set; } = new();
+        // Problems with the file itself (not a scheme workbook, unreadable...).
+        public List<string> FileErrors { get; set; } = new();
+    }
+
     // ---------- Lesson plans ----------
 
     public class LessonPlanWeekSummaryDto

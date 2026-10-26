@@ -60,9 +60,6 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
                 && s.SubjectId == model.SubjectId && s.SchoolClassId == model.SchoolClassId && s.SessionId == model.SessionId);
             if (existing != null) return Ok(new { id = existing.Id });
 
-            var perWeek = await _db.Set<LessonAllocation>()
-                .Where(a => a.SubjectId == subject.Id && a.LearningLevelId == cls.LearningLevelId)
-                .Select(a => (int?)a.LessonsPerWeek).FirstOrDefaultAsync();
             var scheme = new SchemeOfWork
             {
                 StaffDetailsId = staffId.Value,
@@ -70,7 +67,7 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
                 SchoolClassId = cls.Id,
                 SessionId = session.Id,
                 NumberOfWeeks = TeachingDocumentService.TermWeeks(session),
-                LessonsPerWeek = Math.Clamp(perWeek ?? subject.NumOfLessons, 1, 20)
+                LessonsPerWeek = await _svc.DefaultLessonsPerWeekAsync(subject.Id, cls.LearningLevelId)
             };
             scheme.Lessons = BlankGrid(scheme.NumberOfWeeks, scheme.LessonsPerWeek);
             _db.SchemesOfWork.Add(scheme);
@@ -78,9 +75,7 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
             return Ok(new { id = scheme.Id });
         }
 
-        private static List<SchemeOfWorkLesson> BlankGrid(int weeks, int perWeek) =>
-            Enumerable.Range(1, weeks).SelectMany(w => Enumerable.Range(1, perWeek)
-                .Select(l => new SchemeOfWorkLesson { WeekNo = w, LessonNo = l })).ToList();
+        private static List<SchemeOfWorkLesson> BlankGrid(int weeks, int perWeek) => TeachingDocumentService.BlankGrid(weeks, perWeek);
 
         private async Task<(SchemeOfWork? Scheme, IActionResult? Error)> LoadForEditAsync(int id)
         {
