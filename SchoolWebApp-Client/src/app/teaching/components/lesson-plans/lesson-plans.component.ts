@@ -285,8 +285,15 @@ export class LessonPlansComponent implements OnInit {
     }
 
     // Saves every lesson with unsaved edits, one after another; true when all saved.
+    // A lesson without timings is not saved: open its lesson flow and say so.
     saveAll(): Promise<boolean> {
         let plans = this.week!.plans.filter((p) => this.dirtyPlans.has(p.id));
+        let untimed = plans.filter((p) => !this.totalMinutes(p));
+        if (untimed.length) {
+            untimed.forEach((p) => { this.expanded.add(p.id); this.openSections.add(`${p.id}:flow`); });
+            this.toastr.warning(`Enter the minutes in the lesson flow of lesson ${untimed.map((p) => p.lessonNo).join(', ')} first.`);
+            return Promise.resolve(false);
+        }
         return new Promise((resolve) => {
             let next = () => {
                 let p = plans.shift();
