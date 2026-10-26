@@ -104,6 +104,11 @@
             </div>
 
             <div class="card mb-2">
+                <div class="px-2 py-1 text-end border-bottom">
+                    <button class="btn btn-xs btn-link py-0" (click)="toggleAllWeeks()">
+                        <i class="fas" [ngClass]="allWeeksOpen ? 'fa-compress-alt' : 'fa-expand-alt'"></i>
+                        {{ allWeeksOpen ? 'Collapse all weeks' : 'Expand all weeks' }}</button>
+                </div>
                 <div class="card-body p-0 table-responsive td-scroll">
                     <table class="table table-sm table-bordered mb-0 td-grid">
                         <thead class="td-sticky">
@@ -122,14 +127,18 @@
                         </thead>
                         <tbody>
                             <ng-container *ngFor="let g of groups">
-                                <tr class="td-week">
+                                <!-- Click a week to open or close its lessons -->
+                                <tr class="td-week" style="cursor: pointer;" (click)="toggleWeek(g.weekNo)" [attr.aria-expanded]="openWeeks.has(g.weekNo)">
                                     <td [attr.colspan]="editable ? 10 : 9">
+                                        <i class="fas fa-fw" [ngClass]="openWeeks.has(g.weekNo) ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
                                         <b>Week {{ g.weekNo }}</b>
                                         <small class="text-muted ms-1" *ngIf="g.startDate">{{ g.startDate | date:'d MMM':'UTC' }} - {{ g.endDate | date:'d MMM':'UTC' }}</small>
+                                        <small class="text-muted ms-2">{{ filledIn(g) }} of {{ g.lessons.length }} lesson{{ g.lessons.length === 1 ? '' : 's' }} filled in</small>
                                         <small class="text-danger ms-1" *ngIf="g.weekNo > scheme.numberOfWeeks">(outside the scheme's weeks)</small>
-                                        <button *ngIf="editable" class="btn btn-xs btn-link py-0" (click)="addLesson(g)"><i class="fas fa-plus"></i> lesson</button>
+                                        <button *ngIf="editable" class="btn btn-xs btn-link py-0" (click)="$event.stopPropagation(); addLesson(g)"><i class="fas fa-plus"></i> lesson</button>
                                     </td>
                                 </tr>
+                                <ng-container *ngIf="openWeeks.has(g.weekNo)">
                                 <tr *ngFor="let l of g.lessons; let i = index">
                                     <td class="text-center align-middle"><b>{{ l.lessonNo }}</b></td>
                                     <ng-container *ngIf="editable">
@@ -182,6 +191,7 @@
                                 <tr *ngIf="g.lessons.length === 0">
                                     <td [attr.colspan]="editable ? 10 : 9" class="text-muted small">No lessons this week (e.g. half-term or exams).</td>
                                 </tr>
+                                </ng-container>
                             </ng-container>
                         </tbody>
                     </table>

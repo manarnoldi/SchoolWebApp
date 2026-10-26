@@ -114,9 +114,35 @@ export class SchemesOfWorkComponent implements OnInit {
     }
 
     private setScheme(s: SchemeOfWork) {
+        // A scheme opens on its first week; saving or reloading the same scheme keeps what is open.
+        if (this.openedSchemeId !== s.id) {
+            this.openWeeks = new Set([1]);
+            this.openedSchemeId = s.id;
+        }
         this.scheme = s;
         this.dirty = false;
         this.regroup();
+    }
+
+    // ---------- Collapsible weeks ----------
+
+    openWeeks = new Set<number>();
+    private openedSchemeId: number | null = null;
+
+    toggleWeek(weekNo: number) {
+        this.openWeeks.has(weekNo) ? this.openWeeks.delete(weekNo) : this.openWeeks.add(weekNo);
+    }
+
+    get allWeeksOpen(): boolean {
+        return this.groups.length > 0 && this.groups.every((g) => this.openWeeks.has(g.weekNo));
+    }
+
+    toggleAllWeeks() {
+        this.openWeeks = this.allWeeksOpen ? new Set() : new Set(this.groups.map((g) => g.weekNo));
+    }
+
+    filledIn(g: WeekGroup): number {
+        return g.lessons.filter(hasContent).length;
     }
 
     regroup() {
@@ -208,6 +234,7 @@ export class SchemesOfWorkComponent implements OnInit {
     addLesson(g: WeekGroup) {
         let next = g.lessons.reduce((m, l) => Math.max(m, l.lessonNo), 0) + 1;
         this.scheme!.lessons.push(blankLesson(g.weekNo, next));
+        this.openWeeks.add(g.weekNo);
         this.dirty = true;
         this.regroup();
     }
