@@ -285,13 +285,30 @@ export class LessonPlansComponent implements OnInit {
     }
 
     // Saves every lesson with unsaved edits, one after another; true when all saved.
-    // A lesson without timings is not saved: open its lesson flow and say so.
+    // What a lesson still needs before it can be saved, e.g. "the date and roll"; null when complete.
+    missingToSave(p: LessonPlan): string | null {
+        let missing: string[] = [];
+        if (!p.lessonDate) missing.push('the date');
+        if (!p.startTime) missing.push('the start time');
+        if (!p.endTime) missing.push('the end time');
+        else if (p.startTime && p.endTime <= p.startTime) missing.push('an end time after the start time');
+        if (!(+p.roll > 0)) missing.push('the roll');
+        if (!this.totalMinutes(p)) missing.push('the minutes in the lesson flow');
+        if (!missing.length) return null;
+        return missing.length === 1 ? missing[0] : missing.slice(0, -1).join(', ') + ' and ' + missing[missing.length - 1];
+    }
+
+    // An incomplete lesson is not saved: open it and say what it needs.
     saveAll(): Promise<boolean> {
         let plans = this.week!.plans.filter((p) => this.dirtyPlans.has(p.id));
-        let untimed = plans.filter((p) => !this.totalMinutes(p));
-        if (untimed.length) {
-            untimed.forEach((p) => { this.expanded.add(p.id); this.openSections.add(`${p.id}:flow`); });
-            this.toastr.warning(`Enter the minutes in the lesson flow of lesson ${untimed.map((p) => p.lessonNo).join(', ')} first.`);
+        let incomplete = plans.filter((p) => this.missingToSave(p));
+        if (incomplete.length) {
+            incomplete.forEach((p) => {
+                this.expanded.add(p.id);
+                if (!this.totalMinutes(p)) this.openSections.add(`${p.id}:flow`);
+            });
+            this.toastr.warning(incomplete.map((p) => `Lesson ${p.lessonNo}: enter ${this.missingToSave(p)}.`).join('<br>'),
+                'Not saved', {enableHtml: true});
             return Promise.resolve(false);
         }
         return new Promise((resolve) => {

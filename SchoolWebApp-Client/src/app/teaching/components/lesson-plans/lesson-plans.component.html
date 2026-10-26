@@ -189,11 +189,11 @@
                             </div>
 
                             <div class="text-end mt-2">
-                                <small *ngIf="!totalMinutes(p)" class="text-danger me-2">
-                                    <i class="fas fa-clock"></i> Enter the minutes in the lesson flow to save.</small>
+                                <small *ngIf="missingToSave(p) as missing" class="text-danger me-2">
+                                    <i class="fas fa-exclamation-circle"></i> To save, enter {{ missing }}.</small>
                                 <button class="btn btn-sm btn-outline-danger me-1" (click)="deletePlan(p)"><i class="fas fa-trash"></i> Remove lesson</button>
-                                <button class="btn btn-sm btn-success" (click)="savePlan(p)" [disabled]="!dirtyPlans.has(p.id) || !totalMinutes(p)"
-                                    [title]="totalMinutes(p) ? '' : 'Enter the minutes in the lesson flow first'"><i class="fas fa-save"></i> Save lesson {{ p.lessonNo }}</button>
+                                <button class="btn btn-sm btn-success" (click)="savePlan(p)" [disabled]="!dirtyPlans.has(p.id) || !!missingToSave(p)"
+                                    [title]="missingToSave(p) ? 'Enter ' + missingToSave(p) + ' first' : ''"><i class="fas fa-save"></i> Save lesson {{ p.lessonNo }}</button>
                             </div>
                         </ng-container>
 
