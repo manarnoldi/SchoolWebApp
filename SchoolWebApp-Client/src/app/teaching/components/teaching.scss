@@ -86,3 +86,22 @@
     width: 70px;
     flex: 0 0 70px;
 }
+
+// Lesson flow box: tinted so it stands out from the white form around it.
+.lp-flow {
+    border: 1px solid #b6d4fe;
+    border-left: 4px solid #0d6efd;
+    border-radius: 4px;
+    background: #f5f9ff;
+}
+
+.lp-flow-bar {
+    background: #dbe9ff;
+    color: #084298;
+    cursor: pointer;
+    font-size: 0.9rem;
+
+    &:hover {
+        background: #cfe2ff;
+    }
+}
