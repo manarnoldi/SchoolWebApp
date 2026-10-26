@@ -330,6 +330,27 @@ namespace SchoolWebApp.API.Services.TeachingDocuments
         /// submitted: only its teacher (or an administrator) submits it, and it
         /// must have something in it. Returns an error message, or null.
         /// </summary>
+        /// <summary>
+        /// What a lesson plan still needs before it can be saved - date, start and
+        /// end time (end after start), roll and lesson flow minutes - as e.g.
+        /// "the date and the roll"; null when complete. Times are HH:mm.
+        /// </summary>
+        public static string? MissingToSave(DateTime? date, string? start, string? end, int? roll,
+            int? introductionMinutes, int? developmentMinutes, int? conclusionMinutes)
+        {
+            var missing = new List<string>();
+            if (date == null) missing.Add("the date");
+            if (string.IsNullOrWhiteSpace(start)) missing.Add("the start time");
+            if (string.IsNullOrWhiteSpace(end)) missing.Add("the end time");
+            else if (!string.IsNullOrWhiteSpace(start) && string.CompareOrdinal(end.Trim(), start.Trim()) <= 0)
+                missing.Add("an end time after the start time");
+            if (!(roll > 0)) missing.Add("the roll");
+            if ((introductionMinutes ?? 0) + (developmentMinutes ?? 0) + (conclusionMinutes ?? 0) <= 0)
+                missing.Add("the minutes in the lesson flow");
+            if (missing.Count == 0) return null;
+            return missing.Count == 1 ? missing[0] : string.Join(", ", missing.SkipLast(1)) + " and " + missing[^1];
+        }
+
         public async Task<string?> ValidateSubmitAsync(string entityType, int entityId)
         {
             if (entityType != EntityScheme && entityType != EntityLessonPlanWeek) return null;
@@ -342,6 +363,14 @@ namespace SchoolWebApp.API.Services.TeachingDocuments
                 var week = await _db.LessonPlanWeeks.AsNoTracking().Include(w => w.Plans).FirstOrDefaultAsync(w => w.Id == entityId);
                 if (week == null) return "Lesson plan week not found.";
                 if (week.Plans.Count == 0) return "Add at least one lesson plan before submitting the week.";
+                // Lessons left as prepared never went through Save, so check them all here.
+                var incomplete = week.Plans.OrderBy(p => p.LessonNo)
+                    .Select(p => (p.LessonNo, Missing: MissingToSave(p.LessonDate, p.StartTime, p.EndTime, p.Roll,
+                        p.IntroductionMinutes, p.DevelopmentMinutes, p.ConclusionMinutes)))
+                    .Where(x => x.Missing != null).ToList();
+                if (incomplete.Count > 0)
+                    return "Complete every lesson before submitting the week - "
+                        + string.Join("; ", incomplete.Select(x => $"lesson {x.LessonNo}: enter {x.Missing}")) + ".";
                 schemeId = week.SchemeOfWorkId;
             }
             var scheme = await _db.SchemesOfWork.AsNoTracking().Include(s => s.Lessons).FirstOrDefaultAsync(s => s.Id == schemeId);

@@ -260,6 +260,9 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
             if (error != null) return error;
             var plan = week!.Plans.First(p => p.Id == id);
             if (!ValidTime(model.StartTime) || !ValidTime(model.EndTime)) return BadRequest(new { message = "Times must be HH:mm." });
+            var missing = TeachingDocumentService.MissingToSave(model.LessonDate, model.StartTime, model.EndTime, model.Roll,
+                Minutes(model.IntroductionMinutes), Minutes(model.DevelopmentMinutes), Minutes(model.ConclusionMinutes));
+            if (missing != null) return BadRequest(new { message = $"To save lesson {model.LessonNo}, enter {missing}." });
 
             plan.LessonNo = Math.Max(1, model.LessonNo);
             plan.LessonDate = model.LessonDate?.Date;
