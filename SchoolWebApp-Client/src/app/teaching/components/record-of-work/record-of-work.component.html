@@ -72,7 +72,7 @@
                                             <small class="ms-1 fst-italic" *ngIf="c.comment">"{{ c.comment }}"</small>
                                             <button *ngIf="canRemoveCheck(c)" class="btn btn-xs btn-link text-danger py-0" (click)="$event.stopPropagation(); removeCheck(c)">remove check</button>
                                         </ng-container>
-                                        <button *ngIf="!w.check && record.canCheck" class="btn btn-xs btn-outline-success py-0 ms-2" (click)="$event.stopPropagation(); check(w)">
+                                        <button *ngIf="!w.check && record.canCheck && recorded(w) > 0" class="btn btn-xs btn-outline-success py-0 ms-2" (click)="$event.stopPropagation(); check(w)">
                                             <i class="fas fa-check"></i> Check week {{ w.weekNo }}</button>
                                     </td>
                                 </tr>

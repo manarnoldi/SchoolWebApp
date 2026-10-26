@@ -138,6 +138,10 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
             if (!me.CanCheck(s))
                 return StatusCode(403, new { message = "Only the head of the subject's department (or whole-school staff) can check another teacher's record of work." });
             if (model.WeekNo < 1 || model.WeekNo > s.NumberOfWeeks) return BadRequest(new { message = $"The scheme has {s.NumberOfWeeks} weeks." });
+            // Nothing to check until the teacher has recorded at least one of the week's lessons.
+            if (!await _db.RecordOfWorkEntries.AnyAsync(e => e.SchemeOfWorkLesson!.SchemeOfWorkId == s.Id
+                    && e.SchemeOfWorkLesson.WeekNo == model.WeekNo && e.Status != LessonTaughtStatus.NotRecorded))
+                return BadRequest(new { message = $"No lesson in week {model.WeekNo} has been recorded yet, so there is nothing to check." });
 
             var check = await _db.RecordOfWorkChecks.FirstOrDefaultAsync(c => c.SchemeOfWorkId == s.Id && c.WeekNo == model.WeekNo);
             if (check == null)
