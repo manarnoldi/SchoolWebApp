@@ -12,6 +12,7 @@ import {TrackerComponent} from './components/tracker/tracker.component';
 import {SchemeImportComponent} from './components/scheme-import/scheme-import.component';
 import {CurriculumViewComponent} from './components/curriculum-view/curriculum-view.component';
 import {TermPickerComponent} from './components/term-picker/term-picker.component';
+import {FillHeightDirective} from './components/fill-height.directive';
 
 @NgModule({
     declarations: [
@@ -23,7 +24,8 @@ import {TermPickerComponent} from './components/term-picker/term-picker.componen
         TrackerComponent,
         SchemeImportComponent,
         CurriculumViewComponent,
-        TermPickerComponent
+        TermPickerComponent,
+        FillHeightDirective
     ],
     imports: [CommonModule, RouterModule, SharedModule, ApprovalsModule]
 })
