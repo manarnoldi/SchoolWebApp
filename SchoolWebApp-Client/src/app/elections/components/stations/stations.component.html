@@ -1,0 +1,108 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+        <div *ngIf="loading && !data" class="text-center text-muted py-4"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+        <ng-container *ngIf="data as d">
+            <div class="card card-outline card-info mb-2">
+                <div class="card-body p-2 d-flex flex-wrap align-items-center gap-2">
+                    <h5 class="mb-0 me-2"><i class="fas fa-person-booth text-info me-1"></i>Polling stations
+                        <span class="badge ms-1 align-middle" [ngClass]="stageBadges[d.stage]">{{ stageLabels[d.stage] }}</span></h5>
+                    <span class="small text-muted me-auto">{{ d.stations.length }} stations, {{ d.classes.length }} classes with voters</span>
+                    <button class="btn btn-sm btn-outline-secondary" (click)="router.navigate(['/elections/manage', d.electionId])"><i class="fas fa-arrow-left"></i> Back</button>
+                    <ng-container *ngIf="d.canManage">
+                        <button class="btn btn-sm btn-outline-primary" [disabled]="busy || !d.uncoveredClasses.length" (click)="generate()"
+                            title="One station per class not yet covered, run by its class teacher">
+                            <i class="fas fa-magic"></i> A station per class</button>
+                        <button class="btn btn-sm btn-primary" [disabled]="busy || !d.uncoveredClasses.length" (click)="add()"><i class="fas fa-plus"></i> Add station</button>
+                    </ng-container>
+                </div>
+                <div class="card-footer py-1 small" *ngIf="d.uncoveredClasses.length">
+                    <i class="fas fa-exclamation-triangle text-warning me-1"></i>No station yet for: {{ d.uncoveredClasses.length > 12 ? d.uncoveredClasses.length + ' classes' : '' }}
+                    <ng-container *ngIf="d.uncoveredClasses.length <= 12"><span *ngFor="let c of d.uncoveredClasses; let last = last">{{ c.name }}{{ last ? '' : ', ' }}</span></ng-container>.
+                    Polling cannot open until every class has one.
+                </div>
+                <div class="card-footer py-1 small text-muted" *ngIf="!d.canManage && d.stage < 1">Stations are set up once nominations open.</div>
+            </div>
+
+            <div class="card">
+                <div class="card-body p-0">
+                    <table class="table table-sm table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr><th>Station</th><th>Classes</th><th>Returning officer</th><th style="width: 220px;">Turnout</th><th style="width: 1%;"></th></tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngIf="d.stations.length === 0"><td colspan="5" class="text-center text-muted py-3">No stations yet.
+                                <a href="javascript:void(0)" *ngIf="d.canManage && d.uncoveredClasses.length" (click)="generate()">Make one per class</a></td></tr>
+                            <tr *ngFor="let s of d.stations">
+                                <td><b>{{ s.name }}</b></td>
+                                <td class="small">
+                                    <span class="badge bg-light text-dark border me-1 fw-normal" *ngFor="let c of s.classes">{{ c.name }}</span></td>
+                                <td>
+                                    <span *ngIf="s.officerName; else noOfficer"><i class="fas fa-user-tie text-muted me-1"></i>{{ s.officerName }}</span>
+                                    <ng-template #noOfficer><span class="text-muted small">None - only elections officers can run it</span></ng-template>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2 small">
+                                        <div class="progress flex-grow-1" style="height: 8px;"><div class="progress-bar bg-success" [style.width.%]="percent(s)"></div></div>
+                                        <span class="text-nowrap">{{ s.voted }} / {{ s.voters }}</span>
+                                    </div>
+                                </td>
+                                <td class="text-nowrap">
+                                    <ng-container *ngIf="d.canManage">
+                                        <button class="btn btn-sm btn-outline-primary py-0 me-1" (click)="edit(s)" title="Edit"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger py-0" [disabled]="s.voted > 0" (click)="remove(s)" title="Remove"><i class="fas fa-trash"></i></button>
+                                    </ng-container>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</section>
+
+<ng-container *ngIf="showForm && data">
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal fade show d-block" tabindex="-1">
+        <div class="modal-dialog modal-lg" style="margin-top: 40px;">
+            <div class="modal-content">
+                <div class="modal-header py-2">
+                    <h5 class="modal-title"><i class="fas fa-person-booth text-info me-1"></i>{{ editing ? 'Edit station' : 'New station' }}</h5>
+                    <button type="button" class="btn-close" (click)="showForm = false"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label class="form-label mb-0 small">Name</label>
+                            <input class="form-control form-control-sm" [(ngModel)]="form.name" maxlength="255" placeholder="e.g. Junior School hall">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label mb-0 small">Returning officer</label>
+                            <select class="form-select form-select-sm" [(ngModel)]="form.officerUserId">
+                                <option [ngValue]="null">None (elections officers only)</option>
+                                <option *ngFor="let o of data.officers" [ngValue]="o.id">{{ o.name }}</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label mb-0 small">Classes voting here</label>
+                            <input class="form-control form-control-sm mb-1" [(ngModel)]="classSearch" placeholder="Filter classes">
+                            <div class="border rounded p-2" style="max-height: 260px; overflow-y: auto;">
+                                <div class="form-check form-check-inline" *ngFor="let c of availableClasses" style="min-width: 160px;">
+                                    <input class="form-check-input" type="checkbox" [id]="'sc' + c.id" [checked]="hasClass(c.id)" (change)="toggleClass(c.id)">
+                                    <label class="form-check-label small" [for]="'sc' + c.id">{{ c.name }}</label>
+                                </div>
+                                <div *ngIf="availableClasses.length === 0" class="small text-muted">Every class is already at another station.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer py-2">
+                    <button class="btn btn-sm btn-secondary" (click)="showForm = false">Cancel</button>
+                    <button class="btn btn-sm btn-primary" [disabled]="busy" (click)="save()"><i class="fas fa-save"></i> Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-container>

@@ -175,6 +175,12 @@ import { ElectionListComponent } from './elections/components/election-list/elec
 import { ElectionDetailComponent } from './elections/components/election-detail/election-detail.component';
 import { NominationsComponent } from './elections/components/nominations/nominations.component';
 import { VoterRegisterComponent } from './elections/components/voter-register/voter-register.component';
+import { StationsComponent } from './elections/components/stations/stations.component';
+import { PollingComponent } from './elections/components/polling/polling.component';
+import { StationScreenComponent } from './elections/components/station-screen/station-screen.component';
+import { ResultsComponent } from './elections/components/results/results.component';
+import { ResultsHomeComponent } from './elections/components/results-home/results-home.component';
+import { LeadershipComponent } from './elections/components/leadership/leadership.component';
 
 const routes: Routes = [
     {
@@ -488,6 +494,12 @@ const routes: Routes = [
             {path: 'manage/:id', component: ElectionDetailComponent},
             {path: 'manage/:id/nominations', component: NominationsComponent},
             {path: 'manage/:id/register', component: VoterRegisterComponent},
+            {path: 'manage/:id/stations', component: StationsComponent},
+            {path: 'manage/:id/results', component: ResultsComponent},
+            {path: 'manage/:id/leadership', component: LeadershipComponent},
+            {path: 'polling', component: PollingComponent},
+            {path: 'polling/:stationId', component: StationScreenComponent},
+            {path: 'results', component: ResultsHomeComponent},
             {path: '', redirectTo: 'manage', pathMatch: 'full'}
         ]
     },

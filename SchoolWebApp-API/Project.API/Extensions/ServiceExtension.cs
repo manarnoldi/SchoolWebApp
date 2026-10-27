@@ -220,6 +220,7 @@ namespace Project.API.Extensions
             services.AddScoped<TeachingDocumentService>();
             services.AddScoped<SchoolWebApp.API.Services.Elections.ElectionService>();
             services.AddSingleton<SchoolWebApp.API.Services.Elections.ElectionPhotoStore>();
+            services.AddScoped<SchoolWebApp.API.Services.Elections.ElectionResultsService>();
             services.AddScoped<SchemeWorkbookService>();
             services.AddScoped<HeadOfDepartmentRoleSync>();
             services.AddScoped<SchoolWebApp.API.Services.Academics.SubjectLevelGuard>();

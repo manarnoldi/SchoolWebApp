@@ -10,6 +10,12 @@ import {PositionFormComponent} from './components/position-form/position-form.co
 import {NominationsComponent} from './components/nominations/nominations.component';
 import {NominateFormComponent} from './components/nominate-form/nominate-form.component';
 import {VoterRegisterComponent} from './components/voter-register/voter-register.component';
+import {StationsComponent} from './components/stations/stations.component';
+import {PollingComponent} from './components/polling/polling.component';
+import {StationScreenComponent} from './components/station-screen/station-screen.component';
+import {ResultsComponent} from './components/results/results.component';
+import {ResultsHomeComponent} from './components/results-home/results-home.component';
+import {LeadershipComponent} from './components/leadership/leadership.component';
 
 @NgModule({
     declarations: [
@@ -20,7 +26,13 @@ import {VoterRegisterComponent} from './components/voter-register/voter-register
         PositionFormComponent,
         NominationsComponent,
         NominateFormComponent,
-        VoterRegisterComponent
+        VoterRegisterComponent,
+        StationsComponent,
+        PollingComponent,
+        StationScreenComponent,
+        ResultsComponent,
+        ResultsHomeComponent,
+        LeadershipComponent
     ],
     imports: [CommonModule, RouterModule, SharedModule]
 })

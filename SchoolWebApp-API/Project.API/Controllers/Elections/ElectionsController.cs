@@ -20,11 +20,13 @@ namespace SchoolWebApp.API.Controllers.Elections
     {
         private readonly ApplicationDbContext _db;
         private readonly ElectionService _elections;
+        private readonly ElectionResultsService _results;
 
-        public ElectionsController(ApplicationDbContext db, ElectionService elections)
+        public ElectionsController(ApplicationDbContext db, ElectionService elections, ElectionResultsService results)
         {
             _db = db;
             _elections = elections;
+            _results = results;
         }
 
         // GET api/elections/options - lookups for the set-up screens
@@ -170,6 +172,14 @@ namespace SchoolWebApp.API.Controllers.Elections
             var error = await _elections.CannotMoveAsync(e, dto.ToStage);
             if (error != null) return BadRequest(error);
 
+            if (dto.ToStage == ElectionStage.Declared)
+            {
+                var results = await _results.CountAsync(e);
+                var tied = results.Races.Where(r => r.Tied).Select(r => r.Name).ToList();
+                if (tied.Count > 0)
+                    return BadRequest($"These races are tied for the last seat - draw lots on the results page first: {string.Join(", ", tied)}.");
+                await _results.DeclareAsync(e, results, string.IsNullOrEmpty(me.Name) ? User.FindFirst("username")?.Value : me.Name);
+            }
             await _elections.ApplyStageAsync(e, dto.ToStage);
             _db.ElectionStageChanges.Add(new ElectionStageChange
             {

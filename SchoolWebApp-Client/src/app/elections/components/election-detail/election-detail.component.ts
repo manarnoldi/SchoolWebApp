@@ -25,8 +25,12 @@ const STAGE_CONFIRM: {[s: number]: string} = {
     [ElectionStage.Draft]: 'Nominations close and the election goes back to set-up.',
     [ElectionStage.Nominations]: 'Candidates can now be nominated for each race. Positions can still be changed until nominations close.',
     [ElectionStage.CandidatesFinal]: 'The approved candidates become final and are put on the ballot in alphabetical order. '
-        + 'With a frozen register, the voter register is taken now. Positions can no longer change.'
+        + 'With a frozen register, the voter register is taken now. Positions can no longer change.',
+    [ElectionStage.Polling]: 'Returning officers can issue ballots at their stations. Results show live on the results page.',
+    [ElectionStage.PollingClosed]: 'No more ballots can be issued. You can reopen polling until the results are declared.',
+    [ElectionStage.Declared]: 'The leading candidates are declared elected and the results become final and visible to all staff.'
 };
+const REOPEN_POLLING_CONFIRM = 'Returning officers can issue ballots again.';
 const REOPEN_CONFIRM = 'Nominations open again. The ballot order is cleared and a frozen voter register is discarded; '
     + 'both are taken again when nominations close.';
 
@@ -110,8 +114,9 @@ export class ElectionDetailComponent implements OnInit {
 
     // Moving back from Candidates final reopens nominations.
     actionLabel(to: ElectionStage): string {
-        return to === ElectionStage.Nominations && this.election?.stage === ElectionStage.CandidatesFinal
-            ? 'Reopen nominations' : this.stageActions[to];
+        if (to === ElectionStage.Nominations && this.election?.stage === ElectionStage.CandidatesFinal) return 'Reopen nominations';
+        if (to === ElectionStage.Polling && this.election?.stage === ElectionStage.PollingClosed) return 'Reopen polling';
+        return this.stageActions[to];
     }
 
     stepDone(s: ElectionStage): boolean {
@@ -201,7 +206,8 @@ export class ElectionDetailComponent implements OnInit {
         const e = this.election!;
         Swal.fire({
             title: `${this.actionLabel(to)}?`,
-            text: to < e.stage && to === ElectionStage.Nominations ? REOPEN_CONFIRM : STAGE_CONFIRM[to] || '',
+            text: to < e.stage && to === ElectionStage.Nominations ? REOPEN_CONFIRM
+                : to < e.stage && to === ElectionStage.Polling ? REOPEN_POLLING_CONFIRM : STAGE_CONFIRM[to] || '',
             input: 'text',
             inputPlaceholder: 'Note for the record (optional)',
             width: 460, position: 'top', icon: to < e.stage ? 'warning' : 'question',

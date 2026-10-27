@@ -1,0 +1,145 @@
+<app-dashboard-header *ngIf="!full" [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1" *ngIf="!full">
+<section class="content">
+    <div class="container-fluid px-1" [class.full]="full" #board>
+        <div *ngIf="loading && !r" class="text-center text-muted py-4"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+
+        <ng-container *ngIf="r">
+            <!-- Head -->
+            <div class="card card-outline mb-2" [ngClass]="declared ? 'card-success' : 'card-info'">
+                <div class="card-body p-2 d-flex flex-wrap align-items-center gap-3">
+                    <div class="me-auto">
+                        <h4 class="mb-0"><i class="fas fa-poll text-info me-1"></i>{{ r.electionName }}
+                            <span class="badge ms-1 align-middle" [ngClass]="stageBadges[r.stage]">{{ stageLabels[r.stage] }}</span></h4>
+                        <small class="text-muted" *ngIf="!declared">Provisional. As at {{ r.asAt | date:'HH:mm:ss' }}<span *ngIf="auto && r.stage !== Stage.Declared">, refreshing every {{ r.refreshSeconds }}s</span>.</small>
+                        <small class="text-muted" *ngIf="declared">Declared {{ r.declaredAt | date:'d MMM y, HH:mm' }} by {{ r.declaredBy }}.</small>
+                    </div>
+                    <div class="text-center px-2">
+                        <div class="fs-3 fw-bold">{{ r.voted }}<small class="fs-6 text-muted"> / {{ r.voters }}</small></div>
+                        <small class="text-muted">voted - {{ turnout }}%</small>
+                    </div>
+                    <div class="text-center px-2" [title]="allCheck ? 'Every race: ballots counted = voters marked as voted' : 'A race\'s ballots do not match its voters - see the race'">
+                        <div class="fs-3" [ngClass]="allCheck ? 'text-success' : 'text-danger'"><i class="fas" [ngClass]="allCheck ? 'fa-check-circle' : 'fa-exclamation-triangle'"></i></div>
+                        <small class="text-muted">{{ allCheck ? 'Count checks' : 'Count mismatch' }}</small>
+                    </div>
+                    <div class="d-flex flex-wrap gap-1">
+                        <select class="form-select form-select-sm" style="width: auto;" [(ngModel)]="positionId">
+                            <option [ngValue]="null">All positions</option>
+                            <option *ngFor="let p of positions" [ngValue]="p.id">{{ p.name }}</option>
+                        </select>
+                        <button *ngIf="!declared" class="btn btn-sm" [ngClass]="auto ? 'btn-info' : 'btn-outline-info'" (click)="toggleAuto()" title="Refresh automatically">
+                            <i class="fas fa-sync-alt" [class.fa-spin]="auto && loading"></i> Auto</button>
+                        <button class="btn btn-sm btn-outline-secondary" (click)="load()" title="Refresh now"><i class="fas fa-redo"></i></button>
+                        <button class="btn btn-sm btn-outline-dark" (click)="toggleFull()" [title]="full ? 'Leave full screen' : 'Full screen'">
+                            <i class="fas" [ngClass]="full ? 'fa-compress' : 'fa-expand'"></i></button>
+                        <ng-container *ngIf="!full">
+                            <button class="btn btn-sm btn-outline-primary" (click)="print()"><i class="fas fa-print"></i></button>
+                            <button class="btn btn-sm btn-outline-success" (click)="csv()" title="Download CSV"><i class="fas fa-file-csv"></i></button>
+                            <button class="btn btn-sm btn-outline-secondary" (click)="router.navigate(['/elections/manage', r.electionId])"><i class="fas fa-arrow-left"></i></button>
+                        </ng-container>
+                    </div>
+                </div>
+                <!-- Closing steps -->
+                <div class="card-footer py-2 d-flex flex-wrap align-items-center gap-2" *ngIf="canManage && !full && (r.stage === Stage.PollingClosed || declared)">
+                    <ng-container *ngIf="r.stage === Stage.PollingClosed">
+                        <span *ngIf="tiedRaces.length" class="text-warning small me-auto"><i class="fas fa-balance-scale"></i>
+                            {{ tiedRaces.length }} race(s) tied for the last seat - draw lots before declaring.</span>
+                        <span *ngIf="!tiedRaces.length" class="text-muted small me-auto">Polling is closed. Check the count, then declare.</span>
+                        <button class="btn btn-sm btn-success" [disabled]="busy || tiedRaces.length > 0" (click)="declare()"><i class="fas fa-flag-checkered"></i> Declare results</button>
+                    </ng-container>
+                    <ng-container *ngIf="declared">
+                        <span class="text-muted small me-auto">Next: record the winners in the students' leadership records.</span>
+                        <button class="btn btn-sm btn-primary" (click)="router.navigate(['/elections/manage', r.electionId, 'leadership'])"><i class="fas fa-id-badge"></i> Leadership records</button>
+                    </ng-container>
+                </div>
+            </div>
+
+            <!-- Races -->
+            <div class="row g-2">
+                <div class="col-xl-4 col-lg-6" *ngFor="let race of races">
+                    <div class="card h-100 mb-0" [ngClass]="race.tied ? 'card-outline card-warning' : ''">
+                        <div class="card-header py-2">
+                            <div class="d-flex align-items-center">
+                                <b class="me-auto">{{ race.name }}</b>
+                                <span class="small" [ngClass]="checks(race) ? 'text-success' : 'text-danger'"
+                                    [title]="race.ballots + ' ballots counted, ' + race.voted + ' voters marked as voted'">
+                                    <i class="fas" [ngClass]="checks(race) ? 'fa-check' : 'fa-exclamation-triangle'"></i> {{ race.ballots }}</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-2 small text-muted">
+                                <div class="bar flex-grow-1"><div [style.width.%]="pct(race.voted, race.voters)"></div></div>
+                                <span class="text-nowrap">{{ race.voted }}/{{ race.voters }} voted ({{ pct(race.voted, race.voters) }}%)</span>
+                            </div>
+                        </div>
+                        <div class="card-body p-2">
+                            <div *ngFor="let c of race.candidates" class="d-flex align-items-center gap-2 mb-2">
+                                <img *ngIf="photo(c.photoUrl) as src; else noFace" [src]="src" class="face" alt="">
+                                <ng-template #noFace><span class="face none"><i class="fas fa-user"></i></span></ng-template>
+                                <div class="flex-grow-1" style="min-width: 0;">
+                                    <div class="d-flex align-items-baseline gap-1">
+                                        <span class="cname text-truncate" [class.fw-bold]="c.winning">{{ c.name }}</span>
+                                        <i class="fas fa-crown text-warning" *ngIf="c.winning" [title]="declared ? 'Elected' : 'Leading'"></i>
+                                        <span class="badge bg-warning text-dark" *ngIf="c.inTie">Tied</span>
+                                        <span class="ms-auto fw-bold">{{ c.votes }}</span>
+                                        <small class="text-muted" style="width: 3.2rem; text-align: right;">{{ c.percent }}%</small>
+                                    </div>
+                                    <div class="small text-muted text-truncate">{{ c.className }}<span *ngIf="race.seatsPerGender"> - {{ c.genderName }}</span>
+                                        <span *ngIf="c.runningMateName"> - with {{ c.runningMateName }}</span></div>
+                                    <div class="bar mt-1" [class.win]="c.winning" [class.tie]="c.inTie"><div [style.width.%]="width(race, c)"></div></div>
+                                </div>
+                            </div>
+                            <div class="small text-muted d-flex">
+                                <span class="me-auto">{{ race.seats }} seat(s){{ race.seatsPerGender ? ' per gender' : '' }}</span>
+                                <span *ngIf="race.blank">{{ race.blank }} blank</span>
+                            </div>
+                            <button *ngIf="race.tied && canManage && r.stage === Stage.PollingClosed && !full" class="btn btn-sm btn-warning w-100 mt-2" (click)="startDraw(race)">
+                                <i class="fas fa-random"></i> Draw lots</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stations -->
+            <div class="card mt-2" *ngIf="r.stations.length">
+                <div class="card-header py-2"><h6 class="mb-0"><i class="fas fa-person-booth text-info me-1"></i>Turnout by station</h6></div>
+                <div class="card-body p-2">
+                    <div class="row g-2">
+                        <div class="col-xl-3 col-lg-4 col-md-6" *ngFor="let s of r.stations">
+                            <div class="d-flex justify-content-between small"><span>{{ s.name }}</span><span>{{ s.voted }}/{{ s.voters }}</span></div>
+                            <div class="bar"><div [style.width.%]="pct(s.voted, s.voters)"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</section>
+
+<!-- Drawing lots for a tie -->
+<ng-container *ngIf="drawRace">
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal fade show d-block" tabindex="-1">
+        <div class="modal-dialog" style="margin-top: 60px;">
+            <div class="modal-content">
+                <div class="modal-header py-2">
+                    <h5 class="modal-title"><i class="fas fa-random text-warning me-1"></i>Draw lots - {{ drawRace.name }}</h5>
+                    <button type="button" class="btn-close" (click)="drawRace = null"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-muted">These candidates tie for the last seat. Draw lots in the presence of the candidates, then put them
+                        in the order drawn - the first takes the seat.</p>
+                    <ol class="list-group list-group-numbered">
+                        <li class="list-group-item d-flex align-items-center" *ngFor="let c of drawOrder; let i = index; let last = last">
+                            <span class="ms-2 me-auto"><b>{{ c.name }}</b> <small class="text-muted ms-1">{{ c.votes }} votes</small></span>
+                            <button class="btn btn-sm btn-link" [disabled]="i === 0" (click)="moveDraw(i, -1)"><i class="fas fa-arrow-up"></i></button>
+                            <button class="btn btn-sm btn-link" [disabled]="last" (click)="moveDraw(i, 1)"><i class="fas fa-arrow-down"></i></button>
+                        </li>
+                    </ol>
+                </div>
+                <div class="modal-footer py-2">
+                    <button class="btn btn-sm btn-secondary" (click)="drawRace = null">Cancel</button>
+                    <button class="btn btn-sm btn-warning" [disabled]="busy" (click)="saveDraw()"><i class="fas fa-save"></i> Record the draw</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-container>

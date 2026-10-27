@@ -1,4 +1,5 @@
 using SchoolWebApp.Core.Entities.Academics;
+using SchoolWebApp.Core.Entities.CBE.Responsibilities;
 using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Entities.Settings;
@@ -119,6 +120,13 @@ namespace SchoolWebApp.Core.Entities.Elections
         public Gender? Gender { get; set; }
         public bool VotersSameGenderOnly { get; set; }
         public int Rank { get; set; }
+
+        // Where the winners are recorded after the results: a class leadership role
+        // (class races) and/or a student responsibility.
+        public int? ClassLeadershipRoleId { get; set; }
+        public ClassLeadershipRole? ClassLeadershipRole { get; set; }
+        public int? ResponsibilityId { get; set; }
+        public Responsibility? Responsibility { get; set; }
 
         // Voter grades define the position's reach; candidate grades who may stand
         // (none = any voter grade).

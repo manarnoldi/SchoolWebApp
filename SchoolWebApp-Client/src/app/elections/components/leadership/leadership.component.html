@@ -1,0 +1,61 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+        <div *ngIf="loading && !data" class="text-center text-muted py-4"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+        <ng-container *ngIf="data as d">
+            <div class="card card-outline card-primary mb-2">
+                <div class="card-body p-2 d-flex flex-wrap align-items-center gap-2">
+                    <h5 class="mb-0 me-auto"><i class="fas fa-id-badge text-primary me-1"></i>Leadership records - {{ d.electionName }}</h5>
+                    <button class="btn btn-sm btn-outline-secondary" (click)="router.navigate(['/elections/manage', d.electionId, 'results'])"><i class="fas fa-arrow-left"></i> Results</button>
+                    <button class="btn btn-sm btn-primary" *ngIf="d.stage === Stage.Declared" [disabled]="busy" (click)="record()">
+                        <i class="fas" [ngClass]="busy ? 'fa-spinner fa-spin' : 'fa-save'"></i> Record winners
+                        <span class="badge bg-light text-dark ms-1" *ngIf="toRecord">{{ toRecord }}</span></button>
+                </div>
+                <div class="card-footer py-1 small text-muted">
+                    <span *ngIf="d.stage !== Stage.Declared"><i class="fas fa-lock me-1"></i>Winners can be recorded once the results are declared.</span>
+                    <span *ngIf="d.stage === Stage.Declared">Choose for each position where its winners go. Class races can go to a class leadership role
+                        (shown on the class); any position can go to a responsibility for the year (shown on the report form). A running mate is
+                        recorded under the same responsibility with their title.</span>
+                </div>
+            </div>
+
+            <div class="card mb-2" *ngFor="let p of d.positions">
+                <div class="card-header py-2">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-lg-4"><b>{{ p.name }}</b> <small class="text-muted ms-1" *ngIf="p.runningMateTitle">with {{ p.runningMateTitle }}</small></div>
+                        <div class="col-lg-4">
+                            <select class="form-select form-select-sm" [(ngModel)]="p.classLeadershipRoleId" [disabled]="!p.classRaces || d.stage !== Stage.Declared"
+                                [title]="p.classRaces ? '' : 'Only for positions with a race per class'">
+                                <option [ngValue]="null">{{ p.classRaces ? 'No class leadership role' : 'Class role - class races only' }}</option>
+                                <option *ngFor="let r of d.classRoles" [ngValue]="r.id">Class role: {{ r.name }}</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-4">
+                            <select class="form-select form-select-sm" [(ngModel)]="p.responsibilityId" [disabled]="d.stage !== Stage.Declared">
+                                <option [ngValue]="null">No responsibility</option>
+                                <option *ngFor="let r of d.responsibilities" [ngValue]="r.id">Responsibility: {{ r.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <tbody>
+                            <tr *ngIf="p.winners.length === 0"><td class="text-muted small ps-3">No winner.</td></tr>
+                            <tr *ngFor="let w of p.winners">
+                                <td class="ps-3 small text-muted" style="width: 30%;">{{ w.race }}</td>
+                                <td><b>{{ w.name }}</b> <small class="text-muted ms-1">{{ w.className }}</small>
+                                    <div class="small" *ngIf="w.runningMateName"><span class="text-muted">{{ p.runningMateTitle }}:</span> {{ w.runningMateName }}</div></td>
+                                <td class="text-end pe-3 small">
+                                    <span *ngIf="w.recordedAt" class="text-success"><i class="fas fa-check"></i> Recorded {{ w.recordedAt | date:'d MMM y' }}</span>
+                                    <span *ngIf="!w.recordedAt" class="text-muted">Not recorded</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</section>

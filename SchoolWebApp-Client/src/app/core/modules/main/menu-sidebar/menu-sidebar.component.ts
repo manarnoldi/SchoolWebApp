@@ -191,7 +191,10 @@ export const MENU = [
         name: 'Elections',
         iconClasses: 'fas fa-vote-yea',
         children: [
-            {name: 'Manage Elections', iconClasses: 'fas fa-cogs text-info', path: ['/elections/manage']}
+            {name: 'Manage Elections', iconClasses: 'fas fa-cogs text-info', path: ['/elections/manage']},
+            // Returning officers: the stations they run (elections officers see all).
+            {name: 'Polling Station', iconClasses: 'fas fa-person-booth text-success', path: ['/elections/polling']},
+            {name: 'Results', iconClasses: 'fas fa-poll text-warning', path: ['/elections/results']}
         ]
     },
     {

@@ -1,0 +1,29 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+        <div *ngIf="loading" class="text-center text-muted py-4"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+        <div *ngIf="!loading && stations.length === 0" class="card"><div class="card-body text-center text-muted py-4">
+            <i class="fas fa-person-booth fa-2x mb-2 d-block"></i>
+            You are not the returning officer of any polling station. Stations show here once the candidates are final.</div></div>
+
+        <div class="row g-2">
+            <div class="col-xl-3 col-lg-4 col-md-6" *ngFor="let s of stations">
+                <div class="card h-100 mb-0" [ngClass]="s.stage === Stage.Polling ? 'card-outline card-success' : 'card-outline card-secondary'">
+                    <div class="card-body p-3 d-flex flex-column">
+                        <div class="small text-muted">{{ s.electionName }}</div>
+                        <h5 class="mb-1"><i class="fas fa-person-booth text-info me-1"></i>{{ s.stationName }}</h5>
+                        <div class="small mb-2"><span class="badge" [ngClass]="stageBadges[s.stage]">{{ stageLabels[s.stage] }}</span>
+                            <span class="text-muted ms-1" *ngIf="s.officerName">{{ s.officerName }}</span></div>
+                        <div class="d-flex align-items-center gap-2 small mb-3">
+                            <div class="progress flex-grow-1" style="height: 8px;"><div class="progress-bar bg-success" [style.width.%]="percent(s)"></div></div>
+                            <span class="text-nowrap">{{ s.voted }} / {{ s.voters }} voted</span>
+                        </div>
+                        <button class="btn btn-success mt-auto" (click)="router.navigate(['/elections/polling', s.stationId])">
+                            <i class="fas fa-door-open"></i> {{ s.stage === Stage.Polling ? 'Open station' : 'View station' }}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

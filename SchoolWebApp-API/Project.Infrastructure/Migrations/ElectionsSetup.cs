@@ -30,6 +30,16 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 "Administrator", "HeadTeacher", "DeputyHeadTeacher");
         }
 
+        // Polling Station is for returning officers (the API limits each to their own
+        // stations); Results for whoever runs the elections.
+        public static void GrantPollingAndResultsMenus(MigrationBuilder migrationBuilder)
+        {
+            GrantMenu(migrationBuilder, "/elections/polling", "Elections > Polling Station",
+                "Administrator", "HeadTeacher", "DeputyHeadTeacher", "Teacher", "HeadOfDepartment");
+            GrantMenu(migrationBuilder, "/elections/results", "Elections > Results",
+                "Administrator", "HeadTeacher", "DeputyHeadTeacher");
+        }
+
         // Only added to roles that already have menu permissions - a role with none
         // sees the whole menu, and giving it this alone would hide everything else.
         public static void GrantMenu(MigrationBuilder migrationBuilder, string path, string menuName, params string[] roles)

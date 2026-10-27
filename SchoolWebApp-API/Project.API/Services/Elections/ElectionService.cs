@@ -81,15 +81,17 @@ namespace SchoolWebApp.API.Services.Elections
             stage == ElectionStage.Draft || stage == ElectionStage.Nominations;
 
         /// <summary>
-        /// The stages an election can move to from where it is. Forward one step at a
-        /// time; Nominations can go back to Draft. Later steps arrive with the
-        /// nominations, polling and results screens.
+        /// The stages an election can move to from where it is: forward one step at a
+        /// time; back to Draft from Nominations, to Nominations from Candidates final,
+        /// and polling can reopen until the results are declared.
         /// </summary>
         public static List<ElectionStage> NextStages(ElectionStage stage) => stage switch
         {
             ElectionStage.Draft => new() { ElectionStage.Nominations },
             ElectionStage.Nominations => new() { ElectionStage.Draft, ElectionStage.CandidatesFinal },
-            ElectionStage.CandidatesFinal => new() { ElectionStage.Nominations },
+            ElectionStage.CandidatesFinal => new() { ElectionStage.Nominations, ElectionStage.Polling },
+            ElectionStage.Polling => new() { ElectionStage.PollingClosed },
+            ElectionStage.PollingClosed => new() { ElectionStage.Polling, ElectionStage.Declared },
             _ => new()
         };
 
@@ -123,7 +125,24 @@ namespace SchoolWebApp.API.Services.Elections
                 if (empty.Count > 0)
                     return $"These races have no approved candidate: {string.Join(", ", empty.Take(10))}{(empty.Count > 10 ? $" and {empty.Count - 10} more" : "")}.";
             }
+            if (to == ElectionStage.Polling && e.Stage == ElectionStage.CandidatesFinal)
+            {
+                var uncovered = await UncoveredClassesAsync(e);
+                if (!await _db.ElectionStations.AnyAsync(s => s.ElectionId == e.Id))
+                    return "Set up the polling stations before opening polling.";
+                if (uncovered.Count > 0)
+                    return $"These classes have voters but no polling station: {string.Join(", ", uncovered.Select(c => c.Name))}.";
+            }
             return null;
+        }
+
+        /// <summary>Classes with voters that no polling station of the election covers.</summary>
+        public async Task<List<(int Id, string Name)>> UncoveredClassesAsync(Election e)
+        {
+            var covered = await _db.ElectionStationClasses.Where(c => c.ElectionStation!.ElectionId == e.Id)
+                .Select(c => c.SchoolClassId).ToListAsync();
+            return (await VoterPlacesAsync(e)).Where(p => !covered.Contains(p.SchoolClassId))
+                .GroupBy(p => p.SchoolClassId).Select(g => (g.Key, g.First().ClassName)).OrderBy(c => c.Item2).ToList();
         }
 
         /// <summary>

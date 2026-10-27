@@ -46,6 +46,12 @@
                             <i class="fas fa-clipboard-list"></i> Voter register
                             <i class="fas fa-lock ms-1" *ngIf="e.registerFrozenAt" [title]="'Taken ' + (e.registerFrozenAt | date:'d MMM y, HH:mm')"></i>
                         </button>
+                        <button class="btn btn-sm btn-outline-info" *ngIf="e.stage >= Stage.Nominations" (click)="router.navigate(['/elections/manage', e.id, 'stations'])">
+                            <i class="fas fa-person-booth"></i> Polling stations</button>
+                        <button class="btn btn-sm btn-success" *ngIf="e.stage >= Stage.Polling" (click)="router.navigate(['/elections/manage', e.id, 'results'])">
+                            <i class="fas fa-poll"></i> {{ e.stage === Stage.Declared ? 'Results' : 'Live results' }}</button>
+                        <button class="btn btn-sm btn-outline-primary" *ngIf="e.stage === Stage.Declared && canManage" (click)="router.navigate(['/elections/manage', e.id, 'leadership'])">
+                            <i class="fas fa-id-badge"></i> Leadership records</button>
                     </div>
 
                     <!-- Stage steps -->

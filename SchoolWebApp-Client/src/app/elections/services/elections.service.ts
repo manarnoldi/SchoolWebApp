@@ -2,18 +2,25 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {
+    Ballot,
     CandidateStatus,
     ElectionDetail,
     ElectionOptions,
     ElectionStage,
     ElectionSummary,
     EligibleStudent,
+    Leadership,
+    MyStation,
     Nominations,
     RegisterSummary,
     RegisterVoter,
     SaveCandidate,
+    Results,
     SaveElection,
-    SavePosition
+    SavePosition,
+    SaveStation,
+    StationRegister,
+    Stations
 } from '../models/election-models';
 
 @Injectable({providedIn: 'root'})
@@ -102,5 +109,62 @@ export class ElectionsService {
 
     registerContest(electionId: number, contestId: number): Observable<RegisterVoter[]> {
         return this.http.get<RegisterVoter[]>(`/elections/${electionId}/register/contests/${contestId}`);
+    }
+
+    stations(electionId: number): Observable<Stations> {
+        return this.http.get<Stations>(`/elections/${electionId}/stations`);
+    }
+
+    addStation(electionId: number, dto: SaveStation): Observable<Stations> {
+        return this.http.post<Stations>(`/elections/${electionId}/stations`, dto);
+    }
+
+    updateStation(stationId: number, dto: SaveStation): Observable<Stations> {
+        return this.http.put<Stations>(`/elections/stations/${stationId}`, dto);
+    }
+
+    deleteStation(stationId: number): Observable<Stations> {
+        return this.http.delete<Stations>(`/elections/stations/${stationId}`);
+    }
+
+    generateStations(electionId: number): Observable<Stations> {
+        return this.http.post<Stations>(`/elections/${electionId}/stations/generate`, {});
+    }
+
+    myStations(): Observable<MyStation[]> {
+        return this.http.get<MyStation[]>('/elections/polling/mine');
+    }
+
+    stationRegister(stationId: number): Observable<StationRegister> {
+        return this.http.get<StationRegister>(`/elections/stations/${stationId}/register`);
+    }
+
+    ballot(stationId: number, studentId: number): Observable<Ballot> {
+        return this.http.get<Ballot>(`/elections/stations/${stationId}/ballot/${studentId}`);
+    }
+
+    cast(stationId: number, studentId: number, choices: {contestId: number; candidateIds: number[]}[]): Observable<{voted: string; races: number}> {
+        return this.http.post<{voted: string; races: number}>(`/elections/stations/${stationId}/cast`, {studentId, choices});
+    }
+
+    results(electionId: number): Observable<Results> {
+        return this.http.get<Results>(`/elections/${electionId}/results`);
+    }
+
+    resultsCsv(electionId: number): Observable<Blob> {
+        return this.http.get(`/elections/${electionId}/results/csv`, {responseType: 'blob'});
+    }
+
+    tieBreak(contestId: number, candidateIds: number[]): Observable<Results> {
+        return this.http.post<Results>(`/elections/contests/${contestId}/tiebreak`, {candidateIds});
+    }
+
+    leadership(electionId: number): Observable<Leadership> {
+        return this.http.get<Leadership>(`/elections/${electionId}/leadership`);
+    }
+
+    recordLeadership(electionId: number, positions: {positionId: number; classLeadershipRoleId: number | null; responsibilityId: number | null}[]):
+        Observable<{added: number; leadership: Leadership}> {
+        return this.http.post<{added: number; leadership: Leadership}>(`/elections/${electionId}/leadership`, {positions});
     }
 }

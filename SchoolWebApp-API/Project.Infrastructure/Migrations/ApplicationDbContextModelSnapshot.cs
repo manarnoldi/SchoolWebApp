@@ -3301,6 +3301,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<int?>("ClassLeadershipRoleId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("Created")
                         .HasColumnType("datetime(6)");
 
@@ -3332,6 +3335,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Property<int>("Rank")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ResponsibilityId")
+                        .HasColumnType("int");
+
                     b.Property<string>("RunningMateTitle")
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
@@ -3347,9 +3353,13 @@ namespace SchoolWebApp.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ClassLeadershipRoleId");
+
                     b.HasIndex("ElectionId");
 
                     b.HasIndex("GenderId");
+
+                    b.HasIndex("ResponsibilityId");
 
                     b.ToTable("ElectionPositions");
                 });
@@ -7668,6 +7678,12 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Property<int>("ElectionContestId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsElected")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("LeadershipRecordedAt")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<DateTime?>("Modified")
                         .HasColumnType("datetime(6)");
 
@@ -7698,6 +7714,12 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("varchar(500)");
 
                     b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TieBreak")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Votes")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -7757,6 +7779,153 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("ElectionVoters");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionBallotChoice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("BallotId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int?>("ElectionCandidateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ElectionContestId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ElectionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BallotId");
+
+                    b.HasIndex("ElectionCandidateId");
+
+                    b.HasIndex("ElectionContestId");
+
+                    b.HasIndex("ElectionId");
+
+                    b.ToTable("ElectionBallotChoices");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionStation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("ElectionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("OfficerUserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ElectionId");
+
+                    b.HasIndex("OfficerUserId");
+
+                    b.ToTable("ElectionStations");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionStationClass", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("ElectionStationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("SchoolClassId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SchoolClassId");
+
+                    b.HasIndex("ElectionStationId", "SchoolClassId")
+                        .IsUnique();
+
+                    b.ToTable("ElectionStationClasses");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionVoteCast", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("ElectionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ElectionStationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ElectionStationId");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("ElectionId", "StudentId")
+                        .IsUnique();
+
+                    b.ToTable("ElectionVoteCasts");
                 });
 
             modelBuilder.Entity("CompetencySpecificOutcome", b =>
@@ -8667,6 +8836,11 @@ namespace SchoolWebApp.Infrastructure.Migrations
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionPosition", b =>
                 {
+                    b.HasOne("SchoolWebApp.Core.Entities.Class.ClassLeadershipRole", "ClassLeadershipRole")
+                        .WithMany()
+                        .HasForeignKey("ClassLeadershipRoleId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("SchoolWebApp.Core.Entities.Elections.Election", "Election")
                         .WithMany("Positions")
                         .HasForeignKey("ElectionId")
@@ -8678,9 +8852,18 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasForeignKey("GenderId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("SchoolWebApp.Core.Entities.CBE.Responsibilities.Responsibility", "Responsibility")
+                        .WithMany()
+                        .HasForeignKey("ResponsibilityId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("ClassLeadershipRole");
+
                     b.Navigation("Election");
 
                     b.Navigation("Gender");
+
+                    b.Navigation("Responsibility");
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionPositionLevel", b =>
@@ -9685,6 +9868,84 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Navigation("Student");
                 });
 
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionBallotChoice", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Elections.ElectionCandidate", null)
+                        .WithMany()
+                        .HasForeignKey("ElectionCandidateId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Elections.ElectionContest", null)
+                        .WithMany()
+                        .HasForeignKey("ElectionContestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionStation", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Elections.Election", "Election")
+                        .WithMany()
+                        .HasForeignKey("ElectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Identity.AppUser", "OfficerUser")
+                        .WithMany()
+                        .HasForeignKey("OfficerUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Election");
+
+                    b.Navigation("OfficerUser");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionStationClass", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Elections.ElectionStation", "ElectionStation")
+                        .WithMany("Classes")
+                        .HasForeignKey("ElectionStationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Class.SchoolClass", "SchoolClass")
+                        .WithMany()
+                        .HasForeignKey("SchoolClassId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ElectionStation");
+
+                    b.Navigation("SchoolClass");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionVoteCast", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Elections.Election", "Election")
+                        .WithMany()
+                        .HasForeignKey("ElectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Elections.ElectionStation", "ElectionStation")
+                        .WithMany()
+                        .HasForeignKey("ElectionStationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Election");
+
+                    b.Navigation("ElectionStation");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Academics.AcademicYear", b =>
                 {
                     b.Navigation("SchoolClasses");
@@ -10154,6 +10415,11 @@ namespace SchoolWebApp.Infrastructure.Migrations
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionContest", b =>
                 {
                     b.Navigation("Candidates");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionStation", b =>
+                {
+                    b.Navigation("Classes");
                 });
 #pragma warning restore 612, 618
         }

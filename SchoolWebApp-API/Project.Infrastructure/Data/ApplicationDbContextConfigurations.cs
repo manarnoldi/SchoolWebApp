@@ -291,6 +291,10 @@ namespace Project.Infrastructure.Data
                 .HasForeignKey(p => p.ElectionId).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<ElectionPosition>().HasOne(p => p.Gender).WithMany()
                 .HasForeignKey(p => p.GenderId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ElectionPosition>().HasOne(p => p.ClassLeadershipRole).WithMany()
+                .HasForeignKey(p => p.ClassLeadershipRoleId).OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<ElectionPosition>().HasOne(p => p.Responsibility).WithMany()
+                .HasForeignKey(p => p.ResponsibilityId).OnDelete(DeleteBehavior.SetNull);
             modelBuilder.Entity<ElectionPositionLevel>().HasOne(l => l.ElectionPosition).WithMany(p => p.Levels)
                 .HasForeignKey(l => l.ElectionPositionId).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<ElectionPositionLevel>().HasOne(l => l.LearningLevel).WithMany()
@@ -321,6 +325,32 @@ namespace Project.Infrastructure.Data
                 .HasForeignKey(v => v.SchoolClassId).OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ElectionVoter>()
                 .HasIndex(v => new { v.ElectionId, v.StudentId }).IsUnique();
+            modelBuilder.Entity<ElectionStation>().HasOne(s => s.Election).WithMany()
+                .HasForeignKey(s => s.ElectionId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ElectionStation>().HasOne(s => s.OfficerUser).WithMany()
+                .HasForeignKey(s => s.OfficerUserId).OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<ElectionStationClass>().HasOne(c => c.ElectionStation).WithMany(s => s.Classes)
+                .HasForeignKey(c => c.ElectionStationId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ElectionStationClass>().HasOne(c => c.SchoolClass).WithMany()
+                .HasForeignKey(c => c.SchoolClassId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ElectionStationClass>()
+                .HasIndex(c => new { c.ElectionStationId, c.SchoolClassId }).IsUnique();
+            // Who voted. One vote per student per election.
+            modelBuilder.Entity<ElectionVoteCast>().HasOne(v => v.Election).WithMany()
+                .HasForeignKey(v => v.ElectionId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ElectionVoteCast>().HasOne(v => v.Student).WithMany()
+                .HasForeignKey(v => v.StudentId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ElectionVoteCast>().HasOne(v => v.ElectionStation).WithMany()
+                .HasForeignKey(v => v.ElectionStationId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ElectionVoteCast>()
+                .HasIndex(v => new { v.ElectionId, v.StudentId }).IsUnique();
+            // How they voted, kept apart (see ElectionBallotChoice).
+            modelBuilder.Entity<ElectionBallotChoice>().HasOne<ElectionContest>().WithMany()
+                .HasForeignKey(c => c.ElectionContestId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ElectionBallotChoice>().HasOne<ElectionCandidate>().WithMany()
+                .HasForeignKey(c => c.ElectionCandidateId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ElectionBallotChoice>().HasIndex(c => c.ElectionId);
+            modelBuilder.Entity<ElectionBallotChoice>().HasIndex(c => c.BallotId);
 
             // Curriculum design: what the KICD design says beyond strands and outcomes.
             // Everything hangs off its strand / sub-strand / design and goes with it;

@@ -279,3 +279,170 @@ export interface RegisterVoter {
     className: string;
     genderName: string;
 }
+
+// Polling
+
+export interface Station {
+    id: number;
+    electionId: number;
+    name: string;
+    officerUserId: number | null;
+    officerName: string | null;
+    classes: IdName[];
+    voters: number;
+    voted: number;
+}
+
+export interface Stations {
+    electionId: number;
+    electionName: string;
+    stage: ElectionStage;
+    canManage: boolean;
+    stations: Station[];
+    uncoveredClasses: IdName[];
+    classes: IdName[];
+    officers: IdName[];
+}
+
+export interface SaveStation {
+    name: string;
+    officerUserId: number | null;
+    schoolClassIds: number[];
+}
+
+export interface MyStation {
+    stationId: number;
+    stationName: string;
+    electionId: number;
+    electionName: string;
+    stage: ElectionStage;
+    officerName: string | null;
+    voters: number;
+    voted: number;
+}
+
+export interface StationVoter {
+    studentId: number;
+    name: string;
+    upi: string;
+    className: string;
+    genderName: string;
+    voted: boolean;
+    votedAt: string | null;
+}
+
+export interface StationRegister {
+    stationId: number;
+    stationName: string;
+    electionId: number;
+    electionName: string;
+    stage: ElectionStage;
+    officerName: string | null;
+    voters: StationVoter[];
+}
+
+export interface BallotCandidate {
+    candidateId: number;
+    ballotOrder: number;
+    name: string;
+    className: string;
+    genderName: string;
+    runningMateName: string | null;
+    slogan: string | null;
+    photoUrl: string | null;
+    runningMatePhotoUrl: string | null;
+}
+
+export interface BallotRace {
+    contestId: number;
+    name: string;
+    positionName: string;
+    runningMateTitle: string | null;
+    seats: number;
+    seatsPerGender: boolean;
+    candidates: BallotCandidate[];
+}
+
+export interface Ballot {
+    studentId: number;
+    studentName: string;
+    className: string;
+    races: BallotRace[];
+}
+
+// Results
+
+export interface ResultCandidate {
+    candidateId: number;
+    name: string;
+    className: string;
+    genderName: string;
+    runningMateName: string | null;
+    photoUrl: string | null;
+    votes: number;
+    percent: number;
+    winning: boolean;
+    inTie: boolean;
+    tieBreak: number;
+    leadershipRecordedAt: string | null;
+}
+
+export interface ResultRace {
+    contestId: number;
+    positionId: number;
+    positionName: string;
+    name: string;
+    runningMateTitle: string | null;
+    seats: number;
+    seatsPerGender: boolean;
+    voters: number;
+    voted: number;
+    ballots: number;
+    blank: number;
+    tied: boolean;
+    candidates: ResultCandidate[];
+}
+
+export interface Results {
+    electionId: number;
+    electionName: string;
+    stage: ElectionStage;
+    refreshSeconds: number;
+    declaredAt: string | null;
+    declaredBy: string | null;
+    voters: number;
+    voted: number;
+    asAt: string;
+    races: ResultRace[];
+    stations: {stationId: number; name: string; voters: number; voted: number}[];
+}
+
+// Leadership records
+
+export interface LeadershipWinner {
+    candidateId: number;
+    race: string;
+    name: string;
+    runningMateName: string | null;
+    className: string;
+    recordedAt: string | null;
+}
+
+export interface LeadershipPosition {
+    positionId: number;
+    name: string;
+    runningMateTitle: string | null;
+    classRaces: boolean;
+    classLeadershipRoleId: number | null;
+    responsibilityId: number | null;
+    winners: LeadershipWinner[];
+}
+
+export interface Leadership {
+    electionId: number;
+    electionName: string;
+    stage: ElectionStage;
+    classRoles: IdName[];
+    responsibilities: IdName[];
+    positions: LeadershipPosition[];
+}

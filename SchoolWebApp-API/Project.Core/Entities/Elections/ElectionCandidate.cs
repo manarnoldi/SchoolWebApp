@@ -41,6 +41,14 @@ namespace SchoolWebApp.Core.Entities.Elections
         public string? StatusNote { get; set; }
         // Place on the ballot, set when nominations close (alphabetical).
         public int BallotOrder { get; set; }
+
+        // Set when the results are declared.
+        public int Votes { get; set; }
+        public bool IsElected { get; set; }
+        // A tie at the last seat is settled by drawing lots: the higher draw wins.
+        public int TieBreak { get; set; }
+        // When the win was written to the student's leadership records.
+        public DateTime? LeadershipRecordedAt { get; set; }
     }
 
     /// <summary>

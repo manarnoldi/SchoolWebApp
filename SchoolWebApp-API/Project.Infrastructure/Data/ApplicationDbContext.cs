@@ -217,6 +217,10 @@ namespace Project.Infrastructure.Data
         public DbSet<ElectionContest> ElectionContests { get; set; }
         public DbSet<ElectionCandidate> ElectionCandidates { get; set; }
         public DbSet<ElectionVoter> ElectionVoters { get; set; }
+        public DbSet<ElectionStation> ElectionStations { get; set; }
+        public DbSet<ElectionStationClass> ElectionStationClasses { get; set; }
+        public DbSet<ElectionVoteCast> ElectionVoteCasts { get; set; }
+        public DbSet<ElectionBallotChoice> ElectionBallotChoices { get; set; }
         #endregion
 
         #region Approvals
@@ -302,6 +306,9 @@ namespace Project.Infrastructure.Data
             // The whole register is written at once when nominations close; the
             // stage change records who closed them and when.
             typeof(ElectionVoter),
+            // Ballot choices must not be traceable to a voter - not even through
+            // the audit trail's who-and-when.
+            typeof(ElectionBallotChoice),
             // Thousands of rows per send, each re-saved as its status moves;
             // the MessageBatch row already records who sent what.
             typeof(OutboundMessage),

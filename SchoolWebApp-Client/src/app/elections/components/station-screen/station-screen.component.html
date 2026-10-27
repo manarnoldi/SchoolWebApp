@@ -1,0 +1,139 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+        <div *ngIf="loading && !station" class="text-center text-muted py-4"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+
+        <ng-container *ngIf="station as s">
+            <div class="card card-outline mb-2" [ngClass]="s.stage === Stage.Polling ? 'card-success' : 'card-secondary'">
+                <div class="card-body p-2 d-flex flex-wrap align-items-center gap-3">
+                    <div class="me-auto">
+                        <h5 class="mb-0"><i class="fas fa-person-booth text-info me-1"></i>{{ s.stationName }}
+                            <span class="badge ms-1 align-middle" [ngClass]="stageBadges[s.stage]">{{ stageLabels[s.stage] }}</span></h5>
+                        <small class="text-muted">{{ s.electionName }}<span *ngIf="s.officerName"> - returning officer {{ s.officerName }}</span></small>
+                    </div>
+                    <div class="text-center">
+                        <div class="fs-4 fw-bold text-success">{{ counts.voted }}</div><small class="text-muted">voted</small></div>
+                    <div class="text-center">
+                        <div class="fs-4 fw-bold">{{ counts.all - counts.voted }}</div><small class="text-muted">waiting</small></div>
+                    <button class="btn btn-sm btn-outline-secondary" (click)="load()"><i class="fas fa-sync-alt"></i></button>
+                    <button class="btn btn-sm btn-outline-secondary" (click)="router.navigate(['/elections/polling'])"><i class="fas fa-arrow-left"></i> Stations</button>
+                </div>
+                <div class="card-footer py-1 small" *ngIf="s.stage !== Stage.Polling">
+                    <i class="fas fa-lock me-1"></i>{{ s.stage < Stage.Polling ? 'Polling has not opened yet.' : 'Polling is closed.' }} Ballots cannot be issued.</div>
+            </div>
+
+            <div class="card">
+                <div class="card-header py-2 d-flex flex-wrap align-items-center gap-2">
+                    <input class="form-control" style="max-width: 360px;" [(ngModel)]="search" (ngModelChange)="page = 1"
+                        placeholder="Find the voter: name, UPI or class" autofocus>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn" [ngClass]="show === 'waiting' ? 'btn-primary' : 'btn-outline-primary'" (click)="show = 'waiting'; page = 1">Not voted</button>
+                        <button class="btn" [ngClass]="show === 'voted' ? 'btn-primary' : 'btn-outline-primary'" (click)="show = 'voted'; page = 1">Voted</button>
+                        <button class="btn" [ngClass]="show === 'all' ? 'btn-primary' : 'btn-outline-primary'" (click)="show = 'all'; page = 1">All</button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light"><tr><th>Voter</th><th>UPI</th><th>Class</th><th>Gender</th><th style="width: 1%;"></th></tr></thead>
+                        <tbody>
+                            <tr *ngIf="filtered.length === 0"><td colspan="5" class="text-center text-muted py-3">No voters{{ search ? ' match the search' : '' }}.</td></tr>
+                            <tr *ngFor="let v of paged">
+                                <td><b>{{ v.name }}</b></td><td>{{ v.upi }}</td><td>{{ v.className }}</td><td>{{ v.genderName }}</td>
+                                <td class="text-nowrap">
+                                    <span *ngIf="v.voted" class="badge bg-success"><i class="fas fa-check"></i> Voted {{ v.votedAt | date:'HH:mm' }}</span>
+                                    <button *ngIf="!v.voted" class="btn btn-sm btn-success" [disabled]="s.stage !== Stage.Polling || issuing !== null" (click)="issue(v)">
+                                        <i class="fas" [ngClass]="issuing === v.studentId ? 'fa-spinner fa-spin' : 'fa-vote-yea'"></i> Issue ballot</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <app-table-paging *ngIf="filtered.length > 0" [collectionSize]="filtered.length" [page]="page" [pageSize]="pageSize"
+                (pageChangedEvent)="page = $event" (pageSizeChangedEvent)="pageSize = $event; page = 1"></app-table-paging>
+        </ng-container>
+    </div>
+</section>
+
+<!-- The ballot: covers the whole screen while the voter votes -->
+<div class="ballot" *ngIf="mode !== 'register' && ballot as b">
+    <div class="ballot-head px-3 py-2 d-flex align-items-center gap-3">
+        <i class="fas fa-vote-yea fa-2x text-info"></i>
+        <div class="me-auto">
+            <div class="fs-5 fw-bold">{{ station?.electionName }}</div>
+            <div class="small opacity-75">Ballot for {{ b.studentName }} - {{ b.className }}</div>
+        </div>
+        <button *ngIf="mode !== 'done'" class="btn btn-sm btn-outline-light" (click)="cancelBallot()" title="Returning officer: take the ballot back">
+            <i class="fas fa-times"></i> Cancel</button>
+    </div>
+
+    <!-- Choosing -->
+    <div class="container py-3" *ngIf="mode === 'ballot'">
+        <div *ngIf="b.races.length === 0" class="alert alert-warning">There is no race for this voter.</div>
+        <div class="card mb-3" *ngFor="let race of b.races">
+            <div class="card-header bg-white py-2">
+                <div class="fs-5 fw-bold">{{ race.name }}</div>
+                <div class="text-muted">{{ rule(race) }}<span *ngIf="race.runningMateTitle"> - each choice elects the candidate and their {{ race.runningMateTitle }}</span></div>
+            </div>
+            <div class="card-body">
+                <ng-container *ngFor="let g of (race.seatsPerGender ? genders(race) : [null])">
+                    <div *ngIf="g" class="fw-bold text-muted mb-2">{{ g }}</div>
+                    <div class="row g-3 mb-2">
+                        <div class="col-xl-4 col-md-6" *ngFor="let c of candidatesOf(race, g)">
+                            <div class="tile p-2 h-100 d-flex align-items-center gap-3" [class.picked]="isPicked(race, c)" (click)="toggle(race, c)">
+                                <div class="no">{{ c.ballotOrder }}</div>
+                                <img *ngIf="photo(c.photoUrl) as src; else none" [src]="src" alt="">
+                                <ng-template #none><div class="nophoto"><i class="fas fa-user fa-3x"></i></div></ng-template>
+                                <div class="flex-grow-1">
+                                    <div class="fs-5 fw-bold lh-sm">{{ c.name }}</div>
+                                    <div class="text-muted">{{ c.className }}</div>
+                                    <div class="fst-italic small mt-1" *ngIf="c.slogan">"{{ c.slogan }}"</div>
+                                    <div class="mate d-flex align-items-center gap-2 mt-2" *ngIf="c.runningMateName">
+                                        <img *ngIf="photo(c.runningMatePhotoUrl) as src; else noMate" [src]="src" alt="">
+                                        <ng-template #noMate><div class="nophoto"><i class="fas fa-user"></i></div></ng-template>
+                                        <div class="small"><span class="text-muted">{{ race.runningMateTitle }}</span><br><b>{{ c.runningMateName }}</b></div>
+                                    </div>
+                                </div>
+                                <div class="pick"><i class="fas fa-check" *ngIf="isPicked(race, c)"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+                <div *ngIf="race.candidates.length === 0" class="text-muted">No candidates.</div>
+            </div>
+        </div>
+        <div class="text-center pb-4">
+            <button class="btn btn-lg btn-primary px-5" (click)="review()"><i class="fas fa-arrow-right"></i> Review my vote</button>
+        </div>
+    </div>
+
+    <!-- Review and cast -->
+    <div class="container py-4" style="max-width: 760px;" *ngIf="mode === 'review'">
+        <h3 class="mb-3">Check your vote</h3>
+        <div class="card mb-3">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex align-items-center py-3" *ngFor="let race of b.races">
+                    <div class="me-auto"><div class="text-muted small">{{ race.name }}</div>
+                        <div class="fs-5" *ngIf="chosenNames(race).length; else blank"><b>{{ chosenNames(race).join(', ') }}</b></div>
+                        <ng-template #blank><div class="fs-5 text-warning">No choice - left blank</div></ng-template>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="d-flex gap-3 justify-content-center">
+            <button class="btn btn-lg btn-outline-secondary px-4" [disabled]="casting" (click)="mode = 'ballot'"><i class="fas fa-arrow-left"></i> Change</button>
+            <button class="btn btn-lg btn-success px-5" [disabled]="casting" (click)="cast()">
+                <i class="fas" [ngClass]="casting ? 'fa-spinner fa-spin' : 'fa-check-circle'"></i> Cast my vote</button>
+        </div>
+        <p class="text-center text-muted mt-3">Once cast, your vote cannot be changed. Nobody can see how you voted.</p>
+    </div>
+
+    <!-- Done -->
+    <div class="container py-5 text-center" *ngIf="mode === 'done'">
+        <i class="fas fa-check-circle text-success" style="font-size: 6rem;"></i>
+        <h2 class="mt-3">Your vote has been recorded</h2>
+        <p class="fs-5 text-muted">Thank you, {{ b.studentName }}. Please hand the screen back to the returning officer.</p>
+        <button class="btn btn-lg btn-primary mt-2" (click)="next()"><i class="fas fa-user-check"></i> Next voter</button>
+    </div>
+</div>
