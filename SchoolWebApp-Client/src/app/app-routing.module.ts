@@ -170,6 +170,9 @@ import { LessonPlansComponent } from './teaching/components/lesson-plans/lesson-
 import { RecordOfWorkComponent } from './teaching/components/record-of-work/record-of-work.component';
 import { TrackerComponent } from './teaching/components/tracker/tracker.component';
 import { CurriculumViewComponent } from './teaching/components/curriculum-view/curriculum-view.component';
+import { ElectionsComponent } from './elections/elections.component';
+import { ElectionListComponent } from './elections/components/election-list/election-list.component';
+import { ElectionDetailComponent } from './elections/components/election-detail/election-detail.component';
 
 const routes: Routes = [
     {
@@ -471,6 +474,17 @@ const routes: Routes = [
             {path: 'curriculum', component: CurriculumViewComponent},
             // Permission flag only (whole-school access), not a page.
             {path: 'admin', redirectTo: 'tracker', pathMatch: 'full'}
+        ]
+    },
+    {
+        path: 'elections',
+        component: ElectionsComponent,
+        canActivate: [AuthGuard],
+        canActivateChild: [AuthGuard],
+        children: [
+            {path: 'manage', component: ElectionListComponent},
+            {path: 'manage/:id', component: ElectionDetailComponent},
+            {path: '', redirectTo: 'manage', pathMatch: 'full'}
         ]
     },
     {

@@ -30,6 +30,7 @@ import { FinanceModule } from './finance/finance.module';
 import { PayrollModule } from './payroll/payroll.module';
 import { CommunicationsModule } from './communications/communications.module';
 import { TeachingModule } from './teaching/teaching.module';
+import { ElectionsModule } from './elections/elections.module';
 import { ApprovalsModule } from './approvals/approvals.module';
 registerLocaleData(localeEn, 'en-EN');
 
@@ -51,6 +52,7 @@ registerLocaleData(localeEn, 'en-EN');
         PayrollModule,
         CommunicationsModule,
         TeachingModule,
+        ElectionsModule,
         ApprovalsModule,
         ToastrModule.forRoot({
             timeOut: 10000,

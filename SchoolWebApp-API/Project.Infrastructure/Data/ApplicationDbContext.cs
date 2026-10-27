@@ -23,6 +23,7 @@ using SchoolWebApp.Core.Entities.Sponsorships;
 using SchoolWebApp.Core.Entities.Security;
 using SchoolWebApp.Core.Entities.Communications;
 using SchoolWebApp.Core.Entities.TeachingDocuments;
+using SchoolWebApp.Core.Entities.Elections;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json;
 using System.Security.Claims;
@@ -206,6 +207,14 @@ namespace Project.Infrastructure.Data
         public DbSet<LessonPlanStep> LessonPlanSteps { get; set; }
         public DbSet<RecordOfWorkEntry> RecordOfWorkEntries { get; set; }
         public DbSet<RecordOfWorkCheck> RecordOfWorkChecks { get; set; }
+        #endregion
+
+        #region Elections
+        public DbSet<Election> Elections { get; set; }
+        public DbSet<ElectionStageChange> ElectionStageChanges { get; set; }
+        public DbSet<ElectionPosition> ElectionPositions { get; set; }
+        public DbSet<ElectionPositionLevel> ElectionPositionLevels { get; set; }
+        public DbSet<ElectionContest> ElectionContests { get; set; }
         #endregion
 
         #region Approvals

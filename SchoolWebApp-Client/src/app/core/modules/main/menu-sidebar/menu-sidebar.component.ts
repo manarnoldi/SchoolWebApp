@@ -153,6 +153,13 @@ export const MENU = [
         ]
     },
     {
+        name: 'Elections',
+        iconClasses: 'fas fa-vote-yea',
+        children: [
+            {name: 'Manage Elections', iconClasses: 'fas fa-cogs text-info', path: ['/elections/manage']}
+        ]
+    },
+    {
         name: 'Finance',
         iconClasses: 'fas fa-coins',
         children: [

@@ -1,0 +1,68 @@
+<div class="modal-backdrop fade show"></div>
+<div class="modal fade show d-block" tabindex="-1">
+    <div class="modal-dialog modal-lg" style="margin-top: 40px;">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <h5 class="modal-title"><i class="fas fa-vote-yea text-info me-1"></i>{{ election ? 'Edit election' : 'New election' }}</h5>
+                <button type="button" class="btn-close" (click)="closed.emit()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-2">
+                    <div class="col-md-8">
+                        <label class="form-label mb-0 small">Name</label>
+                        <input class="form-control form-control-sm" [(ngModel)]="model.name" maxlength="255" placeholder="e.g. Student Council Elections 2026">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label mb-0 small">Academic year</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="model.academicYearId" [disabled]="yearLocked"
+                            [title]="yearLocked ? 'The year can only change while the election is a draft' : ''">
+                            <option *ngFor="let y of options.academicYears" [ngValue]="y.id">{{ y.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label mb-0 small">Description <span class="text-muted">(optional)</span></label>
+                        <textarea class="form-control form-control-sm" rows="2" [(ngModel)]="model.description" maxlength="1000"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label mb-0 small">Voter register</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="regFrozen" name="regMode" [value]="Mode.Frozen"
+                                [(ngModel)]="model.registerMode" [disabled]="modeLocked">
+                            <label class="form-check-label small" for="regFrozen"><b>Frozen</b> - a snapshot taken when nominations close; a student who changes class afterwards votes where they were registered.</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="regLive" name="regMode" [value]="Mode.Live"
+                                [(ngModel)]="model.registerMode" [disabled]="modeLocked">
+                            <label class="form-check-label small" for="regLive"><b>Live</b> - eligibility follows each student's current class until they vote.</label>
+                        </div>
+                        <small class="text-muted" *ngIf="modeLocked">The register is taken; the mode can no longer change.</small>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <label class="form-label mb-0 small">Polling starts</label>
+                                <input type="datetime-local" class="form-control form-control-sm" [(ngModel)]="model.pollingStart">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label mb-0 small">Polling ends</label>
+                                <input type="datetime-local" class="form-control form-control-sm" [(ngModel)]="model.pollingEnd">
+                            </div>
+                            <div class="col-12">
+                                <small class="text-muted">The planned window, shown to returning officers. Polling itself opens and closes when you move the election's stage.</small>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label mb-0 small">Results refresh (seconds)</label>
+                                <input type="number" min="3" max="600" class="form-control form-control-sm" [(ngModel)]="model.dashboardRefreshSeconds">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer py-2">
+                <button class="btn btn-sm btn-secondary" (click)="closed.emit()">Cancel</button>
+                <button class="btn btn-sm btn-primary" [disabled]="saving" (click)="save()">
+                    <i class="fas" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i> Save</button>
+            </div>
+        </div>
+    </div>
+</div>

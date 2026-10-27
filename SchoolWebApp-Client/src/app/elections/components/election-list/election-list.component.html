@@ -1,0 +1,73 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+        <div class="card card-outline card-primary mb-2">
+            <div class="card-body p-2">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label mb-0 small">Search</label>
+                        <input class="form-control form-control-sm" [(ngModel)]="search" (ngModelChange)="page = 1" placeholder="Election or year">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label mb-0 small">Stage</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="stage" (ngModelChange)="page = 1">
+                            <option [ngValue]="null">Any stage</option>
+                            <option *ngFor="let s of stages" [ngValue]="s">{{ stageLabels[s] }}</option>
+                        </select>
+                    </div>
+                    <div class="col text-end" *ngIf="options?.canManage">
+                        <button class="btn btn-sm btn-primary" (click)="showForm = true"><i class="fas fa-plus"></i> New election</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-2">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover table-striped mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Election</th>
+                                <th>Year</th>
+                                <th>Stage</th>
+                                <th class="text-center">Positions</th>
+                                <th class="text-center">Races</th>
+                                <th>Polling window</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngIf="loading"><td colspan="7" class="text-center text-muted py-3"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>
+                            <tr *ngIf="!loading && filtered.length === 0">
+                                <td colspan="7" class="text-center text-muted py-3">
+                                    No elections{{ rows.length ? ' match the filters' : ' yet' }}.
+                                    <a href="javascript:void(0)" *ngIf="!rows.length && options?.canManage" (click)="showForm = true">Create the first one.</a>
+                                </td>
+                            </tr>
+                            <tr *ngFor="let r of paged" (click)="open(r)" style="cursor: pointer;">
+                                <td><i class="fas fa-vote-yea text-info me-1"></i><b>{{ r.name }}</b></td>
+                                <td>{{ r.academicYearName }}</td>
+                                <td><span class="badge" [ngClass]="stageBadges[r.stage]">{{ stageLabels[r.stage] }}</span></td>
+                                <td class="text-center">{{ r.positions }}</td>
+                                <td class="text-center">{{ r.contests }}</td>
+                                <td class="small">
+                                    <ng-container *ngIf="r.pollingStart; else noWindow">
+                                        {{ r.pollingStart | date:'EEE d MMM y, HH:mm' }}<span *ngIf="r.pollingEnd"> - {{ r.pollingEnd | date:'HH:mm' }}</span>
+                                    </ng-container>
+                                    <ng-template #noWindow><span class="text-muted">Not set</span></ng-template>
+                                </td>
+                                <td class="text-end"><button class="btn btn-sm btn-outline-primary py-0" (click)="open(r); $event.stopPropagation()">Open</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <app-table-paging *ngIf="filtered.length > 0" [collectionSize]="filtered.length" [page]="page" [pageSize]="pageSize"
+            (pageChangedEvent)="page = $event" (pageSizeChangedEvent)="pageSize = $event; page = 1"></app-table-paging>
+    </div>
+</section>
+
+<app-election-form *ngIf="showForm && options" [options]="options" (saved)="created($event)" (closed)="showForm = false"></app-election-form>

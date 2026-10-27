@@ -19,6 +19,7 @@ using SchoolWebApp.Core.Entities.Sponsorships;
 using SchoolWebApp.Core.Entities.Payroll;
 using SchoolWebApp.Core.Entities.Communications;
 using SchoolWebApp.Core.Entities.TeachingDocuments;
+using SchoolWebApp.Core.Entities.Elections;
 
 namespace Project.Infrastructure.Data
 {
@@ -278,6 +279,32 @@ namespace Project.Infrastructure.Data
                 .HasForeignKey(c => c.SchemeOfWorkId).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<RecordOfWorkCheck>().HasOne(c => c.CheckedBy).WithMany()
                 .HasForeignKey(c => c.CheckedByUserId).OnDelete(DeleteBehavior.Restrict);
+
+            // Elections. An election owns its positions, their grade lists and contests,
+            // and its stage history; the school records they point at (year, grades,
+            // classes, gender) cannot be deleted while an election uses them.
+            modelBuilder.Entity<Election>().HasOne(e => e.AcademicYear).WithMany()
+                .HasForeignKey(e => e.AcademicYearId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ElectionStageChange>().HasOne(c => c.Election).WithMany(e => e.StageChanges)
+                .HasForeignKey(c => c.ElectionId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ElectionPosition>().HasOne(p => p.Election).WithMany(e => e.Positions)
+                .HasForeignKey(p => p.ElectionId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ElectionPosition>().HasOne(p => p.Gender).WithMany()
+                .HasForeignKey(p => p.GenderId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ElectionPositionLevel>().HasOne(l => l.ElectionPosition).WithMany(p => p.Levels)
+                .HasForeignKey(l => l.ElectionPositionId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ElectionPositionLevel>().HasOne(l => l.LearningLevel).WithMany()
+                .HasForeignKey(l => l.LearningLevelId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ElectionPositionLevel>()
+                .HasIndex(l => new { l.ElectionPositionId, l.LearningLevelId, l.Role }).IsUnique();
+            modelBuilder.Entity<ElectionContest>().HasOne(c => c.ElectionPosition).WithMany(p => p.Contests)
+                .HasForeignKey(c => c.ElectionPositionId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ElectionContest>().HasOne(c => c.EducationLevel).WithMany()
+                .HasForeignKey(c => c.EducationLevelId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ElectionContest>().HasOne(c => c.LearningLevel).WithMany()
+                .HasForeignKey(c => c.LearningLevelId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ElectionContest>().HasOne(c => c.SchoolClass).WithMany()
+                .HasForeignKey(c => c.SchoolClassId).OnDelete(DeleteBehavior.Restrict);
 
             // Curriculum design: what the KICD design says beyond strands and outcomes.
             // Everything hangs off its strand / sub-strand / design and goes with it;

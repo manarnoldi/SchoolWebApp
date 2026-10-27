@@ -244,6 +244,19 @@ export class GlobalSettingsComponent implements OnInit {
             ]
         },
         {
+            name: 'Elections',
+            title: 'Elections Settings',
+            color: 'info',
+            icon: 'fas fa-vote-yea',
+            settings: [
+                {key: 'VoterRegisterMode', label: 'Voter register', type: 'select', options: [
+                    {value: 'Frozen', label: 'Frozen (strict)'},
+                    {value: 'Live', label: 'Live (lenient)'}
+                ], description: "The default for new elections. Frozen: the register is a snapshot taken when nominations close, so a student who changes class afterwards votes where they were registered. Live: eligibility follows each student's current class until they vote."},
+                {key: 'DashboardRefreshSeconds', label: 'Results screen refresh (seconds)', type: 'text', description: 'The default for new elections: how often the live results screen refreshes. Default: 10.'}
+            ]
+        },
+        {
             name: 'Security',
             title: 'Security Settings',
             color: 'danger',
