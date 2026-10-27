@@ -45,8 +45,11 @@ export class TrackerComponent implements OnInit {
     departmentId: number | null = null;
     learningLevelId: number | null = null;
     subjectId: number | null = null;
+    staffId: number | null = null;
     search = '';
     onlyOverdue = false;
+    // Legend labels picked as a filter; none picked shows every row.
+    statuses = new Set<DocStatus>();
 
     statusLabels = STATUS_LABELS;
     statusClasses = STATUS_CLASSES;
@@ -89,9 +92,37 @@ export class TrackerComponent implements OnInit {
                 && (this.learningLevelId == null || r.learningLevelId === this.learningLevelId));
     }
 
-    // A grade or department change drops a subject not taught there.
+    // Teachers by name, narrowed to the chosen department, grade and subject.
+    get teachers() {
+        return this.distinct((r) => r.staffDetailsId, (r) => r.staffName, undefined,
+            (r) => (this.departmentId == null || r.departmentId === this.departmentId)
+                && (this.learningLevelId == null || r.learningLevelId === this.learningLevelId)
+                && (this.subjectId == null || r.subjectId === this.subjectId));
+    }
+
+    // A grade or department change drops a subject not taught there, and a teacher not teaching there.
     narrowSubject() {
         if (this.subjectId != null && !this.subjects.some((s) => s.id === this.subjectId)) this.subjectId = null;
+        if (this.staffId != null && !this.teachers.some((t) => t.id === this.staffId)) this.staffId = null;
+    }
+
+    toggleStatus(s: DocStatus) {
+        if (!this.statuses.delete(s)) this.statuses.add(s);
+    }
+
+    clearStatus() {
+        this.statuses.clear();
+        this.onlyOverdue = false;
+    }
+
+    chipClass(on: boolean): string {
+        return on ? 'td-filter-on' : (this.statuses.size || this.onlyOverdue) ? 'td-filter-off' : '';
+    }
+
+    // Returned covers rejected documents too, as the legend has no label of its own for them.
+    private hasStatus(r: TrackerRow): boolean {
+        return [r.scheme, ...r.weeks].some((c) =>
+            this.statuses.has(c.status) || (c.status === 'Rejected' && this.statuses.has('Returned')));
     }
 
     // Sorted by rank when one is given, else by name.
@@ -112,6 +143,8 @@ export class TrackerComponent implements OnInit {
             (this.departmentId == null || r.departmentId === this.departmentId)
             && (this.learningLevelId == null || r.learningLevelId === this.learningLevelId)
             && (this.subjectId == null || r.subjectId === this.subjectId)
+            && (this.staffId == null || r.staffDetailsId === this.staffId)
+            && (!this.statuses.size || this.hasStatus(r))
             && (!q || [r.staffName, r.subjectName, r.className].some((v) => v.toLowerCase().includes(q)))
             && (!this.onlyOverdue || r.scheme.overdue || r.weeks.some((w) => w.overdue)));
     }

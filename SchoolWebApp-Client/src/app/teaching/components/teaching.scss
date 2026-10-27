@@ -221,3 +221,11 @@
         background: #dee2e6;
     }
 }
+
+// Tracker legend chips that filter by status: dim when others are picked.
+.td-legend .td-filter {
+    cursor: pointer;
+    user-select: none;
+    &.td-filter-off { opacity: 0.35; }
+    &.td-filter-on { box-shadow: 0 0 0 2px #212529; }
+}

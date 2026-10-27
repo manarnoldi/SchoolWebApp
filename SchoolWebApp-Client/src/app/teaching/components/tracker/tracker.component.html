@@ -24,31 +24,37 @@
                     </div>
                     <div class="col-md-2">
                         <label class="form-label mb-0 small">Subject</label>
-                        <select class="form-select form-select-sm" [(ngModel)]="subjectId">
+                        <select class="form-select form-select-sm" [(ngModel)]="subjectId" (ngModelChange)="narrowSubject()">
                             <option [ngValue]="null">All</option>
                             <option *ngFor="let s of subjects" [ngValue]="s.id">{{ s.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2" *ngIf="tracker && tracker.scope !== 'own'">
+                        <label class="form-label mb-0 small">Teacher</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="staffId">
+                            <option [ngValue]="null">All</option>
+                            <option *ngFor="let t of teachers" [ngValue]="t.id">{{ t.name }}</option>
                         </select>
                     </div>
                     <div class="col-md-2">
                         <label class="form-label mb-0 small">Search</label>
                         <input class="form-control form-control-sm" [(ngModel)]="search" placeholder="Teacher, subject, class">
                     </div>
-                    <div class="col-md-2 text-end">
-                        <div class="form-check form-check-inline small">
-                            <input class="form-check-input" type="checkbox" id="onlyOverdue" [(ngModel)]="onlyOverdue">
-                            <label class="form-check-label" for="onlyOverdue">Overdue only</label>
-                        </div>
-                        <button class="btn btn-sm btn-outline-secondary me-1" [disabled]="!tracker" (click)="exportCsv()"><i class="fas fa-file-csv"></i></button>
-                        <button class="btn btn-sm btn-outline-primary" [disabled]="!tracker" (click)="print()"><i class="fas fa-print"></i></button>
-                    </div>
                 </div>
-                <div class="td-legend mt-2">
-                    <span *ngFor="let s of legend" [ngClass]="statusClasses[s]">{{ statusLabels[s] }}</span>
-                    <span class="td-notstarted td-overdue">Overdue</span>
+                <div class="td-legend mt-2 d-flex align-items-center flex-wrap">
+                    <span *ngFor="let s of legend" class="td-filter" [ngClass]="[statusClasses[s], chipClass(statuses.has(s))]"
+                          title="Show only rows with a document in this state; click again to clear" (click)="toggleStatus(s)">{{ statusLabels[s] }}</span>
+                    <span class="td-notstarted td-overdue td-filter" [ngClass]="chipClass(onlyOverdue)"
+                          title="Show only rows with something overdue; click again to clear" (click)="onlyOverdue = !onlyOverdue">Overdue</span>
+                    <a href="javascript:void(0)" class="small ms-1" *ngIf="statuses.size || onlyOverdue" (click)="clearStatus()">clear</a>
                     <small class="text-muted ms-2" *ngIf="tracker">
                         Showing {{ tracker.scope === 'school' ? 'the whole school' : tracker.scope === 'department' ? 'your department(s) and your own subjects' : 'your own subjects' }}.
-                        Schemes due {{ tracker.schemeDueAt | date:'EEE d MMM' }}. Click a cell to open it.
+                        Schemes due {{ tracker.schemeDueAt | date:'EEE d MMM' }}. Click a cell to open it, or a label above to filter.
                     </small>
+                    <span class="ms-auto">
+                        <button class="btn btn-sm btn-outline-secondary me-1" [disabled]="!tracker" (click)="exportCsv()"><i class="fas fa-file-csv"></i></button>
+                        <button class="btn btn-sm btn-outline-primary" [disabled]="!tracker" (click)="print()"><i class="fas fa-print"></i></button>
+                    </span>
                 </div>
             </div>
         </div>
