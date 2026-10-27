@@ -36,36 +36,35 @@
 
         <ng-container *ngIf="!loading && view && !isEmpty">
             <!-- The design as a whole -->
-            <div class="card mb-2">
+            <div class="card mb-2 cv-design">
                 <div class="card-body p-2">
-                    <h5 class="mb-0">{{ view.title || (view.subjectName + ' - ' + view.learningLevelName + ' curriculum design') }}</h5>
+                    <h5 class="mb-0 text-primary">{{ view.title || (view.subjectName + ' - ' + view.learningLevelName + ' curriculum design') }}</h5>
                     <small class="text-muted">
                         {{ view.source }}
                         <span *ngIf="view.source"> &middot; </span>{{ view.strands.length }} strands, {{ view.totalLessons }} lessons
                         <span *ngIf="view.lessonsPerWeek"> &middot; {{ view.lessonsPerWeek }} lessons per week</span>
                     </small>
-                    <div *ngIf="view.essenceStatement" class="mt-2">
-                        <b class="small">Essence statement</b>
+                    <div *ngIf="view.essenceStatement" class="mt-2 cv-essence">
+                        <b class="small text-primary">Essence statement</b>
                         <div class="pre">{{ view.essenceStatement }}</div>
                     </div>
                     <div *ngIf="view.subjectOutcomes.length" class="mt-2">
-                        <b class="small">Subject general learning outcomes</b>
-                        <ol type="a" class="small mb-0 ps-3">
-                            <li *ngFor="let o of view.subjectOutcomes">{{ o }}</li>
-                        </ol>
+                        <b class="small text-primary">Subject general learning outcomes</b>
+                        <div class="small" *ngFor="let o of view.subjectOutcomes; let i = index">
+                            <span class="cv-letter">{{ letters[i] }}</span>{{ o }}</div>
                     </div>
                 </div>
             </div>
 
             <!-- Strand by strand, one open at a time: click a strand to open it -->
-            <div *ngFor="let s of view.strands" class="card mb-2">
-                <div class="card-header p-2 bg-light d-flex justify-content-between align-items-center" style="cursor: pointer;"
+            <div *ngFor="let s of view.strands" class="card mb-2 cv-strand" [class.open]="openStrands.has(s.id)">
+                <div class="card-header p-2 d-flex justify-content-between align-items-center"
                     (click)="toggleStrand(s.id)" [attr.aria-expanded]="openStrands.has(s.id)">
                     <strong>
                         <i class="fas fa-fw me-1" [ngClass]="openStrands.has(s.id) ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
                         Strand {{ s.code }}: {{ s.name }}
                     </strong>
-                    <small class="text-muted">
+                    <small class="text-muted text-nowrap ms-2">
                         {{ s.subStrands.length }} sub-strand{{ s.subStrands.length === 1 ? '' : 's' }}
                         &middot; {{ lessonsOf(s) }} lessons
                     </small>
@@ -73,8 +72,8 @@
                 <div class="card-body p-2" *ngIf="openStrands.has(s.id)">
                     <div *ngFor="let ss of s.subStrands" class="mb-3">
                         <div class="table-responsive">
-                            <table class="table table-sm table-bordered small mb-0">
-                                <thead class="table-light">
+                            <table class="table table-sm table-bordered small mb-0 cv-sub">
+                                <thead>
                                     <tr>
                                         <th style="width: 15%;">Sub-strand</th>
                                         <th style="width: 24%;">Specific Learning Outcomes</th>
@@ -84,18 +83,18 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>
-                                            <b>{{ ss.code }} {{ ss.name }}</b>
+                                        <td class="cv-sub-name">
+                                            <b class="text-primary">{{ ss.code }} {{ ss.name }}</b>
                                             <div class="text-muted">({{ ss.lessons }} lessons)</div>
                                             <div *ngIf="ss.subjectOutcome" class="text-muted mt-1" [title]="ss.subjectOutcome">
-                                                Subject outcome {{ outcomeLetter(ss.subjectOutcome) }})</div>
+                                                Subject outcome <span class="cv-letter">{{ outcomeLetter(ss.subjectOutcome) }}</span></div>
                                         </td>
                                         <td>
-                                            <div class="text-muted">By the end of the sub-strand, the learner should be able to:</div>
+                                            <div class="cv-lead">By the end of the sub-strand, the learner should be able to:</div>
                                             <ol type="a" class="mb-0 ps-3"><li *ngFor="let o of ss.specificOutcomes">{{ o }}</li></ol>
                                         </td>
                                         <td>
-                                            <div class="text-muted">The learner is guided to:</div>
+                                            <div class="cv-lead">The learner is guided to:</div>
                                             <ul class="mb-0 ps-3"><li *ngFor="let e of ss.learningExperiences">{{ e }}</li></ul>
                                         </td>
                                         <td>
@@ -103,27 +102,27 @@
                                         </td>
                                     </tr>
                                     <tr *ngIf="ss.coreCompetencies.length">
-                                        <td colspan="4"><b>Core Competencies to be developed:</b>
+                                        <td colspan="4" class="cv-row cv-comp"><b>Core Competencies to be developed:</b>
                                             <div *ngFor="let c of ss.coreCompetencies">{{ c.name }}<span *ngIf="c.description">: {{ c.description }}</span></div>
                                         </td>
                                     </tr>
                                     <tr *ngIf="ss.values.length">
-                                        <td colspan="4"><b>Values:</b>
+                                        <td colspan="4" class="cv-row cv-values"><b>Values:</b>
                                             <div *ngFor="let c of ss.values">{{ c.name }}<span *ngIf="c.description">: {{ c.description }}</span></div>
                                         </td>
                                     </tr>
                                     <tr *ngIf="ss.pcis.length">
-                                        <td colspan="4"><b>Link to Pertinent Contemporary Issues (PCIs):</b>
+                                        <td colspan="4" class="cv-row cv-pci"><b>Link to Pertinent Contemporary Issues (PCIs):</b>
                                             <div *ngFor="let c of ss.pcis">{{ c.name }}<span *ngIf="c.description">: {{ c.description }}</span></div>
                                         </td>
                                     </tr>
                                     <tr *ngIf="ss.learningAreaLinks.length">
-                                        <td colspan="4"><b>Link to other Learning Areas:</b>
+                                        <td colspan="4" class="cv-row cv-links"><b>Link to other Learning Areas:</b>
                                             <div *ngFor="let c of ss.learningAreaLinks">{{ c.name }}<span *ngIf="c.description">: {{ c.description }}</span></div>
                                         </td>
                                     </tr>
                                     <tr *ngIf="ss.suggestedResources || ss.suggestedAssessmentMethods || ss.suggestedNonFormalActivities">
-                                        <td colspan="4">
+                                        <td colspan="4" class="cv-row cv-res">
                                             <div *ngIf="ss.suggestedResources"><b>Suggested learning resources:</b> <span class="pre">{{ ss.suggestedResources }}</span></div>
                                             <div *ngIf="ss.suggestedAssessmentMethods"><b>Suggested assessment methods:</b> <span class="pre">{{ ss.suggestedAssessmentMethods }}</span></div>
                                             <div *ngIf="ss.suggestedNonFormalActivities"><b>Suggested non-formal activities:</b> <span class="pre">{{ ss.suggestedNonFormalActivities }}</span></div>
@@ -139,8 +138,8 @@
             </div>
 
             <!-- Appendices and other sections -->
-            <div *ngIf="view.appendix.length" class="card mb-2">
-                <div class="card-header p-2 bg-light"><strong>Appendix: Suggested Resources, Assessment Methods and Non-formal Programmes</strong></div>
+            <div *ngIf="view.appendix.length" class="card mb-2 cv-section">
+                <div class="card-header p-2"><strong>Appendix: Suggested Resources, Assessment Methods and Non-formal Programmes</strong></div>
                 <div class="card-body p-2">
                     <div class="row small">
                         <div *ngFor="let a of view.appendix" class="col-md-3">
@@ -150,8 +149,8 @@
                     </div>
                 </div>
             </div>
-            <div *ngFor="let sec of view.sections" class="card mb-2">
-                <div class="card-header p-2 bg-light"><strong>{{ sec.title }}</strong></div>
+            <div *ngFor="let sec of view.sections" class="card mb-2 cv-section">
+                <div class="card-header p-2"><strong>{{ sec.title }}</strong></div>
                 <div class="card-body p-2 pre">{{ sec.content }}</div>
             </div>
         </ng-container>
@@ -160,15 +159,15 @@
 
 <ng-template #rubricTable let-rows="rows">
     <div *ngIf="rows?.length" class="table-responsive mt-1">
-        <b class="small">Assessment Rubric</b>
-        <table class="table table-sm table-bordered small mb-0">
-            <thead class="table-light">
+        <b class="small cv-rubric-title"><i class="fas fa-clipboard-check me-1"></i>Assessment Rubric</b>
+        <table class="table table-sm table-bordered small mb-0 cv-rubric">
+            <thead>
                 <tr>
-                    <th style="width: 20%;">Indicator</th>
-                    <th>Exceeds Expectations</th>
-                    <th>Meets Expectations</th>
-                    <th>Approaches Expectations</th>
-                    <th>Below Expectations</th>
+                    <th style="width: 20%;" class="cv-ind">Indicator</th>
+                    <th class="cv-ee">Exceeds Expectations</th>
+                    <th class="cv-me">Meets Expectations</th>
+                    <th class="cv-ae">Approaches Expectations</th>
+                    <th class="cv-be">Below Expectations</th>
                 </tr>
             </thead>
             <tbody>

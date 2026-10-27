@@ -105,3 +105,111 @@
         background: #cfe2ff;
     }
 }
+
+// Curriculum view: each part of the design gets its own colour so a page reads at a glance.
+.cv-design {
+    border-left: 4px solid #0d6efd;
+}
+
+.cv-essence {
+    background: #f5f9ff;
+    border: 1px solid #cfe2ff;
+    border-radius: 4px;
+    padding: 6px 8px;
+}
+
+.cv-letter {
+    display: inline-block;
+    min-width: 1.4rem;
+    margin-right: 4px;
+    padding: 0 4px;
+    border-radius: 3px;
+    background: #0d6efd;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.cv-strand {
+    border-left: 4px solid #0d6efd;
+
+    > .card-header {
+        background: #e7f1ff;
+        color: #084298;
+        cursor: pointer;
+
+        &:hover {
+            background: #dbe9ff;
+        }
+    }
+
+    &.open > .card-header {
+        background: #0d6efd;
+        color: #fff;
+
+        small {
+            color: #e7f1ff !important;
+        }
+    }
+}
+
+.cv-sub {
+    thead th {
+        background: #cfe2ff;
+        color: #084298;
+        border-color: #b6d4fe;
+    }
+
+    .cv-sub-name {
+        background: #f5f9ff;
+    }
+
+    .cv-lead {
+        color: #6c757d;
+        font-style: italic;
+    }
+}
+
+// The statement rows under a sub-strand, each with a coloured left edge and label.
+.cv-row {
+    border-left: 4px solid var(--cv, #adb5bd) !important;
+    background: var(--cv-bg, #fff) !important;
+
+    > b {
+        color: var(--cv, #495057);
+    }
+}
+
+.cv-comp { --cv: #198754; --cv-bg: #f3faf6; }
+.cv-values { --cv: #b8860b; --cv-bg: #fffbf0; }
+.cv-pci { --cv: #6f42c1; --cv-bg: #f7f3fd; }
+.cv-links { --cv: #0f8a9d; --cv-bg: #f0fafb; }
+.cv-res { --cv: #6c757d; --cv-bg: #f8f9fa; }
+
+.cv-rubric {
+    th {
+        color: #fff;
+        border-color: #fff;
+    }
+
+    .cv-ind { background: #495057; }
+    .cv-ee { background: #198754; }
+    .cv-me { background: #0d6efd; }
+    .cv-ae { background: #e0a800; color: #212529; }
+    .cv-be { background: #dc3545; }
+
+    td:first-child {
+        background: #f8f9fa;
+        font-weight: 600;
+    }
+}
+
+.cv-rubric-title {
+    color: #495057;
+}
+
+.cv-section > .card-header {
+    background: #e9ecef;
+    border-left: 4px solid #6c757d;
+}
