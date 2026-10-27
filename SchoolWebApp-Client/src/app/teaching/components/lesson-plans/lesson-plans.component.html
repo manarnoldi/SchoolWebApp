@@ -47,7 +47,7 @@
             </div>
 
             <ng-container *ngIf="week">
-                <div class="card mb-2">
+                <div class="card mb-2 cv-design">
                     <div class="card-header p-2 d-flex flex-wrap justify-content-between align-items-center gap-1">
                         <div>
                             <strong>Week {{ week.weekNo }}</strong>
@@ -70,8 +70,9 @@
                     </div>
                 </div>
 
-                <div *ngFor="let p of week.plans" class="card mb-2" [ngClass]="dirtyPlans.has(p.id) ? 'card-outline card-warning' : ''">
-                    <div class="card-header p-2 d-flex justify-content-between align-items-center" style="cursor: pointer;" (click)="toggle(p)">
+                <div *ngFor="let p of week.plans" class="card mb-2 cv-strand" [class.open]="expanded.has(p.id)"
+                    [ngClass]="dirtyPlans.has(p.id) ? 'card-outline card-warning' : ''">
+                    <div class="card-header p-2 d-flex justify-content-between align-items-center" (click)="toggle(p)">
                         <div>
                             <i class="fas me-1" [ngClass]="expanded.has(p.id) ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
                             <strong>Lesson {{ p.lessonNo }}</strong>
@@ -205,44 +206,56 @@
                             </div>
                         </ng-container>
 
-                        <!-- Read-only plan -->
+                        <!-- Read-only plan, coloured like the curriculum view: each part has its own colour. -->
                         <ng-container *ngIf="!editable">
-                            <div class="row small">
-                                <div class="col-md-4"><b>Date:</b> {{ p.lessonDate | date:'EEE d MMM y' }} {{ p.startTime }}{{ p.endTime ? ' - ' + p.endTime : '' }}</div>
-                                <div class="col-md-2"><b>Roll:</b> {{ p.roll }}</div>
-                                <div class="col-md-6"><b>Strand:</b> {{ p.strandName }} &middot; <b>Sub-strand:</b> {{ p.subStrandName }}</div>
+                            <div class="lp-meta small d-flex flex-wrap gap-3 px-2 py-1 mb-2">
+                                <span><i class="far fa-calendar-alt me-1"></i><b>{{ p.lessonDate | date:'EEE d MMM y' }}</b>
+                                    {{ p.startTime }}{{ p.endTime ? ' - ' + p.endTime : '' }}</span>
+                                <span><i class="fas fa-users me-1"></i>Roll <b>{{ p.roll }}</b></span>
+                                <span><i class="fas fa-sitemap me-1"></i>{{ p.strandName }} &rsaquo; <b>{{ p.subStrandName }}</b></span>
                             </div>
-                            <div class="row small mt-1">
-                                <div class="col-md-4"><b>Specific learning outcomes</b><div class="pre">{{ p.learningOutcomes }}</div></div>
-                                <div class="col-md-4"><b>Learning resources</b><div class="pre">{{ p.learningResources }}</div></div>
+                            <div class="row g-2 small">
                                 <div class="col-md-4">
-                                    <b>Key inquiry question(s)</b><div class="pre">{{ p.keyInquiryQuestions }}</div>
-                                    <b class="d-block mt-1">Organisation of learning</b><div class="pre">{{ p.organisationOfLearning }}</div>
+                                    <div class="cv-row cv-comp lp-box h-100"><b>Specific learning outcomes</b><div class="pre">{{ p.learningOutcomes }}</div></div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="cv-row cv-res lp-box h-100"><b>Learning resources</b><div class="pre">{{ p.learningResources }}</div></div>
+                                </div>
+                                <div class="col-md-4 d-flex flex-column gap-2">
+                                    <div class="cv-row cv-pci lp-box"><b>Key inquiry question(s)</b><div class="pre">{{ p.keyInquiryQuestions }}</div></div>
+                                    <div class="cv-row cv-links lp-box flex-grow-1"><b>Organisation of learning</b><div class="pre">{{ p.organisationOfLearning }}</div></div>
                                 </div>
                             </div>
-                            <table class="table table-sm table-bordered small mt-2 mb-0">
-                                <tr><th style="width: 90px;">Time</th><th>Content</th></tr>
-                                <tr><td>{{ p.introductionMinutes ? p.introductionMinutes + ' min' : '' }}</td><td><b>Introduction</b><div class="pre">{{ p.introduction }}</div></td></tr>
-                                <tr><td>{{ p.developmentMinutes ? p.developmentMinutes + ' min' : '' }}</td>
-                                    <td><b>Lesson development</b><div *ngFor="let st of p.steps" class="pre"><b>Step {{ st.stepNo }}:</b> {{ st.activity }}</div></td></tr>
-                                <tr><td></td><td><b>Extended activities</b><div class="pre">{{ p.extendedActivities }}</div></td></tr>
-                                <tr><td>{{ p.conclusionMinutes ? p.conclusionMinutes + ' min' : '' }}</td><td><b>Conclusion</b><div class="pre">{{ p.conclusion }}</div></td></tr>
+                            <table class="table table-sm table-bordered small mt-2 mb-0 cv-sub lp-flow-table">
+                                <thead><tr><th style="width: 90px;">Time</th><th>Lesson flow</th></tr></thead>
+                                <tbody>
+                                    <tr class="lp-intro"><td><span *ngIf="p.introductionMinutes" class="lp-min-badge">{{ p.introductionMinutes }} min</span></td>
+                                        <td><b>Introduction</b><div class="pre">{{ p.introduction }}</div></td></tr>
+                                    <tr class="lp-dev"><td><span *ngIf="p.developmentMinutes" class="lp-min-badge">{{ p.developmentMinutes }} min</span></td>
+                                        <td><b>Lesson development</b>
+                                            <div *ngFor="let st of p.steps" class="pre lp-step"><span class="cv-letter">{{ st.stepNo }}</span>{{ st.activity }}</div></td></tr>
+                                    <tr class="lp-ext"><td></td><td><b>Extended activities</b><div class="pre">{{ p.extendedActivities }}</div></td></tr>
+                                    <tr class="lp-concl"><td><span *ngIf="p.conclusionMinutes" class="lp-min-badge">{{ p.conclusionMinutes }} min</span></td>
+                                        <td><b>Conclusion</b><div class="pre">{{ p.conclusion }}</div></td></tr>
+                                </tbody>
                             </table>
                         </ng-container>
 
                         <!-- After the lesson: what the record of work says, once the week is approved. Written on the Record of Work page. -->
-                        <div *ngIf="week.status === 'Approved'" class="border rounded mt-2 px-2 py-1 small">
+                        <div *ngIf="week.status === 'Approved'" class="cv-row lp-box mt-2 small"
+                            [ngClass]="p.taughtStatus === 1 ? 'cv-comp' : p.taughtStatus === 2 ? 'cv-links' : p.taughtStatus === 3 ? 'lp-not-taught' : 'cv-res'">
                             <div class="d-flex justify-content-between align-items-center">
-                                <strong><i class="fas fa-clipboard-check"></i> After the lesson</strong>
+                                <b><i class="fas fa-clipboard-check"></i> After the lesson</b>
                                 <a *ngIf="p.schemeOfWorkLessonId" href="javascript:void(0)" (click)="openRecordOfWork()">
                                     {{ week.canEdit ? 'Record in Record of Work' : 'Open Record of Work' }} <i class="fas fa-arrow-right"></i></a>
                             </div>
                             <ng-container *ngIf="p.schemeOfWorkLessonId; else notInRecord">
                                 <div *ngIf="p.taughtStatus === 0" class="text-muted">Not recorded yet.</div>
                                 <div *ngIf="p.taughtStatus !== 0" class="row">
-                                    <div class="col-md-3"><b>{{ taughtLabels[p.taughtStatus] }}</b>{{ p.taughtOn ? ' on ' + (p.taughtOn | date:'EEE d MMM') : '' }}</div>
-                                    <div class="col-md-5"><b>Work covered</b><div class="pre">{{ p.workCovered || '-' }}</div></div>
-                                    <div class="col-md-4"><b>Remarks</b><div class="pre">{{ p.remarks || '-' }}</div></div>
+                                    <div class="col-md-3"><span class="badge" [ngClass]="p.taughtStatus === 1 ? 'bg-success' : p.taughtStatus === 2 ? 'bg-info' : 'bg-danger'">{{ taughtLabels[p.taughtStatus] }}</span>
+                                        {{ p.taughtOn ? ' on ' + (p.taughtOn | date:'EEE d MMM') : '' }}</div>
+                                    <div class="col-md-5"><span class="lp-label">Work covered</span><div class="pre">{{ p.workCovered || '-' }}</div></div>
+                                    <div class="col-md-4"><span class="lp-label">Remarks</span><div class="pre">{{ p.remarks || '-' }}</div></div>
                                 </div>
                             </ng-container>
                             <ng-template #notInRecord>

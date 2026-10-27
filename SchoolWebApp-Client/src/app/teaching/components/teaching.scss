@@ -229,3 +229,65 @@
     &.td-filter-off { opacity: 0.35; }
     &.td-filter-on { box-shadow: 0 0 0 2px #212529; }
 }
+
+// Lesson plan view, in the curriculum view's colours.
+.lp-meta {
+    background: #f5f9ff;
+    border: 1px solid #cfe2ff;
+    border-radius: 4px;
+    color: #084298;
+}
+
+.lp-box {
+    border-radius: 4px;
+    padding: 6px 8px;
+}
+
+.lp-label {
+    display: block;
+    font-weight: 600;
+    color: #495057;
+}
+
+.lp-not-taught { --cv: #dc3545; --cv-bg: #fdf3f4; }
+
+// An open lesson's header is solid blue; keep its date readable.
+.cv-strand.open > .card-header .text-muted {
+    color: #e7f1ff !important;
+}
+
+// Each part of the lesson flow gets its own colour on its left edge and heading.
+.lp-flow-table {
+    tr.lp-intro { --lp: #198754; }
+    tr.lp-dev { --lp: #0d6efd; }
+    tr.lp-ext { --lp: #6f42c1; }
+    tr.lp-concl { --lp: #b8860b; }
+
+    td:first-child {
+        text-align: center;
+        vertical-align: top;
+    }
+
+    td:last-child {
+        border-left: 4px solid var(--lp, #dee2e6);
+
+        > b {
+            color: var(--lp, #084298);
+        }
+    }
+
+    .lp-step {
+        margin-top: 3px;
+    }
+}
+
+.lp-min-badge {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background: #e7f1ff;
+    color: #084298;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
