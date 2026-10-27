@@ -186,7 +186,7 @@ namespace SchoolWebApp.API.Services.TeachingDocuments
                 "7. The 'Curr ...' sheets list the curriculum for each subject and grade, for reference.",
                 "",
                 "Uploading",
-                "- In ShuleNova go to Teaching Documents > Schemes of Work and choose Upload workbook.",
+                "- In ShuleNova go to Teaching Management > Schemes of Work and choose Upload workbook.",
                 "- Every sheet is checked first and you see any problems by row before anything is saved.",
                 "- Uploading replaces the scheme's lessons with the sheet's. Schemes already submitted or approved are not changed.",
                 "- Do not rename the header rows or move the columns. Renaming a sheet is fine.",
@@ -386,7 +386,7 @@ namespace SchoolWebApp.API.Services.TeachingDocuments
                 }
             }
             if (result.Sheets.Count == 0)
-                result.FileErrors.Add("No scheme of work sheets were found. Use a workbook downloaded from Teaching Documents > Schemes of Work.");
+                result.FileErrors.Add("No scheme of work sheets were found. Use a workbook downloaded from Teaching Management > Schemes of Work.");
             return result;
         }
 

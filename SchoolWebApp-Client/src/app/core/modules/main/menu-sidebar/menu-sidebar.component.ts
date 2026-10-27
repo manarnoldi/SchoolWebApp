@@ -137,7 +137,7 @@ export const MENU = [
         ]
     },
     {
-        name: 'Teaching Documents',
+        name: 'Teaching Management',
         iconClasses: 'fas fa-chalkboard-teacher',
         children: [
             {name: 'Schemes of Work', iconClasses: 'fas fa-table text-primary', path: ['/teaching/schemes']},

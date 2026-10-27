@@ -82,7 +82,7 @@ export class CurriculumViewComponent implements OnInit {
         {link: ['/'], title: 'Dashboard'},
         {link: ['/teaching/curriculum'], title: 'Curriculum'}
     ];
-    dashboardTitle = 'Teaching Documents: Curriculum';
+    dashboardTitle = 'Teaching Management: Curriculum';
 
     subjects: any[] = [];
     levels: any[] = [];

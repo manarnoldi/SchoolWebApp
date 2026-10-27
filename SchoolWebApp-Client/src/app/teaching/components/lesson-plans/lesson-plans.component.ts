@@ -41,7 +41,7 @@ export class LessonPlansComponent implements OnInit {
         {link: ['/'], title: 'Dashboard'},
         {link: ['/teaching/lesson-plans'], title: 'Lesson Plans'}
     ];
-    dashboardTitle = 'Teaching Documents: Lesson Plans';
+    dashboardTitle = 'Teaching Management: Lesson Plans';
 
     context: TeachingContext | null = null;
     scheme: SchemeOfWork | null = null;

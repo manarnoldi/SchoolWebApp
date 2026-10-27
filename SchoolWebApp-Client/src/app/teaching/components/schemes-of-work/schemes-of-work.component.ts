@@ -44,7 +44,7 @@ export class SchemesOfWorkComponent implements OnInit {
         {link: ['/'], title: 'Dashboard'},
         {link: ['/teaching/schemes'], title: 'Schemes of Work'}
     ];
-    dashboardTitle = 'Teaching Documents: Schemes of Work';
+    dashboardTitle = 'Teaching Management: Schemes of Work';
 
     context: TeachingContext | null = null;
     scheme: SchemeOfWork | null = null;

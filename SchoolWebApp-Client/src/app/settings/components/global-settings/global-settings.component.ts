@@ -147,7 +147,7 @@ export class GlobalSettingsComponent implements OnInit {
             // Due dates only drive the tracker's "overdue" marking; nothing is
             // blocked when a teacher submits late.
             name: 'TeachingDocuments',
-            title: 'Teaching Documents Settings',
+            title: 'Teaching Management Settings',
             color: 'primary',
             icon: 'fas fa-chalkboard-teacher',
             settings: [

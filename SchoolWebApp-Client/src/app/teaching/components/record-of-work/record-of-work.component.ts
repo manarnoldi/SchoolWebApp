@@ -42,7 +42,7 @@ export class RecordOfWorkComponent implements OnInit {
         {link: ['/'], title: 'Dashboard'},
         {link: ['/teaching/record-of-work'], title: 'Record of Work'}
     ];
-    dashboardTitle = 'Teaching Documents: Record of Work';
+    dashboardTitle = 'Teaching Management: Record of Work';
 
     context: TeachingContext | null = null;
     record: RecordOfWork | null = null;

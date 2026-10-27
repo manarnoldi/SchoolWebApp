@@ -18,7 +18,7 @@ const PAGE_NAMES: Record<string, string> = {
 
 const path = (url: string) => url.split('?')[0];
 
-// Only a page inside Teaching Documents is a valid place to go back to.
+// Only a page inside Teaching Management is a valid place to go back to.
 export function fromParam(route: ActivatedRoute): string | null {
     let from = route.snapshot.queryParamMap.get('from');
     return from && from.startsWith('/teaching/') ? from : null;

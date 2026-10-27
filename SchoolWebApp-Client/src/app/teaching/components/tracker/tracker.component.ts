@@ -36,7 +36,7 @@ export class TrackerComponent implements OnInit {
         {link: ['/'], title: 'Dashboard'},
         {link: ['/teaching/tracker'], title: 'Tracker'}
     ];
-    dashboardTitle = 'Teaching Documents: Tracker';
+    dashboardTitle = 'Teaching Management: Tracker';
 
     context: TeachingContext | null = null;
     sessionId: number | null = null;
@@ -233,7 +233,7 @@ export class TrackerComponent implements OnInit {
 
     exportCsv() {
         let t = this.tracker!;
-        downloadCsv(`Teaching documents tracker ${t.session.name} ${t.session.academicYearName}`, [
+        downloadCsv(`Teaching management tracker ${t.session.name} ${t.session.academicYearName}`, [
             {header: 'Teacher', value: (r: TrackerRow) => r.staffName},
             {header: 'Department', value: (r: TrackerRow) => r.departmentName},
             {header: 'Subject', value: (r: TrackerRow) => r.subjectName},
@@ -254,7 +254,7 @@ export class TrackerComponent implements OnInit {
         let colours: Record<string, string> = {NotStarted: '#e2e3e5', Draft: '#ffe08a', Submitted: '#9ec5fe', Returned: '#f1aeb5',
             Rejected: '#f1aeb5', Approved: '#75b798', NotApplicable: '#fff'};
         let cell = (c: TrackerCell) => `<td class="c" style="background:${colours[c.status]};${c.overdue ? 'outline:2px solid #dc3545;outline-offset:-2px;' : ''}">${this.short(c)}</td>`;
-        let body = `<h1>Teaching documents - ${escapeHtml(t.session.name)} ${escapeHtml(t.session.academicYearName)}</h1>
+        let body = `<h1>Teaching management - ${escapeHtml(t.session.name)} ${escapeHtml(t.session.academicYearName)}</h1>
             <p class="legend">${this.legend.map((s) => `<span style="background:${colours[s]}">${this.statusLabels[s]}</span>`).join(' ')}
                 <span style="outline:2px solid #dc3545">Overdue</span> &nbsp; D draft, S submitted, R returned, ✓ approved</p>
             <table><thead><tr><th>Teacher</th><th>Subject</th><th>Class</th><th>Scheme</th>
@@ -267,6 +267,6 @@ export class TrackerComponent implements OnInit {
             h1 { font-size: 13px; margin: 0 0 4px; } .legend span { padding: 1px 6px; margin-right: 4px; }
             table { border-collapse: collapse; width: 100%; } th, td { border: 1px solid #999; padding: 2px 3px; text-align: left; }
             .c { text-align: center; } tr { page-break-inside: avoid; }`;
-        printInFrame(`Teaching documents tracker ${t.session.name} ${t.session.academicYearName}`, css, body, 'landscape');
+        printInFrame(`Teaching management tracker ${t.session.name} ${t.session.academicYearName}`, css, body, 'landscape');
     }
 }
