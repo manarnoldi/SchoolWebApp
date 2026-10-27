@@ -158,5 +158,7 @@ namespace SchoolWebApp.Core.Entities.Elections
         public int? SchoolClassId { get; set; }
         public SchoolClass? SchoolClass { get; set; }
         public int Rank { get; set; }
+
+        public List<ElectionCandidate> Candidates { get; set; } = new();
     }
 }

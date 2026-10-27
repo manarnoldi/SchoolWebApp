@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Project.Infrastructure.Data;
 using SchoolWebApp.Core.Entities.Elections;
+using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Identity;
 
 namespace SchoolWebApp.API.Services.Elections
@@ -13,6 +14,17 @@ namespace SchoolWebApp.API.Services.Elections
         public int? StaffDetailsId { get; set; }
         // Elections officer: sets elections up, clears nominations, moves stages.
         public bool CanManage { get; set; }
+    }
+
+    /// <summary>Where a student sits for an election: their class, grade, section and gender.</summary>
+    public record StudentPlace(int StudentId, string FullName, string Upi, int GenderId, int SchoolClassId,
+        string ClassName, int LearningLevelId, int EducationLevelId);
+
+    public enum ContestRole
+    {
+        Voter,
+        Candidate,
+        RunningMate
     }
 
     /// <summary>
@@ -76,7 +88,8 @@ namespace SchoolWebApp.API.Services.Elections
         public static List<ElectionStage> NextStages(ElectionStage stage) => stage switch
         {
             ElectionStage.Draft => new() { ElectionStage.Nominations },
-            ElectionStage.Nominations => new() { ElectionStage.Draft },
+            ElectionStage.Nominations => new() { ElectionStage.Draft, ElectionStage.CandidatesFinal },
+            ElectionStage.CandidatesFinal => new() { ElectionStage.Nominations },
             _ => new()
         };
 
@@ -94,7 +107,132 @@ namespace SchoolWebApp.API.Services.Elections
                 if (empty.Count > 0)
                     return $"These positions have no contests - check their grades and that the year has classes: {string.Join(", ", empty)}.";
             }
+            if (to == ElectionStage.CandidatesFinal)
+            {
+                var contests = await _db.ElectionContests.Where(c => c.ElectionPosition!.ElectionId == e.Id)
+                    .Select(c => new
+                    {
+                        c.Name,
+                        Pending = c.Candidates.Count(x => x.Status == CandidateStatus.Nominated),
+                        Approved = c.Candidates.Count(x => x.Status == CandidateStatus.Approved)
+                    }).ToListAsync();
+                var pending = contests.Sum(c => c.Pending);
+                if (pending > 0)
+                    return $"{pending} nomination(s) still need approving or rejecting.";
+                var empty = contests.Where(c => c.Approved == 0).Select(c => c.Name).ToList();
+                if (empty.Count > 0)
+                    return $"These races have no approved candidate: {string.Join(", ", empty.Take(10))}{(empty.Count > 10 ? $" and {empty.Count - 10} more" : "")}.";
+            }
             return null;
+        }
+
+        /// <summary>
+        /// What a stage move does besides changing the stage. Closing nominations sets
+        /// the ballot order (alphabetical) and, for a frozen register, takes the
+        /// register; reopening them undoes both.
+        /// </summary>
+        public async Task ApplyStageAsync(Election e, ElectionStage to)
+        {
+            if (to == ElectionStage.CandidatesFinal)
+            {
+                var candidates = await _db.ElectionCandidates.Include(c => c.Student)
+                    .Where(c => c.ElectionContest!.ElectionPosition!.ElectionId == e.Id && c.Status == CandidateStatus.Approved)
+                    .ToListAsync();
+                foreach (var race in candidates.GroupBy(c => c.ElectionContestId))
+                {
+                    var n = 0;
+                    foreach (var c in race.OrderBy(c => c.Student!.FullName)) c.BallotOrder = ++n;
+                }
+                if (e.RegisterMode == VoterRegisterMode.Frozen)
+                {
+                    var places = await LivePlacesAsync(e.AcademicYearId, await VoterLevelIdsAsync(e.Id));
+                    _db.ElectionVoters.AddRange(places.Select(p => new ElectionVoter
+                    {
+                        ElectionId = e.Id,
+                        StudentId = p.StudentId,
+                        SchoolClassId = p.SchoolClassId,
+                        LearningLevelId = p.LearningLevelId,
+                        GenderId = p.GenderId
+                    }));
+                    e.RegisterFrozenAt = DateTime.UtcNow;
+                }
+            }
+            else if (e.Stage == ElectionStage.CandidatesFinal && to == ElectionStage.Nominations)
+            {
+                await _db.ElectionVoters.Where(v => v.ElectionId == e.Id).ExecuteDeleteAsync();
+                e.RegisterFrozenAt = null;
+                await _db.ElectionCandidates.Where(c => c.ElectionContest!.ElectionPosition!.ElectionId == e.Id)
+                    .ExecuteUpdateAsync(s => s.SetProperty(c => c.BallotOrder, 0));
+            }
+        }
+
+        public async Task<List<int>> VoterLevelIdsAsync(int electionId) =>
+            await _db.ElectionPositionLevels
+                .Where(l => l.ElectionPosition!.ElectionId == electionId && l.Role == PositionLevelRole.Voter)
+                .Select(l => l.LearningLevelId).Distinct().ToListAsync();
+
+        /// <summary>
+        /// Active students in the given grades with their class for the year (the
+        /// latest one if they moved class).
+        /// </summary>
+        public async Task<List<StudentPlace>> LivePlacesAsync(int academicYearId, ICollection<int> levelIds)
+        {
+            var rows = await _db.StudentClasses.AsNoTracking()
+                .Where(sc => sc.SchoolClass!.AcademicYearId == academicYearId
+                    && levelIds.Contains(sc.SchoolClass.LearningLevelId)
+                    && sc.Student!.Status == Status.Active)
+                .Select(sc => new
+                {
+                    sc.Id,
+                    sc.StudentId,
+                    sc.Student!.FullName,
+                    sc.Student.UPI,
+                    sc.Student.GenderId,
+                    sc.SchoolClassId,
+                    ClassName = sc.SchoolClass!.Name,
+                    sc.SchoolClass.LearningLevelId,
+                    sc.SchoolClass.LearningLevel!.EducationLevelId
+                }).ToListAsync();
+            return rows.GroupBy(r => r.StudentId).Select(g => g.OrderByDescending(r => r.Id).First())
+                .Select(r => new StudentPlace(r.StudentId, r.FullName, r.UPI, r.GenderId, r.SchoolClassId,
+                    r.ClassName, r.LearningLevelId, r.EducationLevelId))
+                .OrderBy(p => p.FullName).ToList();
+        }
+
+        /// <summary>The voters: the frozen register once taken, otherwise students where they are now.</summary>
+        public async Task<List<StudentPlace>> VoterPlacesAsync(Election e)
+        {
+            if (e.RegisterFrozenAt == null)
+                return await LivePlacesAsync(e.AcademicYearId, await VoterLevelIdsAsync(e.Id));
+            var rows = await _db.ElectionVoters.AsNoTracking().Where(v => v.ElectionId == e.Id)
+                .Select(v => new StudentPlace(v.StudentId, v.Student!.FullName, v.Student.UPI, v.GenderId, v.SchoolClassId,
+                    v.SchoolClass!.Name, v.LearningLevelId, v.SchoolClass.LearningLevel!.EducationLevelId))
+                .ToListAsync();
+            return rows.OrderBy(p => p.FullName).ToList();
+        }
+
+        /// <summary>
+        /// Whether a student belongs in a race: a voter grade of the position and the
+        /// race's section, grade or class. Candidates must also be from a candidate
+        /// grade (when the position limits them); the gender rule applies to
+        /// candidates and running mates, and to voters when only that gender votes.
+        /// </summary>
+        public static bool InContest(ElectionContest c, ElectionPosition p, StudentPlace s, ContestRole role)
+        {
+            if (!p.Levels.Any(l => l.Role == PositionLevelRole.Voter && l.LearningLevelId == s.LearningLevelId)) return false;
+            if (c.SchoolClassId != null) { if (c.SchoolClassId != s.SchoolClassId) return false; }
+            else if (c.LearningLevelId != null) { if (c.LearningLevelId != s.LearningLevelId) return false; }
+            else if (c.EducationLevelId != null && c.EducationLevelId != s.EducationLevelId) return false;
+
+            var oneGender = p.GenderRule == PositionGenderRule.SingleGender && p.GenderId != null;
+            if (role == ContestRole.Voter) return !(oneGender && p.VotersSameGenderOnly && s.GenderId != p.GenderId);
+            if (oneGender && s.GenderId != p.GenderId) return false;
+            if (role == ContestRole.Candidate)
+            {
+                var candidateLevels = p.Levels.Where(l => l.Role == PositionLevelRole.Candidate).Select(l => l.LearningLevelId).ToList();
+                if (candidateLevels.Count > 0 && !candidateLevels.Contains(s.LearningLevelId)) return false;
+            }
+            return true;
         }
 
         public static string Label(ElectionStage stage) => stage switch

@@ -1,0 +1,70 @@
+<div class="modal-backdrop fade show"></div>
+<div class="modal fade show d-block" tabindex="-1">
+    <div class="modal-dialog" [ngClass]="position.runningMateTitle ? 'modal-xl' : 'modal-lg'" style="margin-top: 40px;">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <h5 class="modal-title"><i class="fas fa-user-plus text-info me-1"></i>{{ candidate ? 'Edit nomination' : 'Nominate' }}
+                    <small class="text-muted">- {{ contest.name }}</small></h5>
+                <button type="button" class="btn-close" (click)="closed.emit()"></button>
+            </div>
+            <div class="modal-body">
+                <div *ngIf="loading" class="text-center text-muted py-3"><i class="fas fa-spinner fa-spin"></i> Loading the students who can stand...</div>
+                <div class="row g-3" *ngIf="!loading">
+                    <!-- The candidate -->
+                    <div [ngClass]="position.runningMateTitle ? 'col-lg-6' : 'col-12'">
+                        <label class="form-label mb-1 small fw-bold">{{ position.name }}</label>
+                        <ng-container *ngIf="candidate; else pickCandidate">
+                            <div class="border rounded p-2 bg-light"><b>{{ candidate.studentName }}</b>
+                                <span class="text-muted small"> - {{ candidate.className }}, {{ candidate.upi }}</span></div>
+                        </ng-container>
+                        <ng-template #pickCandidate>
+                            <input class="form-control form-control-sm mb-1" [(ngModel)]="studentSearch" placeholder="Search by name, UPI or class">
+                            <div class="border rounded" style="max-height: 300px; overflow-y: auto;">
+                                <div *ngIf="students.length === 0" class="text-muted small p-2">No student can stand in this race - check the position's grades and gender rule.</div>
+                                <a href="javascript:void(0)" *ngFor="let s of shownStudents" (click)="pickStudent(s)"
+                                    class="d-flex align-items-center px-2 py-1 border-bottom text-decoration-none"
+                                    [ngClass]="s.studentId === studentId ? 'bg-primary text-white' : (s.taken ? 'text-muted' : 'text-body')"
+                                    [style.cursor]="s.taken ? 'not-allowed' : 'pointer'">
+                                    <span class="me-auto">{{ s.name }}
+                                        <small [ngClass]="s.studentId === studentId ? 'text-white-50' : 'text-muted'"> {{ s.upi }}</small>
+                                        <div class="small fst-italic" *ngIf="s.taken">Already {{ s.taken }}</div></span>
+                                    <small class="ms-2 text-nowrap">{{ s.className }} - {{ s.genderName }}</small>
+                                </a>
+                            </div>
+                            <small class="text-muted">{{ students.length }} can stand<span *ngIf="pickedStudent">; chosen: <b>{{ pickedStudent.name }}</b></span></small>
+                        </ng-template>
+                    </div>
+
+                    <!-- The running mate -->
+                    <div class="col-lg-6" *ngIf="position.runningMateTitle">
+                        <label class="form-label mb-1 small fw-bold">{{ position.runningMateTitle }}</label>
+                        <input class="form-control form-control-sm mb-1" [(ngModel)]="mateSearch" placeholder="Search by name, UPI or class">
+                        <div class="border rounded" style="max-height: 300px; overflow-y: auto;">
+                            <a href="javascript:void(0)" *ngFor="let s of shownMates" (click)="pickMate(s)"
+                                class="d-flex align-items-center px-2 py-1 border-bottom text-decoration-none"
+                                [ngClass]="s.studentId === mateId ? 'bg-primary text-white' : (s.taken ? 'text-muted' : 'text-body')"
+                                [style.cursor]="s.taken ? 'not-allowed' : 'pointer'">
+                                <span class="me-auto">{{ s.name }}
+                                    <small [ngClass]="s.studentId === mateId ? 'text-white-50' : 'text-muted'"> {{ s.upi }}</small>
+                                    <div class="small fst-italic" *ngIf="s.taken">Already {{ s.taken }}</div></span>
+                                <small class="ms-2 text-nowrap">{{ s.className }} - {{ s.genderName }}</small>
+                            </a>
+                        </div>
+                        <small class="text-muted" *ngIf="pickedMate">Chosen: <b>{{ pickedMate.name }}</b></small>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label mb-0 small">Slogan <span class="text-muted">(optional, shown on the ballot)</span></label>
+                        <input class="form-control form-control-sm" [(ngModel)]="slogan" maxlength="255" placeholder="e.g. Together we rise">
+                        <small class="text-muted" *ngIf="!candidate">The photo on the student's record is used if there is one; you can upload another after nominating.</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer py-2">
+                <button class="btn btn-sm btn-secondary" (click)="closed.emit()">Cancel</button>
+                <button class="btn btn-sm btn-primary" [disabled]="saving || loading" (click)="save()">
+                    <i class="fas" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i> {{ candidate ? 'Save' : 'Nominate' }}</button>
+            </div>
+        </div>
+    </div>
+</div>

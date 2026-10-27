@@ -219,6 +219,7 @@ namespace Project.API.Extensions
             #region Teaching documents
             services.AddScoped<TeachingDocumentService>();
             services.AddScoped<SchoolWebApp.API.Services.Elections.ElectionService>();
+            services.AddSingleton<SchoolWebApp.API.Services.Elections.ElectionPhotoStore>();
             services.AddScoped<SchemeWorkbookService>();
             services.AddScoped<HeadOfDepartmentRoleSync>();
             services.AddScoped<SchoolWebApp.API.Services.Academics.SubjectLevelGuard>();

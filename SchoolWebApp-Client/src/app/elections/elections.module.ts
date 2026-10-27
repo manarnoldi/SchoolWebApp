@@ -7,6 +7,9 @@ import {ElectionListComponent} from './components/election-list/election-list.co
 import {ElectionDetailComponent} from './components/election-detail/election-detail.component';
 import {ElectionFormComponent} from './components/election-form/election-form.component';
 import {PositionFormComponent} from './components/position-form/position-form.component';
+import {NominationsComponent} from './components/nominations/nominations.component';
+import {NominateFormComponent} from './components/nominate-form/nominate-form.component';
+import {VoterRegisterComponent} from './components/voter-register/voter-register.component';
 
 @NgModule({
     declarations: [
@@ -14,7 +17,10 @@ import {PositionFormComponent} from './components/position-form/position-form.co
         ElectionListComponent,
         ElectionDetailComponent,
         ElectionFormComponent,
-        PositionFormComponent
+        PositionFormComponent,
+        NominationsComponent,
+        NominateFormComponent,
+        VoterRegisterComponent
     ],
     imports: [CommonModule, RouterModule, SharedModule]
 })

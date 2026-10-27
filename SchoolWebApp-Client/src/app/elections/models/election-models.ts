@@ -142,6 +142,8 @@ export interface ElectionDetail extends ElectionSummary {
     declaredAt: string | null;
     declaredBy: string | null;
     positionsEditable: boolean;
+    candidates: number;
+    pendingNominations: number;
     nextStages: ElectionStage[];
     positionList: ElectionPosition[];
     history: ElectionStageChange[];
@@ -174,4 +176,106 @@ export interface SavePosition {
 export function apiError(err: any, fallback: string): string {
     if (typeof err?.error === 'string' && err.error) return err.error;
     return err?.error?.message || err?.error?.title || fallback;
+}
+
+// Nominations
+
+export enum CandidateStatus {
+    Nominated = 0,
+    Approved = 1,
+    Rejected = 2,
+    Withdrawn = 3
+}
+
+export const CANDIDATE_STATUS_LABELS: {[s: number]: string} = {
+    [CandidateStatus.Nominated]: 'Awaiting approval',
+    [CandidateStatus.Approved]: 'Approved',
+    [CandidateStatus.Rejected]: 'Rejected',
+    [CandidateStatus.Withdrawn]: 'Withdrawn'
+};
+
+export const CANDIDATE_STATUS_BADGES: {[s: number]: string} = {
+    [CandidateStatus.Nominated]: 'bg-warning text-dark',
+    [CandidateStatus.Approved]: 'bg-success',
+    [CandidateStatus.Rejected]: 'bg-danger',
+    [CandidateStatus.Withdrawn]: 'bg-secondary'
+};
+
+export interface Candidate {
+    id: number;
+    contestId: number;
+    studentId: number;
+    studentName: string;
+    upi: string;
+    className: string;
+    genderName: string;
+    runningMateStudentId: number | null;
+    runningMateName: string | null;
+    runningMateClassName: string | null;
+    slogan: string | null;
+    photoUrl: string | null;
+    runningMatePhotoUrl: string | null;
+    status: CandidateStatus;
+    statusNote: string | null;
+    ballotOrder: number;
+    nominatedBy: string | null;
+    nominatedAt: string | null;
+}
+
+export interface NominationContest {
+    id: number;
+    name: string;
+    candidates: Candidate[];
+}
+
+export interface NominationPosition {
+    id: number;
+    name: string;
+    runningMateTitle: string | null;
+    seats: number;
+    genderRule: PositionGenderRule;
+    genderName: string | null;
+    contests: NominationContest[];
+}
+
+export interface Nominations {
+    electionId: number;
+    electionName: string;
+    stage: ElectionStage;
+    canManage: boolean;
+    canNominate: boolean;
+    canChangePhotos: boolean;
+    positions: NominationPosition[];
+}
+
+export interface EligibleStudent {
+    studentId: number;
+    name: string;
+    upi: string;
+    className: string;
+    genderName: string;
+    taken: string | null;
+}
+
+export interface SaveCandidate {
+    studentId: number;
+    runningMateStudentId: number | null;
+    slogan: string | null;
+}
+
+// Voter register
+
+export interface RegisterSummary {
+    mode: VoterRegisterMode;
+    frozenAt: string | null;
+    students: number;
+    contests: {contestId: number; positionName: string; name: string; voters: number}[];
+}
+
+export interface RegisterVoter {
+    studentId: number;
+    name: string;
+    upi: string;
+    className: string;
+    genderName: string;
 }

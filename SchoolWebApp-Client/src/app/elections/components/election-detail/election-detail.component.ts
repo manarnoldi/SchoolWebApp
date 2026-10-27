@@ -23,8 +23,12 @@ import {ElectionsService} from '@/elections/services/elections.service';
 // What moving to a stage means, shown before the move is confirmed.
 const STAGE_CONFIRM: {[s: number]: string} = {
     [ElectionStage.Draft]: 'Nominations close and the election goes back to set-up.',
-    [ElectionStage.Nominations]: 'Candidates can now be nominated for each race. Positions can still be changed until nominations close.'
+    [ElectionStage.Nominations]: 'Candidates can now be nominated for each race. Positions can still be changed until nominations close.',
+    [ElectionStage.CandidatesFinal]: 'The approved candidates become final and are put on the ballot in alphabetical order. '
+        + 'With a frozen register, the voter register is taken now. Positions can no longer change.'
 };
+const REOPEN_CONFIRM = 'Nominations open again. The ballot order is cleared and a frozen voter register is discarded; '
+    + 'both are taken again when nominations close.';
 
 /** One election: its details, electable positions and the races they split into, and its stage. */
 @Component({
@@ -102,6 +106,12 @@ export class ElectionDetailComponent implements OnInit {
 
     get canEditPositions(): boolean {
         return this.canManage && !!this.election?.positionsEditable;
+    }
+
+    // Moving back from Candidates final reopens nominations.
+    actionLabel(to: ElectionStage): string {
+        return to === ElectionStage.Nominations && this.election?.stage === ElectionStage.CandidatesFinal
+            ? 'Reopen nominations' : this.stageActions[to];
     }
 
     stepDone(s: ElectionStage): boolean {
@@ -190,12 +200,12 @@ export class ElectionDetailComponent implements OnInit {
     changeStage(to: ElectionStage) {
         const e = this.election!;
         Swal.fire({
-            title: `${this.stageActions[to]}?`,
-            text: STAGE_CONFIRM[to] || '',
+            title: `${this.actionLabel(to)}?`,
+            text: to < e.stage && to === ElectionStage.Nominations ? REOPEN_CONFIRM : STAGE_CONFIRM[to] || '',
             input: 'text',
             inputPlaceholder: 'Note for the record (optional)',
             width: 460, position: 'top', icon: to < e.stage ? 'warning' : 'question',
-            showCancelButton: true, confirmButtonText: this.stageActions[to]
+            showCancelButton: true, confirmButtonText: this.actionLabel(to)
         }).then((r) => {
             if (!r.isConfirmed) return;
             this.busy = true;

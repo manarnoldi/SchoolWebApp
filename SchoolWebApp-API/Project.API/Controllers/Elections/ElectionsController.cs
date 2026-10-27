@@ -130,6 +130,8 @@ namespace SchoolWebApp.API.Controllers.Elections
                 return BadRequest("The voter register is already taken; the register mode can no longer change.");
 
             var yearChanged = dto.AcademicYearId != e.AcademicYearId;
+            if (yearChanged && await _db.ElectionCandidates.AnyAsync(c => c.ElectionContest!.ElectionPosition!.ElectionId == e.Id))
+                return BadRequest("The election has nominations; remove them before changing the academic year.");
             Apply(e, dto);
             if (yearChanged)
             {
@@ -168,6 +170,7 @@ namespace SchoolWebApp.API.Controllers.Elections
             var error = await _elections.CannotMoveAsync(e, dto.ToStage);
             if (error != null) return BadRequest(error);
 
+            await _elections.ApplyStageAsync(e, dto.ToStage);
             _db.ElectionStageChanges.Add(new ElectionStageChange
             {
                 ElectionId = e.Id,
@@ -218,6 +221,8 @@ namespace SchoolWebApp.API.Controllers.Elections
                 return BadRequest("Positions can only change before the candidates are final.");
             var error = await ValidatePositionAsync(dto);
             if (error != null) return BadRequest(error);
+            if (await _db.ElectionCandidates.AnyAsync(c => c.ElectionContest!.ElectionPositionId == p.Id) && ChangesRaces(p, dto))
+                return BadRequest("This position has nominations. Only its name, seats and order can change; remove the nominations to change who votes or stands, the races, the gender rule or the joint ticket.");
 
             p.Name = dto.Name.Trim();
             if (dto.Rank <= 0) dto.Rank = p.Rank;
@@ -238,6 +243,8 @@ namespace SchoolWebApp.API.Controllers.Elections
             if (p == null) return NotFound();
             if (!ElectionService.PositionsEditable(p.Election!.Stage))
                 return BadRequest("Positions can only change before the candidates are final.");
+            if (await _db.ElectionCandidates.AnyAsync(c => c.ElectionContest!.ElectionPositionId == p.Id))
+                return BadRequest("This position has nominations; remove them before removing the position.");
             _db.ElectionPositions.Remove(p);
             await _db.SaveChangesAsync();
             return Ok(await DetailAsync(p.ElectionId));
@@ -264,6 +271,21 @@ namespace SchoolWebApp.API.Controllers.Elections
             if (dto.PollingStart != null && dto.PollingEnd != null && dto.PollingEnd <= dto.PollingStart)
                 return "Polling must end after it starts.";
             return null;
+        }
+
+        // Whether saving would change who is eligible in the position's races.
+        private static bool ChangesRaces(ElectionPosition p, SavePositionDto dto)
+        {
+            static bool Same(IEnumerable<int> a, IEnumerable<int> b) => a.ToHashSet().SetEquals(b);
+            var voters = p.Levels.Where(l => l.Role == PositionLevelRole.Voter).Select(l => l.LearningLevelId);
+            var candidates = p.Levels.Where(l => l.Role == PositionLevelRole.Candidate).Select(l => l.LearningLevelId).ToList();
+            var newCandidates = dto.CandidateLevelIds.ToHashSet();
+            if (newCandidates.SetEquals(dto.VoterLevelIds)) newCandidates.Clear();
+            var mate = string.IsNullOrWhiteSpace(dto.RunningMateTitle) ? null : dto.RunningMateTitle.Trim();
+            return p.Scope != dto.Scope || p.GenderRule != dto.GenderRule
+                || (dto.GenderRule == PositionGenderRule.SingleGender && (p.GenderId != dto.GenderId || p.VotersSameGenderOnly != dto.VotersSameGenderOnly))
+                || (p.RunningMateTitle == null) != (mate == null)
+                || !Same(voters, dto.VoterLevelIds) || !Same(candidates, newCandidates);
         }
 
         private static void ApplyPosition(ElectionPosition p, SavePositionDto dto)
@@ -326,6 +348,10 @@ namespace SchoolWebApp.API.Controllers.Elections
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(x => x.Id == id);
             if (e == null) return null;
+            var counts = await _db.ElectionCandidates
+                .Where(c => c.ElectionContest!.ElectionPosition!.ElectionId == id
+                    && (c.Status == CandidateStatus.Approved || c.Status == CandidateStatus.Nominated))
+                .GroupBy(c => c.Status).Select(g => new { g.Key, Count = g.Count() }).ToListAsync();
 
             return new ElectionDetailDto
             {
@@ -346,6 +372,8 @@ namespace SchoolWebApp.API.Controllers.Elections
                 Positions = e.Positions.Count,
                 Contests = e.Positions.Sum(p => p.Contests.Count),
                 PositionsEditable = ElectionService.PositionsEditable(e.Stage),
+                Candidates = counts.FirstOrDefault(c => c.Key == CandidateStatus.Approved)?.Count ?? 0,
+                PendingNominations = counts.FirstOrDefault(c => c.Key == CandidateStatus.Nominated)?.Count ?? 0,
                 NextStages = ElectionService.NextStages(e.Stage),
                 PositionList = e.Positions.OrderBy(p => p.Rank).ThenBy(p => p.Name).Select(p => new ElectionPositionDto
                 {

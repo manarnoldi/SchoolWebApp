@@ -30,9 +30,22 @@
                             <button class="btn btn-sm btn-outline-danger" *ngIf="e.stage === Stage.Draft" (click)="deleteElection()"><i class="fas fa-trash"></i> Delete</button>
                             <button *ngFor="let s of e.nextStages" class="btn btn-sm" [disabled]="busy"
                                 [ngClass]="s < e.stage ? 'btn-outline-warning' : 'btn-success'" (click)="changeStage(s)">
-                                <i class="fas" [ngClass]="s < e.stage ? 'fa-undo' : 'fa-step-forward'"></i> {{ stageActions[s] }}</button>
+                                <i class="fas" [ngClass]="s < e.stage ? 'fa-undo' : 'fa-step-forward'"></i> {{ actionLabel(s) }}</button>
                         </div>
                         <button *ngIf="!canManage" class="btn btn-sm btn-outline-secondary" (click)="router.navigate(['/elections/manage'])"><i class="fas fa-arrow-left"></i> Back</button>
+                    </div>
+
+                    <!-- Nominations and the voter register -->
+                    <div class="d-flex flex-wrap gap-2 mt-2" *ngIf="e.stage !== Stage.Draft || e.candidates || e.pendingNominations">
+                        <button class="btn btn-sm btn-info" (click)="router.navigate(['/elections/manage', e.id, 'nominations'])">
+                            <i class="fas fa-user-check"></i> Nominations
+                            <span class="badge bg-light text-dark ms-1" title="Approved candidates">{{ e.candidates }}</span>
+                            <span class="badge bg-warning text-dark ms-1" *ngIf="e.pendingNominations" title="Awaiting approval">{{ e.pendingNominations }} pending</span>
+                        </button>
+                        <button class="btn btn-sm btn-outline-info" (click)="router.navigate(['/elections/manage', e.id, 'register'])">
+                            <i class="fas fa-clipboard-list"></i> Voter register
+                            <i class="fas fa-lock ms-1" *ngIf="e.registerFrozenAt" [title]="'Taken ' + (e.registerFrozenAt | date:'d MMM y, HH:mm')"></i>
+                        </button>
                     </div>
 
                     <!-- Stage steps -->

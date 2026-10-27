@@ -305,6 +305,22 @@ namespace Project.Infrastructure.Data
                 .HasForeignKey(c => c.LearningLevelId).OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ElectionContest>().HasOne(c => c.SchoolClass).WithMany()
                 .HasForeignKey(c => c.SchoolClassId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ElectionCandidate>().HasOne(c => c.ElectionContest).WithMany(c => c.Candidates)
+                .HasForeignKey(c => c.ElectionContestId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ElectionCandidate>().HasOne(c => c.Student).WithMany()
+                .HasForeignKey(c => c.StudentId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ElectionCandidate>().HasOne(c => c.RunningMateStudent).WithMany()
+                .HasForeignKey(c => c.RunningMateStudentId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ElectionCandidate>()
+                .HasIndex(c => new { c.ElectionContestId, c.StudentId }).IsUnique();
+            modelBuilder.Entity<ElectionVoter>().HasOne(v => v.Election).WithMany()
+                .HasForeignKey(v => v.ElectionId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ElectionVoter>().HasOne(v => v.Student).WithMany()
+                .HasForeignKey(v => v.StudentId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ElectionVoter>().HasOne(v => v.SchoolClass).WithMany()
+                .HasForeignKey(v => v.SchoolClassId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ElectionVoter>()
+                .HasIndex(v => new { v.ElectionId, v.StudentId }).IsUnique();
 
             // Curriculum design: what the KICD design says beyond strands and outcomes.
             // Everything hangs off its strand / sub-strand / design and goes with it;

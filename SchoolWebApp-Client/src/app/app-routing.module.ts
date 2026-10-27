@@ -173,6 +173,8 @@ import { CurriculumViewComponent } from './teaching/components/curriculum-view/c
 import { ElectionsComponent } from './elections/elections.component';
 import { ElectionListComponent } from './elections/components/election-list/election-list.component';
 import { ElectionDetailComponent } from './elections/components/election-detail/election-detail.component';
+import { NominationsComponent } from './elections/components/nominations/nominations.component';
+import { VoterRegisterComponent } from './elections/components/voter-register/voter-register.component';
 
 const routes: Routes = [
     {
@@ -484,6 +486,8 @@ const routes: Routes = [
         children: [
             {path: 'manage', component: ElectionListComponent},
             {path: 'manage/:id', component: ElectionDetailComponent},
+            {path: 'manage/:id/nominations', component: NominationsComponent},
+            {path: 'manage/:id/register', component: VoterRegisterComponent},
             {path: '', redirectTo: 'manage', pathMatch: 'full'}
         ]
     },

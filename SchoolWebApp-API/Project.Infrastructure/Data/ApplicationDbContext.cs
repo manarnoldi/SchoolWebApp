@@ -215,6 +215,8 @@ namespace Project.Infrastructure.Data
         public DbSet<ElectionPosition> ElectionPositions { get; set; }
         public DbSet<ElectionPositionLevel> ElectionPositionLevels { get; set; }
         public DbSet<ElectionContest> ElectionContests { get; set; }
+        public DbSet<ElectionCandidate> ElectionCandidates { get; set; }
+        public DbSet<ElectionVoter> ElectionVoters { get; set; }
         #endregion
 
         #region Approvals
@@ -297,6 +299,9 @@ namespace Project.Infrastructure.Data
         {
             typeof(AuditLog),
             typeof(Log),
+            // The whole register is written at once when nominations close; the
+            // stage change records who closed them and when.
+            typeof(ElectionVoter),
             // Thousands of rows per send, each re-saved as its status moves;
             // the MessageBatch row already records who sent what.
             typeof(OutboundMessage),

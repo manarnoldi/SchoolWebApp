@@ -1,0 +1,143 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+        <div *ngIf="loading && !data" class="text-center text-muted py-4"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+
+        <ng-container *ngIf="data as d">
+            <div class="card card-outline card-info mb-2">
+                <div class="card-body p-2">
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <h5 class="mb-0 me-2"><i class="fas fa-user-check text-info me-1"></i>{{ d.electionName }}
+                            <span class="badge ms-1 align-middle" [ngClass]="stageBadges[d.stage]">{{ stageLabels[d.stage] }}</span></h5>
+                        <span class="small text-muted me-auto">
+                            {{ counts.approved }} approved<span *ngIf="counts.pending">, <b class="text-warning">{{ counts.pending }} awaiting approval</b></span>
+                            <span *ngIf="counts.racesWithout"> - <b class="text-danger">{{ counts.racesWithout }} of {{ counts.races }} races</b> without an approved candidate</span>
+                        </span>
+                        <button class="btn btn-sm btn-outline-secondary" (click)="router.navigate(['/elections/manage', d.electionId])"><i class="fas fa-arrow-left"></i> Back</button>
+                        <button class="btn btn-sm btn-outline-primary" (click)="print()" [disabled]="!counts.approved"><i class="fas fa-print"></i> Print candidates</button>
+                    </div>
+                    <div class="row g-2 align-items-end mt-1">
+                        <div class="col-md-3">
+                            <label class="form-label mb-0 small">Position</label>
+                            <select class="form-select form-select-sm" [(ngModel)]="positionId">
+                                <option [ngValue]="null">All positions</option>
+                                <option *ngFor="let p of d.positions" [ngValue]="p.id">{{ p.name }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label mb-0 small">Status</label>
+                            <select class="form-select form-select-sm" [(ngModel)]="status">
+                                <option [ngValue]="null">Any status</option>
+                                <option *ngFor="let s of statuses" [ngValue]="s">{{ statusLabels[s] }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label mb-0 small">Search</label>
+                            <input class="form-control form-control-sm" [(ngModel)]="search" placeholder="Student, running mate, class or race">
+                        </div>
+                    </div>
+                    <div class="small text-muted mt-2" *ngIf="!d.canNominate && d.stage === Stage.Draft">
+                        <i class="fas fa-info-circle"></i> Open nominations on the election page to start nominating.</div>
+                    <div class="small text-muted mt-2" *ngIf="d.stage > Stage.Nominations">
+                        <i class="fas fa-lock"></i> Nominations are closed; the approved candidates are on the ballot in the order shown.
+                        <span *ngIf="d.canChangePhotos">Photos can still be changed until polling opens.</span></div>
+                </div>
+            </div>
+
+            <div *ngIf="positions.length === 0" class="text-center text-muted py-4">
+                {{ d.positions.length ? 'Nothing matches the filters.' : 'The election has no positions yet.' }}</div>
+
+            <div class="card mb-2" *ngFor="let p of positions">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="fas fa-user-tie text-primary me-1"></i>{{ p.name }}
+                        <small class="text-muted ms-1" *ngIf="positionHint(p)">{{ positionHint(p) }}</small></h6>
+                </div>
+                <div class="card-body p-2">
+                    <div *ngFor="let c of p.contests; let lastRace = last" [class.mb-3]="!lastRace">
+                        <div class="d-flex align-items-center border-bottom pb-1 mb-2">
+                            <b class="me-2">{{ c.name }}</b>
+                            <span class="badge" [ngClass]="approvedIn(c) ? 'bg-light text-success border border-success' : 'bg-light text-danger border border-danger'">
+                                {{ approvedIn(c) }} approved</span>
+                            <button class="btn btn-sm btn-outline-primary py-0 ms-auto" *ngIf="d.canNominate" (click)="nominate(p, c)">
+                                <i class="fas fa-user-plus"></i> Nominate</button>
+                        </div>
+                        <div *ngIf="c.candidates.length === 0" class="small text-muted ms-1 mb-1">No nominations yet.</div>
+
+                        <div class="row g-2">
+                            <div class="col-xl-4 col-lg-6" *ngFor="let x of c.candidates">
+                                <div class="border rounded p-2 h-100 d-flex flex-column"
+                                    [ngClass]="{'bg-light': x.status === Status.Rejected || x.status === Status.Withdrawn}"
+                                    [style.opacity]="x.status === Status.Rejected || x.status === Status.Withdrawn ? 0.75 : 1">
+                                    <div class="d-flex gap-2">
+                                        <!-- Candidate photo -->
+                                        <div class="text-center" style="width: 84px;">
+                                            <img *ngIf="photo(x.photoUrl) as src; else noPhoto" [src]="src" class="rounded border"
+                                                style="width: 84px; height: 100px; object-fit: cover;" alt="">
+                                            <ng-template #noPhoto><div class="rounded border bg-light text-muted d-flex align-items-center justify-content-center"
+                                                style="width: 84px; height: 100px;"><i class="fas fa-user fa-2x"></i></div></ng-template>
+                                            <div *ngIf="d.canChangePhotos" class="mt-1">
+                                                <label class="btn btn-link btn-sm p-0 small" title="Upload a photo (JPEG, PNG or WebP, up to 3 MB)">
+                                                    <i class="fas fa-camera"></i><input type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="upload(x, false, $event)"></label>
+                                                <button *ngIf="x.photoUrl" class="btn btn-link btn-sm p-0 ms-2 text-danger" title="Remove the photo" (click)="removePhoto(x, false)"><i class="fas fa-times"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 small" style="min-width: 0;">
+                                            <div class="d-flex align-items-start">
+                                                <b class="me-auto text-truncate" style="font-size: 0.95rem;">
+                                                    <span *ngIf="x.ballotOrder" class="badge bg-dark me-1">{{ x.ballotOrder }}</span>{{ x.studentName }}</b>
+                                                <span class="badge ms-1" [ngClass]="statusBadges[x.status]">{{ statusLabels[x.status] }}</span>
+                                            </div>
+                                            <div class="text-muted">{{ x.className }} - {{ x.genderName }} - {{ x.upi }}</div>
+                                            <div *ngIf="x.slogan" class="fst-italic mt-1">"{{ x.slogan }}"</div>
+                                            <div *ngIf="x.statusNote" class="mt-1" [ngClass]="x.status === Status.Rejected ? 'text-danger' : 'text-muted'">
+                                                <i class="fas fa-comment-alt me-1"></i>{{ x.statusNote }}</div>
+                                            <div class="text-muted mt-1" style="font-size: 0.75rem;">Nominated by {{ x.nominatedBy }}, {{ x.nominatedAt | date:'d MMM, HH:mm' }}</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Running mate -->
+                                    <div *ngIf="p.runningMateTitle" class="d-flex gap-2 mt-2 pt-2 border-top align-items-center">
+                                        <div class="text-center" style="width: 84px;">
+                                            <img *ngIf="photo(x.runningMatePhotoUrl) as src; else noMatePhoto" [src]="src" class="rounded border"
+                                                style="width: 56px; height: 66px; object-fit: cover;" alt="">
+                                            <ng-template #noMatePhoto><div class="rounded border bg-light text-muted d-inline-flex align-items-center justify-content-center"
+                                                style="width: 56px; height: 66px;"><i class="fas fa-user"></i></div></ng-template>
+                                            <div *ngIf="d.canChangePhotos">
+                                                <label class="btn btn-link btn-sm p-0 small" title="Upload the running mate's photo">
+                                                    <i class="fas fa-camera"></i><input type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="upload(x, true, $event)"></label>
+                                                <button *ngIf="x.runningMatePhotoUrl" class="btn btn-link btn-sm p-0 ms-2 text-danger" title="Remove the photo" (click)="removePhoto(x, true)"><i class="fas fa-times"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="small">
+                                            <div class="text-muted">{{ p.runningMateTitle }}</div>
+                                            <b>{{ x.runningMateName }}</b>
+                                            <div class="text-muted">{{ x.runningMateClassName }}</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Actions -->
+                                    <div class="d-flex flex-wrap gap-1 mt-auto pt-2" *ngIf="d.canNominate">
+                                        <ng-container *ngIf="x.status === Status.Nominated">
+                                            <button class="btn btn-sm btn-success py-0" [disabled]="busy" (click)="approve(x)"><i class="fas fa-check"></i> Approve</button>
+                                            <button class="btn btn-sm btn-outline-danger py-0" [disabled]="busy" (click)="reject(x)"><i class="fas fa-ban"></i> Reject</button>
+                                        </ng-container>
+                                        <button *ngIf="x.status === Status.Approved" class="btn btn-sm btn-outline-warning py-0" [disabled]="busy" (click)="restore(x)" title="Back to awaiting approval"><i class="fas fa-undo"></i> Unapprove</button>
+                                        <button *ngIf="x.status === Status.Nominated || x.status === Status.Approved" class="btn btn-sm btn-outline-secondary py-0" [disabled]="busy" (click)="withdraw(x)"><i class="fas fa-sign-out-alt"></i> Withdraw</button>
+                                        <button *ngIf="x.status === Status.Rejected || x.status === Status.Withdrawn" class="btn btn-sm btn-outline-primary py-0" [disabled]="busy" (click)="restore(x)"><i class="fas fa-undo"></i> Restore</button>
+                                        <span class="ms-auto"></span>
+                                        <button *ngIf="x.status === Status.Nominated || x.status === Status.Approved" class="btn btn-sm btn-outline-primary py-0" (click)="edit(p, c, x)" title="Edit the slogan or running mate"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger py-0" [disabled]="busy" (click)="remove(x)" title="Delete a mistaken entry"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</section>
+
+<app-nominate-form *ngIf="formPosition && formContest" [position]="formPosition" [contest]="formContest" [candidate]="formCandidate"
+    (saved)="saved($event)" (closed)="closeForm()"></app-nominate-form>

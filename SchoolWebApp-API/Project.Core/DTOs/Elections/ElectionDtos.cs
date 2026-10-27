@@ -50,6 +50,9 @@ namespace SchoolWebApp.Core.DTOs.Elections
         public DateTime? DeclaredAt { get; set; }
         public string? DeclaredBy { get; set; }
         public bool PositionsEditable { get; set; }
+        // Approved, and waiting for approval.
+        public int Candidates { get; set; }
+        public int PendingNominations { get; set; }
         public List<ElectionStage> NextStages { get; set; } = new();
         public List<ElectionPositionDto> PositionList { get; set; } = new();
         public List<ElectionStageChangeDto> History { get; set; } = new();
@@ -119,5 +122,111 @@ namespace SchoolWebApp.Core.DTOs.Elections
     {
         public ElectionStage ToStage { get; set; }
         public string? Note { get; set; }
+    }
+
+    // Nominations
+
+    public class NominationsDto
+    {
+        public int ElectionId { get; set; }
+        public string ElectionName { get; set; } = "";
+        public ElectionStage Stage { get; set; }
+        public bool CanManage { get; set; }
+        // Nominations can be added, approved and removed.
+        public bool CanNominate { get; set; }
+        // Photos can still be changed (until polling opens).
+        public bool CanChangePhotos { get; set; }
+        public List<NominationPositionDto> Positions { get; set; } = new();
+    }
+
+    public class NominationPositionDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+        public string? RunningMateTitle { get; set; }
+        public int Seats { get; set; }
+        public PositionGenderRule GenderRule { get; set; }
+        public string? GenderName { get; set; }
+        public List<NominationContestDto> Contests { get; set; } = new();
+    }
+
+    public class NominationContestDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+        public List<CandidateDto> Candidates { get; set; } = new();
+    }
+
+    public class CandidateDto
+    {
+        public int Id { get; set; }
+        public int ContestId { get; set; }
+        public int StudentId { get; set; }
+        public string StudentName { get; set; } = "";
+        public string Upi { get; set; } = "";
+        public string ClassName { get; set; } = "";
+        public string GenderName { get; set; } = "";
+        public int? RunningMateStudentId { get; set; }
+        public string? RunningMateName { get; set; }
+        public string? RunningMateClassName { get; set; }
+        public string? Slogan { get; set; }
+        public string? PhotoUrl { get; set; }
+        public string? RunningMatePhotoUrl { get; set; }
+        public CandidateStatus Status { get; set; }
+        public string? StatusNote { get; set; }
+        public int BallotOrder { get; set; }
+        public string? NominatedBy { get; set; }
+        public DateTime? NominatedAt { get; set; }
+    }
+
+    /// <summary>A student who can be nominated in a race; Taken says why not, when they already stand.</summary>
+    public class EligibleStudentDto
+    {
+        public int StudentId { get; set; }
+        public string Name { get; set; } = "";
+        public string Upi { get; set; } = "";
+        public string ClassName { get; set; } = "";
+        public string GenderName { get; set; } = "";
+        public string? Taken { get; set; }
+    }
+
+    public class SaveCandidateDto
+    {
+        public int StudentId { get; set; }
+        public int? RunningMateStudentId { get; set; }
+        public string? Slogan { get; set; }
+    }
+
+    public class CandidateStatusDto
+    {
+        public CandidateStatus Status { get; set; }
+        public string? Note { get; set; }
+    }
+
+    // Voter register
+
+    public class RegisterSummaryDto
+    {
+        public VoterRegisterMode Mode { get; set; }
+        public DateTime? FrozenAt { get; set; }
+        public int Students { get; set; }
+        public List<RegisterContestDto> Contests { get; set; } = new();
+    }
+
+    public class RegisterContestDto
+    {
+        public int ContestId { get; set; }
+        public string PositionName { get; set; } = "";
+        public string Name { get; set; } = "";
+        public int Voters { get; set; }
+    }
+
+    public class RegisterVoterDto
+    {
+        public int StudentId { get; set; }
+        public string Name { get; set; } = "";
+        public string Upi { get; set; } = "";
+        public string ClassName { get; set; } = "";
+        public string GenderName { get; set; } = "";
     }
 }
