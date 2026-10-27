@@ -112,10 +112,17 @@ export class TeachingAssignmentsComponent implements OnInit {
     get departments() { return this.options((r) => r.departmentId, (r) => r.departmentName || '-'); }
     // Grades in their set order (Learning Levels > Rank).
     get grades() { return this.options((r) => r.learningLevelId, (r) => r.learningLevelName, () => true, (r) => r.learningLevelRank); }
-    // Subjects in their set order (Subjects > Rank), narrowed to the chosen department.
+    // Subjects in their set order (Subjects > Rank), narrowed to the chosen department and grade.
     get subjects() {
         return this.options((r) => r.subjectId, (r) => r.subjectName,
-            (r) => this.departmentId == null || r.departmentId === this.departmentId, (r) => r.subjectRank);
+            (r) => (this.departmentId == null || r.departmentId === this.departmentId)
+                && (this.learningLevelId == null || r.learningLevelId === this.learningLevelId), (r) => r.subjectRank);
+    }
+
+    // A grade or department change drops a subject not taught there.
+    narrowSubject() {
+        if (this.subjectId != null && !this.subjects.some((s) => s.id === this.subjectId)) this.subjectId = null;
+        this.page = 1;
     }
 
     // Sorted by rank when one is given, else by name.

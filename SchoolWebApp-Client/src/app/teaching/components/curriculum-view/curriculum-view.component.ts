@@ -98,8 +98,6 @@ export class CurriculumViewComponent implements OnInit {
                 private toastr: ToastrService) {}
 
     ngOnInit(): void {
-        // Subjects come from the API in their set order.
-        this.http.get<any[]>('/subjects').subscribe({next: (s) => this.subjects = s || []});
         this.http.get<any[]>('/learningLevels').subscribe({next: (l) => this.levels = (l || []).sort((a, b) => a.rank - b.rank)});
         let q = this.route.snapshot.queryParamMap;
         let subjectId = +(q.get('subjectId') || 0), levelId = +(q.get('learningLevelId') || 0);
@@ -110,11 +108,31 @@ export class CurriculumViewComponent implements OnInit {
                 levelId = saved?.learningLevelId || 0;
             } catch { /* storage blocked */ }
         }
-        if (subjectId && levelId) {
-            this.subjectId = subjectId;
+        if (levelId) {
             this.learningLevelId = levelId;
-            this.load();
+            this.subjectId = subjectId || null;
+            this.loadSubjects();
         }
+    }
+
+    // Grade first: only the subjects taught at the chosen grade are offered.
+    onLevel() {
+        this.subjectId = null;
+        this.view = null;
+        this.loadSubjects();
+    }
+
+    private loadSubjects() {
+        this.subjects = [];
+        if (!this.learningLevelId) return;
+        this.http.get<any[]>('/curriculum/subjects', {params: {learningLevelId: this.learningLevelId}}).subscribe({
+            next: (s) => {
+                this.subjects = s || [];
+                if (this.subjectId && !this.subjects.some((x) => x.id === this.subjectId)) this.subjectId = null;
+                this.load();
+            },
+            error: (err) => this.toastr.error(err.error?.message || 'Error loading the grade\'s subjects.')
+        });
     }
 
     load() {

@@ -33,14 +33,14 @@
             </div>
             <div class="col-md-2" *ngIf="scope === 'oversee'">
                 <label class="form-label mb-0 small">Department</label>
-                <select class="form-select form-select-sm" [(ngModel)]="departmentId" (ngModelChange)="subjectId = null; page = 1">
+                <select class="form-select form-select-sm" [(ngModel)]="departmentId" (ngModelChange)="narrowSubject()">
                     <option [ngValue]="null">All departments</option>
                     <option *ngFor="let d of departments" [ngValue]="d.id">{{ d.name }}</option>
                 </select>
             </div>
             <div class="col-md-2">
                 <label class="form-label mb-0 small">Grade</label>
-                <select class="form-select form-select-sm" [(ngModel)]="learningLevelId" (ngModelChange)="page = 1">
+                <select class="form-select form-select-sm" [(ngModel)]="learningLevelId" (ngModelChange)="narrowSubject()">
                     <option [ngValue]="null">All grades</option>
                     <option *ngFor="let g of grades" [ngValue]="g.id">{{ g.name }}</option>
                 </select>

@@ -8,19 +8,20 @@
                     <div class="card-header p-2"><strong><i class="fas fa-file-download text-success"></i> 1. Download the template</strong></div>
                     <div class="card-body p-2">
                         <div class="row g-2">
-                            <div class="col-md-7">
-                                <label class="form-label mb-0 small">Subject / learning area</label>
-                                <select class="form-select form-select-sm" [(ngModel)]="subjectId">
-                                    <option [ngValue]="null">- choose -</option>
-                                    <option *ngFor="let s of subjects" [ngValue]="s.id">{{ s.name }}</option>
-                                </select>
-                            </div>
                             <div class="col-md-5">
                                 <label class="form-label mb-0 small">Grade</label>
-                                <select class="form-select form-select-sm" [(ngModel)]="learningLevelId">
+                                <select class="form-select form-select-sm" [(ngModel)]="learningLevelId" (ngModelChange)="loadSubjects()">
                                     <option [ngValue]="null">- choose -</option>
                                     <option *ngFor="let l of levels" [ngValue]="l.id">{{ l.name }}</option>
                                 </select>
+                            </div>
+                            <div class="col-md-7">
+                                <label class="form-label mb-0 small">Subject / learning area</label>
+                                <select class="form-select form-select-sm" [(ngModel)]="subjectId" [disabled]="!learningLevelId">
+                                    <option [ngValue]="null">{{ learningLevelId ? '- choose -' : '- choose the grade first -' }}</option>
+                                    <option *ngFor="let s of subjects" [ngValue]="s.id">{{ s.name }}</option>
+                                </select>
+                                <small class="text-muted" *ngIf="learningLevelId">Subject missing? Add it to the grade's education level under Settings &rarr; Dropdowns &rarr; Academics &rarr; Edu-Level Subjects.</small>
                             </div>
                         </div>
                         <button class="btn btn-sm btn-success mt-2" [disabled]="!subjectId || !learningLevelId || busy" (click)="download()">

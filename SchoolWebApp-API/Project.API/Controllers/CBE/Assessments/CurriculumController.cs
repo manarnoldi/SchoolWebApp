@@ -32,6 +32,23 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             (CurriculumDesignItem.NonFormalProgramme, "Non-formal Programmes to Support Learning")
         };
 
+        // GET api/curriculum/subjects?learningLevelId=3 - the subjects taught at a grade:
+        // those set for its education level (in any academic year) and any with curriculum loaded for it.
+        [HttpGet("subjects")]
+        public async Task<IActionResult> Subjects(int learningLevelId)
+        {
+            var level = await _db.LearningLevels.AsNoTracking().FirstOrDefaultAsync(l => l.Id == learningLevelId);
+            if (level == null) return NotFound(new { message = "Choose the grade." });
+            var ids = await _db.EducationLevelSubjects.AsNoTracking()
+                .Where(e => e.EducationLevelId == level.EducationLevelId).Select(e => e.SubjectId)
+                .Union(_db.Strands.AsNoTracking().Where(s => s.LearningLevelId == learningLevelId).Select(s => s.SubjectId))
+                .ToListAsync();
+            var subjects = await _db.Subjects.AsNoTracking().Where(s => ids.Contains(s.Id))
+                .OrderBy(s => s.Rank).ThenBy(s => s.Name)
+                .Select(s => new { s.Id, s.Name, s.Code }).ToListAsync();
+            return Ok(subjects);
+        }
+
         // GET api/curriculum?subjectId=12&learningLevelId=1
         [HttpGet]
         public async Task<IActionResult> Get(int subjectId, int learningLevelId)

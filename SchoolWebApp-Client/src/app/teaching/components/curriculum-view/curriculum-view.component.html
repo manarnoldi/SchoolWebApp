@@ -5,18 +5,18 @@
         <div class="card card-outline card-primary mb-2">
             <div class="card-body p-2">
                 <div class="row g-2 align-items-end">
-                    <div class="col-md-5">
-                        <label class="form-label mb-0 small">Subject / learning area</label>
-                        <select class="form-select form-select-sm" [(ngModel)]="subjectId" (ngModelChange)="load()">
-                            <option [ngValue]="null">- choose -</option>
-                            <option *ngFor="let s of subjects" [ngValue]="s.id">{{ s.name }}</option>
-                        </select>
-                    </div>
                     <div class="col-md-3">
                         <label class="form-label mb-0 small">Grade</label>
-                        <select class="form-select form-select-sm" [(ngModel)]="learningLevelId" (ngModelChange)="load()">
+                        <select class="form-select form-select-sm" [(ngModel)]="learningLevelId" (ngModelChange)="onLevel()">
                             <option [ngValue]="null">- choose -</option>
                             <option *ngFor="let l of levels" [ngValue]="l.id">{{ l.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label mb-0 small">Subject / learning area</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="subjectId" (ngModelChange)="load()" [disabled]="!learningLevelId">
+                            <option [ngValue]="null">{{ learningLevelId ? '- choose -' : '- choose the grade first -' }}</option>
+                            <option *ngFor="let s of subjects" [ngValue]="s.id">{{ s.name }}</option>
                         </select>
                     </div>
                     <div class="col-md-4 text-end">
@@ -29,7 +29,7 @@
         </div>
 
         <div *ngIf="loading" class="text-center text-muted p-3"><i class="fas fa-spinner fa-spin"></i> Loading…</div>
-        <div *ngIf="!loading && !view" class="text-center text-muted p-3">Choose a subject and grade.</div>
+        <div *ngIf="!loading && !view" class="text-center text-muted p-3">Choose the grade, then the subject.</div>
         <div *ngIf="!loading && isEmpty" class="alert alert-warning">
             The {{ view?.subjectName }} {{ view?.learningLevelName }} curriculum has not been loaded yet.
         </div>

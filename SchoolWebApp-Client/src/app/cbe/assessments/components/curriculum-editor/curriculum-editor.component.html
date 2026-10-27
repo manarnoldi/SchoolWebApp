@@ -5,18 +5,18 @@
         <div class="card card-outline card-primary mb-2">
             <div class="card-body p-2">
                 <div class="row g-2 align-items-end">
-                    <div class="col-md-5">
-                        <label class="form-label mb-0 small">Subject / learning area</label>
-                        <select class="form-select form-select-sm" [(ngModel)]="subjectId" (ngModelChange)="pick()">
-                            <option [ngValue]="null">- choose -</option>
-                            <option *ngFor="let s of subjects" [ngValue]="s.id">{{ s.name }}</option>
-                        </select>
-                    </div>
                     <div class="col-md-3">
                         <label class="form-label mb-0 small">Grade</label>
-                        <select class="form-select form-select-sm" [(ngModel)]="learningLevelId" (ngModelChange)="pick()">
+                        <select class="form-select form-select-sm" [(ngModel)]="learningLevelId" (ngModelChange)="pickLevel()">
                             <option [ngValue]="null">- choose -</option>
                             <option *ngFor="let l of levels" [ngValue]="l.id">{{ l.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label mb-0 small">Subject / learning area</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="subjectId" (ngModelChange)="pick()" [disabled]="!learningLevelId">
+                            <option [ngValue]="null">{{ learningLevelId ? '- choose -' : '- choose the grade first -' }}</option>
+                            <option *ngFor="let s of subjects" [ngValue]="s.id">{{ s.name }}</option>
                         </select>
                     </div>
                     <div class="col-md-4 small text-muted">
