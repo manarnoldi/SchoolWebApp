@@ -7,7 +7,7 @@ import {AcademicYear} from '@/school/models/academic-year';
 import {ToastrService} from 'ngx-toastr';
 import {EducationLevelService} from '@/school/services/education-level.service';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
-import {forkJoin} from 'rxjs';
+import {catchError, forkJoin, map, of} from 'rxjs';
 import {EducationLevelSubjectService} from '@/academics/services/education-level-subject.service';
 import Swal from 'sweetalert2';
 import {Subject} from '@/academics/models/subject';
@@ -244,7 +244,7 @@ export class EducationLevelSubjectsComponent implements OnInit {
                             this.toastr.success('Record deleted successfully!');
                         },
                         (err) => {
-                            this.toastr.error(err);
+                            this.toastr.error(err.error?.message || err.error);
                         }
                     );
             } else if (result.dismiss === Swal.DismissReason.cancel) {
@@ -272,28 +272,32 @@ export class EducationLevelSubjectsComponent implements OnInit {
 
         forkJoin(checkForExistenceReq).subscribe(
             (educationLevelSubjs) => {
+                // Each unticked subject is removed on its own: the API keeps a
+                // subject that classes of the level still use, and says why.
                 educationLevelSubjs.forEach((ls) => {
                     if (ls.id) {
                         deleteSubjectIdsReq.push(
-                            this.educationLevelSubjectSvc.delete(
-                                '/educationLevelSubjects',
-                                parseInt(ls.id)
-                            )
+                            this.educationLevelSubjectSvc
+                                .delete('/educationLevelSubjects', parseInt(ls.id))
+                                .pipe(
+                                    map(() => null),
+                                    catchError((err) => of(`${this.subjects.find((s) => s.id == ls.subjectId)?.name || 'Subject'}: ${err.error?.message || err.error || 'not removed'}`))
+                                )
                         );
                     }
                 });
                 if (deleteSubjectIdsReq.length <= 0) {
                     this.recordsUpdated(educationLevelSubjects);
+                    return;
                 }
 
-                forkJoin(deleteSubjectIdsReq).subscribe(
-                    (res) => {
-                        this.recordsUpdated(educationLevelSubjects);
-                    },
-                    (err) => {
-                        this.toastr.error(err.error);
+                forkJoin(deleteSubjectIdsReq).subscribe((results: (string | null)[]) => {
+                    let kept = results.filter((r) => r);
+                    if (kept.length) {
+                        this.toastr.warning(kept.join('<br><br>'), 'Not removed', {enableHtml: true, timeOut: 20000});
                     }
-                );
+                    this.recordsUpdated(educationLevelSubjects);
+                });
             },
             (err) => {
                 this.toastr.error(err.error);

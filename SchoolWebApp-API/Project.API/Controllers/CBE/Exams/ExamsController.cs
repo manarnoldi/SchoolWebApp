@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Academics.Exam;
 using SchoolWebApp.Core.Entities.CBE.Exams;
+using SchoolWebApp.API.Services.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.Academics
@@ -16,11 +17,13 @@ namespace SchoolWebApp.API.Controllers.Academics
         private readonly ILogger<ExamsController> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public ExamsController(ILogger<ExamsController> logger, IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly SubjectLevelGuard _levelGuard;
+        public ExamsController(ILogger<ExamsController> logger, IUnitOfWork unitOfWork, IMapper mapper, SubjectLevelGuard levelGuard)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _levelGuard = levelGuard;
         }
 
         // GET: api/exams
@@ -209,6 +212,8 @@ namespace SchoolWebApp.API.Controllers.Academics
                 if (await _unitOfWork.Exams.ItemExistsAsync(s => s.SchoolExamId == model.SchoolExamId
                 && s.SchoolClassId == model.SchoolClassId && s.SubjectId == model.SubjectId))
                     return Conflict(new { message = $"The exam details submitted already exist." });
+                var notSet = await _levelGuard.NotSetForClassAsync(model.SubjectId, model.SchoolClassId);
+                if (notSet != null) return BadRequest(new { message = notSet });
                 try
                 {
                     var _item = _mapper.Map<Exam>(model);

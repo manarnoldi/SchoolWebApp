@@ -6,6 +6,7 @@ using SchoolWebApp.Core.DTOs.Academics.Curriculum;
 using SchoolWebApp.Core.DTOs.Academics.EducationLevelSubject;
 using SchoolWebApp.Core.DTOs.Academics.Exam;
 using SchoolWebApp.Core.Entities.Academics;
+using SchoolWebApp.API.Services.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.Academics
@@ -18,11 +19,13 @@ namespace SchoolWebApp.API.Controllers.Academics
         private readonly ILogger<CurriculaController> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public EducationLevelSubjectsController(ILogger<CurriculaController> logger, IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly SubjectLevelGuard _levelGuard;
+        public EducationLevelSubjectsController(ILogger<CurriculaController> logger, IUnitOfWork unitOfWork, IMapper mapper, SubjectLevelGuard levelGuard)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _levelGuard = levelGuard;
         }
 
 
@@ -373,13 +376,23 @@ namespace SchoolWebApp.API.Controllers.Academics
         {
             if (ModelState.IsValid)
             {
-                var itemExist = await _unitOfWork.EducationLevelSubjects.ItemExistsAsync(m => m.Id == model.Id);
-                if (!itemExist)
+                var saved = await _unitOfWork.EducationLevelSubjects.GetById(model.Id);
+                if (saved == null)
                     return BadRequest($"The education level subject of Id- '{model.Id}' does not exist hence cannot be updated.");
+                // Switching the row to another subject, level or year takes the old one off its level.
+                if (saved.SubjectId != model.SubjectId || saved.EducationLevelId != model.EducationLevelId || saved.AcademicYearId != model.AcademicYearId)
+                {
+                    var inUse = await _levelGuard.InUseAsync(saved.EducationLevelId, saved.AcademicYearId, saved.SubjectId);
+                    if (inUse != null) return BadRequest(new { message = inUse });
+                }
                 try
                 {
-                    var _item = _mapper.Map<EducationLevelSubject>(model);
-                    _unitOfWork.EducationLevelSubjects.Update(_item);
+                    // The saved row is tracked, so it is changed in place rather than replaced.
+                    saved.Description = model.Description;
+                    saved.EducationLevelId = model.EducationLevelId;
+                    saved.SubjectId = model.SubjectId;
+                    saved.AcademicYearId = model.AcademicYearId;
+                    _unitOfWork.EducationLevelSubjects.Update(saved);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
                 }
@@ -408,6 +421,8 @@ namespace SchoolWebApp.API.Controllers.Academics
                 var itemExists = await _unitOfWork.EducationLevelSubjects.GetById(id);
                 if (itemExists == null)
                     return BadRequest($"The education level subject of Id- '{id}' does not exist hence cannot be deleted.");
+                var inUse = await _levelGuard.InUseAsync(itemExists.EducationLevelId, itemExists.AcademicYearId, itemExists.SubjectId);
+                if (inUse != null) return BadRequest(new { message = inUse });
                 var entity = await _unitOfWork.EducationLevelSubjects.GetById(id);
                 _unitOfWork.EducationLevelSubjects.Delete(entity);
                 await _unitOfWork.SaveChangesAsync();

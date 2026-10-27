@@ -5,6 +5,7 @@ using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Staff.StaffAttendance;
 using SchoolWebApp.Core.DTOs.Staff.StaffSubject;
 using SchoolWebApp.Core.Entities.Staff;
+using SchoolWebApp.API.Services.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 
 namespace SchoolWebApp.API.Controllers.Staff
@@ -17,11 +18,13 @@ namespace SchoolWebApp.API.Controllers.Staff
         private readonly ILogger<StaffSubjectsController> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public StaffSubjectsController(ILogger<StaffSubjectsController> logger, IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly SubjectLevelGuard _levelGuard;
+        public StaffSubjectsController(ILogger<StaffSubjectsController> logger, IUnitOfWork unitOfWork, IMapper mapper, SubjectLevelGuard levelGuard)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _levelGuard = levelGuard;
         }
 
         // GET: api/staffSubjects
@@ -268,6 +271,8 @@ namespace SchoolWebApp.API.Controllers.Staff
                 if (await _unitOfWork.StaffSubjects.ItemExistsAsync(s => s.StaffDetailsId == model.StaffDetailsId && s.SubjectId == model.SubjectId &&
                 s.SchoolClassId == model.SchoolClassId))
                     return Conflict(new { message = $"The staff has already been allocated the subject." });
+                var notSet = await _levelGuard.NotSetForClassAsync(model.SubjectId, model.SchoolClassId);
+                if (notSet != null) return BadRequest(new { message = notSet });
                 try
                 {
                     var _item = _mapper.Map<StaffSubject>(model);
@@ -303,6 +308,8 @@ namespace SchoolWebApp.API.Controllers.Staff
                 var itemExist = await _unitOfWork.StaffSubjects.ItemExistsAsync(m => m.Id == model.Id);
                 if (!itemExist)
                     return BadRequest($"The staff subject of Id- '{model.Id}' does not exist hence cannot be updated.");
+                var notSet = await _levelGuard.NotSetForClassAsync(model.SubjectId, model.SchoolClassId);
+                if (notSet != null) return BadRequest(new { message = notSet });
                 try
                 {
                     var _item = _mapper.Map<StaffSubject>(model);

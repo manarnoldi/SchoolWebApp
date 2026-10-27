@@ -39,6 +39,8 @@ export class BulkStaffSubjectsComponent implements OnInit {
         existingId: string | null;
         existingStaffId: number | null;
         changed: boolean;
+        // Allocated before the subject was taken off the class's level; can only be removed.
+        notForLevel?: boolean;
     }[] = [];
 
     isLoading: boolean = false;
@@ -147,6 +149,19 @@ export class BulkStaffSubjectsComponent implements OnInit {
                         changed: false
                     };
                 });
+
+                // Allocations for subjects the level no longer has, listed so they can be cleared.
+                existingAllocations
+                    .filter((a) => !subjects.some((subj) => subj.id == a.subjectId))
+                    .forEach((a) => this.allocationRows.push({
+                        subjectId: a.subjectId,
+                        subjectName: a.subject?.name || 'Subject ' + a.subjectId,
+                        staffDetailsId: a.staffDetailsId,
+                        existingId: a.id,
+                        existingStaffId: a.staffDetailsId,
+                        changed: false,
+                        notForLevel: true
+                    }));
 
                 this.isLoading = false;
                 this.hasLoaded = true;

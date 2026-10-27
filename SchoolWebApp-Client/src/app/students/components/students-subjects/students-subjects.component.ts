@@ -560,7 +560,7 @@ export class StudentsSubjectsComponent implements OnInit, AfterViewInit {
                 },
                 error: (err) => {
                     this.modalSaving = false;
-                    this.toastr.error(err?.error ?? 'Failed to save allocations.');
+                    this.toastr.error(err?.error?.message || err?.error || 'Failed to save allocations.');
                 }
             });
     }

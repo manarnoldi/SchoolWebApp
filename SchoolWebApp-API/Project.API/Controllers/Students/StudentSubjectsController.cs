@@ -7,6 +7,7 @@ using SchoolWebApp.Core.DTOs.Academics.Subject;
 using SchoolWebApp.Core.DTOs.Students.StudentSubjects;
 using SchoolWebApp.Core.Entities.Academics;
 using SchoolWebApp.Core.Entities.Students;
+using SchoolWebApp.API.Services.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using System.Security.Policy;
 
@@ -20,11 +21,13 @@ namespace SchoolWebApp.API.Controllers.Students
         private readonly ILogger<StudentSubjectsController> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public StudentSubjectsController(ILogger<StudentSubjectsController> logger, IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly SubjectLevelGuard _levelGuard;
+        public StudentSubjectsController(ILogger<StudentSubjectsController> logger, IUnitOfWork unitOfWork, IMapper mapper, SubjectLevelGuard levelGuard)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _levelGuard = levelGuard;
         }
 
         // GET api/studentSubjects/checkIfExists/5
@@ -377,6 +380,12 @@ namespace SchoolWebApp.API.Controllers.Students
             }
             if (ModelState.IsValid)
             {
+                // All or nothing: refuse the batch if any subject is not one of the class's level.
+                foreach (var pair in model.Select(m => new { m.SubjectId, m.StudentClassId }).Distinct())
+                {
+                    var notSet = await _levelGuard.NotSetForStudentClassAsync(pair.SubjectId, pair.StudentClassId);
+                    if (notSet != null) return BadRequest(new { message = notSet });
+                }
                 try
                 {
                     foreach (var item in model)
@@ -427,6 +436,8 @@ namespace SchoolWebApp.API.Controllers.Students
                     return Conflict(new { message = $"The subject details submitted do not exist." });
                 if (await _unitOfWork.StudentSubjects.ItemExistsAsync(s => s.StudentClassId == model.StudentClassId && s.SubjectId == model.SubjectId))
                     return Conflict(new { message = $"The student subject record for the class already exists" });
+                var notSet = await _levelGuard.NotSetForStudentClassAsync(model.SubjectId, model.StudentClassId);
+                if (notSet != null) return BadRequest(new { message = notSet });
                 try
                 {
                     var _item = _mapper.Map<StudentSubject>(model);
@@ -461,6 +472,8 @@ namespace SchoolWebApp.API.Controllers.Students
                 var itemExist = await _unitOfWork.StudentSubjects.ItemExistsAsync(m => m.Id == model.Id);
                 if (!itemExist)
                     return BadRequest($"The student subject of Id- '{model.Id}' does not exist hence cannot be updated.");
+                var notSet = await _levelGuard.NotSetForStudentClassAsync(model.SubjectId, model.StudentClassId);
+                if (notSet != null) return BadRequest(new { message = notSet });
                 try
                 {
                     var _item = _mapper.Map<StudentSubject>(model);

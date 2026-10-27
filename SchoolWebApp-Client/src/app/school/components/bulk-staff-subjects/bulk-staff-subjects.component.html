@@ -74,15 +74,19 @@
                     </thead>
                     <tbody>
                         <tr *ngFor="let row of allocationRows; index as i"
-                            [ngClass]="{'table-warning': row.changed}">
+                            [ngClass]="{'table-warning': row.changed, 'table-danger': row.notForLevel && !row.changed}">
                             <td class="align-middle">{{ i + 1 }}</td>
-                            <td class="align-middle fw-bold">{{ row.subjectName }}</td>
+                            <td class="align-middle fw-bold">{{ row.subjectName }}
+                                <div *ngIf="row.notForLevel" class="small fw-normal text-danger">
+                                    <i class="fas fa-exclamation-triangle"></i> Not a subject of this class's level - remove the allocation.</div>
+                            </td>
                             <td class="align-middle">
                                 <select class="form-select form-select-sm"
                                     [(ngModel)]="row.staffDetailsId"
                                     (ngModelChange)="onStaffChange(row)">
-                                    <option [ngValue]="null">-- Not Assigned --</option>
-                                    <option [ngValue]="staff.id" *ngFor="let staff of teachingStaff">
+                                    <option [ngValue]="null">{{ row.notForLevel ? '-- Remove allocation --' : '-- Not Assigned --' }}</option>
+                                    <option [ngValue]="staff.id" *ngFor="let staff of teachingStaff"
+                                        [hidden]="row.notForLevel && staff.id != row.existingStaffId">
                                         {{ staff.fullName }}
                                     </option>
                                 </select>

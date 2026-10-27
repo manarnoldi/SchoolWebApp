@@ -220,6 +220,7 @@ namespace Project.API.Extensions
             services.AddScoped<TeachingDocumentService>();
             services.AddScoped<SchemeWorkbookService>();
             services.AddScoped<HeadOfDepartmentRoleSync>();
+            services.AddScoped<SchoolWebApp.API.Services.Academics.SubjectLevelGuard>();
             services.AddScoped<SchoolWebApp.API.Services.CBE.CurriculumWorkbookService>();
             #endregion
 
