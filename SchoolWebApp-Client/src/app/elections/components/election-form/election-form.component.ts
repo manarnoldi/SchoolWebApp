@@ -67,9 +67,9 @@ export class ElectionFormComponent implements OnInit {
               }
             : {
                   ...this.model,
-                  // A new election defaults to polling today, 08:00 to 14:00.
+                  // A new election defaults to polling today, 08:00 to 16:00.
                   pollingStart: todayAt(8, 0),
-                  pollingEnd: todayAt(14, 0),
+                  pollingEnd: todayAt(16, 0),
                   academicYearId: this.options.currentAcademicYearId,
                   registerMode: this.options.defaultRegisterMode,
                   dashboardRefreshSeconds: this.options.defaultRefreshSeconds
