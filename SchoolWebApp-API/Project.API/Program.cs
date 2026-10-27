@@ -252,6 +252,8 @@ using (var scope = app.Services.CreateScope())
     {
         logger.LogError(ex, "Error applying database migrations / bootstrapper at startup.");
     }
+    // KICD curriculum designs shipped with the API, loaded once per subject and grade.
+    await SchoolWebApp.API.Services.CBE.CurriculumSeeder.ApplyAsync(app.Services, logger);
 }
 
 // Configure the HTTP request pipeline.

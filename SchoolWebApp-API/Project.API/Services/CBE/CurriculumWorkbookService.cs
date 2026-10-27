@@ -27,10 +27,11 @@ namespace SchoolWebApp.API.Services.CBE
     /// </summary>
     public class CurriculumWorkbookService
     {
-        private const string Marker = "SHULENOVA-CURRICULUM";
+        internal const string Marker = "SHULENOVA-CURRICULUM";
         private const string CurriculumSheet = "Curriculum", OutcomesSheet = "Subject Outcomes", RubricsSheet = "Rubrics",
             DesignSheet = "Design", AppendixSheet = "Appendix", SectionsSheet = "Other Sections", ListsSheet = "Lists";
-        private const int KeyRow = 1, TitleRow = 2, NoteRow = 3, HeaderRow = 4, FirstRow = 5;
+        internal const int KeyRow = 1;
+        private const int TitleRow = 2, NoteRow = 3, HeaderRow = 4, FirstRow = 5;
         private const int OutcomesHeaderRow = 3, OutcomesFirstRow = 4, OutcomeSlots = 15;
         // Rubrics, Appendix and Other Sections: title, note, headers, then rows.
         private const int ListHeaderRow = 3, ListFirstRow = 4;
