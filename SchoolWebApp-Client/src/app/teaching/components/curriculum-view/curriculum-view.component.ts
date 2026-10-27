@@ -93,6 +93,7 @@ export class CurriculumViewComponent implements OnInit {
     letters = 'abcdefghijklmnopqrstuvwxyz';
     // Strands shown open; the first opens on load, the rest on click.
     openStrands = new Set<number>();
+    openParts = new Set<string>();
 
     constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router,
                 private toastr: ToastrService) {}
@@ -146,6 +147,7 @@ export class CurriculumViewComponent implements OnInit {
                 this.view = v;
                 this.loading = false;
                 this.openStrands = new Set(v.strands.slice(0, 1).map((s) => s.id));
+                this.openParts = new Set();
             },
             error: (err) => { this.loading = false; this.toastr.error(err.error?.message || 'Error loading the curriculum.'); }
         });
@@ -153,6 +155,11 @@ export class CurriculumViewComponent implements OnInit {
 
     lessonsOf(s: CurriculumStrandView): number {
         return s.subStrands.reduce((n, ss) => n + (ss.lessons || 0), 0);
+    }
+
+    // The appendix and other sections start folded; each opens and closes on its own.
+    togglePart(key: string) {
+        if (!this.openParts.delete(key)) this.openParts.add(key);
     }
 
     // One strand open at a time: opening one closes the other; clicking the open one closes it.

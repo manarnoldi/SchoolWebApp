@@ -213,3 +213,11 @@
     background: #e9ecef;
     border-left: 4px solid #6c757d;
 }
+
+.cv-section > .card-header {
+    cursor: pointer;
+
+    &:hover {
+        background: #dee2e6;
+    }
+}

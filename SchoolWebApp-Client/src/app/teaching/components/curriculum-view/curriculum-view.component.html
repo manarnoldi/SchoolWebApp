@@ -137,10 +137,12 @@
                 </div>
             </div>
 
-            <!-- Appendices and other sections -->
+            <!-- Appendices and other sections: folded until clicked -->
             <div *ngIf="view.appendix.length" class="card mb-2 cv-section">
-                <div class="card-header p-2"><strong>Appendix: Suggested Resources, Assessment Methods and Non-formal Programmes</strong></div>
-                <div class="card-body p-2">
+                <div class="card-header p-2" (click)="togglePart('appendix')" [attr.aria-expanded]="openParts.has('appendix')">
+                    <strong><i class="fas fa-fw me-1" [ngClass]="openParts.has('appendix') ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+                        Appendix: Suggested Resources, Assessment Methods and Non-formal Programmes</strong></div>
+                <div class="card-body p-2" *ngIf="openParts.has('appendix')">
                     <div class="row small">
                         <div *ngFor="let a of view.appendix" class="col-md-3">
                             <b>{{ a.label }}</b>
@@ -149,9 +151,11 @@
                     </div>
                 </div>
             </div>
-            <div *ngFor="let sec of view.sections" class="card mb-2 cv-section">
-                <div class="card-header p-2"><strong>{{ sec.title }}</strong></div>
-                <div class="card-body p-2 pre">{{ sec.content }}</div>
+            <div *ngFor="let sec of view.sections; let i = index" class="card mb-2 cv-section">
+                <div class="card-header p-2" (click)="togglePart('sec' + i)" [attr.aria-expanded]="openParts.has('sec' + i)">
+                    <strong><i class="fas fa-fw me-1" [ngClass]="openParts.has('sec' + i) ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+                        {{ sec.title }}</strong></div>
+                <div class="card-body p-2 pre" *ngIf="openParts.has('sec' + i)">{{ sec.content }}</div>
             </div>
         </ng-container>
     </div>
