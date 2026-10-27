@@ -990,6 +990,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
+                    b.Property<int?>("EducationLevelId")
+                        .HasColumnType("int");
+
                     b.Property<int>("EducationLevelTypeId")
                         .HasColumnType("int");
 
@@ -1009,6 +1012,8 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EducationLevelId");
 
                     b.HasIndex("EducationLevelTypeId");
 
@@ -7582,10 +7587,16 @@ namespace SchoolWebApp.Infrastructure.Migrations
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.CBE.Assessments.GeneralOutcome", b =>
                 {
+                    b.HasOne("SchoolWebApp.Core.Entities.School.EducationLevel", "EducationLevel")
+                        .WithMany("GeneralOutcomes")
+                        .HasForeignKey("EducationLevelId");
+
                     b.HasOne("SchoolWebApp.Core.Entities.School.EducationLevelType", "EducationLevelType")
                         .WithMany("GeneralOutcomes")
                         .HasForeignKey("EducationLevelTypeId")
                         .IsRequired();
+
+                    b.Navigation("EducationLevel");
 
                     b.Navigation("EducationLevelType");
                 });
@@ -9456,6 +9467,8 @@ namespace SchoolWebApp.Infrastructure.Migrations
             modelBuilder.Entity("SchoolWebApp.Core.Entities.School.EducationLevel", b =>
                 {
                     b.Navigation("BroadOutcomes");
+
+                    b.Navigation("GeneralOutcomes");
 
                     b.Navigation("LearningLevels");
 

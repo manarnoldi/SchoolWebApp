@@ -96,6 +96,17 @@ namespace SchoolWebApp.API.Services.CBE
             };
         }
 
+        // The level learning outcomes a grade's sub-strands can serve: those set for its
+        // education level, else the ones shared by its education level type.
+        private async Task<List<GeneralOutcome>> LevelOutcomesAsync(Scope scope)
+        {
+            var own = await _db.GeneralOutcomes.AsNoTracking()
+                .Where(o => o.EducationLevelId == scope.EducationLevelId).ToListAsync();
+            if (own.Count > 0) return own;
+            return await _db.GeneralOutcomes.AsNoTracking()
+                .Where(o => o.EducationLevelTypeId == scope.EducationLevelTypeId && o.EducationLevelId == null).ToListAsync();
+        }
+
         private IQueryable<Strand> StrandsWithDetail(int subjectId, int learningLevelId) => _db.Strands
             .Where(s => s.SubjectId == subjectId && s.LearningLevelId == learningLevelId)
             .Include(s => s.Rubrics)
@@ -118,9 +129,7 @@ namespace SchoolWebApp.API.Services.CBE
             var subjectOutcomes = await _db.BroadOutcomes.AsNoTracking()
                 .Where(o => o.SubjectId == subjectId && o.EducationLevelId == scope.EducationLevelId)
                 .OrderBy(o => o.Rank).ThenBy(o => o.Id).ToListAsync();
-            var levelOutcomes = await _db.GeneralOutcomes.AsNoTracking()
-                .Where(o => o.EducationLevelTypeId == scope.EducationLevelTypeId)
-                .OrderBy(o => o.Rank).ThenBy(o => o.Id).ToListAsync();
+            var levelOutcomes = (await LevelOutcomesAsync(scope)).OrderBy(o => o.Rank).ThenBy(o => o.Id).ToList();
             var competencies = await _db.Competencies.AsNoTracking().OrderBy(c => c.Rank).ThenBy(c => c.Id).ToListAsync();
             var values = await _db.Values.AsNoTracking().OrderBy(v => v.Rank).ThenBy(v => v.Id).ToListAsync();
             var strands = await StrandsWithDetail(subjectId, learningLevelId).AsNoTracking()
@@ -508,8 +517,7 @@ namespace SchoolWebApp.API.Services.CBE
                 r.SubjectOutcomes = subjectOutcomes.Count;
 
                 // ---- The sub-strands ----
-                var generalOutcomes = await _db.GeneralOutcomes.AsNoTracking()
-                    .Where(o => o.EducationLevelTypeId == scope.EducationLevelTypeId).ToListAsync();
+                var generalOutcomes = await LevelOutcomesAsync(scope);
                 var competencies = await _db.Competencies.AsNoTracking().ToListAsync();
                 var values = await _db.Values.AsNoTracking().ToListAsync();
                 var rows = new List<SubStrandRow>();

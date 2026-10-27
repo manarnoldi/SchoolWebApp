@@ -29,7 +29,7 @@
                         <label for="educationLevelTypeId" class="form-label">Education level type: <span
                                 class="requiredField">*</span></label>
                         <select class="form-select form-select-sm" aria-label="Select education level"
-                            formControlName="educationLevelTypeId" id="educationLevelTypeId" [ngClass]="{
+                            formControlName="educationLevelTypeId" id="educationLevelTypeId" (change)="typeChanged()" [ngClass]="{
                                 'is-invalid': (f.educationLevelTypeId.dirty || f.educationLevelTypeId.touched) && f.educationLevelTypeId.invalid
                                 }">
                             <option [ngValue]="null" hidden disabled selected>Select education
@@ -38,6 +38,19 @@
                                 educationLevelTypes">{{level.name}}</option>
                         </select>
                         <div class="invalid-feedback">Education level type is required</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="educationLevelId" class="form-label">Education level:</label>
+                        <select class="form-select form-select-sm" formControlName="educationLevelId" id="educationLevelId">
+                            <option [ngValue]="null">All levels of the type</option>
+                            <option [ngValue]="level.id" *ngFor="let level of levelsOfType">{{ level.name }}</option>
+                        </select>
+                        <small class="text-muted">Pick a level when its curriculum designs list their own level outcomes
+                            (e.g. Primary for Lower and Upper primary). A level with outcomes of its own uses only those.</small>
                     </div>
                 </div>
             </div>

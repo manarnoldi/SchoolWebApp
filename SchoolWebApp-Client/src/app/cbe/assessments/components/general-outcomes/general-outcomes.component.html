@@ -22,7 +22,7 @@
                 </button>
             </div>
             <app-general-outcome-add-form (addItemEvent)="addGeneralOutcome($event)"
-                [educationLevelTypes]="educationLevelTypes" (errorEvent)="errorEvent($event)"
+                [educationLevelTypes]="educationLevelTypes" [educationLevels]="educationLevels" (errorEvent)="errorEvent($event)"
                 [editMode]="false"></app-general-outcome-add-form>
         </div>
     </div>
@@ -62,6 +62,7 @@
                             <td>{{ item.id }}</td>
                             <td>{{ item.name }}</td>
                             <td>{{ item.educationLevelType?.name }}</td>
+                            <td>{{ item.educationLevel?.name || 'All levels' }}</td>
                             <td>{{ item.rank }}</td>
                             <td>{{ item.description }}</td>
                             <app-table-action

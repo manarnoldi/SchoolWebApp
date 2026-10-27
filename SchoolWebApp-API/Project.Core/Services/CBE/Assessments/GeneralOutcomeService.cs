@@ -24,7 +24,7 @@ namespace SchoolWebApp.Core.Services.CBE.Assessments
                 filter = filter.And(a => a.EducationLevelTypeId == eduLevelTypeId);
 
             var outcomes = await _unitOfWork.Repository<GeneralOutcome>()
-                .Find(eduLevelTypeId == null ? null : filter, includeProperties: "EducationLevelType");
+                .Find(eduLevelTypeId == null ? null : filter, includeProperties: "EducationLevelType,EducationLevel");
             return outcomes.ToList();
         }
     }

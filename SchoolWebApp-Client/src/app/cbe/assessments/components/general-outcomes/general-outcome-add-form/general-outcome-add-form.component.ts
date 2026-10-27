@@ -1,5 +1,6 @@
 import { GeneralOutcome } from '@/cbe/assessments/models/general-outcome';
 import { EducationLevelType } from '@/school/models/education-level-types';
+import {EducationLevel} from '@/school/models/educationLevel';
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
@@ -13,6 +14,7 @@ export class GeneralOutcomeAddFormComponent implements OnInit {
 
     @Input() generalOutcome: GeneralOutcome;
     @Input() educationLevelTypes: EducationLevelType[];
+    @Input() educationLevels: EducationLevel[] = [];
     @Input() editMode: boolean = false;
 
     @Output() addItemEvent = new EventEmitter<GeneralOutcome>();
@@ -31,16 +33,30 @@ export class GeneralOutcomeAddFormComponent implements OnInit {
             name: ['', [Validators.required]],
             rank: [0, [Validators.required]],
             description: [''],
-            educationLevelTypeId: [null, [Validators.required]]
+            educationLevelTypeId: [null, [Validators.required]],
+            educationLevelId: [null]
         });
     };
+
+    // Only the levels of the chosen type can own an outcome of that type.
+    get levelsOfType(): EducationLevel[] {
+        let typeId = this.generalOutcomeForm?.value.educationLevelTypeId;
+        return this.educationLevels.filter((l) => l.educationLevelTypeId == typeId);
+    }
+
+    typeChanged() {
+        let levelId = this.generalOutcomeForm.value.educationLevelId;
+        if (levelId != null && !this.levelsOfType.some((l) => l.id == levelId))
+            this.generalOutcomeForm.patchValue({educationLevelId: null});
+    }
 
     setFormControls = (generalOutcome: GeneralOutcome) => {
         this.generalOutcomeForm.setValue({
             name: generalOutcome.name,
             rank: generalOutcome.rank,
             description: generalOutcome.description,
-            educationLevelTypeId: generalOutcome.educationLevelTypeId ?? null
+            educationLevelTypeId: generalOutcome.educationLevelTypeId ?? null,
+            educationLevelId: generalOutcome.educationLevelId ?? null
         });
     };
 

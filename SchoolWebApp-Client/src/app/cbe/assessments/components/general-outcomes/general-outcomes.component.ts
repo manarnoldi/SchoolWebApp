@@ -8,6 +8,8 @@ import {GeneralOutcome} from '../../models/general-outcome';
 import {ToastrService} from 'ngx-toastr';
 import {GeneralOutcomeService} from '../../services/general-outcome.service';
 import {EducationLevelTypesService} from '@/school/services/education-level-types.service';
+import {EducationLevelService} from '@/school/services/education-level.service';
+import {EducationLevel} from '@/school/models/educationLevel';
 import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
@@ -42,6 +44,7 @@ export class GeneralOutcomesComponent implements OnInit {
         'Ref#',
         'Name',
         'Education level type',
+        'Education level',
         'Rank',
         'Description',
         'Action'
@@ -50,13 +53,15 @@ export class GeneralOutcomesComponent implements OnInit {
     generalOutcome: GeneralOutcome;
     generalOutcomes: GeneralOutcome[] = [];
     educationLevelTypes: EducationLevelType[] = [];
+    educationLevels: EducationLevel[] = [];
 
     firstLoad: boolean = true;
 
     constructor(
         private toastr: ToastrService,
         private generalOutcomeSvc: GeneralOutcomeService,
-        private educationLevelTypesSvc: EducationLevelTypesService
+        private educationLevelTypesSvc: EducationLevelTypesService,
+        private educationLevelSvc: EducationLevelService
     ) {}
 
     pageSizeChanged = (pageSize: number) => {
@@ -75,8 +80,10 @@ export class GeneralOutcomesComponent implements OnInit {
         let educationLevelTypeReq = this.educationLevelTypesSvc.get(
             '/educationLevelTypes'
         );
-        forkJoin([educationLevelTypeReq]).subscribe(
-            ([educationLevelTypes]) => {
+        let educationLevelReq = this.educationLevelSvc.get('/educationLevels');
+        forkJoin([educationLevelTypeReq, educationLevelReq]).subscribe(
+            ([educationLevelTypes, educationLevels]) => {
+                this.educationLevels = educationLevels.sort((a, b) => a.rank - b.rank);
                 this.educationLevelTypes = educationLevelTypes.sort(
                     (a, b) => a.rank - b.rank
                 );
@@ -108,8 +115,9 @@ export class GeneralOutcomesComponent implements OnInit {
         let searchStr = `/generalOutcomes/byEducationLevelTypeId?educationLevelTypeId=${cys.educationLevelTypeId ?? ''}`;
         this.generalOutcomeSvc.get(searchStr).subscribe({
             next: (generalOutcomes) => {
+                // Each level's own outcomes together, after the type-wide ones.
                 this.generalOutcomes = generalOutcomes.sort(
-                    (a, b) => a.rank - b.rank
+                    (a, b) => (a.educationLevel?.rank ?? -1) - (b.educationLevel?.rank ?? -1) || a.rank - b.rank
                 );
                 if (this.generalOutcomes.length <= 0 && !this.firstLoad) {
                     this.toastr.info(
@@ -119,7 +127,7 @@ export class GeneralOutcomesComponent implements OnInit {
                 this.firstLoad = false;
                 this.isAuthLoading = false;
             },
-            error: (err) => this.toastr.error(err.error)
+            error: (err) => this.toastr.error(err.error?.message || err.error)
         });
     };
 
@@ -209,7 +217,7 @@ export class GeneralOutcomesComponent implements OnInit {
                         this.closeButton.nativeElement.click();
                     },
                     (err) => {
-                        this.toastr.error(err.error);
+                        this.toastr.error(err.error?.message || err.error);
                     }
                 );
             } else if (result.dismiss === Swal.DismissReason.cancel) {

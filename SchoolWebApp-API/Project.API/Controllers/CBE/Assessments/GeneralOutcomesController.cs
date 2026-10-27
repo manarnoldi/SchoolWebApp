@@ -31,7 +31,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
         {
             try
             {
-                var generalOutcomes = await _modelSvc.Find(includeProperties: "EducationLevelType");
+                var generalOutcomes = await _modelSvc.Find(includeProperties: "EducationLevelType,EducationLevel");
                 var generalOutcomesDtos = _mapper.Map<List<GeneralOutcomeDto>>(generalOutcomes);
                 return Ok(generalOutcomesDtos);
             }
@@ -50,7 +50,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
         {
             try
             {
-                var paginatedData = await _modelSvc.GetPaginatedData(pageNumber ?? 1, pageSize ?? 10, includeProperties: "EducationLevelType");
+                var paginatedData = await _modelSvc.GetPaginatedData(pageNumber ?? 1, pageSize ?? 10, includeProperties: "EducationLevelType,EducationLevel");
                 var mappedData = _mapper.Map<List<GeneralOutcomeDto>>(paginatedData.Data);
                 return Ok(new PaginatedDto<GeneralOutcomeDto>(mappedData.ToList(), paginatedData.TotalCount));
             }
@@ -72,7 +72,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             try
             {
                 if (id <= 0) return BadRequest(id);
-                var _item = await _modelSvc.GetById(id, includeProperties: "EducationLevelType");
+                var _item = await _modelSvc.GetById(id, includeProperties: "EducationLevelType,EducationLevel");
 
                 if (_item == null) return NotFound();
                 var _itemDto = _mapper.Map<GeneralOutcomeDto>(_item);
@@ -95,8 +95,10 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
         {
             if (ModelState.IsValid)
             {
-                if (await _modelSvc.IsExists("Name", model.Name))
-                    return Conflict(new { message = $"The broad outcome name - '{model.Name}' already exists" });
+                // The same KICD wording can serve several levels (Lower and Upper primary).
+                if (await _modelSvc.ItemExistsAsync(m => m.Name == model.Name && m.EducationLevelTypeId == model.EducationLevelTypeId
+                        && m.EducationLevelId == model.EducationLevelId))
+                    return Conflict(new { message = $"The level outcome '{model.Name}' already exists for that level" });
                 try
                 {
                     var _item = _mapper.Map<GeneralOutcome>(model);
