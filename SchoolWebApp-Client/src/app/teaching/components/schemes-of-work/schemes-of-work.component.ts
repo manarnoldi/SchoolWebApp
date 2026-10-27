@@ -19,6 +19,7 @@ import {SchemesOfWorkService, TeachingDocumentsService} from '@/teaching/service
 import {AssignmentOpened} from '../teaching-assignments/teaching-assignments.component';
 import {PrintSchool, printScheme} from '@/teaching/utils/teaching-print';
 import {blobError, safeFileName, saveBlob} from '@/teaching/utils/download';
+import {backLabel, fromParam, withFrom} from '@/teaching/utils/back-link';
 
 interface WeekGroup {
     weekNo: number;
@@ -59,6 +60,10 @@ export class SchemesOfWorkComponent implements OnInit {
     statusLabels = STATUS_LABELS;
     statusBadges = STATUS_BADGES;
 
+    // Where this page was opened from (another teaching page), for the Back button.
+    from: string | null = null;
+    get backText(): string { return backLabel(this.from); }
+
     constructor(private route: ActivatedRoute, private router: Router, private toastr: ToastrService,
                 private teachingSvc: TeachingDocumentsService, private svc: SchemesOfWorkService,
                 private approvalSvc: ApprovalService, private schoolSvc: SchoolDetailsService) {}
@@ -70,6 +75,7 @@ export class SchemesOfWorkComponent implements OnInit {
             this.school = {name: s?.name || '', address: s?.address, logo: s?.logoAsBase64};
         }});
         // ?actId= from the approvals bell, ?schemeId= from the tracker.
+        this.from = fromParam(this.route);
         let id = +(this.route.snapshot.queryParamMap.get('actId') || this.route.snapshot.queryParamMap.get('schemeId') || 0);
         if (id) this.openScheme(id);
     }
@@ -103,7 +109,7 @@ export class SchemesOfWorkComponent implements OnInit {
         this.svc.get(id).subscribe({
             next: (s) => {
                 this.setScheme(s);
-                this.router.navigate([], {relativeTo: this.route, queryParams: {schemeId: s.id}, replaceUrl: true});
+                this.router.navigate([], {relativeTo: this.route, queryParams: withFrom(this.from, {schemeId: s.id}), replaceUrl: true});
                 this.teachingSvc.curriculum(s.subjectId, s.learningLevelId, s.sessionId).subscribe({next: (c) => this.strands = c});
                 this.teachingSvc.preferredApprovers(s.subjectId).subscribe({next: (ids) => this.preferredApprovers = ids});
             },
@@ -157,6 +163,7 @@ export class SchemesOfWorkComponent implements OnInit {
 
     back() {
         let leave = () => {
+            if (this.from) { this.router.navigateByUrl(this.from); return; }
             this.scheme = null;
             this.groups = [];
             this.router.navigate([], {relativeTo: this.route, queryParams: {}, replaceUrl: true});
@@ -415,7 +422,7 @@ export class SchemesOfWorkComponent implements OnInit {
             .then((r) => {
                 if (!r.value) return;
                 this.svc.delete(this.scheme!.id).subscribe({
-                    next: () => { this.dirty = false; this.toastr.success('Scheme deleted.'); this.back(); },
+                    next: () => { this.dirty = false; this.toastr.success('Scheme deleted.'); this.from = null; this.back(); },
                     error: (err) => this.toastr.error(err.error?.message || 'Error deleting the scheme.')
                 });
             });

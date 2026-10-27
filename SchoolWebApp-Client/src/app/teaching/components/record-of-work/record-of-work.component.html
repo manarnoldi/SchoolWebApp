@@ -9,7 +9,7 @@
             <div class="card card-outline card-primary mb-2">
                 <div class="card-header p-2 d-flex flex-wrap justify-content-between align-items-center gap-1">
                     <div>
-                        <button class="btn btn-sm btn-outline-secondary me-2" (click)="back()"><i class="fas fa-arrow-left"></i> Back</button>
+                        <button class="btn btn-sm btn-outline-secondary me-2" (click)="back()"><i class="fas fa-arrow-left"></i> {{ backText }}</button>
                         <strong>{{ record.scheme.subjectName }} &middot; {{ record.scheme.className }}</strong>
                         <span class="text-muted"> &middot; {{ record.scheme.sessionName }} {{ record.scheme.academicYearName }} &middot; {{ record.scheme.staffName }}</span>
                         <span class="ms-2 small">Scheme: <span class="badge" [ngClass]="statusBadges[record.scheme.status]">{{ statusLabels[record.scheme.status] }}</span></span>

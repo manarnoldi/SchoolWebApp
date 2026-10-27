@@ -18,6 +18,7 @@ import {
 import {RecordOfWorkService, TeachingDocumentsService} from '@/teaching/services/teaching-services';
 import {AssignmentOpened} from '../teaching-assignments/teaching-assignments.component';
 import {PrintSchool, printRecordOfWork} from '@/teaching/utils/teaching-print';
+import {backLabel, fromParam, withFrom} from '@/teaching/utils/back-link';
 
 interface WeekRows {
     weekNo: number;
@@ -56,6 +57,10 @@ export class RecordOfWorkComponent implements OnInit {
     taughtLabels = TAUGHT_LABELS;
     taughtOptions = [LessonTaughtStatus.NotRecorded, LessonTaughtStatus.Taught, LessonTaughtStatus.PartlyTaught, LessonTaughtStatus.NotTaught];
 
+    // Where this page was opened from (another teaching page), for the Back button.
+    from: string | null = null;
+    get backText(): string { return backLabel(this.from); }
+
     constructor(private route: ActivatedRoute, private router: Router, private toastr: ToastrService,
                 private teachingSvc: TeachingDocumentsService, private svc: RecordOfWorkService,
                 private schoolSvc: SchoolDetailsService) {}
@@ -66,6 +71,7 @@ export class RecordOfWorkComponent implements OnInit {
             let s = (r || [])[0] || r;
             this.school = {name: s?.name || '', address: s?.address, logo: s?.logoAsBase64};
         }});
+        this.from = fromParam(this.route);
         let id = +(this.route.snapshot.queryParamMap.get('schemeId') || 0);
         if (id) this.open(id);
     }
@@ -82,7 +88,7 @@ export class RecordOfWorkComponent implements OnInit {
         this.svc.get(schemeId).subscribe({
             next: (r) => {
                 this.set(r);
-                this.router.navigate([], {relativeTo: this.route, queryParams: {schemeId}, replaceUrl: true});
+                this.router.navigate([], {relativeTo: this.route, queryParams: withFrom(this.from, {schemeId}), replaceUrl: true});
             },
             error: (err) => this.toastr.error(err.status === 403
                 ? 'You do not have access to this record of work.'
@@ -118,6 +124,7 @@ export class RecordOfWorkComponent implements OnInit {
 
     back() {
         if (this.dirty.size && !window.confirm('Leave without saving your changes?')) return;
+        if (this.from) { this.router.navigateByUrl(this.from); return; }
         this.record = null;
         this.weeks = [];
         this.router.navigate([], {relativeTo: this.route, queryParams: {}, replaceUrl: true});

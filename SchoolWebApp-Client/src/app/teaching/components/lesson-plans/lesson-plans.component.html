@@ -8,11 +8,11 @@
         <ng-container *ngIf="scheme">
             <div class="card card-outline card-primary mb-2">
                 <div class="card-header p-2">
-                    <button class="btn btn-sm btn-outline-secondary me-2" (click)="back()"><i class="fas fa-arrow-left"></i> Back</button>
+                    <button class="btn btn-sm btn-outline-secondary me-2" (click)="back()"><i class="fas fa-arrow-left"></i> {{ backText }}</button>
                     <strong>{{ scheme.subjectName }} &middot; {{ scheme.className }}</strong>
                     <span class="text-muted"> &middot; {{ scheme.sessionName }} {{ scheme.academicYearName }} &middot; {{ scheme.staffName }}</span>
                     <span class="ms-2 small">Scheme: <span class="badge" [ngClass]="statusBadges[scheme.status]">{{ statusLabels[scheme.status] }}</span></span>
-                    <a class="ms-2 small" [routerLink]="['/teaching/schemes']" [queryParams]="{schemeId: scheme.id}">open scheme</a>
+                    <a class="ms-2 small" href="javascript:void(0)" (click)="openSchemeOfWork()">open scheme</a>
                 </div>
                 <div class="card-body p-2">
                     <div class="small text-muted mb-1">Pick a week. Plans are prepared from the scheme's lessons for that week.</div>

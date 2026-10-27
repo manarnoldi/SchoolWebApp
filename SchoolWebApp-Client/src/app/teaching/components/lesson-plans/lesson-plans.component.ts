@@ -22,6 +22,7 @@ import {
 import {LessonPlansService, SchemesOfWorkService, TeachingDocumentsService} from '@/teaching/services/teaching-services';
 import {AssignmentOpened} from '../teaching-assignments/teaching-assignments.component';
 import {PrintSchool, printLessonPlans} from '@/teaching/utils/teaching-print';
+import {backLabel, fromParam, openedFrom, withFrom} from '@/teaching/utils/back-link';
 
 /**
  * Lesson plans, a week at a time. A week is prepared from the scheme's lessons
@@ -58,6 +59,10 @@ export class LessonPlansComponent implements OnInit {
     statusClasses = STATUS_CLASSES;
     taughtLabels = TAUGHT_LABELS;
 
+    // Where this page was opened from (another teaching page), for the Back button.
+    from: string | null = null;
+    get backText(): string { return backLabel(this.from); }
+
     constructor(private route: ActivatedRoute, private router: Router, private toastr: ToastrService,
                 private teachingSvc: TeachingDocumentsService, private schemeSvc: SchemesOfWorkService,
                 private svc: LessonPlansService, private approvalSvc: ApprovalService,
@@ -71,6 +76,7 @@ export class LessonPlansComponent implements OnInit {
         }});
         // ?actId= (a lesson plan week) from the approvals bell; ?weekId= / ?schemeId= from the tracker.
         let q = this.route.snapshot.queryParamMap;
+        this.from = fromParam(this.route);
         let weekId = +(q.get('actId') || q.get('weekId') || 0);
         let schemeId = +(q.get('schemeId') || 0);
         if (weekId) this.openWeek(weekId, true);
@@ -162,7 +168,7 @@ export class LessonPlansComponent implements OnInit {
     }
 
     private setUrl(params: any) {
-        this.router.navigate([], {relativeTo: this.route, queryParams: params, replaceUrl: true});
+        this.router.navigate([], {relativeTo: this.route, queryParams: withFrom(this.from, params), replaceUrl: true});
     }
 
     private confirmLeave(): boolean {
@@ -171,6 +177,7 @@ export class LessonPlansComponent implements OnInit {
 
     back() {
         if (!this.confirmLeave()) return;
+        if (this.from) { this.router.navigateByUrl(this.from); return; }
         this.scheme = null;
         this.week = null;
         this.weeks = [];
@@ -336,9 +343,13 @@ export class LessonPlansComponent implements OnInit {
         if (this.dirtyPlans.size) e.preventDefault();
     }
 
+    openSchemeOfWork() {
+        this.router.navigate(['/teaching/schemes'], {queryParams: openedFrom(this.router, {schemeId: this.scheme!.id})});
+    }
+
     // Whether lessons were taught is recorded there, against the scheme.
     openRecordOfWork() {
-        this.router.navigate(['/teaching/record-of-work'], {queryParams: {schemeId: this.week!.scheme.id}});
+        this.router.navigate(['/teaching/record-of-work'], {queryParams: openedFrom(this.router, {schemeId: this.week!.scheme.id})});
     }
 
     addPlan() {

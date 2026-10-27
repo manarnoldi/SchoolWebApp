@@ -15,6 +15,7 @@ import {
     TrackerRow
 } from '@/teaching/models/teaching-models';
 import {TeachingDocumentsService} from '@/teaching/services/teaching-services';
+import {openedFrom} from '@/teaching/utils/back-link';
 
 const SESSION_KEY = 'teaching.sessionId';
 
@@ -184,16 +185,16 @@ export class TrackerComponent implements OnInit {
     }
 
     openScheme(r: TrackerRow) {
-        if (r.scheme.id) this.router.navigate(['/teaching/schemes'], {queryParams: {schemeId: r.scheme.id}});
+        if (r.scheme.id) this.router.navigate(['/teaching/schemes'], {queryParams: openedFrom(this.router, {schemeId: r.scheme.id})});
     }
 
     openWeek(r: TrackerRow, c: TrackerCell) {
-        if (c.id) this.router.navigate(['/teaching/lesson-plans'], {queryParams: {weekId: c.id}});
-        else if (r.scheme.id && c.status !== 'NotApplicable') this.router.navigate(['/teaching/lesson-plans'], {queryParams: {schemeId: r.scheme.id}});
+        if (c.id) this.router.navigate(['/teaching/lesson-plans'], {queryParams: openedFrom(this.router, {weekId: c.id})});
+        else if (r.scheme.id && c.status !== 'NotApplicable') this.router.navigate(['/teaching/lesson-plans'], {queryParams: openedFrom(this.router, {schemeId: r.scheme.id})});
     }
 
     openRecord(r: TrackerRow) {
-        if (r.scheme.id) this.router.navigate(['/teaching/record-of-work'], {queryParams: {schemeId: r.scheme.id}});
+        if (r.scheme.id) this.router.navigate(['/teaching/record-of-work'], {queryParams: openedFrom(this.router, {schemeId: r.scheme.id})});
     }
 
     percent(r: TrackerRow): number {
