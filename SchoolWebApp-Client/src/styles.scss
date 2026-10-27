@@ -39,10 +39,15 @@ ngx-spinner .ngx-spinner-overlay > div {
 
 html,
 body {
-    overflow-x: hidden;
     width: 100%;
 
     font-size: 14px !important;
+}
+
+// Only the page itself hides sideways overflow. Setting overflow on body as well
+// turns body into a second scroll box, which shows a second vertical scrollbar.
+html {
+    overflow-x: hidden;
 }
 
 body {
