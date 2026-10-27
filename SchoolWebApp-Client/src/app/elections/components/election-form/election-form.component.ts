@@ -18,6 +18,12 @@ function toLocalInput(utc: string | null): string | null {
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+function todayAt(hours: number, minutes: number): string | null {
+    const d = new Date();
+    d.setHours(hours, minutes, 0, 0);
+    return toLocalInput(d.toISOString());
+}
+
 function toUtc(local: string | null): string | null {
     return local ? new Date(local).toISOString() : null;
 }
@@ -61,6 +67,9 @@ export class ElectionFormComponent implements OnInit {
               }
             : {
                   ...this.model,
+                  // A new election defaults to polling today, 08:00 to 14:00.
+                  pollingStart: todayAt(8, 0),
+                  pollingEnd: todayAt(14, 0),
                   academicYearId: this.options.currentAcademicYearId,
                   registerMode: this.options.defaultRegisterMode,
                   dashboardRefreshSeconds: this.options.defaultRefreshSeconds
