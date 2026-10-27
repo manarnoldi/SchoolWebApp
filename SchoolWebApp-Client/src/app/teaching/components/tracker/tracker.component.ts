@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {DatePipe} from '@angular/common';
 import {ToastrService} from 'ngx-toastr';
 import {BreadCrumb} from '@/core/models/bread-crumb';
@@ -56,15 +56,24 @@ export class TrackerComponent implements OnInit {
     statusClasses = STATUS_CLASSES;
     legend: DocStatus[] = ['NotStarted', 'Draft', 'Submitted', 'Returned', 'Approved'];
 
-    constructor(private svc: TeachingDocumentsService, private router: Router,
+    constructor(private svc: TeachingDocumentsService, private router: Router, private route: ActivatedRoute,
                 private toastr: ToastrService, private datePipe: DatePipe) {}
 
     ngOnInit(): void {
+        let q = this.route.snapshot.queryParamMap;
+        let num = (k: string) => +(q.get(k) || 0) || null;
+        this.staffId = num('teacher');
+        this.departmentId = num('dept');
+        this.learningLevelId = num('grade');
+        this.subjectId = num('subject');
+        this.search = q.get('q') || '';
+        this.statuses = new Set((q.get('status') || '').split(',').filter((s) => this.legend.includes(s as DocStatus)) as DocStatus[]);
+        this.onlyOverdue = q.get('overdue') === '1';
         this.svc.context().subscribe({
             next: (c) => {
                 this.context = c;
-                let saved: number | null = null;
-                try { saved = +(sessionStorage.getItem(SESSION_KEY) || 0) || null; } catch { /* storage blocked */ }
+                let saved: number | null = num('term');
+                try { saved = saved || +(sessionStorage.getItem(SESSION_KEY) || 0) || null; } catch { /* storage blocked */ }
                 this.sessionId = c.sessions.some((s) => s.id === saved) ? saved : c.currentSessionId;
                 this.load();
             },
@@ -72,8 +81,21 @@ export class TrackerComponent implements OnInit {
         });
     }
 
+    // The term and filters live in the URL, so a refresh, or Back from a document
+    // opened here, comes back to the same view.
+    syncUrl() {
+        let p: Record<string, any> = {
+            term: this.sessionId, teacher: this.staffId, dept: this.departmentId, grade: this.learningLevelId,
+            subject: this.subjectId, q: this.search.trim() || null,
+            status: this.statuses.size ? Array.from(this.statuses).join(',') : null, overdue: this.onlyOverdue ? 1 : null
+        };
+        Object.keys(p).forEach((k) => { if (p[k] == null) delete p[k]; });
+        this.router.navigate([], {relativeTo: this.route, queryParams: p, replaceUrl: true});
+    }
+
     load() {
         if (!this.sessionId) return;
+        this.syncUrl();
         try { sessionStorage.setItem(SESSION_KEY, String(this.sessionId)); } catch { /* storage blocked */ }
         this.loading = true;
         this.svc.tracker({sessionId: this.sessionId}).subscribe({
@@ -110,15 +132,23 @@ export class TrackerComponent implements OnInit {
     // A grade or department change drops a subject not taught there.
     narrowSubject() {
         if (this.subjectId != null && !this.subjects.some((s) => s.id === this.subjectId)) this.subjectId = null;
+        this.syncUrl();
     }
 
     toggleStatus(s: DocStatus) {
         if (!this.statuses.delete(s)) this.statuses.add(s);
+        this.syncUrl();
+    }
+
+    toggleOverdue() {
+        this.onlyOverdue = !this.onlyOverdue;
+        this.syncUrl();
     }
 
     clearStatus() {
         this.statuses.clear();
         this.onlyOverdue = false;
+        this.syncUrl();
     }
 
     chipClass(on: boolean): string {

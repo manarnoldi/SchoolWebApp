@@ -1,5 +1,5 @@
 import {Component, HostListener, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import Swal from 'sweetalert2';
 import {BreadCrumb} from '@/core/models/bread-crumb';
@@ -61,7 +61,7 @@ export class LessonPlansComponent implements OnInit {
 
     // Where this page was opened from (another teaching page), for the Back button.
     from: string | null = null;
-    get backText(): string { return backLabel(this.from); }
+    get backText(): string { return backLabel(this.from, this.router); }
 
     constructor(private route: ActivatedRoute, private router: Router, private toastr: ToastrService,
                 private teachingSvc: TeachingDocumentsService, private schemeSvc: SchemesOfWorkService,
@@ -74,13 +74,33 @@ export class LessonPlansComponent implements OnInit {
             let s = (r || [])[0] || r;
             this.school = {name: s?.name || '', address: s?.address, logo: s?.logoAsBase64};
         }});
-        // ?actId= (a lesson plan week) from the approvals bell; ?weekId= / ?schemeId= from the tracker.
-        let q = this.route.snapshot.queryParamMap;
-        this.from = fromParam(this.route);
+        this.route.queryParamMap.subscribe((q) => this.followUrl(q));
+    }
+
+    // The URL says what is open - ?actId= (a lesson plan week) from the approvals
+    // bell, ?weekId= / ?schemeId= from the list or the tracker - or, with none, the
+    // list. Following it lets the browser's Back button return to the list.
+    private followUrl(q: ParamMap) {
         let weekId = +(q.get('actId') || q.get('weekId') || 0);
         let schemeId = +(q.get('schemeId') || 0);
-        if (weekId) this.openWeek(weekId, true);
-        else if (schemeId) this.openScheme(schemeId);
+        let leaving = weekId ? this.week?.id !== weekId : schemeId ? this.scheme?.id !== schemeId : !!this.scheme;
+        if (leaving && this.dirtyPlans.size) {
+            if (!window.confirm('You have unsaved lesson plans. Leave without saving them?')) {
+                let params = this.week ? {weekId: this.week.id} : {schemeId: this.scheme!.id};
+                this.router.navigate([], {relativeTo: this.route, queryParams: withFrom(this.from, params)});
+                return;
+            }
+            this.dirtyPlans.clear();
+        }
+        this.from = fromParam(this.route);
+        if (weekId) { if (this.week?.id !== weekId) this.openWeek(weekId); }
+        else if (schemeId) { if (this.scheme?.id !== schemeId) { this.week = null; this.openScheme(schemeId); } }
+        else if (this.scheme) {
+            this.scheme = null;
+            this.week = null;
+            this.weeks = [];
+            this.pendingWeekNo = null;
+        }
     }
 
     get editable(): boolean {
@@ -88,7 +108,9 @@ export class LessonPlansComponent implements OnInit {
     }
 
     onOpened(e: AssignmentOpened) {
-        if (e.assignment.schemeOfWorkId) this.openScheme(e.assignment.schemeOfWorkId);
+        // A history entry, so Back returns to the list as it was.
+        if (e.assignment.schemeOfWorkId)
+            this.router.navigate([], {relativeTo: this.route, queryParams: {schemeId: e.assignment.schemeOfWorkId, from: this.router.url}});
     }
 
     openScheme(id: number, thenWeekNo?: number) {
@@ -177,12 +199,9 @@ export class LessonPlansComponent implements OnInit {
 
     back() {
         if (!this.confirmLeave()) return;
-        if (this.from) { this.router.navigateByUrl(this.from); return; }
-        this.scheme = null;
-        this.week = null;
-        this.weeks = [];
-        this.pendingWeekNo = null;
-        this.setUrl({});
+        this.dirtyPlans.clear();
+        if (this.from) this.router.navigateByUrl(this.from);
+        else this.router.navigate([], {relativeTo: this.route, queryParams: {}});
     }
 
     toggle(p: LessonPlan) {

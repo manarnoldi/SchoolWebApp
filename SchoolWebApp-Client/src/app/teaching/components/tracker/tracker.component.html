@@ -31,21 +31,21 @@
                     </div>
                     <div class="col-md-2">
                         <label class="form-label mb-0 small">Subject</label>
-                        <select class="form-select form-select-sm" [(ngModel)]="subjectId">
+                        <select class="form-select form-select-sm" [(ngModel)]="subjectId" (ngModelChange)="syncUrl()">
                             <option [ngValue]="null">All</option>
                             <option *ngFor="let s of subjects" [ngValue]="s.id">{{ s.name }}</option>
                         </select>
                     </div>
                     <div class="col-md-2">
                         <label class="form-label mb-0 small">Search</label>
-                        <input class="form-control form-control-sm" [(ngModel)]="search" placeholder="Teacher, subject, class">
+                        <input class="form-control form-control-sm" [(ngModel)]="search" (ngModelChange)="syncUrl()" placeholder="Teacher, subject, class">
                     </div>
                 </div>
                 <div class="td-legend mt-2 d-flex align-items-center flex-wrap">
                     <span *ngFor="let s of legend" class="td-filter" [ngClass]="[statusClasses[s], chipClass(statuses.has(s))]"
                           title="Show only rows with a document in this state; click again to clear" (click)="toggleStatus(s)">{{ statusLabels[s] }}</span>
                     <span class="td-notstarted td-overdue td-filter" [ngClass]="chipClass(onlyOverdue)"
-                          title="Show only rows with something overdue; click again to clear" (click)="onlyOverdue = !onlyOverdue">Overdue</span>
+                          title="Show only rows with something overdue; click again to clear" (click)="toggleOverdue()">Overdue</span>
                     <a href="javascript:void(0)" class="small ms-1" *ngIf="statuses.size || onlyOverdue" (click)="clearStatus()">clear</a>
                     <small class="text-muted ms-2" *ngIf="tracker">
                         Showing {{ tracker.scope === 'school' ? 'the whole school' : tracker.scope === 'department' ? 'your department(s) and your own subjects' : 'your own subjects' }}.

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import Swal from 'sweetalert2';
 import {BreadCrumb} from '@/core/models/bread-crumb';
@@ -59,7 +59,7 @@ export class RecordOfWorkComponent implements OnInit {
 
     // Where this page was opened from (another teaching page), for the Back button.
     from: string | null = null;
-    get backText(): string { return backLabel(this.from); }
+    get backText(): string { return backLabel(this.from, this.router); }
 
     constructor(private route: ActivatedRoute, private router: Router, private toastr: ToastrService,
                 private teachingSvc: TeachingDocumentsService, private svc: RecordOfWorkService,
@@ -71,9 +71,23 @@ export class RecordOfWorkComponent implements OnInit {
             let s = (r || [])[0] || r;
             this.school = {name: s?.name || '', address: s?.address, logo: s?.logoAsBase64};
         }});
+        this.route.queryParamMap.subscribe((q) => this.followUrl(q));
+    }
+
+    // The URL says which scheme's record is open, or the list; following it lets
+    // the browser's Back button return to the list it was opened from.
+    private followUrl(q: ParamMap) {
+        let id = +(q.get('schemeId') || 0);
+        if (this.record && this.dirty.size && this.record.scheme.id !== id) {
+            if (!window.confirm('Leave without saving your changes?')) {
+                this.router.navigate([], {relativeTo: this.route, queryParams: withFrom(this.from, {schemeId: this.record.scheme.id})});
+                return;
+            }
+            this.dirty.clear();
+        }
         this.from = fromParam(this.route);
-        let id = +(this.route.snapshot.queryParamMap.get('schemeId') || 0);
-        if (id) this.open(id);
+        if (id) { if (this.record?.scheme.id !== id) this.open(id); }
+        else if (this.record) { this.record = null; this.weeks = []; }
     }
 
     get editable(): boolean {
@@ -81,7 +95,9 @@ export class RecordOfWorkComponent implements OnInit {
     }
 
     onOpened(e: AssignmentOpened) {
-        if (e.assignment.schemeOfWorkId) this.open(e.assignment.schemeOfWorkId);
+        // A history entry, so Back returns to the list as it was.
+        if (e.assignment.schemeOfWorkId)
+            this.router.navigate([], {relativeTo: this.route, queryParams: {schemeId: e.assignment.schemeOfWorkId, from: this.router.url}});
     }
 
     open(schemeId: number) {
@@ -124,10 +140,9 @@ export class RecordOfWorkComponent implements OnInit {
 
     back() {
         if (this.dirty.size && !window.confirm('Leave without saving your changes?')) return;
-        if (this.from) { this.router.navigateByUrl(this.from); return; }
-        this.record = null;
-        this.weeks = [];
-        this.router.navigate([], {relativeTo: this.route, queryParams: {}, replaceUrl: true});
+        this.dirty.clear();
+        if (this.from) this.router.navigateByUrl(this.from);
+        else this.router.navigate([], {relativeTo: this.route, queryParams: {}});
     }
 
     get coverage(): number {

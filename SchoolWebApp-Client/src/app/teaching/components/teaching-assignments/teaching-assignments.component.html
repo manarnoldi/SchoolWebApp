@@ -15,7 +15,7 @@
             </div>
             <div class="col-md-4">
                 <label class="form-label mb-0 small">Search</label>
-                <input class="form-control form-control-sm" [(ngModel)]="search" (ngModelChange)="page = 1" placeholder="Teacher, subject or class">
+                <input class="form-control form-control-sm" [(ngModel)]="search" (ngModelChange)="changed()" placeholder="Teacher, subject or class">
             </div>
             <div class="col-md-2 text-end small text-muted" *ngIf="session">
                 {{ session.startDate | date:'d MMM':'UTC' }} - {{ session.endDate | date:'d MMM y':'UTC' }}<br>
@@ -26,7 +26,7 @@
         <div class="row g-2 align-items-end mt-0">
             <div class="col-md-3" *ngIf="scope === 'oversee'">
                 <label class="form-label mb-0 small">Teacher</label>
-                <select class="form-select form-select-sm" [(ngModel)]="staffDetailsId" (ngModelChange)="page = 1">
+                <select class="form-select form-select-sm" [(ngModel)]="staffDetailsId" (ngModelChange)="changed()">
                     <option [ngValue]="null">All teachers</option>
                     <option *ngFor="let t of teachers" [ngValue]="t.id">{{ t.name }}</option>
                 </select>
@@ -47,14 +47,14 @@
             </div>
             <div class="col-md-2">
                 <label class="form-label mb-0 small">Subject</label>
-                <select class="form-select form-select-sm" [(ngModel)]="subjectId" (ngModelChange)="page = 1">
+                <select class="form-select form-select-sm" [(ngModel)]="subjectId" (ngModelChange)="changed()">
                     <option [ngValue]="null">All subjects</option>
                     <option *ngFor="let s of subjects" [ngValue]="s.id">{{ s.name }}</option>
                 </select>
             </div>
             <div class="col-md-2">
                 <label class="form-label mb-0 small">Scheme status</label>
-                <select class="form-select form-select-sm" [(ngModel)]="status" (ngModelChange)="page = 1">
+                <select class="form-select form-select-sm" [(ngModel)]="status" (ngModelChange)="changed()">
                     <option [ngValue]="null">Any status</option>
                     <option *ngFor="let s of statusOptions" [ngValue]="s">{{ statusLabels[s] }}</option>
                 </select>
@@ -123,5 +123,5 @@
         </table>
     </div>
     <app-table-paging *ngIf="filtered.length > 0" [collectionSize]="filtered.length" [page]="page" [pageSize]="pageSize"
-        (pageChangedEvent)="page = $event" (pageSizeChangedEvent)="pageSize = $event; page = 1"></app-table-paging>
+        (pageChangedEvent)="page = $event; syncUrl()" (pageSizeChangedEvent)="pageSize = $event; changed()"></app-table-paging>
 </div>

@@ -1,4 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import {
     DocStatus,
@@ -54,18 +55,33 @@ export class TeachingAssignmentsComponent implements OnInit {
     statusBadges = STATUS_BADGES;
 
     constructor(private svc: TeachingDocumentsService, private schemeSvc: SchemesOfWorkService,
-                private toastr: ToastrService) {}
+                private toastr: ToastrService, private route: ActivatedRoute, private router: Router) {}
+
+    // The first load keeps the filters and page read from the URL.
+    private restoring = true;
 
     ngOnInit(): void {
+        let q = this.route.snapshot.queryParamMap;
+        let num = (k: string) => +(q.get(k) || 0) || null;
+        this.staffDetailsId = num('teacher');
+        this.departmentId = num('dept');
+        this.learningLevelId = num('grade');
+        this.subjectId = num('subject');
+        this.status = (q.get('status') as DocStatus) || null;
+        this.search = q.get('q') || '';
+        this.page = num('page') || 1;
+        this.pageSize = num('size') || this.pageSize;
         this.svc.context().subscribe({
             next: (c) => {
                 this.context = c;
                 this.contextLoaded.emit(c);
-                let saved: number | null = null;
-                try { saved = +(sessionStorage.getItem(SESSION_KEY) || 0) || null; } catch { /* storage blocked */ }
+                let saved: number | null = num('term');
+                try { saved = saved || +(sessionStorage.getItem(SESSION_KEY) || 0) || null; } catch { /* storage blocked */ }
                 this.sessionId = c.sessions.some((s) => s.id === saved) ? saved : c.currentSessionId;
                 // An account not linked to a staff record has no subjects of its own.
                 this.scope = c.staffDetailsId ? 'mine' : 'oversee';
+                if (q.get('view') === 'mine' && c.staffDetailsId) this.scope = 'mine';
+                if (q.get('view') === 'all' && this.canOversee) this.scope = 'oversee';
                 this.load();
             },
             error: (err) => this.toastr.error(err.error?.message || 'Error loading your teaching details.')
@@ -102,7 +118,9 @@ export class TeachingAssignmentsComponent implements OnInit {
                 if (!rows.some((r) => r.departmentId === this.departmentId)) this.departmentId = null;
                 if (!rows.some((r) => r.learningLevelId === this.learningLevelId)) this.learningLevelId = null;
                 if (!rows.some((r) => r.subjectId === this.subjectId)) this.subjectId = null;
-                this.page = 1;
+                if (!this.restoring) this.page = 1;
+                this.restoring = false;
+                this.syncUrl();
             },
             error: (err) => { this.loading = false; this.toastr.error(err.error?.message || 'Error loading subject allocations.'); }
         });
@@ -122,7 +140,29 @@ export class TeachingAssignmentsComponent implements OnInit {
     // A grade or department change drops a subject not taught there.
     narrowSubject() {
         if (this.subjectId != null && !this.subjects.some((s) => s.id === this.subjectId)) this.subjectId = null;
+        this.changed();
+    }
+
+    // A filter changed: back to the first page, and into the URL.
+    changed() {
         this.page = 1;
+        this.syncUrl();
+    }
+
+    // The term, view, filters and page live in the URL, so a refresh or the
+    // browser's Back button comes back to the same list.
+    syncUrl() {
+        // The list shows while a document named in the URL is still loading; leave that URL alone.
+        let q = this.route.snapshot.queryParamMap;
+        if (q.has('schemeId') || q.has('weekId') || q.has('actId')) return;
+        let p: Record<string, any> = {
+            term: this.sessionId, view: this.scope === 'oversee' ? 'all' : 'mine',
+            teacher: this.staffDetailsId, dept: this.departmentId, grade: this.learningLevelId, subject: this.subjectId,
+            status: this.status, q: this.search.trim() || null,
+            page: this.page > 1 ? this.page : null, size: this.pageSize !== 15 ? this.pageSize : null
+        };
+        Object.keys(p).forEach((k) => { if (p[k] == null) delete p[k]; });
+        this.router.navigate([], {relativeTo: this.route, queryParams: p, replaceUrl: true});
     }
 
     // Sorted by rank when one is given, else by name.
@@ -163,7 +203,7 @@ export class TeachingAssignmentsComponent implements OnInit {
         this.staffDetailsId = this.departmentId = this.learningLevelId = this.subjectId = null;
         this.status = null;
         this.search = '';
-        this.page = 1;
+        this.changed();
     }
 
     isMine(a: TeachingAssignment): boolean {

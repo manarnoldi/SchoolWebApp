@@ -1,5 +1,5 @@
 import {Component, HostListener, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import Swal from 'sweetalert2';
 import {BreadCrumb} from '@/core/models/bread-crumb';
@@ -19,7 +19,7 @@ import {SchemesOfWorkService, TeachingDocumentsService} from '@/teaching/service
 import {AssignmentOpened} from '../teaching-assignments/teaching-assignments.component';
 import {PrintSchool, printScheme} from '@/teaching/utils/teaching-print';
 import {blobError, safeFileName, saveBlob} from '@/teaching/utils/download';
-import {backLabel, fromParam, withFrom} from '@/teaching/utils/back-link';
+import {backLabel, fromParam, isOwnList, withFrom} from '@/teaching/utils/back-link';
 
 interface WeekGroup {
     weekNo: number;
@@ -62,7 +62,7 @@ export class SchemesOfWorkComponent implements OnInit {
 
     // Where this page was opened from (another teaching page), for the Back button.
     from: string | null = null;
-    get backText(): string { return backLabel(this.from); }
+    get backText(): string { return backLabel(this.from, this.router); }
 
     constructor(private route: ActivatedRoute, private router: Router, private toastr: ToastrService,
                 private teachingSvc: TeachingDocumentsService, private svc: SchemesOfWorkService,
@@ -74,10 +74,29 @@ export class SchemesOfWorkComponent implements OnInit {
             let s = (r || [])[0] || r;
             this.school = {name: s?.name || '', address: s?.address, logo: s?.logoAsBase64};
         }});
-        // ?actId= from the approvals bell, ?schemeId= from the tracker.
+        this.route.queryParamMap.subscribe((q) => this.followUrl(q));
+    }
+
+    // The URL says what is open - ?actId= from the approvals bell, ?schemeId= from
+    // the list or the tracker - or, with neither, the list. Following it lets the
+    // browser's Back button return from a scheme to the list it was opened from.
+    private followUrl(q: ParamMap) {
+        let id = +(q.get('actId') || q.get('schemeId') || 0);
+        if (this.scheme && this.dirty && this.scheme.id !== id) {
+            if (!window.confirm('Leave without saving your changes to this scheme?')) {
+                this.router.navigate([], {relativeTo: this.route, queryParams: withFrom(this.from, {schemeId: this.scheme.id})});
+                return;
+            }
+            this.dirty = false;
+        }
         this.from = fromParam(this.route);
-        let id = +(this.route.snapshot.queryParamMap.get('actId') || this.route.snapshot.queryParamMap.get('schemeId') || 0);
-        if (id) this.openScheme(id);
+        if (id) { if (this.scheme?.id !== id) this.openScheme(id); }
+        else if (this.scheme) { this.scheme = null; this.groups = []; }
+    }
+
+    // Opening from the list adds a history entry, so Back returns to the list as it was.
+    private openFromList(id: number) {
+        this.router.navigate([], {relativeTo: this.route, queryParams: {schemeId: id, from: this.router.url}});
     }
 
     get editable(): boolean {
@@ -87,7 +106,7 @@ export class SchemesOfWorkComponent implements OnInit {
     onOpened(e: AssignmentOpened) {
         let a = e.assignment;
         if (a.schemeOfWorkId) {
-            this.openScheme(a.schemeOfWorkId);
+            this.openFromList(a.schemeOfWorkId);
             return;
         }
         Swal.fire({
@@ -99,7 +118,7 @@ export class SchemesOfWorkComponent implements OnInit {
             if (!r.value) return;
             this.svc.create(a.subjectId, a.schoolClassId, e.session.id,
                 a.staffDetailsId !== e.context.staffDetailsId ? a.staffDetailsId : undefined).subscribe({
-                next: (res) => this.openScheme(res.id),
+                next: (res) => this.openFromList(res.id),
                 error: (err) => this.toastr.error(err.error?.message || 'Error starting the scheme.')
             });
         });
@@ -163,10 +182,9 @@ export class SchemesOfWorkComponent implements OnInit {
 
     back() {
         let leave = () => {
-            if (this.from) { this.router.navigateByUrl(this.from); return; }
-            this.scheme = null;
-            this.groups = [];
-            this.router.navigate([], {relativeTo: this.route, queryParams: {}, replaceUrl: true});
+            this.dirty = false;
+            if (this.from) this.router.navigateByUrl(this.from);
+            else this.router.navigate([], {relativeTo: this.route, queryParams: {}});
         };
         if (!this.dirty) { leave(); return; }
         Swal.fire({title: 'Leave without saving?', text: 'Your changes to this scheme will be lost.', width: 400,
@@ -422,7 +440,7 @@ export class SchemesOfWorkComponent implements OnInit {
             .then((r) => {
                 if (!r.value) return;
                 this.svc.delete(this.scheme!.id).subscribe({
-                    next: () => { this.dirty = false; this.toastr.success('Scheme deleted.'); this.from = null; this.back(); },
+                    next: () => { this.dirty = false; this.toastr.success('Scheme deleted.'); if (!isOwnList(this.router, this.from)) this.from = null; this.back(); },
                     error: (err) => this.toastr.error(err.error?.message || 'Error deleting the scheme.')
                 });
             });
