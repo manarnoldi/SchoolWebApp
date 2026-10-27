@@ -558,5 +558,15 @@
     "file": "Grade 9/Grade-9-Social-Studies-Curriculum-Design.xlsx",
     "subject": "Social Studies",
     "level": "Grade 9"
+  },
+  {
+    "file": "Grade 7/Grade-7-Creative-Arts-and-Sports-Curriculum-Design.xlsx",
+    "subject": "Creative Arts (Art/Crafts, Music & Physical Education combined)",
+    "level": "Grade 7"
+  },
+  {
+    "file": "Grade 8/Grade-8-Mathematics-Curriculum-Design.xlsx",
+    "subject": "Mathematics",
+    "level": "Grade 8"
   }
 ]
