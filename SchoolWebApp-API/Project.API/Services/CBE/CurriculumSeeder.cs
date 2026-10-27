@@ -21,7 +21,21 @@ namespace SchoolWebApp.API.Services.CBE
             public string Level { get; set; } = "";
         }
 
-        public static async Task ApplyAsync(IServiceProvider services, ILogger logger)
+        private static string NameKey(string? name) =>
+            new string((name ?? "").Where(char.IsLetterOrDigit).Select(char.ToLowerInvariant).ToArray());
+
+        // Runs ApplyAsync after the app has started, so startup does not wait for it.
+        public static void StartInBackground(IServiceProvider services, IHostApplicationLifetime lifetime, ILogger logger)
+        {
+            lifetime.ApplicationStarted.Register(() => _ = Task.Run(async () =>
+            {
+                try { await ApplyAsync(services, logger, lifetime.ApplicationStopping); }
+                catch (OperationCanceledException) { logger.LogInformation("Curriculum seed: stopped with the app; it resumes on the next start."); }
+                catch (Exception ex) { logger.LogError(ex, "Curriculum seed failed."); }
+            }));
+        }
+
+        public static async Task ApplyAsync(IServiceProvider services, ILogger logger, CancellationToken cancel = default)
         {
             var dir = Path.Combine(AppContext.BaseDirectory, "SeedData", "Curriculum");
             var manifestPath = Path.Combine(dir, "manifest.json");
@@ -30,13 +44,33 @@ namespace SchoolWebApp.API.Services.CBE
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
 
             var scopes = services.GetRequiredService<IServiceScopeFactory>();
+
+            // One loader at a time: during a recycle the old and new app can overlap, and
+            // both would otherwise load the same designs. A MySQL named lock, held on its
+            // own connection for the whole run, keeps the second one out.
+            using var lockScope = scopes.CreateScope();
+            var lockConnection = lockScope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.GetDbConnection();
+            await lockConnection.OpenAsync(cancel);
+            using (var take = lockConnection.CreateCommand())
+            {
+                take.CommandText = "SELECT GET_LOCK('shulenova_curriculum_seed', 0)";
+                if (Convert.ToInt32(await take.ExecuteScalarAsync(cancel)) != 1)
+                {
+                    logger.LogInformation("Curriculum seed: another instance is loading the designs - skipped.");
+                    return;
+                }
+            }
+
             foreach (var e in entries)
             {
+                cancel.ThrowIfCancellationRequested();
                 // A scope per design keeps each import's tracked entities apart.
                 using var scope = scopes.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                var subject = await db.Subjects.AsNoTracking().FirstOrDefaultAsync(s => s.Name == e.Subject);
-                var level = await db.LearningLevels.AsNoTracking().FirstOrDefaultAsync(l => l.Name == e.Level);
+                // Names are compared on letters and digits only: a school's subject may be
+                // typed with a different dash or spacing (e.g. "Pre‑Technical").
+                var subject = (await db.Subjects.AsNoTracking().ToListAsync(cancel)).FirstOrDefault(s => NameKey(s.Name) == NameKey(e.Subject));
+                var level = (await db.LearningLevels.AsNoTracking().ToListAsync(cancel)).FirstOrDefault(l => NameKey(l.Name) == NameKey(e.Level));
                 if (subject == null || level == null)
                 {
                     logger.LogWarning("Curriculum seed {File}: no subject '{Subject}' or grade '{Level}' here - skipped.", e.File, e.Subject, e.Level);
@@ -74,6 +108,7 @@ namespace SchoolWebApp.API.Services.CBE
                     logger.LogError(ex, "Curriculum seed {File} failed.", e.File);
                 }
             }
+            logger.LogInformation("Curriculum seed: finished ({Count} designs in the manifest).", entries.Count);
         }
     }
 }
