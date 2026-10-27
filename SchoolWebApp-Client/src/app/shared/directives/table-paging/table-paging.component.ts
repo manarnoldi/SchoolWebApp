@@ -7,7 +7,8 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 })
 export class TablePagingComponent  {
     constructor() {}
-    page: number = 1;
+    // Lets the list send the pager back to page 1 when its filters change.
+    @Input() page: number = 1;
     @Input() pageSize: number = 10;
     @Input() collectionSize = 0;
     @Output() pageChangedEvent = new EventEmitter<number>();

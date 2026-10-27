@@ -47,7 +47,7 @@ export class TeachingAssignmentsComponent implements OnInit {
     subjectId: number | null = null;
     status: DocStatus | null = null;
     page = 1;
-    pageSize = 15;
+    pageSize = 10;
     statusOptions: DocStatus[] = ['NotStarted', 'Draft', 'Submitted', 'Returned', 'Rejected', 'Approved'];
 
     statusLabels = STATUS_LABELS;

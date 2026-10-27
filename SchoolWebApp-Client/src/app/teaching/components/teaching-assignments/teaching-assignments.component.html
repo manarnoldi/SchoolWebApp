@@ -122,17 +122,6 @@
             </tbody>
         </table>
     </div>
-    <div class="card-footer p-1 d-flex flex-wrap justify-content-between align-items-center" *ngIf="filtered.length > 0">
-        <small class="text-muted ms-1">
-            {{ (page - 1) * pageSize + 1 }}-{{ (page * pageSize < filtered.length) ? page * pageSize : filtered.length }}
-            of {{ filtered.length }}{{ filtered.length !== rows.length ? ' (filtered from ' + rows.length + ')' : '' }}
-        </small>
-        <div class="d-flex align-items-center gap-2">
-            <select class="form-select form-select-sm" style="width: auto;" [(ngModel)]="pageSize" (ngModelChange)="page = 1">
-                <option *ngFor="let n of [15, 30, 50, 100]" [ngValue]="n">{{ n }} per page</option>
-            </select>
-            <ngb-pagination *ngIf="filtered.length > pageSize" class="mb-0" [collectionSize]="filtered.length" [(page)]="page"
-                [pageSize]="pageSize" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" size="sm"></ngb-pagination>
-        </div>
-    </div>
+    <app-table-paging *ngIf="filtered.length > 0" [collectionSize]="filtered.length" [page]="page" [pageSize]="pageSize"
+        (pageChangedEvent)="page = $event" (pageSizeChangedEvent)="pageSize = $event; page = 1"></app-table-paging>
 </div>
