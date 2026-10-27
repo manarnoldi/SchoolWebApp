@@ -81,29 +81,34 @@ export class TrackerComponent implements OnInit {
         });
     }
 
-    // Filter options come from the rows themselves.
-    get departments() { return this.distinct((r) => r.departmentId, (r) => r.departmentName || '-'); }
+    // Filter options come from the rows themselves; the teacher comes first and narrows the rest.
+    get teachers() { return this.distinct((r) => r.staffDetailsId, (r) => r.staffName); }
+    get departments() { return this.distinct((r) => r.departmentId, (r) => r.departmentName || '-', undefined, (r) => this.ofTeacher(r)); }
     // Grades in their set order (Learning Levels > Rank).
-    get grades() { return this.distinct((r) => r.learningLevelId, (r) => r.learningLevelName, (r) => r.learningLevelRank); }
+    get grades() {
+        return this.distinct((r) => r.learningLevelId, (r) => r.learningLevelName, (r) => r.learningLevelRank, (r) => this.ofTeacher(r));
+    }
     // Subjects in their set order (Subjects > Rank), narrowed to the chosen department and grade.
     get subjects() {
         return this.distinct((r) => r.subjectId, (r) => r.subjectName, (r) => r.subjectRank,
-            (r) => (this.departmentId == null || r.departmentId === this.departmentId)
+            (r) => this.ofTeacher(r) && (this.departmentId == null || r.departmentId === this.departmentId)
                 && (this.learningLevelId == null || r.learningLevelId === this.learningLevelId));
     }
 
-    // Teachers by name, narrowed to the chosen department, grade and subject.
-    get teachers() {
-        return this.distinct((r) => r.staffDetailsId, (r) => r.staffName, undefined,
-            (r) => (this.departmentId == null || r.departmentId === this.departmentId)
-                && (this.learningLevelId == null || r.learningLevelId === this.learningLevelId)
-                && (this.subjectId == null || r.subjectId === this.subjectId));
+    private ofTeacher(r: TrackerRow): boolean {
+        return this.staffId == null || r.staffDetailsId === this.staffId;
     }
 
-    // A grade or department change drops a subject not taught there, and a teacher not teaching there.
+    // A teacher change drops a department or grade they don't teach in, then narrows the subject.
+    narrowToTeacher() {
+        if (this.departmentId != null && !this.departments.some((d) => d.id === this.departmentId)) this.departmentId = null;
+        if (this.learningLevelId != null && !this.grades.some((g) => g.id === this.learningLevelId)) this.learningLevelId = null;
+        this.narrowSubject();
+    }
+
+    // A grade or department change drops a subject not taught there.
     narrowSubject() {
         if (this.subjectId != null && !this.subjects.some((s) => s.id === this.subjectId)) this.subjectId = null;
-        if (this.staffId != null && !this.teachers.some((t) => t.id === this.staffId)) this.staffId = null;
     }
 
     toggleStatus(s: DocStatus) {

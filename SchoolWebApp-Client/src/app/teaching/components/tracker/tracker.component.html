@@ -9,6 +9,13 @@
                         <app-term-picker [sessions]="context?.sessions || []" [(sessionId)]="sessionId" (sessionIdChange)="load()"></app-term-picker>
                     </div>
                     <div class="col-md-2" *ngIf="tracker && tracker.scope !== 'own'">
+                        <label class="form-label mb-0 small">Teacher</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="staffId" (ngModelChange)="narrowToTeacher()">
+                            <option [ngValue]="null">All</option>
+                            <option *ngFor="let t of teachers" [ngValue]="t.id">{{ t.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2" *ngIf="tracker && tracker.scope !== 'own'">
                         <label class="form-label mb-0 small">Department</label>
                         <select class="form-select form-select-sm" [(ngModel)]="departmentId" (ngModelChange)="narrowSubject()">
                             <option [ngValue]="null">All</option>
@@ -24,16 +31,9 @@
                     </div>
                     <div class="col-md-2">
                         <label class="form-label mb-0 small">Subject</label>
-                        <select class="form-select form-select-sm" [(ngModel)]="subjectId" (ngModelChange)="narrowSubject()">
+                        <select class="form-select form-select-sm" [(ngModel)]="subjectId">
                             <option [ngValue]="null">All</option>
                             <option *ngFor="let s of subjects" [ngValue]="s.id">{{ s.name }}</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2" *ngIf="tracker && tracker.scope !== 'own'">
-                        <label class="form-label mb-0 small">Teacher</label>
-                        <select class="form-select form-select-sm" [(ngModel)]="staffId">
-                            <option [ngValue]="null">All</option>
-                            <option *ngFor="let t of teachers" [ngValue]="t.id">{{ t.name }}</option>
                         </select>
                     </div>
                     <div class="col-md-2">
