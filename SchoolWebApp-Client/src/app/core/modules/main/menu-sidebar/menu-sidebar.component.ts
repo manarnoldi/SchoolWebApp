@@ -153,13 +153,6 @@ export const MENU = [
         ]
     },
     {
-        name: 'Elections',
-        iconClasses: 'fas fa-vote-yea',
-        children: [
-            {name: 'Manage Elections', iconClasses: 'fas fa-cogs text-info', path: ['/elections/manage']}
-        ]
-    },
-    {
         name: 'Finance',
         iconClasses: 'fas fa-coins',
         children: [
@@ -192,6 +185,13 @@ export const MENU = [
             {name: 'Loans & Advances', iconClasses: 'fas fa-hand-holding-usd text-warning', path: ['/payroll/loan-advances']},
             {name: 'Processing', iconClasses: 'fas fa-cogs text-primary', path: ['/payroll/periods']},
             {name: 'Reports', iconClasses: 'fas fa-chart-pie text-info', path: ['/payroll/reports']}
+        ]
+    },
+    {
+        name: 'Elections',
+        iconClasses: 'fas fa-vote-yea',
+        children: [
+            {name: 'Manage Elections', iconClasses: 'fas fa-cogs text-info', path: ['/elections/manage']}
         ]
     },
     {
