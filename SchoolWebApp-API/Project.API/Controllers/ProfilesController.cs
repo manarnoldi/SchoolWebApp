@@ -411,7 +411,7 @@ namespace SchoolWebApp.API.Controllers
                 .Cast<object>()
                 .ToList();
 
-        // Self: the signed-in user is this staff member. Officer: an administrator
+        // Self: the signed-in user is this staff member. Officer: a super administrator
         // or a role holding the payroll menu.
         private async Task<(bool Self, bool Officer)> PayAccessAsync(int staffId)
         {
@@ -420,7 +420,8 @@ namespace SchoolWebApp.API.Controllers
             var user = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
             var self = user?.PersonId == staffId;
             var roles = User.FindAll(System.Security.Claims.ClaimTypes.Role).Select(c => c.Value).ToList();
-            var officer = roles.Contains("Administrator") || roles.Contains("SuperAdministrator")
+            // Not administrators as such: only super administrators and roles given Payroll.
+            var officer = roles.Contains("SuperAdministrator")
                 || await _db.MenuPermissions.AnyAsync(p => p.MenuPath == PayrollMenu && roles.Contains(p.RoleId));
             return (self, officer);
         }
