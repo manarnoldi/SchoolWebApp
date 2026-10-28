@@ -118,11 +118,11 @@
 
             <!-- Slideshow: one race -->
             <ng-template #slideTpl>
-                <div class="d-flex align-items-center gap-3 mb-2 px-1">
-                    <h4 class="mb-0 me-auto"><i class="fas fa-poll text-info me-1"></i>{{ r.electionName }}
-                        <span class="badge ms-1 align-middle" [ngClass]="stageBadges[r.stage]">{{ stageLabels[r.stage] }}</span></h4>
-                    <span class="text-muted">{{ declared ? 'Declared results' : 'Provisional, as at ' + (r.asAt | date:'HH:mm:ss') }}</span>
-                    <span class="fs-5"><b>{{ r.voted }}</b><span class="text-muted"> / {{ r.voters }} voted ({{ turnout }}%)</span></span>
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-2 px-1">
+                    <h3 class="mb-0 me-auto fw-bold" style="color: #0b2a5b;"><i class="fas fa-poll text-primary me-2"></i>{{ r.electionName }}
+                        <span class="badge ms-1 align-middle fs-6" [ngClass]="stageBadges[r.stage]">{{ stageLabels[r.stage] }}</span></h3>
+                    <span class="fs-5 text-muted">{{ declared ? 'Declared results' : 'Provisional, as at ' + (r.asAt | date:'HH:mm') }}</span>
+                    <span class="fs-4"><b>{{ r.voted }}</b><span class="text-muted"> / {{ r.voters }} voted &middot; <b>{{ turnout }}%</b></span></span>
                 </div>
                 <app-race-slide [race]="raceSlide!" [photoBase]="photoBase" [declared]="declared"></app-race-slide>
             </ng-template>

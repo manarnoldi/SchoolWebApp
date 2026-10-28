@@ -16,8 +16,10 @@
                         <div class="fs-4 fw-bold text-success">{{ counts.voted }}</div><small class="text-muted">voted</small></div>
                     <div class="text-center">
                         <div class="fs-4 fw-bold">{{ counts.all - counts.voted }}</div><small class="text-muted">waiting</small></div>
-                    <button class="btn btn-sm btn-outline-secondary" (click)="load()"><i class="fas fa-sync-alt"></i></button>
-                    <button class="btn btn-sm btn-outline-secondary" (click)="router.navigate(['/elections/polling'])"><i class="fas fa-arrow-left"></i> Stations</button>
+                    <div class="d-flex gap-1">
+                        <button class="btn btn-outline-secondary touch" (click)="load()" title="Refresh"><i class="fas fa-sync-alt"></i></button>
+                        <button class="btn btn-outline-secondary touch" (click)="router.navigate(['/elections/polling'])"><i class="fas fa-arrow-left"></i> Stations</button>
+                    </div>
                 </div>
                 <div class="card-footer py-1 small" *ngIf="s.stage !== Stage.Polling">
                     <i class="fas fa-lock me-1"></i>{{ s.stage < Stage.Polling ? 'Polling has not opened yet.' : 'Polling is closed.' }} Ballots cannot be issued.</div>
@@ -25,9 +27,9 @@
 
             <div class="card">
                 <div class="card-header py-2 d-flex flex-wrap align-items-center gap-2">
-                    <input class="form-control" style="max-width: 360px;" [(ngModel)]="search" (ngModelChange)="page = 1"
+                    <input class="form-control touch flex-grow-1" style="min-width: 200px; max-width: 420px;" [(ngModel)]="search" (ngModelChange)="page = 1"
                         placeholder="Find the voter: name, UPI or class" autofocus>
-                    <div class="btn-group btn-group-sm">
+                    <div class="btn-group">
                         <button class="btn" [ngClass]="show === 'waiting' ? 'btn-primary' : 'btn-outline-primary'" (click)="show = 'waiting'; page = 1">Not voted</button>
                         <button class="btn" [ngClass]="show === 'voted' ? 'btn-primary' : 'btn-outline-primary'" (click)="show = 'voted'; page = 1">Voted</button>
                         <button class="btn" [ngClass]="show === 'all' ? 'btn-primary' : 'btn-outline-primary'" (click)="show = 'all'; page = 1">All</button>
@@ -35,15 +37,20 @@
                 </div>
                 <div class="card-body p-0">
                     <table class="table table-hover mb-0 align-middle">
-                        <thead class="table-light"><tr><th>Voter</th><th>UPI</th><th>Class</th><th>Gender</th><th style="width: 1%;"></th></tr></thead>
+                        <thead class="table-light"><tr><th>Voter</th><th class="d-none d-md-table-cell">UPI</th><th class="d-none d-md-table-cell">Class</th>
+                            <th class="d-none d-lg-table-cell">Gender</th><th style="width: 1%;"></th></tr></thead>
                         <tbody>
                             <tr *ngIf="filtered.length === 0"><td colspan="5" class="text-center text-muted py-3">No voters{{ search ? ' match the search' : '' }}.</td></tr>
                             <tr *ngFor="let v of paged">
-                                <td><b>{{ v.name }}</b></td><td>{{ v.upi }}</td><td>{{ v.className }}</td><td>{{ v.genderName }}</td>
+                                <td><b>{{ v.name }}</b>
+                                    <!-- Phones: the class and UPI under the name -->
+                                    <div class="small text-muted d-md-none">{{ v.className }} &middot; {{ v.upi }}</div></td>
+                                <td class="d-none d-md-table-cell">{{ v.upi }}</td><td class="d-none d-md-table-cell">{{ v.className }}</td>
+                                <td class="d-none d-lg-table-cell">{{ v.genderName }}</td>
                                 <td class="text-nowrap">
                                     <span *ngIf="v.voted" class="badge bg-success"><i class="fas fa-check"></i> Voted {{ v.votedAt | date:'HH:mm' }}</span>
-                                    <button *ngIf="!v.voted" class="btn btn-sm btn-success" [disabled]="s.stage !== Stage.Polling || issuing !== null" (click)="issue(v)">
-                                        <i class="fas" [ngClass]="issuing === v.studentId ? 'fa-spinner fa-spin' : 'fa-vote-yea'"></i> Issue ballot</button>
+                                    <button *ngIf="!v.voted" class="btn btn-success touch" [disabled]="s.stage !== Stage.Polling || issuing !== null" (click)="issue(v)">
+                                        <i class="fas" [ngClass]="issuing === v.studentId ? 'fa-spinner fa-spin' : 'fa-vote-yea'"></i> Issue<span class="d-none d-sm-inline"> ballot</span></button>
                                 </td>
                             </tr>
                         </tbody>
@@ -104,7 +111,7 @@
             </div>
         </div>
         <div class="text-center pb-4">
-            <button class="btn btn-lg btn-primary px-5" (click)="review()"><i class="fas fa-arrow-right"></i> Review my vote</button>
+            <button class="btn btn-lg btn-primary px-5 touch" (click)="review()"><i class="fas fa-arrow-right"></i> Review my vote</button>
         </div>
     </div>
 
@@ -121,7 +128,7 @@
                 </li>
             </ul>
         </div>
-        <div class="d-flex gap-3 justify-content-center">
+        <div class="d-flex gap-3 justify-content-center ballot-actions">
             <button class="btn btn-lg btn-outline-secondary px-4" [disabled]="casting" (click)="mode = 'ballot'"><i class="fas fa-arrow-left"></i> Change</button>
             <button class="btn btn-lg btn-success px-5" [disabled]="casting" (click)="cast()">
                 <i class="fas" [ngClass]="casting ? 'fa-spinner fa-spin' : 'fa-check-circle'"></i> Cast my vote</button>

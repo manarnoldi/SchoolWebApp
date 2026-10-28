@@ -5,7 +5,8 @@ import {AppService} from './core/services/app.service';
 import {VersionCheckService} from './core/services/version-check.service';
 import {GlobalSettingService} from './settings/services/global-setting.service';
 import {NgbModal, NgbModalConfig} from '@ng-bootstrap/ng-bootstrap';
-import {Router} from '@angular/router';
+import {NavigationEnd, Router} from '@angular/router';
+import {filter} from 'rxjs';
 
 @Component({
     selector: 'app-root',
@@ -93,7 +94,19 @@ export class AppComponent implements OnInit{
 
         // this.reset();
     }
+    // Phones and tablets (AdminLTE's breakpoint): the menu covers the page, so it
+    // starts closed and closes again once a page is picked.
+    private closeMenuOnSmallScreens() {
+        const root = document.querySelector('app-root');
+        if (!root || window.innerWidth >= 992) return;
+        root.classList.remove('sidebar-open');
+        root.classList.add('sidebar-collapse');
+    }
+
     ngOnInit(): void {
+        this.closeMenuOnSmallScreens();
+        this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => this.closeMenuOnSmallScreens());
+
         // Prompt to refresh when a newer build is deployed while this tab is open.
         this.versionCheck.init(10);
 

@@ -1,57 +1,54 @@
-<div class="card mb-0 slide">
-    <div class="card-body p-4">
-        <!-- The race and its turnout -->
-        <div class="d-flex flex-wrap align-items-end gap-3 mb-4">
-            <div class="me-auto">
-                <div class="text-muted text-uppercase small fw-bold" *ngIf="race.positionName !== race.name">{{ race.positionName }}</div>
-                <h2 class="mb-0">{{ race.name }}</h2>
-                <div class="text-muted">{{ race.seats }} seat{{ race.seats === 1 ? '' : 's' }}{{ race.seatsPerGender ? ' per gender' : '' }}
-                    <span *ngIf="race.runningMateTitle"> &middot; with {{ race.runningMateTitle }}</span></div>
-            </div>
-            <div style="min-width: 320px; flex: 0 1 460px;">
-                <div class="d-flex align-items-baseline mb-1">
-                    <span class="me-auto text-muted">Turnout</span>
-                    <span class="fs-3 fw-bold">{{ pct(race.voted, race.voters) }}%</span>
-                </div>
-                <div class="meter"><div [style.width.%]="pct(race.voted, race.voters)"></div></div>
-                <div class="text-muted small mt-1">{{ race.voted }} of {{ race.voters }} voters have voted</div>
-            </div>
+<div class="slide">
+    <!-- The race and its turnout -->
+    <div class="slide-head">
+        <div class="me-auto" style="min-width: 0;">
+            <div class="kicker" *ngIf="race.positionName !== race.name">{{ race.positionName }}</div>
+            <h1 class="race-name">{{ race.name }}</h1>
+            <div class="race-sub">{{ race.seats }} seat{{ race.seats === 1 ? '' : 's' }}{{ race.seatsPerGender ? ' per gender' : '' }}
+                <span *ngIf="race.runningMateTitle"> &middot; with {{ race.runningMateTitle }}</span></div>
+        </div>
+        <div class="turnout">
+            <div class="kicker">Turnout</div>
+            <div class="turnout-pct">{{ pct(race.voted, race.voters) }}%</div>
+            <div class="meter"><div [style.width.%]="pct(race.voted, race.voters)"></div></div>
+            <div class="race-sub mt-1"><b>{{ race.voted }}</b> of {{ race.voters }} voters have voted</div>
+        </div>
+    </div>
+
+    <div class="slide-body">
+        <!-- The donut -->
+        <div class="donut-wrap">
+            <svg class="donut" viewBox="0 0 200 200" role="img" [attr.aria-label]="race.name + ' votes by candidate'">
+                <circle cx="100" cy="100" [attr.r]="r" fill="none" stroke="#e9ecef" stroke-width="28"></circle>
+                <circle *ngFor="let s of slices; trackBy: trackById" class="slice" cx="100" cy="100" [attr.r]="r" fill="none"
+                    [attr.stroke]="s.color" stroke-width="28" [attr.stroke-dasharray]="s.dash" [attr.stroke-dashoffset]="s.offset"
+                    transform="rotate(-90 100 100)">
+                    <title>{{ s.candidate.name }}: {{ s.candidate.votes }} votes ({{ s.candidate.percent }}%)</title>
+                </circle>
+                <text x="100" y="104" text-anchor="middle" class="donut-total">{{ counted }}</text>
+                <text x="100" y="128" text-anchor="middle" class="donut-label">{{ counted === 1 ? 'VOTE' : 'VOTES' }}</text>
+            </svg>
+            <div class="race-sub mt-2" *ngIf="!counted">No votes counted yet.</div>
+            <div class="race-sub mt-2" *ngIf="race.blank">+ {{ race.blank }} blank ballot{{ race.blank === 1 ? '' : 's' }}</div>
         </div>
 
-        <div class="row g-4 align-items-center">
-            <!-- The donut -->
-            <div class="col-lg-5 text-center">
-                <svg class="donut" viewBox="0 0 200 200" role="img" [attr.aria-label]="race.name + ' votes by candidate'">
-                    <circle cx="100" cy="100" [attr.r]="r" fill="none" stroke="#e9ecef" stroke-width="26"></circle>
-                    <circle *ngFor="let s of slices; trackBy: trackById" class="slice" cx="100" cy="100" [attr.r]="r" fill="none"
-                        [attr.stroke]="s.color" stroke-width="26" [attr.stroke-dasharray]="s.dash" [attr.stroke-dashoffset]="s.offset"
-                        transform="rotate(-90 100 100)">
-                        <title>{{ s.candidate.name }}: {{ s.candidate.votes }} votes ({{ s.candidate.percent }}%)</title>
-                    </circle>
-                    <text x="100" y="98" text-anchor="middle" font-size="34" font-weight="700" fill="#212529">{{ counted }}</text>
-                    <text x="100" y="120" text-anchor="middle" font-size="12" fill="#6c757d">{{ counted === 1 ? 'vote' : 'votes' }}</text>
-                </svg>
-                <div class="text-muted mt-2" *ngIf="!counted">No votes counted yet.</div>
-                <div class="text-muted mt-2" *ngIf="race.blank">+ {{ race.blank }} blank ballot{{ race.blank === 1 ? '' : 's' }} (no choice)</div>
-            </div>
-
-            <!-- The candidates, leading first -->
-            <div class="col-lg-7">
-                <div *ngFor="let c of race.candidates" class="cand d-flex align-items-center gap-3 py-2">
-                    <span class="swatch" [style.background]="color(c)"></span>
-                    <img *ngIf="photo(c.photoUrl) as src; else noFace" [src]="src" class="face" alt="">
-                    <ng-template #noFace><span class="face none"><i class="fas fa-user fa-lg"></i></span></ng-template>
-                    <div class="flex-grow-1" style="min-width: 0;">
-                        <div class="cname text-truncate" [class.fw-bold]="c.winning">{{ c.name }}
-                            <i class="fas fa-crown text-warning ms-1" *ngIf="c.winning" [title]="declared ? 'Elected' : 'Leading'"></i>
-                            <span class="badge bg-warning text-dark ms-1 fs-6" *ngIf="c.inTie">Tied</span></div>
-                        <div class="text-muted text-truncate">{{ c.className }}<span *ngIf="race.seatsPerGender"> - {{ c.genderName }}</span>
-                            <span *ngIf="c.runningMateName"> - with {{ c.runningMateName }}</span></div>
-                    </div>
-                    <div class="text-end" style="min-width: 110px;">
-                        <div class="votes">{{ c.votes }}</div>
-                        <div class="text-muted">{{ c.percent }}%</div>
-                    </div>
+        <!-- The candidates, leading first -->
+        <div class="cands">
+            <div *ngFor="let c of race.candidates" class="cand" [class.lead]="c.winning && counted">
+                <span class="swatch" [style.background]="color(c)"></span>
+                <img *ngIf="photo(c.photoUrl) as src; else noFace" [src]="src" class="face" alt="">
+                <ng-template #noFace><span class="face none"><i class="fas fa-user"></i></span></ng-template>
+                <div class="flex-grow-1" style="min-width: 0;">
+                    <div class="cname text-truncate">{{ c.name }}
+                        <i class="fas fa-crown crown" *ngIf="c.winning && counted"></i></div>
+                    <div class="cmeta text-truncate">{{ c.className }}<span *ngIf="race.seatsPerGender"> - {{ c.genderName }}</span>
+                        <span *ngIf="c.runningMateName"> &middot; with <b>{{ c.runningMateName }}</b></span></div>
+                    <span class="pill pill-lead" *ngIf="c.winning && counted && !c.inTie">{{ declared ? 'Elected' : 'Leading' }}</span>
+                    <span class="pill pill-tie" *ngIf="c.inTie && counted">Tied</span>
+                </div>
+                <div class="score">
+                    <div class="votes">{{ c.votes }}</div>
+                    <div class="share">{{ c.percent }}%</div>
                 </div>
             </div>
         </div>

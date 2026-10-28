@@ -29,7 +29,8 @@ dashboardTitle = 'ShuleNova CBE';
     }
 
     toggleMenuSidebar() {
-        if (this.sidebarMenuOpened) {
+        // The page's class is the truth: the menu also closes on its own on small screens.
+        if (!document.querySelector('app-root')!.classList.contains('sidebar-collapse')) {
             this.renderer.removeClass(
                 document.querySelector('app-root'),
                 'sidebar-open'

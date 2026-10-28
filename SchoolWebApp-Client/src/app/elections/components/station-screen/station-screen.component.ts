@@ -1,4 +1,4 @@
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, Inject, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import Swal from 'sweetalert2';
@@ -39,6 +39,17 @@ type Mode = 'register' | 'ballot' | 'review' | 'done';
         .tile .mate img, .tile .mate .nophoto { width: 64px; height: 76px; }
         .nophoto { background: #e9ecef; color: #adb5bd; display: flex; align-items: center; justify-content: center; }
         .no { font-size: 1.6rem; font-weight: 700; color: #6c757d; min-width: 2rem; text-align: center; }
+        /* Tablets and phones: big touch targets, smaller photos, buttons full width. */
+        .touch { min-height: 44px; }
+        .ballot, .tile { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        @media (max-width: 767.98px) {
+            .tile img, .tile .nophoto { width: 76px; height: 92px; }
+            .tile .mate img, .tile .mate .nophoto { width: 48px; height: 58px; }
+            .no { font-size: 1.2rem; min-width: 1.4rem; }
+            .ballot .container { padding-left: 8px; padding-right: 8px; }
+            .ballot-actions { flex-direction: column-reverse; }
+            .ballot-actions .btn { width: 100%; }
+        }
     `]
 })
 export class StationScreenComponent implements OnInit, OnDestroy {
@@ -72,6 +83,7 @@ export class StationScreenComponent implements OnInit, OnDestroy {
                 public router: Router, @Inject('BASE_API_URL') private baseUrl: string) {}
 
     ngOnInit(): void {
+        document.addEventListener('visibilitychange', this.onVisible);
         this.route.paramMap.subscribe((p) => {
             this.stationId = Number(p.get('stationId'));
             this.load();
@@ -80,6 +92,35 @@ export class StationScreenComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         clearTimeout(this.doneTimer);
+        this.releaseWakeLock();
+        document.removeEventListener('visibilitychange', this.onVisible);
+    }
+
+    // While polling is open the station's tablet or phone stays awake (where the browser allows it).
+    private wakeLock: any = null;
+    private onVisible = () => {
+        if (document.visibilityState === 'visible') this.keepAwake();
+    };
+
+    private keepAwake() {
+        if (this.station?.stage !== ElectionStage.Polling || this.wakeLock) return;
+        (navigator as any).wakeLock?.request('screen')
+            .then((lock: any) => {
+                this.wakeLock = lock;
+                lock.addEventListener?.('release', () => (this.wakeLock = null));
+            })
+            .catch(() => {});
+    }
+
+    private releaseWakeLock() {
+        this.wakeLock?.release?.().catch(() => {});
+        this.wakeLock = null;
+    }
+
+    // A ballot in progress is not lost to an accidental refresh or close.
+    @HostListener('window:beforeunload', ['$event'])
+    onLeave(ev: BeforeUnloadEvent) {
+        if (this.mode === 'ballot' || this.mode === 'review') ev.preventDefault();
     }
 
     load() {
@@ -88,6 +129,7 @@ export class StationScreenComponent implements OnInit, OnDestroy {
             next: (s) => {
                 this.loading = false;
                 this.station = s;
+                this.keepAwake();
                 this.breadcrumbs = [...this.breadcrumbs.slice(0, 2),
                     {link: ['/elections/polling', String(s.stationId)], title: s.stationName}];
                 this.dashboardTitle = `${s.electionName}: ${s.stationName}`;
@@ -136,6 +178,8 @@ export class StationScreenComponent implements OnInit, OnDestroy {
                     b.races.forEach((race) => (this.picks[race.contestId] = []));
                     this.mode = 'ballot';
                     window.scrollTo(0, 0);
+                    // The ballot fills the screen, hiding the browser's own controls where it can.
+                    document.documentElement.requestFullscreen?.().catch(() => {});
                 },
                 error: (err) => {
                     this.issuing = null;
@@ -154,6 +198,7 @@ export class StationScreenComponent implements OnInit, OnDestroy {
             if (!r.isConfirmed) return;
             this.ballot = null;
             this.mode = 'register';
+            this.leaveFullscreen();
         });
     }
 
@@ -223,8 +268,13 @@ export class StationScreenComponent implements OnInit, OnDestroy {
             });
     }
 
+    private leaveFullscreen() {
+        if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    }
+
     next() {
         clearTimeout(this.doneTimer);
+        this.leaveFullscreen();
         this.ballot = null;
         this.mode = 'register';
         this.search = '';

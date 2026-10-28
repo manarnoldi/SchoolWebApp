@@ -2,8 +2,12 @@ import {AppState} from '@/core/store/state';
 import {ToggleSidebarMenu} from '@/core/store/ui/actions';
 import {UiState} from '@/core/store/ui/state';
 import {Component, HostBinding, OnInit, Renderer2} from '@angular/core';
+import {NavigationEnd, Router} from '@angular/router';
 import {Store} from '@ngrx/store';
-import {Observable} from 'rxjs';
+import {filter, Observable} from 'rxjs';
+
+// Below this width (AdminLTE's) the menu sits over the page instead of beside it.
+const SMALL_SCREEN = 992;
 
 @Component({
     selector: 'app-main',
@@ -16,9 +20,12 @@ export class MainComponent implements OnInit {
 
     constructor(
         private renderer: Renderer2,
-        private store: Store<AppState>
+        private store: Store<AppState>,
+        private router: Router
     ) {
     }
+
+    private menuOpen = false;
 
     ngOnInit() {
         this.ui = this.store.select('ui');
@@ -41,6 +48,7 @@ export class MainComponent implements OnInit {
 
         this.ui.subscribe(
             ({menuSidebarCollapsed, controlSidebarCollapsed, darkMode}) => {
+                this.menuOpen = !menuSidebarCollapsed;
                 if (menuSidebarCollapsed) {
                     this.renderer.removeClass(
                         document.querySelector('app-root'),
@@ -86,6 +94,14 @@ export class MainComponent implements OnInit {
                 }
             }
         );
+
+        this.closeMenuOnSmallScreens();
+        this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => this.closeMenuOnSmallScreens());
+    }
+
+    // Phones and tablets: the menu starts closed, and closes again once a page is picked.
+    private closeMenuOnSmallScreens() {
+        if (window.innerWidth < SMALL_SCREEN && this.menuOpen) this.store.dispatch(new ToggleSidebarMenu());
     }
 
     onToggleMenuSidebar() {

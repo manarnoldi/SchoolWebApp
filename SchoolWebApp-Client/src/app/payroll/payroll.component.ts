@@ -16,7 +16,8 @@ export class PayrollComponent implements OnInit {
     }
 
     toggleMenuSidebar() {
-        if (this.sidebarMenuOpened) {
+        // The page's class is the truth: the menu also closes on its own on small screens.
+        if (!document.querySelector('app-root')!.classList.contains('sidebar-collapse')) {
             this.renderer.removeClass(document.querySelector('app-root'), 'sidebar-open');
             this.renderer.addClass(document.querySelector('app-root'), 'sidebar-collapse');
             this.sidebarMenuOpened = false;
