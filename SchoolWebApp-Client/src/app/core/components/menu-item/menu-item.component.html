@@ -2,7 +2,8 @@
   (click)="handleMainMenuAction()"
   [routerLink]="menuItem.path ? menuItem.path : null"
   class="nav-link"
-  [ngClass]="{'active': isMainActive || isOneOfChildrenActive, 'depth-2-active': depth >= 2 && isMainActive}">
+  [style.--indent.rem]="depth * 1.1"
+  [ngClass]="{'active': isMainActive || isOneOfChildrenActive, 'depth-2-active': depth >= 2 && isMainActive, 'nested': depth > 0, 'deep': depth >= 2}">
   <i class="nav-icon {{ menuItem.iconClasses }}"></i>
   <p>
     {{ menuItem.name }}

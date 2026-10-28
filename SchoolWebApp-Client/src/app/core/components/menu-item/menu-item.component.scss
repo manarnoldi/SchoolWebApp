@@ -2,6 +2,26 @@
     cursor: pointer;
 }
 
+// Inner menus step in by level, with a faint guide line, so the hierarchy reads at a glance.
+// Not when the sidebar is collapsed to icons.
+:host-context(body:not(.sidebar-collapse)) .nav-link.nested {
+    position: relative;
+    padding-left: calc(1rem + var(--indent, 0rem));
+
+    &::before {
+        content: '';
+        position: absolute;
+        left: calc(var(--indent, 0rem) + 0.15rem);
+        top: 0;
+        bottom: 0;
+        border-left: 2px solid rgba(255, 255, 255, 0.18);
+    }
+}
+
+:host-context(body:not(.sidebar-collapse)) .nav-link.deep {
+    font-size: 0.93em;
+}
+
 ::ng-deep .depth-2-active.nav-link.active {
     background-color: #17a2b8 !important;
     color: #fff !important;
