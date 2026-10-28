@@ -17,6 +17,8 @@ export interface ProfileExam {
     sessionId: number;
     session: string;
     academicYearId: number;
+    curriculumId: number;
+    schoolClassId: number;
     year: string;
     sessionStart: string;
     examTypeRank: number;

@@ -172,7 +172,7 @@
                                         id="academics" role="tabpanel"
                                         aria-labelledby="academics-tab">
                                         <div class="border border-info rounded p-1">
-                                            <app-student-academics *ngIf="student && (opened.has('academics') || activeNav === 'academics')" [studentId]="+student.id"></app-student-academics>
+                                            <app-student-academics *ngIf="student && (opened.has('academics') || activeNav === 'academics')" [studentId]="+student.id" [studentName]="student.fullName"></app-student-academics>
                                         </div>
                                     </div>
                                     <div *ngIf="showFees"

@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin, of, map, switchMap} from 'rxjs';
@@ -130,6 +131,7 @@ export class ReportFormComponent implements OnInit {
     }[] = [];
 
     constructor(
+        private route: ActivatedRoute,
         private toastr: ToastrService,
         private curriculaSvc: CurriculumService,
         private academicYearSvc: AcademicYearsService,
@@ -160,6 +162,7 @@ export class ReportFormComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
+        this.openFromLink();
         forkJoin([
             this.curriculaSvc.get('/curricula'),
             this.academicYearSvc.get('/academicYears'),
@@ -208,6 +211,29 @@ export class ReportFormComponent implements OnInit {
         });
     }
 
+    // Opened from a student's page: choose the curriculum, year, term and class,
+    // load the class and tick the student (moved to the top), ready to print.
+    private openFromLink() {
+        const p = this.route.snapshot.queryParamMap;
+        const curriculumId = +(p.get('curriculumId') || 0), yearId = +(p.get('academicYearId') || 0);
+        const sessionId = +(p.get('sessionId') || 0), classId = +(p.get('schoolClassId') || 0), studentId = +(p.get('studentId') || 0);
+        if (!curriculumId || !yearId || !classId || !sessionId) return;
+        this.filterCurriculumId = curriculumId;
+        this.onCurriculumChange(() => {
+            this.filterAcademicYearId = yearId;
+            this.onAcademicYearChange(() => {
+                this.filterSessionId = sessionId;
+                this.filterSchoolClassId = classId;
+                this.loadStudents(() => {
+                    const row = this.studentRows.find((r) => r.studentId === studentId);
+                    if (!row) return;
+                    row.selected = true;
+                    this.studentRows = [row, ...this.studentRows.filter((r) => r !== row)];
+                });
+            });
+        });
+    }
+
     onGradingCategoryChange = () => {
         this.grades = this.allGrades.filter(g => g.category === this.selectedGradingCategory).sort((a, b) => a.rank - b.rank);
     };
@@ -237,7 +263,7 @@ export class ReportFormComponent implements OnInit {
         this.grades = this.allGrades.filter((g) => g.category === this.gradingCategory).sort((a, b) => a.rank - b.rank);
     };
 
-    onCurriculumChange = () => {
+    onCurriculumChange = (then?: () => void) => {
         this.sessions = this.schoolClasses = [];
         this.filterAcademicYearId = this.filterSessionId = this.filterSchoolClassId = null;
         this.studentsLoaded = false;
@@ -249,12 +275,13 @@ export class ReportFormComponent implements OnInit {
             next: ([levels, edLevels]) => {
                 this.learningLevels = levels.sort((a, b) => a.rank - b.rank);
                 this.educationLevels = edLevels.sort((a, b) => a.rank - b.rank);
+                then?.();
             },
             error: (err) => this.toastr.error(err.error)
         });
     };
 
-    onAcademicYearChange = () => {
+    onAcademicYearChange = (then?: () => void) => {
         this.sessions = this.schoolClasses = [];
         this.filterSessionId = this.filterSchoolClassId = null;
         this.studentsLoaded = false;
@@ -267,6 +294,7 @@ export class ReportFormComponent implements OnInit {
                 this.sessions = sessions.sort((a, b) => a.rank - b.rank);
                 let currLLIds = this.learningLevels.map((ll) => +ll.id);
                 this.schoolClasses = schoolClasses.filter((sc) => currLLIds.includes(+sc.learningLevelId)).sort((a, b) => (a.rank || 0) - (b.rank || 0));
+                then?.();
             },
             error: (err) => this.toastr.error(err.error)
         });
@@ -276,7 +304,7 @@ export class ReportFormComponent implements OnInit {
         this.studentsLoaded = false;
     };
 
-    loadStudents = () => {
+    loadStudents = (then?: () => void) => {
         if (!this.filterSessionId || !this.filterSchoolClassId) {
             this.toastr.info('Please select Session and Class.');
             return;
@@ -314,6 +342,7 @@ export class ReportFormComponent implements OnInit {
                 this.page = 1;
                 this.studentsLoaded = true;
                 this.isLoading = false;
+                then?.();
             },
             error: (err) => { this.isLoading = false; this.toastr.error(err.error); }
         });

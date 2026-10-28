@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 
 /**
@@ -27,6 +28,12 @@ export class ExamResultsTabsComponent {
     visited: {[k: string]: boolean} = {
         exam: true, reportForm: false, annualReportForm: false, missing: false, classProgress: false, studentProgress: false
     };
+
+    // A link can open a tab directly, e.g. ?tab=reportForm from a student's page.
+    constructor(route: ActivatedRoute) {
+        const tab = route.snapshot.queryParamMap.get('tab') as any;
+        if (tab && tab in this.visited) this.setTab(tab);
+    }
 
     setTab(tab: 'exam' | 'reportForm' | 'annualReportForm' | 'missing' | 'classProgress' | 'studentProgress') {
         this.activeNav = tab;
