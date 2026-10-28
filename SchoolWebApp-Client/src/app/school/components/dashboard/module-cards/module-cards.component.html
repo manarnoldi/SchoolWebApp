@@ -7,21 +7,32 @@
                 <a class="small" [routerLink]="['/finance/reports/fees']">Fee reports</a>
             </div>
             <div class="card-body py-2" *ngIf="finance; else loadingTpl">
-                <div class="d-flex justify-content-between small mb-1">
-                    <span>Collected <b>{{ finance.collected | number:'1.0-0' }}</b> of {{ finance.expected | number:'1.0-0' }} invoiced this term</span>
-                    <b>{{ pct(finance.collected, finance.expected) }}%</b>
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="ring" [style.background]="ring(pct(finance.collected, finance.expected), '#1f7a4d')"
+                         [title]="pct(finance.collected, finance.expected) + '% of this term\'s invoices collected'">
+                        <div><b>{{ pct(finance.collected, finance.expected) }}%</b><span>collected</span></div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="small text-muted">Collected this term</div>
+                        <div class="big">{{ finance.collected | number:'1.0-0' }}</div>
+                        <div class="small text-muted">of {{ finance.expected | number:'1.0-0' }} invoiced</div>
+                    </div>
                 </div>
-                <div class="meter mb-2"><div [style.width.%]="pct(finance.collected, finance.expected)"></div></div>
-                <div class="row g-2 text-center mb-2">
-                    <div class="col-3 stat"><div class="v">{{ finance.collectedToday | number:'1.0-0' }}</div><div class="k">Today</div></div>
-                    <div class="col-3 stat"><div class="v">{{ finance.collectedThisWeek | number:'1.0-0' }}</div><div class="k">This week</div></div>
-                    <div class="col-3 stat"><div class="v text-danger">{{ finance.outstanding | number:'1.0-0' }}</div><div class="k">Outstanding</div></div>
-                    <div class="col-3 stat"><div class="v">{{ finance.spentThisMonth | number:'1.0-0' }}</div><div class="k">Spent this month</div></div>
+                <div class="row g-2 mb-2">
+                    <div class="col-6 col-md-3"><div class="tile bg-success-subtle text-success-emphasis">
+                        <i class="fas fa-calendar-day"></i><div class="v">{{ finance.collectedToday | number:'1.0-0' }}</div><div class="k">Today</div></div></div>
+                    <div class="col-6 col-md-3"><div class="tile bg-primary-subtle text-primary-emphasis">
+                        <i class="fas fa-calendar-week"></i><div class="v">{{ finance.collectedThisWeek | number:'1.0-0' }}</div><div class="k">This week</div></div></div>
+                    <div class="col-6 col-md-3"><div class="tile bg-danger-subtle text-danger-emphasis">
+                        <i class="fas fa-hourglass-half"></i><div class="v">{{ finance.outstanding | number:'1.0-0' }}</div><div class="k">Outstanding</div></div></div>
+                    <div class="col-6 col-md-3"><div class="tile bg-warning-subtle text-warning-emphasis">
+                        <i class="fas fa-shopping-cart"></i><div class="v">{{ finance.spentThisMonth | number:'1.0-0' }}</div><div class="k">Spent this month</div></div></div>
                 </div>
                 <div *ngIf="finance.arrearsByClass.length">
                     <div class="small text-muted mb-1">Most owed, by class</div>
-                    <div class="d-flex small border-top py-1" *ngFor="let a of finance.arrearsByClass">
-                        <span class="me-auto">{{ a.className }} <span class="text-muted">({{ a.students }} students)</span></span>
+                    <div class="arrear small" *ngFor="let a of finance.arrearsByClass">
+                        <span class="name">{{ a.className }} <span class="badge rounded-pill text-bg-light border">{{ a.students }}</span></span>
+                        <div class="bar"><div [style.width.%]="pct(a.balance, maxArrears)"></div></div>
                         <b>{{ a.balance | number:'1.0-0' }}</b>
                     </div>
                 </div>
@@ -37,17 +48,21 @@
                 <a class="small" [routerLink]="['/teaching/tracker']">Tracker</a>
             </div>
             <div class="card-body py-2" *ngIf="teaching; else loadingTpl">
-                <div class="small text-muted mb-2">{{ teaching.term }} - {{ teaching.allocations }} subject-classes</div>
-                <div class="d-flex justify-content-between small"><span>Schemes approved</span>
-                    <b>{{ teaching.schemesApproved }} / {{ teaching.allocations }}</b></div>
-                <div class="meter mb-2"><div [style.width.%]="pct(teaching.schemesApproved, teaching.allocations)"></div></div>
-                <div class="d-flex justify-content-between small"><span>Lesson plans approved (weeks due)</span>
-                    <b>{{ pct(teaching.weeksApproved, teaching.weeksDue) }}%</b></div>
-                <div class="meter mb-2"><div [style.width.%]="pct(teaching.weeksApproved, teaching.weeksDue)"></div></div>
-                <div class="d-flex justify-content-between small"><span>Lessons taught</span>
-                    <b>{{ teaching.lessonsTaught }} / {{ teaching.lessonsPlanned }}</b></div>
-                <div class="small text-danger mt-2" *ngIf="teaching.schemesOverdue">
-                    <i class="fas fa-exclamation-triangle me-1"></i>{{ teaching.schemesOverdue }} scheme(s) overdue</div>
+                <div class="d-flex flex-wrap gap-1 mb-2">
+                    <span class="badge rounded-pill text-bg-primary">{{ teaching.term }}</span>
+                    <span class="badge rounded-pill bg-primary-subtle text-primary-emphasis">{{ teaching.allocations }} subject-classes</span>
+                </div>
+                <div class="prog" *ngFor="let m of teachingMeters">
+                    <div class="d-flex align-items-center small">
+                        <span class="me-auto"><i class="fas me-1" [ngClass]="m.icon"></i>{{ m.label }}</span>
+                        <span class="badge rounded-pill" [ngClass]="level(m.pct)">{{ m.text }}</span>
+                    </div>
+                    <div class="meter"><div [ngClass]="'bg-' + levelColour(m.pct)" [style.width.%]="m.pct"></div></div>
+                </div>
+                <a class="badge rounded-pill text-bg-danger text-decoration-none mt-1" *ngIf="teaching.schemesOverdue" [routerLink]="['/teaching/tracker']">
+                    <i class="fas fa-exclamation-triangle me-1"></i>{{ teaching.schemesOverdue }} scheme{{ teaching.schemesOverdue === 1 ? '' : 's' }} overdue</a>
+                <span class="badge rounded-pill text-bg-success mt-1" *ngIf="!teaching.schemesOverdue">
+                    <i class="fas fa-check me-1"></i>No schemes overdue</span>
             </div>
         </div>
     </div>
@@ -62,15 +77,49 @@
             <div class="card-body py-2" *ngIf="payroll; else loadingTpl">
                 <div *ngIf="!payroll.latest" class="small text-muted">No payroll run yet.</div>
                 <ng-container *ngIf="payroll.latest as p">
-                    <div class="d-flex align-items-center mb-2"><b class="me-auto">{{ p.name }}</b>
-                        <span class="badge" [ngClass]="p.status === 'Approved' || p.status === 'Posted' ? 'bg-success' : 'bg-warning text-dark'">{{ p.status }}</span></div>
-                    <div class="row g-2 text-center">
-                        <div class="col-6 stat"><div class="v">{{ p.net | number:'1.0-0' }}</div><div class="k">Net pay</div></div>
-                        <div class="col-6 stat"><div class="v">{{ p.gross | number:'1.0-0' }}</div><div class="k">Gross pay</div></div>
-                        <div class="col-6 stat"><div class="v">{{ p.paye | number:'1.0-0' }}</div><div class="k">PAYE</div></div>
-                        <div class="col-6 stat"><div class="v">{{ p.staff }}</div><div class="k">Staff paid</div></div>
+                    <div class="d-flex align-items-center mb-1">
+                        <b class="me-auto">{{ p.name }}</b>
+                        <span class="badge rounded-pill bg-light text-dark border"><i class="fas fa-users me-1 text-info"></i>{{ p.staff }} staff</span>
                     </div>
-                    <div class="small text-muted mt-2" *ngIf="payroll.previous && change(p.net, payroll.previous.net) as text">{{ text }}</div>
+                    <!-- Where the run is: Draft, Processed, Approved, Posted -->
+                    <div class="steps mb-2">
+                        <span *ngFor="let s of payrollSteps; let i = index" class="badge rounded-pill"
+                              [ngClass]="i < stepIndex(p.status) ? 'bg-success-subtle text-success-emphasis' : i === stepIndex(p.status) ? 'text-bg-success' : 'bg-light text-muted border'">
+                            <i class="fas fa-check me-1" *ngIf="i < stepIndex(p.status)"></i>{{ s }}</span>
+                    </div>
+
+                    <div class="d-flex align-items-end mb-1">
+                        <div class="me-auto">
+                            <div class="small text-muted">Net pay</div>
+                            <div class="big">{{ p.net | number:'1.0-0' }}</div>
+                        </div>
+                        <span class="badge rounded-pill" *ngIf="netChange() as c" [ngClass]="c.pct === 0 ? 'bg-light text-muted border' : 'bg-info-subtle text-info-emphasis'"
+                              [title]="'Against ' + payroll.previous.name">
+                            <i class="fas me-1" [ngClass]="c.pct > 0 ? 'fa-arrow-up' : c.pct < 0 ? 'fa-arrow-down' : 'fa-equals'"></i>{{ c.pct === 0 ? 'Same' : abs(c.pct) + '%' }}
+                            <span class="fw-normal">vs {{ c.name }}</span></span>
+                    </div>
+
+                    <!-- Gross pay, split into what staff take home and what is deducted -->
+                    <div class="small text-muted mb-1">Gross {{ p.gross | number:'1.0-0' }}</div>
+                    <div class="split mb-1">
+                        <div *ngFor="let s of payrollSplit" [style.flex-grow]="s.amount" [style.background]="s.fill"
+                             [title]="s.label + ': ' + (s.amount | number:'1.0-0') + ' (' + pct(s.amount, p.gross) + '%)'"></div>
+                    </div>
+                    <div class="d-flex flex-wrap gap-1 mb-2">
+                        <span class="badge rounded-pill bg-light text-dark border fw-normal" *ngFor="let s of payrollSplit">
+                            <i class="dot" [style.background]="s.fill"></i>{{ s.label }} <b>{{ s.amount | number:'1.0-0' }}</b></span>
+                    </div>
+
+                    <!-- Net pay, last six payrolls -->
+                    <div *ngIf="payroll.trend?.length > 1">
+                        <div class="small text-muted mb-1">Net pay, last {{ payroll.trend.length }} payrolls</div>
+                        <div class="trend">
+                            <div class="col" *ngFor="let t of payroll.trend; let last = last" [title]="t.name + ': ' + (t.net | number:'1.0-0')">
+                                <div class="bar" [class.now]="last" [style.height.%]="pct(t.net, maxTrend) || 2"></div>
+                                <span>{{ monthShort(t.month) }}</span>
+                            </div>
+                        </div>
+                    </div>
                 </ng-container>
             </div>
         </div>
@@ -84,14 +133,20 @@
                 <a class="small" [routerLink]="['/elections/manage']">Manage</a>
             </div>
             <div class="card-body py-2" *ngIf="elections; else loadingTpl">
-                <div class="border-bottom py-1" *ngFor="let e of elections">
-                    <div class="d-flex align-items-center small">
+                <div class="election" *ngFor="let e of elections; let last = last" [class.border-bottom]="!last">
+                    <div class="d-flex align-items-center small gap-1">
                         <a class="me-auto fw-bold" [routerLink]="['/elections/manage', e.id]">{{ e.name }}</a>
-                        <span class="badge" [ngClass]="stageBadges[e.stage]">{{ stageLabels[e.stage] }}</span>
+                        <span class="badge rounded-pill" [ngClass]="stageBadges[e.stage]">{{ stageLabels[e.stage] }}</span>
                     </div>
-                    <div class="small text-muted" *ngIf="e.stage >= 3">
-                        {{ e.voted }}<span *ngIf="e.registered"> of {{ e.registered }}</span> voted<span *ngIf="e.registered"> ({{ pct(e.voted, e.registered) }}%)</span></div>
-                    <div class="small text-muted" *ngIf="e.stage < 3 && e.pollingStart">Polling {{ e.pollingStart | date:'EEE d MMM, HH:mm' }}</div>
+                    <ng-container *ngIf="e.stage >= 3">
+                        <div class="d-flex small mt-1">
+                            <span class="me-auto text-muted"><i class="fas fa-person-booth me-1"></i>{{ e.voted }}<span *ngIf="e.registered"> of {{ e.registered }}</span> voted</span>
+                            <b *ngIf="e.registered">{{ pct(e.voted, e.registered) }}% turnout</b>
+                        </div>
+                        <div class="meter" *ngIf="e.registered"><div class="bg-warning" [style.width.%]="pct(e.voted, e.registered)"></div></div>
+                    </ng-container>
+                    <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis mt-1" *ngIf="e.stage < 3 && e.pollingStart">
+                        <i class="fas fa-clock me-1"></i>Polling {{ e.pollingStart | date:'EEE d MMM, HH:mm' }}</span>
                 </div>
             </div>
         </div>
@@ -101,16 +156,25 @@
     <div class="col-xl-3 col-md-6 px-1 mb-1" *ngIf="show.communications">
         <div class="card card-outline card-secondary mb-0 h-100">
             <div class="card-header py-1 d-flex align-items-center">
-                <span class="card-title-sm me-auto"><i class="fas fa-comment-dots text-secondary me-1"></i>Messages - last 7 days</span>
+                <span class="card-title-sm me-auto"><i class="fas fa-comment-dots text-secondary me-1"></i>Messages<span class="text-muted fw-normal"> - last 7 days</span></span>
                 <a class="small" [routerLink]="['/communications/queue']">Queue</a>
             </div>
             <div class="card-body py-2" *ngIf="communications; else loadingTpl">
-                <div class="row g-2 text-center">
-                    <div class="col-4 stat"><div class="v text-success">{{ communications.delivered }}</div><div class="k"><i class="fas fa-check me-1"></i>Sent</div></div>
-                    <div class="col-4 stat"><div class="v">{{ communications.waiting }}</div><div class="k"><i class="fas fa-clock me-1"></i>Waiting</div></div>
-                    <div class="col-4 stat"><div class="v" [class.text-danger]="communications.failed">{{ communications.failed }}</div>
-                        <div class="k"><i class="fas fa-times me-1"></i>Failed</div></div>
+                <div class="row g-2 mb-2">
+                    <div class="col-4"><div class="tile bg-success-subtle text-success-emphasis">
+                        <i class="fas fa-check-double"></i><div class="v">{{ communications.delivered }}</div><div class="k">Sent</div></div></div>
+                    <div class="col-4"><div class="tile bg-secondary-subtle text-secondary-emphasis">
+                        <i class="fas fa-clock"></i><div class="v">{{ communications.waiting }}</div><div class="k">Waiting</div></div></div>
+                    <div class="col-4"><div class="tile" [ngClass]="communications.failed ? 'bg-danger-subtle text-danger-emphasis' : 'bg-light text-muted'">
+                        <i class="fas fa-times-circle"></i><div class="v">{{ communications.failed }}</div><div class="k">Failed</div></div></div>
                 </div>
+                <ng-container *ngIf="communications.total">
+                    <div class="d-flex small"><span class="me-auto text-muted">Delivery rate</span>
+                        <b>{{ pct(communications.delivered, communications.total) }}%</b></div>
+                    <div class="meter"><div [ngClass]="'bg-' + levelColour(pct(communications.delivered, communications.total))"
+                        [style.width.%]="pct(communications.delivered, communications.total)"></div></div>
+                </ng-container>
+                <div class="small text-muted" *ngIf="!communications.total"><i class="fas fa-inbox me-1"></i>No messages this week.</div>
             </div>
         </div>
     </div>

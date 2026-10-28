@@ -35,7 +35,8 @@
         </div>
 
         <!-- Performance table -->
-        <div class="table-responsive" *ngIf="!isLoading && classPerformance.length > 0">
+        <!-- A fixed height so a long list of classes scrolls inside the card, headings kept in view. -->
+        <div class="table-responsive exam-scroll" *ngIf="!isLoading && classPerformance.length > 0">
             <table class="table table-sm table-hover table-striped mb-0">
                 <thead>
                     <tr>

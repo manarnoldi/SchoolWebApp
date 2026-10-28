@@ -93,26 +93,38 @@ namespace SchoolWebApp.API.Controllers.Dashboard
             });
         }
 
-        // GET api/dashboardCards/payroll - the latest payroll against the one before
+        // GET api/dashboardCards/payroll - the latest payroll (where its gross goes) against
+        // the one before, and net pay over the last six payrolls
         [HttpGet("payroll")]
         [RequiresModule(AppModules.Payroll)]
         public async Task<IActionResult> Payroll()
         {
             if (!await _access.CanAnyAsync(PayrollMenus)) return Forbid();
             var periods = await _db.PayrollPeriods.AsNoTracking()
-                .OrderByDescending(p => p.Year).ThenByDescending(p => p.Month).Take(2)
+                .OrderByDescending(p => p.Year).ThenByDescending(p => p.Month).Take(6)
                 .Select(p => new
                 {
                     p.Id,
                     p.Name,
+                    p.Month,
+                    p.Year,
                     Status = p.Status.ToString(),
                     Staff = p.Payslips.Count,
                     Gross = p.Payslips.Sum(s => (decimal?)s.GrossPay) ?? 0,
                     Net = p.Payslips.Sum(s => (decimal?)s.NetPay) ?? 0,
-                    Paye = p.Payslips.Sum(s => (decimal?)s.Paye) ?? 0
+                    Paye = p.Payslips.Sum(s => (decimal?)s.Paye) ?? 0,
+                    Nssf = p.Payslips.Sum(s => (decimal?)s.NssfEmployee) ?? 0,
+                    Shif = p.Payslips.Sum(s => (decimal?)s.Shif) ?? 0,
+                    Ahl = p.Payslips.Sum(s => (decimal?)s.Ahl) ?? 0,
+                    Deductions = p.Payslips.Sum(s => (decimal?)s.TotalDeductions) ?? 0
                 })
                 .ToListAsync();
-            return Ok(new { Latest = periods.FirstOrDefault(), Previous = periods.Skip(1).FirstOrDefault() });
+            return Ok(new
+            {
+                Latest = periods.FirstOrDefault(),
+                Previous = periods.Skip(1).FirstOrDefault(),
+                Trend = periods.AsEnumerable().Reverse().Select(p => new { p.Name, p.Month, p.Year, p.Net, p.Status })
+            });
         }
 
         // GET api/dashboardCards/elections - elections under way, and the last one declared
