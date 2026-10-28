@@ -15,7 +15,7 @@ import {
     TrackerRow
 } from '@/teaching/models/teaching-models';
 import {TeachingDocumentsService} from '@/teaching/services/teaching-services';
-import {openedFrom} from '@/teaching/utils/back-link';
+import {backLabel, fromParam, openedFrom, withFrom} from '@/teaching/utils/back-link';
 
 const SESSION_KEY = 'teaching.sessionId';
 
@@ -59,7 +59,16 @@ export class TrackerComponent implements OnInit {
     constructor(private svc: TeachingDocumentsService, private router: Router, private route: ActivatedRoute,
                 private toastr: ToastrService, private datePipe: DatePipe) {}
 
+    // Where the tracker was opened from (a staff member's page), for its Back button.
+    from: string | null = null;
+    get backText(): string { return backLabel(this.from, this.router); }
+
+    back() {
+        if (this.from) this.router.navigateByUrl(this.from);
+    }
+
     ngOnInit(): void {
+        this.from = fromParam(this.route);
         let q = this.route.snapshot.queryParamMap;
         let num = (k: string) => +(q.get(k) || 0) || null;
         this.staffId = num('teacher');
@@ -90,7 +99,7 @@ export class TrackerComponent implements OnInit {
             status: this.statuses.size ? Array.from(this.statuses).join(',') : null, overdue: this.onlyOverdue ? 1 : null
         };
         Object.keys(p).forEach((k) => { if (p[k] == null) delete p[k]; });
-        this.router.navigate([], {relativeTo: this.route, queryParams: p, replaceUrl: true});
+        this.router.navigate([], {relativeTo: this.route, queryParams: withFrom(this.from, p), replaceUrl: true});
     }
 
     load() {

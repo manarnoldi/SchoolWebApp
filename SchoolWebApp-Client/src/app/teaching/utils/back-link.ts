@@ -13,15 +13,17 @@ const PAGE_NAMES: Record<string, string> = {
     '/teaching/schemes': 'scheme of work',
     '/teaching/lesson-plans': 'lesson plans',
     '/teaching/record-of-work': 'record of work',
-    '/teaching/tracker': 'tracker'
+    '/teaching/tracker': 'tracker',
+    '/staff/manage/add': 'staff member'
 };
 
 const path = (url: string) => url.split('?')[0];
 
-// Only a page inside Teaching Management is a valid place to go back to.
+// Only a page inside Teaching Management, or a staff member's page (its Teaching tab
+// opens the tracker), is a valid place to go back to.
 export function fromParam(route: ActivatedRoute): string | null {
     let from = route.snapshot.queryParamMap.get('from');
-    return from && from.startsWith('/teaching/') ? from : null;
+    return from && (from.startsWith('/teaching/') || from.startsWith('/staff/manage/')) ? from : null;
 }
 
 // Query parameters that open another teaching page and remember this one.

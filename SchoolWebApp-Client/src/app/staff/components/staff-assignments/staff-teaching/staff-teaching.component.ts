@@ -1,4 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
 import {TeachingDocumentsService} from '@/teaching/services/teaching-services';
 import {DocStatus, STATUS_BADGES, STATUS_LABELS, TeachingSession, TrackerRow} from '@/teaching/models/teaching-models';
 
@@ -16,7 +17,7 @@ import {DocStatus, STATUS_BADGES, STATUS_LABELS, TeachingSession, TrackerRow} fr
                 <option *ngFor="let s of sessions" [ngValue]="s.id">{{ s.name }} {{ s.academicYearName }}</option>
             </select>
             <!-- The tracker opens on this term and this teacher -->
-            <a class="btn btn-sm btn-outline-primary ms-auto" [routerLink]="['/teaching/tracker']" [queryParams]="{term: sessionId, teacher: staffId}">
+            <a class="btn btn-sm btn-outline-primary ms-auto" [routerLink]="['/teaching/tracker']" [queryParams]="{term: sessionId, teacher: staffId, from: router.url}">
                 <i class="fas fa-th"></i> Open the tracker</a>
         </div>
         <div *ngIf="loading" class="text-muted p-2"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
@@ -46,7 +47,7 @@ export class StaffTeachingComponent implements OnInit {
     labels = STATUS_LABELS;
     badges = STATUS_BADGES;
 
-    constructor(private svc: TeachingDocumentsService) {}
+    constructor(private svc: TeachingDocumentsService, public router: Router) {}
 
     ngOnInit(): void {
         this.svc.context().subscribe((c) => {

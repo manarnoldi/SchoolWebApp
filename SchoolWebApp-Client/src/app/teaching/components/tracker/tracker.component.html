@@ -52,6 +52,7 @@
                         Schemes due {{ tracker.schemeDueAt | date:'EEE d MMM' }}. Click a cell to open it, or a label above to filter.
                     </small>
                     <span class="ms-auto">
+                        <button class="btn btn-sm btn-warning me-1" *ngIf="from" (click)="back()"><i class="fas fa-arrow-left"></i> {{ backText }}</button>
                         <button class="btn btn-sm btn-outline-secondary me-1" [disabled]="!tracker" (click)="exportCsv()"><i class="fas fa-file-csv"></i></button>
                         <button class="btn btn-sm btn-outline-primary" [disabled]="!tracker" (click)="print()"><i class="fas fa-print"></i></button>
                     </span>
