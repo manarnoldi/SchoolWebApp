@@ -25,6 +25,7 @@ on:
         type: choice
         options:
           - swikunda
+          - shulenova   # demo site, anonymised data (tools/demo-data)
 
 jobs:
   deploy:

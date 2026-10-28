@@ -12,3 +12,4 @@ SchoolWebApp-API/Project.API/uploads/
 
 # The licence SIGNING key: never commit it. Keep a backup somewhere safe.
 licensing-keys/
+tools/demo-data/last-run.sql
