@@ -50,13 +50,24 @@
                     <strong class="me-auto">
                         <i class="fas fa-fw me-1" [ngClass]="isOpen(p) ? 'fa-chevron-down' : 'fa-chevron-right'"></i>{{ p.name }}
                         <small class="text-muted fw-normal ms-1" *ngIf="positionHint(p)">{{ positionHint(p) }}</small></strong>
-                    <small class="text-muted text-nowrap ms-2" *ngIf="positionCounts(p) as n">
-                        {{ p.contests.length }} race{{ p.contests.length === 1 ? '' : 's' }}
-                        &middot; {{ n.approved }} approved<span *ngIf="n.pending"> &middot; <b>{{ n.pending }} pending</b></span></small>
+                    <!-- One race: its count and Nominate sit on the position's header -->
+                    <ng-container *ngIf="p.contests.length === 1; else manyRaces">
+                        <small class="text-muted text-nowrap ms-2" *ngIf="positionCounts(p).pending as pending"><b>{{ pending }} pending</b></small>
+                        <span class="badge bg-light ms-2" [ngClass]="approvedIn(p.contests[0]) ? 'text-success border border-success' : 'text-danger border border-danger'">
+                            {{ approvedIn(p.contests[0]) }} approved</span>
+                        <button class="btn btn-sm py-0 ms-2" [ngClass]="isOpen(p) ? 'btn-light' : 'btn-outline-primary'" *ngIf="d.canNominate"
+                            (click)="$event.stopPropagation(); nominate(p, p.contests[0])"><i class="fas fa-user-plus"></i> Nominate</button>
+                    </ng-container>
+                    <ng-template #manyRaces>
+                        <small class="text-muted text-nowrap ms-2" *ngIf="positionCounts(p) as n">
+                            {{ p.contests.length }} races
+                            &middot; {{ n.approved }} approved<span *ngIf="n.pending"> &middot; <b>{{ n.pending }} pending</b></span></small>
+                    </ng-template>
                 </div>
                 <div class="card-body p-2" *ngIf="isOpen(p)">
                     <div *ngFor="let c of p.contests; let lastRace = last; trackBy: trackById" [class.mb-3]="!lastRace">
-                        <div class="d-flex align-items-center el-race mb-2">
+                        <!-- Several races (e.g. one per class): a bar for each -->
+                        <div class="d-flex align-items-center el-race mb-2" *ngIf="p.contests.length > 1">
                             <b class="me-2">{{ c.name }}</b>
                             <span class="badge" [ngClass]="approvedIn(c) ? 'bg-light text-success border border-success' : 'bg-light text-danger border border-danger'">
                                 {{ approvedIn(c) }} approved</span>
