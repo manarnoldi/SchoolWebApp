@@ -3,7 +3,7 @@
         <div *ngIf="loading && !data" class="text-center text-muted py-4"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
 
         <ng-container *ngIf="data as d">
-            <div class="card card-outline card-info mb-2">
+            <div class="card card-outline card-primary mb-2">
                 <div class="card-body p-2">
                     <div class="d-flex flex-wrap align-items-center gap-2">
                         <h5 class="mb-0 me-2"><i class="fas fa-user-check text-info me-1"></i>Nominations</h5>
@@ -44,14 +44,19 @@
             <div *ngIf="positions.length === 0" class="text-center text-muted py-4">
                 {{ d.positions.length ? 'Nothing matches the filters.' : 'The election has no positions yet.' }}</div>
 
-            <div class="card mb-2" *ngFor="let p of positions">
-                <div class="card-header py-2">
-                    <h6 class="mb-0"><i class="fas fa-user-tie text-primary me-1"></i>{{ p.name }}
-                        <small class="text-muted ms-1" *ngIf="positionHint(p)">{{ positionHint(p) }}</small></h6>
+            <!-- Position by position, one open at a time: click a position to open it -->
+            <div class="card mb-2 el-position" *ngFor="let p of positions; trackBy: trackById" [class.open]="isOpen(p)">
+                <div class="card-header p-2 d-flex align-items-center" (click)="togglePosition(p)" [attr.aria-expanded]="isOpen(p)">
+                    <strong class="me-auto">
+                        <i class="fas fa-fw me-1" [ngClass]="isOpen(p) ? 'fa-chevron-down' : 'fa-chevron-right'"></i>{{ p.name }}
+                        <small class="text-muted fw-normal ms-1" *ngIf="positionHint(p)">{{ positionHint(p) }}</small></strong>
+                    <small class="text-muted text-nowrap ms-2" *ngIf="positionCounts(p) as n">
+                        {{ p.contests.length }} race{{ p.contests.length === 1 ? '' : 's' }}
+                        &middot; {{ n.approved }} approved<span *ngIf="n.pending"> &middot; <b>{{ n.pending }} pending</b></span></small>
                 </div>
-                <div class="card-body p-2">
-                    <div *ngFor="let c of p.contests; let lastRace = last" [class.mb-3]="!lastRace">
-                        <div class="d-flex align-items-center border-bottom pb-1 mb-2">
+                <div class="card-body p-2" *ngIf="isOpen(p)">
+                    <div *ngFor="let c of p.contests; let lastRace = last; trackBy: trackById" [class.mb-3]="!lastRace">
+                        <div class="d-flex align-items-center el-race mb-2">
                             <b class="me-2">{{ c.name }}</b>
                             <span class="badge" [ngClass]="approvedIn(c) ? 'bg-light text-success border border-success' : 'bg-light text-danger border border-danger'">
                                 {{ approvedIn(c) }} approved</span>
@@ -61,9 +66,8 @@
                         <div *ngIf="c.candidates.length === 0" class="small text-muted ms-1 mb-1">No nominations yet.</div>
 
                         <div class="row g-2">
-                            <div class="col-xl-4 col-lg-6" *ngFor="let x of c.candidates">
-                                <div class="border rounded p-2 h-100 d-flex flex-column"
-                                    [ngClass]="{'bg-light': x.status === Status.Rejected || x.status === Status.Withdrawn}"
+                            <div class="col-xl-4 col-lg-6" *ngFor="let x of c.candidates; trackBy: trackById">
+                                <div class="border rounded p-2 h-100 d-flex flex-column el-candidate" [ngClass]="'el-' + statusClass[x.status]"
                                     [style.opacity]="x.status === Status.Rejected || x.status === Status.Withdrawn ? 0.75 : 1">
                                     <div class="d-flex gap-2">
                                         <!-- Candidate photo -->

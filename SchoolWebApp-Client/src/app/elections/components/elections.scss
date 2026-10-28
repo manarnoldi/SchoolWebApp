@@ -1,0 +1,45 @@
+// Election screens, in the curriculum view's colours (teaching.scss).
+
+// A position: blue left edge, light blue header; solid blue when open.
+.el-position {
+    border-left: 4px solid #0d6efd;
+
+    > .card-header {
+        background: #e7f1ff;
+        color: #084298;
+        cursor: pointer;
+
+        &:hover {
+            background: #dbe9ff;
+        }
+    }
+
+    &.open > .card-header {
+        background: #0d6efd;
+        color: #fff;
+
+        .text-muted {
+            color: #e7f1ff !important;
+        }
+    }
+}
+
+// A race inside a position.
+.el-race {
+    background: #f5f9ff;
+    border: 1px solid #cfe2ff;
+    border-radius: 4px;
+    padding: 4px 8px;
+    color: #084298;
+}
+
+// A candidate card: coloured left edge and tint by status.
+.el-candidate {
+    border-left: 4px solid var(--el, #adb5bd) !important;
+    background: var(--el-bg, #fff);
+}
+
+.el-pending { --el: #e0a800; --el-bg: #fffbf0; }
+.el-approved { --el: #198754; --el-bg: #f3faf6; }
+.el-rejected { --el: #dc3545; --el-bg: #fdf3f4; }
+.el-withdrawn { --el: #6c757d; --el-bg: #f8f9fa; }

@@ -26,7 +26,8 @@ import {ElectionContext} from '@/elections/services/election-context.service';
  */
 @Component({
     selector: 'app-nominations',
-    templateUrl: './nominations.component.html'
+    templateUrl: './nominations.component.html',
+    styleUrls: ['../elections.scss']
 })
 export class NominationsComponent implements OnInit {
     data: Nominations | null = null;
@@ -35,6 +36,8 @@ export class NominationsComponent implements OnInit {
     positionId: number | null = null;
     status: CandidateStatus | null = null;
     search = '';
+    // Positions shown open; the first opens on load, the rest on click.
+    openPositions = new Set<number>();
 
     // The modal
     formPosition: NominationPosition | null = null;
@@ -43,6 +46,11 @@ export class NominationsComponent implements OnInit {
 
     statusLabels = CANDIDATE_STATUS_LABELS;
     statusBadges = CANDIDATE_STATUS_BADGES;
+    // The candidate card's coloured edge.
+    statusClass: {[s: number]: string} = {
+        [CandidateStatus.Nominated]: 'pending', [CandidateStatus.Approved]: 'approved',
+        [CandidateStatus.Rejected]: 'rejected', [CandidateStatus.Withdrawn]: 'withdrawn'
+    };
     stageLabels = STAGE_LABELS;
     stageBadges = STAGE_BADGES;
     Status = CandidateStatus;
@@ -78,6 +86,7 @@ export class NominationsComponent implements OnInit {
     show(n: Nominations) {
         // After a change, the election page header (counts) reloads too.
         if (this.data) this.ctx.reload();
+        if (!this.data) this.openPositions = new Set(n.positions.slice(0, 1).map((p) => p.id));
         this.data = n;
     }
 
@@ -117,6 +126,33 @@ export class NominationsComponent implements OnInit {
             racesWithout: races.filter((c) => !c.candidates.some((x) => x.status === CandidateStatus.Approved)).length,
             races: races.length
         };
+    }
+
+    // With a filter on, every position that matches shows open.
+    get filtering(): boolean {
+        return this.positionId !== null || this.status !== null || !!this.search.trim();
+    }
+
+    isOpen(p: NominationPosition): boolean {
+        return this.filtering || this.openPositions.has(p.id);
+    }
+
+    // One position open at a time: opening one closes the other; clicking the open one closes it.
+    togglePosition(p: NominationPosition) {
+        if (this.filtering) return;
+        this.openPositions = this.openPositions.has(p.id) ? new Set() : new Set([p.id]);
+    }
+
+    positionCounts(p: NominationPosition) {
+        const all = p.contests.flatMap((c) => c.candidates);
+        return {
+            approved: all.filter((x) => x.status === CandidateStatus.Approved).length,
+            pending: all.filter((x) => x.status === CandidateStatus.Nominated).length
+        };
+    }
+
+    trackById(_: number, x: {id: number}) {
+        return x.id;
     }
 
     approvedIn(c: NominationContest): number {
