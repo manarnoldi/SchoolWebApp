@@ -17,6 +17,7 @@ import {ResultsComponent} from './components/results/results.component';
 import {ResultsHomeComponent} from './components/results-home/results-home.component';
 import {LeadershipComponent} from './components/leadership/leadership.component';
 import {ElectionPositionsComponent} from './components/election-positions/election-positions.component';
+import {RaceSlideComponent} from './components/race-slide/race-slide.component';
 import {ElectionHistoryComponent} from './components/election-history/election-history.component';
 
 @NgModule({
@@ -36,7 +37,8 @@ import {ElectionHistoryComponent} from './components/election-history/election-h
         ResultsHomeComponent,
         LeadershipComponent,
         ElectionPositionsComponent,
-        ElectionHistoryComponent
+        ElectionHistoryComponent,
+        RaceSlideComponent
     ],
     imports: [CommonModule, RouterModule, SharedModule]
 })

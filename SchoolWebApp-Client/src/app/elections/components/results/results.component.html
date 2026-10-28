@@ -3,6 +3,7 @@
         <div *ngIf="loading && !r" class="text-center text-muted py-4"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
 
         <ng-container *ngIf="r">
+          <ng-container *ngIf="!raceSlide; else slideTpl">
             <!-- Head -->
             <div class="card card-outline mb-2" [ngClass]="declared ? 'card-success' : 'card-info'">
                 <div class="card-body p-2 d-flex flex-wrap align-items-center gap-3">
@@ -28,6 +29,8 @@
                         <button *ngIf="!declared" class="btn btn-sm" [ngClass]="auto ? 'btn-info' : 'btn-outline-info'" (click)="toggleAuto()" title="Refresh automatically">
                             <i class="fas fa-sync-alt" [class.fa-spin]="auto && loading"></i> Auto</button>
                         <button class="btn btn-sm btn-outline-secondary" (click)="load()" title="Refresh now"><i class="fas fa-redo"></i></button>
+                        <button class="btn btn-sm btn-dark" *ngIf="!slideshow" (click)="startShow()" title="Full screen: the overview, then each race in turn">
+                            <i class="fas fa-play"></i> Slideshow</button>
                         <button class="btn btn-sm btn-outline-dark" (click)="toggleFull()" [title]="full ? 'Leave full screen' : 'Full screen'">
                             <i class="fas" [ngClass]="full ? 'fa-compress' : 'fa-expand'"></i></button>
                         <ng-container *ngIf="!full">
@@ -106,6 +109,32 @@
                         </div>
                     </div>
                 </div>
+            </div>
+          </ng-container>
+
+            <!-- Slideshow: one race -->
+            <ng-template #slideTpl>
+                <div class="d-flex align-items-center gap-3 mb-2 px-1">
+                    <h4 class="mb-0 me-auto"><i class="fas fa-poll text-info me-1"></i>{{ r.electionName }}
+                        <span class="badge ms-1 align-middle" [ngClass]="stageBadges[r.stage]">{{ stageLabels[r.stage] }}</span></h4>
+                    <span class="text-muted">{{ declared ? 'Declared results' : 'Provisional, as at ' + (r.asAt | date:'HH:mm:ss') }}</span>
+                    <span class="fs-5"><b>{{ r.voted }}</b><span class="text-muted"> / {{ r.voters }} voted ({{ turnout }}%)</span></span>
+                </div>
+                <app-race-slide [race]="raceSlide!" [photoBase]="photoBase" [declared]="declared"></app-race-slide>
+            </ng-template>
+
+            <!-- Slideshow controls -->
+            <div class="show-bar d-flex align-items-center gap-1" *ngIf="slideshow">
+                <button class="btn btn-sm" (click)="goTo(slide - 1)" title="Previous (left arrow)"><i class="fas fa-step-backward"></i></button>
+                <button class="btn btn-sm" (click)="togglePause()" [title]="paused ? 'Play (space)' : 'Pause (space)'">
+                    <i class="fas" [ngClass]="paused ? 'fa-play' : 'fa-pause'"></i></button>
+                <button class="btn btn-sm" (click)="goTo(slide + 1)" title="Next (right arrow)"><i class="fas fa-step-forward"></i></button>
+                <span class="d-flex align-items-center gap-1 mx-2">
+                    <span *ngFor="let n of slideIndexes" class="show-dot" [class.on]="n === slide" (click)="goTo(n)"
+                        [title]="n === 0 ? 'All races' : races[n - 1].name"></span>
+                </span>
+                <small class="me-2">{{ slide === 0 ? 'All races' : slide + ' / ' + races.length }}</small>
+                <button class="btn btn-sm" (click)="toggleFull()" title="End the slideshow"><i class="fas fa-times"></i></button>
             </div>
         </ng-container>
     </div>

@@ -37,6 +37,11 @@ import {ElectionContext} from '@/elections/services/election-context.service';
         .face.none { background: #e9ecef; color: #adb5bd; display: inline-flex; align-items: center; justify-content: center; }
         .full .face { width: 52px; height: 62px; }
         .full .cname { font-size: 1.15rem; }
+        .show-bar { position: fixed; right: 16px; bottom: 16px; z-index: 2010; background: rgba(33, 37, 41, .85); color: #fff;
+            border-radius: 24px; padding: 4px 10px; }
+        .show-bar .btn { color: #fff; }
+        .show-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, .35); display: inline-block; cursor: pointer; }
+        .show-dot.on { background: #fff; }
     `]
 })
 export class ResultsComponent implements OnInit, OnDestroy {
@@ -46,6 +51,11 @@ export class ResultsComponent implements OnInit, OnDestroy {
     loading = false;
     auto = true;
     full = false;
+    // Slideshow: full screen, the overview first, then each race in turn.
+    slideshow = false;
+    slide = 0;
+    paused = false;
+    private slideTimer: any;
     positionId: number | null = null;
     busy = false;
     // Drawing lots: the tied race and the order drawn.
@@ -71,6 +81,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         clearTimeout(this.timer);
+        clearTimeout(this.slideTimer);
         if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
     }
 
@@ -154,13 +165,76 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
     @HostListener('document:fullscreenchange')
     onFullscreenChange() {
-        if (!document.fullscreenElement) this.full = false;
+        if (!document.fullscreenElement) {
+            this.full = false;
+            this.stopShow();
+        }
     }
 
     toggleFull() {
         this.full = !this.full;
         if (this.full) document.documentElement.requestFullscreen?.().catch(() => {});
-        else if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+        else {
+            this.stopShow();
+            if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+        }
+    }
+
+    // Slideshow
+    get slides(): number {
+        return this.races.length + 1;
+    }
+
+    get slideIndexes(): number[] {
+        return Array.from({length: this.slides}, (_, i) => i);
+    }
+
+    /** The race on screen, or null on the overview. */
+    get raceSlide(): ResultRace | null {
+        return this.slideshow && this.slide > 0 ? this.races[this.slide - 1] || null : null;
+    }
+
+    startShow() {
+        if (!this.full) this.toggleFull();
+        this.slideshow = true;
+        this.paused = false;
+        this.goTo(0);
+    }
+
+    stopShow() {
+        this.slideshow = false;
+        clearTimeout(this.slideTimer);
+    }
+
+    goTo(i: number) {
+        this.slide = (i + this.slides) % this.slides;
+        this.nextSlide();
+    }
+
+    togglePause() {
+        this.paused = !this.paused;
+        this.nextSlide();
+    }
+
+    // The overview stays up a little longer than each race.
+    private nextSlide() {
+        clearTimeout(this.slideTimer);
+        if (!this.slideshow || this.paused) return;
+        this.slideTimer = setTimeout(() => this.goTo(this.slide + 1), (this.slide === 0 ? 15 : 10) * 1000);
+    }
+
+    @HostListener('document:keydown', ['$event'])
+    onKey(ev: KeyboardEvent) {
+        if (!this.slideshow) return;
+        if (ev.key === 'ArrowRight') this.goTo(this.slide + 1);
+        else if (ev.key === 'ArrowLeft') this.goTo(this.slide - 1);
+        else if (ev.key === ' ') this.togglePause();
+        else return;
+        ev.preventDefault();
+    }
+
+    get photoBase(): string {
+        return this.baseUrl;
     }
 
     // Lots
