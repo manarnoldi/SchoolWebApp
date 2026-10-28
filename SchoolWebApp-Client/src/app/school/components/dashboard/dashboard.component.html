@@ -65,14 +65,14 @@
         <!-- Summary Cards -->
         <app-dashboard-summary></app-dashboard-summary>
         <hr class="mb-1 mx-n2">
-        <!-- Module cards: what the school has bought and the user may see -->
-        <app-dashboard-module-cards></app-dashboard-module-cards>
         <!-- Exam Performance Summary (Academics) -->
         <div class="row" *ngIf="licence.has('Academics') && showExamSummary">
             <div class="col-12 px-1">
                 <app-dashboard-exam-summary></app-dashboard-exam-summary>
             </div>
         </div>
+        <!-- Module cards: what the school has bought and the user may see -->
+        <app-dashboard-module-cards></app-dashboard-module-cards>
         <hr class="mb-1 mx-n2">
         <!-- Todo and Events -->
         <div class="row">
