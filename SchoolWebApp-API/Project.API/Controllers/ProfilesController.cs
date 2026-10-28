@@ -170,6 +170,102 @@ namespace SchoolWebApp.API.Controllers
             }).OrderByDescending(e => e.SessionStart).ThenBy(e => e.ExamTypeRank).ThenBy(e => e.StartDate).Cast<object>().ToList());
         }
 
+        // GET api/profiles/students/12/fees - what the student's fee printouts need: their class,
+        // invoices with items, receipts, and the fee structures for their grade this year
+        [HttpGet("students/{id:int}/fees")]
+        [RequiresModule(AppModules.Finance)]
+        [RequiresMenu(MenuGroup.Finance)]
+        public async Task<IActionResult> StudentFees(int id)
+        {
+            var student = await _db.Students.AsNoTracking().Where(st => st.Id == id)
+                .Select(st => new { st.Id, st.FullName, st.UPI }).FirstOrDefaultAsync();
+            if (student == null) return NotFound();
+            // The student's latest class (its year and grade pick the fee structures).
+            var place = await _db.StudentClasses.AsNoTracking().Where(sc => sc.StudentId == id)
+                .OrderByDescending(sc => sc.SchoolClass!.AcademicYear!.StartDate).ThenByDescending(sc => sc.Id)
+                .Select(sc => new
+                {
+                    ClassName = sc.SchoolClass!.Name,
+                    sc.SchoolClass.LearningLevelId,
+                    sc.SchoolClass.AcademicYearId,
+                    Year = sc.SchoolClass.AcademicYear!.Name
+                })
+                .FirstOrDefaultAsync();
+
+            var invoices = (await _db.StudentInvoices.AsNoTracking()
+                    .Where(i => i.StudentId == id && i.Status != SchoolWebApp.Core.Entities.Finance.InvoiceStatus.Cancelled)
+                    .Select(i => new
+                    {
+                        i.Id,
+                        Number = i.InvoiceNumber,
+                        Date = i.InvoiceDate,
+                        i.DueDate,
+                        Year = i.AcademicYear!.Name,
+                        Session = i.Session != null ? i.Session.SessionName : null,
+                        i.Description,
+                        Status = i.Status.ToString(),
+                        Total = i.TotalAmount,
+                        Discount = i.DiscountAmount,
+                        Paid = i.PaidAmount,
+                        Items = i.Items.Select(it => new
+                        {
+                            Category = it.FeeCategory!.Name,
+                            it.Description,
+                            it.Amount,
+                            it.Discount,
+                            Paid = it.PaidAmount
+                        }).ToList()
+                    })
+                    .ToListAsync())
+                .OrderByDescending(i => i.Date)
+                .Select(i => new { i.Id, i.Number, i.Date, i.DueDate, i.Year, i.Session, i.Description, i.Status, i.Total, i.Discount, i.Paid,
+                    Balance = i.Total - i.Discount - i.Paid, i.Items })
+                .ToList();
+
+            var receipts = await _db.Payments.AsNoTracking()
+                .Where(p => p.StudentId == id && p.PaymentType == SchoolWebApp.Core.Entities.Finance.PaymentType.Receipt
+                    && p.ApprovalStatus == SchoolWebApp.Core.Entities.Finance.PaymentApprovalStatus.Approved)
+                .OrderByDescending(p => p.PaymentDate)
+                .Select(p => new
+                {
+                    p.Id,
+                    Number = p.ReceiptNumber,
+                    Date = p.PaymentDate,
+                    p.Amount,
+                    Method = p.PaymentMethod.ToString(),
+                    Reference = p.TransactionReference,
+                    p.Description,
+                    InvoiceNumber = p.StudentInvoice != null ? p.StudentInvoice.InvoiceNumber : null
+                })
+                .ToListAsync();
+
+            var structures = place == null ? new List<object>() : (await _db.FeeStructures.AsNoTracking()
+                    .Where(fs => fs.IsActive && fs.AcademicYearId == place.AcademicYearId
+                        && (fs.LearningLevelId == null || fs.LearningLevelId == place.LearningLevelId))
+                    .Select(fs => new
+                    {
+                        fs.Id,
+                        fs.Name,
+                        Year = fs.AcademicYear!.Name,
+                        Session = fs.Session != null ? fs.Session.SessionName : null,
+                        SessionStart = fs.Session != null ? fs.Session.StartDate : (DateTime?)null,
+                        fs.Description,
+                        Items = fs.Items.Select(it => new { Category = it.FeeCategory!.Name, it.Amount, Mandatory = it.IsMandatory }).ToList()
+                    })
+                    .ToListAsync())
+                .OrderBy(fs => fs.SessionStart ?? DateTime.MinValue)
+                .Select(fs => (object)new { fs.Id, fs.Name, fs.Year, fs.Session, fs.Description, fs.Items, Total = fs.Items.Sum(it => it.Amount) })
+                .ToList();
+
+            return Ok(new
+            {
+                Student = new { student.Id, Name = student.FullName, Upi = student.UPI, place?.ClassName, place?.Year },
+                Invoices = invoices,
+                Receipts = receipts,
+                FeeStructures = structures
+            });
+        }
+
         // GET api/profiles/students/12/activities - class roles, responsibilities, co-curricular and elections
         [HttpGet("students/{id:int}/activities")]
         public async Task<IActionResult> StudentActivities(int id)
