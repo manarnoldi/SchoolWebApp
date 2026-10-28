@@ -30,7 +30,7 @@
                                     <li class="nav-item" role="presentation">
                                         <button
                                             class="nav-link {{activeNav==='attendance'? 'active':''}}"
-                                            id="attendance-tab"
+                                            id="attendance-tab" (click)="selectTab('attendance')"
                                             data-bs-toggle="pill" data-bs-target="#attendance"
                                             type="button" role="tab" aria-controls="attendance"
                                             aria-selected="true">Attendance details</button>
@@ -38,7 +38,7 @@
                                     <li class="nav-item" role="presentation">
                                         <button
                                             class="nav-link {{activeNav==='discipline'? 'active':''}}"
-                                            id="discipline-tab"
+                                            id="discipline-tab" (click)="selectTab('discipline')"
                                             data-bs-toggle="pill" data-bs-target="#discipline"
                                             type="button" role="tab" aria-controls="discipline"
                                             aria-selected="false">Discipline details</button>
@@ -46,7 +46,7 @@
                                     <li class="nav-item" role="presentation" *ngIf="teachingStaff">
                                         <button
                                             class="nav-link {{activeNav==='subjects'? 'active':''}}"
-                                            id="subjects-tab"
+                                            id="subjects-tab" (click)="selectTab('subjects')"
                                             data-bs-toggle="pill"
                                             data-bs-target="#subjects" type="button" role="tab"
                                             aria-controls="subjects" aria-selected="false">
@@ -56,7 +56,7 @@
                                     <li class="nav-item" role="presentation" *ngIf="teachingStaff && showTeaching">
                                         <button
                                             class="nav-link {{activeNav==='teaching'? 'active':''}}"
-                                            id="teaching-tab" (click)="opened.add('teaching')"
+                                            id="teaching-tab" (click)="selectTab('teaching')"
                                             data-bs-toggle="pill" data-bs-target="#teaching"
                                             type="button" role="tab" aria-controls="teaching"
                                             aria-selected="false">Teaching documents</button>
@@ -64,7 +64,7 @@
                                     <li class="nav-item" role="presentation" *ngIf="showPay">
                                         <button
                                             class="nav-link {{activeNav==='pay'? 'active':''}}"
-                                            id="pay-tab" (click)="opened.add('pay')"
+                                            id="pay-tab" (click)="selectTab('pay')"
                                             data-bs-toggle="pill" data-bs-target="#pay"
                                             type="button" role="tab" aria-controls="pay"
                                             aria-selected="false">Pay</button>
@@ -72,7 +72,7 @@
                                     <li class="nav-item" role="presentation">
                                         <button
                                             class="nav-link {{activeNav==='duties'? 'active':''}}"
-                                            id="duties-tab" (click)="opened.add('duties')"
+                                            id="duties-tab" (click)="selectTab('duties')"
                                             data-bs-toggle="pill" data-bs-target="#duties"
                                             type="button" role="tab" aria-controls="duties"
                                             aria-selected="false">Duties</button>

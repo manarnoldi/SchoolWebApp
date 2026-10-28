@@ -30,7 +30,7 @@
                                     <li class="nav-item" role="presentation">
                                         <button
                                             class="nav-link {{activeNav === 'formerSchool'? 'active':''}}"
-                                            id="formerSchool-tab"
+                                            id="formerSchool-tab" (click)="selectTab('formerSchool')"
                                             data-bs-toggle="pill" data-bs-target="#formerSchool"
                                             type="button" role="tab" aria-controls="formerSchool"
                                             aria-selected="true">Former school/s</button>
@@ -38,7 +38,7 @@
                                     <li class="nav-item" role="class">
                                         <button
                                             class="nav-link {{activeNav === 'class'? 'active':''}}"
-                                            id="class-tab"
+                                            id="class-tab" (click)="selectTab('class')"
                                             data-bs-toggle="pill" data-bs-target="#class"
                                             type="button" role="tab" aria-controls="class"
                                             aria-selected="false">Class details</button>
@@ -46,7 +46,7 @@
                                     <li class="nav-item" role="presentation">
                                         <button
                                             class="nav-link {{activeNav === 'parents'? 'active':''}}"
-                                            id="parents-tab"
+                                            id="parents-tab" (click)="selectTab('parents')"
                                             data-bs-toggle="pill"
                                             data-bs-target="#parents" type="button" role="tab"
                                             aria-controls="parents" aria-selected="false">
@@ -56,7 +56,7 @@
                                     <li class="nav-item" role="presentation">
                                         <button
                                             class="nav-link {{activeNav === 'discipline'? 'active':''}}"
-                                            id="discipline-tab"
+                                            id="discipline-tab" (click)="selectTab('discipline')"
                                             data-bs-toggle="pill" data-bs-target="#discipline"
                                             type="button" role="tab" aria-controls="discipline"
                                             aria-selected="true">Discipline records</button>
@@ -64,7 +64,7 @@
                                     <li class="nav-item" role="presentation">
                                         <button
                                             class="nav-link {{activeNav === 'subjects'? 'active':''}}"
-                                            id="subjects-tab"
+                                            id="subjects-tab" (click)="selectTab('subjects')"
                                             data-bs-toggle="pill" data-bs-target="#subjects"
                                             type="button" role="tab" aria-controls="subjects"
                                             aria-selected="false">Subjects details</button>
@@ -72,7 +72,7 @@
                                     <li class="nav-item" role="presentation">
                                         <button
                                             class="nav-link {{activeNav === 'attendance'? 'active':''}}"
-                                            id="attendance-tab"
+                                            id="attendance-tab" (click)="selectTab('attendance')"
                                             data-bs-toggle="pill"
                                             data-bs-target="#attendance" type="button" role="tab"
                                             aria-controls="attendance" aria-selected="false">
@@ -82,7 +82,7 @@
                                     <li class="nav-item" role="presentation" *ngIf="showAcademics">
                                         <button
                                             class="nav-link {{activeNav === 'academics'? 'active':''}}"
-                                            id="academics-tab" (click)="opened.add('academics')"
+                                            id="academics-tab" (click)="selectTab('academics')"
                                             data-bs-toggle="pill" data-bs-target="#academics"
                                             type="button" role="tab" aria-controls="academics"
                                             aria-selected="false">Academics</button>
@@ -90,7 +90,7 @@
                                     <li class="nav-item" role="presentation" *ngIf="showFees">
                                         <button
                                             class="nav-link {{activeNav === 'fees'? 'active':''}}"
-                                            id="fees-tab" (click)="opened.add('fees')"
+                                            id="fees-tab" (click)="selectTab('fees')"
                                             data-bs-toggle="pill" data-bs-target="#fees"
                                             type="button" role="tab" aria-controls="fees"
                                             aria-selected="false">Fees</button>
@@ -98,7 +98,7 @@
                                     <li class="nav-item" role="presentation">
                                         <button
                                             class="nav-link {{activeNav === 'activities'? 'active':''}}"
-                                            id="activities-tab" (click)="opened.add('activities')"
+                                            id="activities-tab" (click)="selectTab('activities')"
                                             data-bs-toggle="pill" data-bs-target="#activities"
                                             type="button" role="tab" aria-controls="activities"
                                             aria-selected="false">Leadership &amp; activities</button>

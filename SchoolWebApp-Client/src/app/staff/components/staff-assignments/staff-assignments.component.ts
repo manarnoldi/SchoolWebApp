@@ -9,7 +9,8 @@ import {OutcomesService} from '@/settings/services/outcomes.service';
 import {StaffDetails} from '@/staff/models/staff-details';
 import {StaffDetailsService} from '@/staff/services/staff-details.service';
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Location} from '@angular/common';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
 import {LicenceService} from '@/core/services/licence.service';
@@ -53,6 +54,8 @@ export class StaffAssignmentsComponent implements OnInit {
         private toastr: ToastrService,
         private staffsSvc: StaffDetailsService,
         private route: ActivatedRoute,
+        private router: Router,
+        private location: Location,
         private outcomesSvc: OutcomesService,
         private occurenceTypesSvc: OccurenceTypeService,
         private subjectsSvc: SubjectsService,
@@ -76,10 +79,21 @@ export class StaffAssignmentsComponent implements OnInit {
         });
     }
 
+    // Opening a tab records it in the address (?activeNav=), without reloading, so a
+    // refresh or a shared link comes back to the same tab.
+    selectTab(tab: string) {
+        this.activeNav = tab;
+        this.opened.add(tab);
+        const url = this.router.createUrlTree([], {relativeTo: this.route, queryParams: {activeNav: tab}, queryParamsHandling: 'merge'});
+        this.location.replaceState(url.toString());
+    }
+
     loadSelectedStaff = () => {
         this.route.queryParams.subscribe((params) => {
             this.staffId = params['id'];
             this.sourceLink = params['action'];
+            this.activeNav = params['activeNav'] || 'attendance';
+            this.opened.add(this.activeNav);
             this.backLinkUrl = '/staff/' + this.sourceLink;
             let staffByIdReq = this.staffsSvc.getById(
                 this.staffId,

@@ -17,7 +17,8 @@ import {OutcomesService} from '@/settings/services/outcomes.service';
 import {StudentDetails} from '@/students/models/student-details';
 import {StudentDetailsService} from '@/students/services/student-details.service';
 import {Component, Input, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Location} from '@angular/common';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
 import {LicenceService} from '@/core/services/licence.service';
@@ -58,6 +59,8 @@ export class StudentAssignmentsComponent implements OnInit {
         private toastr: ToastrService,
         private studentsSvc: StudentDetailsService,
         private route: ActivatedRoute,
+        private router: Router,
+        private location: Location,
         private currciulumSvc: CurriculumService,
         private educationLevelsSvc: EducationLevelService,
         private academicYrsSvc: AcademicYearsService,
@@ -84,6 +87,15 @@ export class StudentAssignmentsComponent implements OnInit {
         });
     }
 
+    // Opening a tab records it in the address (?activeNav=), without reloading, so a
+    // refresh or a shared link comes back to the same tab.
+    selectTab(tab: string) {
+        this.activeNav = tab;
+        this.opened.add(tab);
+        const url = this.router.createUrlTree([], {relativeTo: this.route, queryParams: {activeNav: tab}, queryParamsHandling: 'merge'});
+        this.location.replaceState(url.toString());
+    }
+
     loadSelectedStudent = () => {
         this.route.queryParams.subscribe((params) => {
             this.studentId = params['id'];
@@ -91,6 +103,7 @@ export class StudentAssignmentsComponent implements OnInit {
             this.activeNav = params['activeNav']
                 ? params['activeNav']
                 : 'formerSchool';
+            this.opened.add(this.activeNav);
             this.breadcrumbs = [
                 {link: ['/'], title: 'Home'},
                 {link: ['/students/' + this.sourceLink], title: 'Students'},
