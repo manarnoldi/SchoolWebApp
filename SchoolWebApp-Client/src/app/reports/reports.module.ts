@@ -40,9 +40,11 @@ import { ClassPerformanceTrendComponent } from './components/academics-report/cl
 import { ExamProgressComponent } from './components/academics-report/exam-progress/exam-progress.component';
 import { ClassPerformanceTabsComponent } from './components/academics-report/class-performance-tabs/class-performance-tabs.component';
 import { ExamResultsTabsComponent } from './components/academics-report/exam-results-tabs/exam-results-tabs.component';
+import {YearProgressComponent} from './components/academics-report/year-progress/year-progress.component';
 
 @NgModule({
     declarations: [
+        YearProgressComponent,
         ReportsComponent,
         SchoolReportComponent,
         StaffReportComponent,

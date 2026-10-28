@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {gradeForPercent} from '@/shared/utils/grading';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
@@ -284,7 +285,7 @@ export class ExamResultsClasswiseComponent implements OnInit {
     };
 
     getGradeForPercent = (percent: number): string => {
-        let grade = this.grades.find((g) => percent >= g.minScore && percent <= g.maxScore);
+        let grade = gradeForPercent(this.grades, percent);
         return grade ? `${grade.abbr}-${grade.points}` : '';
     };
 
@@ -299,7 +300,7 @@ export class ExamResultsClasswiseComponent implements OnInit {
             row.description = '';
         } else if (row.score != null && row.examMark > 0) {
             let percent = (row.score / row.examMark) * 100;
-            let grade = this.grades.find((g) => percent >= g.minScore && percent <= g.maxScore);
+            let grade = gradeForPercent(this.grades, percent);
             row.description = grade ? grade.name : '';
         } else {
             row.description = '';

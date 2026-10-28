@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {gradeForPercent} from '@/shared/utils/grading';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin, of, switchMap, map} from 'rxjs';
@@ -146,7 +147,7 @@ export class ClassPerformanceComponent implements OnInit {
     };
 
     private gradeForPercent = (percent: number, grades: any[]): any =>
-        grades.find((g) => percent >= g.minScore && percent <= g.maxScore);
+        gradeForPercent(grades, percent);
 
     private pointsForPercent = (percent: number, grades: any[]): number => {
         let g = this.gradeForPercent(percent, grades);

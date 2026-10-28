@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project.Infrastructure.Data;
 using SchoolWebApp.API.Licensing;
+using SchoolWebApp.API.Security;
 using SchoolWebApp.Core.DTOs.Payroll;
 using SchoolWebApp.Core.Entities.Elections;
 using SchoolWebApp.Core.Entities.Payroll;
@@ -43,12 +44,44 @@ namespace SchoolWebApp.API.Controllers
         // term in exam-type order, with each subject's mark (the page filters by year and term)
         [HttpGet("students/{id:int}/academics")]
         [RequiresModule(AppModules.Academics)]
-        public async Task<IActionResult> StudentAcademics(int id)
+        public async Task<IActionResult> StudentAcademics(int id) =>
+            Ok((await AcademicsForAsync(new List<int> { id }, null)).GetValueOrDefault(id) ?? new List<object>());
+
+        // GET api/profiles/classes/7/academics - the same for every learner in a class, for the
+        // class's year (Exam Results > Year Progress: one learner on screen, or all printed)
+        [HttpGet("classes/{classId:int}/academics")]
+        [RequiresModule(AppModules.Academics)]
+        [RequiresMenu(MenuGroup.Academics)]
+        public async Task<IActionResult> ClassAcademics(int classId)
+        {
+            var cls = await _db.SchoolClasses.AsNoTracking().FirstOrDefaultAsync(c => c.Id == classId);
+            if (cls == null) return NotFound();
+            var learners = (await _db.StudentClasses.AsNoTracking()
+                    .Where(sc => sc.SchoolClassId == classId && sc.Student!.Status == SchoolWebApp.Core.Entities.Enums.Status.Active)
+                    .Select(sc => new { sc.StudentId, sc.Student!.FullName, sc.Student.UPI })
+                    .ToListAsync())
+                .GroupBy(x => x.StudentId).Select(g => g.First())
+                .OrderBy(x => x.FullName).ToList();
+            var byStudent = await AcademicsForAsync(learners.Select(l => l.StudentId).ToList(), cls.AcademicYearId);
+            return Ok(learners.Select(l => new
+            {
+                l.StudentId,
+                Name = l.FullName,
+                Upi = l.UPI,
+                Exams = byStudent.GetValueOrDefault(l.StudentId) ?? new List<object>()
+            }));
+        }
+
+        // Every exam each student sat (in one year, or all), newest term first and within a term in
+        // exam-type order, each subject's mark and grade, the mean and its grade, and the class mean.
+        private async Task<Dictionary<int, List<object>>> AcademicsForAsync(List<int> studentIds, int? academicYearId)
         {
             var rows = await _db.ExamResults.AsNoTracking()
-                .Where(r => r.StudentId == id)
+                .Where(r => studentIds.Contains(r.StudentId))
+                .Where(r => academicYearId == null || r.Exam!.SchoolExam!.Session!.AcademicYearId == academicYearId)
                 .Select(r => new
                 {
+                    r.StudentId,
                     r.Exam!.SchoolExamId,
                     ExamName = r.Exam.SchoolExam!.ExamType!.Name,
                     ExamTypeRank = r.Exam.SchoolExam.ExamType.Rank,
@@ -96,11 +129,14 @@ namespace SchoolWebApp.API.Controllers
             (string? Abbr, string? Name) GradeFor(double percent, int levelId)
             {
                 var category = CategoryFor(levelId);
-                var g = grades.FirstOrDefault(gr => gr.Category == category && percent >= gr.MinScore && percent <= gr.MaxScore);
+                // The highest band the mark reaches, so a mark between two whole-number bands (62.6 between
+                // 50-62 and 63-74) takes the lower one rather than none.
+                var g = grades.Where(gr => gr.Category == category && percent >= gr.MinScore)
+                    .OrderByDescending(gr => gr.MinScore).FirstOrDefault();
                 return (g?.Abbr, g?.Name);
             }
 
-            var exams = rows.GroupBy(r => r.SchoolExamId).Select(g =>
+            return rows.GroupBy(r => r.StudentId).ToDictionary(st => st.Key, st => st.GroupBy(r => r.SchoolExamId).Select(g =>
             {
                 var f = g.First();
                 var subjects = g.Select(r =>
@@ -131,8 +167,7 @@ namespace SchoolWebApp.API.Controllers
                     ClassMean = classMeans.TryGetValue(g.Key, out var cm) ? cm : (double?)null,
                     Subjects = subjects
                 };
-            }).OrderByDescending(e => e.SessionStart).ThenBy(e => e.ExamTypeRank).ThenBy(e => e.StartDate).ToList();
-            return Ok(exams);
+            }).OrderByDescending(e => e.SessionStart).ThenBy(e => e.ExamTypeRank).ThenBy(e => e.StartDate).Cast<object>().ToList());
         }
 
         // GET api/profiles/students/12/activities - class roles, responsibilities, co-curricular and elections

@@ -1,9 +1,10 @@
-import {AfterViewInit, Component, ElementRef, Input, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, NgZone, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {forkJoin} from 'rxjs';
 import {ProfileExam, ProfilesService} from '@/core/services/profiles.service';
 import {AccessService} from '@/core/services/access.service';
-import {escapeHtml, printInFrame, removePrintFrame} from '@/shared/utils/print-frame';
+import {printInFrame, removePrintFrame} from '@/shared/utils/print-frame';
+import {PROGRESS_PRINT_CSS, progressReportPage} from '@/shared/utils/progress-report';
 
 interface ChartPoint {
     x: number;
@@ -30,16 +31,6 @@ const ABOVE = '#198754';
 const BELOW = '#dc3545';
 const NEUTRAL = '#2a78d6';
 
-const PRINT_CSS = `
-    body { font-family: Arial, Helvetica, sans-serif; color: #212529; margin: 12mm; }
-    h1 { font-size: 18px; margin: 0 0 2px; } .sub { color: #52514e; font-size: 12px; margin-bottom: 10px; }
-    svg { width: 100%; height: auto; } svg text { font-size: 11px; font-family: Arial, Helvetica, sans-serif; }
-    svg text:not(.val):not(.grade) { fill: #52514e; } svg .val { font-weight: bold; }
-    svg text.grade { font-size: 9.5px; font-weight: bold; fill: #6c757d; }
-    table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
-    th, td { border: 1px solid #dee2e6; padding: 4px 6px; text-align: left; } th { background: #e7f1ff; }
-    td.n { text-align: right; } .up { color: ${ABOVE}; font-weight: bold; } .down { color: ${BELOW}; font-weight: bold; }
-`;
 
 /**
  * Student page, Academics tab: for a year (the current one first), a progress
@@ -131,7 +122,7 @@ const PRINT_CSS = `
                 </div>
                 <!-- Drawn at the panel's own width; a long year scrolls sideways -->
                 <div style="overflow-x: auto;">
-                    <svg class="chart" #chartSvg xmlns="http://www.w3.org/2000/svg" [attr.width]="W" [attr.height]="H"
+                    <svg class="chart" xmlns="http://www.w3.org/2000/svg" [attr.width]="W" [attr.height]="H"
                         [attr.viewBox]="'0 0 ' + W + ' ' + H" role="img" [attr.aria-label]="'Marks through ' + yearName">
                         <g *ngFor="let g of grid">
                             <line [attr.x1]="padL" [attr.x2]="W - padR" [attr.y1]="yFor(g)" [attr.y2]="yFor(g)" stroke="#e9ecef"/>
@@ -189,10 +180,12 @@ const PRINT_CSS = `
             </div>
         </div>`
 })
-export class StudentAcademicsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class StudentAcademicsComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
     @Input() studentId!: number;
     @Input() studentName = '';
-    @ViewChild('chartSvg') chartSvg?: ElementRef<SVGElement>;
+    /** The learner's exams when the page already has them (Exam Results > Year Progress); else fetched. */
+    @Input() preloaded: ProfileExam[] | null = null;
+    private schoolName = '';
     exams: ProfileExam[] = [];
     loading = false;
     open = 0;
@@ -232,7 +225,18 @@ export class StudentAcademicsComponent implements OnInit, AfterViewInit, OnDestr
     private resize?: ResizeObserver;
     private lastWidth = 0;
 
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['preloaded'] && this.preloaded) {
+            this.exams = this.preloaded;
+            this.yearId = this.exams[0]?.academicYearId ?? null;
+            this.sessionId = null;
+            this.refresh();
+        }
+    }
+
     ngOnInit(): void {
+        this.http.get<any[]>('/schoolDetails').subscribe({next: (d) => (this.schoolName = (d || [])[0]?.name || ''), error: () => {}});
+        if (this.preloaded) return;
         this.loading = true;
         this.access.canAny('/reports/academics/exam-results', '/reports/academics/report-forms').subscribe((ok) => (this.can.reportForms = ok));
         this.access.canAny('/reports/academics/assessment-report').subscribe((ok) => (this.can.assessment = ok));
@@ -385,21 +389,11 @@ export class StudentAcademicsComponent implements OnInit, AfterViewInit, OnDestr
         return q;
     }
 
-    // The year's progress: the chart as it is on screen, and each exam against the class.
+    // The year's progress: the chart, and each exam against the class.
     printProgress() {
-        const chart = this.chartSvg?.nativeElement.outerHTML || '';
-        const rows = this.yearExams.map((e) => {
-            const diff = e.classMean === null ? null : Math.round((e.mean - e.classMean) * 10) / 10;
-            return `<tr><td>${escapeHtml(e.session)}</td><td>${escapeHtml(e.name)}</td><td class="n">${e.mean}%</td><td>${escapeHtml(e.meanGrade || '')}</td>
-                <td class="n">${e.classMean === null ? '-' : e.classMean + '%'}</td>
-                <td class="n ${diff === null ? '' : diff >= 0 ? 'up' : 'down'}">${diff === null ? '-' : (diff > 0 ? '+' : '') + diff}</td></tr>`;
-        }).join('');
         const cls = this.yearExams[this.yearExams.length - 1]?.className || '';
-        printInFrame(`Progress report - ${this.studentName}`, PRINT_CSS,
-            `<h1>${escapeHtml(this.studentName)} - progress through ${escapeHtml(this.yearName)}</h1>
-             <div class="sub">${escapeHtml(cls)}. Mean mark in each exam against the class mean (green: at or above, red: below).</div>
-             ${chart}
-             <table><thead><tr><th>Term</th><th>Exam</th><th>Mean</th><th>Grade</th><th>Class mean</th><th>Against the class</th></tr></thead>
-             <tbody>${rows}</tbody></table>`);
+        printInFrame(`Progress report - ${this.studentName}`, PROGRESS_PRINT_CSS,
+            progressReportPage({school: this.schoolName, name: this.studentName, className: cls, yearName: this.yearName, exams: this.yearExams}));
     }
+
 }

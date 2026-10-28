@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {gradeForPercent} from '@/shared/utils/grading';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
@@ -246,7 +247,7 @@ export class ExamResultsBulkComponent implements OnInit {
     }
 
     getGradeForPercent = (percent: number): any => {
-        return this.grades.find((g) => percent >= g.minScore && percent <= g.maxScore);
+        return gradeForPercent(this.grades, percent);
     };
 
     loadGrid = () => {

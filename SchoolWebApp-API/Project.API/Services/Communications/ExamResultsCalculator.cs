@@ -134,7 +134,8 @@ namespace SchoolWebApp.API.Services.Communications
                     .Select(g => new GradeBand(g.MinScore, g.MaxScore, g.Points, g.Abbr)).ToList();
                 var maxPoints = grades.Count > 0 ? grades.Max(g => g.Points) : 0;
 
-                GradeBand? ByPercent(double pct) => grades.FirstOrDefault(g => pct >= g.Min && pct <= g.Max);
+                // The highest band the mark reaches (a mark between whole-number bands takes the lower).
+                GradeBand? ByPercent(double pct) => grades.Where(g => pct >= g.Min).OrderByDescending(g => g.Min).FirstOrDefault();
                 string GradeForPoints(double pts)
                 {
                     if (grades.Count == 0) return "";

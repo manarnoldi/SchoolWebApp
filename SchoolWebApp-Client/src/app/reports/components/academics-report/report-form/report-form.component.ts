@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {gradeForPercent} from '@/shared/utils/grading';
 import {ActivatedRoute} from '@angular/router';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
@@ -451,7 +452,7 @@ export class ReportFormComponent implements OnInit {
     };
 
     getGradeForPercent = (percent: number): any => {
-        return this.grades.find((g) => percent >= g.minScore && percent <= g.maxScore);
+        return gradeForPercent(this.grades, percent);
     };
 
     generateReportForStudent = (student: any, callback?: () => void, mode: string = 'preview') => {
@@ -694,7 +695,7 @@ export class ReportFormComponent implements OnInit {
                     let val = r.score || 0;
                     if (usePoints) {
                         let percent = exam.examMark > 0 ? (val / exam.examMark) * 100 : 0;
-                        let grade = this.grades.find((g) => percent >= g.minScore && percent <= g.maxScore);
+                        let grade = gradeForPercent(this.grades, percent);
                         val = grade ? grade.points : 0;
                     }
                     studentTotalsByType[etId][r.studentId] = (studentTotalsByType[etId][r.studentId] || 0) + val;

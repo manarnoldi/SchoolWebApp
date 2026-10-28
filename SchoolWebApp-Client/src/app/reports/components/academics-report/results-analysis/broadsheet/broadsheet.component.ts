@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {gradeForPercent} from '@/shared/utils/grading';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
 import {CurriculumService} from '@/academics/services/curriculum.service';
@@ -229,7 +230,7 @@ export class BroadsheetComponent implements OnInit {
     };
 
     getGradeForPercent = (percent: number): string => {
-        let grade = this.grades.find((g) => percent >= g.minScore && percent <= g.maxScore);
+        let grade = gradeForPercent(this.grades, percent);
         return grade ? grade.abbr : '';
     };
 
@@ -246,7 +247,7 @@ export class BroadsheetComponent implements OnInit {
     };
 
     getPointsForPercent = (percent: number): number => {
-        let grade = this.grades.find((g) => percent >= g.minScore && percent <= g.maxScore);
+        let grade = gradeForPercent(this.grades, percent);
         return grade ? grade.points : 0;
     };
 

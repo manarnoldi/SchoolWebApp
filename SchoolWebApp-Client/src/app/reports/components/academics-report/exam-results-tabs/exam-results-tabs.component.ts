@@ -24,9 +24,9 @@ export class ExamResultsTabsComponent {
         {link: ['/reports/academics/exam-results'], title: 'Academics: Exam Results'}
     ];
 
-    activeNav: 'exam' | 'reportForm' | 'annualReportForm' | 'missing' | 'classProgress' | 'studentProgress' = 'exam';
+    activeNav: 'exam' | 'reportForm' | 'annualReportForm' | 'missing' | 'classProgress' | 'studentProgress' | 'yearProgress' = 'exam';
     visited: {[k: string]: boolean} = {
-        exam: true, reportForm: false, annualReportForm: false, missing: false, classProgress: false, studentProgress: false
+        exam: true, reportForm: false, annualReportForm: false, missing: false, classProgress: false, studentProgress: false, yearProgress: false
     };
 
     // A link can open a tab directly, e.g. ?tab=reportForm from a student's page.
@@ -35,7 +35,7 @@ export class ExamResultsTabsComponent {
         if (tab && tab in this.visited) this.setTab(tab);
     }
 
-    setTab(tab: 'exam' | 'reportForm' | 'annualReportForm' | 'missing' | 'classProgress' | 'studentProgress') {
+    setTab(tab: 'exam' | 'reportForm' | 'annualReportForm' | 'missing' | 'classProgress' | 'studentProgress' | 'yearProgress') {
         this.activeNav = tab;
         this.visited[tab] = true;
     }

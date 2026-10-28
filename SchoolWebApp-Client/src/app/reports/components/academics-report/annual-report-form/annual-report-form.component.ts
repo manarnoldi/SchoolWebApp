@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {gradeForPercent} from '@/shared/utils/grading';
 import {ActivatedRoute} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin, of, map, switchMap} from 'rxjs';
@@ -177,7 +178,7 @@ export class AnnualReportFormComponent implements OnInit {
     };
 
     private gradeFor = (percent: number): any =>
-        this.grades.find((g) => percent >= g.minScore && percent <= g.maxScore);
+        gradeForPercent(this.grades, percent);
 
     onCurriculumChange = (then?: () => void) => {
         this.sessions = this.schoolClasses = [];

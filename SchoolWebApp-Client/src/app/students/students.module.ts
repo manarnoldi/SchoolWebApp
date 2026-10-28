@@ -38,13 +38,11 @@ import { StudentsAttendancesComponent } from './components/students-attendances/
 import { StudentsAttendancesTableComponent } from './components/students-attendances/students-attendances-table/students-attendances-table.component';
 import { StudentsAttendancesSearchFormComponent } from './components/students-attendances/students-attendances-search-form/students-attendances-search-form.component';
 import { StudentPromotionComponent } from './components/student-promotion/student-promotion.component';
-import {StudentAcademicsComponent} from './components/student-assignments/student-academics/student-academics.component';
 import {StudentFeesComponent} from './components/student-assignments/student-fees/student-fees.component';
 import {StudentActivitiesComponent} from './components/student-assignments/student-activities/student-activities.component';
 
 @NgModule({
     declarations: [
-        StudentAcademicsComponent,
         StudentFeesComponent,
         StudentActivitiesComponent,
         StudentsComponent,

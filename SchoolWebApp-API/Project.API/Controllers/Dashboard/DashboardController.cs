@@ -281,21 +281,18 @@ namespace SchoolWebApp.API.Controllers.Dashboard
         }
 
         /// <summary>
-        /// Mirrors the client's old grade-lookup logic: prefer the exact range
-        /// match; fall back to the band with the closest midpoint if the value
-        /// falls in a gap (which can happen with custom grading scales).
+        /// The grade band a percentage reaches - the same rule as the report forms
+        /// (shared/utils/grading.ts on the client).
         /// </summary>
         private static string GetGradeAbbr(double percent, List<Grade> grades)
         {
             if (grades.Count == 0) return string.Empty;
             var rounded = Math.Round(percent * 10) / 10;
-            var direct = grades.FirstOrDefault(g => rounded >= g.MinScore && rounded <= g.MaxScore);
-            if (direct != null) return direct.Abbr;
-
-            var closest = grades
-                .OrderBy(g => Math.Abs(((g.MinScore + g.MaxScore) / 2.0) - rounded))
-                .FirstOrDefault();
-            return closest?.Abbr ?? string.Empty;
+            // The highest band the mark reaches, as the report forms grade (a mark between
+            // whole-number bands takes the lower); below every band, the lowest.
+            var band = grades.Where(g => rounded >= g.MinScore).OrderByDescending(g => g.MinScore).FirstOrDefault()
+                ?? grades.OrderBy(g => g.MinScore).FirstOrDefault();
+            return band?.Abbr ?? string.Empty;
         }
     }
 }
