@@ -11,6 +11,7 @@ interface ChartPoint {
     v: number;
     label: string;
     color: string;
+    grade?: string | null;
 }
 
 interface Series {
@@ -33,7 +34,8 @@ const PRINT_CSS = `
     body { font-family: Arial, Helvetica, sans-serif; color: #212529; margin: 12mm; }
     h1 { font-size: 18px; margin: 0 0 2px; } .sub { color: #52514e; font-size: 12px; margin-bottom: 10px; }
     svg { width: 100%; height: auto; } svg text { font-size: 11px; font-family: Arial, Helvetica, sans-serif; }
-    svg text:not(.val) { fill: #52514e; } svg .val { font-weight: bold; }
+    svg text:not(.val):not(.grade) { fill: #52514e; } svg .val { font-weight: bold; }
+    svg text.grade { font-size: 9.5px; font-weight: bold; fill: #6c757d; }
     table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
     th, td { border: 1px solid #dee2e6; padding: 4px 6px; text-align: left; } th { background: #e7f1ff; }
     td.n { text-align: right; } .up { color: ${ABOVE}; font-weight: bold; } .down { color: ${BELOW}; font-weight: bold; }
@@ -57,8 +59,9 @@ const PRINT_CSS = `
         .bar { height: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden; min-width: 80px; }
         .bar > div { height: 100%; background: #2a78d6; }
         .chart { display: block; }
-        .chart text:not(.val) { font-size: 11px; fill: #52514e; }
+        .chart text:not(.val):not(.grade) { font-size: 11px; fill: #52514e; }
         .chart .val { font-size: 10.5px; font-weight: 600; }
+        .chart text.grade { font-size: 9.5px; font-weight: 600; fill: #6c757d; }
         .key { display: inline-flex; align-items: center; gap: 6px; margin: 2px 14px 2px 0; font-size: .8rem; color: #212529; }
         .key.toggle { cursor: pointer; user-select: none; }
         .key.off { opacity: .35; }
@@ -150,6 +153,8 @@ const PRINT_CSS = `
                         <ng-container *ngIf="view === 'overall' && series[0]?.on">
                             <text *ngFor="let p of series[0].points" class="val" [attr.x]="p.x" [attr.y]="p.y - 8" text-anchor="middle"
                                 [attr.fill]="p.color">{{ p.v }}</text>
+                            <!-- The mean's grade just under its point -->
+                            <text *ngFor="let p of series[0].points" class="grade" [attr.x]="p.x" [attr.y]="p.y + 15" text-anchor="middle">{{ p.grade || '' }}</text>
                         </ng-container>
                     </svg>
                 </div>
@@ -307,7 +312,8 @@ export class StudentAcademicsComponent implements OnInit, AfterViewInit, OnDestr
         if (this.view === 'overall') {
             const mine = this.yearExams.map((e, i) => ({
                 x: this.xFor(i), y: this.yFor(e.mean), v: e.mean, label: label(e) + (e.meanGrade ? ` (${e.meanGrade})` : ''),
-                color: e.classMean === null ? NEUTRAL : e.mean >= e.classMean ? ABOVE : BELOW
+                color: e.classMean === null ? NEUTRAL : e.mean >= e.classMean ? ABOVE : BELOW,
+                grade: e.meanGrade
             }));
             const cls = this.yearExams.map((e, i) => ({e, i})).filter(({e}) => e.classMean !== null)
                 .map(({e, i}) => ({x: this.xFor(i), y: this.yFor(e.classMean!), v: e.classMean!, label: label(e), color: '#6c757d'}));
