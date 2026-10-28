@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Project.Infrastructure.Data;
 using SchoolWebApp.API.Services.Elections;
@@ -242,6 +243,7 @@ namespace SchoolWebApp.API.Controllers.Elections
                 .Select(sc => new { sc.Id, sc.StudentId, sc.SchoolClass!.Name }).ToListAsync();
             var className = classes.GroupBy(x => x.StudentId).ToDictionary(g => g.Key, g => g.OrderByDescending(x => x.Id).First().Name);
             static string? Url(string? f) => f == null ? null : $"/elections/photos/{f}";
+            var shuffle = await _elections.SettingAsync(ElectionService.BallotOrderSetting) == ElectionService.BallotOrderRandom;
 
             return Ok(new BallotDto
             {
@@ -256,7 +258,7 @@ namespace SchoolWebApp.API.Controllers.Elections
                     RunningMateTitle = c.ElectionPosition.RunningMateTitle,
                     Seats = c.ElectionPosition.Seats,
                     SeatsPerGender = c.ElectionPosition.GenderRule == PositionGenderRule.SeatsPerGender,
-                    Candidates = c.Candidates.OrderBy(x => x.BallotOrder).Select(x => new BallotCandidateDto
+                    Candidates = Order(c.Candidates.OrderBy(x => x.BallotOrder).Select(x => new BallotCandidateDto
                     {
                         CandidateId = x.Id,
                         BallotOrder = x.BallotOrder,
@@ -267,9 +269,23 @@ namespace SchoolWebApp.API.Controllers.Elections
                         Slogan = x.Slogan,
                         PhotoUrl = Url(x.PhotoFile),
                         RunningMatePhotoUrl = Url(x.RunningMatePhotoFile)
-                    }).ToList()
+                    }).ToList(), shuffle)
                 }).ToList()
             });
+        }
+
+        // Alphabetical (the order fixed when nominations closed), or a fresh random
+        // order for each ballot issued, numbered as shown - per the Elections settings.
+        private static List<BallotCandidateDto> Order(List<BallotCandidateDto> candidates, bool shuffle)
+        {
+            if (!shuffle) return candidates;
+            for (var i = candidates.Count - 1; i > 0; i--)
+            {
+                var j = RandomNumberGenerator.GetInt32(i + 1);
+                (candidates[i], candidates[j]) = (candidates[j], candidates[i]);
+            }
+            for (var i = 0; i < candidates.Count; i++) candidates[i].BallotOrder = i + 1;
+            return candidates;
         }
 
         // POST api/elections/stations/3/cast

@@ -20,7 +20,7 @@ import {ElectionContext} from '@/elections/services/election-context.service';
 const STAGE_CONFIRM: {[s: number]: string} = {
     [ElectionStage.Draft]: 'Nominations close and the election goes back to set-up.',
     [ElectionStage.Nominations]: 'Candidates can now be nominated for each race. Positions can still be changed until nominations close.',
-    [ElectionStage.CandidatesFinal]: 'The approved candidates become final and are put on the ballot in alphabetical order. '
+    [ElectionStage.CandidatesFinal]: 'The approved candidates become final and go on the ballot (alphabetical, or shuffled for each voter - see Elections Settings). '
         + 'With a frozen register, the voter register is taken now. Positions can no longer change.',
     [ElectionStage.Polling]: 'Returning officers can issue ballots at their stations. Results show live on the results page.',
     [ElectionStage.PollingClosed]: 'No more ballots can be issued. You can reopen polling until the results are declared.',

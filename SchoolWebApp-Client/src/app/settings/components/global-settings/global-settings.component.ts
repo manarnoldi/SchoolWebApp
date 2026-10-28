@@ -253,7 +253,11 @@ export class GlobalSettingsComponent implements OnInit {
                     {value: 'Frozen', label: 'Frozen (strict)'},
                     {value: 'Live', label: 'Live (lenient)'}
                 ], description: "The default for new elections. Frozen: the register is a snapshot taken when nominations close, so a student who changes class afterwards votes where they were registered. Live: eligibility follows each student's current class until they vote."},
-                {key: 'DashboardRefreshSeconds', label: 'Results screen refresh (seconds)', type: 'text', description: 'The default for new elections: how often the live results screen refreshes. Default: 10.'}
+                {key: 'DashboardRefreshSeconds', label: 'Results screen refresh (seconds)', type: 'text', description: 'The default for new elections: how often the live results screen refreshes. Default: 10.'},
+                {key: 'BallotOrder', label: 'Order of names on the ballot', type: 'select', options: [
+                    {value: 'Alphabetical', label: 'Alphabetical'},
+                    {value: 'Random', label: 'Random - shuffled for each voter'}
+                ], description: 'Alphabetical: every ballot lists the candidates in name order. Random: each ballot issued shows them in a fresh random order, so no candidate always appears first. Takes effect for the next ballot issued.'}
             ]
         },
         {

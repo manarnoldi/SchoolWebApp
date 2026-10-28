@@ -18,17 +18,22 @@ namespace SchoolWebApp.Infrastructure.Migrations
                 ("VoterRegisterMode", "Frozen", "Frozen: the voter register is a snapshot taken when nominations close. Live: eligibility follows each student's current class until they vote."),
                 ("DashboardRefreshSeconds", "10", "How often, in seconds, the live results screen refreshes.")
             };
-            foreach (var (key, value, description) in settings)
-            {
-                migrationBuilder.Sql($@"
-                    INSERT INTO GlobalSettings (Module, SettingKey, SettingValue, Description, Created, CreatedBy, Modified, ModifiedBy)
-                    SELECT 'Elections', '{key}', '{value}', '{Q(description)}', NOW(), 'admin', NOW(), 'admin' FROM DUAL
-                    WHERE NOT EXISTS (SELECT 1 FROM GlobalSettings WHERE Module = 'Elections' AND SettingKey = '{key}');");
-            }
+            foreach (var (key, value, description) in settings) Setting(migrationBuilder, key, value, description);
 
             GrantMenu(migrationBuilder, "/elections/manage", "Elections > Manage Elections",
                 "Administrator", "HeadTeacher", "DeputyHeadTeacher");
         }
+
+        // How candidates are ordered on each ballot; alphabetical keeps what schools had.
+        public static void SeedBallotOrderSetting(MigrationBuilder migrationBuilder) =>
+            Setting(migrationBuilder, "BallotOrder", "Alphabetical",
+                "Alphabetical: candidates appear in name order on every ballot. Random: each ballot issued shows them in a fresh random order.");
+
+        private static void Setting(MigrationBuilder migrationBuilder, string key, string value, string description) =>
+            migrationBuilder.Sql($@"
+                INSERT INTO GlobalSettings (Module, SettingKey, SettingValue, Description, Created, CreatedBy, Modified, ModifiedBy)
+                SELECT 'Elections', '{key}', '{value}', '{Q(description)}', NOW(), 'admin', NOW(), 'admin' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM GlobalSettings WHERE Module = 'Elections' AND SettingKey = '{key}');");
 
         // Polling Station is for returning officers (the API limits each to their own
         // stations); Results for whoever runs the elections.

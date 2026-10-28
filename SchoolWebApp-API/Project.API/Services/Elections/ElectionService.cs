@@ -35,6 +35,9 @@ namespace SchoolWebApp.API.Services.Elections
     {
         public const string ManagePermissionPath = "/elections/manage";
         public const string SettingsModule = "Elections";
+        // Elections/BallotOrder: "Alphabetical" (default) or "Random" - shuffled afresh for each ballot issued.
+        public const string BallotOrderSetting = "BallotOrder";
+        public const string BallotOrderRandom = "Random";
 
         private readonly ApplicationDbContext _db;
         private readonly UserManager<AppUser> _userManager;

@@ -36,7 +36,7 @@
                     <div class="small text-muted mt-2" *ngIf="!d.canNominate && d.stage === Stage.Draft">
                         <i class="fas fa-info-circle"></i> Open nominations on the election page to start nominating.</div>
                     <div class="small text-muted mt-2" *ngIf="d.stage > Stage.Nominations">
-                        <i class="fas fa-lock"></i> Nominations are closed; the approved candidates are on the ballot in the order shown.
+                        <i class="fas fa-lock"></i> Nominations are closed; the approved candidates are on the ballot (in the order shown, unless Elections Settings shuffle it for each voter).
                         <span *ngIf="d.canChangePhotos">Photos can still be changed until polling opens.</span></div>
                 </div>
             </div>
