@@ -39,7 +39,8 @@ namespace SchoolWebApp.API.Controllers
 
         private Task<bool> Has(string module) => _licence.HasModuleAsync(module, Request.Host.Host);
 
-        // GET api/profiles/students/12/academics - every exam the student sat, newest first, with each subject's mark
+        // GET api/profiles/students/12/academics - every exam the student sat, newest term first and within a
+        // term in exam-type order, with each subject's mark (the page filters by year and term)
         [HttpGet("students/{id:int}/academics")]
         [RequiresModule(AppModules.Academics)]
         public async Task<IActionResult> StudentAcademics(int id)
@@ -50,17 +51,37 @@ namespace SchoolWebApp.API.Controllers
                 {
                     r.Exam!.SchoolExamId,
                     ExamName = r.Exam.SchoolExam!.ExamType!.Name,
+                    ExamTypeRank = r.Exam.SchoolExam.ExamType.Rank,
+                    r.Exam.SchoolExam.SessionId,
+                    SessionStart = r.Exam.SchoolExam.Session!.StartDate,
+                    r.Exam.SchoolExam.Session.AcademicYearId,
                     r.Exam.SchoolExam.Description,
-                    Session = r.Exam.SchoolExam.Session!.SessionName,
+                    Session = r.Exam.SchoolExam.Session.SessionName,
                     Year = r.Exam.SchoolExam.Session.AcademicYear!.Name,
                     r.Exam.SchoolExam.ExamStartDate,
                     r.Exam.SchoolExam.IsReleased,
+                    r.Exam.SchoolClassId,
                     ClassName = r.Exam.SchoolClass!.Name,
                     Subject = r.Exam.Subject!.Name,
+                    SubjectRank = r.Exam.Subject.Rank,
                     r.Exam.ExamMark,
                     r.Score
                 })
                 .ToListAsync();
+
+            // Each exam's class mean (the mean of every classmate's subject average), to compare against.
+            var examClass = rows.Select(r => new { r.SchoolExamId, r.SchoolClassId }).Distinct().ToList();
+            var schoolExamIds = examClass.Select(e => e.SchoolExamId).ToList();
+            var classIds = examClass.Select(e => e.SchoolClassId).Distinct().ToList();
+            var classRows = await _db.ExamResults.AsNoTracking()
+                .Where(r => schoolExamIds.Contains(r.Exam!.SchoolExamId) && classIds.Contains(r.Exam.SchoolClassId))
+                .Select(r => new { r.Exam!.SchoolExamId, r.Exam.SchoolClassId, r.StudentId, r.Score, r.Exam.ExamMark })
+                .ToListAsync();
+            var classMeans = classRows
+                .Where(r => examClass.Any(e => e.SchoolExamId == r.SchoolExamId && e.SchoolClassId == r.SchoolClassId))
+                .GroupBy(r => r.SchoolExamId)
+                .ToDictionary(g => g.Key, g => Math.Round(g.GroupBy(r => r.StudentId)
+                    .Average(st => st.Average(r => r.Score / (r.ExamMark > 0 ? r.ExamMark : 100) * 100.0)), 1));
 
             var exams = rows.GroupBy(r => r.SchoolExamId).Select(g =>
             {
@@ -68,21 +89,26 @@ namespace SchoolWebApp.API.Controllers
                 var subjects = g.Select(r =>
                 {
                     var outOf = r.ExamMark > 0 ? r.ExamMark : 100;
-                    return new { r.Subject, Score = r.Score, OutOf = outOf, Percent = Math.Round(r.Score / outOf * 100.0, 1) };
-                }).OrderBy(s => s.Subject).ToList();
+                    return new { r.Subject, r.SubjectRank, Score = r.Score, OutOf = outOf, Percent = Math.Round(r.Score / outOf * 100.0, 1) };
+                }).OrderBy(s => s.SubjectRank).ThenBy(s => s.Subject).ToList();
                 return new
                 {
                     SchoolExamId = g.Key,
                     Name = string.IsNullOrWhiteSpace(f.Description) ? f.ExamName : $"{f.ExamName} - {f.Description}",
+                    f.SessionId,
                     f.Session,
+                    f.AcademicYearId,
                     f.Year,
+                    f.SessionStart,
+                    f.ExamTypeRank,
                     StartDate = f.ExamStartDate,
                     Released = f.IsReleased,
                     f.ClassName,
                     Mean = subjects.Count == 0 ? 0 : Math.Round(subjects.Average(s => s.Percent), 1),
+                    ClassMean = classMeans.TryGetValue(g.Key, out var cm) ? cm : (double?)null,
                     Subjects = subjects
                 };
-            }).OrderByDescending(e => e.StartDate).ToList();
+            }).OrderByDescending(e => e.SessionStart).ThenBy(e => e.ExamTypeRank).ThenBy(e => e.StartDate).ToList();
             return Ok(exams);
         }
 

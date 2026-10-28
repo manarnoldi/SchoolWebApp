@@ -5,6 +5,7 @@ import {Payslip} from '@/payroll/models/payroll-models';
 
 export interface ProfileExamSubject {
     subject: string;
+    subjectRank: number;
     score: number;
     outOf: number;
     percent: number;
@@ -13,8 +14,14 @@ export interface ProfileExamSubject {
 export interface ProfileExam {
     schoolExamId: number;
     name: string;
+    sessionId: number;
     session: string;
+    academicYearId: number;
     year: string;
+    sessionStart: string;
+    examTypeRank: number;
+    /** The class's mean in this exam, to compare against. */
+    classMean: number | null;
     startDate: string;
     released: boolean;
     className: string;
