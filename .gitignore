@@ -6,3 +6,6 @@
 
 # Production secrets - kept on the server only, never committed.
 **/appsettings.Production.json
+
+# Uploaded files (election candidate photos) live with the running app, not in git.
+SchoolWebApp-API/Project.API/uploads/
