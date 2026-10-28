@@ -30,6 +30,8 @@ interface TeachingSummary {
         .meter { height: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden; margin: 2px 0 8px; }
         .meter > div { height: 100%; background: #2a78d6; border-radius: 4px; transition: width .6s; }
         .card-title-sm { font-size: .95rem; font-weight: 600; }
+        /* Cards in a row that is not full stretch to share it, so no gap is left. */
+        .row > .grow { flex-grow: 1; }
         .big { font-size: 1.45rem; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
         /* Tinted figure tiles */
         .tile { border-radius: 8px; padding: 6px 8px; position: relative; height: 100%; }
