@@ -1,14 +1,10 @@
-<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
-<hr class="mb-1">
-<section class="content">
-    <div class="container-fluid px-1">
+<section>
+    <div class="px-0">
         <div class="card card-outline card-info mb-2">
             <div class="card-body p-2 d-flex flex-wrap align-items-center gap-2">
                 <h5 class="mb-0 me-2"><i class="fas fa-clipboard-list text-info me-1"></i>Voter register</h5>
                 <span class="small text-muted me-auto" *ngIf="summary">
                     <b>{{ summary.students }}</b> students. <i class="fas" [ngClass]="summary.frozenAt ? 'fa-lock' : 'fa-sync-alt'"></i> {{ basis }}</span>
-                <button class="btn btn-sm btn-outline-secondary" (click)="router.navigate(['/elections/manage', election?.id])" [disabled]="!election">
-                    <i class="fas fa-arrow-left"></i> Back</button>
             </div>
         </div>
 

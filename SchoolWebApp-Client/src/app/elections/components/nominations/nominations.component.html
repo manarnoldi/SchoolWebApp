@@ -1,20 +1,16 @@
-<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
-<hr class="mb-1">
-<section class="content">
-    <div class="container-fluid px-1">
+<section>
+    <div class="px-0">
         <div *ngIf="loading && !data" class="text-center text-muted py-4"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
 
         <ng-container *ngIf="data as d">
             <div class="card card-outline card-info mb-2">
                 <div class="card-body p-2">
                     <div class="d-flex flex-wrap align-items-center gap-2">
-                        <h5 class="mb-0 me-2"><i class="fas fa-user-check text-info me-1"></i>{{ d.electionName }}
-                            <span class="badge ms-1 align-middle" [ngClass]="stageBadges[d.stage]">{{ stageLabels[d.stage] }}</span></h5>
+                        <h5 class="mb-0 me-2"><i class="fas fa-user-check text-info me-1"></i>Nominations</h5>
                         <span class="small text-muted me-auto">
                             {{ counts.approved }} approved<span *ngIf="counts.pending">, <b class="text-warning">{{ counts.pending }} awaiting approval</b></span>
                             <span *ngIf="counts.racesWithout"> - <b class="text-danger">{{ counts.racesWithout }} of {{ counts.races }} races</b> without an approved candidate</span>
                         </span>
-                        <button class="btn btn-sm btn-outline-secondary" (click)="router.navigate(['/elections/manage', d.electionId])"><i class="fas fa-arrow-left"></i> Back</button>
                         <button class="btn btn-sm btn-outline-primary" (click)="print()" [disabled]="!counts.approved"><i class="fas fa-print"></i> Print candidates</button>
                     </div>
                     <div class="row g-2 align-items-end mt-1">

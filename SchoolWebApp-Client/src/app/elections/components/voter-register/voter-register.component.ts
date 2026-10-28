@@ -2,10 +2,10 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {DatePipe} from '@angular/common';
 import {ToastrService} from 'ngx-toastr';
-import {BreadCrumb} from '@/core/models/bread-crumb';
 import {escapeHtml, printInFrame} from '@/shared/utils/print-frame';
-import {apiError, ElectionDetail, RegisterSummary, RegisterVoter, VoterRegisterMode} from '@/elections/models/election-models';
+import {apiError, RegisterSummary, RegisterVoter, VoterRegisterMode} from '@/elections/models/election-models';
 import {ElectionsService} from '@/elections/services/elections.service';
+import {ElectionContext} from '@/elections/services/election-context.service';
 
 /**
  * Who votes in each race: the frozen register once nominations close, or (live
@@ -17,13 +17,6 @@ import {ElectionsService} from '@/elections/services/elections.service';
     providers: [DatePipe]
 })
 export class VoterRegisterComponent implements OnInit {
-    breadcrumbs: BreadCrumb[] = [
-        {link: ['/'], title: 'Dashboard'},
-        {link: ['/elections/manage'], title: 'Manage Elections'}
-    ];
-    dashboardTitle = 'Elections: Voter register';
-
-    election: ElectionDetail | null = null;
     summary: RegisterSummary | null = null;
     contestId: number | null = null;
     voters: RegisterVoter[] = [];
@@ -34,21 +27,11 @@ export class VoterRegisterComponent implements OnInit {
     Mode = VoterRegisterMode;
 
     constructor(private svc: ElectionsService, private toastr: ToastrService, private route: ActivatedRoute,
-                public router: Router, private datePipe: DatePipe) {}
+                public router: Router, private datePipe: DatePipe, private ctx: ElectionContext) {}
 
     ngOnInit(): void {
-        this.route.paramMap.subscribe((p) => {
+        this.route.parent!.paramMap.subscribe((p) => {
             const id = Number(p.get('id'));
-            this.svc.get(id).subscribe({
-                next: (e) => {
-                    this.election = e;
-                    this.breadcrumbs = [...this.breadcrumbs.slice(0, 2),
-                        {link: ['/elections/manage', String(e.id)], title: e.name},
-                        {link: ['/elections/manage', String(e.id), 'register'], title: 'Voter register'}];
-                    this.dashboardTitle = `Elections: ${e.name} - Voter register`;
-                },
-                error: (err) => this.toastr.error(apiError(err, 'Error loading the election.'))
-            });
             this.svc.register(id).subscribe({
                 next: (s) => {
                     this.summary = s;
@@ -67,7 +50,7 @@ export class VoterRegisterComponent implements OnInit {
         this.contestId = contestId;
         this.page = 1;
         this.loadingVoters = true;
-        this.svc.registerContest(Number(this.route.snapshot.paramMap.get('id')), contestId).subscribe({
+        this.svc.registerContest(Number(this.route.parent!.snapshot.paramMap.get('id')), contestId).subscribe({
             next: (v) => {
                 this.voters = v;
                 this.loadingVoters = false;
@@ -108,8 +91,8 @@ export class VoterRegisterComponent implements OnInit {
             .sub { color: #555; margin: 1mm 0 4mm; } table { width: 100%; border-collapse: collapse; }
             th, td { border: 1px solid #999; padding: 1.2mm 2mm; text-align: left; } th { background: #eee; }
             td:first-child { width: 8mm; text-align: right; } td:last-child { width: 35mm; } tr { break-inside: avoid; }`;
-        printInFrame(`${this.election?.name} - ${c.name} register`, css,
-            `<h1>${escapeHtml(this.election?.name || '')} - ${escapeHtml(c.name)}</h1>
+        printInFrame(`${this.ctx.election?.name} - ${c.name} register`, css,
+            `<h1>${escapeHtml(this.ctx.election?.name || '')} - ${escapeHtml(c.name)}</h1>
              <div class="sub">Voter register: ${this.voters.length} voters. ${escapeHtml(this.basis)}</div>
              <table><thead><tr><th>#</th><th>Name</th><th>UPI</th><th>Class</th><th>Gender</th><th>Signature</th></tr></thead>
              <tbody>${rows}</tbody></table>`);

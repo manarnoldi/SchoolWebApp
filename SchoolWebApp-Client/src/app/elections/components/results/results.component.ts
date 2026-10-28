@@ -3,7 +3,6 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {DatePipe} from '@angular/common';
 import {ToastrService} from 'ngx-toastr';
 import Swal from 'sweetalert2';
-import {BreadCrumb} from '@/core/models/bread-crumb';
 import {escapeHtml, printInFrame} from '@/shared/utils/print-frame';
 import {safeFileName, saveBlob} from '@/teaching/utils/download';
 import {
@@ -16,6 +15,7 @@ import {
     STAGE_LABELS
 } from '@/elections/models/election-models';
 import {ElectionsService} from '@/elections/services/elections.service';
+import {ElectionContext} from '@/elections/services/election-context.service';
 
 /**
  * Live results: turnout and tallies per race as votes come in, refreshing on the
@@ -41,12 +41,6 @@ import {ElectionsService} from '@/elections/services/elections.service';
 })
 export class ResultsComponent implements OnInit, OnDestroy {
     @ViewChild('board') board?: ElementRef<HTMLElement>;
-    breadcrumbs: BreadCrumb[] = [
-        {link: ['/'], title: 'Dashboard'},
-        {link: ['/elections/results'], title: 'Results'}
-    ];
-    dashboardTitle = 'Elections: Results';
-
     r: Results | null = null;
     canManage = false;
     loading = false;
@@ -65,11 +59,11 @@ export class ResultsComponent implements OnInit, OnDestroy {
     private timer: any;
 
     constructor(private svc: ElectionsService, private toastr: ToastrService, private route: ActivatedRoute,
-                public router: Router, private datePipe: DatePipe, @Inject('BASE_API_URL') private baseUrl: string) {}
+                public router: Router, private datePipe: DatePipe, private ctx: ElectionContext, @Inject('BASE_API_URL') private baseUrl: string) {}
 
     ngOnInit(): void {
         this.svc.options().subscribe({next: (o) => (this.canManage = o.canManage)});
-        this.route.paramMap.subscribe((p) => {
+        this.route.parent!.paramMap.subscribe((p) => {
             this.electionId = Number(p.get('id'));
             this.load();
         });
@@ -112,8 +106,6 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
     show(r: Results) {
         this.r = r;
-        this.breadcrumbs = [...this.breadcrumbs.slice(0, 2), {link: ['/elections/manage', String(r.electionId), 'results'], title: r.electionName}];
-        this.dashboardTitle = `Elections: ${r.electionName} - Results`;
     }
 
     get positions() {
@@ -208,6 +200,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
                 next: () => {
                     this.busy = false;
                     this.toastr.success('Results declared.');
+                    this.ctx.reload();
                     this.load();
                 },
                 error: (err) => {

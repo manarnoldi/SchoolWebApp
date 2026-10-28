@@ -1,15 +1,11 @@
-<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
-<hr class="mb-1">
-<section class="content">
-    <div class="container-fluid px-1">
+<section>
+    <div class="px-0">
         <div *ngIf="loading && !data" class="text-center text-muted py-4"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
         <ng-container *ngIf="data as d">
             <div class="card card-outline card-info mb-2">
                 <div class="card-body p-2 d-flex flex-wrap align-items-center gap-2">
-                    <h5 class="mb-0 me-2"><i class="fas fa-person-booth text-info me-1"></i>Polling stations
-                        <span class="badge ms-1 align-middle" [ngClass]="stageBadges[d.stage]">{{ stageLabels[d.stage] }}</span></h5>
+                    <h5 class="mb-0 me-2"><i class="fas fa-person-booth text-info me-1"></i>Polling stations</h5>
                     <span class="small text-muted me-auto">{{ d.stations.length }} stations, {{ d.classes.length }} classes with voters</span>
-                    <button class="btn btn-sm btn-outline-secondary" (click)="router.navigate(['/elections/manage', d.electionId])"><i class="fas fa-arrow-left"></i> Back</button>
                     <ng-container *ngIf="d.canManage">
                         <button class="btn btn-sm btn-outline-primary" [disabled]="busy || !d.uncoveredClasses.length" (click)="generate()"
                             title="One station per class not yet covered, run by its class teacher">

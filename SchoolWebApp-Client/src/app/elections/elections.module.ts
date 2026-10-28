@@ -16,6 +16,8 @@ import {StationScreenComponent} from './components/station-screen/station-screen
 import {ResultsComponent} from './components/results/results.component';
 import {ResultsHomeComponent} from './components/results-home/results-home.component';
 import {LeadershipComponent} from './components/leadership/leadership.component';
+import {ElectionPositionsComponent} from './components/election-positions/election-positions.component';
+import {ElectionHistoryComponent} from './components/election-history/election-history.component';
 
 @NgModule({
     declarations: [
@@ -32,7 +34,9 @@ import {LeadershipComponent} from './components/leadership/leadership.component'
         StationScreenComponent,
         ResultsComponent,
         ResultsHomeComponent,
-        LeadershipComponent
+        LeadershipComponent,
+        ElectionPositionsComponent,
+        ElectionHistoryComponent
     ],
     imports: [CommonModule, RouterModule, SharedModule]
 })

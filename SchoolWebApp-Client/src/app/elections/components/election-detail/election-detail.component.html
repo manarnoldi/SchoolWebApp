@@ -5,13 +5,12 @@
         <div *ngIf="loading && !election" class="text-center text-muted py-4"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
 
         <ng-container *ngIf="election as e">
-            <!-- The election and where it is -->
+            <!-- The election, where it is and its next step -->
             <div class="card card-outline card-info mb-2">
                 <div class="card-body p-2">
                     <div class="d-flex flex-wrap align-items-start gap-2">
                         <div class="me-auto">
-                            <h5 class="mb-1"><i class="fas fa-vote-yea text-info me-1"></i>{{ e.name }}
-                                <span class="badge ms-1 align-middle" [ngClass]="stageBadges[e.stage]">{{ stageLabels[e.stage] }}</span></h5>
+                            <h5 class="mb-1"><i class="fas fa-vote-yea text-info me-1"></i>{{ e.name }}</h5>
                             <div class="small text-muted">
                                 <span class="me-3"><i class="far fa-calendar me-1"></i>{{ e.academicYearName }}</span>
                                 <span class="me-3" [title]="e.registerMode === Mode.Frozen
@@ -20,38 +19,31 @@
                                     <i class="fas fa-clipboard-list me-1"></i>{{ e.registerMode === Mode.Frozen ? 'Frozen register' : 'Live register' }}</span>
                                 <span class="me-3" *ngIf="e.pollingStart"><i class="fas fa-clock me-1"></i>Polling
                                     {{ e.pollingStart | date:'EEE d MMM y, HH:mm' }}<span *ngIf="e.pollingEnd"> - {{ e.pollingEnd | date:'HH:mm' }}</span></span>
-                                <span><i class="fas fa-sync-alt me-1"></i>Results refresh every {{ e.dashboardRefreshSeconds }}s</span>
                             </div>
-                            <div class="small mt-1" *ngIf="e.description">{{ e.description }}</div>
+                            <div class="small mt-1" *ngIf="e.description && e.description !== e.name">{{ e.description }}</div>
                         </div>
-                        <div class="d-flex flex-wrap gap-1" *ngIf="canManage">
-                            <button class="btn btn-sm btn-outline-secondary" (click)="router.navigate(['/elections/manage'])"><i class="fas fa-arrow-left"></i> Back</button>
-                            <button class="btn btn-sm btn-outline-primary" *ngIf="e.stage < Stage.Declared" (click)="showEdit = true"><i class="fas fa-edit"></i> Edit</button>
-                            <button class="btn btn-sm btn-outline-danger" *ngIf="e.stage === Stage.Draft" (click)="deleteElection()"><i class="fas fa-trash"></i> Delete</button>
-                            <button *ngFor="let s of e.nextStages" class="btn btn-sm" [disabled]="busy"
-                                [ngClass]="s < e.stage ? 'btn-outline-warning' : 'btn-success'" (click)="changeStage(s)">
-                                <i class="fas" [ngClass]="s < e.stage ? 'fa-undo' : 'fa-step-forward'"></i> {{ actionLabel(s) }}</button>
+                        <div class="d-flex flex-wrap gap-1">
+                            <button class="btn btn-sm btn-outline-secondary" (click)="router.navigate(['/elections/manage'])" title="All elections"><i class="fas fa-arrow-left"></i></button>
+                            <ng-container *ngIf="canManage">
+                                <button *ngFor="let s of forwardStages" class="btn btn-sm btn-success" [disabled]="busy" (click)="changeStage(s)">
+                                    <i class="fas fa-step-forward"></i> {{ actionLabel(s) }}</button>
+                                <div class="dropdown" *ngIf="e.stage < Stage.Declared || backStages.length">
+                                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown" aria-expanded="false" title="More">
+                                        <i class="fas fa-ellipsis-h"></i></button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li *ngIf="e.stage < Stage.Declared"><a class="dropdown-item" href="javascript:void(0)" (click)="showEdit = true">
+                                            <i class="fas fa-edit text-primary me-2"></i>Edit election</a></li>
+                                        <li *ngFor="let s of backStages"><a class="dropdown-item" href="javascript:void(0)" [class.disabled]="busy" (click)="changeStage(s)">
+                                            <i class="fas fa-undo text-warning me-2"></i>{{ actionLabel(s) }}</a></li>
+                                        <ng-container *ngIf="e.stage === Stage.Draft">
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-danger" href="javascript:void(0)" (click)="deleteElection()">
+                                                <i class="fas fa-trash me-2"></i>Delete election</a></li>
+                                        </ng-container>
+                                    </ul>
+                                </div>
+                            </ng-container>
                         </div>
-                        <button *ngIf="!canManage" class="btn btn-sm btn-outline-secondary" (click)="router.navigate(['/elections/manage'])"><i class="fas fa-arrow-left"></i> Back</button>
-                    </div>
-
-                    <!-- Nominations and the voter register -->
-                    <div class="d-flex flex-wrap gap-2 mt-2" *ngIf="e.stage !== Stage.Draft || e.candidates || e.pendingNominations">
-                        <button class="btn btn-sm btn-info" (click)="router.navigate(['/elections/manage', e.id, 'nominations'])">
-                            <i class="fas fa-user-check"></i> Nominations
-                            <span class="badge bg-light text-dark ms-1" title="Approved candidates">{{ e.candidates }}</span>
-                            <span class="badge bg-warning text-dark ms-1" *ngIf="e.pendingNominations" title="Awaiting approval">{{ e.pendingNominations }} pending</span>
-                        </button>
-                        <button class="btn btn-sm btn-outline-info" (click)="router.navigate(['/elections/manage', e.id, 'register'])">
-                            <i class="fas fa-clipboard-list"></i> Voter register
-                            <i class="fas fa-lock ms-1" *ngIf="e.registerFrozenAt" [title]="'Taken ' + (e.registerFrozenAt | date:'d MMM y, HH:mm')"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-info" *ngIf="e.stage >= Stage.Nominations" (click)="router.navigate(['/elections/manage', e.id, 'stations'])">
-                            <i class="fas fa-person-booth"></i> Polling stations</button>
-                        <button class="btn btn-sm btn-success" *ngIf="e.stage >= Stage.Polling" (click)="router.navigate(['/elections/manage', e.id, 'results'])">
-                            <i class="fas fa-poll"></i> {{ e.stage === Stage.Declared ? 'Results' : 'Live results' }}</button>
-                        <button class="btn btn-sm btn-outline-primary" *ngIf="e.stage === Stage.Declared && canManage" (click)="router.navigate(['/elections/manage', e.id, 'leadership'])">
-                            <i class="fas fa-id-badge"></i> Leadership records</button>
                     </div>
 
                     <!-- Stage steps -->
@@ -66,99 +58,31 @@
                 </div>
             </div>
 
-            <!-- Positions -->
-            <div class="card mb-2">
-                <div class="card-header py-2 d-flex align-items-center">
-                    <h6 class="mb-0 me-auto"><i class="fas fa-user-tie text-primary me-1"></i>Electable positions
-                        <small class="text-muted">({{ e.positions }} positions, {{ e.contests }} races)</small></h6>
-                    <button class="btn btn-sm btn-primary" *ngIf="canEditPositions" (click)="addPosition()"><i class="fas fa-plus"></i> Add position</button>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-sm mb-0 align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th style="width: 1%;"></th>
-                                    <th>Position</th>
-                                    <th>Races</th>
-                                    <th class="text-center">Seats</th>
-                                    <th>Voters</th>
-                                    <th>Candidates from</th>
-                                    <th style="width: 1%;"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngIf="e.positionList.length === 0">
-                                    <td colspan="7" class="text-center text-muted py-3">
-                                        No positions yet.
-                                        <a href="javascript:void(0)" *ngIf="canEditPositions" (click)="addPosition()">Add the first one</a>
-                                        <span *ngIf="canEditPositions"> - e.g. School President, Senator, Class Representative.</span>
-                                    </td>
-                                </tr>
-                                <tr *ngFor="let p of e.positionList; let i = index; let last = last">
-                                    <td class="text-nowrap">
-                                        <ng-container *ngIf="canEditPositions">
-                                            <button class="btn btn-link btn-sm p-0 me-1" [disabled]="i === 0 || busy" (click)="move(p, -1)" title="Move up"><i class="fas fa-arrow-up"></i></button>
-                                            <button class="btn btn-link btn-sm p-0" [disabled]="last || busy" (click)="move(p, 1)" title="Move down"><i class="fas fa-arrow-down"></i></button>
-                                        </ng-container>
-                                    </td>
-                                    <td>
-                                        <b>{{ p.name }}</b>
-                                        <div class="small text-muted" *ngIf="p.runningMateTitle"><i class="fas fa-user-friends me-1"></i>Joint ticket with {{ p.runningMateTitle }}</div>
-                                        <div class="small text-muted" *ngIf="genderText(p)"><i class="fas fa-venus-mars me-1"></i>{{ genderText(p) }}</div>
-                                    </td>
-                                    <td>
-                                        <div class="small text-muted">{{ scopeLabels[p.scope] }}</div>
-                                        <ng-container *ngIf="p.contests.length <= 4 || expanded.has(p.id); else fewRaces">
-                                            <span class="badge bg-light text-dark border me-1 fw-normal" *ngFor="let c of p.contests">{{ c.name }}</span>
-                                            <a href="javascript:void(0)" class="small" *ngIf="p.contests.length > 4" (click)="toggleRaces(p)">less</a>
-                                        </ng-container>
-                                        <ng-template #fewRaces>
-                                            <span class="badge bg-light text-dark border me-1 fw-normal" *ngFor="let c of p.contests.slice(0, 3)">{{ c.name }}</span>
-                                            <a href="javascript:void(0)" class="small" (click)="toggleRaces(p)">+{{ p.contests.length - 3 }} more</a>
-                                        </ng-template>
-                                        <span class="text-danger small" *ngIf="p.contests.length === 0"><i class="fas fa-exclamation-triangle"></i> No races - the chosen grades have no classes in {{ e.academicYearName }}.</span>
-                                    </td>
-                                    <td class="text-center">{{ p.seats }}</td>
-                                    <td class="small">{{ describeGrades(p.voterLevelIds) }}</td>
-                                    <td class="small">{{ p.candidateLevelIds.length ? describeGrades(p.candidateLevelIds) : 'Any voter grade' }}</td>
-                                    <td class="text-nowrap">
-                                        <ng-container *ngIf="canEditPositions">
-                                            <button class="btn btn-sm btn-outline-primary py-0 me-1" (click)="openPosition(p)" title="Edit"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-sm btn-outline-danger py-0" (click)="deletePosition(p)" title="Remove"><i class="fas fa-trash"></i></button>
-                                        </ng-container>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="card-footer py-1 small text-muted" *ngIf="!e.positionsEditable">
-                    <i class="fas fa-lock me-1"></i>Positions are fixed once nominations close.
-                </div>
-            </div>
+            <!-- Tabs -->
+            <ul class="nav nav-tabs mb-2">
+                <li class="nav-item" *ngFor="let t of tabs">
+                    <a *ngIf="isOpen(t); else closedTab" class="nav-link" routerLinkActive="active" [routerLink]="[t.path]">
+                        <i class="fas me-1" [ngClass]="t.icon"></i>{{ t.label }}
+                        <ng-container *ngIf="t.path === 'nominations'">
+                            <span class="badge bg-secondary ms-1" title="Approved candidates">{{ e.candidates }}</span>
+                            <span class="badge bg-warning text-dark ms-1" *ngIf="e.pendingNominations" title="Awaiting approval">{{ e.pendingNominations }} pending</span>
+                        </ng-container>
+                        <i class="fas fa-lock ms-1 small text-muted" *ngIf="t.path === 'register' && e.registerFrozenAt"
+                            [title]="'Taken ' + (e.registerFrozenAt | date:'d MMM y, HH:mm')"></i>
+                        <span class="badge bg-danger ms-1" *ngIf="t.path === 'results' && e.stage === Stage.Polling">Live</span>
+                    </a>
+                    <ng-template #closedTab>
+                        <span class="nav-link disabled" [title]="t.closedNote"><i class="fas me-1" [ngClass]="t.icon"></i>{{ t.label }}</span>
+                    </ng-template>
+                </li>
+            </ul>
 
-            <!-- Stage history -->
-            <div class="card mb-2" *ngIf="e.history.length">
-                <div class="card-header py-2"><h6 class="mb-0"><i class="fas fa-history text-secondary me-1"></i>Stage history</h6></div>
-                <div class="card-body p-0">
-                    <table class="table table-sm mb-0 small">
-                        <tbody>
-                            <tr *ngFor="let h of e.history">
-                                <td class="text-nowrap" style="width: 1%;">{{ h.at | date:'d MMM y, HH:mm' }}</td>
-                                <td class="text-nowrap" style="width: 1%;">{{ h.by }}</td>
-                                <td><span class="text-muted">{{ stageLabels[h.fromStage] }}</span> <i class="fas fa-arrow-right mx-1 text-muted"></i>
-                                    <b>{{ stageLabels[h.toStage] }}</b><span *ngIf="h.note" class="text-muted"> - {{ h.note }}</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <ng-container *ngFor="let k of [outletKey]">
+                <router-outlet></router-outlet>
+            </ng-container>
         </ng-container>
     </div>
 </section>
 
-<app-election-form *ngIf="showEdit && options && election" [options]="options" [election]="election"
+<app-election-form *ngIf="showEdit && ctx.options && election" [options]="ctx.options" [election]="election"
     (saved)="edited($event)" (closed)="showEdit = false"></app-election-form>
-<app-position-form *ngIf="showPositionForm && options && election" [options]="options" [election]="election" [position]="editPosition"
-    (saved)="positionSaved($event)" (closed)="showPositionForm = false"></app-position-form>

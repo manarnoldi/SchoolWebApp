@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import Swal from 'sweetalert2';
-import {BreadCrumb} from '@/core/models/bread-crumb';
 import {apiError, IdName, SaveStation, Station, Stations, STAGE_BADGES, STAGE_LABELS} from '@/elections/models/election-models';
 import {ElectionsService} from '@/elections/services/elections.service';
 
@@ -15,12 +14,6 @@ import {ElectionsService} from '@/elections/services/elections.service';
     templateUrl: './stations.component.html'
 })
 export class StationsComponent implements OnInit {
-    breadcrumbs: BreadCrumb[] = [
-        {link: ['/'], title: 'Dashboard'},
-        {link: ['/elections/manage'], title: 'Manage Elections'}
-    ];
-    dashboardTitle = 'Elections: Polling stations';
-
     data: Stations | null = null;
     loading = false;
     busy = false;
@@ -38,7 +31,7 @@ export class StationsComponent implements OnInit {
     constructor(private svc: ElectionsService, private toastr: ToastrService, private route: ActivatedRoute, public router: Router) {}
 
     ngOnInit(): void {
-        this.route.paramMap.subscribe((p) => {
+        this.route.parent!.paramMap.subscribe((p) => {
             this.electionId = Number(p.get('id'));
             this.loading = true;
             this.svc.stations(this.electionId).subscribe({
@@ -56,10 +49,6 @@ export class StationsComponent implements OnInit {
 
     show(d: Stations) {
         this.data = d;
-        this.breadcrumbs = [...this.breadcrumbs.slice(0, 2),
-            {link: ['/elections/manage', String(d.electionId)], title: d.electionName},
-            {link: ['/elections/manage', String(d.electionId), 'stations'], title: 'Polling stations'}];
-        this.dashboardTitle = `Elections: ${d.electionName} - Polling stations`;
     }
 
     private run(call: ReturnType<ElectionsService['stations']>, done: string, after?: () => void) {

@@ -1,0 +1,75 @@
+<ng-container *ngIf="election as e">
+    <div class="card mb-2">
+        <div class="card-header py-2 d-flex align-items-center">
+            <h6 class="mb-0 me-auto"><i class="fas fa-user-tie text-primary me-1"></i>Electable positions
+                <small class="text-muted">({{ e.positions }} positions, {{ e.contests }} races)</small></h6>
+            <button class="btn btn-sm btn-primary" *ngIf="canEditPositions" (click)="addPosition()"><i class="fas fa-plus"></i> Add position</button>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 1%;"></th>
+                            <th>Position</th>
+                            <th>Races</th>
+                            <th class="text-center">Seats</th>
+                            <th>Voters</th>
+                            <th>Candidates from</th>
+                            <th style="width: 1%;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="e.positionList.length === 0">
+                            <td colspan="7" class="text-center text-muted py-3">
+                                No positions yet.
+                                <a href="javascript:void(0)" *ngIf="canEditPositions" (click)="addPosition()">Add the first one</a>
+                                <span *ngIf="canEditPositions"> - e.g. School President, Senator, Class Representative.</span>
+                            </td>
+                        </tr>
+                        <tr *ngFor="let p of e.positionList; let i = index; let last = last">
+                            <td class="text-nowrap">
+                                <ng-container *ngIf="canEditPositions">
+                                    <button class="btn btn-link btn-sm p-0 me-1" [disabled]="i === 0 || busy" (click)="move(p, -1)" title="Move up"><i class="fas fa-arrow-up"></i></button>
+                                    <button class="btn btn-link btn-sm p-0" [disabled]="last || busy" (click)="move(p, 1)" title="Move down"><i class="fas fa-arrow-down"></i></button>
+                                </ng-container>
+                            </td>
+                            <td>
+                                <b>{{ p.name }}</b>
+                                <div class="small text-muted" *ngIf="p.runningMateTitle"><i class="fas fa-user-friends me-1"></i>Joint ticket with {{ p.runningMateTitle }}</div>
+                                <div class="small text-muted" *ngIf="genderText(p)"><i class="fas fa-venus-mars me-1"></i>{{ genderText(p) }}</div>
+                            </td>
+                            <td>
+                                <div class="small text-muted">{{ scopeLabels[p.scope] }}</div>
+                                <ng-container *ngIf="p.contests.length <= 4 || expanded.has(p.id); else fewRaces">
+                                    <span class="badge bg-light text-dark border me-1 fw-normal" *ngFor="let c of p.contests">{{ c.name }}</span>
+                                    <a href="javascript:void(0)" class="small" *ngIf="p.contests.length > 4" (click)="toggleRaces(p)">less</a>
+                                </ng-container>
+                                <ng-template #fewRaces>
+                                    <span class="badge bg-light text-dark border me-1 fw-normal" *ngFor="let c of p.contests.slice(0, 3)">{{ c.name }}</span>
+                                    <a href="javascript:void(0)" class="small" (click)="toggleRaces(p)">+{{ p.contests.length - 3 }} more</a>
+                                </ng-template>
+                                <span class="text-danger small" *ngIf="p.contests.length === 0"><i class="fas fa-exclamation-triangle"></i> No races - the chosen grades have no classes in {{ e.academicYearName }}.</span>
+                            </td>
+                            <td class="text-center">{{ p.seats }}</td>
+                            <td class="small">{{ describeGrades(p.voterLevelIds) }}</td>
+                            <td class="small">{{ p.candidateLevelIds.length ? describeGrades(p.candidateLevelIds) : 'Any voter grade' }}</td>
+                            <td class="text-nowrap">
+                                <ng-container *ngIf="canEditPositions">
+                                    <button class="btn btn-sm btn-outline-primary py-0 me-1" (click)="openPosition(p)" title="Edit"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-outline-danger py-0" (click)="deletePosition(p)" title="Remove"><i class="fas fa-trash"></i></button>
+                                </ng-container>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer py-1 small text-muted" *ngIf="!e.positionsEditable">
+            <i class="fas fa-lock me-1"></i>Positions are fixed once nominations close.
+        </div>
+    </div>
+</ng-container>
+
+<app-position-form *ngIf="showPositionForm && ctx.options && election" [options]="ctx.options" [election]="election" [position]="editPosition"
+    (saved)="positionSaved($event)" (closed)="showPositionForm = false"></app-position-form>

@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import Swal from 'sweetalert2';
-import {BreadCrumb} from '@/core/models/bread-crumb';
 import {apiError, ElectionStage, Leadership, LeadershipPosition} from '@/elections/models/election-models';
 import {ElectionsService} from '@/elections/services/elections.service';
 
@@ -16,12 +15,6 @@ import {ElectionsService} from '@/elections/services/elections.service';
     templateUrl: './leadership.component.html'
 })
 export class LeadershipComponent implements OnInit {
-    breadcrumbs: BreadCrumb[] = [
-        {link: ['/'], title: 'Dashboard'},
-        {link: ['/elections/manage'], title: 'Manage Elections'}
-    ];
-    dashboardTitle = 'Elections: Leadership records';
-
     data: Leadership | null = null;
     loading = false;
     busy = false;
@@ -31,7 +24,7 @@ export class LeadershipComponent implements OnInit {
     constructor(private svc: ElectionsService, private toastr: ToastrService, private route: ActivatedRoute, public router: Router) {}
 
     ngOnInit(): void {
-        this.route.paramMap.subscribe((p) => {
+        this.route.parent!.paramMap.subscribe((p) => {
             this.electionId = Number(p.get('id'));
             this.loading = true;
             this.svc.leadership(this.electionId).subscribe({
@@ -49,10 +42,6 @@ export class LeadershipComponent implements OnInit {
 
     show(d: Leadership) {
         this.data = d;
-        this.breadcrumbs = [...this.breadcrumbs.slice(0, 2),
-            {link: ['/elections/manage', String(d.electionId)], title: d.electionName},
-            {link: ['/elections/manage', String(d.electionId), 'leadership'], title: 'Leadership records'}];
-        this.dashboardTitle = `Elections: ${d.electionName} - Leadership records`;
     }
 
     mapped(p: LeadershipPosition): boolean {

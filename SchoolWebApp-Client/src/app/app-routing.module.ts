@@ -181,6 +181,8 @@ import { StationScreenComponent } from './elections/components/station-screen/st
 import { ResultsComponent } from './elections/components/results/results.component';
 import { ResultsHomeComponent } from './elections/components/results-home/results-home.component';
 import { LeadershipComponent } from './elections/components/leadership/leadership.component';
+import { ElectionPositionsComponent } from './elections/components/election-positions/election-positions.component';
+import { ElectionHistoryComponent } from './elections/components/election-history/election-history.component';
 
 const routes: Routes = [
     {
@@ -491,12 +493,22 @@ const routes: Routes = [
         canActivateChild: [AuthGuard],
         children: [
             {path: 'manage', component: ElectionListComponent},
-            {path: 'manage/:id', component: ElectionDetailComponent},
-            {path: 'manage/:id/nominations', component: NominationsComponent},
-            {path: 'manage/:id/register', component: VoterRegisterComponent},
-            {path: 'manage/:id/stations', component: StationsComponent},
-            {path: 'manage/:id/results', component: ResultsComponent},
-            {path: 'manage/:id/leadership', component: LeadershipComponent},
+            {
+                // The election page; each part of running it is a tab.
+                path: 'manage/:id',
+                component: ElectionDetailComponent,
+                children: [
+                    {path: 'positions', component: ElectionPositionsComponent},
+                    {path: 'nominations', component: NominationsComponent},
+                    {path: 'register', component: VoterRegisterComponent},
+                    {path: 'stations', component: StationsComponent},
+                    {path: 'results', component: ResultsComponent},
+                    {path: 'leadership', component: LeadershipComponent},
+                    {path: 'history', component: ElectionHistoryComponent},
+                    // No tab: the page opens the tab for the election's stage.
+                    {path: '', pathMatch: 'full', children: []}
+                ]
+            },
             {path: 'polling', component: PollingComponent},
             {path: 'polling/:stationId', component: StationScreenComponent},
             {path: 'results', component: ResultsHomeComponent},

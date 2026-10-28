@@ -2,7 +2,6 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import Swal from 'sweetalert2';
-import {BreadCrumb} from '@/core/models/bread-crumb';
 import {escapeHtml, printInFrame} from '@/shared/utils/print-frame';
 import {
     apiError,
@@ -19,6 +18,7 @@ import {
     STAGE_LABELS
 } from '@/elections/models/election-models';
 import {ElectionsService} from '@/elections/services/elections.service';
+import {ElectionContext} from '@/elections/services/election-context.service';
 
 /**
  * Who stands in each race: nominate students (with running mates), approve or
@@ -29,12 +29,6 @@ import {ElectionsService} from '@/elections/services/elections.service';
     templateUrl: './nominations.component.html'
 })
 export class NominationsComponent implements OnInit {
-    breadcrumbs: BreadCrumb[] = [
-        {link: ['/'], title: 'Dashboard'},
-        {link: ['/elections/manage'], title: 'Manage Elections'}
-    ];
-    dashboardTitle = 'Elections: Nominations';
-
     data: Nominations | null = null;
     loading = false;
     busy = false;
@@ -58,10 +52,10 @@ export class NominationsComponent implements OnInit {
     private electionId = 0;
 
     constructor(private svc: ElectionsService, private toastr: ToastrService, private route: ActivatedRoute,
-                public router: Router, @Inject('BASE_API_URL') private baseUrl: string) {}
+                public router: Router, private ctx: ElectionContext, @Inject('BASE_API_URL') private baseUrl: string) {}
 
     ngOnInit(): void {
-        this.route.paramMap.subscribe((p) => {
+        this.route.parent!.paramMap.subscribe((p) => {
             this.electionId = Number(p.get('id'));
             this.load();
         });
@@ -82,13 +76,9 @@ export class NominationsComponent implements OnInit {
     }
 
     show(n: Nominations) {
+        // After a change, the election page header (counts) reloads too.
+        if (this.data) this.ctx.reload();
         this.data = n;
-        this.breadcrumbs = [
-            ...this.breadcrumbs.slice(0, 2),
-            {link: ['/elections/manage', String(n.electionId)], title: n.electionName},
-            {link: ['/elections/manage', String(n.electionId), 'nominations'], title: 'Nominations'}
-        ];
-        this.dashboardTitle = `Elections: ${n.electionName} - Nominations`;
     }
 
     photo(url: string | null): string | null {
