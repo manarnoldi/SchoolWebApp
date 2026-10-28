@@ -30,6 +30,13 @@
 
 <ul class="navbar-nav ml-auto align-items-center">
     <!-- <app-messages></app-messages> -->
+    <li class="nav-item" *ngIf="licenceAlert as l">
+        <a class="nav-link" [routerLink]="['/settings/licence']" [title]="l.message || 'Licence'">
+            <i class="fas fa-key" [ngClass]="l.state === 'Expiring' || l.state === 'Grace' ? 'text-warning' : 'text-danger'"></i>
+            <small class="d-none d-sm-inline ms-1" [ngClass]="l.state === 'Expiring' || l.state === 'Grace' ? 'text-warning' : 'text-danger'">
+                {{ l.state === 'Expiring' ? 'Licence expiring' : (l.state === 'None' ? 'No licence' : 'Licence') }}</small>
+        </a>
+    </li>
     <li class="nav-item" *ngIf="isSuperAdmin">
         <a class="nav-link" [routerLink]="['/security/active-users']" role="button"
             title="Users currently logged in">

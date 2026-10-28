@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.API.Services.CBE;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.CBE.Assessments
 {
@@ -12,6 +13,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
     [Route("api/curriculumImports")]
     [ApiController]
     [Authorize(Roles = "Administrator,SuperAdministrator")]
+    [RequiresModule(AppModules.Academics)]
     public class CurriculumImportsController : ControllerBase
     {
         private const string XlsxType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";

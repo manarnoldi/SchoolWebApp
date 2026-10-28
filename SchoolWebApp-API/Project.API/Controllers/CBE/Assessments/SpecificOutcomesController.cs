@@ -6,12 +6,14 @@ using SchoolWebApp.Core.DTOs.CBE.Assessments.Competency;
 using SchoolWebApp.Core.DTOs.CBE.Assessments.SpecificOutcome;
 using SchoolWebApp.Core.Entities.CBE.Assessments;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.Assessments;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.CBE.Assessments
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [RequiresModule(AppModules.Academics)]
     public class SpecificOutcomesController : ControllerBase
     {
         private readonly ILogger<SpecificOutcomesController> _logger;

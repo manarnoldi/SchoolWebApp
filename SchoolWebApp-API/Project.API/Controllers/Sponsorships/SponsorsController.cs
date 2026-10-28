@@ -5,12 +5,14 @@ using Microsoft.EntityFrameworkCore;
 using Project.Infrastructure.Data;
 using SchoolWebApp.Core.DTOs.Sponsorships;
 using SchoolWebApp.Core.Entities.Sponsorships;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.Sponsorships
 {
     [Authorize]
     [Route("api/sponsors")]
     [ApiController]
+    [RequiresModule(AppModules.Finance)]
     public class SponsorsController : ControllerBase
     {
         private readonly ApplicationDbContext _db;

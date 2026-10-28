@@ -5,6 +5,7 @@ using Project.Infrastructure.Data;
 using SchoolWebApp.API.Services.CBE;
 using SchoolWebApp.Core.DTOs.CBE;
 using SchoolWebApp.Core.Entities.CBE.Assessments;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.CBE.Assessments
 {
@@ -18,6 +19,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
     [Route("api/curriculumDesign")]
     [ApiController]
     [Authorize(Roles = "Administrator,SuperAdministrator")]
+    [RequiresModule(AppModules.Academics)]
     public class CurriculumDesignEditorController : ControllerBase
     {
         private const int MaxName = 255, MaxItem = 1000;

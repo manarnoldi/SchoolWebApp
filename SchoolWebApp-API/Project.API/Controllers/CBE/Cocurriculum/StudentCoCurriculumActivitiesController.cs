@@ -5,12 +5,14 @@ using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.CBE.Cocurriculum.StudentCoCurriculumActivity;
 using SchoolWebApp.Core.Entities.CBE.Cocurriculum;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.Cocurriculum;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.CBE.Cocurriculum
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [RequiresModule(AppModules.Academics)]
     public class StudentCoCurriculumActivitiesController : ControllerBase
     {
         private readonly ILogger<StudentCoCurriculumActivitiesController> _logger;

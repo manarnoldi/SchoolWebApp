@@ -7,6 +7,7 @@ import {Store} from '@ngrx/store';
 import { AuthService } from '@/core/services/auth.service';
 import {AuditLogsService} from '@/security/services/audit-logs.service';
 import {Observable} from 'rxjs';
+import {LicenceService, LicenceStatus} from '@/core/services/licence.service';
 
 const BASE_CLASSES = 'main-header navbar navbar-expand';
 @Component({
@@ -22,11 +23,14 @@ export class HeaderComponent implements OnInit {
     // Super administrators see a live count of who is currently signed in.
     isSuperAdmin = false;
     activeUsersCount = 0;
+    // Administrators see when the licence needs attention (missing, expiring, expired).
+    licenceAlert: LicenceStatus | null = null;
 
     constructor(
         private authService: AuthService,
         private auditLogsSvc: AuditLogsService,
-        private store: Store<AppState>
+        private store: Store<AppState>,
+        private licence: LicenceService
     ) {}
 
     ngOnInit() {
@@ -38,6 +42,13 @@ export class HeaderComponent implements OnInit {
             search: new UntypedFormControl(null)
         });
         this.loadActiveUsers();
+        this.loadLicenceAlert();
+    }
+
+    private loadLicenceAlert() {
+        let roles = (this.authService.getCurrentUser()?.roles || []).map((r: any) => String(r).toLowerCase());
+        if (!roles.includes('administrator') && !roles.includes('superadministrator')) return;
+        this.licence.load().subscribe((s) => (this.licenceAlert = s.state === 'Active' ? null : s));
     }
 
     private loadActiveUsers() {

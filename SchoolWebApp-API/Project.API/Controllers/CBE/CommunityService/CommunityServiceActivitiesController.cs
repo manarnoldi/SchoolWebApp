@@ -5,12 +5,14 @@ using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.CBE.CommunityService.CommunityServiceActivity;
 using SchoolWebApp.Core.Entities.CBE.CommunityService;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.CommunityService;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.CBE.CommunityService
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [RequiresModule(AppModules.Academics)]
     public class CommunityServiceActivitiesController : ControllerBase
     {
         private readonly ILogger<CommunityServiceActivitiesController> _logger;

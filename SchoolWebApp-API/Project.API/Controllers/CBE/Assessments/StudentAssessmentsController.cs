@@ -8,12 +8,14 @@ using SchoolWebApp.Core.Entities.CBE.Assessments;
 using SchoolWebApp.Core.Entities.Identity;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.Assessments;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.CBE.Assessments
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [RequiresModule(AppModules.Academics)]
     public class StudentAssessmentsController : ControllerBase
     {
         private readonly ILogger<StudentAssessmentsController> _logger;

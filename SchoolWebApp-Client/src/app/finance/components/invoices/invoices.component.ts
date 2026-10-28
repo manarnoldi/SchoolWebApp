@@ -79,7 +79,7 @@ export class FinanceInvoicesComponent implements OnInit {
         private schoolClassesSvc: SchoolClassesService,
         private studentClassSvc: StudentClassService,
         private sponsorshipSvc: SponsorshipService,
-        private messageSender: StandardMessageSender
+        public messageSender: StandardMessageSender
     ) {}
 
     ngOnInit(): void {

@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs.Finance.FeeStructure;
 using SchoolWebApp.Core.Entities.Finance;
 using SchoolWebApp.Core.Interfaces.IRepositories;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.Finance
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [RequiresModule(AppModules.Finance)]
     public class FeeStructuresController : ControllerBase
     {
         private readonly ILogger<FeeStructuresController> _logger;

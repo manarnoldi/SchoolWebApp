@@ -5,6 +5,7 @@ using Project.Infrastructure.Data;
 using SchoolWebApp.API.Services.Communications;
 using SchoolWebApp.Core.DTOs.Communications;
 using SchoolWebApp.Core.Entities.Communications;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.Communications
 {
@@ -16,6 +17,7 @@ namespace SchoolWebApp.API.Controllers.Communications
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [RequiresModule(AppModules.Communications)]
     public class MessageTemplatesController : ControllerBase
     {
         private readonly ApplicationDbContext _db;

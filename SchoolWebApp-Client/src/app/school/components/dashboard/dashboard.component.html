@@ -65,8 +65,8 @@
         <!-- Summary Cards -->
         <app-dashboard-summary></app-dashboard-summary>
         <hr class="mb-1 mx-n2">
-        <!-- Exam Performance Summary -->
-        <div class="row">
+        <!-- Exam Performance Summary (Academics) -->
+        <div class="row" *ngIf="licence.has('Academics')">
             <div class="col-12 px-1">
                 <app-dashboard-exam-summary></app-dashboard-exam-summary>
             </div>

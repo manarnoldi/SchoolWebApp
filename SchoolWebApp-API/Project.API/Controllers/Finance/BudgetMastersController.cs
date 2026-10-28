@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs.Finance.BudgetMaster;
 using SchoolWebApp.Core.Entities.Finance;
 using SchoolWebApp.Core.Interfaces.IRepositories;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.Finance
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [RequiresModule(AppModules.Finance)]
     public class BudgetMastersController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;

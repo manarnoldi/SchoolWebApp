@@ -102,7 +102,7 @@ export class PaymentsComponent implements OnInit {
         private authSvc: AuthService,
         private approvalSvc: ApprovalService,
         private route: ActivatedRoute,
-        private messageSender: StandardMessageSender
+        public messageSender: StandardMessageSender
     ) {
         let cu = this.authSvc.getCurrentUser();
         this.currentUserId = cu?.id || null;

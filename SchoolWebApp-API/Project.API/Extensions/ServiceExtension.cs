@@ -221,6 +221,8 @@ namespace Project.API.Extensions
             services.AddScoped<SchoolWebApp.API.Services.Elections.ElectionService>();
             services.AddSingleton<SchoolWebApp.API.Services.Elections.ElectionPhotoStore>();
             services.AddScoped<SchoolWebApp.API.Services.Elections.ElectionResultsService>();
+            // The school's licence: which paid modules are switched on.
+            services.AddSingleton<SchoolWebApp.API.Licensing.LicenceService>();
             services.AddScoped<SchemeWorkbookService>();
             services.AddScoped<HeadOfDepartmentRoleSync>();
             services.AddScoped<SchoolWebApp.API.Services.Academics.SubjectLevelGuard>();

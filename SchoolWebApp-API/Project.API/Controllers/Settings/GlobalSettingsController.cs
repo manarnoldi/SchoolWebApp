@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs.Settings.GlobalSetting;
 using SchoolWebApp.Core.Entities.Settings;
 using SchoolWebApp.Core.Interfaces.IRepositories;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.Settings
 {
@@ -78,11 +79,15 @@ namespace SchoolWebApp.API.Controllers.Settings
             }
         }
 
+        // The licence key is only changed through Settings > Licence, which checks it first.
+        private const string LicenceOnly = "The licence is installed from Settings > Licence.";
+
         // POST: api/globalSettings
         [HttpPost]
         public async Task<IActionResult> Create(CreateGlobalSettingDto model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (model.Module == LicenceService.SettingsModule) return BadRequest(LicenceOnly);
             try
             {
                 var existing = (await _unitOfWork.Repository<GlobalSetting>()
@@ -107,6 +112,7 @@ namespace SchoolWebApp.API.Controllers.Settings
         public async Task<IActionResult> Update(GlobalSettingDto model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (model.Module == LicenceService.SettingsModule) return BadRequest(LicenceOnly);
             try
             {
                 var item = _mapper.Map<GlobalSetting>(model);
@@ -129,6 +135,7 @@ namespace SchoolWebApp.API.Controllers.Settings
             {
                 var item = await _unitOfWork.Repository<GlobalSetting>().GetById(id);
                 if (item == null) return BadRequest("Setting not found.");
+                if (item.Module == LicenceService.SettingsModule) return BadRequest(LicenceOnly);
                 _unitOfWork.Repository<GlobalSetting>().Delete(item);
                 await _unitOfWork.SaveChangesAsync();
                 return Ok();
@@ -145,6 +152,7 @@ namespace SchoolWebApp.API.Controllers.Settings
         public async Task<IActionResult> Upsert(CreateGlobalSettingDto model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (model.Module == LicenceService.SettingsModule) return BadRequest(LicenceOnly);
             try
             {
                 var existing = (await _unitOfWork.Repository<GlobalSetting>()

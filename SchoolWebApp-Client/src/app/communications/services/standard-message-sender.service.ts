@@ -5,6 +5,7 @@ import {ToastrService} from 'ngx-toastr';
 import Swal from 'sweetalert2';
 import {ComposePreview, QueueResult} from '../models/communication-models';
 import {escapeHtml} from '@/shared/utils/print-frame';
+import {LicenceService} from '@/core/services/licence.service';
 
 export type StandardMessageKind = 'examResults' | 'schoolExamResults' | 'feeInvoices' | 'feeBalances' | 'feePayments';
 
@@ -25,9 +26,15 @@ const KIND_LABELS: {[k in StandardMessageKind]: string} = {
  */
 @Injectable({providedIn: 'root'})
 export class StandardMessageSender {
-    constructor(private http: HttpClient, private toastr: ToastrService, private router: Router) {}
+    constructor(private http: HttpClient, private toastr: ToastrService, private router: Router, private licence: LicenceService) {}
+
+    /** Sending needs the Communications add-on; the screens hide their send buttons without it. */
+    get available(): boolean {
+        return this.licence.has('Communications');
+    }
 
     send(kind: StandardMessageKind, body: any): void {
+        if (!this.available) return this.notLicensed();
         this.http.post<ComposePreview>(`/messages/${kind}`, {...body, preview: true}).subscribe({
             next: (p) => this.confirm(kind, body, p),
             error: (err) => this.toastr.error(this.error(err))
@@ -40,10 +47,15 @@ export class StandardMessageSender {
      * exam is released. Reports the outcome as a toast.
      */
     sendNow(kind: StandardMessageKind, body: any): void {
+        if (!this.available) return this.notLicensed();
         this.http.post<QueueResult>(`/messages/${kind}`, {...body, preview: false}).subscribe({
             next: (q) => this.queued(q),
             error: (err) => this.toastr.error(this.error(err), 'Results not sent')
         });
+    }
+
+    private notLicensed() {
+        this.toastr.info('Sending messages to parents needs the Communications add-on.');
     }
 
     private queued(q: QueueResult) {

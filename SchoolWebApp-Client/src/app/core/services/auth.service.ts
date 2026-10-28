@@ -5,6 +5,7 @@ import {Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import {Observable, catchError, map, throwError} from 'rxjs';
 import { AppService } from './app.service';
+import {LicenceService} from './licence.service';
 
 @Injectable({
     providedIn: 'root'
@@ -18,7 +19,8 @@ export class AuthService {
         private http: HttpClient,
         public router: Router,
         private toastr: ToastrService,
-        private appService:AppService
+        private appService:AppService,
+        private licence: LicenceService
     ) {}
 
     // Sign-up
@@ -116,6 +118,7 @@ export class AuthService {
 
         localStorage.removeItem('ssw_token');
         localStorage.removeItem('current_user');
+        this.licence.clear();
         this.appService.setUserLoggedIn(false);
         this.router.navigate(['/login']);
     }

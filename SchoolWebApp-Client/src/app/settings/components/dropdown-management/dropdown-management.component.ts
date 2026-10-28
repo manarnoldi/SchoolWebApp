@@ -4,6 +4,15 @@ import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
 import {HttpClient} from '@angular/common/http';
 import Swal from 'sweetalert2';
+import {AppModule, LicenceService} from '@/core/services/licence.service';
+
+// The paid module each section (or editor) belongs to; the rest are core.
+const CATEGORY_MODULES: {[name: string]: AppModule} = {
+    'Finance': 'Finance',
+    'Payroll Settings': 'Payroll',
+    'CBE Settings': 'Academics',
+    'examTypes': 'Academics'
+};
 
 interface DropdownConfig {
     name: string;
@@ -186,10 +195,21 @@ export class DropdownManagementComponent implements OnInit {
     constructor(
         private toastr: ToastrService,
         private http: HttpClient,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private licence: LicenceService
     ) {}
 
     ngOnInit(): void {
+        // Only the sections of modules the school has bought.
+        this.licence.load().subscribe(() => {
+            this.categories = this.categories
+                .filter((c) => this.licence.has(CATEGORY_MODULES[c.name]))
+                .map((c) => ({...c, configs: c.configs.filter((x: any) => this.licence.has(CATEGORY_MODULES[x.name]))}));
+            this.openFirst();
+        });
+    }
+
+    private openFirst() {
         let openCategory = this.route.snapshot.queryParamMap.get('category');
         if (openCategory) {
             let match = this.categories.find((c) => c.name === openCategory);

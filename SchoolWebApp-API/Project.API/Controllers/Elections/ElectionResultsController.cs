@@ -9,6 +9,7 @@ using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Entities.Elections;
 using SchoolWebApp.Core.Entities.Enums;
 using System.Text;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.Elections
 {
@@ -20,6 +21,7 @@ namespace SchoolWebApp.API.Controllers.Elections
     [Authorize]
     [Route("api/elections")]
     [ApiController]
+    [RequiresModule(AppModules.Elections)]
     public class ElectionResultsController : ControllerBase
     {
         private readonly ApplicationDbContext _db;

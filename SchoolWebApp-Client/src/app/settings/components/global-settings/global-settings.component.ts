@@ -8,6 +8,18 @@ import {CurriculumService} from '@/academics/services/curriculum.service';
 import {EducationLevelService} from '@/school/services/education-level.service';
 import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
+import {AppModule, LicenceService} from '@/core/services/licence.service';
+
+// The paid module each settings section belongs to; the rest are core.
+const SECTION_MODULES: {[section: string]: AppModule} = {
+    Finance: 'Finance',
+    Payroll: 'Payroll',
+    Communications: 'Communications',
+    TeachingDocuments: 'Academics',
+    Grading: 'Academics',
+    ReportForm: 'Academics',
+    Elections: 'Elections'
+};
 
 @Component({
     selector: 'app-global-settings',
@@ -286,14 +298,23 @@ export class GlobalSettingsComponent implements OnInit {
         private examTypeSvc: ExamTypeService,
         private accountSvc: AccountService,
         private curriculaSvc: CurriculumService,
-        private educationLevelSvc: EducationLevelService
+        private educationLevelSvc: EducationLevelService,
+        private licence: LicenceService
     ) {}
 
     ngOnInit(): void {
+        // Only the sections of modules the school has bought.
+        this.licence.load().subscribe(() => {
+            this.modules = this.modules.filter((m) => this.licence.has(SECTION_MODULES[m.name]));
+            this.init();
+        });
+    }
+
+    private init() {
         // Collapse all modules except the first one
         this.modules.slice(1).forEach((m) => this.collapsedModules.add(m.name));
-        this.loadExamTypes();
-        this.loadAccounts();
+        if (this.licence.has('Academics')) this.loadExamTypes();
+        if (this.licence.has('Finance')) this.loadAccounts();
         // Inject the per-education-level "Exam Results" rows, THEN load values -
         // loadSettings() must run after the dynamic settings exist so their
         // saved values/defaults are mapped.

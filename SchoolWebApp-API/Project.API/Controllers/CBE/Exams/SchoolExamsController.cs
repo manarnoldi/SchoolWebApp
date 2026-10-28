@@ -7,6 +7,7 @@ using SchoolWebApp.Core.DTOs.Academics.SchoolExam;
 using SchoolWebApp.Core.Entities.CBE.Exams;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.Services;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.CBE.Exams
 {
@@ -20,6 +21,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Exams
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
+    [RequiresModule(AppModules.Academics)]
     public class SchoolExamsController : ControllerBase
     {
         private readonly ILogger<SchoolExamsController> _logger;

@@ -69,6 +69,8 @@ builder.Services.AddControllers(
                options.ReturnHttpNotAcceptable = true;
                options.SuppressAsyncSuffixInActionNames = false;
                options.Filters.Add(new ProducesAttribute("application/json"));
+               // Paid-module endpoints answer only when the licence includes the module.
+               options.Filters.Add<SchoolWebApp.API.Licensing.ModuleLicenceFilter>();
                // options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
            }).AddNewtonsoftJson(options =>
            {

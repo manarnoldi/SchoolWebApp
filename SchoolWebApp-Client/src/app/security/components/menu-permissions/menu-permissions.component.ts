@@ -5,7 +5,8 @@ import {BreadCrumb} from '@/core/models/bread-crumb';
 import {RoleService} from '../../services/role.service';
 import {MenuPermissionService} from '../../services/menu-permission.service';
 import {AppRole} from '../../models/app-role';
-import {MENU} from '@/core/modules/main/menu-sidebar/menu-sidebar.component';
+import {licensedMenu, MENU} from '@/core/modules/main/menu-sidebar/menu-sidebar.component';
+import {LicenceService} from '@/core/services/licence.service';
 
 interface MenuChild {
     path: string;
@@ -45,18 +46,21 @@ export class MenuPermissionsComponent implements OnInit {
     constructor(
         private roleSvc: RoleService,
         private menuPermSvc: MenuPermissionService,
-        private toastr: ToastrService
+        private toastr: ToastrService,
+        private licence: LicenceService
     ) {}
 
     ngOnInit(): void {
-        this.buildMenuGroups();
+        // Only the modules the school has bought can be given out.
+        this.licence.load().subscribe(() => this.buildMenuGroups());
         this.roleSvc.getAll().subscribe({
             next: (roles) => this.roles = roles
         });
     }
 
     buildMenuGroups() {
-        for (const item of MENU) {
+        this.menuGroups = [];
+        for (const item of licensedMenu(MENU, this.licence)) {
             if (item.path) {
                 // Top-level item with direct path (e.g. Dashboard)
                 const pathStr = Array.isArray(item.path) ? item.path.join('/') : item.path;

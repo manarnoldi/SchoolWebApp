@@ -128,7 +128,7 @@ export class FinanceReportsComponent implements OnInit {
         private classSvc: SchoolClassesService,
         private studentClassSvc: StudentClassService,
         private route: ActivatedRoute,
-        private messageSender: StandardMessageSender
+        public messageSender: StandardMessageSender
     ) {}
 
     ngOnInit(): void {

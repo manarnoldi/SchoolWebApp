@@ -5,12 +5,14 @@ using SchoolWebApp.Core.DTOs.Finance.Payment;
 using SchoolWebApp.Core.Entities.Finance;
 using SchoolWebApp.Core.Entities.Settings;
 using SchoolWebApp.Core.Interfaces.IRepositories;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.Finance
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [RequiresModule(AppModules.Finance)]
     public class PaymentsController : ControllerBase
     {
         private readonly ILogger<PaymentsController> _logger;

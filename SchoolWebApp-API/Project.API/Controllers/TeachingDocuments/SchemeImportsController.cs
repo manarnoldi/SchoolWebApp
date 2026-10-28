@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.API.Services.TeachingDocuments;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.TeachingDocuments
 {
@@ -13,6 +14,7 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
     [Route("api/schemeImports")]
     [ApiController]
     [Authorize]
+    [RequiresModule(AppModules.Academics)]
     public class SchemeImportsController : ControllerBase
     {
         private const string XlsxType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";

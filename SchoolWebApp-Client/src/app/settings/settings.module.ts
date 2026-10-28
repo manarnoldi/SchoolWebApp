@@ -15,6 +15,7 @@ import { ReligionsComponent } from './components/religions/religions.component';
 import { SessionTypesComponent } from './components/session-types/session-types.component';
 import { StaffCategoriesComponent } from './components/staff-categories/staff-categories.component';
 import { GlobalSettingsComponent } from './components/global-settings/global-settings.component';
+import { LicenceComponent } from './components/licence/licence.component';
 import { DropdownManagementComponent } from './components/dropdown-management/dropdown-management.component';
 
 @NgModule({
@@ -32,6 +33,7 @@ import { DropdownManagementComponent } from './components/dropdown-management/dr
     SessionTypesComponent,
     StaffCategoriesComponent,
     GlobalSettingsComponent,
+    LicenceComponent,
     DropdownManagementComponent
   ],
   imports: [

@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs.Payroll;
 using SchoolWebApp.Core.Entities.Payroll;
 using SchoolWebApp.Core.Interfaces.IRepositories;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.Payroll
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [RequiresModule(AppModules.Payroll)]
     public class DeductionTypesController : ControllerBase
     {
         private readonly ILogger<DeductionTypesController> _logger;

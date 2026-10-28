@@ -66,7 +66,7 @@ export class SchoolExamsComponent implements OnInit {
         private curriculaSvc: CurriculumService,
         private academicYearSvc: AcademicYearsService,
         private sessionsSvc: SessionsService,
-        private messageSender: StandardMessageSender
+        public messageSender: StandardMessageSender
     ) {}
 
     parseInt = parseInt;

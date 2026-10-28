@@ -7,12 +7,14 @@ using SchoolWebApp.Core.Entities.Payroll;
 using SchoolWebApp.Core.Entities.Finance;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using System.Globalization;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.Payroll
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [RequiresModule(AppModules.Payroll)]
     public class PayrollPeriodsController : ControllerBase
     {
         private readonly ILogger<PayrollPeriodsController> _logger;

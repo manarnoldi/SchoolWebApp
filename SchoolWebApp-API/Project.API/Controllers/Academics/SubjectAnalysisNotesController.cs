@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Project.Infrastructure.Data;
 using SchoolWebApp.Core.DTOs.Academics.SubjectAnalysisNote;
 using SchoolWebApp.Core.Entities.Academics;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.Academics
 {
@@ -16,6 +17,7 @@ namespace SchoolWebApp.API.Controllers.Academics
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
+    [RequiresModule(AppModules.Academics)]
     public class SubjectAnalysisNotesController : ControllerBase
     {
         private readonly ApplicationDbContext _db;

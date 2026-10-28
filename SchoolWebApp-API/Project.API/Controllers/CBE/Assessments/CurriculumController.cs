@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Project.Infrastructure.Data;
 using SchoolWebApp.Core.DTOs.CBE;
 using SchoolWebApp.Core.Entities.CBE.Assessments;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.CBE.Assessments
 {
@@ -15,6 +16,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
     [Route("api/curriculum")]
     [ApiController]
     [Authorize]
+    [RequiresModule(AppModules.Academics)]
     public class CurriculumController : ControllerBase
     {
         private readonly ApplicationDbContext _db;

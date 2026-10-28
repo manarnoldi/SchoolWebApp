@@ -98,7 +98,7 @@ export class BroadsheetComponent implements OnInit {
         private schoolSvc: SchoolDetailsService,
         private userSvc: AuthService,
         private reportSvc: ReportsService,
-        private messageSender: StandardMessageSender
+        public messageSender: StandardMessageSender
     ) {}
 
     ngOnInit(): void {

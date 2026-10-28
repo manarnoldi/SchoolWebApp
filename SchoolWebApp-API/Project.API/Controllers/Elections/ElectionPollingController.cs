@@ -7,6 +7,7 @@ using SchoolWebApp.API.Services.Elections;
 using SchoolWebApp.Core.DTOs.Elections;
 using SchoolWebApp.Core.Entities.Elections;
 using SchoolWebApp.Core.Entities.Enums;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.Elections
 {
@@ -19,6 +20,7 @@ namespace SchoolWebApp.API.Controllers.Elections
     [Authorize]
     [Route("api/elections")]
     [ApiController]
+    [RequiresModule(AppModules.Elections)]
     public class ElectionPollingController : ControllerBase
     {
         private readonly ApplicationDbContext _db;

@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolWebApp.Core.DTOs.CBE.Assessments.Theme;
 using SchoolWebApp.Core.Entities.CBE.Assessments;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.Assessments;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.CBE.Assessments
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [RequiresModule(AppModules.Academics)]
     public class ThemesController : ControllerBase
     {
         private readonly ILogger<ThemesController> _logger;

@@ -5,12 +5,14 @@ using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.CBE.Responsibilities.StudentResponsibility;
 using SchoolWebApp.Core.Entities.CBE.Responsibilities;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.Responsibilities;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.CBE.Responsibilities
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [RequiresModule(AppModules.Academics)]
     public class StudentResponsibilitiesController : ControllerBase
     {
         private readonly ILogger<StudentResponsibilitiesController> _logger;

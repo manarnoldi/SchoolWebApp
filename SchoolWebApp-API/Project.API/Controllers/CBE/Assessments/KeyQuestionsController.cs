@@ -5,12 +5,14 @@ using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.CBE.Assessments.KeyQuestion;
 using SchoolWebApp.Core.Entities.CBE.Assessments;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.Assessments;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.CBE.Assessments
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [RequiresModule(AppModules.Academics)]
     public class KeyQuestionsController : ControllerBase
     {
         private readonly ILogger<KeyQuestionsController> _logger;

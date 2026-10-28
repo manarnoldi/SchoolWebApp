@@ -7,12 +7,14 @@ using SchoolWebApp.Core.Entities.Finance;
 using SchoolWebApp.Core.Helpers;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using System.Security.Claims;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.Finance
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [RequiresModule(AppModules.Finance)]
     public class BudgetAmendmentsController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;

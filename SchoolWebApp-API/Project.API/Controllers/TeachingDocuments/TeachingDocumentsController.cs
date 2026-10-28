@@ -7,6 +7,7 @@ using SchoolWebApp.Core.DTOs.TeachingDocuments;
 using SchoolWebApp.Core.Entities.CBE.Assessments;
 using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Entities.TeachingDocuments;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.TeachingDocuments
 {
@@ -17,6 +18,7 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [RequiresModule(AppModules.Academics)]
     public class TeachingDocumentsController : ControllerBase
     {
         private readonly ApplicationDbContext _db;

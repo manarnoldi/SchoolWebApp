@@ -5,6 +5,7 @@ using Project.Infrastructure.Data;
 using SchoolWebApp.API.Services.TeachingDocuments;
 using SchoolWebApp.Core.DTOs.TeachingDocuments;
 using SchoolWebApp.Core.Entities.TeachingDocuments;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.TeachingDocuments
 {
@@ -17,6 +18,7 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
     [Route("api/recordOfWork")]
     [ApiController]
     [Authorize]
+    [RequiresModule(AppModules.Academics)]
     public class RecordOfWorkController : ControllerBase
     {
         private readonly ApplicationDbContext _db;

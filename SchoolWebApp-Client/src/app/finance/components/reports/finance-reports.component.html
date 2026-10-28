@@ -269,7 +269,7 @@
                 <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadOutstanding()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
                 <div class="col-auto"><button class="btn btn-sm btn-outline-secondary" (click)="clearOutstandingFilters()" title="Clear"><i class="fas fa-times"></i></button></div>
                 <div class="col text-end" *ngIf="outstanding.length > 0">
-                    <button class="btn btn-sm btn-outline-success me-1" (click)="remindOutstanding()"
+                    <button class="btn btn-sm btn-outline-success me-1" *ngIf="messageSender.available" (click)="remindOutstanding()"
                         title="Send a fee balance reminder to the parents of every learner listed. The message states each learner's total outstanding balance."><i class="fas fa-paper-plane"></i> Send reminders</button>
                     <button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button>
                 </div>
@@ -375,7 +375,7 @@
                 <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadFeeBalancesByClass()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
                 <div class="col-auto"><button class="btn btn-sm btn-outline-secondary" (click)="clearFeeBalanceFilters()" title="Clear"><i class="fas fa-times"></i></button></div>
                 <div class="col text-end" *ngIf="feeBalancesReport">
-                    <button class="btn btn-sm btn-outline-success me-1" (click)="remindFeeBalances()" *ngIf="feeBalancesReport.totalClasses > 0"
+                    <button class="btn btn-sm btn-outline-success me-1" (click)="remindFeeBalances()" *ngIf="feeBalancesReport.totalClasses > 0 && messageSender.available"
                         title="Send a fee balance reminder to the parents of every learner in the report. The message states each learner's total outstanding balance."><i class="fas fa-paper-plane"></i> Send reminders</button>
                     <button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button>
                 </div>
@@ -401,7 +401,7 @@
                             <strong><i class="fas fa-users me-1"></i> {{ cls.className }}</strong>
                             <span>
                                 <span class="badge bg-light text-dark">{{ cls.studentCount }} student(s) | Balance: {{ cls.totalBalance | number:'1.2-2' }}</span>
-                                <button class="btn btn-xs btn-light py-0 px-1 ms-1 d-print-none" style="font-size: 0.75rem;" (click)="remindFeeBalances(cls)"
+                                <button *ngIf="messageSender.available" class="btn btn-xs btn-light py-0 px-1 ms-1 d-print-none" style="font-size: 0.75rem;" (click)="remindFeeBalances(cls)"
                                     title="Send fee balance reminders to this class's parents"><i class="fas fa-paper-plane"></i> Remind</button>
                             </span>
                         </div>

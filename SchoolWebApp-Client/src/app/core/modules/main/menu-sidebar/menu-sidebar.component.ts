@@ -5,6 +5,7 @@ import {Store} from '@ngrx/store';
 import {AuthService} from '@/core/services/auth.service';
 import {MenuPermissionService} from '../../../../security/services/menu-permission.service';
 import {Observable} from 'rxjs';
+import {LicenceService} from '@/core/services/licence.service';
 
 const BASE_CLASSES = 'main-sidebar elevation-4';
 @Component({
@@ -21,7 +22,8 @@ export class MenuSidebarComponent implements OnInit {
     constructor(
         public authService: AuthService,
         private store: Store<AppState>,
-        private menuPermSvc: MenuPermissionService
+        private menuPermSvc: MenuPermissionService,
+        private licence: LicenceService
     ) {}
 
     ngOnInit() {
@@ -33,37 +35,34 @@ export class MenuSidebarComponent implements OnInit {
         this.loadMenuPermissions();
     }
 
+    // What the school has bought decides the menus first; then the user's permissions.
     loadMenuPermissions() {
         if (!this.user) return;
+        this.menu = licensedMenu(MENU, this.licence);
+        this.licence.load().subscribe(() => {
+            const licensed = licensedMenu(MENU, this.licence);
+            this.menu = licensed;
 
-        // Super Administrators get full access
-        const isSuperAdmin = this.user.roles?.some((r: string) =>
-            r.toLowerCase() === 'superadministrator'
-        );
-        if (isSuperAdmin) {
-            this.menu = MENU;
-            return;
-        }
+            // Super Administrators get full access
+            const isSuperAdmin = this.user.roles?.some((r: string) =>
+                r.toLowerCase() === 'superadministrator'
+            );
+            if (isSuperAdmin) return;
 
-        this.menuPermSvc.getMyPermissions().subscribe({
-            next: (result) => {
-                if (result.allAccess) {
-                    this.menu = MENU;
-                } else {
-                    this.menu = this.filterMenu(MENU, result.paths);
-                }
-            },
-            error: () => {
-                // On error, show full menu (fallback)
-                this.menu = MENU;
-            }
+            this.menuPermSvc.getMyPermissions().subscribe({
+                next: (result) => {
+                    this.menu = result.allAccess ? licensed : this.filterMenu(licensed, result.paths);
+                },
+                // On error, show the licensed menu (fallback)
+                error: () => (this.menu = licensed)
+            });
         });
     }
 
     filterMenu(items: any[], allowedPaths: string[]): any[] {
         if (!allowedPaths || allowedPaths.length === 0) {
             // If no permissions configured at all, show full menu
-            return MENU;
+            return items;
         }
 
         return items
@@ -85,6 +84,18 @@ export class MenuSidebarComponent implements OnInit {
     }
 }
 
+/**
+ * The menu without the modules the school's licence does not include. An item
+ * with a `module` (and everything under it) shows only when that module is on;
+ * a group left empty is dropped.
+ */
+export function licensedMenu(items: any[], licence: LicenceService): any[] {
+    return items
+        .filter((item) => licence.has(item.module))
+        .map((item) => (item.children ? {...item, children: licensedMenu(item.children, licence)} : item))
+        .filter((item) => !item.children || item.children.length > 0);
+}
+
 export const MENU = [
     {
         name: 'Dashboard',
@@ -99,10 +110,16 @@ export const MENU = [
             {name: 'Academic Years', iconClasses: 'fas fa-bullseye', path: ['/school/academicYears']},
             {name: 'Sessions', iconClasses: 'fas fa-bullseye', path: ['/school/sessions']},
             {name: 'Classes', iconClasses: 'fas fa-bullseye', path: ['/class/classes']},
-            {name: 'Staff Details', iconClasses: 'fas fa-bullseye', path: ['/staff/details']},
-            {name: 'Staff Attendance', iconClasses: 'fas fa-bullseye', path: ['/staff/staff-attendances']},
-            {name: 'Staff Subjects', iconClasses: 'fas fa-bullseye', path: ['/school/bulk-staff-subjects']},
             {name: 'Events', iconClasses: 'fas fa-bullseye', path: ['/school/events']}
+        ]
+    },
+    {
+        name: 'Staff',
+        iconClasses: 'fas fa-user-tie',
+        children: [
+            {name: 'Staff Details', iconClasses: 'fas fa-bullseye', path: ['/staff/details']},
+            {name: 'Attendance', iconClasses: 'fas fa-bullseye', path: ['/staff/staff-attendances']},
+            {name: 'Subject Allocation', iconClasses: 'fas fa-bullseye', path: ['/school/bulk-staff-subjects'], module: 'Academics'}
         ]
     },
     {
@@ -111,34 +128,66 @@ export const MENU = [
         children: [
             {name: 'Basic Details', iconClasses: 'fas fa-bullseye', path: ['/students/details']},
             {name: 'Parents', iconClasses: 'fas fa-bullseye', path: ['/students/parents']},
-            {name: 'Subject Allocation', iconClasses: 'fas fa-bullseye', path: ['/students/students-subjects']},
+            {name: 'Subject Allocation', iconClasses: 'fas fa-bullseye', path: ['/students/students-subjects'], module: 'Academics'},
             {name: 'Attendance', iconClasses: 'fas fa-bullseye', path: ['/students/students-attendances']},
             {name: 'Class Assignment', iconClasses: 'fas fa-bullseye', path: ['/students/promotion']}
         ]
     },
     {
-        name: 'CBE Curriculum',
+        name: 'Academics',
         iconClasses: 'fas fa-pen',
+        module: 'Academics',
         children: [
-            {name: 'Student Assessments', iconClasses: 'fas fa-bullseye text-info', path: ['/cbe/assessments/assessments']},
-            // Permission flag (not a navigable feature). When assigned to a role,
-            // members of that role can enter Student Assessment marks for any
-            // teacher / class / subject. Without it (and without Administrator
-            // or SuperAdministrator role), users are restricted to their own
-            // allocations on /cbe/assessments/assessments.
-            {name: 'Student Assessments (Admin)', iconClasses: 'fas fa-user-shield text-warning', path: ['/cbe/assessments/admin']},
-            {name: 'Co-curricular', iconClasses: 'fas fa-bullseye text-success', path: ['/cbe/cocurriculum/student-scores']},
-            {name: 'Responsibilities', iconClasses: 'fas fa-bullseye text-primary', path: ['/cbe/responsibilities/student-assignments']},
-            {name: 'Community Service', iconClasses: 'fas fa-bullseye text-secondary', path: ['/cbe/community-service/student-assignments']},
-            {name: 'Values', iconClasses: 'fas fa-bullseye text-danger', path: ['/cbe/values/student-assignments']},
-            {name: 'School Exams', iconClasses: 'fas fa-calendar-check text-info', path: ['/cbe/exams/school-exams']},
-            {name: 'Register Exams', iconClasses: 'fas fa-bullseye text-warning', path: ['/cbe/exams/exams']},
-            {name: 'Results Entry', iconClasses: 'fas fa-bullseye text-warning', path: ['/cbe/exams/exam-results-bulk']}
+            {
+                name: 'Assessments',
+                iconClasses: 'fas fa-tasks text-info',
+                children: [
+                    {name: 'Student Assessments', iconClasses: 'fas fa-bullseye text-info', path: ['/cbe/assessments/assessments']},
+                    // Permission flag (not a navigable feature). When assigned to a role,
+                    // members of that role can enter Student Assessment marks for any
+                    // teacher / class / subject. Without it (and without Administrator
+                    // or SuperAdministrator role), users are restricted to their own
+                    // allocations on /cbe/assessments/assessments.
+                    {name: 'Student Assessments (Admin)', iconClasses: 'fas fa-user-shield text-warning', path: ['/cbe/assessments/admin']}
+                ]
+            },
+            {
+                name: 'Exams',
+                iconClasses: 'fas fa-file-signature text-warning',
+                children: [
+                    {name: 'School Exams', iconClasses: 'fas fa-calendar-check text-info', path: ['/cbe/exams/school-exams']},
+                    {name: 'Register Exams', iconClasses: 'fas fa-bullseye text-warning', path: ['/cbe/exams/exams']},
+                    {name: 'Results Entry', iconClasses: 'fas fa-bullseye text-warning', path: ['/cbe/exams/exam-results-bulk']}
+                ]
+            },
+            {
+                name: 'Learner Development',
+                iconClasses: 'fas fa-seedling text-success',
+                children: [
+                    {name: 'Co-curricular', iconClasses: 'fas fa-bullseye text-success', path: ['/cbe/cocurriculum/student-scores']},
+                    {name: 'Responsibilities', iconClasses: 'fas fa-bullseye text-primary', path: ['/cbe/responsibilities/student-assignments']},
+                    {name: 'Community Service', iconClasses: 'fas fa-bullseye text-secondary', path: ['/cbe/community-service/student-assignments']},
+                    {name: 'Values', iconClasses: 'fas fa-bullseye text-danger', path: ['/cbe/values/student-assignments']}
+                ]
+            },
+            {
+                name: 'Reports',
+                iconClasses: 'fas fa-chart-bar text-primary',
+                children: [
+                    {name: 'Exam Results', iconClasses: 'fas fa-bullseye text-warning', path: ['/reports/academics/exam-results']},
+                    {name: 'Assessment Report', iconClasses: 'fas fa-bullseye text-warning', path: ['/reports/academics/assessment-report']},
+                    {name: 'Subject Performance', iconClasses: 'fas fa-bullseye text-warning', path: ['/reports/academics/subject-performance']},
+                    {name: 'Class Performance', iconClasses: 'fas fa-bullseye text-warning', path: ['/reports/academics/class-performance']},
+                    {name: 'Student Subject Allocation', iconClasses: 'fas fa-bullseye text-warning', path: ['/reports/academics/student-subject-allocation']}
+                ]
+            }
         ]
     },
     {
         name: 'Teaching Management',
         iconClasses: 'fas fa-chalkboard-teacher',
+        // Sold as part of Academics.
+        module: 'Academics',
         children: [
             {name: 'Schemes of Work', iconClasses: 'fas fa-table text-primary', path: ['/teaching/schemes']},
             {name: 'Lesson Plans', iconClasses: 'fas fa-book-open text-info', path: ['/teaching/lesson-plans']},
@@ -155,26 +204,58 @@ export const MENU = [
     {
         name: 'Finance',
         iconClasses: 'fas fa-coins',
+        module: 'Finance',
         children: [
-            {name: 'Budget Register', iconClasses: 'fas fa-clipboard-list text-info', path: ['/finance/budget-register']},
-            {name: 'Budgets', iconClasses: 'fas fa-piggy-bank text-warning', path: ['/finance/budgets']},
-            {name: 'Budget Amendments', iconClasses: 'fas fa-edit text-warning', path: ['/finance/budget-amendments']},
-            {name: 'Fee Structures', iconClasses: 'fas fa-file-invoice-dollar text-success', path: ['/finance/fee-structures']},
-            {name: 'Student Invoices', iconClasses: 'fas fa-file-invoice text-warning', path: ['/finance/invoices']},
-            {name: 'Fee Payments', iconClasses: 'fas fa-cash-register text-success', path: ['/finance/payments']},
-            {name: 'Sponsors', iconClasses: 'fas fa-hands-helping text-primary', path: ['/finance/sponsors']},
-            {name: 'Sponsorships', iconClasses: 'fas fa-award text-primary', path: ['/finance/sponsorships']},
-            {name: 'Sponsor Payments', iconClasses: 'fas fa-hand-holding-usd text-success', path: ['/finance/sponsor-payments']},
-            {name: 'Expenses', iconClasses: 'fas fa-money-bill-wave text-danger', path: ['/finance/expenses']},
-            {name: 'Journal Entries', iconClasses: 'fas fa-pen text-primary', path: ['/finance/journal-entries']},
-            {name: 'Fee Reports', iconClasses: 'fas fa-chart-bar text-info', path: ['/finance/reports/fees']},
-            {name: 'Expenses Report', iconClasses: 'fas fa-money-bill-wave text-danger', path: ['/finance/reports/expenses']},
-            {name: 'Statements', iconClasses: 'fas fa-file-invoice-dollar text-primary', path: ['/finance/reports/statements']}
+            {
+                name: 'Fees',
+                iconClasses: 'fas fa-file-invoice-dollar text-success',
+                children: [
+                    {name: 'Fee Structures', iconClasses: 'fas fa-file-invoice-dollar text-success', path: ['/finance/fee-structures']},
+                    {name: 'Student Invoices', iconClasses: 'fas fa-file-invoice text-warning', path: ['/finance/invoices']},
+                    {name: 'Fee Payments', iconClasses: 'fas fa-cash-register text-success', path: ['/finance/payments']},
+                    {name: 'Statements', iconClasses: 'fas fa-file-invoice-dollar text-primary', path: ['/finance/reports/statements']}
+                ]
+            },
+            {
+                name: 'Sponsors',
+                iconClasses: 'fas fa-hands-helping text-primary',
+                children: [
+                    {name: 'Sponsors', iconClasses: 'fas fa-hands-helping text-primary', path: ['/finance/sponsors']},
+                    {name: 'Sponsorships', iconClasses: 'fas fa-award text-primary', path: ['/finance/sponsorships']},
+                    {name: 'Sponsor Payments', iconClasses: 'fas fa-hand-holding-usd text-success', path: ['/finance/sponsor-payments']}
+                ]
+            },
+            {
+                name: 'Budgets',
+                iconClasses: 'fas fa-piggy-bank text-warning',
+                children: [
+                    {name: 'Budget Register', iconClasses: 'fas fa-clipboard-list text-info', path: ['/finance/budget-register']},
+                    {name: 'Budgets', iconClasses: 'fas fa-piggy-bank text-warning', path: ['/finance/budgets']},
+                    {name: 'Budget Amendments', iconClasses: 'fas fa-edit text-warning', path: ['/finance/budget-amendments']}
+                ]
+            },
+            {
+                name: 'Expenses & Accounts',
+                iconClasses: 'fas fa-money-bill-wave text-danger',
+                children: [
+                    {name: 'Expenses', iconClasses: 'fas fa-money-bill-wave text-danger', path: ['/finance/expenses']},
+                    {name: 'Journal Entries', iconClasses: 'fas fa-pen text-primary', path: ['/finance/journal-entries']}
+                ]
+            },
+            {
+                name: 'Reports',
+                iconClasses: 'fas fa-chart-bar text-info',
+                children: [
+                    {name: 'Fee Reports', iconClasses: 'fas fa-chart-bar text-info', path: ['/finance/reports/fees']},
+                    {name: 'Expenses Report', iconClasses: 'fas fa-money-bill-wave text-danger', path: ['/finance/reports/expenses']}
+                ]
+            }
         ]
     },
     {
         name: 'Payroll',
         iconClasses: 'fas fa-money-check-alt',
+        module: 'Payroll',
         children: [
             // Day-to-day payroll work, in the order it is done: who is paid and
             // what, then process (which also shows, checks and prints the payslips),
@@ -190,6 +271,7 @@ export const MENU = [
     {
         name: 'Elections',
         iconClasses: 'fas fa-vote-yea',
+        module: 'Elections',
         children: [
             {name: 'Manage Elections', iconClasses: 'fas fa-cogs text-info', path: ['/elections/manage']},
             // Returning officers: the stations they run (elections officers see all).
@@ -237,6 +319,11 @@ export const MENU = [
                 name: 'Global Settings',
                 iconClasses: 'fas fa-cogs text-primary',
                 path: ['/settings/global-settings']
+            },
+            {
+                name: 'Licence',
+                iconClasses: 'fas fa-key text-warning',
+                path: ['/settings/licence']
             }
         ]
     },
@@ -285,37 +372,6 @@ export const MENU = [
                         path: ['/reports/class/attendance-details']
                     }
                 ]
-            },
-            {
-                name: 'Academics Reports',
-                iconClasses: 'fas fa-circle',
-                children: [
-                    {
-                        name: 'Exam Results',
-                        iconClasses: 'fas fa-bullseye text-warning',
-                        path: ['/reports/academics/exam-results']
-                    },
-                    {
-                        name: 'Assessment Report',
-                        iconClasses: 'fas fa-bullseye text-warning',
-                        path: ['/reports/academics/assessment-report']
-                    },
-                    {
-                        name: 'Subject Performance',
-                        iconClasses: 'fas fa-bullseye text-warning',
-                        path: ['/reports/academics/subject-performance']
-                    },
-                    {
-                        name: 'Class Performance',
-                        iconClasses: 'fas fa-bullseye text-warning',
-                        path: ['/reports/academics/class-performance']
-                    },
-                    {
-                        name: 'Student Subject Allocation',
-                        iconClasses: 'fas fa-bullseye text-warning',
-                        path: ['/reports/academics/student-subject-allocation']
-                    }
-                ]
             }
         ]
     },
@@ -334,6 +390,8 @@ export const MENU = [
     {
         name: 'Communications',
         iconClasses: 'fas fa-comment-dots',
+        // Add-on.
+        module: 'Communications',
         children: [
             {name: 'Send Message', iconClasses: 'fas fa-paper-plane text-success', path: ['/communications/compose']},
             {name: 'Message Queue', iconClasses: 'fas fa-stream text-primary', path: ['/communications/queue']},

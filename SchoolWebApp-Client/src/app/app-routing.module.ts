@@ -23,6 +23,7 @@ import {ReligionsComponent} from './settings/components/religions/religions.comp
 import {SessionTypesComponent} from './settings/components/session-types/session-types.component';
 import {StaffCategoriesComponent} from './settings/components/staff-categories/staff-categories.component';
 import {GlobalSettingsComponent} from './settings/components/global-settings/global-settings.component';
+import {LicenceComponent} from './settings/components/licence/licence.component';
 import {DropdownManagementComponent} from './settings/components/dropdown-management/dropdown-management.component';
 import {ApprovalWorkflowsComponent} from './approvals/components/approval-workflows/approval-workflows.component';
 import {LearningModesComponent} from './school/components/learning-modes/learning-modes.component';
@@ -30,6 +31,7 @@ import {SchoolComponent} from './school/school.component';
 import {SchoolDetailsComponent} from './school/components/school-details/school-details.component';
 import {EducationLevelTypesComponent} from './school/components/education-level-types/education-level-types.component';
 import {AcademicYearsComponent} from './school/components/academic-years/academic-years.component';
+import {moduleGuard} from './core/guards/module.guard';
 import {AcademicsComponent} from './academics/academics.component';
 import {CurriculumComponent} from './academics/components/curriculum/curriculum.component';
 import {ExamTypesComponent} from './academics/components/exam-types/exam-types.component';
@@ -217,7 +219,7 @@ const routes: Routes = [
             {path: 'learning-levels', component: LearningLevelsComponent},
             {path: 'departments', component: DepartmentsComponent},
             {path: 'events', component: EventsComponent},
-            {path: 'bulk-staff-subjects', component: BulkStaffSubjectsComponent}
+            {path: 'bulk-staff-subjects', component: BulkStaffSubjectsComponent, canActivate: [moduleGuard], data: {module: 'Academics'}}
         ]
     },
     {
@@ -269,7 +271,7 @@ const routes: Routes = [
             {path: 'manage/add', component: StudentAssignmentsComponent},
             {path: 'parents', component: ParentsListComponent},
             {path: 'parents/add', component: ParentAddFormComponent},
-            {path: 'students-subjects', component: StudentsSubjectsComponent},
+            {path: 'students-subjects', component: StudentsSubjectsComponent, canActivate: [moduleGuard], data: {module: 'Academics'}},
             {
                 path: 'students-subjects/add',
                 component: StudentsSubjectsAddFormComponent
@@ -305,7 +307,8 @@ const routes: Routes = [
      {
         path: 'cbe',
         component: CbeComponent,
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard, moduleGuard],
+        data: {module: 'Academics'},
         canActivateChild: [AuthGuard],
         children: [
             
@@ -367,6 +370,7 @@ const routes: Routes = [
             {path: 'sessionTypes', component: SessionTypesComponent},
             {path: 'staffCategories', component: StaffCategoriesComponent},
             {path: 'global-settings', component: GlobalSettingsComponent},
+            {path: 'licence', component: LicenceComponent},
             {path: 'dropdowns', component: DropdownManagementComponent},
             {path: 'approval-workflows', component: ApprovalWorkflowsComponent}
         ]
@@ -380,23 +384,23 @@ const routes: Routes = [
             {path: 'school', component: SchoolReportComponent},
             {path: 'class', component: ClassReportComponent},
             {path: 'staff', component: StaffReportComponent},
-            {path: 'academics', component: AcademicsReportComponent},
+            {path: 'academics', component: AcademicsReportComponent, canActivate: [moduleGuard], data: {module: 'Academics'}},
             {path: 'staff/attendance', component: StaffAttendancePageComponent},
             {path: 'staff/attendance-details', component: StaffAttendanceDetailsPageComponent},
             {path: 'staff/subject-allocation', component: StaffSubjectPageComponent},
             {path: 'class/class-list', component: ClassListPageComponent},
             {path: 'class/attendance', component: ClassAttendancePageComponent},
             {path: 'class/attendance-details', component: ClassAttendanceDetailsPageComponent},
-            {path: 'academics/missing-marks', component: MissingMarksPageComponent},
-            {path: 'academics/results-analysis', component: ResultsAnalysisPageComponent},
-            {path: 'academics/exam-results', component: ExamResultsTabsComponent},
-            {path: 'academics/report-forms', component: ReportFormsPageComponent},
-            {path: 'academics/assessment-report', component: AssessmentReportComponent},
-            {path: 'academics/subject-performance', component: SubjectPerformanceTabsComponent},
-            {path: 'academics/class-performance', component: ClassPerformanceTabsComponent},
+            {path: 'academics/missing-marks', component: MissingMarksPageComponent, canActivate: [moduleGuard], data: {module: 'Academics'}},
+            {path: 'academics/results-analysis', component: ResultsAnalysisPageComponent, canActivate: [moduleGuard], data: {module: 'Academics'}},
+            {path: 'academics/exam-results', component: ExamResultsTabsComponent, canActivate: [moduleGuard], data: {module: 'Academics'}},
+            {path: 'academics/report-forms', component: ReportFormsPageComponent, canActivate: [moduleGuard], data: {module: 'Academics'}},
+            {path: 'academics/assessment-report', component: AssessmentReportComponent, canActivate: [moduleGuard], data: {module: 'Academics'}},
+            {path: 'academics/subject-performance', component: SubjectPerformanceTabsComponent, canActivate: [moduleGuard], data: {module: 'Academics'}},
+            {path: 'academics/class-performance', component: ClassPerformanceTabsComponent, canActivate: [moduleGuard], data: {module: 'Academics'}},
             // Exam progress now lives as two tabs under Exam Results; keep old links working.
             {path: 'academics/exam-progress', redirectTo: 'academics/exam-results', pathMatch: 'full'},
-            {path: 'academics/student-subject-allocation', component: StudentSubjectPageComponent}
+            {path: 'academics/student-subject-allocation', component: StudentSubjectPageComponent, canActivate: [moduleGuard], data: {module: 'Academics'}}
         ]
     },
     {
@@ -417,7 +421,8 @@ const routes: Routes = [
     {
         path: 'finance',
         component: FinanceComponent,
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard, moduleGuard],
+        data: {module: 'Finance'},
         canActivateChild: [AuthGuard],
         children: [
             {path: 'accounts', component: FinanceAccountsComponent},
@@ -443,6 +448,9 @@ const routes: Routes = [
     {
         path: 'payroll',
         component: PayrollComponent,
+        canActivate: [AuthGuard, moduleGuard],
+        canActivateChild: [AuthGuard],
+        data: {module: 'Payroll'},
         children: [
             {path: 'earning-types', component: PayrollEarningTypesComponent},
             {path: 'deduction-types', component: PayrollDeductionTypesComponent},
@@ -461,7 +469,8 @@ const routes: Routes = [
     {
         path: 'communications',
         component: CommunicationsComponent,
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard, moduleGuard],
+        data: {module: 'Communications'},
         canActivateChild: [AuthGuard],
         children: [
             {path: 'compose', component: ComposeMessageComponent},
@@ -474,7 +483,8 @@ const routes: Routes = [
     {
         path: 'teaching',
         component: TeachingComponent,
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard, moduleGuard],
+        data: {module: 'Academics'},
         canActivateChild: [AuthGuard],
         children: [
             {path: 'schemes', component: SchemesOfWorkComponent},
@@ -489,7 +499,8 @@ const routes: Routes = [
     {
         path: 'elections',
         component: ElectionsComponent,
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard, moduleGuard],
+        data: {module: 'Elections'},
         canActivateChild: [AuthGuard],
         children: [
             {path: 'manage', component: ElectionListComponent},

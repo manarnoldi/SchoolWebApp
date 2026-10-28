@@ -9,3 +9,6 @@
 
 # Uploaded files (election candidate photos) live with the running app, not in git.
 SchoolWebApp-API/Project.API/uploads/
+
+# The licence SIGNING key: never commit it. Keep a backup somewhere safe.
+licensing-keys/

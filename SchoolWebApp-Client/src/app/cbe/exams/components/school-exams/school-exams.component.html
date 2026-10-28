@@ -115,7 +115,7 @@
                             </span>
                         </td>
                         <td class="text-end" style="white-space:nowrap;">
-                            <button *ngIf="item.isReleased" class="btn btn-outline-success btn-sm me-1" (click)="sendResults(item)"
+                            <button *ngIf="item.isReleased && messageSender.available" class="btn btn-outline-success btn-sm me-1" (click)="sendResults(item)"
                                 [title]="item.parentsNotified ? 'Send the results to parents again' : 'Send the results to parents'">
                                 <i class="fas fa-paper-plane"></i>
                             </button>

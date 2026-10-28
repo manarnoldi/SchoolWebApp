@@ -5,6 +5,7 @@ import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
 import {SchoolDetailsService} from '../../services/school-details.service';
 import {AcademicYearsService} from '../../services/academic-years.service';
+import {LicenceService} from '@/core/services/licence.service';
 import {DateTime} from 'luxon';
 
 @Component({
@@ -33,11 +34,13 @@ export class DashboardComponent implements OnInit {
         private authService: AuthService,
         private schoolDetailsSvc: SchoolDetailsService,
         private academicYearSvc: AcademicYearsService,
-        private toastr: ToastrService
+        private toastr: ToastrService,
+        public licence: LicenceService
     ) {}
 
     ngOnInit(): void {
         this.user = this.authService.getCurrentUser();
+        this.licence.load().subscribe();
         this.currentDate = DateTime.now().toFormat('EEEE, dd MMMM yyyy');
         this.setGreeting();
         this.buildQuickLinks();

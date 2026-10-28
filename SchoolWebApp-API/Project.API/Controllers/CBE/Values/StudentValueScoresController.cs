@@ -5,12 +5,14 @@ using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.CBE.Values.StudentValueScore;
 using SchoolWebApp.Core.Entities.CBE.Values;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.Values;
+using SchoolWebApp.API.Licensing;
 
 namespace SchoolWebApp.API.Controllers.CBE.Values
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [RequiresModule(AppModules.Academics)]
     public class StudentValueScoresController : ControllerBase
     {
         private readonly ILogger<StudentValueScoresController> _logger;
