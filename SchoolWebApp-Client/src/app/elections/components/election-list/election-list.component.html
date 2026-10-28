@@ -5,9 +5,12 @@
         <div class="card card-outline card-primary mb-2">
             <div class="card-body p-2">
                 <div class="row g-2 align-items-end">
-                    <div class="col-md-4">
-                        <label class="form-label mb-0 small">Search</label>
-                        <input class="form-control form-control-sm" [(ngModel)]="search" (ngModelChange)="page = 1" placeholder="Election or year">
+                    <div class="col-md-2">
+                        <label class="form-label mb-0 small">Year</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="yearId" (ngModelChange)="page = 1">
+                            <option [ngValue]="null">All years</option>
+                            <option *ngFor="let y of options?.academicYears" [ngValue]="y.id">{{ y.name }}</option>
+                        </select>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label mb-0 small">Stage</label>
@@ -15,6 +18,10 @@
                             <option [ngValue]="null">Any stage</option>
                             <option *ngFor="let s of stages" [ngValue]="s">{{ stageLabels[s] }}</option>
                         </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label mb-0 small">Search</label>
+                        <input class="form-control form-control-sm" [(ngModel)]="search" (ngModelChange)="page = 1" placeholder="Election title">
                     </div>
                     <div class="col text-end" *ngIf="options?.canManage">
                         <button class="btn btn-sm btn-primary" (click)="showForm = true"><i class="fas fa-plus"></i> New election</button>

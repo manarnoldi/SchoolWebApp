@@ -29,6 +29,7 @@ export class ElectionListComponent implements OnInit {
     rows: ElectionSummary[] = [];
     loading = false;
     search = '';
+    yearId: number | null = null;
     stage: ElectionStage | null = null;
     page = 1;
     pageSize = 15;
@@ -43,7 +44,11 @@ export class ElectionListComponent implements OnInit {
 
     ngOnInit(): void {
         this.svc.options().subscribe({
-            next: (o) => (this.options = o),
+            next: (o) => {
+                this.options = o;
+                // Start on the current year's elections.
+                this.yearId = o.currentAcademicYearId;
+            },
             error: (err) => this.toastr.error(apiError(err, 'Error loading the election options.'))
         });
         this.load();
@@ -66,8 +71,9 @@ export class ElectionListComponent implements OnInit {
     get filtered(): ElectionSummary[] {
         const q = this.search.trim().toLowerCase();
         return this.rows.filter((r) =>
+            (this.yearId === null || r.academicYearId === this.yearId) &&
             (this.stage === null || r.stage === this.stage) &&
-            (!q || r.name.toLowerCase().includes(q) || r.academicYearName.toLowerCase().includes(q)));
+            (!q || r.name.toLowerCase().includes(q)));
     }
 
     get paged(): ElectionSummary[] {
