@@ -15,7 +15,9 @@ import {DocStatus, STATUS_BADGES, STATUS_LABELS, TeachingSession, TrackerRow} fr
             <select class="form-select form-select-sm" style="width: auto;" [(ngModel)]="sessionId" (ngModelChange)="load()">
                 <option *ngFor="let s of sessions" [ngValue]="s.id">{{ s.name }} {{ s.academicYearName }}</option>
             </select>
-            <a class="btn btn-sm btn-outline-primary ms-auto" [routerLink]="['/teaching/tracker']"><i class="fas fa-th"></i> Open the tracker</a>
+            <!-- The tracker opens on this term and this teacher -->
+            <a class="btn btn-sm btn-outline-primary ms-auto" [routerLink]="['/teaching/tracker']" [queryParams]="{term: sessionId, teacher: staffId}">
+                <i class="fas fa-th"></i> Open the tracker</a>
         </div>
         <div *ngIf="loading" class="text-muted p-2"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
         <div *ngIf="!loading && rows.length === 0" class="text-muted p-2">
