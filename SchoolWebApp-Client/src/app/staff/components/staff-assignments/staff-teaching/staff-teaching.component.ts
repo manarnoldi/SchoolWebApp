@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
+import {Location} from '@angular/common';
 import {TeachingDocumentsService} from '@/teaching/services/teaching-services';
 import {DocStatus, STATUS_BADGES, STATUS_LABELS, TeachingSession, TrackerRow} from '@/teaching/models/teaching-models';
 
@@ -17,7 +17,7 @@ import {DocStatus, STATUS_BADGES, STATUS_LABELS, TeachingSession, TrackerRow} fr
                 <option *ngFor="let s of sessions" [ngValue]="s.id">{{ s.name }} {{ s.academicYearName }}</option>
             </select>
             <!-- The tracker opens on this term and this teacher -->
-            <a class="btn btn-sm btn-outline-primary ms-auto" [routerLink]="['/teaching/tracker']" [queryParams]="{term: sessionId, teacher: staffId, from: router.url}">
+            <a class="btn btn-sm btn-outline-primary ms-auto" [routerLink]="['/teaching/tracker']" [queryParams]="{term: sessionId, teacher: staffId, from: location.path()}">
                 <i class="fas fa-th"></i> Open the tracker</a>
         </div>
         <div *ngIf="loading" class="text-muted p-2"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
@@ -47,7 +47,9 @@ export class StaffTeachingComponent implements OnInit {
     labels = STATUS_LABELS;
     badges = STATUS_BADGES;
 
-    constructor(private svc: TeachingDocumentsService, public router: Router) {}
+    // The address as shown (the page records its open tab there without telling the router),
+    // so Back from the tracker returns to this tab.
+    constructor(private svc: TeachingDocumentsService, public location: Location) {}
 
     ngOnInit(): void {
         this.svc.context().subscribe((c) => {
