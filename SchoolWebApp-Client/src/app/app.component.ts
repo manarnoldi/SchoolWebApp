@@ -4,7 +4,7 @@ import {AuthService} from './core/services/auth.service';
 import {AppService} from './core/services/app.service';
 import {VersionCheckService} from './core/services/version-check.service';
 import {GlobalSettingService} from './settings/services/global-setting.service';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal, NgbModalConfig} from '@ng-bootstrap/ng-bootstrap';
 import {Router} from '@angular/router';
 
 @Component({
@@ -31,8 +31,12 @@ export class AppComponent implements OnInit{
         private appService: AppService,
         private versionCheck: VersionCheckService,
         private globalSettingSvc: GlobalSettingService,
-        public router: Router
+        public router: Router,
+        modalConfig: NgbModalConfig
     ) {
+        // ng-bootstrap modals close from their own buttons, not a click outside.
+        modalConfig.backdrop = 'static';
+
         // Defaults, overridden by the Security global settings in ngOnInit.
         // Consider the user idle after 30 minutes (1800s) of no activity.
         idle.setIdle(1800);

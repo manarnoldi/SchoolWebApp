@@ -4,7 +4,7 @@
     <div class="container-fluid px-1">
 
         <!-- Add/Edit Modal -->
-        <div class="modal-backdrop fade show" *ngIf="showForm" (click)="cancel()"></div>
+        <div class="modal-backdrop fade show" *ngIf="showForm"></div>
         <div class="modal fade show d-block" *ngIf="showForm" tabindex="-1">
             <div class="modal-dialog modal-lg" style="margin-top: 50px;">
                 <div class="modal-content">
@@ -69,7 +69,7 @@
         </div>
 
         <!-- Statement Modal -->
-        <div class="modal-backdrop fade show" *ngIf="statementSponsor" (click)="closeStatement()"></div>
+        <div class="modal-backdrop fade show" *ngIf="statementSponsor"></div>
         <div class="modal fade show d-block" *ngIf="statementSponsor" tabindex="-1">
             <div class="modal-dialog modal-xl modal-dialog-scrollable" style="margin-top: 40px;">
                 <div class="modal-content">

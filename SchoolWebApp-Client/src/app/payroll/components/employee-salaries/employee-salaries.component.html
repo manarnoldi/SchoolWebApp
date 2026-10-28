@@ -4,7 +4,7 @@
     <div class="container-fluid px-1">
 
         <!-- Form Modal: per-employee detail, incl. earnings / deductions line items -->
-        <div class="modal-backdrop fade show" *ngIf="showForm" (click)="cancel()"></div>
+        <div class="modal-backdrop fade show" *ngIf="showForm"></div>
         <div class="modal fade show d-block" *ngIf="showForm" tabindex="-1">
             <div class="modal-dialog modal-xl modal-dialog-scrollable" style="margin-top: 30px;">
                 <div class="modal-content">
@@ -185,7 +185,7 @@
 
         <!-- Payroll details modal: the cleanup that has to happen before payroll is
              processed - statutory numbers, and taking non-payroll people off. -->
-        <div class="modal-backdrop fade show" *ngIf="showPayrollDetails" (click)="cancelPayrollDetails()"></div>
+        <div class="modal-backdrop fade show" *ngIf="showPayrollDetails"></div>
         <div class="modal fade show d-block" *ngIf="showPayrollDetails" tabindex="-1">
             <div class="modal-dialog modal-dialog-scrollable" style="margin-top: 40px;">
                 <div class="modal-content">

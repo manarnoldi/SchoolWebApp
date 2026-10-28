@@ -4,7 +4,7 @@
     <div class="container-fluid px-1">
 
         <!-- Bulk Generate Modal -->
-        <div class="modal-backdrop fade show" *ngIf="showBulk" (click)="showBulk=false"></div>
+        <div class="modal-backdrop fade show" *ngIf="showBulk"></div>
         <div class="modal fade show d-block" *ngIf="showBulk" tabindex="-1">
             <div class="modal-dialog modal-lg" style="margin-top: 50px;">
                 <div class="modal-content">
@@ -72,7 +72,7 @@
         </div>
 
         <!-- Edit Invoice Items Modal -->
-        <div class="modal-backdrop fade show" *ngIf="showEdit" (click)="cancelEdit()"></div>
+        <div class="modal-backdrop fade show" *ngIf="showEdit"></div>
         <div class="modal fade show d-block" *ngIf="showEdit" tabindex="-1">
             <div class="modal-dialog modal-lg modal-dialog-scrollable" style="margin-top: 40px;">
                 <div class="modal-content">
@@ -171,7 +171,7 @@
         </div>
 
         <!-- View Invoice Detail Modal (read-only) -->
-        <div class="modal-backdrop fade show" *ngIf="viewDetail" (click)="closeDetail()"></div>
+        <div class="modal-backdrop fade show" *ngIf="viewDetail"></div>
         <div class="modal fade show d-block" *ngIf="viewDetail" tabindex="-1">
             <div class="modal-dialog modal-lg" style="margin-top: 50px;">
                 <div class="modal-content">

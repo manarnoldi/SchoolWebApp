@@ -4,7 +4,7 @@
     <div class="container-fluid px-1">
 
         <!-- Form Modal -->
-        <div class="modal-backdrop fade show" *ngIf="showForm" (click)="cancel()"></div>
+        <div class="modal-backdrop fade show" *ngIf="showForm"></div>
         <div class="modal fade show d-block" *ngIf="showForm" tabindex="-1">
             <div class="modal-dialog modal-xl modal-dialog-scrollable" style="margin-top: 30px;">
                 <div class="modal-content">
@@ -213,7 +213,7 @@
         </div>
 
         <!-- Detail Modal (Budget vs Actual) -->
-        <div class="modal-backdrop fade show" *ngIf="detail" (click)="closeDetail()"></div>
+        <div class="modal-backdrop fade show" *ngIf="detail"></div>
         <div class="modal fade show d-block" *ngIf="detail" tabindex="-1">
             <div class="modal-dialog modal-xl modal-dialog-scrollable" style="margin-top: 30px;">
                 <div class="modal-content">

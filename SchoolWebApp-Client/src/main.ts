@@ -5,10 +5,13 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import {AppModule} from './app/app.module';
 import {environment} from './environments/environment';
+import {applyModalDefaults} from './app/core/utils/modal-defaults';
 
 if (environment.production) {
     enableProdMode();
 }
+
+applyModalDefaults();
 
 platformBrowserDynamic()
     .bootstrapModule(AppModule)
