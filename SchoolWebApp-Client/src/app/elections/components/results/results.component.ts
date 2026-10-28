@@ -1,6 +1,7 @@
-import {Component, ElementRef, HostListener, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, HostListener, Inject, OnDestroy, OnInit, Optional, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {DatePipe} from '@angular/common';
+import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
 import Swal from 'sweetalert2';
 import {escapeHtml, printInFrame} from '@/shared/utils/print-frame';
@@ -48,6 +49,8 @@ export class ResultsComponent implements OnInit, OnDestroy {
     @ViewChild('board') board?: ElementRef<HTMLElement>;
     r: Results | null = null;
     canManage = false;
+    /** Opened from the Results menu on its own page, for viewing: no tabs and no officer actions. */
+    standalone = false;
     loading = false;
     auto = true;
     full = false;
@@ -69,11 +72,13 @@ export class ResultsComponent implements OnInit, OnDestroy {
     private timer: any;
 
     constructor(private svc: ElectionsService, private toastr: ToastrService, private route: ActivatedRoute,
-                public router: Router, private datePipe: DatePipe, private ctx: ElectionContext, @Inject('BASE_API_URL') private baseUrl: string) {}
+                public router: Router, private datePipe: DatePipe, @Optional() private ctx: ElectionContext | null, @Inject('BASE_API_URL') private baseUrl: string) {}
 
     ngOnInit(): void {
-        this.svc.options().subscribe({next: (o) => (this.canManage = o.canManage)});
-        this.route.parent!.paramMap.subscribe((p) => {
+        this.standalone = !!this.route.snapshot.data['standalone'];
+        this.svc.options().subscribe({next: (o) => (this.canManage = o.canManage && !this.standalone)});
+        // On the election page the id is the page's; on its own page, the route's.
+        (this.standalone ? this.route : this.route.parent!).paramMap.subscribe((p) => {
             this.electionId = Number(p.get('id'));
             this.load();
         });
@@ -117,6 +122,12 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
     show(r: Results) {
         this.r = r;
+    }
+
+    get crumbs(): BreadCrumb[] {
+        const list: BreadCrumb[] = [{link: ['/'], title: 'Dashboard'}, {link: ['/elections/results'], title: 'Results'}];
+        if (this.r) list.push({link: ['/elections/results', String(this.r.electionId)], title: this.r.electionName});
+        return list;
     }
 
     get positions() {
@@ -274,7 +285,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
                 next: () => {
                     this.busy = false;
                     this.toastr.success('Results declared.');
-                    this.ctx.reload();
+                    this.ctx?.reload();
                     this.load();
                 },
                 error: (err) => {

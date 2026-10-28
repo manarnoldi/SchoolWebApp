@@ -1,5 +1,9 @@
-<section>
-    <div [class.full]="full" #board>
+<ng-container *ngIf="standalone && !full">
+    <app-dashboard-header [title]="'Elections: Results'" [breadcrumbs]="crumbs"></app-dashboard-header>
+    <hr class="mb-1">
+</ng-container>
+<section [class.content]="standalone">
+    <div [class.full]="full" [class.container-fluid]="standalone" [class.px-1]="standalone" #board>
         <div *ngIf="loading && !r" class="text-center text-muted py-4"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
 
         <ng-container *ngIf="r">

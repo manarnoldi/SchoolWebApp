@@ -23,7 +23,7 @@ import {ElectionsService} from '@/elections/services/elections.service';
                                 <h5 class="mb-1"><i class="fas fa-poll text-info me-1"></i>{{ e.name }}</h5>
                                 <div class="small mb-3"><span class="badge" [ngClass]="stageBadges[e.stage]">{{ stageLabels[e.stage] }}</span>
                                     <span class="text-muted ms-1">{{ e.academicYearName }} - {{ e.contests }} races</span></div>
-                                <button class="btn btn-primary mt-auto" (click)="router.navigate(['/elections/manage', e.id, 'results'])">
+                                <button class="btn btn-primary mt-auto" (click)="router.navigate(['/elections/results', e.id])">
                                     <i class="fas fa-chart-bar"></i> {{ e.stage === Stage.Declared ? 'Results' : 'Live results' }}</button>
                             </div>
                         </div>

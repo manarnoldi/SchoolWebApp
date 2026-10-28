@@ -512,6 +512,8 @@ const routes: Routes = [
             {path: 'polling', component: PollingComponent},
             {path: 'polling/:stationId', component: StationScreenComponent},
             {path: 'results', component: ResultsHomeComponent},
+            // One election's results on their own page, for viewing (no officer actions).
+            {path: 'results/:id', component: ResultsComponent, data: {standalone: true}},
             {path: '', redirectTo: 'manage', pathMatch: 'full'}
         ]
     },
