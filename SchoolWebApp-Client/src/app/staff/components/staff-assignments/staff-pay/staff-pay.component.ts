@@ -1,0 +1,109 @@
+import {Component, ElementRef, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ToastrService} from 'ngx-toastr';
+import {forkJoin} from 'rxjs';
+import {ProfilePayslip, ProfilesService} from '@/core/services/profiles.service';
+import {Payslip} from '@/payroll/models/payroll-models';
+import {PAYSLIP_PRINT_CSS} from '@/payroll/components/payslips/payslip-print.styles';
+import {printInFrame, removePrintFrame} from '@/shared/utils/print-frame';
+import {SchoolDetailsService} from '@/school/services/school-details.service';
+import {GlobalSettingService} from '@/settings/services/global-setting.service';
+
+/**
+ * Staff page, Pay tab: the staff member's payslips, newest first, each
+ * printable. Staff see their own once the payroll is approved; payroll officers
+ * see every one (the API decides).
+ */
+@Component({
+    selector: 'app-staff-pay',
+    styles: [`.slip-source { position: absolute; left: -10000px; top: 0; }`],
+    template: `
+        <div *ngIf="loading" class="text-muted p-2"><i class="fas fa-spinner fa-spin"></i> Loading the payslips...</div>
+        <div *ngIf="!loading && error" class="text-muted p-2">{{ error }}</div>
+        <div *ngIf="!loading && !error && slips.length === 0" class="text-muted p-2">No payslips yet.</div>
+        <table class="table table-sm table-striped mb-0 align-middle" *ngIf="!loading && slips.length">
+            <thead class="table-light"><tr><th>Period</th><th class="text-end">Gross pay</th><th class="text-end">Deductions</th>
+                <th class="text-end">Net pay</th><th></th><th style="width: 1%;"></th></tr></thead>
+            <tbody>
+                <tr *ngFor="let p of slips">
+                    <td><b>{{ p.period }}</b></td>
+                    <td class="text-end">{{ p.grossPay | number:'1.2-2' }}</td>
+                    <td class="text-end">{{ p.totalDeductions | number:'1.2-2' }}</td>
+                    <td class="text-end fw-bold">{{ p.netPay | number:'1.2-2' }}</td>
+                    <td><span class="badge" *ngIf="p.status !== 'Approved' && p.status !== 'Posted'" [ngClass]="'bg-warning text-dark'"
+                        title="Not yet approved - only payroll officers see it">{{ p.status }}</span></td>
+                    <td class="text-nowrap"><button class="btn btn-sm btn-outline-primary py-0" [disabled]="printing === p.id" (click)="print(p)">
+                        <i class="fas" [ngClass]="printing === p.id ? 'fa-spinner fa-spin' : 'fa-print'"></i> Payslip</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- Print source: never shown -->
+        <div class="slip-source" #source>
+            <div class="payslip-pair" *ngIf="slip">
+                <app-payslip-slip [p]="slip" [schoolName]="schoolName" [schoolLogo]="schoolLogo" [employerKraPin]="employerKraPin"
+                    [periodLabel]="slipPeriod"></app-payslip-slip>
+            </div>
+        </div>`
+})
+export class StaffPayComponent implements OnInit, OnDestroy {
+    @Input() staffId!: number;
+    @ViewChild('source') source?: ElementRef<HTMLElement>;
+    slips: ProfilePayslip[] = [];
+    loading = false;
+    error = '';
+    printing: number | null = null;
+    slip: Payslip | null = null;
+    slipPeriod = '';
+    schoolName = '';
+    schoolLogo: string | null = null;
+    employerKraPin = '';
+
+    constructor(private svc: ProfilesService, private toastr: ToastrService, private schoolSvc: SchoolDetailsService,
+                private globalSettingSvc: GlobalSettingService) {}
+
+    ngOnInit(): void {
+        this.loading = true;
+        this.svc.staffPayslips(+this.staffId).subscribe({
+            next: (s) => {
+                this.loading = false;
+                this.slips = s;
+            },
+            error: (err) => {
+                this.loading = false;
+                this.error = err.status === 403 ? 'Only this staff member and payroll officers can see these payslips.' : 'The payslips could not be loaded.';
+            }
+        });
+        forkJoin([this.schoolSvc.get('/schoolDetails'), this.globalSettingSvc.getByKey('Payroll', 'EmployerKraPin')]).subscribe({
+            next: ([school, kraPin]: any[]) => {
+                const s = (school || [])[0];
+                this.schoolName = s?.name || '';
+                this.schoolLogo = s?.logoAsBase64 || null;
+                this.employerKraPin = kraPin?.settingValue || '';
+            },
+            error: () => {}
+        });
+    }
+
+    print(p: ProfilePayslip) {
+        this.printing = p.id;
+        this.svc.staffPayslip(+this.staffId, p.id).subscribe({
+            next: (slip) => {
+                this.slip = slip;
+                this.slipPeriod = p.period;
+                // Let Angular render the slip before copying it.
+                setTimeout(() => {
+                    this.printing = null;
+                    const body = this.source?.nativeElement.innerHTML || '';
+                    if (body.trim()) printInFrame(`Payslip - ${p.period}`, PAYSLIP_PRINT_CSS, body);
+                }, 150);
+            },
+            error: () => {
+                this.printing = null;
+                this.toastr.error('The payslip could not be loaded.');
+            }
+        });
+    }
+
+    ngOnDestroy(): void {
+        removePrintFrame();
+    }
+}

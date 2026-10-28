@@ -34,9 +34,11 @@ import {StudentAttendanceTableComponent} from '../students/components/student-as
 import {ExamResultsComponent} from '@/academics/components/exam-results/exam-results.component';
 import {ExamResultsTableComponent} from '@/academics/components/exam-results/exam-results-table/exam-results-table.component';
 import { DataTablesModule } from 'angular-datatables';
+import {PayslipSlipComponent} from './components/payslip-slip/payslip-slip.component';
 
 @NgModule({
     declarations: [
+        PayslipSlipComponent,
         ButtonComponent,
         DashboardHeaderComponent,
         DropdownComponent,
@@ -72,6 +74,7 @@ import { DataTablesModule } from 'angular-datatables';
 
     imports: [CommonModule, NgbModule, CoreModule,DataTablesModule],
     exports: [
+        PayslipSlipComponent,
         ButtonComponent,
         DashboardHeaderComponent,
         DropdownComponent,

@@ -20,6 +20,8 @@ import {Component, Input, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
+import {LicenceService} from '@/core/services/licence.service';
+import {AccessService} from '@/core/services/access.service';
 
 @Component({
     selector: 'app-student-assignments',
@@ -46,6 +48,11 @@ export class StudentAssignmentsComponent implements OnInit {
     status = Status;
     statuses;
     activeNav: string = 'formerSchool';
+    // Tabs from other modules: shown when the school has the module and the user may see what they show.
+    showAcademics = false;
+    showFees = false;
+    // Tabs opened so far; each loads the first time it is opened.
+    opened = new Set<string>();
 
     constructor(
         private toastr: ToastrService,
@@ -57,7 +64,9 @@ export class StudentAssignmentsComponent implements OnInit {
         private learningLvlsSvc: LearningLevelsService,
         private schoolStreamsSvc: SchoolStreamsService,
         private outcomesSvc: OutcomesService,
-        private occurenceTypesSvc: OccurenceTypeService
+        private occurenceTypesSvc: OccurenceTypeService,
+        private licence: LicenceService,
+        private access: AccessService
     ) {
         this.statuses = Object.keys(this.status).filter((k) =>
             isNaN(Number(k))
@@ -65,6 +74,14 @@ export class StudentAssignmentsComponent implements OnInit {
     }
     ngOnInit(): void {
         this.loadSelectedStudent();
+        this.licence.load().subscribe(() => {
+            if (this.licence.has('Academics'))
+                this.access.canAny('/reports/academics/exam-results', '/cbe/exams/exam-results-bulk', '/cbe/assessments/assessments')
+                    .subscribe((ok) => (this.showAcademics = ok));
+            if (this.licence.has('Finance'))
+                this.access.canAny('/finance/reports/statements', '/finance/invoices', '/finance/payments')
+                    .subscribe((ok) => (this.showFees = ok));
+        });
     }
 
     loadSelectedStudent = () => {

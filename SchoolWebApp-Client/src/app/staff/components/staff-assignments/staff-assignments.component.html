@@ -53,6 +53,30 @@
                                             Subjects assignments details
                                         </button>
                                     </li>
+                                    <li class="nav-item" role="presentation" *ngIf="teachingStaff && showTeaching">
+                                        <button
+                                            class="nav-link {{activeNav==='teaching'? 'active':''}}"
+                                            id="teaching-tab" (click)="opened.add('teaching')"
+                                            data-bs-toggle="pill" data-bs-target="#teaching"
+                                            type="button" role="tab" aria-controls="teaching"
+                                            aria-selected="false">Teaching documents</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation" *ngIf="showPay">
+                                        <button
+                                            class="nav-link {{activeNav==='pay'? 'active':''}}"
+                                            id="pay-tab" (click)="opened.add('pay')"
+                                            data-bs-toggle="pill" data-bs-target="#pay"
+                                            type="button" role="tab" aria-controls="pay"
+                                            aria-selected="false">Pay</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button
+                                            class="nav-link {{activeNav==='duties'? 'active':''}}"
+                                            id="duties-tab" (click)="opened.add('duties')"
+                                            data-bs-toggle="pill" data-bs-target="#duties"
+                                            type="button" role="tab" aria-controls="duties"
+                                            aria-selected="false">Duties</button>
+                                    </li>
                                 </ul>
                             </div>
                             <div class="card-body p-1">
@@ -84,6 +108,30 @@
                                         <div class="border border-info rounded p-1 pt-0">
                                             <app-staff-subject [statuses]="statuses"
                                                 [staff]="staff" ></app-staff-subject>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="teachingStaff && showTeaching"
+                                        class="tab-pane fade {{activeNav==='teaching'? 'show active':''}}"
+                                        id="teaching" role="tabpanel"
+                                        aria-labelledby="teaching-tab">
+                                        <div class="border border-info rounded p-1">
+                                            <app-staff-teaching *ngIf="staff && opened.has('teaching')" [staffId]="+staff.id"></app-staff-teaching>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="showPay"
+                                        class="tab-pane fade {{activeNav==='pay'? 'show active':''}}"
+                                        id="pay" role="tabpanel"
+                                        aria-labelledby="pay-tab">
+                                        <div class="border border-info rounded p-1">
+                                            <app-staff-pay *ngIf="staff && opened.has('pay')" [staffId]="+staff.id"></app-staff-pay>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="tab-pane fade {{activeNav==='duties'? 'show active':''}}"
+                                        id="duties" role="tabpanel"
+                                        aria-labelledby="duties-tab">
+                                        <div class="border border-info rounded p-1">
+                                            <app-staff-duties *ngIf="staff && opened.has('duties')" [staffId]="+staff.id"></app-staff-duties>
                                         </div>
                                     </div>
                                 </div>

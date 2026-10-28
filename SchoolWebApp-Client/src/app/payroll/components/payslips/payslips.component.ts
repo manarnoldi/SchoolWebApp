@@ -1,7 +1,7 @@
 import {Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin, of} from 'rxjs';
-import {Payslip, PayrollPeriod, PayslipLine} from '@/payroll/models/payroll-models';
+import {Payslip, PayrollPeriod} from '@/payroll/models/payroll-models';
 import {PayrollPeriodService} from '@/payroll/services/payroll-services';
 import {SchoolDetailsService} from '@/school/services/school-details.service';
 import {StaffDetailsService} from '@/staff/services/staff-details.service';
@@ -130,46 +130,6 @@ export class PayrollPayslipsComponent implements OnInit, OnChanges, OnDestroy {
     totalDeductions = (): number => this.filtered().reduce((s, p) => s + (+p.totalDeductions! || 0), 0);
     totalNet = (): number => this.filtered().reduce((s, p) => s + (+p.netPay! || 0), 0);
     totalPaye = (): number => this.filtered().reduce((s, p) => s + (+p.paye! || 0), 0);
-
-    // --- Payslip breakdown helpers ---
-    // "Other Allowances" on the printed slip means everything on top of basic:
-    // the allowance columns plus any additional earning lines. BASIC is already
-    // shown on its own row, so it is excluded here.
-    otherAllowanceLines(p: Payslip): {name: string; amount: number; taxable: boolean}[] {
-        let lines: {name: string; amount: number; taxable: boolean}[] = [];
-        if (+p.houseAllowance! > 0) lines.push({name: 'House Allowance', amount: +p.houseAllowance!, taxable: true});
-        if (+p.transportAllowance! > 0) lines.push({name: 'Transport Allowance', amount: +p.transportAllowance!, taxable: true});
-        if (+p.otherAllowances! > 0) lines.push({name: 'Other Allowances', amount: +p.otherAllowances!, taxable: true});
-        for (let e of (p.earnings || []) as PayslipLine[]) {
-            if (e.code === 'BASIC' || e.code === 'HSEALL' || e.code === 'TRNALL') continue;
-            if (+e.amount! > 0) lines.push({name: e.name || 'Earning', amount: +e.amount!, taxable: e.isTaxable !== false});
-        }
-        return lines;
-    }
-
-    // Earnings left out of taxable pay - the gap between gross and taxable pay.
-    nonTaxableEarnings(p: Payslip): number {
-        return Math.round(((+p.grossPay! || 0) - (+p.taxablePay! || 0)) * 100) / 100;
-    }
-
-    // Gross less deductions before net pay is rounded, so the payslip can show the
-    // rounding as its own line and still add up.
-    netBeforeRounding(p: Payslip): number {
-        return Math.round(((+p.grossPay! || 0) - (+p.totalDeductions! || 0)) * 100) / 100;
-    }
-
-    hasRounding(p: Payslip): boolean {
-        return Math.abs(+p.roundingAdjustment! || 0) >= 0.005;
-    }
-
-    // Deduction lines other than the statutory ones already printed on their own
-    // rows (PAYE, NSSF, SHIF, AHL) - voluntary items and loan instalments.
-    otherDeductionLines(p: Payslip): {name: string; amount: number}[] {
-        let statutory = ['PAYE', 'NSSF', 'SHIF', 'AHL', 'NSSFER'];
-        return ((p.deductions || []) as PayslipLine[])
-            .filter((d) => !statutory.includes(d.code || '') && +d.amount! > 0)
-            .map((d) => ({name: d.name || 'Deduction', amount: +d.amount!}));
-    }
 
     // --- Payslip identifiers (KRA PIN, ID, NSSF, SHA) ---
     // These print from the staff record rather than being copied onto the

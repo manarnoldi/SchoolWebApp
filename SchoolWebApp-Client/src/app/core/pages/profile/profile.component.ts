@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ToastrService} from 'ngx-toastr';
 import {HttpClient} from '@angular/common/http';
 import {AuthService} from '@/core/services/auth.service';
+import {LicenceService} from '@/core/services/licence.service';
 
 @Component({
     selector: 'app-profile',
@@ -18,11 +19,13 @@ export class ProfileComponent implements OnInit {
         private fb: FormBuilder,
         private toastr: ToastrService,
         private http: HttpClient,
-        private authService: AuthService
+        private authService: AuthService,
+        public licence: LicenceService
     ) {}
 
     ngOnInit(): void {
         this.user = this.authService.getCurrentUser() || {};
+        this.licence.load().subscribe();
         this.passwordForm = this.fb.group({
             currentPassword: ['', Validators.required],
             newPassword: ['', [Validators.required, Validators.minLength(6)]],

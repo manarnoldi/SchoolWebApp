@@ -45,6 +45,8 @@
                                 </span>
                             </li>
                         </ul>
+                        <a *ngIf="user.personId && licence.has('Payroll')" [routerLink]="['/staff/my-payslips']" class="btn btn-sm btn-success w-100 mt-2">
+                            <i class="fas fa-file-invoice-dollar"></i> My payslips</a>
                     </div>
                 </div>
             </div>

@@ -12,6 +12,8 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
+import {LicenceService} from '@/core/services/licence.service';
+import {AccessService} from '@/core/services/access.service';
 
 @Component({
     selector: 'app-staff-assignments',
@@ -22,6 +24,11 @@ export class StaffAssignmentsComponent implements OnInit {
     staffId: number = 0;
     sourceLink: string = '';
     activeNav: string = 'attendance';
+    // Tabs from other modules: shown when the school has the module and the user may see what they show.
+    showTeaching = false;
+    showPay = false;
+    // Tabs opened so far; each loads the first time it is opened.
+    opened = new Set<string>();
     staff: StaffDetails;
     outcomes: Outcome[] = [];
     occurenceTypes: OccurenceType[] = [];
@@ -48,7 +55,9 @@ export class StaffAssignmentsComponent implements OnInit {
         private route: ActivatedRoute,
         private outcomesSvc: OutcomesService,
         private occurenceTypesSvc: OccurenceTypeService,
-        private subjectsSvc: SubjectsService
+        private subjectsSvc: SubjectsService,
+        private licence: LicenceService,
+        private access: AccessService
     ) {
         this.statuses = Object.keys(this.status).filter((k) =>
             isNaN(Number(k))
@@ -56,6 +65,15 @@ export class StaffAssignmentsComponent implements OnInit {
     }
     ngOnInit(): void {
         this.loadSelectedStaff();
+        this.licence.load().subscribe(() => {
+            this.showTeaching = this.licence.has('Academics');
+            if (this.licence.has('Payroll')) {
+                // Their own payslips, or anyone's for payroll officers (the API checks too).
+                const me = JSON.parse(localStorage.getItem('current_user') || 'null');
+                const self = me?.personId != null && +me.personId === +this.staffId;
+                this.access.canAny('/payroll/periods').subscribe((ok) => (this.showPay = ok || self));
+            }
+        });
     }
 
     loadSelectedStaff = () => {

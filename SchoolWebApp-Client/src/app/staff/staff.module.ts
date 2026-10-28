@@ -15,9 +15,17 @@ import {StaffDisciplineTableComponent} from './components/staff-assignments/staf
 import {StaffSubjectComponent} from './components/staff-assignments/staff-subject/staff-subject.component';
 import {StaffSubjectFormComponent} from './components/staff-assignments/staff-subject/staff-subject-form/staff-subject-form.component';
 import {StaffsAttendancesComponent} from './components/staffs-attendances/staffs-attendances.component';
+import {StaffTeachingComponent} from './components/staff-assignments/staff-teaching/staff-teaching.component';
+import {StaffPayComponent} from './components/staff-assignments/staff-pay/staff-pay.component';
+import {StaffDutiesComponent} from './components/staff-assignments/staff-duties/staff-duties.component';
+import {MyPayslipsComponent} from './components/my-payslips/my-payslips.component';
 
 @NgModule({
     declarations: [
+        MyPayslipsComponent,
+        StaffTeachingComponent,
+        StaffPayComponent,
+        StaffDutiesComponent,
         StaffComponent,
         StaffDetailsComponent,
         StaffDetailsFormComponent,

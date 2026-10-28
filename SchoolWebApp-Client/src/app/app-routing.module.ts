@@ -32,6 +32,7 @@ import {SchoolDetailsComponent} from './school/components/school-details/school-
 import {EducationLevelTypesComponent} from './school/components/education-level-types/education-level-types.component';
 import {AcademicYearsComponent} from './school/components/academic-years/academic-years.component';
 import {moduleGuard} from './core/guards/module.guard';
+import {MyPayslipsComponent} from './staff/components/my-payslips/my-payslips.component';
 import {AcademicsComponent} from './academics/academics.component';
 import {CurriculumComponent} from './academics/components/curriculum/curriculum.component';
 import {ExamTypesComponent} from './academics/components/exam-types/exam-types.component';
@@ -246,7 +247,9 @@ const routes: Routes = [
             {path: 'details/add', component: StaffDetailsFormComponent},
             {path: 'manage', redirectTo: 'details', pathMatch: 'full'},
             {path: 'manage/add', component: StaffAssignmentsComponent},
-            {path: 'staff-attendances', component: StaffsAttendancesComponent}
+            {path: 'staff-attendances', component: StaffsAttendancesComponent},
+            // A staff member's own payslips, opened from My Profile.
+            {path: 'my-payslips', component: MyPayslipsComponent, canActivate: [moduleGuard], data: {module: 'Payroll'}}
         ]
     },
     // {
