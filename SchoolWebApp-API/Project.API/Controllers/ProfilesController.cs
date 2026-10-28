@@ -63,6 +63,7 @@ namespace SchoolWebApp.API.Controllers
                     r.Exam.SchoolExam.IsReleased,
                     r.Exam.SchoolClassId,
                     ClassName = r.Exam.SchoolClass!.Name,
+                    r.Exam.SchoolClass.LearningLevel!.EducationLevelId,
                     Subject = r.Exam.Subject!.Name,
                     SubjectRank = r.Exam.Subject.Rank,
                     r.Exam.ExamMark,
@@ -84,13 +85,30 @@ namespace SchoolWebApp.API.Controllers
                 .ToDictionary(g => g.Key, g => Math.Round(g.GroupBy(r => r.StudentId)
                     .Average(st => st.Average(r => r.Score / (r.ExamMark > 0 ? r.ExamMark : 100) * 100.0)), 1));
 
+            // Grades as on the report form: the education level's exam grading (Grading settings
+            // ExamResults:{level}, else ExamResults, else 4-Point), a percentage falling in a grade's band.
+            var gradingSettings = await _db.GlobalSettings.AsNoTracking().Where(x => x.Module == "Grading")
+                .ToDictionaryAsync(x => x.SettingKey, x => x.SettingValue);
+            var grades = await _db.Grades.AsNoTracking().OrderBy(gr => gr.Rank).ToListAsync();
+            string CategoryFor(int levelId) =>
+                gradingSettings.GetValueOrDefault($"ExamResults:{levelId}") is { Length: > 0 } own ? own
+                : gradingSettings.GetValueOrDefault("ExamResults") is { Length: > 0 } all ? all : "4-Point";
+            (string? Abbr, string? Name) GradeFor(double percent, int levelId)
+            {
+                var category = CategoryFor(levelId);
+                var g = grades.FirstOrDefault(gr => gr.Category == category && percent >= gr.MinScore && percent <= gr.MaxScore);
+                return (g?.Abbr, g?.Name);
+            }
+
             var exams = rows.GroupBy(r => r.SchoolExamId).Select(g =>
             {
                 var f = g.First();
                 var subjects = g.Select(r =>
                 {
                     var outOf = r.ExamMark > 0 ? r.ExamMark : 100;
-                    return new { r.Subject, r.SubjectRank, Score = r.Score, OutOf = outOf, Percent = Math.Round(r.Score / outOf * 100.0, 1) };
+                    var percent = Math.Round(r.Score / outOf * 100.0, 1);
+                    var grade = GradeFor(percent, r.EducationLevelId);
+                    return new { r.Subject, r.SubjectRank, Score = r.Score, OutOf = outOf, Percent = percent, Grade = grade.Abbr, GradeName = grade.Name };
                 }).OrderBy(s => s.SubjectRank).ThenBy(s => s.Subject).ToList();
                 return new
                 {
@@ -108,6 +126,8 @@ namespace SchoolWebApp.API.Controllers
                     f.CurriculumId,
                     f.ClassName,
                     Mean = subjects.Count == 0 ? 0 : Math.Round(subjects.Average(s => s.Percent), 1),
+                    MeanGrade = subjects.Count == 0 ? null : GradeFor(Math.Round(subjects.Average(s => s.Percent), 1), f.EducationLevelId).Abbr,
+                    MeanGradeName = subjects.Count == 0 ? null : GradeFor(Math.Round(subjects.Average(s => s.Percent), 1), f.EducationLevelId).Name,
                     ClassMean = classMeans.TryGetValue(g.Key, out var cm) ? cm : (double?)null,
                     Subjects = subjects
                 };

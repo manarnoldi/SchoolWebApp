@@ -9,6 +9,9 @@ export interface ProfileExamSubject {
     score: number;
     outOf: number;
     percent: number;
+    /** The grade on the education level's exam grading, e.g. ME, and its name. */
+    grade: string | null;
+    gradeName: string | null;
 }
 
 export interface ProfileExam {
@@ -28,6 +31,8 @@ export interface ProfileExam {
     released: boolean;
     className: string;
     mean: number;
+    meanGrade: string | null;
+    meanGradeName: string | null;
     subjects: ProfileExamSubject[];
 }
 

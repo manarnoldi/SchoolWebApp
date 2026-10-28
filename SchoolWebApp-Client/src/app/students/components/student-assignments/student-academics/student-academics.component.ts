@@ -64,6 +64,12 @@ const PRINT_CSS = `
         .key.off { opacity: .35; }
         .sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
         .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+        /* Grade badges, in the rubric colours: exceeding, meeting, approaching, below expectations */
+        .gr { display: inline-block; min-width: 2.1rem; padding: 0 5px; border-radius: 4px; font-size: .72rem; font-weight: 700;
+            text-align: center; line-height: 1.5; background: #e9ecef; color: #495057; }
+        .gr-ee { background: #d1e7dd; color: #0f5132; } .gr-me { background: #cfe2ff; color: #084298; }
+        .gr-ae { background: #fff3cd; color: #664d03; } .gr-be { background: #f8d7da; color: #842029; }
+        .exam.open > .exam-head .gr { box-shadow: 0 0 0 1px #fff; }
     `],
     template: `
         <div class="d-flex flex-wrap align-items-end gap-2 mb-2">
@@ -159,10 +165,11 @@ const PRINT_CSS = `
                 <span class="badge bg-warning text-dark me-2" *ngIf="!e.released" title="Not yet released to parents">Provisional</span>
                 <small class="text-muted me-2" *ngIf="e.classMean !== null">class {{ e.classMean }}%</small>
                 <b>{{ e.mean }}%</b><small class="text-muted ms-1">mean</small>
+                <span class="gr ms-2" *ngIf="e.meanGrade" [ngClass]="gradeClass(e.meanGrade)" [title]="e.meanGradeName || ''">{{ e.meanGrade }}</span>
             </div>
             <div class="card-body p-0" *ngIf="open === i">
                 <table class="table table-sm mb-0 align-middle">
-                    <thead class="table-light"><tr><th>Subject</th><th class="text-end">Mark</th><th class="text-end">Out of</th><th style="width: 40%;">%</th></tr></thead>
+                    <thead class="table-light"><tr><th>Subject</th><th class="text-end">Mark</th><th class="text-end">Out of</th><th style="width: 40%;">%</th><th class="text-center" style="width: 1%;">Grade</th></tr></thead>
                     <tbody>
                         <tr *ngFor="let s of e.subjects">
                             <td>{{ s.subject }}</td>
@@ -170,6 +177,7 @@ const PRINT_CSS = `
                             <td class="text-end text-muted">{{ s.outOf }}</td>
                             <td><div class="d-flex align-items-center gap-2"><div class="bar flex-grow-1"><div [style.width.%]="s.percent"></div></div>
                                 <span style="width: 3.5rem;" class="text-end">{{ s.percent }}%</span></div></td>
+                            <td class="text-center"><span class="gr" *ngIf="s.grade" [ngClass]="gradeClass(s.grade)" [title]="s.gradeName || ''">{{ s.grade }}</span></td>
                         </tr>
                     </tbody>
                 </table>
@@ -298,7 +306,7 @@ export class StudentAcademicsComponent implements OnInit, AfterViewInit, OnDestr
         let series: Series[];
         if (this.view === 'overall') {
             const mine = this.yearExams.map((e, i) => ({
-                x: this.xFor(i), y: this.yFor(e.mean), v: e.mean, label: label(e),
+                x: this.xFor(i), y: this.yFor(e.mean), v: e.mean, label: label(e) + (e.meanGrade ? ` (${e.meanGrade})` : ''),
                 color: e.classMean === null ? NEUTRAL : e.mean >= e.classMean ? ABOVE : BELOW
             }));
             const cls = this.yearExams.map((e, i) => ({e, i})).filter(({e}) => e.classMean !== null)
@@ -344,6 +352,12 @@ export class StudentAcademicsComponent implements OnInit, AfterViewInit, OnDestr
         return this.padT + h - (Math.max(0, Math.min(100, v)) / 100) * h;
     }
 
+    // EE1/EE2 -> exceeding, ME -> meeting, AE -> approaching, BE -> below expectations.
+    gradeClass(grade: string | null): string {
+        const g = (grade || '').toUpperCase();
+        return g.startsWith('EE') ? 'gr-ee' : g.startsWith('ME') ? 'gr-me' : g.startsWith('AE') ? 'gr-ae' : g.startsWith('BE') ? 'gr-be' : '';
+    }
+
     // "End-Term Exam" -> "End-Term", to fit under the chart.
     shortName(e: ProfileExam): string {
         return e.name.replace(/\s+exam\b/i, '').split(' - ')[0];
@@ -370,7 +384,7 @@ export class StudentAcademicsComponent implements OnInit, AfterViewInit, OnDestr
         const chart = this.chartSvg?.nativeElement.outerHTML || '';
         const rows = this.yearExams.map((e) => {
             const diff = e.classMean === null ? null : Math.round((e.mean - e.classMean) * 10) / 10;
-            return `<tr><td>${escapeHtml(e.session)}</td><td>${escapeHtml(e.name)}</td><td class="n">${e.mean}%</td>
+            return `<tr><td>${escapeHtml(e.session)}</td><td>${escapeHtml(e.name)}</td><td class="n">${e.mean}%</td><td>${escapeHtml(e.meanGrade || '')}</td>
                 <td class="n">${e.classMean === null ? '-' : e.classMean + '%'}</td>
                 <td class="n ${diff === null ? '' : diff >= 0 ? 'up' : 'down'}">${diff === null ? '-' : (diff > 0 ? '+' : '') + diff}</td></tr>`;
         }).join('');
@@ -379,7 +393,7 @@ export class StudentAcademicsComponent implements OnInit, AfterViewInit, OnDestr
             `<h1>${escapeHtml(this.studentName)} - progress through ${escapeHtml(this.yearName)}</h1>
              <div class="sub">${escapeHtml(cls)}. Mean mark in each exam against the class mean (green: at or above, red: below).</div>
              ${chart}
-             <table><thead><tr><th>Term</th><th>Exam</th><th>Mean</th><th>Class mean</th><th>Against the class</th></tr></thead>
+             <table><thead><tr><th>Term</th><th>Exam</th><th>Mean</th><th>Grade</th><th>Class mean</th><th>Against the class</th></tr></thead>
              <tbody>${rows}</tbody></table>`);
     }
 }
