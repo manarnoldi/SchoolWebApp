@@ -6,6 +6,7 @@ using SchoolWebApp.Core.DTOs.CBE.Responsibilities.StudentResponsibility;
 using SchoolWebApp.Core.Entities.CBE.Responsibilities;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.Responsibilities;
 using SchoolWebApp.API.Licensing;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.CBE.Responsibilities
 {
@@ -13,6 +14,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Responsibilities
     [ApiController]
     [Authorize]
     [RequiresModule(AppModules.Academics)]
+    [RequiresMenu(MenuGroup.Academics, WritesOnly = true, LogOnly = true)]
     public class StudentResponsibilitiesController : ControllerBase
     {
         private readonly ILogger<StudentResponsibilitiesController> _logger;

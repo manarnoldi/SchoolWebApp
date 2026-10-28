@@ -13,12 +13,14 @@ using System;
 using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.DTOs.Academics.Exam;
 using SchoolWebApp.Core.DTOs.Staff.StaffDetails;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Students
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
+    [RequiresMenu(MenuGroup.Students, WritesOnly = true, LogOnly = true)]
     public class StudentsController : ControllerBase
     {
         private readonly ILogger<StudentsController> _logger;

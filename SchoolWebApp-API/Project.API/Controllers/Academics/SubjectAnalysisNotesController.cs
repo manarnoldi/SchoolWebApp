@@ -6,6 +6,7 @@ using Project.Infrastructure.Data;
 using SchoolWebApp.Core.DTOs.Academics.SubjectAnalysisNote;
 using SchoolWebApp.Core.Entities.Academics;
 using SchoolWebApp.API.Licensing;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Academics
 {
@@ -18,6 +19,7 @@ namespace SchoolWebApp.API.Controllers.Academics
     [Route("api/[controller]")]
     [ApiController]
     [RequiresModule(AppModules.Academics)]
+    [RequiresMenu(MenuGroup.Academics, WritesOnly = true, LogOnly = true)]
     public class SubjectAnalysisNotesController : ControllerBase
     {
         private readonly ApplicationDbContext _db;

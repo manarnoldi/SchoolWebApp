@@ -7,12 +7,14 @@ using SchoolWebApp.Core.DTOs.Staff.StaffSubject;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.API.Services.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Staff
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
+    [RequiresMenu(MenuGroup.Staff, WritesOnly = true, LogOnly = true)]
     public class StaffSubjectsController : ControllerBase
     {
         private readonly ILogger<StaffSubjectsController> _logger;

@@ -6,12 +6,14 @@ using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.DTOs.Class.ClassLeadershipRole;
 using SchoolWebApp.Core.Entities.Class;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Class
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
+    [RequiresMenu(MenuGroup.SchoolSetup, MenuGroup.Students, WritesOnly = true, LogOnly = true)]
     public class ClassLeadershipRolesController : ControllerBase
     {
         private readonly ILogger<ClassLeadershipRolesController> _logger;

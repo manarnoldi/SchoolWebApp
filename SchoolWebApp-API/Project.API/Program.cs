@@ -55,6 +55,9 @@ if (!string.IsNullOrEmpty(mySqlConnectionStr) &&
 builder.Logging.ClearProviders();
 builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
 builder.Host.UseNLog();
+// Menu permission refusals are logged as warnings even where the configured level is Error
+// (the deploy keeps each server's appsettings), so they reach Security > Error Logs.
+builder.Logging.AddFilter("SchoolWebApp.API.Security", Microsoft.Extensions.Logging.LogLevel.Warning);
 
 builder.Services.AddDbContext<ApplicationDbContext>(
                 options => options.UseMySql(mySqlConnectionStr, ServerVersion.AutoDetect(mySqlConnectionStr)));
@@ -71,6 +74,8 @@ builder.Services.AddControllers(
                options.Filters.Add(new ProducesAttribute("application/json"));
                // Paid-module endpoints answer only when the licence includes the module.
                options.Filters.Add<SchoolWebApp.API.Licensing.ModuleLicenceFilter>();
+               // Each API answers only roles holding the menu of a page that uses it.
+               options.Filters.Add<SchoolWebApp.API.Security.MenuPermissionFilter>();
                // options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
            }).AddNewtonsoftJson(options =>
            {

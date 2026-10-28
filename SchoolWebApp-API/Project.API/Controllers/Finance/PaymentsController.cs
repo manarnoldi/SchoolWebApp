@@ -6,6 +6,7 @@ using SchoolWebApp.Core.Entities.Finance;
 using SchoolWebApp.Core.Entities.Settings;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.API.Licensing;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Finance
 {
@@ -13,6 +14,7 @@ namespace SchoolWebApp.API.Controllers.Finance
     [ApiController]
     [Authorize]
     [RequiresModule(AppModules.Finance)]
+    [RequiresMenu(MenuGroup.Finance)]
     public class PaymentsController : ControllerBase
     {
         private readonly ILogger<PaymentsController> _logger;

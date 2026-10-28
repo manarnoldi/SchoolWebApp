@@ -5,12 +5,14 @@ using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Academics.Grade;
 using SchoolWebApp.Core.Entities.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Academics
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
+    [RequiresMenu(MenuGroup.Dropdowns, WritesOnly = true, LogOnly = true)]
     public class GradesController : ControllerBase
     {
         private readonly ILogger<GradesController> _logger;

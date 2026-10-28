@@ -5,12 +5,14 @@ using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Class.Session;
 using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Interfaces.IRepositories;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Class
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
+    [RequiresMenu(MenuGroup.SchoolSetup, MenuGroup.Students, WritesOnly = true, LogOnly = true)]
     public class SessionsController : ControllerBase
     {
         private readonly ILogger<SessionsController> _logger;

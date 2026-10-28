@@ -10,12 +10,14 @@ using SchoolWebApp.Core.Entities.Class;
 using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Students
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
+    [RequiresMenu(MenuGroup.Students, WritesOnly = true, LogOnly = true)]
     public class StudentClassesController : ControllerBase
     {
         private readonly ILogger<StudentClassesController> _logger;

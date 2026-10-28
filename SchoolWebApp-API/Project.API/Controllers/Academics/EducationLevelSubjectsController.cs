@@ -8,12 +8,14 @@ using SchoolWebApp.Core.DTOs.Academics.Exam;
 using SchoolWebApp.Core.Entities.Academics;
 using SchoolWebApp.API.Services.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Academics
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
+    [RequiresMenu(MenuGroup.Dropdowns, WritesOnly = true, LogOnly = true)]
     public class EducationLevelSubjectsController : ControllerBase
     {
         private readonly ILogger<CurriculaController> _logger;

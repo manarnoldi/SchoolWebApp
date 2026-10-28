@@ -5,6 +5,7 @@ using SchoolWebApp.Core.DTOs.Payroll;
 using SchoolWebApp.Core.Entities.Payroll;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.API.Licensing;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Payroll
 {
@@ -12,6 +13,8 @@ namespace SchoolWebApp.API.Controllers.Payroll
     [ApiController]
     [Authorize]
     [RequiresModule(AppModules.Payroll)]
+    // Payroll set-up, also opened from Settings > Dropdowns > Payroll Settings.
+    [RequiresMenu(MenuGroup.Payroll, MenuGroup.Dropdowns)]
     public class PayrollReliefsController : ControllerBase
     {
         private readonly ILogger<PayrollReliefsController> _logger;

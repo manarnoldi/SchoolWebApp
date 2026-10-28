@@ -6,6 +6,7 @@ using SchoolWebApp.Core.DTOs.CBE.Assessments.AssessmentType;
 using SchoolWebApp.Core.Entities.CBE.Assessments;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.Assessments;
 using SchoolWebApp.API.Licensing;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.CBE.Assessments
 {
@@ -13,6 +14,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
     [ApiController]
     [Authorize]
     [RequiresModule(AppModules.Academics)]
+    [RequiresMenu(MenuGroup.Dropdowns, WritesOnly = true, LogOnly = true)]
     public class AssessmentTypesController : ControllerBase
     {
         private readonly ILogger<AssessmentTypesController> _logger;

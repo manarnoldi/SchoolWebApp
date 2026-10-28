@@ -5,12 +5,14 @@ using SchoolWebApp.Core.DTOs.Settings.GlobalSetting;
 using SchoolWebApp.Core.Entities.Settings;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.API.Licensing;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Settings
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [RequiresMenu(MenuGroup.GlobalSettings, WritesOnly = true)]
     public class GlobalSettingsController : ControllerBase
     {
         private readonly ILogger<GlobalSettingsController> _logger;

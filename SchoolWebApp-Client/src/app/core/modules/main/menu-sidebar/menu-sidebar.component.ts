@@ -60,9 +60,9 @@ export class MenuSidebarComponent implements OnInit {
     }
 
     filterMenu(items: any[], allowedPaths: string[]): any[] {
+        // A role with no menu permissions sees only the dashboard (the API refuses the rest).
         if (!allowedPaths || allowedPaths.length === 0) {
-            // If no permissions configured at all, show full menu
-            return items;
+            return items.filter((item) => item.path && item.path.join('/') === '/');
         }
 
         return items

@@ -9,12 +9,14 @@ using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.Core.DTOs.Settings.EmploymentType;
 using SchoolWebApp.Core.Entities.Settings;
 using SchoolWebApp.Core.Entities.Staff;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Settings
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
+    [RequiresMenu(MenuGroup.Dropdowns, WritesOnly = true, LogOnly = true)]
     public class EmploymentTypesController : ControllerBase
     {
         private readonly ILogger<EmploymentTypesController> _logger;

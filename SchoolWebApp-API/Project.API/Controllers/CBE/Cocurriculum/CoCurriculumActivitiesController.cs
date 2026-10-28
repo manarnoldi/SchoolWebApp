@@ -6,6 +6,7 @@ using SchoolWebApp.Core.DTOs.CBE.Cocurriculum.CoCurriculumActivity;
 using SchoolWebApp.Core.Entities.CBE.Cocurriculum;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.Cocurriculum;
 using SchoolWebApp.API.Licensing;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.CBE.Cocurriculum
 {
@@ -13,6 +14,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Cocurriculum
     [ApiController]
     [Authorize]
     [RequiresModule(AppModules.Academics)]
+    [RequiresMenu(MenuGroup.Dropdowns, WritesOnly = true, LogOnly = true)]
     public class CoCurriculumActivitiesController : ControllerBase
     {
         private readonly ILogger<CoCurriculumActivitiesController> _logger;

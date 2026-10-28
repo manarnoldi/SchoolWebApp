@@ -6,6 +6,7 @@ using SchoolWebApp.Core.DTOs.CBE.CommunityService.StudentCommunityServiceActivit
 using SchoolWebApp.Core.Entities.CBE.CommunityService;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.CommunityService;
 using SchoolWebApp.API.Licensing;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.CBE.CommunityService
 {
@@ -13,6 +14,7 @@ namespace SchoolWebApp.API.Controllers.CBE.CommunityService
     [ApiController]
     [Authorize]
     [RequiresModule(AppModules.Academics)]
+    [RequiresMenu(MenuGroup.Academics, WritesOnly = true, LogOnly = true)]
     public class StudentCommunityServiceActivitiesController : ControllerBase
     {
         private readonly ILogger<StudentCommunityServiceActivitiesController> _logger;

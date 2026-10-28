@@ -6,6 +6,7 @@ using Project.Infrastructure.Data;
 using SchoolWebApp.Core.DTOs.Sponsorships;
 using SchoolWebApp.Core.Entities.Sponsorships;
 using SchoolWebApp.API.Licensing;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Sponsorships
 {
@@ -13,6 +14,7 @@ namespace SchoolWebApp.API.Controllers.Sponsorships
     [Route("api/sponsors")]
     [ApiController]
     [RequiresModule(AppModules.Finance)]
+    [RequiresMenu(MenuGroup.Finance)]
     public class SponsorsController : ControllerBase
     {
         private readonly ApplicationDbContext _db;

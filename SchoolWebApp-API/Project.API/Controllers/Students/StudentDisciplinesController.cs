@@ -7,12 +7,14 @@ using SchoolWebApp.Core.DTOs.Students.StudentDiscipline;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.Core.Interfaces.IRepositories;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Students
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [RequiresMenu(MenuGroup.Students, WritesOnly = true, LogOnly = true)]
     public class StudentDisciplinesController : ControllerBase
     {
         private readonly ILogger<StudentDisciplinesController> _logger;

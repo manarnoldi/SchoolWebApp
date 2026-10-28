@@ -6,12 +6,14 @@ using SchoolWebApp.Core.DTOs.Settings.Nationality;
 using SchoolWebApp.Core.Entities.Settings;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Settings
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
+    [RequiresMenu(MenuGroup.Dropdowns, WritesOnly = true, LogOnly = true)]
     public class NationalitiesController : ControllerBase
     {
         private readonly ILogger<NationalitiesController> _logger;

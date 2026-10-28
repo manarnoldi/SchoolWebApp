@@ -10,12 +10,14 @@ using SchoolWebApp.Core.Entities.Students;
 using SchoolWebApp.API.Services.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using System.Security.Policy;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Students
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [RequiresMenu(MenuGroup.Students, WritesOnly = true, LogOnly = true)]
     public class StudentSubjectsController : ControllerBase
     {
         private readonly ILogger<StudentSubjectsController> _logger;

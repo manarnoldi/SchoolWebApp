@@ -4,6 +4,7 @@ using SchoolWebApp.Core.DTOs.Finance.Reports;
 using SchoolWebApp.Core.Entities.Finance;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.API.Licensing;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Finance
 {
@@ -11,6 +12,7 @@ namespace SchoolWebApp.API.Controllers.Finance
     [ApiController]
     [Authorize]
     [RequiresModule(AppModules.Finance)]
+    [RequiresMenu(MenuGroup.Finance)]
     public class FinanceReportsController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;

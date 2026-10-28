@@ -8,10 +8,10 @@ interface MyPermissions {
 }
 
 /**
- * Whether the signed-in user may open a page, by the same rule as the side menu:
- * super administrators and roles without any menu permissions see everything,
- * others only the menu paths their roles hold. Used for profile tabs and
- * dashboard cards that show what those pages show.
+ * Whether the signed-in user may open a page, by the same rule as the side menu
+ * and the API: super administrators see everything, everyone else only the menu
+ * paths their roles hold. Used for profile tabs and dashboard cards that show
+ * what those pages show.
  */
 @Injectable({providedIn: 'root'})
 export class AccessService {
@@ -33,7 +33,7 @@ export class AccessService {
 
     /** True when the user may open any one of the menu paths given. */
     canAny(...paths: string[]): Observable<boolean> {
-        return this.load().pipe(map((m) => m.allAccess || m.paths.length === 0 || paths.some((p) => m.paths.includes(p))));
+        return this.load().pipe(map((m) => m.allAccess || paths.some((p) => m.paths.includes(p))));
     }
 
     /** Forget the permissions (on sign-out). */

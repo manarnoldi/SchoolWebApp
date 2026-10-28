@@ -5,6 +5,7 @@ using SchoolWebApp.API.Services.Communications;
 using SchoolWebApp.Core.DTOs.Communications;
 using SchoolWebApp.Core.Entities.Communications;
 using SchoolWebApp.API.Licensing;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Communications
 {
@@ -17,6 +18,7 @@ namespace SchoolWebApp.API.Controllers.Communications
     [ApiController]
     [Authorize]
     [RequiresModule(AppModules.Communications)]
+    [RequiresMenu(MenuGroup.Communications)]
     public class CommunicationSettingsController : ControllerBase
     {
         private readonly ILogger<CommunicationSettingsController> _logger;

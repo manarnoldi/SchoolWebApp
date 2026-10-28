@@ -6,6 +6,7 @@ using SchoolWebApp.API.Services.Communications;
 using SchoolWebApp.Core.DTOs.Communications;
 using SchoolWebApp.Core.Entities.Communications;
 using SchoolWebApp.API.Licensing;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Communications
 {
@@ -16,6 +17,7 @@ namespace SchoolWebApp.API.Controllers.Communications
     [ApiController]
     [Authorize]
     [RequiresModule(AppModules.Communications)]
+    [RequiresMenu(MenuGroup.Communications)]
     public class MessagesController : ControllerBase
     {
         public const string SenderRoles = "Administrator,SuperAdministrator,HeadTeacher,Accounts";
@@ -97,22 +99,32 @@ namespace SchoolWebApp.API.Controllers.Communications
         // (counts, the first rendered message, recipients) without queueing.
 
         [HttpPost("examResults")]
+        // Also from the pages with a "send to parents" button.
+        [RequiresMenu(MenuGroup.Communications, MenuGroup.ParentMessaging)]
         [Authorize(Roles = SenderRoles)]
         public Task<IActionResult> ExamResults(ExamResultsMessageDto model) => Standard(() => _standard.ExamResultsAsync(model));
 
         [HttpPost("schoolExamResults")]
+        // Also from the pages with a "send to parents" button.
+        [RequiresMenu(MenuGroup.Communications, MenuGroup.ParentMessaging)]
         [Authorize(Roles = SenderRoles)]
         public Task<IActionResult> SchoolExamResults(SchoolExamResultsMessageDto model) => Standard(() => _standard.SchoolExamResultsAsync(model));
 
         [HttpPost("feeInvoices")]
+        // Also from the pages with a "send to parents" button.
+        [RequiresMenu(MenuGroup.Communications, MenuGroup.ParentMessaging)]
         [Authorize(Roles = SenderRoles)]
         public Task<IActionResult> FeeInvoices(InvoiceMessageDto model) => Standard(() => _standard.InvoicesAsync(model));
 
         [HttpPost("feeBalances")]
+        // Also from the pages with a "send to parents" button.
+        [RequiresMenu(MenuGroup.Communications, MenuGroup.ParentMessaging)]
         [Authorize(Roles = SenderRoles)]
         public Task<IActionResult> FeeBalances(FeeBalanceMessageDto model) => Standard(() => _standard.FeeBalancesAsync(model));
 
         [HttpPost("feePayments")]
+        // Also from the pages with a "send to parents" button.
+        [RequiresMenu(MenuGroup.Communications, MenuGroup.ParentMessaging)]
         [Authorize(Roles = SenderRoles)]
         public Task<IActionResult> FeePayments(PaymentMessageDto model) => Standard(() => _standard.PaymentsAsync(model));
 

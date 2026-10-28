@@ -12,12 +12,14 @@ using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using System;
 using System.Linq.Expressions;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Staff
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
+    [RequiresMenu(MenuGroup.Staff, WritesOnly = true, LogOnly = true)]
     public class StaffDetailsController : ControllerBase
     {
         private readonly ILogger<StaffDetailsController> _logger;

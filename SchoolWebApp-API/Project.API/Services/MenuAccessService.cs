@@ -5,9 +5,9 @@ namespace SchoolWebApp.API.Services
 {
     /// <summary>
     /// Whether the caller may open a page, by the side menu's rule: super
-    /// administrators and roles without any menu permissions see everything,
-    /// others only the menu paths their roles hold. For data that summarises a
-    /// page (dashboard cards), so it is not shown to people who cannot open it.
+    /// administrators see everything, everyone else only the menu paths their
+    /// roles hold (a role with none has no pages). Used by the API's menu checks
+    /// (RequiresMenu) and the dashboard cards.
     /// </summary>
     public class MenuAccessService
     {
@@ -30,7 +30,7 @@ namespace SchoolWebApp.API.Services
             _paths ??= await _db.MenuPermissions.AsNoTracking()
                 .Where(p => roles.Contains(p.RoleId))
                 .Select(p => p.MenuPath).Distinct().ToListAsync();
-            return _paths.Count == 0 || paths.Any(_paths.Contains);
+            return paths.Any(_paths.Contains);
         }
     }
 }

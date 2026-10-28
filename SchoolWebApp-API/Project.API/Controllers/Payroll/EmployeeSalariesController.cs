@@ -5,6 +5,7 @@ using SchoolWebApp.Core.DTOs.Payroll;
 using SchoolWebApp.Core.Entities.Payroll;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.API.Licensing;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Payroll
 {
@@ -12,6 +13,7 @@ namespace SchoolWebApp.API.Controllers.Payroll
     [ApiController]
     [Authorize]
     [RequiresModule(AppModules.Payroll)]
+    [RequiresMenu(MenuGroup.Payroll)]
     public class EmployeeSalariesController : ControllerBase
     {
         private readonly ILogger<EmployeeSalariesController> _logger;

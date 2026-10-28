@@ -6,12 +6,14 @@ using SchoolWebApp.Core.DTOs.School.SchoolDetails;
 using SchoolWebApp.Core.Entities.School;
 using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.Core.Interfaces.IRepositories;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.School
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
+    [RequiresMenu(MenuGroup.SchoolSetup, WritesOnly = true, LogOnly = true)]
     public class SchoolDetailsController : ControllerBase
     {
         private readonly ILogger<SchoolDetailsController> _logger;

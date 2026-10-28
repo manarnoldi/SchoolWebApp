@@ -5,6 +5,7 @@ using Project.Infrastructure.Data;
 using SchoolWebApp.Core.DTOs.CBE;
 using SchoolWebApp.Core.Entities.CBE.Assessments;
 using SchoolWebApp.API.Licensing;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.CBE.Assessments
 {
@@ -17,6 +18,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
     [ApiController]
     [Authorize]
     [RequiresModule(AppModules.Academics)]
+    [RequiresMenu(MenuGroup.Academics, WritesOnly = true, LogOnly = true)]
     public class CurriculumController : ControllerBase
     {
         private readonly ApplicationDbContext _db;

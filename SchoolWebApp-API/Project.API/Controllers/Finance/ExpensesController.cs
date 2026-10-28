@@ -9,6 +9,7 @@ using SchoolWebApp.Core.Helpers;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using System.Security.Claims;
 using SchoolWebApp.API.Licensing;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Finance
 {
@@ -16,6 +17,7 @@ namespace SchoolWebApp.API.Controllers.Finance
     [ApiController]
     [Authorize]
     [RequiresModule(AppModules.Finance)]
+    [RequiresMenu(MenuGroup.Finance)]
     public class ExpenseCategoriesController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;

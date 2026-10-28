@@ -6,6 +6,7 @@ using SchoolWebApp.Core.DTOs.CBE.Values.StudentValueScore;
 using SchoolWebApp.Core.Entities.CBE.Values;
 using SchoolWebApp.Core.Interfaces.IServices.CBE.Values;
 using SchoolWebApp.API.Licensing;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.CBE.Values
 {
@@ -13,6 +14,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Values
     [ApiController]
     [Authorize]
     [RequiresModule(AppModules.Academics)]
+    [RequiresMenu(MenuGroup.Academics, WritesOnly = true, LogOnly = true)]
     public class StudentValueScoresController : ControllerBase
     {
         private readonly ILogger<StudentValueScoresController> _logger;

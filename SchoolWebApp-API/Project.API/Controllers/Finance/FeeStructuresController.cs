@@ -5,6 +5,7 @@ using SchoolWebApp.Core.DTOs.Finance.FeeStructure;
 using SchoolWebApp.Core.Entities.Finance;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.API.Licensing;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Finance
 {
@@ -12,6 +13,7 @@ namespace SchoolWebApp.API.Controllers.Finance
     [ApiController]
     [Authorize]
     [RequiresModule(AppModules.Finance)]
+    [RequiresMenu(MenuGroup.Finance)]
     public class FeeStructuresController : ControllerBase
     {
         private readonly ILogger<FeeStructuresController> _logger;

@@ -5,12 +5,14 @@ using SchoolWebApp.Core.DTOs;
 using SchoolWebApp.Core.DTOs.Academics.AcademicYear;
 using SchoolWebApp.Core.Entities.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories;
+using SchoolWebApp.API.Security;
 
 namespace SchoolWebApp.API.Controllers.Academics
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
+    [RequiresMenu(MenuGroup.SchoolSetup, WritesOnly = true, LogOnly = true)]
     public class AcademicYearsController : ControllerBase
     {
         private readonly ILogger<AcademicYearsController> _logger;
