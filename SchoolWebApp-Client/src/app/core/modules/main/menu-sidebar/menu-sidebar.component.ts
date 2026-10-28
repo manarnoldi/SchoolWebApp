@@ -110,7 +110,16 @@ export const MENU = [
             {name: 'Academic Years', iconClasses: 'fas fa-bullseye', path: ['/school/academicYears']},
             {name: 'Sessions', iconClasses: 'fas fa-bullseye', path: ['/school/sessions']},
             {name: 'Classes', iconClasses: 'fas fa-bullseye', path: ['/class/classes']},
-            {name: 'Events', iconClasses: 'fas fa-bullseye', path: ['/school/events']}
+            {name: 'Events', iconClasses: 'fas fa-bullseye', path: ['/school/events']},
+            {
+                name: 'Reports',
+                iconClasses: 'fas fa-chart-bar text-success',
+                children: [
+                    {name: 'Class List', iconClasses: 'fas fa-bullseye text-success', path: ['/reports/class/class-list']},
+                    {name: 'Attendance Report', iconClasses: 'fas fa-bullseye text-success', path: ['/reports/class/attendance']},
+                    {name: 'Attendance Detailed', iconClasses: 'fas fa-bullseye text-success', path: ['/reports/class/attendance-details']}
+                ]
+            }
         ]
     },
     {
@@ -119,7 +128,16 @@ export const MENU = [
         children: [
             {name: 'Staff Details', iconClasses: 'fas fa-bullseye', path: ['/staff/details']},
             {name: 'Attendance', iconClasses: 'fas fa-bullseye', path: ['/staff/staff-attendances']},
-            {name: 'Subject Allocation', iconClasses: 'fas fa-bullseye', path: ['/school/bulk-staff-subjects'], module: 'Academics'}
+            {name: 'Subject Allocation', iconClasses: 'fas fa-bullseye', path: ['/school/bulk-staff-subjects'], module: 'Academics'},
+            {
+                name: 'Reports',
+                iconClasses: 'fas fa-chart-bar text-info',
+                children: [
+                    {name: 'Attendance Report', iconClasses: 'fas fa-bullseye text-info', path: ['/reports/staff/attendance']},
+                    {name: 'Attendance Detailed', iconClasses: 'fas fa-bullseye text-info', path: ['/reports/staff/attendance-details']},
+                    {name: 'Subject Allocation', iconClasses: 'fas fa-bullseye text-info', path: ['/reports/staff/subject-allocation'], module: 'Academics'}
+                ]
+            }
         ]
     },
     {
@@ -324,54 +342,6 @@ export const MENU = [
                 name: 'Licence',
                 iconClasses: 'fas fa-key text-warning',
                 path: ['/settings/licence']
-            }
-        ]
-    },
-    {
-        name: 'Reports',
-        iconClasses: 'fas fa-chart-bar',
-        children: [
-            {
-                name: 'Staff Reports',
-                iconClasses: 'fas fa-circle',
-                children: [
-                    {
-                        name: 'Attendance Report',
-                        iconClasses: 'fas fa-bullseye text-info',
-                        path: ['/reports/staff/attendance']
-                    },
-                    {
-                        name: 'Attendance Detailed',
-                        iconClasses: 'fas fa-bullseye text-info',
-                        path: ['/reports/staff/attendance-details']
-                    },
-                    {
-                        name: 'Subject Allocation',
-                        iconClasses: 'fas fa-bullseye text-info',
-                        path: ['/reports/staff/subject-allocation']
-                    }
-                ]
-            },
-            {
-                name: 'Class Reports',
-                iconClasses: 'fas fa-circle',
-                children: [
-                    {
-                        name: 'Class List',
-                        iconClasses: 'fas fa-bullseye text-success',
-                        path: ['/reports/class/class-list']
-                    },
-                    {
-                        name: 'Attendance Report',
-                        iconClasses: 'fas fa-bullseye text-success',
-                        path: ['/reports/class/attendance']
-                    },
-                    {
-                        name: 'Attendance Detailed',
-                        iconClasses: 'fas fa-bullseye text-success',
-                        path: ['/reports/class/attendance-details']
-                    }
-                ]
             }
         ]
     },

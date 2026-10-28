@@ -390,7 +390,7 @@ const routes: Routes = [
             {path: 'academics', component: AcademicsReportComponent, canActivate: [moduleGuard], data: {module: 'Academics'}},
             {path: 'staff/attendance', component: StaffAttendancePageComponent},
             {path: 'staff/attendance-details', component: StaffAttendanceDetailsPageComponent},
-            {path: 'staff/subject-allocation', component: StaffSubjectPageComponent},
+            {path: 'staff/subject-allocation', component: StaffSubjectPageComponent, canActivate: [moduleGuard], data: {module: 'Academics'}},
             {path: 'class/class-list', component: ClassListPageComponent},
             {path: 'class/attendance', component: ClassAttendancePageComponent},
             {path: 'class/attendance-details', component: ClassAttendanceDetailsPageComponent},
