@@ -21,9 +21,11 @@ import { EventsDashboardComponent } from './components/events/events-dashboard/e
 import { EventsDashboardItemComponent } from './components/events/events-dashboard/events-dashboard-item/events-dashboard-item.component';
 import { DashboardExamSummaryComponent } from './components/dashboard-exam-summary/dashboard-exam-summary.component';
 import { BulkStaffSubjectsComponent } from './components/bulk-staff-subjects/bulk-staff-subjects.component';
+import {ModuleCardsComponent} from './components/dashboard/module-cards/module-cards.component';
 
 @NgModule({
   declarations: [
+        ModuleCardsComponent,
     SchoolComponent,
     LearningModesComponent,
     SchoolDetailsComponent,    

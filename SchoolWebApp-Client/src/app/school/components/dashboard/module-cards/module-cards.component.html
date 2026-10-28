@@ -1,0 +1,119 @@
+<div class="row g-0" *ngIf="any">
+    <!-- Fees -->
+    <div class="col-xl-6 col-12 px-1 mb-1" *ngIf="show.finance">
+        <div class="card card-outline card-success mb-0 h-100">
+            <div class="card-header py-1 d-flex align-items-center">
+                <span class="card-title-sm me-auto"><i class="fas fa-coins text-success me-1"></i>Fees<span class="text-muted fw-normal" *ngIf="finance?.term"> - {{ finance.term }}</span></span>
+                <a class="small" [routerLink]="['/finance/reports/fees']">Fee reports</a>
+            </div>
+            <div class="card-body py-2" *ngIf="finance; else loadingTpl">
+                <div class="d-flex justify-content-between small mb-1">
+                    <span>Collected <b>{{ finance.collected | number:'1.0-0' }}</b> of {{ finance.expected | number:'1.0-0' }} invoiced this term</span>
+                    <b>{{ pct(finance.collected, finance.expected) }}%</b>
+                </div>
+                <div class="meter mb-2"><div [style.width.%]="pct(finance.collected, finance.expected)"></div></div>
+                <div class="row g-2 text-center mb-2">
+                    <div class="col-3 stat"><div class="v">{{ finance.collectedToday | number:'1.0-0' }}</div><div class="k">Today</div></div>
+                    <div class="col-3 stat"><div class="v">{{ finance.collectedThisWeek | number:'1.0-0' }}</div><div class="k">This week</div></div>
+                    <div class="col-3 stat"><div class="v text-danger">{{ finance.outstanding | number:'1.0-0' }}</div><div class="k">Outstanding</div></div>
+                    <div class="col-3 stat"><div class="v">{{ finance.spentThisMonth | number:'1.0-0' }}</div><div class="k">Spent this month</div></div>
+                </div>
+                <div *ngIf="finance.arrearsByClass.length">
+                    <div class="small text-muted mb-1">Most owed, by class</div>
+                    <div class="d-flex small border-top py-1" *ngFor="let a of finance.arrearsByClass">
+                        <span class="me-auto">{{ a.className }} <span class="text-muted">({{ a.students }} students)</span></span>
+                        <b>{{ a.balance | number:'1.0-0' }}</b>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teaching -->
+    <div class="col-xl-3 col-md-6 px-1 mb-1" *ngIf="show.teaching">
+        <div class="card card-outline card-primary mb-0 h-100">
+            <div class="card-header py-1 d-flex align-items-center">
+                <span class="card-title-sm me-auto"><i class="fas fa-chalkboard-teacher text-primary me-1"></i>Teaching documents</span>
+                <a class="small" [routerLink]="['/teaching/tracker']">Tracker</a>
+            </div>
+            <div class="card-body py-2" *ngIf="teaching; else loadingTpl">
+                <div class="small text-muted mb-2">{{ teaching.term }} - {{ teaching.allocations }} subject-classes</div>
+                <div class="d-flex justify-content-between small"><span>Schemes approved</span>
+                    <b>{{ teaching.schemesApproved }} / {{ teaching.allocations }}</b></div>
+                <div class="meter mb-2"><div [style.width.%]="pct(teaching.schemesApproved, teaching.allocations)"></div></div>
+                <div class="d-flex justify-content-between small"><span>Lesson plans approved (weeks due)</span>
+                    <b>{{ pct(teaching.weeksApproved, teaching.weeksDue) }}%</b></div>
+                <div class="meter mb-2"><div [style.width.%]="pct(teaching.weeksApproved, teaching.weeksDue)"></div></div>
+                <div class="d-flex justify-content-between small"><span>Lessons taught</span>
+                    <b>{{ teaching.lessonsTaught }} / {{ teaching.lessonsPlanned }}</b></div>
+                <div class="small text-danger mt-2" *ngIf="teaching.schemesOverdue">
+                    <i class="fas fa-exclamation-triangle me-1"></i>{{ teaching.schemesOverdue }} scheme(s) overdue</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payroll -->
+    <div class="col-xl-3 col-md-6 px-1 mb-1" *ngIf="show.payroll">
+        <div class="card card-outline card-info mb-0 h-100">
+            <div class="card-header py-1 d-flex align-items-center">
+                <span class="card-title-sm me-auto"><i class="fas fa-money-check-alt text-info me-1"></i>Payroll</span>
+                <a class="small" [routerLink]="['/payroll/periods']">Processing</a>
+            </div>
+            <div class="card-body py-2" *ngIf="payroll; else loadingTpl">
+                <div *ngIf="!payroll.latest" class="small text-muted">No payroll run yet.</div>
+                <ng-container *ngIf="payroll.latest as p">
+                    <div class="d-flex align-items-center mb-2"><b class="me-auto">{{ p.name }}</b>
+                        <span class="badge" [ngClass]="p.status === 'Approved' || p.status === 'Posted' ? 'bg-success' : 'bg-warning text-dark'">{{ p.status }}</span></div>
+                    <div class="row g-2 text-center">
+                        <div class="col-6 stat"><div class="v">{{ p.net | number:'1.0-0' }}</div><div class="k">Net pay</div></div>
+                        <div class="col-6 stat"><div class="v">{{ p.gross | number:'1.0-0' }}</div><div class="k">Gross pay</div></div>
+                        <div class="col-6 stat"><div class="v">{{ p.paye | number:'1.0-0' }}</div><div class="k">PAYE</div></div>
+                        <div class="col-6 stat"><div class="v">{{ p.staff }}</div><div class="k">Staff paid</div></div>
+                    </div>
+                    <div class="small text-muted mt-2" *ngIf="payroll.previous && change(p.net, payroll.previous.net) as text">{{ text }}</div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+
+    <!-- Elections -->
+    <div class="col-xl-3 col-md-6 px-1 mb-1" *ngIf="show.elections">
+        <div class="card card-outline card-warning mb-0 h-100">
+            <div class="card-header py-1 d-flex align-items-center">
+                <span class="card-title-sm me-auto"><i class="fas fa-vote-yea text-warning me-1"></i>Elections</span>
+                <a class="small" [routerLink]="['/elections/manage']">Manage</a>
+            </div>
+            <div class="card-body py-2" *ngIf="elections; else loadingTpl">
+                <div class="border-bottom py-1" *ngFor="let e of elections">
+                    <div class="d-flex align-items-center small">
+                        <a class="me-auto fw-bold" [routerLink]="['/elections/manage', e.id]">{{ e.name }}</a>
+                        <span class="badge" [ngClass]="stageBadges[e.stage]">{{ stageLabels[e.stage] }}</span>
+                    </div>
+                    <div class="small text-muted" *ngIf="e.stage >= 3">
+                        {{ e.voted }}<span *ngIf="e.registered"> of {{ e.registered }}</span> voted<span *ngIf="e.registered"> ({{ pct(e.voted, e.registered) }}%)</span></div>
+                    <div class="small text-muted" *ngIf="e.stage < 3 && e.pollingStart">Polling {{ e.pollingStart | date:'EEE d MMM, HH:mm' }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="col-xl-3 col-md-6 px-1 mb-1" *ngIf="show.communications">
+        <div class="card card-outline card-secondary mb-0 h-100">
+            <div class="card-header py-1 d-flex align-items-center">
+                <span class="card-title-sm me-auto"><i class="fas fa-comment-dots text-secondary me-1"></i>Messages - last 7 days</span>
+                <a class="small" [routerLink]="['/communications/queue']">Queue</a>
+            </div>
+            <div class="card-body py-2" *ngIf="communications; else loadingTpl">
+                <div class="row g-2 text-center">
+                    <div class="col-4 stat"><div class="v text-success">{{ communications.delivered }}</div><div class="k"><i class="fas fa-check me-1"></i>Sent</div></div>
+                    <div class="col-4 stat"><div class="v">{{ communications.waiting }}</div><div class="k"><i class="fas fa-clock me-1"></i>Waiting</div></div>
+                    <div class="col-4 stat"><div class="v" [class.text-danger]="communications.failed">{{ communications.failed }}</div>
+                        <div class="k"><i class="fas fa-times me-1"></i>Failed</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #loadingTpl><div class="card-body py-2 small text-muted"><i class="fas fa-spinner fa-spin"></i> Loading...</div></ng-template>

@@ -6,6 +6,7 @@ import {forkJoin} from 'rxjs';
 import {SchoolDetailsService} from '../../services/school-details.service';
 import {AcademicYearsService} from '../../services/academic-years.service';
 import {LicenceService} from '@/core/services/licence.service';
+import {AccessService} from '@/core/services/access.service';
 import {DateTime} from 'luxon';
 
 @Component({
@@ -35,12 +36,18 @@ export class DashboardComponent implements OnInit {
         private schoolDetailsSvc: SchoolDetailsService,
         private academicYearSvc: AcademicYearsService,
         private toastr: ToastrService,
-        public licence: LicenceService
+        public licence: LicenceService,
+        private access: AccessService
     ) {}
+
+    // Class exam performance names top students: for those who see the results.
+    showExamSummary = false;
 
     ngOnInit(): void {
         this.user = this.authService.getCurrentUser();
         this.licence.load().subscribe();
+        this.access.canAny('/reports/academics/exam-results', '/reports/academics/class-performance', '/cbe/exams/exam-results-bulk')
+            .subscribe((ok) => (this.showExamSummary = ok));
         this.currentDate = DateTime.now().toFormat('EEEE, dd MMMM yyyy');
         this.setGreeting();
         this.buildQuickLinks();
