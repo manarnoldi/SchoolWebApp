@@ -126,7 +126,9 @@ export const MENU = [
         name: 'Staff',
         iconClasses: 'fas fa-user-tie',
         children: [
-            {name: 'Staff Details', iconClasses: 'fas fa-bullseye', path: ['/staff/details']},
+            {name: 'Staff Details', iconClasses: 'fas fa-bullseye', path: ['/staff/details'],
+                // A staff member's own page, and adding one.
+                extraActivePaths: ['/staff/manage', '/staff/add']},
             {name: 'Attendance', iconClasses: 'fas fa-bullseye', path: ['/staff/staff-attendances']},
             {name: 'Subject Allocation', iconClasses: 'fas fa-bullseye', path: ['/school/bulk-staff-subjects'], module: 'Academics'},
             {
@@ -144,7 +146,9 @@ export const MENU = [
         name: 'Students',
         iconClasses: 'fas fa-user-graduate',
         children: [
-            {name: 'Basic Details', iconClasses: 'fas fa-bullseye', path: ['/students/details']},
+            {name: 'Basic Details', iconClasses: 'fas fa-bullseye', path: ['/students/details'],
+                // A student's own page (tabs: class, parents, academics, fees...).
+                extraActivePaths: ['/students/manage']},
             {name: 'Parents', iconClasses: 'fas fa-bullseye', path: ['/students/parents']},
             {name: 'Subject Allocation', iconClasses: 'fas fa-bullseye', path: ['/students/students-subjects'], module: 'Academics'},
             {name: 'Attendance', iconClasses: 'fas fa-bullseye', path: ['/students/students-attendances']},
@@ -175,14 +179,16 @@ export const MENU = [
                 children: [
                     {name: 'School Exams', iconClasses: 'fas fa-calendar-check text-info', path: ['/cbe/exams/school-exams']},
                     {name: 'Register Exams', iconClasses: 'fas fa-bullseye text-warning', path: ['/cbe/exams/exams']},
-                    {name: 'Results Entry', iconClasses: 'fas fa-bullseye text-warning', path: ['/cbe/exams/exam-results-bulk']}
+                    {name: 'Results Entry', iconClasses: 'fas fa-bullseye text-warning', path: ['/cbe/exams/exam-results-bulk'],
+                        extraActivePaths: ['/cbe/exams/exam-results', '/cbe/exams/exam-results-classwise']}
                 ]
             },
             {
                 name: 'Learner Development',
                 iconClasses: 'fas fa-seedling text-success',
                 children: [
-                    {name: 'Co-curricular', iconClasses: 'fas fa-bullseye text-success', path: ['/cbe/cocurriculum/student-scores']},
+                    {name: 'Co-curricular', iconClasses: 'fas fa-bullseye text-success', path: ['/cbe/cocurriculum/student-scores'],
+                        extraActivePaths: ['/cbe/cocurriculum/student-assignments', '/cbe/cocurriculum/scores-setup']},
                     {name: 'Responsibilities', iconClasses: 'fas fa-bullseye text-primary', path: ['/cbe/responsibilities/student-assignments']},
                     {name: 'Community Service', iconClasses: 'fas fa-bullseye text-secondary', path: ['/cbe/community-service/student-assignments']},
                     {name: 'Values', iconClasses: 'fas fa-bullseye text-danger', path: ['/cbe/values/student-assignments']}
@@ -192,7 +198,8 @@ export const MENU = [
                 name: 'Reports',
                 iconClasses: 'fas fa-chart-bar text-primary',
                 children: [
-                    {name: 'Exam Results', iconClasses: 'fas fa-bullseye text-warning', path: ['/reports/academics/exam-results']},
+                    {name: 'Exam Results', iconClasses: 'fas fa-bullseye text-warning', path: ['/reports/academics/exam-results'],
+                        extraActivePaths: ['/reports/academics/report-forms', '/reports/academics/missing-marks', '/reports/academics/results-analysis']},
                     {name: 'Assessment Report', iconClasses: 'fas fa-bullseye text-warning', path: ['/reports/academics/assessment-report']},
                     {name: 'Subject Performance', iconClasses: 'fas fa-bullseye text-warning', path: ['/reports/academics/subject-performance']},
                     {name: 'Class Performance', iconClasses: 'fas fa-bullseye text-warning', path: ['/reports/academics/class-performance']},
@@ -325,7 +332,20 @@ export const MENU = [
                     '/payroll/tax-bands',
                     '/payroll/nssf-bands',
                     '/payroll/reliefs',
-                    '/payroll/settings'
+                    '/payroll/settings',
+                    // Set-up screens opened from the Dropdowns sections.
+                    '/school/learningModes', '/school/curricula', '/school/departments',
+                    '/class/classNames', '/class/leadership-roles',
+                    '/academics/examTypes', '/academics/examNames', '/academics/subjectGroups', '/academics/examResults',
+                    '/cbe/assessments/assessment-types', '/cbe/assessments/competencies', '/cbe/assessments/key-questions',
+                    '/cbe/assessments/learning-experiences', '/cbe/assessments/lesson-allocations', '/cbe/assessments/pcis',
+                    '/cbe/values/values-register', '/cbe/values/values-scores', '/cbe/responsibilities/responsibilities',
+                    '/cbe/cocurriculum/activities', '/cbe/cocurriculum/score-types', '/cbe/community-service/activities',
+                    '/cbe/exams/exam-types',
+                    '/settings/occupations', '/settings/designations', '/settings/employmentTypes', '/settings/genders',
+                    '/settings/nationalities', '/settings/occurenceTypes', '/settings/outcomes', '/settings/relationships',
+                    '/settings/religions', '/settings/sessionTypes', '/settings/staffCategories',
+                    '/finance/accounts', '/finance/fee-categories', '/finance/expense-categories'
                 ]
             },
             {
