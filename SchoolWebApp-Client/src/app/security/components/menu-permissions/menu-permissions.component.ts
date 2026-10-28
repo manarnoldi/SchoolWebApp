@@ -7,6 +7,7 @@ import {MenuPermissionService} from '../../services/menu-permission.service';
 import {AppRole} from '../../models/app-role';
 import {licensedMenu, MENU} from '@/core/modules/main/menu-sidebar/menu-sidebar.component';
 import {LicenceService} from '@/core/services/licence.service';
+import {DASHBOARD_CARDS} from '@/core/models/dashboard-cards';
 
 interface MenuChild {
     path: string;
@@ -64,10 +65,16 @@ export class MenuPermissionsComponent implements OnInit {
             if (item.path) {
                 // Top-level item with direct path (e.g. Dashboard)
                 const pathStr = Array.isArray(item.path) ? item.path.join('/') : item.path;
+                const children: MenuChild[] = [{path: pathStr, name: item.name}];
+                // The dashboard's cards are permissions of their own, for the modules licensed.
+                if (pathStr === '/') {
+                    DASHBOARD_CARDS.filter((c) => this.licence.has(c.module))
+                        .forEach((c) => children.push({path: c.path, name: c.name, subGroup: 'Cards'}));
+                }
                 this.menuGroups.push({
                     name: item.name,
                     iconClasses: item.iconClasses,
-                    children: [{path: pathStr, name: item.name}],
+                    children,
                     collapsed: false
                 });
             } else if (item.children) {

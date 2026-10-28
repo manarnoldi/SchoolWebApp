@@ -12,18 +12,19 @@ namespace SchoolWebApp.API.Controllers.Dashboard
 {
     /// <summary>
     /// The dashboard's module cards. Each answers only when the licence has the
-    /// module and the caller may open the pages it summarises.
+    /// module and the caller's role holds the card.
     /// </summary>
     [Authorize]
     [ApiController]
     [Route("api/dashboardCards")]
     public class DashboardCardsController : ControllerBase
     {
-        // The menus whose holders see each card.
-        public static readonly string[] FinanceMenus = { "/finance/reports/fees", "/finance/payments" };
-        public static readonly string[] PayrollMenus = { "/payroll/periods", "/payroll/reports" };
-        public static readonly string[] ElectionsMenus = { "/elections/manage" };
-        public static readonly string[] CommunicationsMenus = { "/communications/queue", "/communications/sms-report" };
+        // Each card is a permission of its own (Security > Menu Permissions > Dashboard),
+        // the same paths the client checks (core/models/dashboard-cards.ts).
+        public static readonly string[] FinanceMenus = { "/dashboard/cards/fees" };
+        public static readonly string[] PayrollMenus = { "/dashboard/cards/payroll" };
+        public static readonly string[] ElectionsMenus = { "/dashboard/cards/elections" };
+        public static readonly string[] CommunicationsMenus = { "/dashboard/cards/messages" };
 
         private readonly ApplicationDbContext _db;
         private readonly MenuAccessService _access;

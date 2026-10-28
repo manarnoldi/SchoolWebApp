@@ -6,6 +6,7 @@ import {AccessService} from '@/core/services/access.service';
 import {TeachingDocumentsService} from '@/teaching/services/teaching-services';
 import {TrackerRow} from '@/teaching/models/teaching-models';
 import {STAGE_BADGES, STAGE_LABELS} from '@/elections/models/election-models';
+import {cardPath} from '@/core/models/dashboard-cards';
 
 interface TeachingSummary {
     term: string;
@@ -53,12 +54,12 @@ export class ModuleCardsComponent implements OnInit {
 
     ngOnInit(): void {
         this.licence.load().subscribe(() => {
-            this.card('Finance', ['/finance/reports/fees', '/finance/payments'], 'finance', () =>
+            this.card('Finance', cardPath('finance'), 'finance', () =>
                 this.http.get('/dashboardCards/finance').subscribe({next: (d) => (this.finance = d), error: () => (this.show.finance = false)}));
-            this.card('Payroll', ['/payroll/periods', '/payroll/reports'], 'payroll', () =>
+            this.card('Payroll', cardPath('payroll'), 'payroll', () =>
                 this.http.get('/dashboardCards/payroll').subscribe({next: (d) => (this.payroll = d), error: () => (this.show.payroll = false)}));
-            this.card('Academics', ['/teaching/tracker'], 'teaching', () => this.loadTeaching());
-            this.card('Elections', ['/elections/manage'], 'elections', () =>
+            this.card('Academics', cardPath('teaching'), 'teaching', () => this.loadTeaching());
+            this.card('Elections', cardPath('elections'), 'elections', () =>
                 this.http.get<any[]>('/dashboardCards/elections').subscribe({
                     next: (d) => {
                         this.elections = d;
@@ -66,15 +67,16 @@ export class ModuleCardsComponent implements OnInit {
                     },
                     error: () => (this.show.elections = false)
                 }));
-            this.card('Communications', ['/communications/queue', '/communications/sms-report'], 'communications', () =>
+            this.card('Communications', cardPath('communications'), 'communications', () =>
                 this.http.get('/dashboardCards/communications').subscribe({next: (d) => (this.communications = d), error: () => (this.show.communications = false)}));
         });
     }
 
-    // Shows a card (and loads it) when its module is licensed and the user may open one of its pages.
-    private card(module: any, paths: string[], key: keyof ModuleCardsComponent['show'], load: () => void) {
+    // Shows a card (and loads it) when its module is licensed and the user's role holds the card
+    // (Security > Menu Permissions > Dashboard > Cards).
+    private card(module: any, path: string, key: keyof ModuleCardsComponent['show'], load: () => void) {
         if (!this.licence.has(module)) return;
-        this.access.canAny(...paths).subscribe((ok) => {
+        this.access.canAny(path).subscribe((ok) => {
             this.show[key] = ok;
             if (ok) load();
         });
