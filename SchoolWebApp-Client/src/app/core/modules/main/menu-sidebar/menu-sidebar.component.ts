@@ -232,6 +232,15 @@ export const MENU = [
         module: 'Finance',
         children: [
             {
+                name: 'Budgets',
+                iconClasses: 'fas fa-piggy-bank text-warning',
+                children: [
+                    {name: 'Budget Register', iconClasses: 'fas fa-clipboard-list text-info', path: ['/finance/budget-register']},
+                    {name: 'Budgets', iconClasses: 'fas fa-piggy-bank text-warning', path: ['/finance/budgets']},
+                    {name: 'Budget Amendments', iconClasses: 'fas fa-edit text-warning', path: ['/finance/budget-amendments']}
+                ]
+            },
+            {
                 name: 'Fees',
                 iconClasses: 'fas fa-file-invoice-dollar text-success',
                 children: [
@@ -248,15 +257,6 @@ export const MENU = [
                     {name: 'Sponsors', iconClasses: 'fas fa-hands-helping text-primary', path: ['/finance/sponsors']},
                     {name: 'Sponsorships', iconClasses: 'fas fa-award text-primary', path: ['/finance/sponsorships']},
                     {name: 'Sponsor Payments', iconClasses: 'fas fa-hand-holding-usd text-success', path: ['/finance/sponsor-payments']}
-                ]
-            },
-            {
-                name: 'Budgets',
-                iconClasses: 'fas fa-piggy-bank text-warning',
-                children: [
-                    {name: 'Budget Register', iconClasses: 'fas fa-clipboard-list text-info', path: ['/finance/budget-register']},
-                    {name: 'Budgets', iconClasses: 'fas fa-piggy-bank text-warning', path: ['/finance/budgets']},
-                    {name: 'Budget Amendments', iconClasses: 'fas fa-edit text-warning', path: ['/finance/budget-amendments']}
                 ]
             },
             {
