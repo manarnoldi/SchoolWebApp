@@ -588,7 +588,21 @@
                     <span class="badge bg-light text-dark">{{ consolidatedBudget.departments?.length || 0 }} department(s)</span>
                 </div>
                 <div class="card-body p-2">
-                    <div class="row g-2 mb-2" *ngIf="consolidatedBudget.departments?.length > 0">
+                    <!-- Printed as one compact summary row; the cards are for the screen. -->
+                    <table class="table table-sm table-bordered mb-2 d-none d-print-table" *ngIf="consolidatedBudget.departments?.length > 0">
+                        <thead class="table-light"><tr><th class="text-end">Budgeted Income</th><th class="text-end">Actual Income</th>
+                            <th class="text-end">Budgeted Expense</th><th class="text-end">Actual Expense</th>
+                            <th class="text-end">Net Budgeted</th><th class="text-end">Net Actual</th></tr></thead>
+                        <tbody><tr class="fw-bold">
+                            <td class="text-end">{{ consolidatedBudget.grandBudgetedIncome | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ consolidatedBudget.grandActualIncome | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ consolidatedBudget.grandBudgetedExpense | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ consolidatedBudget.grandActualExpense | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ consolidatedBudget.netBudgeted | number:'1.2-2' }}</td>
+                            <td class="text-end">{{ consolidatedBudget.netActual | number:'1.2-2' }}</td>
+                        </tr></tbody>
+                    </table>
+                    <div class="row g-2 mb-2 d-print-none" *ngIf="consolidatedBudget.departments?.length > 0">
                         <div class="col-md-3"><div class="small-box bg-success p-2"><div class="inner"><h5 class="mb-0">{{ consolidatedBudget.grandBudgetedIncome | number:'1.0-2' }}</h5><div>Budgeted Income</div><small class="text-white-50">Actual: {{ consolidatedBudget.grandActualIncome | number:'1.0-2' }}</small></div></div></div>
                         <div class="col-md-3"><div class="small-box bg-danger p-2"><div class="inner"><h5 class="mb-0">{{ consolidatedBudget.grandBudgetedExpense | number:'1.0-2' }}</h5><div>Budgeted Expense</div><small class="text-white-50">Actual: {{ consolidatedBudget.grandActualExpense | number:'1.0-2' }}</small></div></div></div>
                         <div class="col-md-3"><div class="small-box bg-primary p-2"><div class="inner"><h5 class="mb-0">{{ consolidatedBudget.netBudgeted | number:'1.0-2' }}</h5><div>Net Budgeted</div></div></div></div>
