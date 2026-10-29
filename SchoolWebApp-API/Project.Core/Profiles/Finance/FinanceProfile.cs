@@ -119,6 +119,8 @@ namespace SchoolWebApp.Core.Profiles.Finance
                 .ForMember(d => d.DepartmentName, o => o.MapFrom(s => s.Department != null ? s.Department.Name : null))
                 .ForMember(d => d.BudgetMasterName, o => o.MapFrom(s => s.BudgetMaster != null ? s.BudgetMaster.Name : null))
                 .ForMember(d => d.TotalBudgeted, o => o.MapFrom(s => s.Lines.Sum(l => l.BudgetedAmount)))
+                .ForMember(d => d.TotalIncome, o => o.MapFrom(s => s.Lines.Where(l => l.Account != null && l.Account.AccountType == AccountType.Income).Sum(l => l.BudgetedAmount)))
+                .ForMember(d => d.TotalExpense, o => o.MapFrom(s => s.Lines.Where(l => l.Account != null && l.Account.AccountType == AccountType.Expense).Sum(l => l.BudgetedAmount)))
                 .ForMember(d => d.Lines, o => o.MapFrom(s => s.Lines));
             CreateMap<CreateBudgetDto, Budget>();
 

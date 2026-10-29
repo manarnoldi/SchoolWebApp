@@ -345,7 +345,8 @@
                             <th>Department</th>
                             <th>Academic Year</th>
                             <th>Period</th>
-                            <th class="text-end">Total Budgeted</th>
+                            <th class="text-end">Income</th>
+                            <th class="text-end">Expense</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -357,7 +358,8 @@
                             <td><span class="badge bg-info">{{ b.departmentName || '-' }}</span></td>
                             <td><small>{{ b.academicYearName || '-' }}</small></td>
                             <td><small>{{ b.startDate | date:'mediumDate' }} - {{ b.endDate | date:'mediumDate' }}</small></td>
-                            <td class="text-end fw-bold">{{ b.totalBudgeted | number:'1.2-2' }}</td>
+                            <td class="text-end fw-bold text-success">{{ b.totalIncome ? (b.totalIncome | number:'1.2-2') : '-' }}</td>
+                            <td class="text-end fw-bold text-danger">{{ b.totalExpense ? (b.totalExpense | number:'1.2-2') : '-' }}</td>
                             <td>
                                 <span *ngIf="b.isActive" class="badge bg-success">Active</span>
                                 <span *ngIf="!b.isActive" class="badge bg-secondary">Inactive</span>

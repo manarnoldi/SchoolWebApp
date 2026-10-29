@@ -25,6 +25,9 @@ namespace SchoolWebApp.Core.DTOs.Finance.Budget
         public string? DepartmentName { get; set; }
         public string? BudgetMasterName { get; set; }
         public decimal TotalBudgeted { get; set; }
+        // Income and expense lines apart, so a budget with both doesn't show them added together.
+        public decimal TotalIncome { get; set; }
+        public decimal TotalExpense { get; set; }
         public decimal TotalAmendments { get; set; }
         public decimal TotalEffective { get; set; }
         public List<BudgetLineDto> Lines { get; set; } = new();

@@ -31,6 +31,8 @@ export class Budget extends ResourceModel<Budget> {
     public budgetMasterName?: string;
     public isActive?: boolean;
     public totalBudgeted?: number;
+    public totalIncome?: number;
+    public totalExpense?: number;
     public totalAmendments?: number;
     public totalEffective?: number;
     public lines!: BudgetLine[];
