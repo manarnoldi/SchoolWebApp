@@ -302,6 +302,20 @@ namespace SchoolWebApp.API.Controllers.Finance
                         : l.Debit - l.Credit)
                 );
 
+            // An account only one department budgets takes its actual from the ledger. One that several
+            // departments budget (stationery, transport...) is split by the approved expenses each
+            // department charged to its own budget lines - otherwise every one of them would show the
+            // whole school's spend on it, and the totals would count it several times.
+            var sharedAccounts = budgets.SelectMany(b => b.Lines.Select(l => new { b.DepartmentId, l.AccountId })).Distinct()
+                .GroupBy(x => x.AccountId).Where(g => g.Count() > 1).Select(g => g.Key).ToHashSet();
+            var budgetLineIds = budgets.SelectMany(b => b.Lines).Select(l => l.Id).ToList();
+            var chargedByLine = (await _unitOfWork.Repository<ExpenseLine>().Find(l => l.BudgetLineId != null
+                        && budgetLineIds.Contains(l.BudgetLineId.Value) && l.Expense!.Status == ExpenseStatus.Approved
+                        && l.Expense.ExpenseDate >= minDate && l.Expense.ExpenseDate <= maxDate,
+                    includeProperties: "Expense"))
+                .GroupBy(l => l.BudgetLineId!.Value)
+                .ToDictionary(g => g.Key, g => g.Sum(l => l.Amount));
+
             // Sum of approved-amendment deltas per (BudgetId, AccountId) - added on top of each budget line.
             var budgetIds = budgets.Select(b => b.Id).ToHashSet();
             var approvedAmendments = (await _unitOfWork.BudgetAmendments.Find(
@@ -347,6 +361,7 @@ namespace SchoolWebApp.API.Controllers.Finance
                 // using effective (budgeted + approved-amendment-delta).
                 var allLines = deptGroup.SelectMany(b => b.Lines.Select(l => new {
                     BudgetId = b.Id,
+                    LineId = l.Id,
                     l.AccountId,
                     l.Account,
                     EffectiveAmt = Effective(b.Id, l.AccountId, l.BudgetedAmount)
@@ -358,7 +373,9 @@ namespace SchoolWebApp.API.Controllers.Finance
                 {
                     var acc = lg.First().Account!;
                     var budgeted = lg.Sum(l => l.EffectiveAmt);
-                    var actual = actualsByAccount.TryGetValue(acc.Id, out var v) ? v : 0;
+                    var actual = sharedAccounts.Contains(acc.Id)
+                        ? lg.Sum(l => chargedByLine.GetValueOrDefault(l.LineId))
+                        : actualsByAccount.TryGetValue(acc.Id, out var v) ? v : 0;
                     var line = new ConsolidatedBudgetLineDto
                     {
                         AccountId = acc.Id,
