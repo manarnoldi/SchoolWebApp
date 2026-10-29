@@ -29,3 +29,8 @@
         border-color: #3b82f6;
     }
 }
+
+// Report rows that open the transactions behind them.
+.drill-row { cursor: pointer; }
+.drill-row:hover td { color: #1e40af; }
+@media print { .drill-row:hover td { color: inherit; } }

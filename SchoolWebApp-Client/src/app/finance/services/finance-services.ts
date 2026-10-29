@@ -155,6 +155,16 @@ export class FinanceReportsService {
     expenseReport(from: string, to: string): Observable<any> {
         return this.http.get<any>(`/financeReports/expenseReport?from=${from}&to=${to}`);
     }
+    // Drill-down: the transactions behind a report figure.
+    accountLedger(accountId: number, from: string, to: string): Observable<any> {
+        return this.http.get<any>(`/financeDrilldown/ledger?accountId=${accountId}&from=${from}&to=${to}`);
+    }
+    budgetLineExpenses(academicYearId: number, departmentId: number, accountId: number): Observable<any> {
+        return this.http.get<any>(`/financeDrilldown/budgetLine?academicYearId=${academicYearId}&departmentId=${departmentId}&accountId=${accountId}`);
+    }
+    document(type: string, id: number): Observable<any> {
+        return this.http.get<any>(`/financeDrilldown/document?type=${type}&id=${id}`);
+    }
     studentStatement(studentId: number, academicYearId?: any, sessionId?: any, from?: string, to?: string): Observable<any> {
         let params: string[] = [`studentId=${studentId}`];
         if (academicYearId) params.push(`academicYearId=${academicYearId}`);

@@ -1,5 +1,6 @@
 import {StandardMessageSender} from '@/communications/services/standard-message-sender.service';
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {FinanceDrilldownComponent} from './drilldown/finance-drilldown.component';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
 import {FinanceReportsService} from '@/finance/services/finance-services';
@@ -530,6 +531,43 @@ export class FinanceReportsComponent implements OnInit {
     }
 
     printReport() { window.print(); }
+
+    // ---------- Drill-down: the transactions behind a figure, in a pop-up ----------
+
+    @ViewChild('drill') drillDown!: FinanceDrilldownComponent;
+
+    openLedger(accountId: number | null, from: string, to: string) {
+        if (accountId) this.drillDown.show({kind: 'ledger', accountId}, {from, to});
+    }
+
+    // The balance sheet is at a date: its ledgers run from the start of that year.
+    openBalanceLedger(accountId: number | null) {
+        this.openLedger(accountId, this.asOfDate.slice(0, 4) + '-01-01', this.asOfDate);
+    }
+
+    openStatement(studentId: number, academicYearId: any, sessionId: any) {
+        let year = this.academicYears.find((y) => y.id == academicYearId)?.name;
+        let term = this.allSessions.find((s) => s.id == sessionId)?.sessionName;
+        this.drillDown.show({kind: 'statement', studentId, academicYearId, sessionId, label: [term, year].filter(Boolean).join(' ')},
+            {from: this.fromDate, to: this.toDate});
+    }
+
+    openDocument(type: string, id: number) {
+        if (id) this.drillDown.show({kind: 'document', type, id}, {from: this.fromDate, to: this.toDate});
+    }
+
+    openExpenseCategory(c: any) {
+        let rows = (this.expenseReport?.detail || []).filter((d: any) => d.expenseCategoryId === c.categoryId);
+        this.drillDown.show({kind: 'expenses', title: c.category, subtitle: `Expenses, ${this.fromDate} to ${this.toDate}`, rows},
+            {from: this.fromDate, to: this.toDate});
+    }
+
+    openBudgetLine(d: any, l: any) {
+        let b = this.consolidatedBudget;
+        let from = (b.startDate || '').slice(0, 10), to = (b.endDate || '').slice(0, 10);
+        this.drillDown.show({kind: 'budgetLine', academicYearId: b.academicYearId, departmentId: d.departmentId, accountId: l.accountId,
+            shared: !!l.shared, from, to}, {from, to});
+    }
 
     tbTotalDebit(): number { return (this.trialBalance || []).reduce((s, r) => s + (r.debit || 0), 0); }
     tbTotalCredit(): number { return (this.trialBalance || []).reduce((s, r) => s + (r.credit || 0), 0); }

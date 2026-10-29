@@ -82,6 +82,8 @@ namespace SchoolWebApp.Core.DTOs.Finance.Reports
         public decimal Budgeted { get; set; }
         public decimal Actual { get; set; }
         public decimal Variance { get; set; }
+        // Several departments budget this account, so its actual is their charged expenses, not the ledger.
+        public bool Shared { get; set; }
     }
 
     public class ConsolidatedBudgetDepartmentDto
@@ -110,6 +112,8 @@ namespace SchoolWebApp.Core.DTOs.Finance.Reports
     {
         public int AcademicYearId { get; set; }
         public string? AcademicYearName { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public decimal GrandBudgetedIncome { get; set; }
         public decimal GrandBudgetedExpense { get; set; }
         public decimal GrandActualIncome { get; set; }

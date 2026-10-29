@@ -10,6 +10,7 @@ import {JournalEntriesComponent} from './components/journal-entries/journal-entr
 import {PaymentsComponent} from './components/payments/payments.component';
 import {FinanceInvoicesComponent} from './components/invoices/invoices.component';
 import {FinanceReportsComponent} from './components/reports/finance-reports.component';
+import {FinanceDrilldownComponent} from './components/reports/drilldown/finance-drilldown.component';
 import {FinanceBudgetsComponent} from './components/budgets/budgets.component';
 import {FinanceBudgetAmendmentsComponent} from './components/budget-amendments/budget-amendments.component';
 import {SponsorsComponent} from './components/sponsors/sponsors.component';
@@ -30,6 +31,7 @@ import {ApprovalsModule} from '@/approvals/approvals.module';
         PaymentsComponent,
         FinanceInvoicesComponent,
         FinanceReportsComponent,
+        FinanceDrilldownComponent,
         FinanceBudgetsComponent,
         FinanceBudgetAmendmentsComponent,
         FinanceBudgetMastersComponent,

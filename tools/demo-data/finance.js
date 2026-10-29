@@ -429,6 +429,9 @@ ${Object.entries(MENUS).flatMap(([role, paths]) => paths.map((p) => `INSERT INTO
     // Bulk invoices are numbered by the time they were made; number them by
     // their date instead, and stamp every record with its own date, not today's.
     exec(`
+UPDATE journallines l JOIN journalentries j ON j.Id = l.JournalEntryId JOIN studentinvoices i ON j.ReferenceNumber = CONCAT('INV-JNL-', i.InvoiceNumber)
+    SET l.Description = REPLACE(l.Description, i.InvoiceNumber, CONCAT('INV-', DATE_FORMAT(i.InvoiceDate, '%Y%m%d'), '-', i.StudentId))
+    WHERE i.InvoiceNumber NOT LIKE '%-X';
 UPDATE journalentries j JOIN studentinvoices i ON j.ReferenceNumber = CONCAT('INV-JNL-', i.InvoiceNumber)
     SET j.ReferenceNumber = CONCAT('INV-JNL-INV-', DATE_FORMAT(i.InvoiceDate, '%Y%m%d'), '-', i.StudentId),
         j.Description = CONCAT('Auto-posted: Invoice INV-', DATE_FORMAT(i.InvoiceDate, '%Y%m%d'), '-', i.StudentId)

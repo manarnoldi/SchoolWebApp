@@ -337,7 +337,9 @@ namespace SchoolWebApp.API.Controllers.Finance
             var result = new ConsolidatedBudgetDto
             {
                 AcademicYearId = academicYearId,
-                AcademicYearName = yearName
+                AcademicYearName = yearName,
+                StartDate = minDate,
+                EndDate = maxDate
             };
 
             foreach (var deptGroup in budgets.GroupBy(b => new { b.DepartmentId, DeptName = b.Department?.Name }))
@@ -384,7 +386,8 @@ namespace SchoolWebApp.API.Controllers.Finance
                         AccountType = acc.AccountType.ToString(),
                         Budgeted = budgeted,
                         Actual = actual,
-                        Variance = budgeted - actual
+                        Variance = budgeted - actual,
+                        Shared = sharedAccounts.Contains(acc.Id)
                     };
                     deptDto.Lines.Add(line);
 
@@ -553,23 +556,23 @@ namespace SchoolWebApp.API.Controllers.Finance
             var invoices = invoicesQuery.ToList();
 
             // Build transaction list: invoices = debit, payments = credit, credit notes = debit, debit notes = debit
-            var transactions = new List<(DateTime Date, string Type, string Reference, string Description, decimal Debit, decimal Credit, string? CreatedBy, string? Method)>();
+            var transactions = new List<(DateTime Date, string Type, string Reference, string Description, decimal Debit, decimal Credit, string? CreatedBy, string? Method, string SourceType, int SourceId)>();
 
             foreach (var inv in invoices)
             {
                 var itemDesc = string.Join(", ", inv.Items.Select(it => it.FeeCategory?.Name ?? "").Where(n => !string.IsNullOrEmpty(n)));
                 transactions.Add((inv.InvoiceDate, "Invoice", inv.InvoiceNumber,
-                    itemDesc.Length > 0 ? itemDesc : (inv.Description ?? ""), inv.TotalAmount, 0m, inv.CreatedBy, null));
+                    itemDesc.Length > 0 ? itemDesc : (inv.Description ?? ""), inv.TotalAmount, 0m, inv.CreatedBy, null, "invoice", inv.Id));
             }
 
             foreach (var p in payments)
             {
                 if (p.PaymentType == PaymentType.Receipt)
-                    transactions.Add((p.PaymentDate, "Receipt", p.ReceiptNumber, p.Description ?? "", 0m, p.Amount, p.CreatedBy, p.PaymentMethod.ToString()));
+                    transactions.Add((p.PaymentDate, "Receipt", p.ReceiptNumber, p.Description ?? "", 0m, p.Amount, p.CreatedBy, p.PaymentMethod.ToString(), "payment", p.Id));
                 else if (p.PaymentType == PaymentType.CreditNote)
-                    transactions.Add((p.PaymentDate, "Credit Note", p.ReceiptNumber, p.Reason ?? p.Description ?? "", p.Amount, 0m, p.CreatedBy, null));
+                    transactions.Add((p.PaymentDate, "Credit Note", p.ReceiptNumber, p.Reason ?? p.Description ?? "", p.Amount, 0m, p.CreatedBy, null, "payment", p.Id));
                 else if (p.PaymentType == PaymentType.DebitNote)
-                    transactions.Add((p.PaymentDate, "Debit Note", p.ReceiptNumber, p.Reason ?? p.Description ?? "", p.Amount, 0m, p.CreatedBy, null));
+                    transactions.Add((p.PaymentDate, "Debit Note", p.ReceiptNumber, p.Reason ?? p.Description ?? "", p.Amount, 0m, p.CreatedBy, null, "payment", p.Id));
             }
 
             transactions = transactions.OrderBy(t => t.Date).ThenBy(t => t.Reference).ToList();
@@ -588,7 +591,9 @@ namespace SchoolWebApp.API.Controllers.Finance
                     credit = t.Credit,
                     balance = running,
                     createdBy = t.CreatedBy,
-                    method = t.Method
+                    method = t.Method,
+                    sourceType = t.SourceType,
+                    sourceId = t.SourceId
                 };
             }).ToList();
 
@@ -808,20 +813,25 @@ namespace SchoolWebApp.API.Controllers.Finance
             var expenses = await _unitOfWork.Expenses.GetAllWithLines();
             var filtered = expenses.Where(e => e.ExpenseDate >= from && e.ExpenseDate <= to && e.Status == ExpenseStatus.Approved).ToList();
             var lines = filtered.SelectMany(e => e.Lines.Select(l => new {
+                ExpenseId = e.Id,
                 e.ReferenceNumber,
                 e.ExpenseDate,
+                l.ExpenseCategoryId,
                 l.ExpenseCategory,
                 l.Amount,
                 l.Vendor,
                 l.Description
             }));
-            var byCategory = lines.GroupBy(l => l.ExpenseCategory?.Name ?? "Uncategorized").Select(g => new {
-                Category = g.Key,
+            var byCategory = lines.GroupBy(l => new { l.ExpenseCategoryId, Name = l.ExpenseCategory?.Name ?? "Uncategorized" }).Select(g => new {
+                CategoryId = g.Key.ExpenseCategoryId,
+                Category = g.Key.Name,
                 Amount = g.Sum(x => x.Amount),
                 Count = g.Count()
             }).OrderByDescending(x => x.Amount).ToList();
 
             var detail = lines.Select(l => new {
+                l.ExpenseId,
+                l.ExpenseCategoryId,
                 l.ReferenceNumber,
                 Date = l.ExpenseDate,
                 Category = l.ExpenseCategory?.Name,

@@ -78,7 +78,7 @@
                     <table class="table table-striped table-hover table-sm mb-0">
                         <thead class="table-light"><tr><th>Code</th><th>Account</th><th>Type</th><th class="text-end">Debit</th><th class="text-end">Credit</th></tr></thead>
                         <tbody>
-                            <tr *ngFor="let r of trialBalance">
+                            <tr *ngFor="let r of trialBalance" class="drill-row" (click)="openLedger(r.accountId, fromDate, toDate)" title="See the transactions">
                                 <td><strong>{{ r.accountCode }}</strong></td>
                                 <td>{{ r.accountName }}</td>
                                 <td><span class="badge bg-secondary">{{ getAccountTypeLabel(r.accountType) }}</span></td>
@@ -106,14 +106,14 @@
                     <h6 class="text-success"><i class="fas fa-arrow-up me-1"></i> Income</h6>
                     <table class="table table-sm mb-2">
                         <tbody>
-                            <tr *ngFor="let r of incomeStatement.income"><td style="width:15%;"><strong>{{ r.accountCode }}</strong></td><td>{{ r.accountName }}</td><td class="text-end" style="width:20%;">{{ r.amount | number:'1.2-2' }}</td></tr>
+                            <tr *ngFor="let r of incomeStatement.income" class="drill-row" (click)="openLedger(r.accountId, fromDate, toDate)" title="See the transactions"><td style="width:15%;"><strong>{{ r.accountCode }}</strong></td><td>{{ r.accountName }}</td><td class="text-end" style="width:20%;">{{ r.amount | number:'1.2-2' }}</td></tr>
                             <tr class="table-success fw-bold"><td colspan="2" class="text-end">Total Income</td><td class="text-end">{{ incomeStatement.totalIncome | number:'1.2-2' }}</td></tr>
                         </tbody>
                     </table>
                     <h6 class="text-danger"><i class="fas fa-arrow-down me-1"></i> Expenses</h6>
                     <table class="table table-sm mb-2">
                         <tbody>
-                            <tr *ngFor="let r of incomeStatement.expenses"><td style="width:15%;"><strong>{{ r.accountCode }}</strong></td><td>{{ r.accountName }}</td><td class="text-end" style="width:20%;">{{ r.amount | number:'1.2-2' }}</td></tr>
+                            <tr *ngFor="let r of incomeStatement.expenses" class="drill-row" (click)="openLedger(r.accountId, fromDate, toDate)" title="See the transactions"><td style="width:15%;"><strong>{{ r.accountCode }}</strong></td><td>{{ r.accountName }}</td><td class="text-end" style="width:20%;">{{ r.amount | number:'1.2-2' }}</td></tr>
                             <tr class="table-danger fw-bold"><td colspan="2" class="text-end">Total Expenses</td><td class="text-end">{{ incomeStatement.totalExpenses | number:'1.2-2' }}</td></tr>
                         </tbody>
                     </table>
@@ -137,17 +137,17 @@
                 <div class="card-body p-2">
                     <h6 class="text-success">Assets</h6>
                     <table class="table table-sm mb-2"><tbody>
-                        <tr *ngFor="let r of balanceSheet.assets"><td style="width:15%;"><strong>{{ r.accountCode }}</strong></td><td>{{ r.accountName }}</td><td class="text-end" style="width:20%;">{{ r.amount | number:'1.2-2' }}</td></tr>
+                        <tr *ngFor="let r of balanceSheet.assets" [class.drill-row]="r.accountId" (click)="openBalanceLedger(r.accountId)" title="See the transactions"><td style="width:15%;"><strong>{{ r.accountCode }}</strong></td><td>{{ r.accountName }}</td><td class="text-end" style="width:20%;">{{ r.amount | number:'1.2-2' }}</td></tr>
                         <tr class="table-success fw-bold"><td colspan="2" class="text-end">Total Assets</td><td class="text-end">{{ balanceSheet.totalAssets | number:'1.2-2' }}</td></tr>
                     </tbody></table>
                     <h6 class="text-warning">Liabilities</h6>
                     <table class="table table-sm mb-2"><tbody>
-                        <tr *ngFor="let r of balanceSheet.liabilities"><td style="width:15%;"><strong>{{ r.accountCode }}</strong></td><td>{{ r.accountName }}</td><td class="text-end" style="width:20%;">{{ r.amount | number:'1.2-2' }}</td></tr>
+                        <tr *ngFor="let r of balanceSheet.liabilities" [class.drill-row]="r.accountId" (click)="openBalanceLedger(r.accountId)" title="See the transactions"><td style="width:15%;"><strong>{{ r.accountCode }}</strong></td><td>{{ r.accountName }}</td><td class="text-end" style="width:20%;">{{ r.amount | number:'1.2-2' }}</td></tr>
                         <tr class="table-warning fw-bold"><td colspan="2" class="text-end">Total Liabilities</td><td class="text-end">{{ balanceSheet.totalLiabilities | number:'1.2-2' }}</td></tr>
                     </tbody></table>
                     <h6 class="text-info">Equity</h6>
                     <table class="table table-sm mb-2"><tbody>
-                        <tr *ngFor="let r of balanceSheet.equity"><td style="width:15%;"><strong>{{ r.accountCode }}</strong></td><td>{{ r.accountName }}</td><td class="text-end" style="width:20%;">{{ r.amount | number:'1.2-2' }}</td></tr>
+                        <tr *ngFor="let r of balanceSheet.equity" [class.drill-row]="r.accountId" (click)="openBalanceLedger(r.accountId)" title="See the transactions"><td style="width:15%;"><strong>{{ r.accountCode }}</strong></td><td>{{ r.accountName }}</td><td class="text-end" style="width:20%;">{{ r.amount | number:'1.2-2' }}</td></tr>
                         <tr class="table-info fw-bold"><td colspan="2" class="text-end">Total Equity</td><td class="text-end">{{ balanceSheet.totalEquity | number:'1.2-2' }}</td></tr>
                     </tbody></table>
                     <div class="alert alert-primary"><strong>Total Liabilities + Equity:</strong><span class="float-end fw-bold">{{ (balanceSheet.totalLiabilities + balanceSheet.totalEquity) | number:'1.2-2' }}</span></div>
@@ -221,7 +221,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let s of cls.students; index as i">
+                                    <tr *ngFor="let s of cls.students; index as i" class="drill-row" (click)="openStatement(s.studentId, feeCollectionYearId, feeCollectionSessionId)" title="See the student's statement">
                                         <td>{{ i + 1 }}</td>
                                         <td><strong>{{ s.studentUPI }}</strong></td>
                                         <td>{{ s.studentName }}</td>
@@ -283,7 +283,7 @@
                     <table class="table table-striped table-hover table-sm mb-0">
                         <thead class="table-light"><tr><th>#</th><th>Adm No</th><th>Student</th><th class="text-end">Invoiced</th><th class="text-end">Paid</th><th class="text-end">Balance</th></tr></thead>
                         <tbody>
-                            <tr *ngFor="let r of outstanding; index as i">
+                            <tr *ngFor="let r of outstanding; index as i" class="drill-row" (click)="openStatement(r.studentId, outstandingYearId, outstandingSessionId)" title="See the student's statement">
                                 <td>{{ i + 1 }}</td><td><strong>{{ r.studentUPI }}</strong></td><td>{{ r.studentName }}</td>
                                 <td class="text-end">{{ r.totalInvoiced | number:'1.2-2' }}</td>
                                 <td class="text-end text-success">{{ r.totalPaid | number:'1.2-2' }}</td>
@@ -315,7 +315,7 @@
                         <table class="table table-striped table-sm mb-0">
                             <thead class="table-light"><tr><th>#</th><th>Category</th><th class="text-center">Count</th><th class="text-end">Amount</th><th class="text-end">% of Total</th></tr></thead>
                             <tbody>
-                                <tr *ngFor="let c of expenseReport.byCategory; index as i">
+                                <tr *ngFor="let c of expenseReport.byCategory; index as i" class="drill-row" (click)="openExpenseCategory(c)" title="See the expenses">
                                     <td>{{ i + 1 }}</td><td><strong>{{ c.category }}</strong></td>
                                     <td class="text-center"><span class="badge bg-secondary">{{ c.count }}</span></td>
                                     <td class="text-end fw-bold">{{ c.amount | number:'1.2-2' }}</td>
@@ -333,7 +333,7 @@
                         <table class="table table-striped table-hover table-sm mb-0">
                             <thead class="table-light"><tr><th>Ref #</th><th>Date</th><th>Category</th><th>Vendor</th><th class="text-end">Amount</th><th>Description</th></tr></thead>
                             <tbody>
-                                <tr *ngFor="let d of expenseReport.detail">
+                                <tr *ngFor="let d of expenseReport.detail" class="drill-row" (click)="openDocument('expense', d.expenseId)" title="Open the expense">
                                     <td><strong>{{ d.referenceNumber }}</strong></td>
                                     <td><small>{{ d.date | date:'mediumDate' }}</small></td>
                                     <td><span class="badge bg-secondary">{{ d.category }}</span></td>
@@ -419,7 +419,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let s of cls.students; index as i">
+                                    <tr *ngFor="let s of cls.students; index as i" class="drill-row" (click)="openStatement(s.studentId, feeBalanceYearId, feeBalanceSessionId)" title="See the student's statement">
                                         <td>{{ i + 1 }}</td>
                                         <td><strong>{{ s.studentUPI }}</strong></td>
                                         <td>{{ s.studentName }}</td>
@@ -531,7 +531,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let t of studentStatement.transactions; index as i">
+                                <tr *ngFor="let t of studentStatement.transactions; index as i" class="drill-row" (click)="openDocument(t.sourceType, t.sourceId)" title="Open">
                                     <td>{{ i + 1 }}</td>
                                     <td><small>{{ t.date | date:'mediumDate' }}</small></td>
                                     <td>
@@ -634,7 +634,7 @@
                                         <table class="table table-sm table-bordered mb-0">
                                             <thead class="table-light"><tr><th>Code</th><th>Account</th><th>Type</th><th class="text-end">Budgeted</th><th class="text-end">Actual</th><th class="text-end">Variance</th></tr></thead>
                                             <tbody>
-                                                <tr *ngFor="let l of d.lines">
+                                                <tr *ngFor="let l of d.lines" class="drill-row" (click)="openBudgetLine(d, l)" title="See the transactions">
                                                     <td><small>{{ l.accountCode }}</small></td><td>{{ l.accountName }}</td>
                                                     <td><span class="badge" [ngClass]="l.accountType === 'Income' ? 'bg-success' : 'bg-danger'">{{ l.accountType }}</span></td>
                                                     <td class="text-end">{{ l.budgeted | number:'1.2-2' }}</td><td class="text-end">{{ l.actual | number:'1.2-2' }}</td>
@@ -718,7 +718,8 @@
                                     <td class="d-none d-print-table-cell"></td>
                                     <td>{{ i + 1 }}</td>
                                     <td>{{ s.studentUPI }}</td>
-                                    <td><strong>{{ s.studentName }}</strong></td>
+                                    <td><strong>{{ s.studentName }}</strong>
+                                        <a role="button" class="ms-1 d-print-none" (click)="$event.stopPropagation(); openStatement(s.studentId, discountYearId, discountSessionId)" title="See the student's statement"><i class="fas fa-file-alt"></i></a></td>
                                     <td>{{ s.className }}</td>
                                     <td class="text-end">{{ s.invoiceCount }}</td>
                                     <td class="text-end">{{ s.totalInvoiced | number:'1.2-2' }}</td>
@@ -730,7 +731,7 @@
                                         <div *ngFor="let inv of s.invoices" class="mb-2">
                                             <div class="d-flex justify-content-between align-items-center mb-1">
                                                 <span>
-                                                    <strong>{{ inv.invoiceNumber }}</strong>
+                                                    <a role="button" class="fw-bold text-decoration-none" (click)="openDocument('invoice', inv.invoiceId)" title="Open the invoice">{{ inv.invoiceNumber }}</a>
                                                     <span class="ms-2 text-muted">{{ inv.invoiceDate | date:'mediumDate' }}</span>
                                                     <span class="ms-2" *ngIf="inv.academicYear">| {{ inv.academicYear }}</span>
                                                     <span class="ms-1" *ngIf="inv.session">/ {{ inv.session }}</span>
@@ -861,7 +862,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let n of notesReport.notes; let i = index">
+                            <tr *ngFor="let n of notesReport.notes; let i = index" class="drill-row" (click)="openDocument('payment', n.id)" title="Open the note">
                                 <td>{{ i + 1 }}</td>
                                 <td><strong>{{ n.receiptNumber }}</strong></td>
                                 <td>
@@ -902,4 +903,5 @@
         </div>
 
     </div>
+    <app-finance-drilldown #drill></app-finance-drilldown>
 </section>
