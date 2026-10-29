@@ -41,6 +41,8 @@ for (const [u, e] of mysql(opt.source, 'SELECT UserName, Email FROM aspnetusers'
     if (u !== 'admin' && u.length >= 4 && !ours.has(u.toUpperCase())) add(u, 'login');
     if (e && !e.startsWith('admin@')) add(e, 'email');
 }
+for (const [name] of mysql(opt.source, 'SELECT Name FROM sponsors UNION SELECT a.Name FROM accounts a JOIN sponsors s ON s.ReceivableAccountId = a.Id'))
+    add(name, 'sponsor');
 add('SWIKUNDA', 'school'); add('UKUNDA', 'school');
 
 // Dump the copy, one row per line, and search it.

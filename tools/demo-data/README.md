@@ -22,7 +22,23 @@ documents and elections are kept, so the demo shows a full, working school.
    MYSQL_PWD=... node tools/demo-data/anonymize.js --db shulenova --licence "SNL1...."
    ```
 
-3. Check nothing is left from the original:
+3. Add a year of invented finance. Start the API on the copy
+   (`ConnectionStrings__DefaultConnection=...Database=shulenova`), then:
+
+   ```
+   MYSQL_PWD=... node tools/demo-data/finance.js --db shulenova --api http://localhost:5198 --through 2026-11-05
+   ```
+
+   It clears any finance test data, then records through the API: fee
+   structures per class level and term, invoices, about 2,700 fee payments
+   (M-Pesa, bank, cash; earlier terms nearly all paid, the latest one still
+   coming in), sponsorships and sponsor payments, a budget per department and
+   the monthly expenses against it, approved through the real workflows. The
+   school's accountant gets a login (Accounts role) who records it all.
+   Payments run daily up to `--through` (set it to the demo day), so the
+   dashboard shows money collected "today".
+
+4. Check nothing is left from the original:
 
    ```
    MYSQL_PWD=... node tools/demo-data/check.js --source swikunda --db shulenova
@@ -32,7 +48,7 @@ documents and elections are kept, so the demo shows a full, working school.
    name still found, by table. Ordinary words that are also names (Junior,
    Christian, Adam and Love in CRE lessons) are expected.
 
-4. Dump `shulenova` and restore it on the demo site's database.
+5. Dump `shulenova` and restore it on the demo site's database.
 
 ## What changes
 
@@ -45,8 +61,8 @@ documents and elections are kept, so the demo shows a full, working school.
   can sign in as a teacher or head teacher. "Created by" stamps everywhere
   follow the new user names.
 - The school: ShuleNova Demo School, the ShuleNova logo, invented contacts.
-- Sponsors and former schools get invented names; election candidate photos
-  are removed.
+- Sponsors (and their receivable accounts) and former schools get invented
+  names; election candidate photos are removed.
 - Deleted: audit trail, error logs, message history, login tokens.
 - SMS and email are switched off with their credentials cleared, so the demo
   can never message anyone.

@@ -229,6 +229,8 @@ sql.push(`UPDATE schooldetails SET Name = 'SHULENOVA DEMO SCHOOL', Initials = 'S
 // Other names that would identify the school or its people.
 sql.push(`UPDATE sponsors SET Name = CASE Id % 3 WHEN 1 THEN 'Elimu Bora Foundation' WHEN 2 THEN 'Tumaini Bursary Fund' ELSE 'Jamii Scholarship Trust' END,
     ContactName = NULL, Email = NULL, Phone = NULL, Address = NULL;`);
+// Each sponsor's receivable account was named after the real sponsor.
+sql.push(`UPDATE accounts a JOIN sponsors s ON s.ReceivableAccountId = a.Id SET a.Name = s.Name, a.Description = CONCAT(s.Name, ' (Accounts Receivable)');`);
 sql.push(`UPDATE formerschools SET SchoolName = ELT(1 + Id % 4, 'Sunrise Academy', 'Hillside Primary School', 'Bahari Junior Academy', 'Greenfield School');`);
 sql.push('UPDATE electioncandidates SET PhotoFile = NULL, RunningMatePhotoFile = NULL;');
 if (opt.licence) sql.push(`UPDATE globalsettings SET SettingValue = ${q(opt.licence)} WHERE Module = 'Licence' AND SettingKey = 'Key';`);
