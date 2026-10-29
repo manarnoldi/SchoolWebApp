@@ -322,6 +322,8 @@
                 <button class="btn btn-sm btn-outline-secondary" (click)="clearFilters()" title="Clear"><i class="fas fa-times"></i></button>
             </div>
             <div class="col-md-2 text-end">
+                <button class="btn btn-sm btn-outline-secondary me-1" *ngIf="fromRegister" (click)="backToRegister()"
+                    title="Back to the Budget Register"><i class="fas fa-arrow-left"></i> Budget Register</button>
                 <button class="btn btn-sm btn-success" (click)="addNew()"><i class="fas fa-plus"></i> Add Budget</button>
             </div>
         </div>

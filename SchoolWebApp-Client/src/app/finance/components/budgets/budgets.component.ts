@@ -14,7 +14,7 @@ import {ViewChild} from '@angular/core';
 import {ApprovalWebpartComponent} from '@/approvals/components/approval-webpart/approval-webpart.component';
 import {ApprovalService} from '@/approvals/services/approval.service';
 import {ApprovalRequestStatus} from '@/approvals/models/approval.models';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
     selector: 'app-finance-budgets',
@@ -94,7 +94,8 @@ export class FinanceBudgetsComponent implements OnInit {
         private masterSvc: BudgetMasterService,
         private authSvc: AuthService,
         private approvalSvc: ApprovalService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private router: Router
     ) {
         let cu = this.authSvc.getCurrentUser();
         this.currentUserId = cu?.id || null;
@@ -164,6 +165,10 @@ export class FinanceBudgetsComponent implements OnInit {
             error: (err) => this.toastr.error(err.error)
         });
     };
+
+    // Opened from the Budget Register's budgets count: offer the way back.
+    get fromRegister(): boolean { return !!this.route.snapshot.queryParamMap.get('planId'); }
+    backToRegister = () => this.router.navigate(['/finance/budget-register']);
 
     ngOnInit(): void {
         forkJoin([
