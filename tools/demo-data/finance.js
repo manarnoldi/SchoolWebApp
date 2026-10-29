@@ -365,7 +365,7 @@ ${Object.entries(MENUS).flatMap(([role, paths]) => paths.map((p) => `INSERT INTO
 
     // ---------- 10. Expenses ----------
     const expenses = [];
-    const add = (date, description, method, lines) => { if (date <= through) expenses.push({date, description, method, lines}); };
+    const add = (date, description, method, lines, waiting) => { if (date <= through) expenses.push({date, description, method, lines, waiting}); };
     const line = (category, amount, vendor, department, description) => ({category, amount, vendor, department, description});
     const termMonth = (m) => terms.some((t) => t.start.getMonth() <= m && t.end.getMonth() >= m);
     for (let m = 0; m <= through.getMonth(); m++) {
@@ -408,10 +408,10 @@ ${Object.entries(MENUS).flatMap(([role, paths]) => paths.map((p) => `INSERT INTO
     add(new Date(y, 8, 23), 'Science and engineering fair', 0, [line('Miscellaneous', 15000, 'Various', 'STEM', 'Materials and transport')]);
     add(new Date(y, 9, 9), 'Drama festival', 0, [line('Miscellaneous', 22000, 'Various', 'CAS', 'Props and transport')]);
     add(new Date(y, 9, 27), 'Desk repairs', 0, [line('Repairs', 16500, 'Fundi Works Ltd', 'Administration', '30 desks repaired')]);
-    add(addDays(today, 1), 'Grade 9 KJSEA revision books', 2, [line('Stationery', 38500, 'Text Book Centre', 'STEM', 'Revision papers')]);
-    add(addDays(today, 2), 'Generator service', 0, [line('Repairs', 9500, 'Power Gen Services', 'Administration', 'Annual service')]);
+    add(addDays(today, 1), 'Grade 9 KJSEA revision books', 2, [line('Stationery', 38500, 'Text Book Centre', 'STEM', 'Revision papers')], 'second approver');
+    add(addDays(today, 2), 'Generator service', 0, [line('Repairs', 9500, 'Power Gen Services', 'Administration', 'Annual service')], 'draft');
     expenses.sort((x, y) => x.date - y.date);
-    // The last two are still waiting: one with its second approver, one not yet submitted.
+    // Two recent ones are still waiting: one with its second approver, one not yet submitted.
     for (const [i, e] of expenses.entries()) {
         const ref = `EXP-${year.Name}-${String(i + 1).padStart(4, '0')}`;
         const created = await api(B, 'POST', '/expenses', {referenceNumber: ref, expenseDate: iso(e.date), paymentMethod: e.method,
@@ -420,8 +420,8 @@ ${Object.entries(MENUS).flatMap(([role, paths]) => paths.map((p) => `INSERT INTO
             lines: e.lines.map((l) => ({expenseCategoryId: expCat[l.category].id, amount: l.amount, vendor: l.vendor, description: l.description,
                 budgetLineId: budgetLine[`${l.department}:${expCat[l.category].account}`] ?? null}))});
         e.id = created.id;
-        if (i === expenses.length - 1) continue;
-        await approve('Expense', created.id, bursar, [boss[1], boss[0]], 'OK', i === expenses.length - 2 ? 1 : 2);
+        if (e.waiting === 'draft') continue;
+        await approve('Expense', created.id, bursar, [boss[1], boss[0]], 'OK', e.waiting ? 1 : 2);
     }
     console.log(`Expenses: ${expenses.length}.`);
 
