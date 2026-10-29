@@ -604,7 +604,7 @@
                         <tbody>
                             <ng-container *ngFor="let d of consolidatedBudget.departments">
                                 <tr (click)="toggleDept(d.departmentId)" role="button" class="table-primary">
-                                    <td><i class="fas" [ngClass]="isDeptExpanded(d.departmentId) ? 'fa-chevron-down' : 'fa-chevron-right'"></i></td>
+                                    <td><i class="fas d-print-none" [ngClass]="isDeptExpanded(d.departmentId) ? 'fa-chevron-down' : 'fa-chevron-right'"></i></td>
                                     <td><strong>{{ d.departmentName || '(No Department)' }}</strong></td>
                                     <td class="text-center">{{ d.budgetCount }}</td>
                                     <td class="text-end text-success">{{ d.totalBudgetedIncome | number:'1.2-2' }}</td>
@@ -613,7 +613,8 @@
                                     <td class="text-end">{{ d.totalActualExpense | number:'1.2-2' }}</td>
                                     <td class="text-end fw-bold" [ngClass]="getVarianceClass(d.totalBudgetedIncome - d.totalBudgetedExpense)">{{ (d.totalBudgetedIncome - d.totalBudgetedExpense) | number:'1.2-2' }}</td>
                                 </tr>
-                                <tr *ngIf="isDeptExpanded(d.departmentId)">
+                                <!-- Closed departments are hidden on screen but always printed. -->
+                                <tr [class.d-none]="!isDeptExpanded(d.departmentId)" class="d-print-table-row">
                                     <td></td>
                                     <td colspan="7">
                                         <table class="table table-sm table-bordered mb-0">
