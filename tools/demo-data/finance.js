@@ -346,7 +346,7 @@ ${Object.entries(MENUS).flatMap(([role, paths]) => paths.map((p) => `INSERT INTO
     const master = await api(B, 'POST', '/budgetMasters', {name: `${year.Name} Annual Budget`, description: `School budget for ${year.Name}`,
         academicYearId: +year.Id, startDate: `${year.Name}-01-01`, endDate: `${year.Name}-12-31`, status: 1});
     const BUDGETS = {
-        Administration: {'5100': 230000, '5110': 66000, '5120': 96000, '5210': 150000, '5220': 180000, '5300': 520000, '5400': 3100000},
+        Administration: {'4000': 12000000, '4010': 1700000, '4020': 4800000, '4040': 1100000, '4050': 300000, '5100': 230000, '5110': 66000, '5120': 96000, '5210': 150000, '5220': 180000, '5300': 520000, '5400': 3100000},
         STEM: {'5200': 260000, '5220': 60000, '5900': 40000},
         'Social Sciences': {'5200': 170000, '5300': 90000, '5900': 45000},
         CAS: {'5300': 120000, '5900': 160000, '5200': 50000},
