@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
@@ -41,8 +42,12 @@ export class FinanceBudgetMastersComponent implements OnInit {
     constructor(
         private toastr: ToastrService,
         private svc: BudgetMasterService,
-        private yearSvc: AcademicYearsService
+        private yearSvc: AcademicYearsService,
+        private router: Router
     ) {}
+
+    // Opens the Budgets page filtered to this plan.
+    openBudgets = (b: BudgetMaster) => this.router.navigate(['/finance/budgets'], {queryParams: {planId: b.id}});
 
     ngOnInit(): void {
         forkJoin([

@@ -113,7 +113,8 @@
                             <td><small>{{ b.academicYearName }}</small></td>
                             <td><small>{{ b.startDate | date:'mediumDate' }} - {{ b.endDate | date:'mediumDate' }}</small></td>
                             <td><span class="badge" [ngClass]="getStatusBadgeClass(b.status)">{{ getStatusLabel(b.status) }}</span></td>
-                            <td class="text-center"><span class="badge bg-info">{{ b.budgetCount }}</span></td>
+                            <td class="text-center"><a role="button" class="badge bg-info text-decoration-none" (click)="openBudgets(b)"
+                                title="Open this plan's budgets">{{ b.budgetCount }}</a></td>
                             <td>
                                 <button class="btn btn-outline-primary btn-sm" (click)="edit(b)"><i class="fas fa-edit"></i></button>
                                 <button class="btn btn-outline-danger btn-sm ms-1" (click)="delete(b)" [disabled]="b.budgetCount! > 0"

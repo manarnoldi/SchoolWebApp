@@ -185,7 +185,10 @@ export class FinanceBudgetsComponent implements OnInit {
                 let activeYear = this.academicYears.find((y: any) => y.status === true);
                 this.filterAcademicYearId = activeYear ? activeYear.id : (this.academicYears[0]?.id || null);
                 // Default the Budget Plan filter to the first Open plan matching the active year (if any)
-                let defaultPlan = this.budgetMasters.find((m) => m.status === 1 && m.academicYearId == this.filterAcademicYearId)
+                // ...unless the Budget Register opened this page for a particular plan.
+                let planId = this.route.snapshot.queryParamMap.get('planId');
+                let defaultPlan = (planId ? this.budgetMasters.find((m) => +m.id === +planId) : null)
+                    || this.budgetMasters.find((m) => m.status === 1 && m.academicYearId == this.filterAcademicYearId)
                     || this.budgetMasters.find((m) => m.status === 1);
                 if (defaultPlan) {
                     this.filterBudgetMasterId = defaultPlan.id;
