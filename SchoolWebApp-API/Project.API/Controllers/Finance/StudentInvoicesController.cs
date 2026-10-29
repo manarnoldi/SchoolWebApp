@@ -77,7 +77,9 @@ namespace SchoolWebApp.API.Controllers.Finance
             var feeStructure = await _unitOfWork.FeeStructures.GetByIdWithItems(model.FeeStructureId);
             if (feeStructure == null) return NotFound(new { message = "Fee structure not found." });
 
-            var studentClasses = await _unitOfWork.StudentClasses.GetBySchoolClassId(model.SchoolClassId, Core.Entities.Enums.Status.Active);
+            // A student entered twice in the class is invoiced once.
+            var studentClasses = (await _unitOfWork.StudentClasses.GetBySchoolClassId(model.SchoolClassId, Core.Entities.Enums.Status.Active))
+                .GroupBy(sc => sc.StudentId).Select(g => g.First()).ToList();
             if (studentClasses.Count == 0) return BadRequest(new { message = "No active students in class." });
 
             // Pre-fetch all active sponsorships relevant to this year/session/class. We filter per-student
