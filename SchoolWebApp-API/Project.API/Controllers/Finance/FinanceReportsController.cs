@@ -568,7 +568,7 @@ namespace SchoolWebApp.API.Controllers.Finance
             foreach (var p in payments)
             {
                 if (p.PaymentType == PaymentType.Receipt)
-                    transactions.Add((p.PaymentDate, "Receipt", p.ReceiptNumber, p.Description ?? "", 0m, p.Amount, p.CreatedBy, p.PaymentMethod.ToString(), "payment", p.Id));
+                    transactions.Add((p.PaymentDate, "Receipt", p.ReceiptNumber, p.Description ?? "", 0m, p.Amount, p.CreatedBy, FinanceDrilldownController.Label(p.PaymentMethod), "payment", p.Id));
                 else if (p.PaymentType == PaymentType.CreditNote)
                     transactions.Add((p.PaymentDate, "Credit Note", p.ReceiptNumber, p.Reason ?? p.Description ?? "", p.Amount, 0m, p.CreatedBy, null, "payment", p.Id));
                 else if (p.PaymentType == PaymentType.DebitNote)

@@ -65,9 +65,22 @@ export class FinanceDrilldownComponent {
     private push(target: DrillTarget) {
         this.loading = true;
         this.load(target).subscribe({
-            next: (v) => { this.stack.push(v); this.loading = false; },
+            next: (v) => { this.stack.push(this.dropEmptyColumns(v)); this.loading = false; },
             error: (err) => { this.loading = false; this.toastr.error(err.error?.message || 'Could not load the details.'); }
         });
+    }
+
+    // A column with nothing in any row (an unused description, say) is left out.
+    private dropEmptyColumns(v: DrillView): DrillView {
+        let empty = (x: any) => x === null || x === undefined || x === '';
+        for (let s of v.sections) {
+            if (!s.rows.length) continue;
+            let keep = s.columns.map((_, i) => s.rows.some((r) => !empty(r.cells[i])));
+            s.columns = s.columns.filter((_, i) => keep[i]);
+            s.rows.forEach((r) => (r.cells = r.cells.filter((_, i) => keep[i])));
+            if (s.footer) s.footer = s.footer.filter((_, i) => keep[i]);
+        }
+        return v;
     }
 
     private load(t: DrillTarget): Observable<DrillView> {

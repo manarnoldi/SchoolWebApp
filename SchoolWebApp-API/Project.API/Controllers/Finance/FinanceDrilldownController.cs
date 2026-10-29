@@ -25,6 +25,10 @@ namespace SchoolWebApp.API.Controllers.Finance
         private static object Doc(string type, int id) => new { kind = "document", type, id };
         private static object Ledger(int accountId) => new { kind = "ledger", accountId };
 
+        // An enum value as words: PartiallyPaid -> "Partially paid", Mpesa -> "M-Pesa".
+        public static string Label(Enum value) => value.ToString() == "Mpesa" ? "M-Pesa"
+            : System.Text.RegularExpressions.Regex.Replace(value.ToString(), "(?<=[a-z])([A-Z])", m => " " + m.Value.ToLower());
+
         private static bool DebitNatural(AccountType t) => t == AccountType.Asset || t == AccountType.Expense;
 
         // GET api/financeDrilldown/ledger?accountId=4&from=2026-01-01&to=2026-12-31
@@ -147,7 +151,7 @@ namespace SchoolWebApp.API.Controllers.Finance
             var balance = inv.TotalAmount - inv.PaidAmount - inv.DiscountAmount;
             return new
             {
-                kind = "Invoice", reference = inv.InvoiceNumber, date = inv.InvoiceDate, status = inv.Status.ToString(),
+                kind = "Invoice", reference = inv.InvoiceNumber, date = inv.InvoiceDate, status = Label(inv.Status),
                 fields = new[]
                 {
                     Field("Student", $"{inv.Student?.UPI} - {inv.Student?.FullName}"),
@@ -164,7 +168,7 @@ namespace SchoolWebApp.API.Controllers.Finance
                             it.Sponsorship?.Sponsor?.Name, it.PaidAmount }))),
                     Section("Payments", new[] { "Receipt", "Date", "Type", "Method", "Amount" },
                         inv.Payments.OrderBy(p => p.PaymentDate).Select(p => Row(new object?[] { p.ReceiptNumber, p.PaymentDate,
-                            p.PaymentType.ToString(), p.PaymentMethod.ToString(), p.Amount }, Doc("payment", p.Id))))
+                            Label(p.PaymentType), Label(p.PaymentMethod), p.Amount }, Doc("payment", p.Id))))
                 }
             };
         }
@@ -181,13 +185,13 @@ namespace SchoolWebApp.API.Controllers.Finance
             var kind = p.PaymentType switch { PaymentType.CreditNote => "Credit note", PaymentType.DebitNote => "Debit note", _ => "Receipt" };
             return new
             {
-                kind, reference = p.ReceiptNumber, date = p.PaymentDate, status = p.ApprovalStatus.ToString(),
+                kind, reference = p.ReceiptNumber, date = p.PaymentDate, status = Label(p.ApprovalStatus),
                 fields = new[]
                 {
                     Field("Student", $"{p.Student?.UPI} - {p.Student?.FullName}"),
                     Field("Invoice", p.StudentInvoice?.InvoiceNumber, p.StudentInvoiceId == null ? null : Doc("invoice", p.StudentInvoiceId.Value)),
                     Field("Original receipt", p.OriginalPayment?.ReceiptNumber, p.OriginalPaymentId == null ? null : Doc("payment", p.OriginalPaymentId.Value)),
-                    Field("Amount", p.Amount), Field("Method", p.PaymentMethod.ToString()),
+                    Field("Amount", p.Amount), Field("Method", Label(p.PaymentMethod)),
                     Field("Transaction ref", p.TransactionReference), Field("Received into", p.BankAccount?.Name),
                     Field("Description", p.Reason ?? p.Description), Field("Received by", p.CreatedBy),
                     Field("Accounting entry", journal?.ReferenceNumber, journal == null ? null : Doc("journal", journal.Id))
@@ -223,13 +227,13 @@ namespace SchoolWebApp.API.Controllers.Finance
             if (approval != null)
                 sections.Add(Section("Approval", new[] { "Step", "Approver", "Status", "Date", "Comment" },
                     approval.Actions.OrderBy(a => a.StepRank).Select(a => Row(new object?[] { a.StepName,
-                        UserName(a.ActionedBy ?? a.AssignedTo), a.Status.ToString(), a.ActionedAt, a.Comment }))));
+                        UserName(a.ActionedBy ?? a.AssignedTo), Label(a.Status), a.ActionedAt, a.Comment }))));
             return new
             {
-                kind = "Expense", reference = e.ReferenceNumber, date = e.ExpenseDate, status = e.Status.ToString(),
+                kind = "Expense", reference = e.ReferenceNumber, date = e.ExpenseDate, status = Label(e.Status),
                 fields = new[]
                 {
-                    Field("Description", e.Description), Field("Method", e.PaymentMethod.ToString()),
+                    Field("Description", e.Description), Field("Method", Label(e.PaymentMethod)),
                     Field("Transaction ref", e.TransactionReference), Field("Paid from", e.PaidFromAccount?.Name),
                     Field("Recorded by", e.CreatedBy), Field("Submitted by", UserName(approval?.SubmittedBy)),
                     Field("Accounting entry", journal?.ReferenceNumber, journal == null ? null : Doc("journal", journal.Id))
@@ -248,7 +252,7 @@ namespace SchoolWebApp.API.Controllers.Finance
                 kind = "Sponsor payment", reference = p.ReferenceNumber, date = p.PaymentDate, status = (string?)null,
                 fields = new[]
                 {
-                    Field("Sponsor", p.Sponsor?.Name), Field("Amount", p.Amount), Field("Method", p.PaymentMethod.ToString()),
+                    Field("Sponsor", p.Sponsor?.Name), Field("Amount", p.Amount), Field("Method", Label(p.PaymentMethod)),
                     Field("Transaction ref", p.TransactionReference), Field("Received into", p.BankAccount?.Name),
                     Field("Description", p.Description), Field("Recorded by", p.CreatedBy),
                     Field("Accounting entry", journal?.ReferenceNumber, journal == null ? null : Doc("journal", journal.Id))
@@ -264,7 +268,7 @@ namespace SchoolWebApp.API.Controllers.Finance
             var src = (await ResolveSources(new[] { j.ReferenceNumber })).GetValueOrDefault(j.ReferenceNumber);
             return new
             {
-                kind = "Journal entry", reference = j.ReferenceNumber, date = j.EntryDate, status = j.Status.ToString(),
+                kind = "Journal entry", reference = j.ReferenceNumber, date = j.EntryDate, status = Label(j.Status),
                 fields = new[]
                 {
                     Field("Description", j.Description), Field("Posted", j.IsPosted ? "Yes" : "No"), Field("Recorded by", j.CreatedBy),
