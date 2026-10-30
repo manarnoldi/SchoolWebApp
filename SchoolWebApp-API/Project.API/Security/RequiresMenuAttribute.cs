@@ -30,7 +30,7 @@ namespace SchoolWebApp.API.Security
                 "/finance/budget-register", "/finance/budgets", "/finance/budget-amendments", "/finance/fee-structures",
                 "/finance/invoices", "/finance/payments", "/finance/sponsors", "/finance/sponsorships", "/finance/sponsor-payments",
                 "/finance/expenses", "/finance/journal-entries", "/finance/reports/fees", "/finance/reports/expenses",
-                "/finance/reports/statements", "/finance/reports"
+                "/finance/reports/statements", "/finance/reports", "/finance/accounting-periods"
             },
             // Chart of accounts and fee categories are also set up and picked outside Finance.
             [MenuGroup.FinanceLookups] = new[]

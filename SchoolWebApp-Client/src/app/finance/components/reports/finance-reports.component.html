@@ -373,10 +373,11 @@
             </div>
             <ng-container *ngIf="allOutstanding.length > 0">
                 <div class="row g-2 mb-2 d-print-none">
-                    <div class="col-md-3"><div class="small-box bg-primary p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ allOutstanding.length }}</h5><div>Students with a balance</div></div></div></div>
-                    <div class="col-md-3"><div class="small-box bg-info p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ outstandingInvoiced() | number:'1.0-2' }}</h5><div>Invoiced to students who owe</div></div></div></div>
-                    <div class="col-md-3"><div class="small-box bg-success p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ outstandingPaid() | number:'1.0-2' }}</h5><div>Paid so far by students who owe</div></div></div></div>
-                    <div class="col-md-3"><div class="small-box bg-warning p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ outstandingAll() | number:'1.0-2' }}</h5><div>Outstanding</div></div></div></div>
+                    <div class="col"><div class="small-box bg-primary p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ allOutstanding.length }}</h5><div>Students with a balance</div></div></div></div>
+                    <div class="col" *ngIf="outstandingBfAll()"><div class="small-box bg-secondary p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ outstandingBfAll() | number:'1.0-2' }}</h5><div>Brought forward from before</div></div></div></div>
+                    <div class="col"><div class="small-box bg-info p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ outstandingInvoiced() | number:'1.0-2' }}</h5><div>Invoiced to students who owe</div></div></div></div>
+                    <div class="col"><div class="small-box bg-success p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ outstandingPaid() | number:'1.0-2' }}</h5><div>Paid so far by students who owe</div></div></div></div>
+                    <div class="col"><div class="small-box bg-warning p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ outstandingAll() | number:'1.0-2' }}</h5><div>Outstanding</div></div></div></div>
                 </div>
                 <div class="card card-outline card-primary mb-2">
                     <div class="card-header py-1 px-2 report-head d-print-none">
@@ -396,18 +397,19 @@
                     </div>
                     <div class="card-body p-0 report-scroll">
                         <table class="table table-striped table-hover table-sm mb-0">
-                            <thead class="table-light"><tr><th>#</th><th>Adm No</th><th>Student</th><th class="text-end">Invoiced</th><th class="text-end">Paid</th><th class="text-end">Balance</th><th class="text-end" title="Part of the balance a sponsor has pledged and not yet paid. The student owes it if the sponsor does not pay.">Of it, awaiting sponsor</th></tr></thead>
+                            <thead class="table-light"><tr><th>#</th><th>Adm No</th><th>Student</th><th class="text-end" title="Still owed from before this term, brought forward">B/f</th><th class="text-end">Invoiced</th><th class="text-end">Paid</th><th class="text-end">Balance</th><th class="text-end" title="Part of the balance a sponsor has pledged and not yet paid. The student owes it if the sponsor does not pay.">Of it, awaiting sponsor</th></tr></thead>
                             <tbody>
                                 <tr *ngFor="let r of outstanding; index as i" class="drill-row" (click)="openStatement(r.studentId, outstandingYearId, outstandingSessionId)" title="See the student's statement">
                                     <td>{{ i + 1 }}</td><td>{{ r.studentUPI }}</td><td>{{ r.studentName }}</td>
+                                    <td class="text-end">{{ r.broughtForward ? (r.broughtForward | number:'1.2-2') : '' }}</td>
                                     <td class="text-end">{{ r.totalInvoiced | number:'1.2-2' }}</td>
                                     <td class="text-end">{{ r.totalPaid | number:'1.2-2' }}</td>
                                     <td class="text-end fw-semibold text-danger">{{ r.balance | number:'1.2-2' }}</td>
                                     <td class="text-end text-primary">{{ r.awaitingSponsor ? (r.awaitingSponsor | number:'1.2-2') : '' }}</td>
                                 </tr>
-                                <tr *ngIf="!outstanding.length"><td colspan="7" class="text-center text-muted p-3">No student matches "{{ outstandingSearch.trim() }}".</td></tr>
+                                <tr *ngIf="!outstanding.length"><td colspan="8" class="text-center text-muted p-3">No student matches "{{ outstandingSearch.trim() }}".</td></tr>
                             </tbody>
-                            <tfoot><tr class="table-warning fw-bold"><td colspan="3">{{ outstandingSearch.trim() ? 'Students found' : 'All students' }}</td><td></td><td></td><td class="text-end">{{ outstandingTotal() | number:'1.2-2' }}</td><td class="text-end text-primary">{{ outstandingAwaiting() | number:'1.2-2' }}</td></tr></tfoot>
+                            <tfoot><tr class="table-warning fw-bold"><td colspan="3">{{ outstandingSearch.trim() ? 'Students found' : 'All students' }}</td><td class="text-end">{{ outstandingBf() | number:'1.2-2' }}</td><td></td><td></td><td class="text-end">{{ outstandingTotal() | number:'1.2-2' }}</td><td class="text-end text-primary">{{ outstandingAwaiting() | number:'1.2-2' }}</td></tr></tfoot>
                         </table>
                     </div>
                 </div>
@@ -664,12 +666,13 @@
                                             <td colspan="6" class="p-0 pb-2">
                                                 <div class="students-scroll">
                                                 <table class="table table-sm table-hover mb-0 students">
-                                                    <thead><tr><th style="width:6%;">#</th><th style="width:14%;">Adm No</th><th>Student</th><th class="text-end">Invoiced</th><th class="text-end">Paid</th><th class="text-end">Balance</th></tr></thead>
+                                                    <thead><tr><th style="width:6%;">#</th><th style="width:14%;">Adm No</th><th>Student</th><th class="text-end" title="Still owed from before this term, brought forward">B/f</th><th class="text-end">Invoiced</th><th class="text-end">Paid</th><th class="text-end">Balance</th></tr></thead>
                                                     <tbody>
                                                         <tr *ngFor="let s of balanceStudents(cls); index as i" class="drill-row" (click)="openStatement(s.studentId, feeBalanceYearId, feeBalanceSessionId)" title="See the student's statement">
                                                             <td>{{ i + 1 }}</td>
                                                             <td>{{ s.studentUPI }}</td>
                                                             <td>{{ s.studentName }}</td>
+                                                            <td class="text-end">{{ s.broughtForward ? (s.broughtForward | number:'1.2-2') : '' }}</td>
                                                             <td class="text-end">{{ s.totalInvoiced | number:'1.2-2' }}</td>
                                                             <td class="text-end">{{ s.totalPaid | number:'1.2-2' }}</td>
                                                             <td class="text-end fw-semibold text-danger">{{ s.balance | number:'1.2-2' }}</td>
@@ -808,6 +811,7 @@
                     </div>
                     <div class="card-body p-2">
                         <div class="row g-1" style="font-size:0.85rem;">
+                            <div class="col-md-3" *ngIf="studentStatement.broughtForward"><small class="text-muted d-block">Brought Forward</small><strong>{{ studentStatement.broughtForward | number:'1.2-2' }}</strong></div>
                             <div class="col-md-3"><small class="text-muted d-block">Total Invoiced</small><strong class="text-primary">{{ studentStatement.totalInvoiced | number:'1.2-2' }}</strong></div>
                             <div class="col-md-3"><small class="text-muted d-block">Total Paid</small><strong class="text-success">{{ studentStatement.totalPaid | number:'1.2-2' }}</strong></div>
                             <div class="col-md-3"><small class="text-muted d-block">Closing Balance</small><strong [ngClass]="studentStatement.balance > 0 ? 'text-danger' : 'text-success'">{{ studentStatement.balance | number:'1.2-2' }}</strong></div>
@@ -838,7 +842,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let t of studentStatement.transactions; index as i" class="drill-row" (click)="openDocument(t.sourceType, t.sourceId)" title="Open">
+                                <tr *ngFor="let t of studentStatement.transactions; index as i" [class.drill-row]="t.sourceId" [class.fw-semibold]="!t.sourceId" (click)="openDocument(t.sourceType, t.sourceId)" [title]="t.sourceId ? 'Open' : ''">
                                     <td>{{ i + 1 }}</td>
                                     <td><small>{{ t.date | date:'mediumDate' }}</small></td>
                                     <td>
@@ -846,7 +850,9 @@
                                             'bg-primary': t.type === 'Invoice',
                                             'bg-success': t.type === 'Receipt',
                                             'bg-warning text-dark': t.type === 'Credit Note',
-                                            'bg-danger': t.type === 'Debit Note'
+                                            'bg-danger': t.type === 'Debit Note',
+                                            'bg-info': t.type === 'Sponsor payment',
+                                            'bg-secondary': t.type === 'Balance b/f'
                                         }">{{ t.type }}</span>
                                     </td>
                                     <td><strong>{{ t.reference }}</strong></td>

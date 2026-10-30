@@ -34,7 +34,8 @@ documents and elections are kept, so the demo shows a full, working school.
    (M-Pesa, bank, cash; earlier terms nearly all paid, the latest one still
    coming in), sponsorships (each pledging part of its students' invoices, which
    still carry the whole fee) and sponsor payments put onto those invoices, a
-   Sponsor Advances account (2310) for sponsor money not yet needed, a budget per department and
+   Sponsor Advances account (2310) for sponsor money not yet needed, termly accounting
+   with every finished term closed (its surplus to Retained Earnings 3100), a budget per department and
    the monthly expenses against it, approved through the real workflows. The
    school's accountant gets a login (Accounts role) who records it all.
    Payments run daily up to `--through` (set it to the demo day), so the

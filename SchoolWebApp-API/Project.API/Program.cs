@@ -233,15 +233,21 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.UseExceptionHandler(errorApp =>
 {
-    errorApp.Run(context =>
+    errorApp.Run(async context =>
     {
         var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
         var exception = exceptionHandlerPathFeature?.Error;
+        // Something dated in a closed accounting period: the user is told which period, not shown a server error.
+        if (exception is Project.Core.Exceptions.PeriodClosedException closed)
+        {
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            await context.Response.WriteAsJsonAsync(new { message = closed.Message });
+            return;
+        }
         // Route through Microsoft.Extensions.Logging so NLog picks it up via
         // the provider registered in builder.Host.UseNLog() above.
         var requestLogger = context.RequestServices.GetRequiredService<ILogger<Program>>();
         requestLogger.LogError(exception, "Unhandled exception occurred");
-        return Task.CompletedTask;
     });
 });
 

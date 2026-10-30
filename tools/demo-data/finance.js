@@ -106,7 +106,7 @@ async function pool(items, size, fn) {
 const FINANCE_MENUS = ['/finance/budget-register', '/finance/budgets', '/finance/budget-amendments', '/finance/fee-structures',
     '/finance/invoices', '/finance/payments', '/finance/sponsors', '/finance/sponsorships', '/finance/sponsor-payments',
     '/finance/expenses', '/finance/journal-entries', '/finance/reports', '/finance/reports/fees', '/finance/reports/expenses',
-    '/finance/reports/statements', '/finance/accounts', '/finance/fee-categories', '/finance/expense-categories'];
+    '/finance/reports/statements', '/finance/accounts', '/finance/fee-categories', '/finance/expense-categories', '/finance/accounting-periods'];
 // Who sees what: the accountant runs finance; administrators approve expenses;
 // the head teacher approves budgets and sees the fees card.
 const MENUS = {
@@ -131,6 +131,7 @@ DELETE a FROM approvalstepactions a JOIN approvalrequests r ON r.Id = a.Approval
 DELETE FROM approvalrequests WHERE EntityType IN ('Expense', 'Budget', 'BudgetAmendment', 'JournalEntry', 'CreditDebitNote');
 DELETE l FROM journallines l JOIN journalentries j ON j.Id = l.JournalEntryId WHERE j.Description NOT LIKE 'Payroll%';
 DELETE FROM journalentries WHERE Description NOT LIKE 'Payroll%';
+DELETE FROM accountingperiodcloses;
 SET FOREIGN_KEY_CHECKS = 1;
 INSERT INTO accounts (Code, Name, AccountType, Description, IsActive, Created, CreatedBy, Modified, ModifiedBy)
     SELECT '2310', 'Sponsor Advances', 2, 'Sponsor money received and not yet applied to student invoices', 1, '2025-12-01', 'admin', '2025-12-01', 'admin'
@@ -141,6 +142,12 @@ INSERT INTO globalsettings (Module, SettingKey, SettingValue, Description, Creat
     FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM globalsettings WHERE Module = 'Finance' AND SettingKey = 'SponsorAdvancesAccountId');
 UPDATE globalsettings SET SettingValue = (SELECT Id FROM (SELECT Id FROM accounts WHERE Code = '2310') a)
     WHERE Module = 'Finance' AND SettingKey = 'SponsorAdvancesAccountId';
+DELETE FROM globalsettings WHERE Module = 'Finance' AND SettingKey = 'AccountingPeriod';
+INSERT INTO globalsettings (Module, SettingKey, SettingValue, Description, Created, CreatedBy, Modified, ModifiedBy)
+    SELECT 'Finance', 'AccountingPeriod', 'Termly', 'How often the books are closed', '2025-12-01', 'admin', '2025-12-01', 'admin';
+DELETE FROM globalsettings WHERE Module = 'Finance' AND SettingKey = 'RetainedEarningsAccountId';
+INSERT INTO globalsettings (Module, SettingKey, SettingValue, Description, Created, CreatedBy, Modified, ModifiedBy)
+    SELECT 'Finance', 'RetainedEarningsAccountId', (SELECT Id FROM accounts WHERE Code = '3100'), 'Equity account each closed period surplus goes to', '2025-12-01', 'admin', '2025-12-01', 'admin';
 INSERT INTO departments (Name, Code, Description, Created, CreatedBy, Modified, ModifiedBy)
     SELECT 'Administration', 'DEPT004', 'School office, utilities, catering and transport', '2025-12-01', 'admin', '2025-12-01', 'admin'
     FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM departments WHERE Name = 'Administration');
@@ -438,7 +445,17 @@ ${Object.entries(MENUS).flatMap(([role, paths]) => paths.map((p) => `INSERT INTO
     }
     console.log(`Expenses: ${expenses.length}.`);
 
-    // ---------- 11. Make it look recorded on the day ----------
+    // ---------- 11. Close the terms that are over ----------
+    // Termly accounting: each finished term is closed in turn, its surplus to Retained Earnings and its records locked.
+    for (;;) {
+        const {periods} = await api(B, 'GET', `/accountingPeriods?academicYearId=${year.Id}`);
+        const next = periods.find((p) => !p.closed && !p.blockers.length);
+        if (!next) break;
+        await api(B, 'POST', `/accountingPeriods/close?key=${encodeURIComponent(next.key)}`);
+        console.log(`Closed ${next.name}.`);
+    }
+
+    // ---------- 12. Make it look recorded on the day ----------
     // Bulk invoices are numbered by the time they were made; number them by
     // their date instead, and stamp every record with its own date, not today's.
     exec(`

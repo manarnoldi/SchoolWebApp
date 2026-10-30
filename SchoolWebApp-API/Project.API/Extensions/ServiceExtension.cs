@@ -225,6 +225,7 @@ namespace Project.API.Extensions
             services.AddSingleton<SchoolWebApp.API.Licensing.LicenceService>();
             services.AddScoped<SchoolWebApp.API.Services.MenuAccessService>();
             services.AddScoped<SchoolWebApp.API.Services.SponsorAllocator>();
+            services.AddScoped<SchoolWebApp.API.Services.AccountingPeriodService>();
             services.AddScoped<SchemeWorkbookService>();
             services.AddScoped<HeadOfDepartmentRoleSync>();
             services.AddScoped<SchoolWebApp.API.Services.Academics.SubjectLevelGuard>();

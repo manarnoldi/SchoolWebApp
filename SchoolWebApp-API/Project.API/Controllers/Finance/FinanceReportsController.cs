@@ -16,10 +16,21 @@ namespace SchoolWebApp.API.Controllers.Finance
     public class FinanceReportsController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly SchoolWebApp.API.Services.AccountingPeriodService _periods;
 
-        public FinanceReportsController(IUnitOfWork unitOfWork)
+        public FinanceReportsController(IUnitOfWork unitOfWork, SchoolWebApp.API.Services.AccountingPeriodService periods)
         {
             _unitOfWork = unitOfWork;
+            _periods = periods;
+        }
+
+        // The dates a term (or, with no term, a year) covers - from its first day to the day before the next starts -
+        // for bringing balances forward into it. Null when neither is given.
+        private async Task<(DateTime Start, DateTime End)?> Window(int? academicYearId, int? sessionId)
+        {
+            var p = sessionId.HasValue ? await _periods.TermOf(sessionId.Value)
+                : academicYearId.HasValue ? await _periods.YearOf(academicYearId.Value) : null;
+            return p == null ? null : (p.Start, p.End);
         }
 
         // GET api/financeReports/trialBalance?from=2025-01-01&to=2025-12-31
@@ -27,7 +38,9 @@ namespace SchoolWebApp.API.Controllers.Finance
         public async Task<IActionResult> TrialBalance(DateTime from, DateTime to)
         {
             var accounts = (await _unitOfWork.Accounts.Find()).ToList();
-            var lines = await _unitOfWork.JournalLines.GetAllWithEntryAndAccount(from, to);
+            // Closing entries left out: a closed period still shows what it earned and spent.
+            var lines = (await _unitOfWork.JournalLines.GetAllWithEntryAndAccount(from, to))
+                .Where(l => !l.JournalEntry!.ReferenceNumber.StartsWith(SchoolWebApp.API.Services.AccountingPeriodService.ClosingPrefix)).ToList();
 
             var rows = accounts.Select(a =>
             {
@@ -57,7 +70,9 @@ namespace SchoolWebApp.API.Controllers.Finance
         public async Task<IActionResult> IncomeStatement(DateTime from, DateTime to)
         {
             var accounts = (await _unitOfWork.Accounts.Find()).ToList();
-            var lines = await _unitOfWork.JournalLines.GetAllWithEntryAndAccount(from, to);
+            // Closing entries left out: a closed period still shows what it earned and spent.
+            var lines = (await _unitOfWork.JournalLines.GetAllWithEntryAndAccount(from, to))
+                .Where(l => !l.JournalEntry!.ReferenceNumber.StartsWith(SchoolWebApp.API.Services.AccountingPeriodService.ClosingPrefix)).ToList();
 
             var income = new List<IncomeStatementLineDto>();
             var expenses = new List<IncomeStatementLineDto>();
@@ -144,7 +159,7 @@ namespace SchoolWebApp.API.Controllers.Finance
 
             var retainedEarnings = totalIncome - totalExpenses;
             if (retainedEarnings != 0)
-                equity.Add(new BalanceSheetLineDto { AccountCode = "3999", AccountName = "Retained Earnings (YTD)", Amount = retainedEarnings });
+                equity.Add(new BalanceSheetLineDto { AccountCode = "3999", AccountName = "Surplus not yet closed", Amount = retainedEarnings });
 
             return Ok(new BalanceSheetDto
             {
@@ -433,18 +448,30 @@ namespace SchoolWebApp.API.Controllers.Finance
                 filtered = filtered.Where(i =>
                     (i.Student != null && ((i.Student.FullName ?? "").ToLower().Contains(q) || (i.Student.UPI ?? "").ToLower().Contains(q))));
             }
-            var grouped = filtered.GroupBy(i => i.StudentId).Select(g =>
+            // What students still owe on invoices from before the term (or year) comes forward into it - so a student
+            // owing from earlier is listed even with nothing invoiced in this term.
+            var window = await Window(academicYearId, sessionId);
+            var term = filtered.ToList();
+            var earlier = window == null ? new List<StudentInvoice>()
+                : invoices.Where(i => i.InvoiceDate.Date < window.Value.Start.Date && i.Status != InvoiceStatus.Cancelled
+                    && (string.IsNullOrWhiteSpace(search) || (i.Student != null && ((i.Student.FullName ?? "").ToLower().Contains(search.Trim().ToLower())
+                        || (i.Student.UPI ?? "").ToLower().Contains(search.Trim().ToLower()))))).ToList();
+            var grouped = term.Select(i => i.StudentId).Concat(earlier.Select(i => i.StudentId)).Distinct().Select(id =>
             {
-                var s = g.First().Student;
+                var t = term.Where(i => i.StudentId == id).ToList();
+                var e = earlier.Where(i => i.StudentId == id).ToList();
+                var s = (t.FirstOrDefault() ?? e.First()).Student;
+                var bf = e.Sum(i => i.TotalAmount - i.PaidAmount - i.DiscountAmount);
                 return new OutstandingBalanceRowDto
                 {
-                    StudentId = g.Key,
+                    StudentId = id,
                     StudentUPI = s?.UPI,
                     StudentName = s?.FullName,
-                    TotalInvoiced = g.Sum(i => i.TotalAmount),
-                    TotalPaid = g.Sum(i => i.PaidAmount),
-                    Balance = g.Sum(i => i.TotalAmount - i.PaidAmount - i.DiscountAmount),
-                    AwaitingSponsor = g.SelectMany(i => i.Items).Sum(AwaitingSponsor)
+                    BroughtForward = bf,
+                    TotalInvoiced = t.Sum(i => i.TotalAmount),
+                    TotalPaid = t.Sum(i => i.PaidAmount),
+                    Balance = bf + t.Sum(i => i.TotalAmount - i.PaidAmount - i.DiscountAmount),
+                    AwaitingSponsor = e.Concat(t).SelectMany(i => i.Items).Sum(AwaitingSponsor)
                 };
             }).Where(r => r.Balance > 0).OrderByDescending(r => r.Balance).ToList();
             return Ok(grouped);
@@ -458,18 +485,29 @@ namespace SchoolWebApp.API.Controllers.Finance
             if (academicYearId.HasValue) filteredInv = filteredInv.Where(i => i.AcademicYearId == academicYearId.Value);
             if (sessionId.HasValue) filteredInv = filteredInv.Where(i => i.SessionId == sessionId.Value);
 
-            // Group invoices by student to get outstanding
-            var studentBalances = filteredInv.GroupBy(i => i.StudentId).Select(g =>
+            // What students still owe on invoices from before the term (or year) comes forward into it.
+            var window = await Window(academicYearId, sessionId);
+            var termInv = filteredInv.ToList();
+            var earlier = window == null ? new List<StudentInvoice>()
+                : invoices.Where(i => i.InvoiceDate.Date < window.Value.Start.Date && i.Status != InvoiceStatus.Cancelled).ToList();
+
+            // Per student: arrears brought forward, this term's invoices and payments, and the balance - a student owing
+            // from earlier is listed even with nothing invoiced in this term.
+            var studentBalances = termInv.Select(i => i.StudentId).Concat(earlier.Select(i => i.StudentId)).Distinct().Select(id =>
             {
-                var s = g.First().Student;
+                var t = termInv.Where(i => i.StudentId == id).ToList();
+                var e = earlier.Where(i => i.StudentId == id).ToList();
+                var s = (t.FirstOrDefault() ?? e.First()).Student;
+                var bf = e.Sum(i => i.TotalAmount - i.PaidAmount - i.DiscountAmount);
                 return new
                 {
-                    StudentId = g.Key,
+                    StudentId = id,
                     StudentUPI = s?.UPI,
                     StudentName = s?.FullName,
-                    TotalInvoiced = g.Sum(i => i.TotalAmount),
-                    TotalPaid = g.Sum(i => i.PaidAmount),
-                    Balance = g.Sum(i => i.TotalAmount - i.PaidAmount - i.DiscountAmount)
+                    BroughtForward = bf,
+                    TotalInvoiced = t.Sum(i => i.TotalAmount),
+                    TotalPaid = t.Sum(i => i.PaidAmount),
+                    Balance = bf + t.Sum(i => i.TotalAmount - i.PaidAmount - i.DiscountAmount)
                 };
             }).Where(r => r.Balance > 0).ToDictionary(r => r.StudentId);
 
@@ -502,6 +540,7 @@ namespace SchoolWebApp.API.Controllers.Finance
                                 b.StudentId,
                                 b.StudentUPI,
                                 b.StudentName,
+                                b.BroughtForward,
                                 b.TotalInvoiced,
                                 b.TotalPaid,
                                 b.Balance
@@ -544,23 +583,23 @@ namespace SchoolWebApp.API.Controllers.Finance
             var student = await _unitOfWork.Students.GetById(studentId);
             if (student == null) return NotFound(new { message = "Student not found." });
 
-            var invoicesQuery = (await _unitOfWork.StudentInvoices.Find(includeProperties: "AcademicYear,Session,Items.FeeCategory,Items.Sponsorship.Sponsor"))
-                .Where(i => i.StudentId == studentId);
-            if (academicYearId.HasValue) invoicesQuery = invoicesQuery.Where(i => i.AcademicYearId == academicYearId.Value);
-            if (sessionId.HasValue) invoicesQuery = invoicesQuery.Where(i => i.SessionId == sessionId.Value);
-            if (from.HasValue) invoicesQuery = invoicesQuery.Where(i => i.InvoiceDate >= from.Value);
-            if (to.HasValue) invoicesQuery = invoicesQuery.Where(i => i.InvoiceDate <= to.Value);
+            // A statement for a term (or a year, or dates) covers what happened in it, opening with the balance brought
+            // forward from before: everything invoiced, paid and noted earlier, so arrears carry into the new term.
+            var window = await Window(academicYearId, sessionId);
+            var start = from ?? window?.Start;
+            var end = to ?? window?.End;
+            bool Within(DateTime d) => (start == null || d.Date >= start.Value.Date) && (end == null || d.Date <= end.Value.Date);
+            bool Before(DateTime d) => start != null && d.Date < start.Value.Date;
 
-            var payments = (await _unitOfWork.Payments.Find(includeProperties: "StudentInvoice,BankAccount,SponsorPayment.Sponsor"))
-                .Where(p => p.StudentId == studentId && p.ApprovalStatus == PaymentApprovalStatus.Approved).ToList();
-            if (academicYearId.HasValue)
-                payments = payments.Where(p => p.StudentInvoice == null || p.StudentInvoice.AcademicYearId == academicYearId.Value).ToList();
-            if (sessionId.HasValue)
-                payments = payments.Where(p => p.StudentInvoice == null || p.StudentInvoice.SessionId == sessionId.Value).ToList();
-            if (from.HasValue) payments = payments.Where(p => p.PaymentDate >= from.Value).ToList();
-            if (to.HasValue) payments = payments.Where(p => p.PaymentDate <= to.Value).ToList();
-
-            var invoices = invoicesQuery.ToList();
+            // Only this student's records are read.
+            var allInvoices = (await _unitOfWork.StudentInvoices.Find(i => i.StudentId == studentId && i.Status != InvoiceStatus.Cancelled,
+                includeProperties: "AcademicYear,Session,Items.FeeCategory,Items.Sponsorship.Sponsor")).ToList();
+            var allPayments = (await _unitOfWork.Payments.Find(p => p.StudentId == studentId && p.ApprovalStatus == PaymentApprovalStatus.Approved,
+                includeProperties: "StudentInvoice,BankAccount,SponsorPayment.Sponsor")).ToList();
+            var invoices = allInvoices.Where(i => Within(i.InvoiceDate)).ToList();
+            var payments = allPayments.Where(p => Within(p.PaymentDate)).ToList();
+            var broughtForward = allInvoices.Where(i => Before(i.InvoiceDate)).Sum(i => i.TotalAmount - i.DiscountAmount)
+                - allPayments.Where(p => Before(p.PaymentDate)).Sum(p => p.PaymentType == PaymentType.Receipt ? p.Amount : -p.Amount);
 
             // Build transaction list: invoices = debit, payments = credit, credit notes = debit, debit notes = debit
             var transactions = new List<(DateTime Date, string Type, string Reference, string Description, decimal Debit, decimal Credit, string? CreatedBy, string? Method, string SourceType, int SourceId)>();
@@ -592,7 +631,7 @@ namespace SchoolWebApp.API.Controllers.Finance
 
             transactions = transactions.OrderBy(t => t.Date).ThenBy(t => t.Reference).ToList();
 
-            decimal running = 0;
+            decimal running = broughtForward;
             var rows = transactions.Select(t =>
             {
                 running += t.Debit - t.Credit;
@@ -611,21 +650,30 @@ namespace SchoolWebApp.API.Controllers.Finance
                     sourceId = t.SourceId
                 };
             }).ToList();
+            if (start != null)
+                rows.Insert(0, new
+                {
+                    date = start.Value, type = "Balance b/f", reference = "",
+                    description = broughtForward == 0 ? "Nothing owed from before" : "Balance brought forward from before",
+                    debit = broughtForward > 0 ? broughtForward : 0m, credit = broughtForward < 0 ? -broughtForward : 0m,
+                    balance = broughtForward, createdBy = (string?)null, method = (string?)null, sourceType = "", sourceId = 0
+                });
 
             return Ok(new
             {
                 student = new { id = student.Id, upi = student.UPI, fullName = student.FullName },
-                fromDate = from,
-                toDate = to,
+                fromDate = start,
+                toDate = end,
                 academicYearId,
                 sessionId,
+                broughtForward,
                 totalInvoiced = transactions.Sum(t => t.Debit),
                 totalPaid = transactions.Sum(t => t.Credit),
                 balance = running,
-                // Sponsors' part: pledged on these invoices, paid so far, and still awaited (part of the balance).
+                // Sponsors' part: pledged on this period's invoices, paid in it, and still awaited (part of the balance).
                 sponsorPledged = invoices.SelectMany(i => i.Items).Sum(it => it.SponsoredAmount),
-                sponsorPaid = invoices.SelectMany(i => i.Items).Sum(it => it.SponsorPaidAmount),
-                awaitingSponsor = invoices.SelectMany(i => i.Items).Sum(AwaitingSponsor),
+                sponsorPaid = payments.Where(p => p.PaymentType == PaymentType.Receipt && p.SponsorPaymentId != null).Sum(p => p.Amount),
+                awaitingSponsor = allInvoices.Where(i => end == null || i.InvoiceDate.Date <= end.Value.Date).SelectMany(i => i.Items).Sum(AwaitingSponsor),
                 paidByFamily = payments.Where(p => p.PaymentType == PaymentType.Receipt && p.SponsorPaymentId == null).Sum(p => p.Amount),
                 transactions = rows
             });

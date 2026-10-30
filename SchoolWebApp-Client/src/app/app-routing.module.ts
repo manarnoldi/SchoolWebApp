@@ -140,6 +140,7 @@ import { FeeCategoriesComponent } from './finance/components/fee-categories/fee-
 import { ExpenseCategoriesComponent } from './finance/components/expense-categories/expense-categories.component';
 import { ExpensesComponent as FinanceExpensesComponent } from './finance/components/expenses/expenses.component';
 import { JournalEntriesComponent } from './finance/components/journal-entries/journal-entries.component';
+import { AccountingPeriodsComponent } from './finance/components/accounting-periods/accounting-periods.component';
 import { PaymentsComponent } from './finance/components/payments/payments.component';
 import { FinanceInvoicesComponent } from './finance/components/invoices/invoices.component';
 import { FinanceReportsComponent } from './finance/components/reports/finance-reports.component';
@@ -434,6 +435,7 @@ const routes: Routes = [
             {path: 'expense-categories', component: ExpenseCategoriesComponent},
             {path: 'expenses', component: FinanceExpensesComponent},
             {path: 'journal-entries', component: JournalEntriesComponent},
+            {path: 'accounting-periods', component: AccountingPeriodsComponent},
             {path: 'payments', component: PaymentsComponent},
             {path: 'invoices', component: FinanceInvoicesComponent},
             {path: 'budget-register', component: FinanceBudgetMastersComponent},

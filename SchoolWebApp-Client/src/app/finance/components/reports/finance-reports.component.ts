@@ -432,6 +432,8 @@ export class FinanceReportsComponent implements OnInit {
 
     outstandingInvoiced(): number { return (this.allOutstanding || []).reduce((s, r) => s + (r.totalInvoiced || 0), 0); }
     outstandingPaid(): number { return (this.allOutstanding || []).reduce((s, r) => s + (r.totalPaid || 0), 0); }
+    outstandingBfAll(): number { return (this.allOutstanding || []).reduce((s, r) => s + (r.broughtForward || 0), 0); }
+    outstandingBf(): number { return (this.outstanding || []).reduce((s, r) => s + (r.broughtForward || 0), 0); }
     outstandingAwaiting(): number { return (this.outstanding || []).reduce((s, r) => s + (r.awaitingSponsor || 0), 0); }
     outstandingAll(): number { return (this.allOutstanding || []).reduce((s, r) => s + (r.balance || 0), 0); }
 

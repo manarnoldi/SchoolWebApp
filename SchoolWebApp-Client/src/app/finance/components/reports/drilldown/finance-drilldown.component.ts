@@ -160,11 +160,11 @@ export class FinanceDrilldownComponent implements OnDestroy {
             subtitle: 'Fee statement' + (t.label ? `, ${t.label}` : ''),
             icon: 'fa-file-invoice-dollar',
             note: 'Balance is what the student owes after each line. Sponsor payments are credited to the student; a pledge the sponsor does not pay stays in the balance.',
-            fields: r.sponsorPledged
+            fields: (r.broughtForward ? [{label: 'Brought forward', value: r.broughtForward}] : []).concat(r.sponsorPledged
                 ? [{label: 'Invoiced', value: r.totalInvoiced}, {label: 'Paid by family', value: r.paidByFamily},
                    {label: 'Paid by sponsor', value: r.sponsorPaid}, {label: 'Balance', value: r.balance},
                    {label: 'Pledged by sponsors', value: `${this.fmt(r.sponsorPledged)} (${this.fmt(r.awaitingSponsor)} of the balance still awaited)`}]
-                : [{label: 'Invoiced', value: r.totalInvoiced}, {label: 'Paid', value: r.totalPaid}, {label: 'Balance', value: r.balance}],
+                : [{label: 'Invoiced', value: r.totalInvoiced}, {label: 'Paid', value: r.totalPaid}, {label: 'Balance', value: r.balance}]),
             sections: [{
                 columns: ['Date', 'Type', 'Reference', 'Description', 'Method', 'Debit', 'Credit', 'Balance'],
                 rows: r.transactions.map((x: any) => ({cells: [x.date, x.type, x.reference, x.description, x.method, x.debit || null, x.credit || null, x.balance],

@@ -248,3 +248,14 @@ export class SponsorPaymentService {
     }
     applyCredit(sponsorId: number): Observable<any> { return this.http.post(`/sponsorPayments/applyCredit?sponsorId=${sponsorId}`, {}); }
 }
+
+// Accounting periods (terms or years, per the Finance setting): their state, closing and reopening.
+@Injectable({providedIn: 'root'})
+export class AccountingPeriodService {
+    constructor(private http: HttpClient) {}
+    list(academicYearId?: any): Observable<any> {
+        return this.http.get<any>(`/accountingPeriods${academicYearId ? '?academicYearId=' + academicYearId : ''}`);
+    }
+    close(key: string): Observable<any> { return this.http.post(`/accountingPeriods/close?key=${encodeURIComponent(key)}`, {}); }
+    reopen(key: string): Observable<any> { return this.http.post(`/accountingPeriods/reopen?key=${encodeURIComponent(key)}`, {}); }
+}

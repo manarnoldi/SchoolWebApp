@@ -98,6 +98,11 @@ export class GlobalSettingsComponent implements OnInit {
             color: 'info',
             icon: 'fas fa-coins',
             settings: [
+                {key: 'AccountingPeriod', label: 'Accounting Period', type: 'select', options: [
+                    {value: 'Termly', label: 'Termly - close the books at the end of each term'},
+                    {value: 'Yearly', label: 'Yearly - close the books at the end of each academic year'}
+                ], description: 'How often the books are closed (Finance > Expenses & Accounts > Accounting Periods). A term runs from its first day to the day before the next term, so the holiday after it belongs to it. Closing moves the period\'s surplus to Retained Earnings and locks it.'},
+                {key: 'RetainedEarningsAccountId', label: 'Retained Earnings Account', type: 'account', description: 'Equity account each closed period\'s income less expenses is moved to (e.g. 3100 Retained Earnings).'},
                 {key: 'PaymentApportionMode', label: 'Payment Apportioning Mode', type: 'select', options: [
                     {value: 'auto', label: 'Auto (by fee category priority/rank)'},
                     {value: 'manual', label: 'Manual (finance officer allocates)'}

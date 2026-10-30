@@ -7,6 +7,7 @@ import {FeeCategoriesComponent} from './components/fee-categories/fee-categories
 import {ExpenseCategoriesComponent} from './components/expense-categories/expense-categories.component';
 import {ExpensesComponent} from './components/expenses/expenses.component';
 import {JournalEntriesComponent} from './components/journal-entries/journal-entries.component';
+import {AccountingPeriodsComponent} from './components/accounting-periods/accounting-periods.component';
 import {PaymentsComponent} from './components/payments/payments.component';
 import {FinanceInvoicesComponent} from './components/invoices/invoices.component';
 import {FinanceReportsComponent} from './components/reports/finance-reports.component';
@@ -28,6 +29,7 @@ import {ApprovalsModule} from '@/approvals/approvals.module';
         ExpenseCategoriesComponent,
         ExpensesComponent,
         JournalEntriesComponent,
+        AccountingPeriodsComponent,
         PaymentsComponent,
         FinanceInvoicesComponent,
         FinanceReportsComponent,

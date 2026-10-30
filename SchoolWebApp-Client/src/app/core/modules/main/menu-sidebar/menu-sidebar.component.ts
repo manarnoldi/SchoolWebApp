@@ -264,7 +264,8 @@ export const MENU = [
                 iconClasses: 'fas fa-money-bill-wave text-danger',
                 children: [
                     {name: 'Expenses', iconClasses: 'fas fa-money-bill-wave text-danger', path: ['/finance/expenses']},
-                    {name: 'Journal Entries', iconClasses: 'fas fa-pen text-primary', path: ['/finance/journal-entries']}
+                    {name: 'Journal Entries', iconClasses: 'fas fa-pen text-primary', path: ['/finance/journal-entries']},
+                    {name: 'Accounting Periods', iconClasses: 'fas fa-calendar-check text-success', path: ['/finance/accounting-periods']}
                 ]
             },
             {

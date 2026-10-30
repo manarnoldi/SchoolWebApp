@@ -158,6 +158,7 @@ namespace Project.Infrastructure.Data
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<ExpenseLine> ExpenseLines { get; set; }
         public DbSet<JournalEntry> JournalEntries { get; set; }
+        public DbSet<AccountingPeriodClose> AccountingPeriodCloses { get; set; }
         public DbSet<JournalLine> JournalLines { get; set; }
         public DbSet<Budget> Budgets { get; set; }
         public DbSet<BudgetLine> BudgetLines { get; set; }
@@ -333,8 +334,82 @@ namespace Project.Infrastructure.Data
             nameof(Base.CreatedBy)
         };
 
+        /// <summary>
+        /// Set by closing and reopening a period, which must write into it; everything else is held to the lock.
+        /// </summary>
+        public bool AllowClosedPeriodChanges { get; set; }
+
+        /// <summary>
+        /// The lock on closed accounting periods, in the one place every save passes through: nothing dated in a
+        /// closed period may be added, deleted, or have its money or date changed - journals, receipts and notes,
+        /// sponsor payments, expenses, invoices and their fee lines. A receipt in an open term paying off an invoice
+        /// from a closed one is fine: only the invoice's paid amount and status move.
+        /// </summary>
+        private async Task GuardClosedPeriods(CancellationToken ct)
+        {
+            if (AllowClosedPeriodChanges) return;
+            var changed = ChangeTracker.Entries()
+                .Where(e => e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted
+                    && e.Entity is JournalEntry or Payment or SponsorPayment or Expense or StudentInvoice or StudentInvoiceItem)
+                .ToList();
+            if (changed.Count == 0) return;
+            var closed = await AccountingPeriodCloses.AsNoTracking()
+                .Where(p => p.Status == AccountingPeriodCloseStatus.Closed).ToListAsync(ct);
+            if (closed.Count == 0) return;
+
+            // Changed for real - some saves mark every column modified (Update() on a tracked entity).
+            static bool Moved(EntityEntry e, string m) { var p = e.Property(m); return p.IsModified && !Equals(p.OriginalValue, p.CurrentValue); }
+            var dates = new List<DateTime>();
+            void Take(EntityEntry e, string prop, params string[] moneyOrDate)
+            {
+                var p = e.Property(prop);
+                if (e.State == EntityState.Modified)
+                {
+                    // Only a change to the money or the date counts; paid amounts and statuses may move.
+                    if (moneyOrDate.Length > 0 && !moneyOrDate.Any(m => Moved(e, m))) return;
+                    if (moneyOrDate.Length == 0 && !e.Properties.Any(x => x.IsModified && !Equals(x.OriginalValue, x.CurrentValue)
+                        && x.Metadata.Name is not ("Modified" or "ModifiedBy"))) return;
+                    if (p.OriginalValue is DateTime o) dates.Add(o);
+                }
+                if (p.CurrentValue is DateTime c) dates.Add(c);
+            }
+            var invoiceIds = new List<int>();
+            foreach (var e in changed)
+            {
+                switch (e.Entity)
+                {
+                    case JournalEntry: Take(e, nameof(JournalEntry.EntryDate)); break;
+                    case Payment: Take(e, nameof(Payment.PaymentDate), nameof(Payment.Amount), nameof(Payment.PaymentDate), nameof(Payment.ApprovalStatus)); break;
+                    case SponsorPayment: Take(e, nameof(SponsorPayment.PaymentDate), nameof(SponsorPayment.Amount), nameof(SponsorPayment.PaymentDate)); break;
+                    case Expense: Take(e, nameof(Expense.ExpenseDate)); break;
+                    case StudentInvoice: Take(e, nameof(StudentInvoice.InvoiceDate), nameof(StudentInvoice.TotalAmount),
+                        nameof(StudentInvoice.DiscountAmount), nameof(StudentInvoice.InvoiceDate)); break;
+                    case StudentInvoiceItem item:
+                        if (e.State != EntityState.Modified || new[] { nameof(StudentInvoiceItem.Amount), nameof(StudentInvoiceItem.Discount),
+                                nameof(StudentInvoiceItem.SponsoredAmount), nameof(StudentInvoiceItem.FeeCategoryId) }.Any(m => Moved(e, m)))
+                        {
+                            var inv = item.StudentInvoice;
+                            if (inv != null) dates.Add(inv.InvoiceDate); else invoiceIds.Add(item.StudentInvoiceId);
+                        }
+                        break;
+                }
+            }
+            if (invoiceIds.Count > 0)
+                dates.AddRange(await StudentInvoices.AsNoTracking().Where(i => invoiceIds.Contains(i.Id)).Select(i => i.InvoiceDate).ToListAsync(ct));
+
+            foreach (var d in dates)
+            {
+                var hit = closed.FirstOrDefault(p => d.Date >= p.StartDate.Date && d.Date <= p.EndDate.Date);
+                if (hit != null)
+                    throw new Project.Core.Exceptions.PeriodClosedException(
+                        $"{hit.Name} is closed, so nothing dated {hit.StartDate:dd MMM yyyy} to {hit.EndDate:dd MMM yyyy} can be recorded or changed "
+                        + $"(this is dated {d:dd MMM yyyy}). Record it in the open period instead, or ask an administrator to reopen {hit.Name}.");
+            }
+        }
+
         public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
+            await GuardClosedPeriods(cancellationToken);
             var entries = ChangeTracker.Entries().Where(e => e.Entity is Base && (e.State == EntityState.Added || e.State == EntityState.Modified));
             var user = _httpContextAccessor.HttpContext?.User?.FindFirstValue("username");
             // Use UtcNow rather than .Now so audit timestamps stay

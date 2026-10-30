@@ -231,6 +231,9 @@ namespace SchoolWebApp.API.Controllers.Sponsorships
                     && i.Status != InvoiceStatus.Paid
                     && i.Status != InvoiceStatus.Cancelled)
                 .ToListAsync();
+            // Invoices in a closed accounting period are locked and left as they are.
+            var closed = await _db.AccountingPeriodCloses.AsNoTracking().Where(c => c.Status == AccountingPeriodCloseStatus.Closed).ToListAsync();
+            invoices = invoices.Where(i => !closed.Any(c => i.InvoiceDate.Date >= c.StartDate.Date && i.InvoiceDate.Date <= c.EndDate.Date)).ToList();
 
             var coveredCategories = sponsorship.FeeCategories.Select(fc => fc.FeeCategoryId).ToHashSet();
             bool coversAll = coveredCategories.Count == 0;

@@ -68,6 +68,8 @@ namespace SchoolWebApp.Core.DTOs.Finance.Reports
         public string? StudentUPI { get; set; }
         public string? StudentName { get; set; }
         public string? ClassName { get; set; }
+        // Still owed on invoices from before the term (or year) asked for, carried into it.
+        public decimal BroughtForward { get; set; }
         public decimal TotalInvoiced { get; set; }
         public decimal TotalPaid { get; set; }
         public decimal Balance { get; set; }
