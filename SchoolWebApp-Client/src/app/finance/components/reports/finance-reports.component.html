@@ -38,7 +38,8 @@
                     | Academic Year: <strong>{{ getStatementYearName() }}</strong>
                     | Term: <strong>{{ getStatementSessionName() }}</strong>
                 </span>
-                <span *ngIf="activeTab!=='balanceSheet' && activeTab!=='consolidatedBudget' && activeTab!=='outstanding' && activeTab!=='studentStatement' && activeTab!=='discounts'">
+                <span *ngIf="activeTab==='feeCollection'">{{ feeCollectionLabel() }}</span>
+                <span *ngIf="activeTab!=='balanceSheet' && activeTab!=='consolidatedBudget' && activeTab!=='outstanding' && activeTab!=='studentStatement' && activeTab!=='discounts' && activeTab!=='feeCollection'">
                     Period: {{ fromDate | date:'mediumDate' }} to {{ toDate | date:'mediumDate' }}
                 </span>
             </small>
@@ -66,7 +67,7 @@
 
         <!-- ==================== TRIAL BALANCE ==================== -->
         <div *ngIf="activeTab==='trialBalance'">
-            <div class="row g-1 mb-1 align-items-end d-print-none">
+            <div class="row g-1 mb-1 align-items-end d-print-none" (change)="filterChanged($event)">
                 <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">From</label><input type="date" class="form-control form-control-sm" [(ngModel)]="fromDate"/></div>
                 <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">To</label><input type="date" class="form-control form-control-sm" [(ngModel)]="toDate"/></div>
                 <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadTrialBalance()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
@@ -94,7 +95,7 @@
 
         <!-- ==================== PROFIT & LOSS ==================== -->
         <div *ngIf="activeTab==='incomeStatement'">
-            <div class="row g-1 mb-1 align-items-end d-print-none">
+            <div class="row g-1 mb-1 align-items-end d-print-none" (change)="filterChanged($event)">
                 <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">From</label><input type="date" class="form-control form-control-sm" [(ngModel)]="fromDate"/></div>
                 <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">To</label><input type="date" class="form-control form-control-sm" [(ngModel)]="toDate"/></div>
                 <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadIncomeStatement()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
@@ -127,7 +128,7 @@
 
         <!-- ==================== BALANCE SHEET ==================== -->
         <div *ngIf="activeTab==='balanceSheet'">
-            <div class="row g-1 mb-1 align-items-end d-print-none">
+            <div class="row g-1 mb-1 align-items-end d-print-none" (change)="filterChanged($event)">
                 <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">As of Date</label><input type="date" class="form-control form-control-sm" [(ngModel)]="asOfDate"/></div>
                 <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadBalanceSheet()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
                 <div class="col text-end" *ngIf="balanceSheet"><button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button></div>
@@ -157,7 +158,7 @@
 
         <!-- ==================== FEE COLLECTION ==================== -->
         <div *ngIf="activeTab==='feeCollection'">
-            <div class="row g-1 mb-1 align-items-end d-print-none">
+            <div class="row g-1 mb-1 align-items-end d-print-none" (change)="filterChanged($event)">
                 <div class="col-md-2">
                     <label class="form-label mb-0" style="font-size:0.8rem;">Academic Year</label>
                     <select class="form-select form-select-sm" [(ngModel)]="feeCollectionYearId" (ngModelChange)="onFeeCollectionYearChange()">
@@ -179,8 +180,8 @@
                         <option [ngValue]="c.id" *ngFor="let c of feeCollectionClasses">{{ c.learningLevel?.name }}{{ c.schoolStream?.name ? ' - ' + c.schoolStream.name : '' }}</option>
                     </select>
                 </div>
-                <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">From</label><input type="date" class="form-control form-control-sm" [(ngModel)]="fromDate"/></div>
-                <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">To</label><input type="date" class="form-control form-control-sm" [(ngModel)]="toDate"/></div>
+                <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">From <small class="text-muted">(optional)</small></label><input type="date" class="form-control form-control-sm" [(ngModel)]="feeCollectionFrom"/></div>
+                <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">To <small class="text-muted">(optional)</small></label><input type="date" class="form-control form-control-sm" [(ngModel)]="feeCollectionTo" [min]="feeCollectionFrom"/></div>
                 <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadFeeCollection()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
                 <div class="col-auto"><button class="btn btn-sm btn-outline-secondary" (click)="clearFeeCollectionFilters()" title="Clear"><i class="fas fa-times"></i></button></div>
                 <div class="col text-end" *ngIf="feeCollection"><button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button></div>
@@ -195,6 +196,11 @@
                     <div class="col-md-3"><div class="small-box bg-primary p-2"><div class="inner"><h5 class="mb-0">{{ feeCollection.paidCount }}/{{ feeCollection.invoiceCount }}</h5><div>Paid / Total</div></div></div></div>
                 </div>
 
+                <div class="text-end mb-1 d-print-none" *ngIf="feeCollection.classes?.length > 1">
+                    <button class="btn btn-sm btn-link py-0" (click)="setAllFeeClasses(true)"><i class="fas fa-angle-double-down me-1"></i>Open all</button>
+                    <button class="btn btn-sm btn-link py-0" (click)="setAllFeeClasses(false)"><i class="fas fa-angle-double-up me-1"></i>Fold all</button>
+                </div>
+
                 <div *ngIf="feeCollection.classes?.length === 0" class="alert alert-info">
                     <i class="fas fa-info-circle me-1"></i> No fee activity found for the selected filters.
                 </div>
@@ -202,13 +208,14 @@
                 <!-- Per-class detail (each on its own page when printing) -->
                 <div *ngFor="let cls of feeCollection.classes; let idx = index" [style.page-break-before]="idx > 0 ? 'always' : 'auto'">
                     <div class="card card-outline card-primary mb-3">
-                        <div class="card-header py-1 bg-info text-white d-flex justify-content-between">
-                            <strong><i class="fas fa-users me-1"></i> {{ cls.className }}</strong>
+                        <div class="card-header py-1 bg-info text-white d-flex justify-content-between" role="button" (click)="toggleFeeClass(idx)"
+                            [title]="openFeeClasses.has(idx) ? 'Fold this class' : 'Open this class'">
+                            <strong><i class="fas me-1 d-print-none" [ngClass]="openFeeClasses.has(idx) ? 'fa-chevron-down' : 'fa-chevron-right'"></i><i class="fas fa-users me-1"></i> {{ cls.className }}</strong>
                             <span class="badge bg-light text-dark">
                                 {{ cls.studentCount }} student(s) | Invoiced: {{ cls.totalInvoiced | number:'1.2-2' }} | Collected: {{ cls.totalCollected | number:'1.2-2' }} | Outstanding: {{ cls.totalOutstanding | number:'1.2-2' }}
                             </span>
                         </div>
-                        <div class="card-body p-0">
+                        <div class="card-body p-0 fold-body" [class.folded]="!openFeeClasses.has(idx)">
                             <table class="table table-striped table-sm mb-0">
                                 <thead class="table-light">
                                     <tr>
@@ -247,7 +254,7 @@
 
         <!-- ==================== OUTSTANDING BALANCES ==================== -->
         <div *ngIf="activeTab==='outstanding'">
-            <div class="row g-1 mb-1 align-items-end d-print-none">
+            <div class="row g-1 mb-1 align-items-end d-print-none" (change)="filterChanged($event)">
                 <div class="col-md-2">
                     <label class="form-label mb-0" style="font-size:0.8rem;">Academic Year</label>
                     <select class="form-select form-select-sm" [(ngModel)]="outstandingYearId" (ngModelChange)="onOutstandingYearChange()">
@@ -298,7 +305,7 @@
 
         <!-- ==================== EXPENSES REPORT ==================== -->
         <div *ngIf="activeTab==='expenses'">
-            <div class="row g-1 mb-1 align-items-end d-print-none">
+            <div class="row g-1 mb-1 align-items-end d-print-none" (change)="filterChanged($event)">
                 <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">From</label><input type="date" class="form-control form-control-sm" [(ngModel)]="fromDate"/></div>
                 <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">To</label><input type="date" class="form-control form-control-sm" [(ngModel)]="toDate"/></div>
                 <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadExpenseReport()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
@@ -350,7 +357,7 @@
 
         <!-- ==================== FEE BALANCES BY CLASS ==================== -->
         <div *ngIf="activeTab==='feeBalancesByClass'">
-            <div class="row g-1 mb-1 align-items-end d-print-none">
+            <div class="row g-1 mb-1 align-items-end d-print-none" (change)="filterChanged($event)">
                 <div class="col-md-2">
                     <label class="form-label mb-0" style="font-size:0.8rem;">Academic Year</label>
                     <select class="form-select form-select-sm" [(ngModel)]="feeBalanceYearId" (ngModelChange)="onFeeBalanceYearChange()">
@@ -452,7 +459,7 @@
 
         <!-- ==================== STUDENT STATEMENT ==================== -->
         <div *ngIf="activeTab==='studentStatement'">
-            <div class="row g-1 mb-1 align-items-end d-print-none">
+            <div class="row g-1 mb-1 align-items-end d-print-none" (change)="filterChanged($event)">
                 <div class="col-md-2">
                     <label class="form-label mb-0" style="font-size:0.8rem;">Academic Year</label>
                     <select class="form-select form-select-sm" [(ngModel)]="statementYearId" (ngModelChange)="onStatementYearChange()">
@@ -570,7 +577,7 @@
 
         <!-- ==================== CONSOLIDATED BUDGET ==================== -->
         <div *ngIf="activeTab==='consolidatedBudget'">
-            <div class="row g-1 mb-1 align-items-end d-print-none">
+            <div class="row g-1 mb-1 align-items-end d-print-none" (change)="filterChanged($event)">
                 <div class="col-md-3">
                     <label class="form-label mb-0" style="font-size:0.8rem;">Academic Year</label>
                     <select class="form-select form-select-sm" [(ngModel)]="selectedAcademicYearId">
@@ -660,7 +667,7 @@
 
         <!-- ==================== STUDENT DISCOUNTS ==================== -->
         <div *ngIf="activeTab==='discounts'">
-            <div class="row g-1 mb-1 align-items-end d-print-none">
+            <div class="row g-1 mb-1 align-items-end d-print-none" (change)="filterChanged($event)">
                 <div class="col-md-2">
                     <label class="form-label mb-0" style="font-size:0.8rem;">Academic Year</label>
                     <select class="form-select form-select-sm" [(ngModel)]="discountYearId" (change)="onDiscountYearChange()">
@@ -785,7 +792,7 @@
 
         <!-- ==================== CREDIT / DEBIT NOTES ==================== -->
         <div *ngIf="activeTab==='notes'">
-            <div class="row g-1 mb-1 align-items-end d-print-none">
+            <div class="row g-1 mb-1 align-items-end d-print-none" (change)="filterChanged($event)">
                 <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">From</label><input type="date" class="form-control form-control-sm" [(ngModel)]="fromDate"/></div>
                 <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8rem;">To</label><input type="date" class="form-control form-control-sm" [(ngModel)]="toDate"/></div>
                 <div class="col-md-2">

@@ -86,6 +86,11 @@ export class FinanceReportsComponent implements OnInit {
     feeCollectionClassId: any = null;
     feeCollectionSessions: any[] = [];
     feeCollectionClasses: any[] = [];
+    // Optional: left empty, the year and term decide what is in the report.
+    feeCollectionFrom: string = '';
+    feeCollectionTo: string = '';
+    // Classes opened on screen; the first opens on load, the rest when clicked. Printing shows all.
+    openFeeClasses = new Set<number>();
 
     // Student discounts
     discountYearId: any = null;
@@ -204,6 +209,36 @@ export class FinanceReportsComponent implements OnInit {
     private loadedTabs = new Set<string>();
     private filtersReady = {years: false, sessions: false};
 
+    // A changed filter clears the report below it, so what is on screen never belongs to other filters.
+    // Text boxes are left out: the outstanding search filters the loaded list as you type.
+    filterChanged(e: Event) {
+        let el = e.target as HTMLInputElement;
+        if (el?.type === 'text' || el?.type === 'search') return;
+        // The From / To dates are shared by these reports, so a new date clears them all.
+        let sharesDates = ['trialBalance', 'incomeStatement', 'expenses', 'notes'];
+        if (el?.type === 'date' && sharesDates.includes(this.activeTab)) sharesDates.forEach((tab) => this.clearReport(tab));
+        else this.clearReport(this.activeTab);
+    }
+
+    clearReport(tab: string) {
+        let clear: Record<string, () => void> = {
+            trialBalance: () => (this.trialBalance = []),
+            incomeStatement: () => (this.incomeStatement = null),
+            balanceSheet: () => (this.balanceSheet = null),
+            consolidatedBudget: () => (this.consolidatedBudget = null),
+            feeCollection: () => (this.feeCollection = null),
+            outstanding: () => { this.allOutstanding = []; this.outstanding = []; },
+            feeBalancesByClass: () => (this.feeBalancesReport = null),
+            studentStatement: () => (this.studentStatement = null),
+            discounts: () => (this.discountReport = null),
+            expenses: () => (this.expenseReport = null),
+            notes: () => (this.notesReport = null)
+        };
+        clear[tab]?.();
+        // Opening the tab again loads it afresh for the filters then set.
+        if (tab !== this.activeTab) this.loadedTabs.delete(tab);
+    }
+
     private autoLoad() {
         if (!this.filtersReady.years || !this.filtersReady.sessions || this.loadedTabs.has(this.activeTab)) return;
         let loaders: Record<string, () => void> = {
@@ -258,8 +293,12 @@ export class FinanceReportsComponent implements OnInit {
 
     loadFeeCollection() {
         this.isLoading = true;
-        this.reportsSvc.feeCollection(this.fromDate, this.toDate, this.feeCollectionYearId, this.feeCollectionSessionId, this.feeCollectionClassId).subscribe({
-            next: (r) => { this.feeCollection = r; this.isLoading = false; },
+        this.reportsSvc.feeCollection(this.feeCollectionFrom, this.feeCollectionTo, this.feeCollectionYearId, this.feeCollectionSessionId, this.feeCollectionClassId).subscribe({
+            next: (r) => {
+                this.feeCollection = r;
+                this.openFeeClasses = new Set(r?.classes?.length ? [0] : []);
+                this.isLoading = false;
+            },
             error: (err) => { this.isLoading = false; this.toastr.error(err.error?.message || 'Error.'); }
         });
     }
@@ -268,7 +307,8 @@ export class FinanceReportsComponent implements OnInit {
         this.feeCollectionSessions = this.feeCollectionYearId
             ? this.allSessions.filter((s: any) => s.academicYearId == this.feeCollectionYearId)
             : [];
-        this.feeCollectionSessionId = null;
+        let activeSession = this.feeCollectionSessions.find((s: any) => s.status === true);
+        this.feeCollectionSessionId = activeSession ? activeSession.id : null;
         this.feeCollectionClasses = [];
         this.feeCollectionClassId = null;
         if (this.feeCollectionYearId) {
@@ -282,10 +322,35 @@ export class FinanceReportsComponent implements OnInit {
         }
     }
 
+    // Printed under the title: the year, term and class chosen, and the dates only when given.
+    feeCollectionLabel(): string {
+        let year = this.academicYears.find((y: any) => y.id == this.feeCollectionYearId)?.name || 'All years';
+        let term = this.allSessions.find((t: any) => t.id == this.feeCollectionSessionId)?.sessionName || 'All terms';
+        let cls = this.feeCollectionClasses.find((c: any) => c.id == this.feeCollectionClassId);
+        let parts = [`Academic Year: ${year}`, `Term: ${term}`];
+        if (cls) parts.push(`Class: ${cls.learningLevel?.name || ''}${cls.schoolStream?.name ? ' - ' + cls.schoolStream.name : ''}`);
+        let fmt = (d: string) => formatDate(d, 'mediumDate', 'en');
+        if (this.feeCollectionFrom || this.feeCollectionTo)
+            parts.push(`Period: ${this.feeCollectionFrom ? fmt(this.feeCollectionFrom) : 'start'} to ${this.feeCollectionTo ? fmt(this.feeCollectionTo) : 'today'}`);
+        return parts.join(' | ');
+    }
+
+    toggleFeeClass(idx: number) {
+        if (this.openFeeClasses.has(idx)) this.openFeeClasses.delete(idx);
+        else this.openFeeClasses.add(idx);
+    }
+
+    setAllFeeClasses(open: boolean) {
+        this.openFeeClasses = new Set(open ? (this.feeCollection?.classes || []).map((_: any, i: number) => i) : []);
+    }
+
     clearFeeCollectionFilters() {
+        this.clearReport(this.activeTab);
         let active = this.academicYears.find((y: any) => y.status === true);
         this.feeCollectionYearId = active ? active.id : null;
         this.onFeeCollectionYearChange();
+        this.feeCollectionFrom = '';
+        this.feeCollectionTo = '';
     }
 
     // ========== Student Statement ==========
@@ -343,6 +408,7 @@ export class FinanceReportsComponent implements OnInit {
     }
 
     clearStatementFilters() {
+        this.clearReport(this.activeTab);
         let active = this.academicYears.find((y: any) => y.status === true);
         this.statementYearId = active ? active.id : null;
         this.onStatementYearChange();
@@ -415,6 +481,7 @@ export class FinanceReportsComponent implements OnInit {
     }
 
     clearOutstandingFilters() {
+        this.clearReport(this.activeTab);
         let active = this.academicYears.find((y: any) => y.status === true);
         this.outstandingYearId = active ? active.id : null;
         this.onOutstandingYearChange();
@@ -450,6 +517,7 @@ export class FinanceReportsComponent implements OnInit {
     }
 
     clearFeeBalanceFilters() {
+        this.clearReport(this.activeTab);
         let active = this.academicYears.find((y: any) => y.status === true);
         this.feeBalanceYearId = active ? active.id : null;
         this.onFeeBalanceYearChange();
@@ -501,6 +569,7 @@ export class FinanceReportsComponent implements OnInit {
     }
 
     clearDiscountFilters() {
+        this.clearReport(this.activeTab);
         let active = this.academicYears.find((y: any) => y.status === true);
         this.discountYearId = active ? active.id : null;
         this.onDiscountYearChange();
@@ -548,6 +617,7 @@ export class FinanceReportsComponent implements OnInit {
     }
 
     clearNotesFilters() {
+        this.clearReport(this.activeTab);
         let active = this.academicYears.find((y: any) => y.status === true);
         this.notesYearId = active ? active.id : null;
         this.onNotesYearChange();

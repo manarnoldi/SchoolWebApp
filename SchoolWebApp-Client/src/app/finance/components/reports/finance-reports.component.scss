@@ -34,3 +34,7 @@
 .drill-row { cursor: pointer; }
 .drill-row:hover td { color: #1e40af; }
 @media print { .drill-row:hover td { color: inherit; } }
+
+// A folded class shows only its header on screen; printing always shows every class in full.
+.fold-body.folded { display: none; }
+@media print { .fold-body.folded { display: block !important; } }

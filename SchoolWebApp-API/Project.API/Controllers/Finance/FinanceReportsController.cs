@@ -159,16 +159,19 @@ namespace SchoolWebApp.API.Controllers.Finance
             });
         }
 
-        // GET api/financeReports/feeCollection?from=...&to=...
+        // GET api/financeReports/feeCollection?academicYearId=&sessionId=&from=&to=
+        // The dates are optional: without them the year and term decide what is in.
         [HttpGet("feeCollection")]
-        public async Task<IActionResult> FeeCollection(DateTime from, DateTime to, int? academicYearId, int? sessionId, int? schoolClassId)
+        public async Task<IActionResult> FeeCollection(DateTime? from, DateTime? to, int? academicYearId, int? sessionId, int? schoolClassId)
         {
+            var start = from ?? DateTime.MinValue;
+            var end = to.HasValue ? to.Value.Date.AddDays(1).AddTicks(-1) : DateTime.MaxValue;
             var payments = (await _unitOfWork.Payments.Find(includeProperties: "Student,StudentInvoice"))
-                .Where(p => p.PaymentDate >= from && p.PaymentDate <= to
+                .Where(p => p.PaymentDate >= start && p.PaymentDate <= end
                     && (p.ApprovalStatus == PaymentApprovalStatus.Approved)).ToList();
 
             var allInvoices = (await _unitOfWork.StudentInvoices.Find(includeProperties: "Student,AcademicYear,Session"))
-                .Where(i => i.InvoiceDate >= from && i.InvoiceDate <= to).ToList();
+                .Where(i => i.InvoiceDate >= start && i.InvoiceDate <= end).ToList();
 
             if (academicYearId.HasValue)
             {

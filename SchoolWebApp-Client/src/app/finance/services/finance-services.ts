@@ -135,7 +135,9 @@ export class FinanceReportsService {
         return this.http.get<any>(`/financeReports/balanceSheet?asOf=${asOf}`);
     }
     feeCollection(from: string, to: string, academicYearId?: any, sessionId?: any, schoolClassId?: any): Observable<any> {
-        let params: string[] = [`from=${from}`, `to=${to}`];
+        let params: string[] = [];
+        if (from) params.push(`from=${from}`);
+        if (to) params.push(`to=${to}`);
         if (academicYearId) params.push(`academicYearId=${academicYearId}`);
         if (sessionId) params.push(`sessionId=${sessionId}`);
         if (schoolClassId) params.push(`schoolClassId=${schoolClassId}`);
