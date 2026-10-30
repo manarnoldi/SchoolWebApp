@@ -184,11 +184,12 @@ export class FinanceReportsService {
         let q = params.length > 0 ? '?' + params.join('&') : '';
         return this.http.get<any>(`/financeReports/feeBalancesByClass${q}`);
     }
-    studentDiscounts(academicYearId?: any, sessionId?: any, schoolClassId?: any): Observable<any> {
+    studentDiscounts(academicYearId?: any, sessionId?: any, schoolClassId?: any, sponsorId?: any): Observable<any> {
         let params: string[] = [];
         if (academicYearId) params.push(`academicYearId=${academicYearId}`);
         if (sessionId) params.push(`sessionId=${sessionId}`);
         if (schoolClassId) params.push(`schoolClassId=${schoolClassId}`);
+        if (sponsorId) params.push(`sponsorId=${sponsorId}`);
         let q = params.length > 0 ? '?' + params.join('&') : '';
         return this.http.get<any>(`/financeReports/studentDiscounts${q}`);
     }

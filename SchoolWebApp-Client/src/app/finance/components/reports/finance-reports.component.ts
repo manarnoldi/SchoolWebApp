@@ -3,7 +3,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {FinanceDrilldownComponent} from './drilldown/finance-drilldown.component';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
-import {FinanceReportsService} from '@/finance/services/finance-services';
+import {FinanceReportsService, SponsorService} from '@/finance/services/finance-services';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {SchoolDetailsService} from '@/school/services/school-details.service';
 import {SessionsService} from '@/class/services/sessions.service';
@@ -96,6 +96,9 @@ export class FinanceReportsComponent implements OnInit {
     discountYearId: any = null;
     discountSessionId: any = null;
     discountClassId: any = null;
+    // A sponsor, -1 for discounts the school gave itself, or null for all.
+    discountSponsorId: any = null;
+    sponsors: any[] = [];
     discountSessions: any[] = [];
     discountClasses: any[] = [];
     discountReport: any = null;
@@ -128,6 +131,7 @@ export class FinanceReportsComponent implements OnInit {
     constructor(
         private toastr: ToastrService,
         private reportsSvc: FinanceReportsService,
+        private sponsorSvc: SponsorService,
         private yearSvc: AcademicYearsService,
         private schoolSvc: SchoolDetailsService,
         private sessionSvc: SessionsService,
@@ -165,6 +169,10 @@ export class FinanceReportsComponent implements OnInit {
         this.toDate = formatDate(today, 'yyyy-MM-dd', 'en');
         this.asOfDate = formatDate(today, 'yyyy-MM-dd', 'en');
 
+        this.sponsorSvc.getAll().subscribe({
+            next: (s) => { this.sponsors = (s || []).sort((a: any, b: any) => (a.name || '').localeCompare(b.name || '')); },
+            error: () => {}
+        });
         this.schoolSvc.get('/schoolDetails').subscribe({
             next: (schools: any[]) => { this.school = schools?.[0] || null; },
             error: () => {}
@@ -689,7 +697,7 @@ export class FinanceReportsComponent implements OnInit {
 
     loadStudentDiscounts() {
         this.isLoading = true;
-        this.reportsSvc.studentDiscounts(this.discountYearId, this.discountSessionId, this.discountClassId).subscribe({
+        this.reportsSvc.studentDiscounts(this.discountYearId, this.discountSessionId, this.discountClassId, this.discountSponsorId).subscribe({
             next: (r) => {
                 this.discountReport = r;
                 this.expandedDiscountStudents.clear();
@@ -705,6 +713,7 @@ export class FinanceReportsComponent implements OnInit {
         this.discountYearId = active ? active.id : null;
         this.onDiscountYearChange();
         this.discountReport = null;
+        this.discountSponsorId = null;
     }
 
     // One student open at a time, as on the other report tabs.

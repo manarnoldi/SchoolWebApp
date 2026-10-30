@@ -981,13 +981,21 @@
                         <option *ngFor="let s of discountSessions" [ngValue]="s.id">{{ s.sessionName }}</option>
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="form-label mb-0" style="font-size:0.8rem;">Class</label>
                     <select class="form-select form-select-sm" [(ngModel)]="discountClassId">
                         <option [ngValue]="null">-- All --</option>
                         <option *ngFor="let c of discountClasses" [ngValue]="c.id">
                             {{ c.learningLevel?.name }}{{ c.schoolStream?.name ? ' - ' + c.schoolStream.name : '' }}
                         </option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label mb-0" style="font-size:0.8rem;">Sponsor</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="discountSponsorId">
+                        <option [ngValue]="null">-- All --</option>
+                        <option *ngFor="let sp of sponsors" [ngValue]="sp.id">{{ sp.name }}</option>
+                        <option [ngValue]="-1">School discount (no sponsor)</option>
                     </select>
                 </div>
                 <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadStudentDiscounts()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
