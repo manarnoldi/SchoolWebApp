@@ -348,6 +348,11 @@ export class FinanceInvoicesComponent implements OnInit {
     getDetailPledgedTotal = (): number =>
         (this.viewDetail?.items || []).reduce((s, i) => s + (+i.sponsoredAmount! || 0), 0);
 
+    // Of what has been paid, the sponsor's part (against its pledge) and the family's.
+    getDetailSponsorPaidTotal = (): number =>
+        (this.viewDetail?.items || []).reduce((s, i) => s + (+i.sponsorPaidAmount! || 0), 0);
+    getDetailFamilyPaidTotal = (): number => this.getDetailPaidTotal() - this.getDetailSponsorPaidTotal();
+
     getDetailPaidTotal = (): number => {
         if (!this.viewDetail) return 0;
         return (this.viewDetail.items || []).reduce((s, i) => s + (+i.paidAmount! || 0), 0);

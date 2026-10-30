@@ -184,12 +184,17 @@
                     <div class="modal-body p-2">
                         <div class="border border-secondary rounded p-2 mb-2 bg-light">
                             <div class="row" style="font-size:0.85rem;">
-                                <div class="col-md-3"><small class="text-muted d-block">Student</small><strong>{{ viewDetail.studentUPI }} - {{ viewDetail.studentName }}</strong></div>
-                                <div class="col-md-2"><small class="text-muted d-block">Academic Year</small><strong>{{ viewDetail.academicYearName }}</strong></div>
-                                <div class="col-md-2"><small class="text-muted d-block">Session</small><strong>{{ viewDetail.sessionName || '-' }}</strong></div>
-                                <div class="col-md-2"><small class="text-muted d-block">Invoice Date</small><strong>{{ viewDetail.invoiceDate | date:'mediumDate' }}</strong></div>
-                                <div class="col-md-1"><small class="text-muted d-block">Paid</small><strong class="text-success">{{ viewDetail.paidAmount | number:'1.2-2' }}</strong></div>
-                                <div class="col-md-2"><small class="text-muted d-block">Status</small><span class="badge" [ngClass]="statusBadge(viewDetail.status)">{{ statusLabel(viewDetail.status) }}</span></div>
+                                <div class="col-3"><small class="text-muted d-block">Student</small><strong>{{ viewDetail.studentUPI }} - {{ viewDetail.studentName }}</strong></div>
+                                <div class="col"><small class="text-muted d-block">Academic Year</small><strong>{{ viewDetail.academicYearName }}</strong></div>
+                                <div class="col"><small class="text-muted d-block">Session</small><strong>{{ viewDetail.sessionName || '-' }}</strong></div>
+                                <div class="col"><small class="text-muted d-block">Invoice Date</small><strong>{{ viewDetail.invoiceDate | date:'mediumDate' }}</strong></div>
+                                <!-- Who has paid: the family and, where part is pledged, the sponsor -->
+                                <div class="col" *ngIf="!getDetailPledgedTotal()"><small class="text-muted d-block">Paid</small><strong class="text-success">{{ viewDetail.paidAmount | number:'1.2-2' }}</strong></div>
+                                <ng-container *ngIf="getDetailPledgedTotal()">
+                                    <div class="col"><small class="text-muted d-block">Paid by family</small><strong class="text-success">{{ getDetailFamilyPaidTotal() | number:'1.2-2' }}</strong></div>
+                                    <div class="col"><small class="text-muted d-block">Paid by sponsor</small><strong class="text-primary">{{ getDetailSponsorPaidTotal() | number:'1.2-2' }}</strong></div>
+                                </ng-container>
+                                <div class="col"><small class="text-muted d-block">Status</small><span class="badge" [ngClass]="statusBadge(viewDetail.status)">{{ statusLabel(viewDetail.status) }}</span></div>
                             </div>
                         </div>
                         <table class="table table-sm table-striped mb-0">
@@ -201,7 +206,8 @@
                                     <th class="text-end">Discount</th>
                                     <th class="text-end">Invoiced</th>
                                     <th class="text-end" title="The part a sponsor is expected to pay; the student owes it if the sponsor does not">Sponsor pledge</th>
-                                    <th class="text-end">Paid</th>
+                                    <th class="text-end" *ngIf="getDetailPledgedTotal()" title="Paid by the sponsor against its pledge">Paid by sponsor</th>
+                                    <th class="text-end">{{ getDetailPledgedTotal() ? 'Paid by family' : 'Paid' }}</th>
                                     <th class="text-end">Balance</th>
                                     <th>Description</th>
                                 </tr>
@@ -214,7 +220,8 @@
                                     <td class="text-end">{{ it.discount | number:'1.2-2' }}</td>
                                     <td class="text-end">{{ (it.amount! - (it.discount || 0)) | number:'1.2-2' }}</td>
                                     <td class="text-end text-primary">{{ it.sponsoredAmount ? (it.sponsoredAmount | number:'1.2-2') : '' }}</td>
-                                    <td class="text-end text-success">{{ it.paidAmount | number:'1.2-2' }}</td>
+                                    <td class="text-end text-primary" *ngIf="getDetailPledgedTotal()">{{ it.sponsoredAmount ? ((it.sponsorPaidAmount || 0) | number:'1.2-2') : '' }}</td>
+                                    <td class="text-end text-success">{{ ((it.paidAmount || 0) - (it.sponsorPaidAmount || 0)) | number:'1.2-2' }}</td>
                                     <td class="text-end fw-bold" [class.text-danger]="(it.amount! - (it.discount || 0) - (it.paidAmount || 0)) > 0">{{ (it.amount! - (it.discount || 0) - (it.paidAmount || 0)) | number:'1.2-2' }}</td>
                                     <td><small>{{ it.description }}</small></td>
                                 </tr>
@@ -224,7 +231,8 @@
                                     <td colspan="4" class="text-end">TOTAL</td>
                                     <td class="text-end">{{ getDetailTotal() | number:'1.2-2' }}</td>
                                     <td class="text-end text-primary">{{ getDetailPledgedTotal() ? (getDetailPledgedTotal() | number:'1.2-2') : '' }}</td>
-                                    <td class="text-end text-success">{{ getDetailPaidTotal() | number:'1.2-2' }}</td>
+                                    <td class="text-end text-primary" *ngIf="getDetailPledgedTotal()">{{ getDetailSponsorPaidTotal() | number:'1.2-2' }}</td>
+                                    <td class="text-end text-success">{{ getDetailFamilyPaidTotal() | number:'1.2-2' }}</td>
                                     <td class="text-end">{{ (getDetailTotal() - getDetailPaidTotal()) | number:'1.2-2' }}</td>
                                     <td></td>
                                 </tr>
