@@ -28,6 +28,10 @@ export class StaffDetails extends ResourceModel<StaffDetails> {
     public nhifNo?: string;
     public nssfNo?: string;
     public kraPinNo?: string;
+    // Where net pay is sent (payslip, bank schedule).
+    public bankName?: string;
+    public bankBranch?: string;
+    public bankAccountNumber?: string;
 
     //Employment details
     public employmentDate?: Date;

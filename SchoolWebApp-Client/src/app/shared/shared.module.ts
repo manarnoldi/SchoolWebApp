@@ -36,11 +36,13 @@ import {ExamResultsTableComponent} from '@/academics/components/exam-results/exa
 import { DataTablesModule } from 'angular-datatables';
 import {StudentAcademicsComponent} from '@/students/components/student-assignments/student-academics/student-academics.component';
 import {PayslipSlipComponent} from './components/payslip-slip/payslip-slip.component';
+import {P9CardComponent} from './components/p9-card/p9-card.component';
 
 @NgModule({
     declarations: [
         StudentAcademicsComponent,
         PayslipSlipComponent,
+        P9CardComponent,
         ButtonComponent,
         DashboardHeaderComponent,
         DropdownComponent,
@@ -78,6 +80,7 @@ import {PayslipSlipComponent} from './components/payslip-slip/payslip-slip.compo
     exports: [
         StudentAcademicsComponent,
         PayslipSlipComponent,
+        P9CardComponent,
         ButtonComponent,
         DashboardHeaderComponent,
         DropdownComponent,

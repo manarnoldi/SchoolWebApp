@@ -164,8 +164,8 @@
                                                 [readonly]="readonly" />
                                         </div>
                                         <div class="form-group">
-                                            <label for="nhifNo">NHIF number:</label>
-                                            <input placeholder="Enter NHIF number" id="nhifNo"
+                                            <label for="nhifNo">SHA number:</label>
+                                            <input placeholder="Enter SHA (formerly NHIF) number" id="nhifNo"
                                                 type="text" class="form-control form-control-sm"
                                                 formControlName="nhifNo" [readonly]="readonly" />
                                         </div>
@@ -180,6 +180,22 @@
                                             <input placeholder="Enter KRA pin number" id="kraPinNo"
                                                 type="text" class="form-control form-control-sm"
                                                 formControlName="kraPinNo" [readonly]="readonly" />
+                                        </div>
+                                        <!-- Where net pay is sent: printed on the payslip and the bank schedule. -->
+                                        <div class="form-group">
+                                            <label for="bankName">Bank:</label>
+                                            <input placeholder="e.g. KCB Bank" id="bankName" type="text" maxlength="100"
+                                                class="form-control form-control-sm" formControlName="bankName" [readonly]="readonly" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="bankBranch">Bank branch:</label>
+                                            <input placeholder="Enter branch" id="bankBranch" type="text" maxlength="100"
+                                                class="form-control form-control-sm" formControlName="bankBranch" [readonly]="readonly" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="bankAccountNumber">Bank account number:</label>
+                                            <input placeholder="Enter account number" id="bankAccountNumber" type="text" maxlength="50"
+                                                class="form-control form-control-sm" formControlName="bankAccountNumber" [readonly]="readonly" />
                                         </div>
                                     </div>
                                 </div>

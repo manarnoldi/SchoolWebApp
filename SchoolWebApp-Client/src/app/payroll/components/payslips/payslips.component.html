@@ -1,84 +1,7 @@
-<!-- Payslips for the period chosen on the Processing page. No page header or
-     period filter of its own: the periods table above picks the period. -->
-<!-- Payslip details modal: only the statutory numbers that print on the
-     payslip. Everything else about a staff member stays on Staff Details. -->
-<div class="modal-backdrop fade show d-print-none" *ngIf="showIdentifiers"></div>
-<div class="modal fade show d-block d-print-none" *ngIf="showIdentifiers" tabindex="-1">
-    <div class="modal-dialog modal-dialog-scrollable" style="margin-top: 40px;">
-        <div class="modal-content">
-            <div class="modal-header bg-info text-white py-2">
-                <h5 class="modal-title"><i class="fas fa-id-card me-1"></i> Payslip Details</h5>
-                <button type="button" class="close text-white" (click)="cancelIdentifiers()"><span>&times;</span></button>
-            </div>
-            <div class="modal-body p-2">
-                <div class="border border-secondary rounded p-2 mb-2 bg-light">
-                    <strong>{{ identifiersFor?.staffName }}</strong>
-                    <small class="text-muted ms-2">EMP No: {{ identifiersFor?.staffUpi }}</small>
-                </div>
-                <div class="row g-1">
-                    <div class="col-md-6">
-                        <label class="form-label mb-0" style="font-size:0.8rem;">KRA Pin</label>
-                        <input type="text" class="form-control form-control-sm" [(ngModel)]="identifiers.kraPinNo" maxlength="255" />
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label mb-0" style="font-size:0.8rem;">ID Number</label>
-                        <input type="text" class="form-control form-control-sm" [(ngModel)]="identifiers.idNumber" maxlength="255" />
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label mb-0" style="font-size:0.8rem;">NSSF No</label>
-                        <input type="text" class="form-control form-control-sm" [(ngModel)]="identifiers.nssfNo" maxlength="255" />
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label mb-0" style="font-size:0.8rem;">SHA No</label>
-                        <input type="text" class="form-control form-control-sm" [(ngModel)]="identifiers.nhifNo" maxlength="255" />
-                    </div>
-                </div>
-                <!-- Where net pay goes: printed on the payslip and the bank schedule. -->
-                <div class="row g-1 mt-1">
-                    <div class="col-md-4">
-                        <label class="form-label mb-0" style="font-size:0.8rem;">Bank</label>
-                        <input type="text" class="form-control form-control-sm" [(ngModel)]="identifiers.bankName" maxlength="100" placeholder="e.g. KCB Bank" />
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label mb-0" style="font-size:0.8rem;">Branch</label>
-                        <input type="text" class="form-control form-control-sm" [(ngModel)]="identifiers.bankBranch" maxlength="100" />
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label mb-0" style="font-size:0.8rem;">Account No</label>
-                        <input type="text" class="form-control form-control-sm" [(ngModel)]="identifiers.bankAccountNumber" maxlength="50" />
-                    </div>
-                </div>
-                <hr class="my-2">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="excludeFromPayrollSwitch"
-                        [(ngModel)]="identifiers.excludeFromPayroll">
-                    <label class="form-check-label" for="excludeFromPayrollSwitch">
-                        <strong>Exclude from payroll</strong>
-                    </label>
-                </div>
-                <small class="text-muted d-block">
-                    For people not paid through the payroll, such as suppliers or contractors.
-                    They stay on the staff list but are skipped when payroll is processed, are not
-                    given a salary structure, and their payslip cannot be printed.
-                </small>
-
-                <small class="text-muted d-block mt-2">
-                    <i class="fas fa-info-circle"></i>
-                    Saved against the staff record, so the change shows on every payslip for this
-                    employee straight away - the payroll does not need re-processing. Names,
-                    category and employment details are edited under School &gt; Staff Details.
-                </small>
-            </div>
-            <div class="modal-footer py-1">
-                <button class="btn btn-sm btn-secondary" (click)="cancelIdentifiers()">Cancel</button>
-                <button class="btn btn-sm btn-success" (click)="saveIdentifiers()" [disabled]="savingIdentifiers">
-                    <i class="fas fa-save"></i> {{ savingIdentifiers ? 'Saving...' : 'Save' }}
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
+<!-- The payslips of one period: checked in the Processing pop-up (view a slip, see missing
+     statutory numbers), or printed from Payroll Reports > Payslips. -->
+<!-- The list (search, warnings, table) steps aside while a payslip is open. -->
+<ng-container *ngIf="!(mode === 'check' && previewOne)">
 <!-- Search and print -->
 <div class="row g-1 mb-1 align-items-end d-print-none">
     <div class="col-md-4">
@@ -108,7 +31,7 @@
 <div class="alert alert-warning py-1 px-2 mb-1 d-print-none" style="font-size:0.8rem;" *ngIf="mode === 'check' && incompleteCount() > 0">
     <i class="fas fa-exclamation-triangle me-1"></i>
     {{ incompleteCount() }} of {{ filtered().length }} listed staff are missing a KRA PIN, ID, NSSF or SHA number -
-    those lines will print blank. Use the <i class="fas fa-id-card"></i> button on a row to fill them in.
+    those lines will print blank. Fill them in on the staff member's record under Staff &gt; Staff Details.
 </div>
 
 <!-- Payslips that exist from an earlier run but whose staff member has since
@@ -119,11 +42,24 @@
     disabled and will not print, and re-processing this period will drop them.
 </div>
 
-<!-- Check mode: one slip on screen, as it will print. -->
-<div class="border rounded p-2 mb-2 bg-light d-print-none" *ngIf="mode === 'check' && previewOne">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <strong><i class="fas fa-file-invoice-dollar me-1"></i> {{ previewOne.staffName }} - {{ periodLabel() }}</strong>
-        <button class="btn btn-sm btn-outline-secondary" (click)="previewOne = null"><i class="fas fa-times"></i> Close</button>
+</ng-container>
+
+<!-- Check mode: one slip on its own, as it will print, with the way back to the list. -->
+<div class="d-print-none" *ngIf="mode === 'check' && previewOne">
+    <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center border-bottom pb-2 mb-2">
+        <button class="btn btn-sm btn-outline-secondary" (click)="closePreview()"><i class="fas fa-arrow-left"></i> Back to the list</button>
+        <div class="text-center">
+            <strong>{{ previewOne.staffName }}</strong>
+            <small class="text-muted ms-1">{{ previewOne.staffUpi }} &middot; {{ previewIndex() + 1 }} of {{ filtered().length }}</small>
+        </div>
+        <div>
+            <button class="btn btn-sm btn-outline-primary" (click)="previewStep(-1)" [disabled]="previewIndex() <= 0" title="Previous payslip">
+                <i class="fas fa-chevron-left"></i> Previous
+            </button>
+            <button class="btn btn-sm btn-outline-primary ms-1" (click)="previewStep(1)" [disabled]="previewIndex() >= filtered().length - 1" title="Next payslip">
+                Next <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
     </div>
     <iframe *ngIf="previewHtml" [srcdoc]="previewHtml" (load)="fitPreview($event)" title="Payslip"
         class="d-block mx-auto bg-white border" style="width: 100%; max-width: 420px; height: 600px;"></iframe>
@@ -135,7 +71,7 @@
 </div>
 
 <!-- List -->
-<div class="card card-outline card-primary d-print-none">
+<div class="card card-outline card-primary d-print-none" *ngIf="!(mode === 'check' && previewOne)">
     <div class="card-header py-1 d-flex justify-content-between align-items-center bg-info text-white">
         <div>
             <strong><i class="fas fa-file-invoice-dollar me-1"></i> Payslips</strong>
@@ -167,6 +103,8 @@
                         <td>{{ (page-1) * pageSize + i + 1 }}</td>
                         <td>
                             <strong>{{ p.staffName }}</strong>
+                            <span class="badge bg-warning text-dark ms-1" *ngIf="mode === 'check' && missingIdentifiers(p).length" style="font-size:0.65rem;"
+                                [title]="'Missing: ' + missingIdentifiers(p).join(', ')">Missing {{ missingIdentifiers(p).join(', ') }}</span>
                             <span class="badge bg-secondary ms-1" *ngIf="p.excludeFromPayroll" style="font-size:0.65rem;">
                                 Excluded from payroll
                             </span>
@@ -180,15 +118,9 @@
                         <td class="text-end">{{ p.totalDeductions | number:'1.2-2' }}</td>
                         <td class="text-end fw-bold">{{ p.netPay | number:'1.2-2' }}</td>
                         <td class="text-nowrap">
-                            <button *ngIf="mode === 'check'" class="btn btn-sm" [ngClass]="previewOne?.id === p.id ? 'btn-info' : 'btn-outline-info'"
+                            <button *ngIf="mode === 'check'" class="btn btn-sm btn-outline-info"
                                 (click)="preview(p)" title="View this payslip">
                                 <i class="fas fa-eye"></i>
-                            </button>
-                            <button *ngIf="mode === 'check'" class="btn btn-outline-secondary btn-sm ms-1" (click)="editIdentifiers(p)"
-                                [title]="missingIdentifiers(p).length
-                                    ? 'Missing: ' + missingIdentifiers(p).join(', ')
-                                    : 'Edit payslip details (KRA PIN, ID, NSSF, SHA)'">
-                                <i class="fas" [ngClass]="missingIdentifiers(p).length ? 'fa-exclamation-triangle text-warning' : 'fa-id-card'"></i>
                             </button>
                             <button *ngIf="mode === 'print'" class="btn btn-outline-primary btn-sm" (click)="print(p)"
                                 [disabled]="p.excludeFromPayroll"

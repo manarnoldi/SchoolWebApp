@@ -2,7 +2,7 @@
 // Fills an anonymised demo copy with a year of payroll: complete staff payroll
 // details (KRA PIN, ID, NSSF and SHA numbers, bank accounts), salary structures
 // with allowances and deductions (union dues, SACCO, welfare, HELB, insurance,
-// pension), NITA paid by the school as the law has it, loans and salary advances, and a payroll for every month from
+// pension), NITA paid by the school as the law has it, all of last year (for its P9s), loans and salary advances, and a payroll for every month from
 // January to the last full month before --through. Each month is processed by the
 // accountant, reviewed by one administrator and approved by another, and its
 // journal posts to the ledger. Everything goes through the API, so the payslips,
@@ -304,6 +304,52 @@ INSERT INTO designations (Name, Description, \`Rank\`, Created, CreatedBy, Modif
     const save = (s) => { const m = sal.get(s.id); return api(B, 'PUT', `/employeeSalaries/${m.id}`, m); };
     console.log(`Salary structures: ${sal.size}.`);
 
+    // A month's payroll: the accountant processes it and submits it, one administrator reviews it and
+    // another approves it.
+    const runPeriod = async (m, year) => {
+        const period = await api(B, 'POST', '/payrollPeriods', {month: m, year});
+        await api(B, 'POST', `/payrollPeriods/${period.id}/process`);
+        const req = await api(B, 'POST', '/approvalRequests/submit', {entityType: 'PayrollPeriod', entityId: period.id, formKey: 'Payroll',
+            stepAssignments: [{stepRank: 1, assignedToUserId: uid[reviewer]}, {stepRank: 2, assignedToUserId: uid[approver]}]});
+        await api(tok[reviewer], 'POST', `/approvalRequests/${req.id}/action`, {action: 'approve',
+            comment: pick(['Checked against the muster roll.', 'Totals agree with last month and the changes listed.', 'Reviewed - OK.'])});
+        await api(tok[approver], 'POST', `/approvalRequests/${req.id}/action`, {action: 'approve', comment: 'Approved for payment.'});
+        const t = query(`SELECT COUNT(*) n, SUM(GrossPay) g, SUM(NetPay) net FROM payslips WHERE PayrollPeriodId = ${period.id}`)[0];
+        console.log(`${MONTH[m - 1]} ${year}: ${t.n} payslips, gross ${Math.round(+t.g).toLocaleString('en-KE')}, net ${Math.round(+t.net).toLocaleString('en-KE')}.`);
+        return period;
+    };
+    const drivers = staff.filter((s) => isSupport(s) && ['Driver', 'Cook'].includes(ROLES[support.findIndex((x) => +x.Id === s.id)]?.[0]));
+    const holiday = (m) => m === 4 || m === 8 || m === 12; // the April, August and December school holidays
+
+    // ---------- 5b. Last year ----------
+    // A full year before this one, so staff have a closed year's P9 on their profile. It is paid at last
+    // year's rates - about 5% below this year's, which the January increment brings them up to - and posts
+    // no journals: the demo's books start this January.
+    const lastYear = Y - 1;
+    const rates = new Map([...sal].map(([id, m]) => [id, {basic: m.basicSalary, house: m.houseAllowance, notes: m.notes}]));
+    exec(`UPDATE globalsettings SET SettingValue = 'off' WHERE Module = 'Finance' AND SettingKey = 'PayrollJournalMode';`);
+    for (const s of staff) {
+        const m = sal.get(s.id);
+        m.basicSalary = isSupport(s) ? m.basicSalary - 500 : round(m.basicSalary * 0.95, 500);
+        if (!isSupport(s)) m.houseAllowance = Math.max(2000, round(m.basicSalary * 0.10, 500));
+        await save(s);
+    }
+    for (let m = 1; m <= 12; m++) {
+        const changed = new Set();
+        for (const s of drivers) { setItem(s, 'earn', 'OVRTME', holiday(m) ? 0 : round(between(1500, 4500))); changed.add(s); }
+        if (m === 8 || m === 9) for (const s of teaching) { setItem(s, 'earn', 'LVALL', m === 8 ? 4500 : 0); changed.add(s); }
+        for (const s of changed) await save(s);
+        await runPeriod(m, lastYear);
+    }
+    for (const s of staff) {
+        const m = sal.get(s.id), r = rates.get(s.id);
+        m.basicSalary = r.basic;
+        m.houseAllowance = r.house;
+        m.notes = [r.notes, `Annual increment from 1 January ${Y}`].filter(Boolean).join('. ');
+        await save(s);
+    }
+    exec(`UPDATE globalsettings SET SettingValue = 'auto' WHERE Module = 'Finance' AND SettingKey = 'PayrollJournalMode';`);
+
     // ---------- 6. Loans and advances, issued in the month they start ----------
     const loanees = shuffle(staff.filter((s) => !isSupport(s)));
     const LOANS = [
@@ -318,12 +364,8 @@ INSERT INTO designations (Name, Description, \`Rank\`, Created, CreatedBy, Modif
     ].filter((l) => l.s && months.includes(l.m));
 
     // ---------- 7. The months ----------
-    const drivers = staff.filter((s) => isSupport(s) && ['Driver', 'Cook'].includes(ROLES[support.findIndex((x) => +x.Id === s.id)]?.[0]));
     const acting = [...teaching].filter((s) => s.id !== promoted?.id && s.Designation === 'Teacher').sort((x, y) => y.basic - x.basic)[0];
-    const holiday = (m) => m === 4 || m === 8; // the April and August school holidays
-    const periodIds = [];
     for (const m of months) {
-        const name = `${MONTH[m - 1]} ${Y}`;
         const changed = new Set();
         // Overtime for the drivers and the cook in term time.
         for (const s of drivers) { setItem(s, 'earn', 'OVRTME', holiday(m) ? 0 : round(between(1500, 4500))); changed.add(s); }
@@ -347,19 +389,10 @@ INSERT INTO designations (Name, Description, \`Rank\`, Created, CreatedBy, Modif
                 balance: l.p, issueDate: `${Y}-${String(m).padStart(2, '0')}-${String(between(5, 15)).padStart(2, '0')}`, status: 1,
                 notes: `${Math.ceil(l.p / l.i)} instalment(s) of ${l.i.toLocaleString('en-KE')}`});
 
-        const period = await api(B, 'POST', '/payrollPeriods', {month: m, year: Y});
-        await api(B, 'POST', `/payrollPeriods/${period.id}/process`);
-        const req = await api(B, 'POST', '/approvalRequests/submit', {entityType: 'PayrollPeriod', entityId: period.id, formKey: 'Payroll',
-            stepAssignments: [{stepRank: 1, assignedToUserId: uid[reviewer]}, {stepRank: 2, assignedToUserId: uid[approver]}]});
-        await api(tok[reviewer], 'POST', `/approvalRequests/${req.id}/action`, {action: 'approve',
-            comment: pick(['Checked against the muster roll.', 'Totals agree with last month and the changes listed.', 'Reviewed - OK.'])});
-        await api(tok[approver], 'POST', `/approvalRequests/${req.id}/action`, {action: 'approve', comment: 'Approved for payment.'});
-        periodIds.push({id: period.id, m});
+        await runPeriod(m, Y);
 
         // The leaver is paid to the end of June and then leaves the staff list.
         if (leaver && m === 6) exec(`UPDATE person SET Status = ${leaver.Status} WHERE Id = ${leaver.Id};`);
-        const t = query(`SELECT COUNT(*) n, SUM(GrossPay) g, SUM(NetPay) net FROM payslips WHERE PayrollPeriodId = ${period.id}`)[0];
-        console.log(`${name}: ${t.n} payslips, gross ${Math.round(+t.g).toLocaleString('en-KE')}, net ${Math.round(+t.net).toLocaleString('en-KE')}.`);
     }
 
     // ---------- 8. Close the terms again ----------
@@ -390,15 +423,20 @@ UPDATE journalentries j JOIN payrollperiods p ON j.ReferenceNumber = CONCAT('PRL
 UPDATE journallines l JOIN journalentries j ON j.Id = l.JournalEntryId SET l.Created = j.Created, l.Modified = j.Created
     WHERE j.ReferenceNumber LIKE 'PRL-JNL-%';
 UPDATE loanadvances SET Created = IssueDate + INTERVAL 11 HOUR, Modified = Created;
-UPDATE employeesalaries SET Created = '${Y - 1}-12-18 10:00', Modified = Created;
+UPDATE employeesalaries SET Created = '${Y - 2}-12-18 10:00', Modified = Created;
 UPDATE employeesalaries s JOIN person p ON p.Id = s.StaffDetailsId SET s.Created = p.EmploymentDate - INTERVAL 3 DAY + INTERVAL 10 HOUR, s.Modified = s.Created
-    WHERE p.EmploymentDate > '${Y}-01-01';
+    WHERE p.EmploymentDate > '${Y - 1}-01-01';
 UPDATE employeesalaryitems i JOIN employeesalaries s ON s.Id = i.EmployeeSalaryId SET i.Created = s.Created, i.Modified = s.Created;
 DELETE FROM auditlogs;
 `);
 
+    const kesY = (v) => 'KES ' + Math.round(+v || 0).toLocaleString('en-KE');
+    for (const r of query(`SELECT p.Year, COUNT(DISTINCT p.Id) months, COUNT(*) slips, SUM(s.GrossPay) gross, SUM(s.Paye) paye, SUM(s.NetPay) net
+        FROM payslips s JOIN payrollperiods p ON p.Id = s.PayrollPeriodId GROUP BY p.Year ORDER BY p.Year`))
+        console.log(`${r.Year}: ${r.months} months, ${r.slips} payslips, gross ${kesY(r.gross)}, PAYE ${kesY(r.paye)}, net ${kesY(r.net)}.`);
     const sum = query(`SELECT SUM(GrossPay) gross, SUM(Paye) paye, SUM(NetPay) net, SUM(NssfEmployee + NssfEmployer) nssf, COUNT(*) slips,
-        (SELECT SUM(Balance) FROM loanadvances WHERE Status = 1) loans, (SELECT SUM(Debit) - SUM(Credit) FROM journallines) imbalance FROM payslips`)[0];
+        (SELECT SUM(Balance) FROM loanadvances WHERE Status = 1) loans, (SELECT SUM(Debit) - SUM(Credit) FROM journallines) imbalance
+        FROM payslips s JOIN payrollperiods p ON p.Id = s.PayrollPeriodId WHERE p.Year = ${Y}`)[0];
     const kes = (v) => 'KES ' + Math.round(+v || 0).toLocaleString('en-KE');
     console.log(`Done. ${months.length} months, ${sum.slips} payslips: gross ${kes(sum.gross)}, PAYE ${kes(sum.paye)}, NSSF ${kes(sum.nssf)}, `
         + `net ${kes(sum.net)}; loans still owed ${kes(sum.loans)}; journals ${+sum.imbalance === 0 ? 'balance' : 'are OUT by ' + sum.imbalance}.`);

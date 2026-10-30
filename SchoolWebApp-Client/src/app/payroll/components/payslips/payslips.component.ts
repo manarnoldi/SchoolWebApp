@@ -5,7 +5,6 @@ import {forkJoin, of} from 'rxjs';
 import {Payslip, PayrollPeriod} from '@/payroll/models/payroll-models';
 import {PayrollPeriodService} from '@/payroll/services/payroll-services';
 import {SchoolDetailsService} from '@/school/services/school-details.service';
-import {StaffDetailsService} from '@/staff/services/staff-details.service';
 import {GlobalSettingService} from '@/settings/services/global-setting.service';
 import {printInFrame, removePrintFrame} from '@/shared/utils/print-frame';
 import {PAYSLIP_PRINT_CSS} from './payslip-print.styles';
@@ -56,19 +55,10 @@ export class PayrollPayslipsComponent implements OnInit, OnChanges, OnDestroy {
     pageChanged = (p: number) => { this.page = p; };
     pageSizeChanged = (s: number) => { this.pageSize = s; };
 
-    // Editing the statutory numbers and bank details that print on the payslip.
-    // Deliberately limited to these - the rest of the staff record is managed on
-    // the Staff Details page.
-    showIdentifiers = false;
-    savingIdentifiers = false;
-    identifiersFor: Payslip | null = null;
-    identifiers = {kraPinNo: '', idNumber: '', nssfNo: '', nhifNo: '', bankName: '', bankBranch: '', bankAccountNumber: '', excludeFromPayroll: false};
-
     constructor(
         private toastr: ToastrService,
         private svc: PayrollPeriodService,
         private schoolSvc: SchoolDetailsService,
-        private staffSvc: StaffDetailsService,
         private globalSettingSvc: GlobalSettingService,
         private sanitizer: DomSanitizer
     ) {}
@@ -164,56 +154,6 @@ export class PayrollPayslipsComponent implements OnInit, OnChanges, OnDestroy {
         return this.filtered().filter((p) => p.excludeFromPayroll).length;
     }
 
-    editIdentifiers(p: Payslip): void {
-        this.identifiersFor = p;
-        this.identifiers = {
-            kraPinNo: p.kraPin || '',
-            idNumber: p.idNumber || '',
-            nssfNo: p.nssfNumber || '',
-            nhifNo: p.shaNumber || '',
-            bankName: p.bankName || '',
-            bankBranch: p.bankBranch || '',
-            bankAccountNumber: p.bankAccountNumber || '',
-            excludeFromPayroll: !!p.excludeFromPayroll
-        };
-        this.showIdentifiers = true;
-    }
-
-    cancelIdentifiers(): void {
-        this.showIdentifiers = false;
-        this.identifiersFor = null;
-    }
-
-    saveIdentifiers(): void {
-        let target = this.identifiersFor;
-        if (!target) return;
-        this.savingIdentifiers = true;
-        this.staffSvc.updatePayrollDetails(+target.staffDetailsId!, {
-            kraPinNo: this.identifiers.kraPinNo?.trim() || null,
-            idNumber: this.identifiers.idNumber?.trim() || null,
-            nssfNo: this.identifiers.nssfNo?.trim() || null,
-            nhifNo: this.identifiers.nhifNo?.trim() || null,
-            bankName: this.identifiers.bankName?.trim() || null,
-            bankBranch: this.identifiers.bankBranch?.trim() || null,
-            bankAccountNumber: this.identifiers.bankAccountNumber?.trim() || null,
-            excludeFromPayroll: !!this.identifiers.excludeFromPayroll
-        }).subscribe({
-            next: () => {
-                this.savingIdentifiers = false;
-                this.toastr.success(`Details updated for ${target!.staffName}.`);
-                this.showIdentifiers = false;
-                this.identifiersFor = null;
-                // Reload so every payslip for this staff member picks up the change,
-                // not just the row that was edited.
-                this.loadPayslips(true);
-            },
-            error: (err) => {
-                this.savingIdentifiers = false;
-                this.toastr.error(err.error?.message || err.error || 'Error saving details.');
-            }
-        });
-    }
-
     // --- Printing ---
     // Both paths render into the same hidden print area, which runPrint() then
     // prints on its own.
@@ -226,16 +166,35 @@ export class PayrollPayslipsComponent implements OnInit, OnChanges, OnDestroy {
 
     // Check mode: show one slip on screen, as it will print.
     preview(p: Payslip): void {
-        this.previewOne = this.previewOne?.id === p.id ? null : p;
+        this.previewOne = p;
         this.previewHtml = null;
-        if (!this.previewOne) return;
         // Let Angular render the slip, then show it with the stylesheet it prints with.
         setTimeout(() => {
+            // Opened from lower down the list: start the slip at the top of the pop-up.
+            this.previewSource?.nativeElement.closest('.modal-body')?.scrollTo({top: 0});
             let slip = this.previewSource?.nativeElement.innerHTML || '';
             this.previewHtml = this.sanitizer.bypassSecurityTrustHtml(
                 `<!doctype html><html><head><meta charset="utf-8"><style>${PAYSLIP_PRINT_CSS}
                 body { display: flex; justify-content: center; padding: 8px; }</style></head><body>${slip}</body></html>`);
         });
+    }
+
+    closePreview(): void {
+        this.previewOne = null;
+        this.previewHtml = null;
+    }
+
+    // Where the open slip sits in the listed (searched) payslips.
+    previewIndex(): number {
+        return this.filtered().findIndex((p) => p.id === this.previewOne?.id);
+    }
+
+    previewStep(by: number): void {
+        let next = this.filtered()[this.previewIndex() + by];
+        if (!next) return;
+        this.preview(next);
+        // Back on the list, the page holding this slip is the one shown.
+        this.page = Math.floor((this.previewIndex()) / this.pageSize) + 1;
     }
 
     // The frame takes the slip's height, so the pop-up scrolls rather than the frame.

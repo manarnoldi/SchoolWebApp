@@ -6,8 +6,6 @@ using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Payroll;
 using SchoolWebApp.Core.Entities.Finance;
 using SchoolWebApp.Core.Interfaces.IRepositories;
-using Microsoft.EntityFrameworkCore;
-using Project.Infrastructure.Data;
 using SchoolWebApp.API.Services;
 using System.Globalization;
 using SchoolWebApp.API.Licensing;
@@ -26,12 +24,12 @@ namespace SchoolWebApp.API.Controllers.Payroll
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly PayrollApprovalService _approval;
-        private readonly ApplicationDbContext _db;
+        private readonly P9Service _p9;
 
         public PayrollPeriodsController(ILogger<PayrollPeriodsController> logger, IUnitOfWork unitOfWork, IMapper mapper,
-            PayrollApprovalService approval, ApplicationDbContext db)
+            PayrollApprovalService approval, P9Service p9)
         {
-            _logger = logger; _unitOfWork = unitOfWork; _mapper = mapper; _approval = approval; _db = db;
+            _logger = logger; _unitOfWork = unitOfWork; _mapper = mapper; _approval = approval; _p9 = p9;
         }
 
         // GET api/payrollPeriods
@@ -630,57 +628,7 @@ namespace SchoolWebApp.API.Controllers.Payroll
         [HttpGet("p9")]
         public async Task<IActionResult> P9(int year, int? staffId)
         {
-            var settings = (await _unitOfWork.PayrollSettings.Find(s => s.IsActive)).ToList();
-            decimal Setting(string key) => settings.FirstOrDefault(s => s.Key == key)?.Value ?? 0m;
-            var percent = Setting("RetirementReliefPercent");
-            var cap = Setting("RetirementReliefCap");
-            var retirementTypeIds = (await _unitOfWork.DeductionTypes.Find(d => d.IsRetirementContribution))
-                .Select(d => d.Id).ToHashSet();
-
-            var slips = await _db.Payslips.AsNoTracking()
-                .Include(p => p.PayrollPeriod).Include(p => p.StaffDetails).Include(p => p.Deductions)
-                .Where(p => p.PayrollPeriod!.Year == year
-                            && (p.PayrollPeriod.Status == PayrollPeriodStatus.Approved || p.PayrollPeriod.Status == PayrollPeriodStatus.Posted)
-                            && (staffId == null || p.StaffDetailsId == staffId))
-                .ToListAsync();
-
-            var employees = slips.GroupBy(p => p.StaffDetailsId).Select(g =>
-            {
-                var staff = g.First().StaffDetails!;
-                var rows = g.OrderBy(p => p.PayrollPeriod!.Month).Select(p => new
-                {
-                    month = p.PayrollPeriod!.Month,
-                    basic = p.BasicSalary,
-                    // Taxable earnings other than basic pay: allowances and benefits.
-                    benefits = p.TaxablePay - p.BasicSalary,
-                    quarters = 0m,
-                    gross = p.TaxablePay,
-                    // E: retirement contributions - the limit as a share of basic, what was paid, the fixed cap.
-                    e1 = Math.Round(p.BasicSalary * percent / 100m, 2),
-                    e2 = p.NssfEmployee + p.Deductions.Where(d => retirementTypeIds.Contains(d.DeductionTypeId)).Sum(d => d.Amount),
-                    e3 = cap,
-                    ownerOccupiedInterest = 0m,
-                    retirement = p.RetirementRelief,
-                    ahl = p.Ahl,
-                    shif = p.Shif,
-                    otherDeductible = p.OtherTaxDeductible,
-                    chargeable = p.TaxableIncome,
-                    taxCharged = p.GrossTax,
-                    personalRelief = p.PersonalRelief,
-                    insuranceRelief = p.InsuranceRelief,
-                    paye = p.Paye
-                }).ToList();
-                return new
-                {
-                    staffId = staff.Id,
-                    name = staff.FullName,
-                    staffNo = staff.UPI,
-                    kraPin = staff.KraPinNo,
-                    idNumber = staff.IdNumber,
-                    rows
-                };
-            }).OrderBy(e => e.name).ToList();
-
+            var employees = await _p9.BuildAsync(year, staffId);
             return Ok(new { year, employees });
         }
 

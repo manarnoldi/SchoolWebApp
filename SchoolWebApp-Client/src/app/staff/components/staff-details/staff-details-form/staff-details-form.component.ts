@@ -157,6 +157,9 @@ export class StaffDetailsFormComponent implements OnInit {
             nhifNo: [''],
             nssfNo: [''],
             kraPinNo: [''],
+            bankName: [''],
+            bankBranch: [''],
+            bankAccountNumber: [''],
 
             employmentDate: [null],
             endofEmploymentDate: [null],
@@ -271,6 +274,9 @@ export class StaffDetailsFormComponent implements OnInit {
             nhifNo: this.staff?.nhifNo,
             nssfNo: this.staff?.nssfNo,
             kraPinNo: this.staff?.kraPinNo,
+            bankName: this.staff?.bankName,
+            bankBranch: this.staff?.bankBranch,
+            bankAccountNumber: this.staff?.bankAccountNumber,
 
             employmentDate: this.staff?.employmentDate
                 ? this.datePipe.transform(

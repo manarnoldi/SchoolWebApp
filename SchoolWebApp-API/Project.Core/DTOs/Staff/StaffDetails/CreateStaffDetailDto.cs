@@ -17,6 +17,13 @@ namespace SchoolWebApp.Core.DTOs.Staff.StaffDetails
         public string? NhifNo { get; set; }
         public string? NssfNo { get; set; }
         public string? KraPinNo { get; set; }
+        // Where net pay is sent: printed on the payslip and the payroll bank schedule.
+        [StringLength(100)]
+        public string? BankName { get; set; }
+        [StringLength(100)]
+        public string? BankBranch { get; set; }
+        [StringLength(50)]
+        public string? BankAccountNumber { get; set; }
         public DateTime? EmploymentDate { get; set; }
         public DateTime? EndofEmploymentDate { get; set; }
         public bool CurrentlyEmployed { get; set; }

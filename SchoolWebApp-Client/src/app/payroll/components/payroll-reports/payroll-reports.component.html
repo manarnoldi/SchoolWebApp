@@ -571,55 +571,8 @@
         <!-- P9 print source: never shown. printP9() fills p9Printing and prints it,
              one card to a page. -->
         <div #p9Print style="display:none;">
-            <div class="rp-page" *ngFor="let e of p9Printing">
-                <div class="rp-form">KENYA REVENUE AUTHORITY - DOMESTIC TAXES DEPARTMENT</div>
-                <div class="rp-header">
-                    <div class="rp-title">P9A - TAX DEDUCTION CARD YEAR {{ p9Year }}</div>
-                </div>
-                <div class="p9-details">
-                    <div><div class="k">Employer's name</div><div class="v">{{ schoolName }}</div></div>
-                    <div><div class="k">Employer's PIN</div><div class="v">{{ employerKraPin || '-' }}</div></div>
-                    <div><div class="k">Employee's main name</div><div class="v">{{ mainName(e) }}</div></div>
-                    <div><div class="k">Employee's other names</div><div class="v">{{ otherNames(e) || '-' }}</div></div>
-                    <div><div class="k">Employee's PIN</div><div class="v">{{ e.kraPin || '-' }}</div></div>
-                </div>
-                <table class="rp p9">
-                    <thead>
-                        <tr>
-                            <th>Month</th>
-                            <th *ngFor="let c of p9Cols" class="num">{{ c.title }}</th>
-                        </tr>
-                        <tr>
-                            <th></th>
-                            <th *ngFor="let c of p9Cols" class="code">{{ c.code }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let m of p9Months(e)">
-                            <td class="month">{{ m.name }}</td>
-                            <td *ngFor="let c of p9Cols" class="num">{{ m.row ? (m.row[c.key] | number:'1.2-2') : '' }}</td>
-                        </tr>
-                        <tr class="totals">
-                            <td>TOTALS</td>
-                            <td *ngFor="let c of p9Cols" class="num">{{ p9Total(e, c.key) | number:'1.2-2' }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="p9-foot">
-                    <div>
-                        <div>Total chargeable pay (col. H): <strong>KES {{ p9Total(e, 'chargeable') | number:'1.2-2' }}</strong></div>
-                        <div>Total tax (col. L): <strong>KES {{ p9Total(e, 'paye') | number:'1.2-2' }}</strong></div>
-                        <div style="margin-top:2mm;">Housing levy, SHIF and PRMF are allowable deductions (Tax Laws (Amendment) Act 2024).</div>
-                    </div>
-                    <div>
-                        <div class="line"></div>
-                        <div>Employer's signature and stamp</div>
-                    </div>
-                    <div>
-                        <div>Printed {{ printedOn | date:'d MMM yyyy' }}</div>
-                    </div>
-                </div>
-            </div>
+            <app-p9-card *ngFor="let e of p9Printing" [e]="e" [year]="p9Year" [schoolName]="schoolName"
+                [employerKraPin]="employerKraPin" [printedOn]="printedOn"></app-p9-card>
         </div>
 
         <!-- No data message -->

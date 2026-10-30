@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {Payslip} from '@/payroll/models/payroll-models';
+import {Payslip, P9Employee} from '@/payroll/models/payroll-models';
 
 export interface ProfileExamSubject {
     subject: string;
@@ -102,6 +102,15 @@ export class ProfilesService {
 
     staffPayslip(staffId: number, payslipId: number): Observable<Payslip> {
         return this.http.get<Payslip>(`/profiles/staff/${staffId}/payslips/${payslipId}`);
+    }
+
+    // The years whose P9 the staff member can take (ended, every payroll approved), newest first.
+    staffP9Years(staffId: number): Observable<number[]> {
+        return this.http.get<number[]>(`/profiles/staff/${staffId}/p9`);
+    }
+
+    staffP9(staffId: number, year: number): Observable<P9Employee> {
+        return this.http.get<P9Employee>(`/profiles/staff/${staffId}/p9/${year}`);
     }
 
     studentStatement(studentId: number): Observable<any> {

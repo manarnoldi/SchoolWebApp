@@ -30,8 +30,12 @@ namespace SchoolWebApp.API.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public ProfilesController(ApplicationDbContext db, LicenceService licence, IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly SchoolWebApp.API.Services.P9Service _p9;
+
+        public ProfilesController(ApplicationDbContext db, LicenceService licence, IUnitOfWork unitOfWork, IMapper mapper,
+            SchoolWebApp.API.Services.P9Service p9)
         {
+            _p9 = p9;
             _db = db;
             _licence = licence;
             _unitOfWork = unitOfWork;
@@ -393,6 +397,29 @@ namespace SchoolWebApp.API.Controllers
             var released = payslip.PayrollPeriod!.Status is PayrollPeriodStatus.Approved or PayrollPeriodStatus.Posted;
             if (!officer && !released) return NotFound();
             return Ok(_mapper.Map<PayslipDto>(payslip));
+        }
+
+        // GET api/profiles/staff/5/p9 - the years whose P9 tax card the staff member can take: years that
+        // have ended with every payroll in them approved. The current year's is not final until then.
+        [HttpGet("staff/{id:int}/p9")]
+        [RequiresModule(AppModules.Payroll)]
+        public async Task<IActionResult> StaffP9Years(int id)
+        {
+            var (self, officer) = await PayAccessAsync(id);
+            if (!self && !officer) return Forbid();
+            return Ok(await _p9.ClosedYearsAsync(id));
+        }
+
+        // GET api/profiles/staff/5/p9/2025 - the P9 tax card for one closed year
+        [HttpGet("staff/{id:int}/p9/{year:int}")]
+        [RequiresModule(AppModules.Payroll)]
+        public async Task<IActionResult> StaffP9(int id, int year)
+        {
+            var (self, officer) = await PayAccessAsync(id);
+            if (!self && !officer) return Forbid();
+            if (!(await _p9.ClosedYearsAsync(id)).Contains(year)) return NotFound();
+            var card = (await _p9.BuildAsync(year, id)).FirstOrDefault();
+            return card == null ? NotFound() : Ok(card);
         }
 
         // Class leadership roles a student or staff member has held, newest year first.

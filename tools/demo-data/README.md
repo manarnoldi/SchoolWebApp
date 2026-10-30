@@ -60,7 +60,9 @@ shows a full, working school.
    posted to the ledger at month end. Along the way: overtime for the drivers and
    cook in term time, an acting allowance (March to May), leave allowance in
    August, a promotion to deputy head in July, a teacher joining in May and one
-   leaving at the end of June, and loans and salary advances. It reopens the
+   leaving at the end of June, and loans and salary advances. Before that it runs
+   all of the previous year at last year's rates (no journals - the demo's books
+   start in January), so staff have a closed year's P9 on their profile. It reopens the
    terms finance.js closed while it posts into them, and closes them again.
 
 5. Check nothing is left from the original:

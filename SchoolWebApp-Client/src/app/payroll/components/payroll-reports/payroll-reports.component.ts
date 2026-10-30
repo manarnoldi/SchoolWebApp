@@ -9,6 +9,7 @@ import {SchoolDetailsService} from '@/school/services/school-details.service';
 import {GlobalSettingService} from '@/settings/services/global-setting.service';
 import {printInFrame, removePrintFrame} from '@/shared/utils/print-frame';
 import {payrollReportPrintCss} from './payroll-report-print.styles';
+import {P9CardComponent} from '@/shared/components/p9-card/p9-card.component';
 
 @Component({
     selector: 'app-payroll-reports',
@@ -50,28 +51,8 @@ export class PayrollReportsComponent implements OnInit, OnDestroy {
     p9Loading = false;
     // The cards being printed: the one on screen, or everyone.
     p9Printing: P9Employee[] = [];
-    readonly monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
-        'September', 'October', 'November', 'December'];
-    // KRA's P9A columns, in order. "code" is the column letter on the form.
-    readonly p9Cols: {key: keyof P9Row; code: string; title: string}[] = [
-        {key: 'basic', code: 'A', title: 'Basic salary'},
-        {key: 'benefits', code: 'B', title: 'Benefits and allowances'},
-        {key: 'quarters', code: 'C', title: 'Value of quarters'},
-        {key: 'gross', code: 'D', title: 'Total gross pay'},
-        {key: 'e1', code: 'E1', title: 'Retirement: % of A'},
-        {key: 'e2', code: 'E2', title: 'Retirement: actual'},
-        {key: 'e3', code: 'E3', title: 'Retirement: fixed'},
-        {key: 'ownerOccupiedInterest', code: 'F', title: 'Owner-occupied interest'},
-        {key: 'retirement', code: 'G', title: 'Retirement and owner-occupied interest (lowest of E, plus F)'},
-        {key: 'ahl', code: '', title: 'Housing levy'},
-        {key: 'shif', code: '', title: 'SHIF'},
-        {key: 'otherDeductible', code: '', title: 'PRMF and other allowable'},
-        {key: 'chargeable', code: 'H', title: 'Chargeable pay'},
-        {key: 'taxCharged', code: 'J', title: 'Tax charged'},
-        {key: 'personalRelief', code: 'K', title: 'Personal relief'},
-        {key: 'insuranceRelief', code: '', title: 'Insurance relief'},
-        {key: 'paye', code: 'L', title: 'PAYE tax (J - K)'}
-    ];
+    readonly monthNames = P9CardComponent.MONTHS;
+    readonly p9Cols = P9CardComponent.COLUMNS;
 
     page: number = 1;
     pageSize: number = 20;
@@ -161,12 +142,6 @@ export class PayrollReportsComponent implements OnInit, OnDestroy {
         this.monthNames.map((name, i) => ({name, row: e.rows.find((r) => r.month === i + 1) || null}));
 
     p9Total = (e: P9Employee, key: keyof P9Row): number => e.rows.reduce((s, r) => s + (+r[key] || 0), 0);
-
-    // The form asks for the main name (surname) and other names, without the title.
-    private plainName = (e: P9Employee): string[] =>
-        (e.name || '').replace(/^(MR|MRS|MS|MD|MISS|DR|MADAM)\.?\s+/i, '').trim().split(/\s+/);
-    mainName = (e: P9Employee): string => { let n = this.plainName(e); return n.length > 1 ? n[n.length - 1] : n[0]; };
-    otherNames = (e: P9Employee): string => { let n = this.plainName(e); return n.length > 1 ? n.slice(0, -1).join(' ') : ''; };
 
     printP9 = (all: boolean) => {
         let one = this.p9Selected();
