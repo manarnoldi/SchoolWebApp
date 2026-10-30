@@ -25,7 +25,7 @@ export class FinanceAccountsComponent implements OnInit {
     filterActive: any = null;
 
     page: number = 1;
-    pageSize: number = 10;
+    pageSize: number = 15;
     pageChanged = (p: number) => { this.page = p; };
     pageSizeChanged = (s: number) => { this.pageSize = s; };
 

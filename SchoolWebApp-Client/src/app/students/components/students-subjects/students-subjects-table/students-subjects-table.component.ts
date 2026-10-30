@@ -14,7 +14,7 @@ export class StudentsSubjectsTableComponent {
     @Output() deleteItemEvent = new EventEmitter<number>();
 
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
 
     pageSizeChanged = (pageSize: number) => {
         this.pageSize = pageSize;

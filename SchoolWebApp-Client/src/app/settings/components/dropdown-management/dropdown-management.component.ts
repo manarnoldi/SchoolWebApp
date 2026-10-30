@@ -188,7 +188,7 @@ export class DropdownManagementComponent implements OnInit {
     private optionsCache: {[endpoint: string]: any[]} = {};
 
     page: number = 1;
-    pageSize: number = 10;
+    pageSize: number = 15;
     pageChanged = (page: number) => { this.page = page; };
     pageSizeChanged = (pageSize: number) => { this.pageSize = pageSize; };
 

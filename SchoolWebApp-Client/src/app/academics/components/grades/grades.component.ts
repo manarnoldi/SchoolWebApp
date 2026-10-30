@@ -30,7 +30,7 @@ export class GradesComponent implements OnInit {
 
     firstLoad: boolean = true;
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
 
     tableModel: string = 'grade';
     breadcrumbs: BreadCrumb[] = [

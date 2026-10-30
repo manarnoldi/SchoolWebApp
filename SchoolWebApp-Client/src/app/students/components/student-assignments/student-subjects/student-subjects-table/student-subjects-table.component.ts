@@ -21,7 +21,7 @@ export class StudentSubjectsTableComponent implements OnInit {
     @Output() deleteItemEvent = new EventEmitter<number>();
 
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
 
     students: StudentDetails[] = [];
     schoolClasses: SchoolClass[] = [];

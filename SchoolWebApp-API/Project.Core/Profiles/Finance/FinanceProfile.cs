@@ -49,7 +49,12 @@ namespace SchoolWebApp.Core.Profiles.Finance
                 .ForMember(d => d.StudentUPI, o => o.MapFrom(s => s.Student != null ? s.Student.UPI : null))
                 .ForMember(d => d.AcademicYearName, o => o.MapFrom(s => s.AcademicYear != null ? s.AcademicYear.Name : null))
                 .ForMember(d => d.SessionName, o => o.MapFrom(s => s.Session != null ? s.Session.SessionName : null))
-                .ForMember(d => d.Balance, o => o.MapFrom(s => s.TotalAmount - s.PaidAmount - s.DiscountAmount));
+                .ForMember(d => d.Balance, o => o.MapFrom(s => s.TotalAmount - s.PaidAmount - s.DiscountAmount))
+                .ForMember(d => d.SponsoredAmount, o => o.MapFrom(s => s.Items.Sum(i => i.SponsoredAmount)))
+                .ForMember(d => d.SponsorPaidAmount, o => o.MapFrom(s => s.Items.Sum(i => i.SponsorPaidAmount)))
+                .ForMember(d => d.SponsorName, o => o.MapFrom(s => string.Join(", ", s.Items
+                    .Where(i => i.SponsoredAmount > 0 && i.Sponsorship != null && i.Sponsorship.Sponsor != null)
+                    .Select(i => i.Sponsorship!.Sponsor!.Name).Distinct())));
             CreateMap<CreateStudentInvoiceDto, StudentInvoice>();
 
             CreateMap<StudentInvoiceItem, StudentInvoiceItemDto>()

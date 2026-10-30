@@ -17,7 +17,7 @@ export class ScoreTypesComponent implements OnInit {
     @ViewChild('closebutton') closeButton;
     @ViewChild(SettingsTableComponent) settingsTblBtn: SettingsTableComponent;
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
 
     scoreTypeForm: FormGroup;
 

@@ -38,7 +38,7 @@ export class StrandsComponent implements OnInit {
     isAuthLoading: boolean;
 
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
 
     tableModel: string = 'strand';
     breadcrumbs: BreadCrumb[] = [

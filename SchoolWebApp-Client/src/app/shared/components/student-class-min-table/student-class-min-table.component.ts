@@ -43,7 +43,7 @@ export class StudentClassMinTableComponent implements OnInit {
     tableHeaders = [];
 
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
 
     statusVals = Status;
     statusValues;

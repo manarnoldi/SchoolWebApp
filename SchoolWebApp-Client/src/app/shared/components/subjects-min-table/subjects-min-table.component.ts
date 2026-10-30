@@ -15,7 +15,7 @@ export class SubjectsMinTableComponent implements OnInit {
     @ViewChild('checkAllSubjects', {static: false}) checkAll: ElementRef;
 
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
 
     constructor() {}
 

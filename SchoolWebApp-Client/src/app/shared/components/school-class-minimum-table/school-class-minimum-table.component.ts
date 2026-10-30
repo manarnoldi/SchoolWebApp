@@ -24,7 +24,7 @@ export class SchoolClassMinimumTableComponent {
     @Output() schoolClassClickedEvent =new EventEmitter<number>();
 
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
 
     checkAllClicked = (inputSelectAll: any) => {
         if (inputSelectAll?.target?.checked) {

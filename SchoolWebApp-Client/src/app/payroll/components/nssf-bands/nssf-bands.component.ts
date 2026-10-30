@@ -23,7 +23,7 @@ export class PayrollNssfBandsComponent implements OnInit {
     showForm = false;
 
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
     pageChanged = (p: number) => { this.page = p; };
     pageSizeChanged = (s: number) => { this.pageSize = s; };
 

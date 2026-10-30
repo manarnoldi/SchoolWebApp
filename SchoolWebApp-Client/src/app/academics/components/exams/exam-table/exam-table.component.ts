@@ -19,7 +19,7 @@ export class ExamTableComponent implements OnInit {
     @Output() deleteItemEvent = new EventEmitter<number>();
 
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
 
     constructor() {}
 

@@ -17,7 +17,7 @@ export class ScoresSetupComponent implements OnInit {
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
 
     scoreForm: FormGroup;
     buttonTitle: string = 'Add score';

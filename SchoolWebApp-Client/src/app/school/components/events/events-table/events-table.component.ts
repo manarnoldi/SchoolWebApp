@@ -16,7 +16,7 @@ export class EventsTableComponent {
     @Output() resetFormEvent = new EventEmitter<void>();
 
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
 
     tableTitle: string = ' Events list';
     tableHeaders: string[] = [

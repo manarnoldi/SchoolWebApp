@@ -65,7 +65,7 @@ export class PaymentsComponent implements OnInit {
     invoiceMap: Map<number, any> = new Map();
 
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
     pageChanged = (p: number) => { this.page = p; };
     pageSizeChanged = (s: number) => { this.pageSize = s; };
 

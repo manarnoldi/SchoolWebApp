@@ -28,7 +28,7 @@ export class SubjectsTableComponent implements OnInit {
     @ViewChild('checkAll') checkAllBox: ElementRef;
 
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
 
     constructor() {}
 

@@ -16,7 +16,7 @@ export class ExamTypesComponent implements OnInit {
     @ViewChild('closebutton') closeButton;
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
 
     examTypeForm: FormGroup;
     buttonTitle: string = 'Add exam type';

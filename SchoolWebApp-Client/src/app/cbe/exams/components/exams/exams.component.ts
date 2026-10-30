@@ -33,7 +33,7 @@ export class ExamsComponent implements OnInit {
     dashboardTitle = 'CBE Exams: Register New Exam(s)';
 
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
 
     // Dropdown data
     curricula: any[] = [];

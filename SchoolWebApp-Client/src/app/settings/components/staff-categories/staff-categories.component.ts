@@ -18,7 +18,7 @@ export class StaffCategoriesComponent implements OnInit {
     @ViewChild(TableButtonComponent) tableButton: TableButtonComponent;
 
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
 
     staffCategoryForm: FormGroup;
 

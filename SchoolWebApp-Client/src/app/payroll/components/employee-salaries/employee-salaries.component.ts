@@ -71,7 +71,7 @@ export class PayrollEmployeeSalariesComponent implements OnInit {
     bulkEffectiveDate: string = new Date().toISOString().substring(0, 10);
 
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
     pageChanged = (p: number) => { this.page = p; };
     pageSizeChanged = (s: number) => { this.pageSize = s; };
 

@@ -30,7 +30,7 @@ export class GeneralOutcomesComponent implements OnInit {
     isAuthLoading: boolean;
 
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
 
     tableModel: string = 'generalOutcome';
     breadcrumbs: BreadCrumb[] = [

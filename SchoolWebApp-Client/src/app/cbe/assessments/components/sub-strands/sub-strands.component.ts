@@ -39,7 +39,7 @@ export class SubStrandsComponent implements OnInit {
     isAuthLoading: boolean;
 
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
 
     tableModel: string = 'subStrand';
     breadcrumbs: BreadCrumb[] = [

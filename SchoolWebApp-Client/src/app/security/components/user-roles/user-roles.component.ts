@@ -29,7 +29,7 @@ export class UserRolesComponent implements OnInit {
     showForm = false;
     searchTerm: string = '';
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
     pageChanged = (p: number) => { this.page = p; };
     pageSizeChanged = (s: number) => { this.pageSize = s; };
 

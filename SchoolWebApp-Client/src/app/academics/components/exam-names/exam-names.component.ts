@@ -42,7 +42,7 @@ export class ExamNamesComponent implements OnInit {
     editMode = false;
     isAuthLoading: boolean;
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
     tableModel: string = 'examName';
 
     examNameForm: FormGroup;

@@ -9,7 +9,7 @@ export class TablePagingComponent  {
     constructor() {}
     // Lets the list send the pager back to page 1 when its filters change.
     @Input() page: number = 1;
-    @Input() pageSize: number = 10;
+    @Input() pageSize: number = 15;
     @Input() collectionSize = 0;
     @Output() pageChangedEvent = new EventEmitter<number>();
     @Output() pageSizeChangedEvent = new EventEmitter<number>();

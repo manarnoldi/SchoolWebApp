@@ -17,7 +17,7 @@ export class OutcomesComponent implements OnInit {
     @ViewChild('closebutton') closeButton;
     @ViewChild(SettingsTableComponent) settingsTblBtn: SettingsTableComponent;
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
 
     outcomeForm: FormGroup;
 

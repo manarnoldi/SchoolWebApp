@@ -55,6 +55,8 @@ export class FinanceInvoicesComponent implements OnInit {
     filterLearningLevelId: any = null;
     filterClassId: any = null;
     filterStatus: any = null;
+    // null = all; 'any' = sponsored; 'none' = not sponsored; otherwise a sponsor's name.
+    filterSponsor: any = null;
     filterStudentSearch: string = '';
     filterClasses: any[] = [];
     filterClassStudentIds: Set<number> = new Set();
@@ -172,11 +174,19 @@ export class FinanceInvoicesComponent implements OnInit {
         });
     };
 
+    // The sponsors on the invoices loaded, for the Sponsor filter.
+    sponsorNames = (): string[] =>
+        [...new Set(this.invoices.flatMap((i) => (i.sponsorName ? i.sponsorName.split(', ') : [])))].sort();
+
     filtered = (): StudentInvoice[] => {
         return this.invoices.filter((i) => {
             if (this.filterYearId != null && i.academicYearId != this.filterYearId) return false;
             if (this.filterSessionId != null && i.sessionId != this.filterSessionId) return false;
             if (this.filterStatus != null && i.status != this.filterStatus) return false;
+            if (this.filterSponsor === 'any' && !i.sponsoredAmount) return false;
+            if (this.filterSponsor === 'none' && i.sponsoredAmount) return false;
+            if (this.filterSponsor && this.filterSponsor !== 'any' && this.filterSponsor !== 'none'
+                && !(i.sponsorName || '').split(', ').includes(this.filterSponsor)) return false;
             if (this.filterClassId != null && !this.filterClassStudentIds.has(+i.studentId!)) return false;
             if (this.filterStudentSearch) {
                 let q = this.filterStudentSearch.toLowerCase();
@@ -194,6 +204,7 @@ export class FinanceInvoicesComponent implements OnInit {
         this.filterLearningLevelId = null;
         this.filterClassId = null;
         this.filterStatus = null;
+        this.filterSponsor = null;
         this.filterStudentSearch = '';
         this.filterSessions = [];
         this.filterClasses = [];

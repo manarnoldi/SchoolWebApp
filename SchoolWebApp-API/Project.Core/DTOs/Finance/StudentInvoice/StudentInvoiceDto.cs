@@ -27,5 +27,10 @@ namespace SchoolWebApp.Core.DTOs.Finance.StudentInvoice
         public InvoiceStatus Status { get; set; }
         public string? Description { get; set; }
         public List<StudentInvoiceItemDto> Items { get; set; } = new();
+
+        // Who has pledged part of this invoice, how much, and how much of it they have paid.
+        public string? SponsorName { get; set; }
+        public decimal SponsoredAmount { get; set; }
+        public decimal SponsorPaidAmount { get; set; }
     }
 }

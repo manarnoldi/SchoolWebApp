@@ -37,7 +37,7 @@ export class ThemesComponent implements OnInit {
     isAuthLoading: boolean;
 
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
 
     tableModel: string = 'theme';
     breadcrumbs: BreadCrumb[] = [

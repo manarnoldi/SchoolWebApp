@@ -41,7 +41,7 @@ namespace SchoolWebApp.API.Controllers.Finance
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var items = await _unitOfWork.StudentInvoices.Find(includeProperties: "Student,AcademicYear,Session,Items.FeeCategory");
+            var items = await _unitOfWork.StudentInvoices.Find(includeProperties: "Student,AcademicYear,Session,Items.FeeCategory,Items.Sponsorship.Sponsor");
             return Ok(_mapper.Map<List<StudentInvoiceDto>>(items));
         }
 

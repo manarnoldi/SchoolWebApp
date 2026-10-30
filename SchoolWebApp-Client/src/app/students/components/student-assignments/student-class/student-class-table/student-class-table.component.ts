@@ -22,7 +22,7 @@ export class StudentClassTableComponent {
     @Output() deleteItemEvent = new EventEmitter<number>();
 
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
 
     tableHeaders: string[] = [
         'Ref#',

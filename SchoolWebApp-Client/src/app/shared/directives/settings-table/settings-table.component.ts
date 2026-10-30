@@ -31,7 +31,7 @@ export class SettingsTableComponent {
     @Output() pageSizeChangedEvent = new EventEmitter<number>();
 
     page: number = 1;
-    pageSize: number = 10;
+    pageSize: number = 15;
 
     editItem(id: number) {
         this.editItemEvent.emit(id);

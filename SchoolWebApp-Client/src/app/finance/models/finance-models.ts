@@ -82,6 +82,10 @@ export class StudentInvoice extends ResourceModel<StudentInvoice> {
     public status?: InvoiceStatus;
     public description?: string;
     public items!: StudentInvoiceItem[];
+    // Who has pledged part of the invoice, how much, and how much of it they have paid.
+    public sponsorName?: string;
+    public sponsoredAmount?: number;
+    public sponsorPaidAmount?: number;
     constructor(m?: Partial<StudentInvoice>) { super(m); if (!this.items) this.items = []; }
 }
 
