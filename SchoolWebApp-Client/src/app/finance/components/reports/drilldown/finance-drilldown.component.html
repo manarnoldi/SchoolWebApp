@@ -3,10 +3,11 @@
     <div class="modal fade show d-block" tabindex="-1" (click)="close()">
         <div class="modal-dialog modal-xl modal-dialog-scrollable" (click)="$event.stopPropagation()">
             <div class="modal-content">
-                <div class="modal-header py-2">
-                    <button class="btn btn-sm btn-outline-secondary me-2" *ngIf="stack.length > 1 || backLabel" (click)="back()"
+                <div class="modal-header bg-info text-white py-2">
+                    <button class="btn btn-sm btn-light me-2" *ngIf="stack.length > 1 || backLabel" (click)="back()"
                         [title]="stack.length > 1 ? 'Back' : 'Back to ' + backLabel"><i class="fas fa-arrow-left"></i></button>
-                    <div class="flex-grow-1 me-2">
+                    <div class="head-icon me-2" *ngIf="view"><i class="fas" [ngClass]="view.icon || 'fa-search-dollar'"></i></div>
+                    <div class="flex-grow-1 me-2 overflow-hidden">
                         <div class="trail" *ngIf="stack.length > 1 || backLabel">
                             <ng-container *ngIf="backLabel"><a role="button" (click)="close()">{{ backLabel }}</a><span class="mx-1">›</span></ng-container>
                             <ng-container *ngFor="let s of stack; let i = index; let last = last">
@@ -14,35 +15,57 @@
                                 <span *ngIf="!last" class="mx-1">›</span>
                             </ng-container>
                         </div>
-                        <h5 class="modal-title mb-0">{{ view?.title || 'Loading...' }}</h5>
-                        <small class="text-muted">{{ view?.subtitle }}</small>
+                        <h5 class="modal-title mb-0 text-truncate">
+                            {{ view?.title || 'Loading...' }}
+                            <span class="badge ms-1 align-middle" *ngIf="view?.status" [ngClass]="statusClass(view!.status)">{{ view!.status }}</span>
+                        </h5>
+                        <small class="sub">{{ view?.subtitle }}</small>
                     </div>
                     <ng-container *ngIf="view">
-                        <button class="btn btn-sm btn-outline-success me-1" (click)="exportCsv()" *ngIf="view.sections.length" title="Download as CSV"><i class="fas fa-file-csv"></i></button>
-                        <button class="btn btn-sm btn-outline-secondary me-2" (click)="print()" title="Print"><i class="fas fa-print"></i></button>
+                        <button class="btn btn-sm btn-light me-1" (click)="exportCsv()" *ngIf="view.sections.length" title="Download as CSV"><i class="fas fa-file-csv text-success"></i></button>
+                        <button class="btn btn-sm btn-light me-2" (click)="print()" title="Print"><i class="fas fa-print"></i></button>
                     </ng-container>
-                    <button type="button" class="btn-close" (click)="close()" title="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" (click)="close()" title="Close"></button>
                 </div>
                 <div class="modal-body p-2" [class.dim]="loading">
                     <div class="text-center text-muted p-4" *ngIf="loading && !view"><i class="fas fa-spinner fa-spin me-1"></i> Loading...</div>
                     <ng-container *ngIf="view">
-                        <div class="row g-2 mb-2" *ngIf="view.fields.length">
-                            <div class="col-6 col-md-3" *ngFor="let f of view.fields">
-                                <small class="text-muted d-block">{{ f.label }}</small>
-                                <a role="button" class="drill-link fw-semibold" *ngIf="f.drill && f.value; else plain" (click)="drill(f.drill)">{{ fmt(f.value) }} <i class="fas fa-angle-right"></i></a>
-                                <ng-template #plain><span class="fw-semibold">{{ fmt(f.value) || '-' }}</span></ng-template>
+                        <!-- Amounts as tiles; the balance-type figure stands out -->
+                        <div class="row g-2 mb-2" *ngIf="tiles(view).length">
+                            <div class="col" *ngFor="let f of tiles(view)">
+                                <div class="tile" [ngClass]="tileClass(f)">
+                                    <div class="tile-label">{{ f.label }}</div>
+                                    <a role="button" class="tile-value drill-link" *ngIf="f.drill; else plainTile" (click)="drill(f.drill)">{{ fmt(f.value) }} <i class="fas fa-angle-right small"></i></a>
+                                    <ng-template #plainTile><div class="tile-value">{{ fmt(f.value) }}</div></ng-template>
+                                </div>
                             </div>
                         </div>
-                        <div *ngFor="let s of view.sections" class="mb-2">
-                            <h6 class="mb-1" *ngIf="s.title">{{ s.title }} <span class="badge bg-secondary">{{ s.rows.length }}</span></h6>
-                            <div class="table-responsive">
+                        <!-- Everything else as a details grid -->
+                        <div class="card card-outline card-info mb-2" *ngIf="details(view).length">
+                            <div class="card-body py-2 px-3">
+                                <div class="row g-2">
+                                    <div class="col-6 col-md-3" *ngFor="let f of details(view)">
+                                        <div class="detail-label">{{ f.label }}</div>
+                                        <a role="button" class="drill-link fw-semibold" *ngIf="f.drill && f.value; else plain" (click)="drill(f.drill)">{{ fmt(f.value) }} <i class="fas fa-angle-right small"></i></a>
+                                        <ng-template #plain><div class="fw-semibold">{{ fmt(f.value) || '-' }}</div></ng-template>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="view.note" class="note mb-2"><i class="fas fa-info-circle me-1"></i>{{ view.note }}</div>
+                        <div *ngFor="let s of view.sections" class="card card-outline card-success mb-2">
+                            <div class="card-header py-1 px-2 bg-light" *ngIf="s.title">
+                                <strong class="small">{{ s.title }}</strong>
+                                <span class="badge bg-info ms-2">{{ s.rows.length }}</span>
+                            </div>
+                            <div class="card-body p-0">
                                 <table class="table table-sm table-striped table-hover mb-0">
-                                    <thead class="table-light"><tr><th *ngFor="let c of s.columns">{{ c }}</th><th></th></tr></thead>
+                                    <thead class="table-light"><tr><th *ngFor="let c of s.columns; let i = index" [class.text-end]="numericColumn(s, i)">{{ c }}</th><th class="arrow"></th></tr></thead>
                                     <tbody>
                                         <tr *ngFor="let r of s.rows | slice: 0 : limit(s)" [class.drill-row]="r.drill" (click)="drill(r.drill)"
                                             [title]="r.drill ? 'Open' : ''">
                                             <td *ngFor="let c of r.cells" [class.text-end]="isNumber(c)" [class.text-nowrap]="isNumber(c)">{{ fmt(c) }}</td>
-                                            <td class="text-end text-muted"><i class="fas fa-angle-right" *ngIf="r.drill"></i></td>
+                                            <td class="arrow text-end text-muted"><i class="fas fa-angle-right" *ngIf="r.drill"></i></td>
                                         </tr>
                                         <tr *ngIf="!s.rows.length"><td [attr.colspan]="s.columns.length + 1" class="text-center text-muted">No transactions.</td></tr>
                                     </tbody>
@@ -50,8 +73,10 @@
                                         <tr class="table-warning fw-bold"><td *ngFor="let c of s.footer" [class.text-end]="isNumber(c)" class="text-nowrap">{{ fmt(c) }}</td><td></td></tr>
                                     </tfoot>
                                 </table>
+                                <div class="text-center" *ngIf="s.rows.length > limit(s)">
+                                    <button class="btn btn-sm btn-link" (click)="showAll(s)">Show all {{ s.rows.length }}</button>
+                                </div>
                             </div>
-                            <button class="btn btn-sm btn-link" *ngIf="s.rows.length > limit(s)" (click)="showAll(s)">Show all {{ s.rows.length }}</button>
                         </div>
                     </ng-container>
                 </div>

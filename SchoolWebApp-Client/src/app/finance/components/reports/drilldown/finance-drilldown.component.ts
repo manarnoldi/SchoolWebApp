@@ -1,4 +1,4 @@
-import {Component, HostListener, Input} from '@angular/core';
+import {Component, HostListener, Input, OnDestroy} from '@angular/core';
 import {formatDate, formatNumber} from '@angular/common';
 import {Observable, map} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
@@ -17,7 +17,13 @@ export type DrillTarget =
 
 interface DrillRow {cells: any[]; drill?: any}
 interface DrillSection {title?: string; columns: string[]; rows: DrillRow[]; footer?: any[]}
-interface DrillView {title: string; subtitle?: string; fields: {label: string; value: any; drill?: any}[]; sections: DrillSection[]}
+interface DrillField {label: string; value: any; drill?: any}
+interface DrillView {title: string; subtitle?: string; icon?: string; status?: string; note?: string; fields: DrillField[]; sections: DrillSection[]}
+
+const DOC_ICONS: Record<string, string> = {
+    invoice: 'fa-file-invoice', payment: 'fa-receipt', expense: 'fa-money-bill-wave',
+    journal: 'fa-pen', sponsorPayment: 'fa-hand-holding-usd'
+};
 
 // A pop-up over a finance report that lists the transactions behind a figure.
 // Every row that stands for a document opens it, one level deeper; the back
@@ -27,7 +33,7 @@ interface DrillView {title: string; subtitle?: string; fields: {label: string; v
     templateUrl: './finance-drilldown.component.html',
     styleUrls: ['./finance-drilldown.component.scss']
 })
-export class FinanceDrilldownComponent {
+export class FinanceDrilldownComponent implements OnDestroy {
     // Opened from a list page: the page's name, shown first in the trail with a back arrow to it.
     @Input() backLabel = '';
     stack: DrillView[] = [];
@@ -46,6 +52,7 @@ export class FinanceDrilldownComponent {
     show(target: DrillTarget, period?: {from: string; to: string}) {
         if (period) { this.from = period.from; this.to = period.to; }
         this.stack = [];
+        this.lockPage(true);
         this.push(target);
     }
 
@@ -56,7 +63,11 @@ export class FinanceDrilldownComponent {
 
     back() { if (this.stack.length > 1) this.stack.pop(); else this.close(); }
     backTo(i: number) { this.stack = this.stack.slice(0, i + 1); }
-    close() { this.stack = []; this.loading = false; }
+    close() { this.stack = []; this.loading = false; this.lockPage(false); }
+
+    // While open, the page behind does not scroll (Bootstrap's modal-open), so only the pop-up has a scroll bar.
+    private lockPage(on: boolean) { document.body.classList.toggle('modal-open', on); }
+    ngOnDestroy() { this.lockPage(false); }
 
     @HostListener('document:keydown.escape')
     onEscape() { if (this.open) this.close(); }
@@ -68,7 +79,7 @@ export class FinanceDrilldownComponent {
         this.loading = true;
         this.load(target).subscribe({
             next: (v) => { this.stack.push(this.dropEmptyColumns(v)); this.loading = false; },
-            error: (err) => { this.loading = false; this.toastr.error(err.error?.message || 'Could not load the details.'); }
+            error: (err) => { this.loading = false; if (!this.stack.length) this.lockPage(false);this.toastr.error(err.error?.message || 'Could not load the details.'); }
         });
     }
 
@@ -92,12 +103,14 @@ export class FinanceDrilldownComponent {
             case 'statement': return this.statement(t);
             case 'document': return this.svc.document(t.type, t.id).pipe(map((d) => ({
                 title: `${d.kind} ${d.reference}`,
-                subtitle: [this.fmt(d.date), d.status].filter(Boolean).join(' · '),
+                subtitle: this.fmt(d.date),
+                icon: DOC_ICONS[t.type],
+                status: d.status,
                 fields: d.fields || [],
                 sections: (d.sections || []).filter((s: DrillSection) => s.rows.length)
             })));
             case 'expenses': return new Observable<DrillView>((o) => {
-                o.next({title: t.title, subtitle: t.subtitle, fields: [], sections: [{
+                o.next({title: t.title, subtitle: t.subtitle, icon: 'fa-money-bill-wave', fields: [], sections: [{
                     columns: ['Date', 'Reference', 'Category', 'Vendor', 'Description', 'Amount'],
                     rows: t.rows.map((r) => ({cells: [r.date, r.referenceNumber, r.category, r.vendor, r.description, r.amount],
                         drill: {kind: 'document', type: 'expense', id: r.expenseId}})),
@@ -112,12 +125,14 @@ export class FinanceDrilldownComponent {
         return this.svc.accountLedger(accountId, from, to).pipe(map((r) => ({
             title: `${r.account.code} - ${r.account.name}`,
             subtitle: `${r.account.type} ledger, ${this.fmt(r.from)} to ${this.fmt(r.to)}`,
+            icon: 'fa-book',
+            note: 'Running balance is the balance of this account after each line, not the balance of the person named on it.',
             fields: [
                 {label: 'Opening balance', value: r.opening}, {label: 'Debits', value: r.totalDebit},
                 {label: 'Credits', value: r.totalCredit}, {label: 'Closing balance', value: r.closing}
             ],
             sections: [{
-                columns: ['Date', 'Reference', 'Name', 'Description', 'Debit', 'Credit', 'Balance'],
+                columns: ['Date', 'Reference', 'Name', 'Description', 'Debit', 'Credit', 'Running balance'],
                 rows: r.lines.map((l: any) => ({cells: [l.date, l.reference, l.party, l.description, l.debit || null, l.credit || null, l.balance], drill: l.drill})),
                 footer: ['Total', null, null, null, r.totalDebit, r.totalCredit, r.closing]
             }]
@@ -128,6 +143,7 @@ export class FinanceDrilldownComponent {
         return this.svc.budgetLineExpenses(t.academicYearId, t.departmentId, t.accountId).pipe(map((r) => ({
             title: `${r.department}: ${r.account}`,
             subtitle: 'Approved expenses charged to this budget line',
+            icon: 'fa-piggy-bank',
             fields: [],
             sections: [{
                 columns: ['Date', 'Reference', 'Category', 'Vendor', 'Description', 'Amount'],
@@ -141,6 +157,8 @@ export class FinanceDrilldownComponent {
         return this.svc.studentStatement(t.studentId, t.academicYearId, t.sessionId, t.from, t.to).pipe(map((r) => ({
             title: `${r.student.upi} - ${r.student.fullName}`,
             subtitle: 'Fee statement' + (t.label ? `, ${t.label}` : ''),
+            icon: 'fa-file-invoice-dollar',
+            note: 'Balance is what the student owes after each line.',
             fields: [{label: 'Invoiced', value: r.totalInvoiced}, {label: 'Paid', value: r.totalPaid}, {label: 'Balance', value: r.balance}],
             sections: [{
                 columns: ['Date', 'Type', 'Reference', 'Description', 'Method', 'Debit', 'Credit', 'Balance'],
@@ -154,6 +172,30 @@ export class FinanceDrilldownComponent {
     // ---------- Display ----------
 
     isNumber(v: any): boolean { return typeof v === 'number'; }
+
+    // Money figures show as tiles across the top; everything else as a details grid.
+    tiles(v: DrillView): DrillField[] { return v.fields.filter((f) => typeof f.value === 'number'); }
+    details(v: DrillView): DrillField[] { return v.fields.filter((f) => typeof f.value !== 'number' && f.value !== null && f.value !== undefined && f.value !== ''); }
+
+    // The amount a document is for leads in green; the balance it leaves stands out, red when something is owed.
+    tileClass(f: DrillField): string {
+        if (/^amount/i.test(f.label)) return 'main';
+        if (/closing/i.test(f.label)) return 'result';
+        if (/balance/i.test(f.label) && !/opening/i.test(f.label)) return 'result' + (f.value > 0 ? ' owing' : '');
+        return '';
+    }
+
+    statusClass(s: string): string {
+        if (/reject|cancel|void/i.test(s)) return 'bg-danger';
+        if (/partial|pending|draft|submitted|review/i.test(s)) return 'bg-warning text-dark';
+        if (/paid|approved|posted|active/i.test(s)) return 'bg-success';
+        return 'bg-light text-dark';
+    }
+
+    // Right-align a header over a column of figures.
+    numericColumn(s: DrillSection, i: number): boolean {
+        return s.rows.some((r) => typeof r.cells[i] === 'number') || (s.footer ? typeof s.footer[i] === 'number' : false);
+    }
 
     fmt(v: any): string {
         if (v === null || v === undefined || v === '') return '';
@@ -177,7 +219,7 @@ export class FinanceDrilldownComponent {
     print() {
         let v = this.view!;
         let cell = (x: any) => `<td class="${typeof x === 'number' ? 'r' : ''}">${escapeHtml(this.fmt(x))}</td>`;
-        let body = `<h1>${escapeHtml(v.title)}</h1><h2>${escapeHtml(v.subtitle || '')}</h2>`
+        let body = `<h1>${escapeHtml(v.title)}</h1><h2>${escapeHtml([v.subtitle, v.status].filter(Boolean).join(' · '))}</h2>`
             + (v.fields.length ? `<table class="f">${v.fields.map((f) => `<tr><th>${escapeHtml(f.label)}</th>${cell(f.value)}</tr>`).join('')}</table>` : '')
             + v.sections.map((s) => `${s.title ? `<h3>${escapeHtml(s.title)}</h3>` : ''}<table>
                 <tr>${s.columns.map((c) => `<th>${escapeHtml(c)}</th>`).join('')}</tr>

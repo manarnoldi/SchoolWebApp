@@ -1,7 +1,32 @@
-.modal-dialog { margin-top: 40px; }
-.modal-body { max-height: 75vh; font-size: 0.85rem; }
+// One scroll bar: the dialog fits the window and only its body scrolls.
+.modal { overflow: hidden; }
+.modal-dialog { margin-top: 1.5rem; margin-bottom: 1.5rem; height: calc(100% - 3rem); }
+.modal-content { max-height: 100%; }
+.modal-body { overflow-y: auto; font-size: 0.85rem; background: #f4f6f9; }
 .modal-body.dim { opacity: 0.5; pointer-events: none; }
-.trail { font-size: 0.75rem; a { color: #3b82f6; text-decoration: none; &:hover { text-decoration: underline; } } }
+
+.head-icon {
+    width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255, 255, 255, 0.25); font-size: 1rem;
+}
+.trail { font-size: 0.75rem; a { color: #fff; opacity: 0.85; text-decoration: none; &:hover { opacity: 1; text-decoration: underline; } } }
+.sub { color: rgba(255, 255, 255, 0.85); }
+
+.tile {
+    background: #fff; border-radius: 4px; padding: 6px 10px; height: 100%;
+    border-left: 4px solid #17a2b8; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+    .tile-label { font-size: 0.72rem; color: #6c757d; text-transform: uppercase; letter-spacing: 0.02em; }
+    .tile-value { font-size: 1.1rem; font-weight: 700; color: #343a40; white-space: nowrap; }
+    &.main { border-left-color: #28a745; .tile-value { color: #28a745; } }
+    &.result { border-left-color: #ffc107; background: #fffdf5; }
+    &.result.owing .tile-value { color: #dc3545; }
+}
+.detail-label { font-size: 0.72rem; color: #6c757d; }
+.note { font-size: 0.78rem; color: #0c5460; background: #d1ecf1; border-radius: 4px; padding: 4px 8px; }
+
+.card { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); }
+th.arrow, td.arrow { width: 24px; }
 .drill-row { cursor: pointer; }
-.drill-row:hover td { color: #1e40af; }
+.drill-row:hover td { color: #1e40af; background: #e8f4fd; }
 .drill-link { color: #1e40af; text-decoration: none; &:hover { text-decoration: underline; } }

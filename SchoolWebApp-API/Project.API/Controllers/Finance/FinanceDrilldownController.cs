@@ -168,8 +168,9 @@ namespace SchoolWebApp.API.Controllers.Finance
                             it.Sponsorship?.Sponsor?.Name, it.PaidAmount }))),
                     Section("Payments", new[] { "Receipt", "Date", "Type", "Method", "Amount" },
                         inv.Payments.OrderBy(p => p.PaymentDate).Select(p => Row(new object?[] { p.ReceiptNumber, p.PaymentDate,
-                            Label(p.PaymentType), Label(p.PaymentMethod), p.Amount }, Doc("payment", p.Id))))
-                }
+                            Label(p.PaymentType), Label(p.PaymentMethod), p.Amount }, Doc("payment", p.Id)))),
+                    journal == null ? null : JournalSection(journal)
+                }.Where(s => s != null)
             };
         }
 
@@ -183,25 +184,53 @@ namespace SchoolWebApp.API.Controllers.Finance
             var prefix = p.PaymentType == PaymentType.Receipt ? "PAY-JNL-" : "CN-JNL-";
             var journal = await JournalFor(prefix + p.ReceiptNumber);
             var kind = p.PaymentType switch { PaymentType.CreditNote => "Credit note", PaymentType.DebitNote => "Debit note", _ => "Receipt" };
-            return new
+            var inv = p.StudentInvoice;
+
+            // Where the invoice stood once this receipt was in: everything received on it up to and
+            // including this one. Only worked out when the invoice has nothing but receipts, since a
+            // credit or debit note moves the figures in ways a running sum of receipts would not show.
+            var fields = new List<object> { Field(p.PaymentType == PaymentType.Receipt ? "Amount received" : "Amount", p.Amount) };
+            if (inv != null)
             {
-                kind, reference = p.ReceiptNumber, date = p.PaymentDate, status = Label(p.ApprovalStatus),
-                fields = new[]
+                var onInvoice = await _db.Payments.AsNoTracking().Where(x => x.StudentInvoiceId == inv.Id)
+                    .Select(x => new { x.Id, x.PaymentDate, x.PaymentType, x.Amount }).ToListAsync();
+                var payable = inv.TotalAmount - inv.DiscountAmount;
+                if (p.PaymentType == PaymentType.Receipt && onInvoice.All(x => x.PaymentType == PaymentType.Receipt))
                 {
-                    Field("Student", $"{p.Student?.UPI} - {p.Student?.FullName}"),
-                    Field("Invoice", p.StudentInvoice?.InvoiceNumber, p.StudentInvoiceId == null ? null : Doc("invoice", p.StudentInvoiceId.Value)),
-                    Field("Original receipt", p.OriginalPayment?.ReceiptNumber, p.OriginalPaymentId == null ? null : Doc("payment", p.OriginalPaymentId.Value)),
-                    Field("Amount", p.Amount), Field("Method", Label(p.PaymentMethod)),
-                    Field("Transaction ref", p.TransactionReference), Field("Received into", p.BankAccount?.Name),
-                    Field("Description", p.Reason ?? p.Description), Field("Received by", p.CreatedBy),
-                    Field("Accounting entry", journal?.ReferenceNumber, journal == null ? null : Doc("journal", journal.Id))
-                },
-                sections = new[]
-                {
-                    Section("Applied to", new[] { "Fee category", "Amount" },
-                        p.Allocations.Select(a => Row(new object?[] { a.StudentInvoiceItem?.FeeCategory?.Name, a.Amount })))
+                    var before = onInvoice.Where(x => x.PaymentDate < p.PaymentDate || (x.PaymentDate == p.PaymentDate && x.Id < p.Id)).Sum(x => x.Amount);
+                    fields.Add(Field("Invoice total", payable));
+                    fields.Add(Field("Paid before this receipt", before));
+                    fields.Add(Field("Invoice balance after it", payable - before - p.Amount));
                 }
+                else
+                {
+                    fields.Add(Field("Invoice total", payable));
+                    fields.Add(Field("Paid on the invoice", inv.PaidAmount));
+                    fields.Add(Field("Invoice balance today", payable - inv.PaidAmount));
+                }
+            }
+            fields.AddRange(new[]
+            {
+                Field(p.PaymentType == PaymentType.Receipt ? "Received from" : "Student", $"{p.Student?.UPI} - {p.Student?.FullName}",
+                    new { kind = "statement", studentId = p.StudentId, academicYearId = inv?.AcademicYearId }),
+                Field("For invoice", inv?.InvoiceNumber, p.StudentInvoiceId == null ? null : Doc("invoice", p.StudentInvoiceId.Value)),
+                Field("Original receipt", p.OriginalPayment?.ReceiptNumber, p.OriginalPaymentId == null ? null : Doc("payment", p.OriginalPaymentId.Value)),
+                Field("Method", Label(p.PaymentMethod)), Field("Transaction ref", p.TransactionReference),
+                Field("Paid into", p.BankAccount == null ? null : $"{p.BankAccount.Code} - {p.BankAccount.Name}",
+                    p.BankAccountId == null ? null : Ledger(p.BankAccountId.Value)),
+                Field("Description", p.Reason ?? p.Description), Field("Received by", p.CreatedBy)
+            });
+
+            var sections = new List<object>
+            {
+                Section(p.PaymentType == PaymentType.Receipt ? "What this receipt paid for" : "Applied to",
+                    new[] { "Fee category", "Description", "Charged", "Paid by this receipt" },
+                    p.Allocations.Select(a => Row(new object?[] { a.StudentInvoiceItem?.FeeCategory?.Name, a.StudentInvoiceItem?.Description,
+                        a.StudentInvoiceItem == null ? null : a.StudentInvoiceItem.Amount - a.StudentInvoiceItem.Discount, a.Amount })),
+                    new object?[] { "Total", null, null, p.Allocations.Sum(a => a.Amount) })
             };
+            if (journal != null) sections.Add(JournalSection(journal));
+            return new { kind, reference = p.ReceiptNumber, date = p.PaymentDate, status = Label(p.ApprovalStatus), fields, sections };
         }
 
         private async Task<object?> ExpenseDoc(int id)
@@ -228,11 +257,13 @@ namespace SchoolWebApp.API.Controllers.Finance
                 sections.Add(Section("Approval", new[] { "Step", "Approver", "Status", "Date", "Comment" },
                     approval.Actions.OrderBy(a => a.StepRank).Select(a => Row(new object?[] { a.StepName,
                         UserName(a.ActionedBy ?? a.AssignedTo), Label(a.Status), a.ActionedAt, a.Comment }))));
+            if (journal != null) sections.Add(JournalSection(journal));
             return new
             {
                 kind = "Expense", reference = e.ReferenceNumber, date = e.ExpenseDate, status = Label(e.Status),
                 fields = new[]
                 {
+                    Field("Amount", e.Lines.Sum(l => l.Amount)),
                     Field("Description", e.Description), Field("Method", Label(e.PaymentMethod)),
                     Field("Transaction ref", e.TransactionReference), Field("Paid from", e.PaidFromAccount?.Name),
                     Field("Recorded by", e.CreatedBy), Field("Submitted by", UserName(approval?.SubmittedBy)),
@@ -246,8 +277,7 @@ namespace SchoolWebApp.API.Controllers.Finance
         {
             var p = await _db.SponsorPayments.AsNoTracking().Include(x => x.Sponsor).Include(x => x.BankAccount).FirstOrDefaultAsync(x => x.Id == id);
             if (p == null) return null;
-            var journal = await _db.JournalEntries.AsNoTracking().Include(j => j.Lines).ThenInclude(l => l.Account)
-                .FirstOrDefaultAsync(j => j.ReferenceNumber == $"SP-JNL-{p.ReferenceNumber}");
+            var journal = await JournalFor($"SP-JNL-{p.ReferenceNumber}");
 
             // A sponsor payment is not allocated to invoices, so show what the sponsor carries for the
             // academic year it was paid in: its share of each student's invoices that year.
@@ -263,11 +293,7 @@ namespace SchoolWebApp.API.Controllers.Finance
                 .Where(s => s.SponsorId == p.SponsorId && s.PaymentDate >= year.StartDate && s.PaymentDate <= year.EndDate).SumAsync(s => s.Amount);
 
             var sections = new List<object>();
-            if (journal != null)
-                sections.Add(Section("Accounting entry", new[] { "Account", "Description", "Debit", "Credit" },
-                    journal.Lines.Select(l => Row(new object?[] { $"{l.Account?.Code} - {l.Account?.Name}", l.Description,
-                        l.Debit == 0 ? null : l.Debit, l.Credit == 0 ? null : l.Credit }, Ledger(l.AccountId))),
-                    new object?[] { "Total", null, journal.Lines.Sum(l => l.Debit), journal.Lines.Sum(l => l.Credit) }));
+            if (journal != null) sections.Add(JournalSection(journal));
             if (year != null)
                 sections.Add(Section($"Students covered by {p.Sponsor?.Name} in {year.Name}", new[] { "UPI", "Student", "Invoices", "Sponsor's share" },
                     // The count goes as text so it is not shown as money (3.00).
@@ -316,7 +342,15 @@ namespace SchoolWebApp.API.Controllers.Finance
         }
 
         private Task<JournalEntry?> JournalFor(string reference) =>
-            _db.JournalEntries.AsNoTracking().FirstOrDefaultAsync(j => j.ReferenceNumber == reference);
+            _db.JournalEntries.AsNoTracking().Include(j => j.Lines).ThenInclude(l => l.Account)
+                .FirstOrDefaultAsync(j => j.ReferenceNumber == reference);
+
+        // The double entry a document posted, each line opening its account's ledger.
+        private static object JournalSection(JournalEntry j) =>
+            Section($"Accounting entry {j.ReferenceNumber}", new[] { "Account", "Description", "Debit", "Credit" },
+                j.Lines.Select(l => Row(new object?[] { $"{l.Account?.Code} - {l.Account?.Name}", l.Description,
+                    l.Debit == 0 ? null : l.Debit, l.Credit == 0 ? null : l.Credit }, Ledger(l.AccountId))),
+                new object?[] { "Total", null, j.Lines.Sum(l => l.Debit), j.Lines.Sum(l => l.Credit) });
 
         private static string? UserName(Core.Entities.Identity.AppUser? u) =>
             u == null ? null : (($"{u.FirstName} {u.LastName}").Trim() is { Length: > 0 } n ? n : u.UserName);
