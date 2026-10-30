@@ -12,11 +12,11 @@
 
 .section-head {
     display: flex; align-items: center; padding: 8px 12px; user-select: none;
-    &:hover { background: #f8fafc; }
+    &:hover { filter: brightness(0.98); }
     .section-title { font-weight: 600; color: #1e293b; margin-left: 10px; }
     .changed { background: #fef3c7; color: #92400e; font-weight: 600; }
 }
-.settings-section.open .section-head { border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+.settings-section.open .section-head { border-bottom: 1px solid #e2e8f0; }
 
 .section-icon {
     width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
@@ -29,7 +29,27 @@
     &.icon-danger { background: #fee2e2; color: #b91c1c; }
 }
 
-.section-body { padding: 0; }
+// Each module's colour: a stripe down the left, a faint tint on the header (a little stronger when
+// open) and the title in a deep shade of it.
+@mixin accent($stripe, $tint, $open, $ink) {
+    border-left: 4px solid $stripe;
+    .section-head { background: $tint; }
+    .section-head .section-title { color: $ink; }
+    &.open .section-head { background: $open; border-bottom-color: rgba($stripe, 0.35); }
+    &.open { border-color: rgba($stripe, 0.45); border-left-color: $stripe; }
+}
+.settings-section {
+    &.accent-primary { @include accent(#6366f1, #f7f7ff, #eef0ff, #3730a3); }
+    &.accent-info { @include accent(#0ea5e9, #f5fbff, #e6f5fd, #075985); }
+    &.accent-secondary { @include accent(#64748b, #f8fafc, #eef2f6, #334155); }
+    &.accent-success { @include accent(#22c55e, #f6fdf8, #e8f8ee, #166534); }
+    &.accent-warning { @include accent(#f59e0b, #fffcf3, #fef5dc, #92400e); }
+    &.accent-danger { @include accent(#ef4444, #fff8f8, #fdecec, #991b1b); }
+}
+
+// A long section scrolls inside itself under pinned headings, so the other sections stay in reach.
+.section-body { padding: 0; max-height: 420px; overflow-y: auto; }
+tr.head-row > th { position: sticky; top: 0; z-index: 1; background: #eef2f7; color: #334155; font-weight: 600; border-bottom: 1px solid #dbe3ec; }
 
 // A setting changed since the last save.
 tr.changed-row > td { background: #fffbeb; }

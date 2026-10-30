@@ -14,7 +14,7 @@
         </div>
 
         <!-- One section open at a time -->
-        <div class="settings-section" *ngFor="let module of modules" [class.open]="isModuleExpanded(module)">
+        <div class="settings-section" *ngFor="let module of modules" [class.open]="isModuleExpanded(module)" [ngClass]="'accent-' + module.color">
             <div class="section-head" (click)="toggleModule(module)" role="button"
                 [title]="isModuleExpanded(module) ? 'Fold' : 'Open ' + module.title">
                 <span class="section-icon" [ngClass]="'icon-' + module.color"><i class="{{ module.icon }}"></i></span>
@@ -26,7 +26,7 @@
             <div class="section-body" *ngIf="isModuleExpanded(module)">
                 <table class="table table-hover table-sm mb-0">
                     <thead>
-                        <tr class="table-light">
+                        <tr class="head-row">
                             <th style="width:30%;">Setting</th>
                             <th style="width:35%;">Description</th>
                             <th style="width:35%;">Value</th>
