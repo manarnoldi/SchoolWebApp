@@ -293,7 +293,7 @@
                 </table>
                 <app-table-paging (pageChangedEvent)="pageChanged($event)"
                     (pageSizeChangedEvent)="pageSizeChanged($event)"
-                    [collectionSize]="filtered().length"></app-table-paging>
+                    [collectionSize]="filtered().length" [pageSize]="pageSize"></app-table-paging>
             </div>
         </div>
     </div>

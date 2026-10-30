@@ -47,7 +47,7 @@ export class FeeStructuresComponent implements OnInit {
     filterActive: any = null;
 
     page = 1;
-    pageSize = 15;
+    pageSize = 10; // Two-line rows: 10 fit on a screen.
     pageChanged = (p: number) => { this.page = p; };
     pageSizeChanged = (s: number) => { this.pageSize = s; };
 
