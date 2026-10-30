@@ -47,9 +47,18 @@
         font-size: 0.85rem;
         thead th { background: #f1f5f9; font-weight: 600; position: sticky; top: 0; z-index: 1; }
     }
-    .students-search {
-        display: flex; align-items: center; gap: 8px; padding: 6px 8px; background: #fff;
-        border: 1px solid #e2e8f0; border-bottom: 0;
-        input { max-width: 320px; }
+}
+
+// The class table's header: title left, search centred, switch right.
+.fee-head {
+    display: flex; align-items: center; gap: 12px;
+    .side { flex: 1 1 0; display: flex; align-items: center; min-width: 0; }
+    .fee-search {
+        flex: 0 1 460px; display: flex; align-items: center; gap: 8px;
+        .box { position: relative; flex: 1 1 auto; display: flex; align-items: center; }
+        .box > .fa-search { position: absolute; left: 9px; color: #94a3b8; font-size: 0.8rem; }
+        input { padding-left: 28px; padding-right: 26px; }
+        .clear { position: absolute; right: 8px; color: #94a3b8; }
+        .found { white-space: nowrap; font-size: 0.75rem; color: #475569; }
     }
 }

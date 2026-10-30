@@ -360,10 +360,26 @@ export class FinanceReportsComponent implements OnInit {
         return (this.feeCollection?.classes || []).reduce((n: number, c: any) => n + (c.studentCount || 0), 0);
     }
 
+    // The search covers every class: while it is on, only classes with a match show, each open on the
+    // students found. Cleared, the table goes back to one class open at a time.
+    feeSearching(): boolean { return !!this.feeStudentSearch.trim(); }
+
+    isFeeClassOpen(idx: number): boolean { return this.feeSearching() || this.openFeeClasses.has(idx); }
+
+    feeSearchCount(): {students: number; classes: number} {
+        let found = (this.feeCollection?.classes || []).map((c: any) => this.feeStudents(c).length);
+        return {students: found.reduce((a: number, b: number) => a + b, 0), classes: found.filter((n: number) => n > 0).length};
+    }
+
+    feeSearchSummary(): string {
+        let {students, classes} = this.feeSearchCount();
+        return students ? `${students} student${students === 1 ? '' : 's'} in ${classes} class${classes === 1 ? '' : 'es'}` : 'none found';
+    }
+
     // One class open at a time: opening another folds the one that was open; clicking the open one folds it.
     toggleFeeClass(idx: number) {
+        if (this.feeSearching()) return;
         this.openFeeClasses = new Set(this.openFeeClasses.has(idx) ? [] : [idx]);
-        this.feeStudentSearch = '';
     }
 
     clearFeeCollectionFilters() {

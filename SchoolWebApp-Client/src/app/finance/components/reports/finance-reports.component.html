@@ -202,10 +202,22 @@
 
                 <!-- On screen: one row per class; a class opens to its students -->
                 <div class="card card-outline card-primary mb-2 d-print-none" *ngIf="feeCollection.classes?.length">
-                    <div class="card-header py-1 px-2 d-flex align-items-center">
-                        <strong class="small"><i class="fas fa-users me-1"></i> Collection by class</strong>
-                        <span class="badge bg-info ms-2">{{ feeCollection.classes.length }}</span>
-                        <div class="ms-auto d-flex align-items-center gap-2">
+                    <!-- Title on the left, the search in the middle, the switch on the right -->
+                    <div class="card-header py-1 px-2 fee-head">
+                        <div class="side">
+                            <strong class="small"><i class="fas fa-users me-1"></i> Collection by class</strong>
+                            <span class="badge bg-info ms-2">{{ feeCollection.classes.length }}</span>
+                        </div>
+                        <!-- Search across every class; matching classes open on the students found -->
+                        <div class="fee-search">
+                            <div class="box">
+                                <i class="fas fa-search"></i>
+                                <input class="form-control form-control-sm" [(ngModel)]="feeStudentSearch" placeholder="Find a student by name or Adm No" />
+                                <button class="btn btn-sm btn-link p-0 clear" *ngIf="feeStudentSearch" (click)="feeStudentSearch = ''" title="Clear the search"><i class="fas fa-times"></i></button>
+                            </div>
+                            <small class="found" *ngIf="feeSearching()">{{ feeSearchSummary() }}</small>
+                        </div>
+                        <div class="side justify-content-end">
                             <div class="form-check form-switch mb-0 small">
                                 <input class="form-check-input" type="checkbox" id="feeOnlyOwing" [(ngModel)]="feeOnlyOwing">
                                 <label class="form-check-label" for="feeOnlyOwing">Only students who owe</label>
@@ -227,9 +239,10 @@
                             </thead>
                             <tbody>
                                 <ng-container *ngFor="let cls of feeCollection.classes; let idx = index">
-                                    <tr class="class-row" [class.open]="openFeeClasses.has(idx)" (click)="toggleFeeClass(idx)"
-                                        [title]="openFeeClasses.has(idx) ? 'Fold this class' : 'See the students in this class'">
-                                        <td class="text-muted"><i class="fas" [ngClass]="openFeeClasses.has(idx) ? 'fa-chevron-down' : 'fa-chevron-right'"></i></td>
+                                  <ng-container *ngIf="!feeSearching() || feeStudents(cls).length">
+                                    <tr class="class-row" [class.open]="isFeeClassOpen(idx)" (click)="toggleFeeClass(idx)"
+                                        [title]="feeSearching() ? '' : isFeeClassOpen(idx) ? 'Fold this class' : 'See the students in this class'">
+                                        <td class="text-muted"><i class="fas" [ngClass]="isFeeClassOpen(idx) ? 'fa-chevron-down' : 'fa-chevron-right'"></i></td>
                                         <td class="fw-semibold">{{ cls.className }}</td>
                                         <td class="text-end">{{ cls.studentCount }}</td>
                                         <td class="text-end">{{ cls.totalInvoiced | number:'1.2-2' }}</td>
@@ -244,14 +257,9 @@
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr *ngIf="openFeeClasses.has(idx)" class="students-row">
+                                    <tr *ngIf="isFeeClassOpen(idx)" class="students-row">
                                         <td></td>
                                         <td colspan="6" class="p-0 pb-2">
-                                            <div class="students-search" *ngIf="cls.students?.length > 15">
-                                                <i class="fas fa-search text-muted"></i>
-                                                <input class="form-control form-control-sm" [(ngModel)]="feeStudentSearch" placeholder="Find a student by name or Adm No" />
-                                                <small class="text-muted text-nowrap">{{ feeStudents(cls).length }} of {{ cls.students.length }}</small>
-                                            </div>
                                             <!-- About 15 students show; the list scrolls under its pinned headings -->
                                             <div class="students-scroll">
                                             <table class="table table-sm table-hover mb-0 students">
@@ -271,7 +279,9 @@
                                             </div>
                                         </td>
                                     </tr>
+                                  </ng-container>
                                 </ng-container>
+                                <tr *ngIf="feeSearching() && !feeSearchCount().students"><td colspan="7" class="text-center text-muted p-3">No student matches "{{ feeStudentSearch.trim() }}".</td></tr>
                             </tbody>
                             <tfoot>
                                 <tr class="table-warning fw-bold">
