@@ -105,17 +105,46 @@ export class SponsorPaymentsComponent implements OnInit {
         this.filterSponsorId = null;
     };
 
-    addNew = () => { this.item = this.blank(); this.showForm = true; };
-    cancel = () => { this.showForm = false; };
+    // Step 2 of recording a payment: how it goes onto the students' invoices (oldest pledge first, changeable).
+    allocation: any = null;
+
+    addNew = () => { this.item = this.blank(); this.allocation = null; this.showForm = true; };
+    cancel = () => { this.showForm = false; this.allocation = null; };
+
+    review = () => {
+        if (!this.item.sponsorId) { this.toastr.info('Select a sponsor.'); return; }
+        if (!this.item.paymentDate) { this.toastr.info('Payment date is required.'); return; }
+        if (!this.item.amount || +this.item.amount <= 0) { this.toastr.info('Amount must be positive.'); return; }
+        this.svc.proposal(+this.item.sponsorId, +this.item.amount).subscribe({
+            next: (r) => this.allocation = r,
+            error: (err) => this.toastr.error(err.error?.message || 'Error loading the sponsor\'s pledges.')
+        });
+    };
+
+    allocatedTotal = (): number => (this.allocation?.lines || []).reduce((s: number, l: any) => s + (+l.amount || 0), 0);
+    heldAmount = (): number => Math.max(0, (+this.item.amount || 0) - this.allocatedTotal());
+
+    // Oldest pledge first again, after the bursar has changed some amounts.
+    reproposeAllocation = () => {
+        let left = +this.item.amount || 0;
+        for (let l of this.allocation?.lines || []) { l.amount = Math.min(left, l.due); left -= l.amount; }
+    };
+
+    clampLine = (l: any) => { l.amount = Math.max(0, Math.min(+l.amount || 0, l.due)); };
 
     save = () => {
         if (!this.item.sponsorId) { this.toastr.info('Select a sponsor.'); return; }
         if (!this.item.paymentDate) { this.toastr.info('Payment date is required.'); return; }
         if (!this.item.amount || +this.item.amount <= 0) { this.toastr.info('Amount must be positive.'); return; }
 
+        if (!this.allocation) { this.review(); return; }
+        if (this.allocatedTotal() > +this.item.amount + 0.005) { this.toastr.info('The amounts given to students are more than the payment.'); return; }
+        this.item.allocations = (this.allocation.lines || []).filter((l: any) => +l.amount > 0)
+            .map((l: any) => ({studentInvoiceId: l.studentInvoiceId, amount: +l.amount}));
         this.svc.create(this.item).subscribe({
             next: () => {
-                this.toastr.success('Sponsor payment recorded and posted.');
+                this.toastr.success('Sponsor payment recorded and put on the students\' invoices.');
+                this.allocation = null;
                 this.showForm = false;
                 this.load();
             },
@@ -126,7 +155,7 @@ export class SponsorPaymentsComponent implements OnInit {
     delete = (p: SponsorPayment) => {
         Swal.fire({
             title: 'Delete sponsor payment?',
-            text: 'The auto-posted journal entry will also be removed.',
+            text: "It is also taken back off the students' invoices, and its journal entries are removed.",
             icon: 'warning', showCancelButton: true,
             width: 420, position: 'top', padding: '1em',
             confirmButtonColor: '#d33', confirmButtonText: 'Delete'
@@ -143,6 +172,18 @@ export class SponsorPaymentsComponent implements OnInit {
     openPayment = (p: SponsorPayment) => {
         let today = formatDate(new Date(), 'yyyy-MM-dd', 'en');
         this.drillDown.show({kind: 'document', type: 'sponsorPayment', id: +p.id!}, {from: `${String(p.paymentDate).slice(0, 4)}-01-01`, to: today});
+    };
+
+    // Puts the sponsor's held credit on its pledges now due.
+    applyCredit = (p: SponsorPayment) => {
+        this.svc.applyCredit(+p.sponsorId).subscribe({
+            next: (r: any) => {
+                if (r.applied > 0) this.toastr.success(`${(+r.applied).toLocaleString()} put on students' invoices.`);
+                else this.toastr.info('No pledges are waiting for this sponsor\'s money just now.');
+                this.load();
+            },
+            error: (err) => this.toastr.error(err.error?.message || 'Error applying the credit.')
+        });
     };
 
     getMethodLabel =(m: any): string => this.paymentMethods.find(x => x.value === m)?.label || '';

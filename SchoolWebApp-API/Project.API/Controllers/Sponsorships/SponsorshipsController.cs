@@ -20,7 +20,11 @@ namespace SchoolWebApp.API.Controllers.Sponsorships
     {
         private readonly ApplicationDbContext _db;
         private readonly IMapper _mapper;
-        public SponsorshipsController(ApplicationDbContext db, IMapper mapper) { _db = db; _mapper = mapper; }
+        private readonly SchoolWebApp.API.Services.SponsorAllocator _allocator;
+        public SponsorshipsController(ApplicationDbContext db, IMapper mapper, SchoolWebApp.API.Services.SponsorAllocator allocator)
+        {
+            _db = db; _mapper = mapper; _allocator = allocator;
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -146,7 +150,7 @@ namespace SchoolWebApp.API.Controllers.Sponsorships
             var ids = list.Select(s => s.Id).ToList();
             var applied = await _db.StudentInvoiceItems.Where(i => i.SponsorshipId != null && ids.Contains(i.SponsorshipId.Value))
                 .GroupBy(i => i.SponsorshipId!.Value)
-                .Select(g => new { Id = g.Key, Invoices = g.Select(i => i.StudentInvoiceId).Distinct().Count(), Amount = g.Sum(i => i.Discount) })
+                .Select(g => new { Id = g.Key, Invoices = g.Select(i => i.StudentInvoiceId).Distinct().Count(), Amount = g.Sum(i => i.SponsoredAmount) })
                 .ToDictionaryAsync(a => a.Id);
             foreach (var s in list)
                 if (applied.TryGetValue(s.Id, out var a)) { s.AppliedInvoices = a.Invoices; s.AppliedAmount = a.Amount; }
@@ -186,10 +190,10 @@ namespace SchoolWebApp.API.Controllers.Sponsorships
         }
 
         /// <summary>
-        /// Retroactively apply this sponsorship to existing open invoices that match its scope
-        /// (student or class, year, session, covered fee categories). Posts an adjustment journal
-        /// per invoice - Debit Sponsor Receivable / Credit Student Debtors - transferring the AR
-        /// from the student to the sponsor. Skips fully-paid invoices and items already sponsored.
+        /// Puts this sponsorship on existing open invoices in its scope (student or class, year, term, covered fees):
+        /// it pledges its share of each covered line that is still open. The student is still invoiced the whole fee;
+        /// no journal is posted, since a pledge is not a debt. Credit the sponsor already holds is then applied.
+        /// Skips fully-paid invoices and lines another sponsorship already covers.
         /// </summary>
         [HttpPost("{id}/applyToExisting")]
         public async Task<IActionResult> ApplyToExisting(int id)
@@ -215,16 +219,6 @@ namespace SchoolWebApp.API.Controllers.Sponsorships
             }
             if (studentIds.Count == 0)
                 return BadRequest(new { message = "Sponsorship has no beneficiary configured." });
-
-            // Pre-load main Debtors account from settings.
-            var debtorsAccountIdSetting = await _db.GlobalSettings
-                .FirstOrDefaultAsync(s => s.Module == "Finance" && s.SettingKey == "DebtorsAccountId");
-            int debtorsAccountId = int.TryParse(debtorsAccountIdSetting?.SettingValue, out var dx) ? dx : 0;
-
-            // Sponsor receivable account: dedicated one if set, otherwise fall back to main debtors.
-            int sponsorAccountId = sponsorship.Sponsor?.ReceivableAccountId ?? debtorsAccountId;
-            if (sponsorAccountId == 0 || debtorsAccountId == 0)
-                return BadRequest(new { message = "Debtors / Sponsor receivable account is not configured." });
 
             // Load candidate invoices.
             var invoices = await _db.StudentInvoices
@@ -258,6 +252,7 @@ namespace SchoolWebApp.API.Controllers.Sponsorships
                     if (item.SponsorshipId.HasValue) { skippedAlreadySponsoredItems++; continue; }
                     if (!coversAll && !coveredCategories.Contains(item.FeeCategoryId)) { skippedNoCoverageItems++; continue; }
 
+                    // The sponsor pledges its share of what is still open on the line (the family may have paid some).
                     decimal openOnItem = item.Amount - item.Discount - item.PaidAmount;
                     if (openOnItem <= 0) continue;
 
@@ -277,7 +272,7 @@ namespace SchoolWebApp.API.Controllers.Sponsorships
                     }
                     if (cover <= 0) continue;
 
-                    item.Discount += cover;
+                    item.SponsoredAmount = cover;
                     item.SponsorshipId = sponsorship.Id;
                     invoiceApplied += cover;
                     appliedItems++;
@@ -285,30 +280,6 @@ namespace SchoolWebApp.API.Controllers.Sponsorships
 
                 if (invoiceApplied > 0)
                 {
-                    inv.TotalAmount = Math.Max(0, inv.TotalAmount - invoiceApplied);
-                    var balance = inv.TotalAmount - inv.PaidAmount - inv.DiscountAmount;
-                    if (balance <= 0 && inv.PaidAmount > 0) inv.Status = InvoiceStatus.Paid;
-                    else if (inv.PaidAmount > 0) inv.Status = InvoiceStatus.PartiallyPaid;
-                    else if (balance <= 0) inv.Status = InvoiceStatus.Paid;
-
-                    // Adjustment journal: transfer AR from main Debtors to Sponsor Receivable.
-                    var journal = new JournalEntry
-                    {
-                        ReferenceNumber = $"SP-ADJ-{inv.InvoiceNumber}-{sponsorship.Id}",
-                        EntryDate = DateTime.Today,
-                        Description = $"Sponsorship retro-applied: {sponsorship.Sponsor?.Name} on {inv.InvoiceNumber}",
-                        IsPosted = true,
-                        Status = JournalEntryStatus.Approved,
-                        Lines = new List<JournalLine>
-                        {
-                            new JournalLine { AccountId = sponsorAccountId, Debit = invoiceApplied, Credit = 0,
-                                Description = $"Sponsor receivable - {sponsorship.Sponsor?.Name} ({inv.InvoiceNumber})" },
-                            new JournalLine { AccountId = debtorsAccountId, Debit = 0, Credit = invoiceApplied,
-                                Description = $"Reduce student debtors - {inv.InvoiceNumber}" }
-                        }
-                    };
-                    _db.JournalEntries.Add(journal);
-
                     totalApplied += invoiceApplied;
                     appliedInvoices++;
                 }
@@ -319,10 +290,12 @@ namespace SchoolWebApp.API.Controllers.Sponsorships
             }
 
             await _db.SaveChangesAsync();
+            // Credit the sponsor already holds goes onto the new pledges.
+            await _allocator.ApplyHeldCredit(sponsorship.SponsorId);
 
             return Ok(new
             {
-                message = $"Sponsorship applied to {appliedInvoices} invoice(s).",
+                message = $"Sponsorship pledged on {appliedInvoices} invoice(s).",
                 appliedInvoices,
                 appliedItems,
                 totalApplied,

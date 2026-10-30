@@ -71,6 +71,8 @@ namespace SchoolWebApp.Core.DTOs.Finance.Reports
         public decimal TotalInvoiced { get; set; }
         public decimal TotalPaid { get; set; }
         public decimal Balance { get; set; }
+        // Of the balance, the part sponsors have pledged and not yet paid (the student owes it if they do not).
+        public decimal AwaitingSponsor { get; set; }
     }
 
     public class ConsolidatedBudgetLineDto

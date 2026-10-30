@@ -70,4 +70,10 @@ export interface SponsorPayment {
     bankAccountId?: number | null;
     bankAccountName?: string;
     description?: string;
+    // On students' invoices so far (how much, on how many), and what is held as the sponsor's credit.
+    applied?: number;
+    invoiceCount?: number;
+    held?: number;
+    // How the bursar spread it over the students' invoices before saving.
+    allocations?: {studentInvoiceId: number; amount: number}[];
 }

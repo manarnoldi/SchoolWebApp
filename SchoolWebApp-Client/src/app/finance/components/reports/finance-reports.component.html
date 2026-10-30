@@ -396,17 +396,18 @@
                     </div>
                     <div class="card-body p-0 report-scroll">
                         <table class="table table-striped table-hover table-sm mb-0">
-                            <thead class="table-light"><tr><th>#</th><th>Adm No</th><th>Student</th><th class="text-end">Invoiced</th><th class="text-end">Paid</th><th class="text-end">Balance</th></tr></thead>
+                            <thead class="table-light"><tr><th>#</th><th>Adm No</th><th>Student</th><th class="text-end">Invoiced</th><th class="text-end">Paid</th><th class="text-end">Balance</th><th class="text-end" title="Part of the balance a sponsor has pledged and not yet paid. The student owes it if the sponsor does not pay.">Of it, awaiting sponsor</th></tr></thead>
                             <tbody>
                                 <tr *ngFor="let r of outstanding; index as i" class="drill-row" (click)="openStatement(r.studentId, outstandingYearId, outstandingSessionId)" title="See the student's statement">
                                     <td>{{ i + 1 }}</td><td>{{ r.studentUPI }}</td><td>{{ r.studentName }}</td>
                                     <td class="text-end">{{ r.totalInvoiced | number:'1.2-2' }}</td>
                                     <td class="text-end">{{ r.totalPaid | number:'1.2-2' }}</td>
                                     <td class="text-end fw-semibold text-danger">{{ r.balance | number:'1.2-2' }}</td>
+                                    <td class="text-end text-primary">{{ r.awaitingSponsor ? (r.awaitingSponsor | number:'1.2-2') : '' }}</td>
                                 </tr>
-                                <tr *ngIf="!outstanding.length"><td colspan="6" class="text-center text-muted p-3">No student matches "{{ outstandingSearch.trim() }}".</td></tr>
+                                <tr *ngIf="!outstanding.length"><td colspan="7" class="text-center text-muted p-3">No student matches "{{ outstandingSearch.trim() }}".</td></tr>
                             </tbody>
-                            <tfoot><tr class="table-warning fw-bold"><td colspan="3">{{ outstandingSearch.trim() ? 'Students found' : 'All students' }}</td><td></td><td></td><td class="text-end">{{ outstandingTotal() | number:'1.2-2' }}</td></tr></tfoot>
+                            <tfoot><tr class="table-warning fw-bold"><td colspan="3">{{ outstandingSearch.trim() ? 'Students found' : 'All students' }}</td><td></td><td></td><td class="text-end">{{ outstandingTotal() | number:'1.2-2' }}</td><td class="text-end text-primary">{{ outstandingAwaiting() | number:'1.2-2' }}</td></tr></tfoot>
                         </table>
                     </div>
                 </div>
@@ -1004,10 +1005,11 @@
             </div>
 
             <div class="row g-2 mb-2 d-print-none" *ngIf="discountReport?.students?.length">
-                <div class="col-md-3"><div class="small-box bg-primary p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ discountReport.studentCount }}</h5><div>Students sponsored or discounted</div></div></div></div>
-                <div class="col-md-3"><div class="small-box bg-info p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ discountFees() | number:'1.0-2' }}</h5><div>Their fees</div></div></div></div>
-                <div class="col-md-3"><div class="small-box bg-success p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ discountReport.grandTotalDiscount | number:'1.0-2' }}</h5><div>Paid by sponsors or discounted</div></div></div></div>
-                <div class="col-md-3"><div class="small-box bg-warning p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ discountInvoiced() | number:'1.0-2' }}</h5><div>Left for their families</div></div></div></div>
+                <div class="col"><div class="small-box bg-primary p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ discountReport.studentCount }}</h5><div>Students sponsored or discounted</div></div></div></div>
+                <div class="col"><div class="small-box bg-info p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ discountReport.totalFees | number:'1.0-2' }}</h5><div>Their fees</div></div></div></div>
+                <div class="col"><div class="small-box bg-success p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ discountReport.totalPledged | number:'1.0-2' }}</h5><div>Pledged by sponsors · {{ discountReport.totalSponsorPaid | number:'1.0-0' }} paid</div></div></div></div>
+                <div class="col" *ngIf="discountReport.totalDiscount"><div class="small-box bg-secondary p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ discountReport.totalDiscount | number:'1.0-2' }}</h5><div>Discounts</div></div></div></div>
+                <div class="col"><div class="small-box bg-warning p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ discountReport.totalFamilyShare | number:'1.0-2' }}</h5><div>Families' own share</div></div></div></div>
             </div>
 
             <div class="card card-outline card-primary" *ngIf="discountReport?.students?.length">
@@ -1035,10 +1037,12 @@
                                 <th>UPI</th>
                                 <th>Student</th>
                                 <th>Class</th>
-                                <th>Given by</th>
+                                <th>Sponsor / discount</th>
                                 <th class="text-end">Fees</th>
-                                <th class="text-end">Discount / sponsorship</th>
-                                <th class="text-end">Family pays</th>
+                                <th class="text-end">Discount</th>
+                                <th class="text-end" title="The part sponsors promised to pay. The student is invoiced the whole fee and owes any pledge not paid.">Pledged</th>
+                                <th class="text-end">Sponsor paid</th>
+                                <th class="text-end" title="What the family is expected to pay itself">Family share</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1053,12 +1057,14 @@
                                     <td>{{ s.className }}</td>
                                     <td>{{ s.givenBy }}</td>
                                     <td class="text-end">{{ s.totalFees | number:'1.2-2' }}</td>
-                                    <td class="text-end fw-bold text-success">{{ s.totalDiscount | number:'1.2-2' }}</td>
-                                    <td class="text-end">{{ s.totalInvoiced | number:'1.2-2' }}</td>
+                                    <td class="text-end">{{ s.totalDiscount ? (s.totalDiscount | number:'1.2-2') : '' }}</td>
+                                    <td class="text-end fw-bold text-primary">{{ s.sponsorPledged ? (s.sponsorPledged | number:'1.2-2') : '' }}</td>
+                                    <td class="text-end text-success">{{ s.sponsorPledged ? (s.sponsorPaid | number:'1.2-2') : '' }}</td>
+                                    <td class="text-end">{{ s.familyShare | number:'1.2-2' }}</td>
                                 </tr>
                                 <tr *ngIf="isDiscountStudentExpanded(s.studentId) || true" [class.d-none]="!isDiscountStudentExpanded(s.studentId)" class="d-print-table-row">
                                     <td></td>
-                                    <td colspan="8" class="p-2" style="background:#f8fafc;">
+                                    <td colspan="10" class="p-2" style="background:#f8fafc;">
                                         <div *ngFor="let inv of s.invoices" class="mb-2">
                                             <div class="d-flex justify-content-between align-items-center mb-1">
                                                 <span>
@@ -1068,7 +1074,7 @@
                                                     <span class="ms-1" *ngIf="inv.session">/ {{ inv.session }}</span>
                                                 </span>
                                                 <span>
-                                                    Family pays: <strong>{{ inv.totalAmount | number:'1.2-2' }}</strong>
+                                                    Invoiced: <strong>{{ inv.totalAmount | number:'1.2-2' }}</strong>
                                                     <span class="ms-2" *ngIf="inv.headerDiscount > 0">Discount on the whole invoice: <strong class="text-success">{{ inv.headerDiscount | number:'1.2-2' }}</strong></span>
                                                 </span>
                                             </div>
@@ -1076,10 +1082,12 @@
                                                 <thead class="table-light">
                                                     <tr>
                                                         <th>Fee</th>
-                                                        <th>Given by</th>
+                                                        <th>Sponsor / discount</th>
                                                         <th class="text-end">Amount</th>
-                                                        <th class="text-end">Discount / sponsorship</th>
-                                                        <th class="text-end">Family pays</th>
+                                                        <th class="text-end">Discount</th>
+                                                        <th class="text-end">Pledged</th>
+                                                        <th class="text-end">Sponsor paid</th>
+                                                        <th class="text-end">Family share</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1087,8 +1095,10 @@
                                                         <td>{{ it.feeCategory }}</td>
                                                         <td>{{ it.givenBy }}</td>
                                                         <td class="text-end">{{ it.amount | number:'1.2-2' }}</td>
-                                                        <td class="text-end fw-bold text-success">{{ it.discount | number:'1.2-2' }}</td>
-                                                        <td class="text-end">{{ (it.amount - it.discount) | number:'1.2-2' }}</td>
+                                                        <td class="text-end">{{ it.discount ? (it.discount | number:'1.2-2') : '' }}</td>
+                                                        <td class="text-end fw-bold text-primary">{{ it.pledged ? (it.pledged | number:'1.2-2') : '' }}</td>
+                                                        <td class="text-end text-success">{{ it.pledged ? (it.sponsorPaid | number:'1.2-2') : '' }}</td>
+                                                        <td class="text-end">{{ (it.amount - it.discount - it.pledged) | number:'1.2-2' }}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -1099,15 +1109,17 @@
                                     </td>
                                 </tr>
                             </ng-container>
-                            <tr *ngIf="!discountStudents().length"><td colspan="9" class="text-center text-muted p-3">No student matches "{{ query.discounts.trim() }}".</td></tr>
+                            <tr *ngIf="!discountStudents().length"><td colspan="11" class="text-center text-muted p-3">No student matches "{{ query.discounts.trim() }}".</td></tr>
                         </tbody>
                         <tfoot>
                             <tr class="table-warning fw-bold">
                                 <td></td>
                                 <td colspan="5" class="text-end">GRAND TOTAL</td>
-                                <td class="text-end">{{ discountFees() | number:'1.2-2' }}</td>
-                                <td class="text-end text-success">{{ discountReport.grandTotalDiscount | number:'1.2-2' }}</td>
-                                <td class="text-end">{{ discountInvoiced() | number:'1.2-2' }}</td>
+                                <td class="text-end">{{ discountReport.totalFees | number:'1.2-2' }}</td>
+                                <td class="text-end">{{ discountReport.totalDiscount | number:'1.2-2' }}</td>
+                                <td class="text-end text-primary">{{ discountReport.totalPledged | number:'1.2-2' }}</td>
+                                <td class="text-end text-success">{{ discountReport.totalSponsorPaid | number:'1.2-2' }}</td>
+                                <td class="text-end">{{ discountReport.totalFamilyShare | number:'1.2-2' }}</td>
                             </tr>
                         </tfoot>
                     </table>

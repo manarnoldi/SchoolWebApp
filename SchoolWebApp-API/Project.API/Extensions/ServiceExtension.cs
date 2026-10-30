@@ -224,6 +224,7 @@ namespace Project.API.Extensions
             // The school's licence: which paid modules are switched on.
             services.AddSingleton<SchoolWebApp.API.Licensing.LicenceService>();
             services.AddScoped<SchoolWebApp.API.Services.MenuAccessService>();
+            services.AddScoped<SchoolWebApp.API.Services.SponsorAllocator>();
             services.AddScoped<SchemeWorkbookService>();
             services.AddScoped<HeadOfDepartmentRoleSync>();
             services.AddScoped<SchoolWebApp.API.Services.Academics.SubjectLevelGuard>();

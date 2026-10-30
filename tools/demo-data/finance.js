@@ -132,6 +132,15 @@ DELETE FROM approvalrequests WHERE EntityType IN ('Expense', 'Budget', 'BudgetAm
 DELETE l FROM journallines l JOIN journalentries j ON j.Id = l.JournalEntryId WHERE j.Description NOT LIKE 'Payroll%';
 DELETE FROM journalentries WHERE Description NOT LIKE 'Payroll%';
 SET FOREIGN_KEY_CHECKS = 1;
+INSERT INTO accounts (Code, Name, AccountType, Description, IsActive, Created, CreatedBy, Modified, ModifiedBy)
+    SELECT '2310', 'Sponsor Advances', 2, 'Sponsor money received and not yet applied to student invoices', 1, '2025-12-01', 'admin', '2025-12-01', 'admin'
+    FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM accounts WHERE Code = '2310');
+INSERT INTO globalsettings (Module, SettingKey, SettingValue, Description, Created, CreatedBy, Modified, ModifiedBy)
+    SELECT 'Finance', 'SponsorAdvancesAccountId', (SELECT Id FROM accounts WHERE Code = '2310'),
+        'Liability account holding sponsor money not yet applied to student invoices', '2025-12-01', 'admin', '2025-12-01', 'admin'
+    FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM globalsettings WHERE Module = 'Finance' AND SettingKey = 'SponsorAdvancesAccountId');
+UPDATE globalsettings SET SettingValue = (SELECT Id FROM (SELECT Id FROM accounts WHERE Code = '2310') a)
+    WHERE Module = 'Finance' AND SettingKey = 'SponsorAdvancesAccountId';
 INSERT INTO departments (Name, Code, Description, Created, CreatedBy, Modified, ModifiedBy)
     SELECT 'Administration', 'DEPT004', 'School office, utilities, catering and transport', '2025-12-01', 'admin', '2025-12-01', 'admin'
     FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM departments WHERE Name = 'Administration');
@@ -248,8 +257,11 @@ ${Object.entries(MENUS).flatMap(([role, paths]) => paths.map((p) => `INSERT INTO
                 description: `${t.name} ${items.length > 1 ? 'transport and uniform' : items[0].description.toLowerCase()}`, status: 0, items});
         });
     }
-    const invoices = query('SELECT Id, StudentId, SessionId, TotalAmount FROM studentinvoices')
-        .map((r) => ({id: +r.Id, student: +r.StudentId, term: terms.find((t) => t.id === +r.SessionId), total: +r.TotalAmount, left: +r.TotalAmount}));
+    // A sponsored student is invoiced the whole fee; the family pays its own share and the sponsor the pledge.
+    const invoices = query(`SELECT i.Id, i.StudentId, i.SessionId,
+            i.TotalAmount - COALESCE((SELECT SUM(ii.SponsoredAmount) FROM studentinvoiceitems ii WHERE ii.StudentInvoiceId = i.Id), 0) Family
+        FROM studentinvoices i`)
+        .map((r) => ({id: +r.Id, student: +r.StudentId, term: terms.find((t) => t.id === +r.SessionId), total: +r.Family, left: +r.Family}));
     console.log(`Invoices: ${invoices.length}.`);
 
     // ---------- 7. Fee payments ----------
@@ -319,7 +331,8 @@ ${Object.entries(MENUS).flatMap(([role, paths]) => paths.map((p) => `INSERT INTO
     console.log(`Payments: ${plan.length}.`);
 
     // ---------- 8. Sponsor remittances ----------
-    const owed = query(`SELECT s.SponsorId, i.SessionId, SUM(ii.Discount) Amount FROM studentinvoiceitems ii
+    // Each payment goes onto the sponsored students' invoices, oldest pledge first.
+    const owed = query(`SELECT s.SponsorId, i.SessionId, SUM(ii.SponsoredAmount) Amount FROM studentinvoiceitems ii
         JOIN studentinvoices i ON i.Id = ii.StudentInvoiceId JOIN sponsorships s ON s.Id = ii.SponsorshipId
         GROUP BY s.SponsorId, i.SessionId`);
     let sp = 0;

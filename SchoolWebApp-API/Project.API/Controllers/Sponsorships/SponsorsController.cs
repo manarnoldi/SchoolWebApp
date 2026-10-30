@@ -80,58 +80,5 @@ namespace SchoolWebApp.API.Controllers.Sponsorships
             await _db.SaveChangesAsync();
             return Ok();
         }
-
-        // GET /api/sponsors/{id}/statement - ledger of sponsor receivable
-        [HttpGet("{id}/statement")]
-        public async Task<IActionResult> Statement(int id, DateTime? from, DateTime? to)
-        {
-            var sponsor = await _db.Sponsors.Include(s => s.ReceivableAccount).FirstOrDefaultAsync(s => s.Id == id);
-            if (sponsor == null) return NotFound();
-
-            // Invoice-driven AR: each sponsored invoice item's Discount is a charge on the sponsor.
-            var chargesQuery = _db.StudentInvoiceItems
-                .Include(i => i.StudentInvoice).ThenInclude(inv => inv!.Student)
-                .Where(i => i.SponsorshipId != null && i.Sponsorship!.SponsorId == id);
-            if (from.HasValue) chargesQuery = chargesQuery.Where(i => i.StudentInvoice!.InvoiceDate >= from.Value);
-            if (to.HasValue) chargesQuery = chargesQuery.Where(i => i.StudentInvoice!.InvoiceDate <= to.Value);
-            var charges = await chargesQuery.ToListAsync();
-
-            var paymentsQuery = _db.SponsorPayments.Where(p => p.SponsorId == id);
-            if (from.HasValue) paymentsQuery = paymentsQuery.Where(p => p.PaymentDate >= from.Value);
-            if (to.HasValue) paymentsQuery = paymentsQuery.Where(p => p.PaymentDate <= to.Value);
-            var payments = await paymentsQuery.ToListAsync();
-
-            var rows = charges.Select(c => new {
-                date = c.StudentInvoice!.InvoiceDate,
-                type = "Charge",
-                reference = c.StudentInvoice.InvoiceNumber,
-                description = $"{c.StudentInvoice.Student?.FullName} - {c.FeeCategory?.Name}",
-                debit = c.Discount,
-                credit = 0m
-            }).Concat(payments.Select(p => new {
-                date = p.PaymentDate,
-                type = "Payment",
-                reference = p.ReferenceNumber,
-                description = p.Description ?? "",
-                debit = 0m,
-                credit = p.Amount
-            })).OrderBy(r => r.date).ToList();
-
-            decimal running = 0;
-            var ledger = rows.Select(r => {
-                running += r.debit - r.credit;
-                return new { r.date, r.type, r.reference, r.description, r.debit, r.credit, balance = running };
-            }).ToList();
-
-            return Ok(new {
-                sponsor = new { sponsor.Id, sponsor.Name },
-                fromDate = from,
-                toDate = to,
-                totalCharges = rows.Sum(r => r.debit),
-                totalPayments = rows.Sum(r => r.credit),
-                balance = running,
-                entries = ledger
-            });
-        }
     }
 }

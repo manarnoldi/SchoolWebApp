@@ -114,20 +114,23 @@ namespace SchoolWebApp.API.Controllers.Finance
                             .OrderBy(i => categories.GetValueOrDefault(i.FeeCategoryId, 999))
                             .ThenBy(i => i.Id)
                             .ToList();
-                        foreach (var item in sortedItems)
-                        {
-                            if (remaining <= 0) break;
-                            var itemBalance = item.Amount - item.Discount - item.PaidAmount;
-                            if (itemBalance <= 0) continue;
-                            var apply = Math.Min(remaining, itemBalance);
-                            item.PaidAmount += apply;
-                            remaining -= apply;
-                            allocations.Add(new PaymentAllocation
+                        // The family's own share of each line first; only then the parts a sponsor pledged and has not
+                        // paid (the student owes those too if the sponsor does not pay).
+                        decimal FamilyOpen(StudentInvoiceItem i) =>
+                            Math.Max(0, (i.Amount - i.Discount - i.SponsoredAmount) - (i.PaidAmount - i.SponsorPaidAmount));
+                        foreach (var pass in new[] { true, false })
+                            foreach (var item in sortedItems)
                             {
-                                StudentInvoiceItemId = item.Id,
-                                Amount = apply
-                            });
-                        }
+                                if (remaining <= 0) break;
+                                var itemBalance = pass ? FamilyOpen(item) : item.Amount - item.Discount - item.PaidAmount;
+                                if (itemBalance <= 0) continue;
+                                var apply = Math.Min(remaining, itemBalance);
+                                item.PaidAmount += apply;
+                                remaining -= apply;
+                                var existingAlloc = allocations.FirstOrDefault(a => a.StudentInvoiceItemId == item.Id);
+                                if (existingAlloc != null) existingAlloc.Amount += apply;
+                                else allocations.Add(new PaymentAllocation { StudentInvoiceItemId = item.Id, Amount = apply });
+                            }
                     }
 
                     payment.Allocations = allocations;
@@ -153,6 +156,8 @@ namespace SchoolWebApp.API.Controllers.Finance
             if (original == null) return NotFound();
             if (original.PaymentType != PaymentType.Receipt)
                 return BadRequest("Credit notes can only be issued against receipts.");
+            if (original.SponsorPaymentId != null)
+                return BadRequest("This receipt is a sponsor's payment applied to the invoice. To reverse it, delete the sponsor payment under Sponsor Payments.");
 
             var amount = model.Amount > 0 ? model.Amount : original.Amount;
             if (amount > original.Amount)

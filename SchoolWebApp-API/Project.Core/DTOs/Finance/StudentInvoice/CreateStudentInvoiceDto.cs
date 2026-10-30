@@ -11,6 +11,8 @@ namespace SchoolWebApp.Core.DTOs.Finance.StudentInvoice
         public decimal Discount { get; set; }
         public decimal PaidAmount { get; set; }
         public int? SponsorshipId { get; set; }
+        public decimal SponsoredAmount { get; set; }
+        public decimal SponsorPaidAmount { get; set; }
         public string? Description { get; set; }
     }
 

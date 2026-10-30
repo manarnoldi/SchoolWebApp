@@ -658,65 +658,65 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             CreatedBy = "admin",
                             Description = "Default budget amendment approval workflow",
                             FormKey = "BudgetAmendment",
                             IsActive = true,
                             IsMakerChecker = true,
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             ModifiedBy = "admin",
                             Name = "Budget Amendment Approval"
                         },
                         new
                         {
                             Id = 2,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             CreatedBy = "admin",
                             Description = "Default expense approval workflow",
                             FormKey = "Expense",
                             IsActive = true,
                             IsMakerChecker = true,
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             ModifiedBy = "admin",
                             Name = "Expense Approval"
                         },
                         new
                         {
                             Id = 3,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             CreatedBy = "admin",
                             Description = "Default journal entry approval workflow",
                             FormKey = "JournalEntry",
                             IsActive = true,
                             IsMakerChecker = true,
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             ModifiedBy = "admin",
                             Name = "Journal Entry Approval"
                         },
                         new
                         {
                             Id = 4,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             CreatedBy = "admin",
                             Description = "Default credit/debit note approval workflow",
                             FormKey = "CreditDebitNote",
                             IsActive = true,
                             IsMakerChecker = true,
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             ModifiedBy = "admin",
                             Name = "Credit/Debit Note Approval"
                         },
                         new
                         {
                             Id = 5,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             CreatedBy = "admin",
                             Description = "Default budget approval workflow",
                             FormKey = "Budget",
                             IsActive = true,
                             IsMakerChecker = true,
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             ModifiedBy = "admin",
                             Name = "Budget Approval"
                         });
@@ -781,10 +781,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 1,
                             ApprovalWorkflowId = 1,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             CreatedBy = "admin",
                             IsFinal = false,
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             ModifiedBy = "admin",
                             Name = "Reviewer",
                             NotifyApplicant = true,
@@ -797,10 +797,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 2,
                             ApprovalWorkflowId = 1,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             CreatedBy = "admin",
                             IsFinal = true,
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             ModifiedBy = "admin",
                             Name = "Approver",
                             NotifyApplicant = true,
@@ -813,10 +813,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 3,
                             ApprovalWorkflowId = 2,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             CreatedBy = "admin",
                             IsFinal = false,
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             ModifiedBy = "admin",
                             Name = "Reviewer",
                             NotifyApplicant = true,
@@ -829,10 +829,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 4,
                             ApprovalWorkflowId = 2,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             CreatedBy = "admin",
                             IsFinal = true,
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             ModifiedBy = "admin",
                             Name = "Approver",
                             NotifyApplicant = true,
@@ -845,10 +845,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 5,
                             ApprovalWorkflowId = 3,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             CreatedBy = "admin",
                             IsFinal = false,
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             ModifiedBy = "admin",
                             Name = "Reviewer",
                             NotifyApplicant = true,
@@ -861,10 +861,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 6,
                             ApprovalWorkflowId = 3,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             CreatedBy = "admin",
                             IsFinal = true,
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             ModifiedBy = "admin",
                             Name = "Approver",
                             NotifyApplicant = true,
@@ -877,10 +877,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 7,
                             ApprovalWorkflowId = 4,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             CreatedBy = "admin",
                             IsFinal = false,
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             ModifiedBy = "admin",
                             Name = "Reviewer",
                             NotifyApplicant = true,
@@ -893,10 +893,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 8,
                             ApprovalWorkflowId = 4,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             CreatedBy = "admin",
                             IsFinal = true,
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             ModifiedBy = "admin",
                             Name = "Approver",
                             NotifyApplicant = true,
@@ -909,10 +909,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 9,
                             ApprovalWorkflowId = 5,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             CreatedBy = "admin",
                             IsFinal = false,
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             ModifiedBy = "admin",
                             Name = "Reviewer",
                             NotifyApplicant = true,
@@ -925,10 +925,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 10,
                             ApprovalWorkflowId = 5,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             CreatedBy = "admin",
                             IsFinal = true,
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 720, DateTimeKind.Local).AddTicks(8716),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 206, DateTimeKind.Local).AddTicks(6634),
                             ModifiedBy = "admin",
                             Name = "Approver",
                             NotifyApplicant = true,
@@ -3242,6 +3242,111 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.ToTable("Elections");
                 });
 
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionBallotChoice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("BallotId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int?>("ElectionCandidateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ElectionContestId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ElectionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BallotId");
+
+                    b.HasIndex("ElectionCandidateId");
+
+                    b.HasIndex("ElectionContestId");
+
+                    b.HasIndex("ElectionId");
+
+                    b.ToTable("ElectionBallotChoices");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionCandidate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("BallotOrder")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("ElectionContestId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsElected")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("LeadershipRecordedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("PhotoFile")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("RunningMatePhotoFile")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int?>("RunningMateStudentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Slogan")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StatusNote")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TieBreak")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Votes")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RunningMateStudentId");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("ElectionContestId", "StudentId")
+                        .IsUnique();
+
+                    b.ToTable("ElectionCandidates");
+                });
+
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionContest", b =>
                 {
                     b.Property<int>("Id")
@@ -3441,6 +3546,170 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasIndex("ElectionId");
 
                     b.ToTable("ElectionStageChanges");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionStation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("ElectionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("OfficerUserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ElectionId");
+
+                    b.HasIndex("OfficerUserId");
+
+                    b.ToTable("ElectionStations");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionStationClass", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("ElectionStationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("SchoolClassId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SchoolClassId");
+
+                    b.HasIndex("ElectionStationId", "SchoolClassId")
+                        .IsUnique();
+
+                    b.ToTable("ElectionStationClasses");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionVoteCast", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("ElectionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ElectionStationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ElectionStationId");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("ElectionId", "StudentId")
+                        .IsUnique();
+
+                    b.ToTable("ElectionVoteCasts");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionVoter", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("ElectionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GenderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LearningLevelId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("SchoolClassId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SchoolClassId");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("ElectionId", "StudentId")
+                        .IsUnique();
+
+                    b.ToTable("ElectionVoters");
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.Account", b =>
@@ -4177,6 +4446,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<int?>("SponsorPaymentId")
+                        .HasColumnType("int");
+
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
 
@@ -4192,6 +4464,8 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasIndex("BankAccountId");
 
                     b.HasIndex("OriginalPaymentId");
+
+                    b.HasIndex("SponsorPaymentId");
 
                     b.HasIndex("StudentId");
 
@@ -4345,6 +4619,12 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Property<decimal>("PaidAmount")
                         .HasColumnType("decimal(65,30)");
 
+                    b.Property<decimal>("SponsorPaidAmount")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("SponsoredAmount")
+                        .HasColumnType("decimal(65,30)");
+
                     b.Property<int?>("SponsorshipId")
                         .HasColumnType("int");
 
@@ -4406,9 +4686,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2541),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(6518),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2552),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(6542),
                             ModifiedBy = "admin",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
@@ -4416,9 +4696,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 2,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2584),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(6677),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2585),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(6680),
                             ModifiedBy = "admin",
                             Name = "HeadTeacher",
                             NormalizedName = "HEADTEACHER"
@@ -4426,9 +4706,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 3,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2601),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(6765),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2602),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(6768),
                             ModifiedBy = "admin",
                             Name = "Teacher",
                             NormalizedName = "TEACHER"
@@ -4436,9 +4716,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 4,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2616),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(6850),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2616),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(6853),
                             ModifiedBy = "admin",
                             Name = "Student",
                             NormalizedName = "STUDENT"
@@ -4446,9 +4726,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 5,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2630),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(6929),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2632),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(6932),
                             ModifiedBy = "admin",
                             Name = "Parent",
                             NormalizedName = "PARENT"
@@ -4456,9 +4736,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 6,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2648),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7014),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2649),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7016),
                             ModifiedBy = "admin",
                             Name = "Accounts",
                             NormalizedName = "ACCOUNTS"
@@ -4466,9 +4746,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 7,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2662),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7114),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2663),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7117),
                             ModifiedBy = "admin",
                             Name = "Others",
                             NormalizedName = "OTHERS"
@@ -4476,9 +4756,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 8,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2678),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7214),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2679),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7217),
                             ModifiedBy = "admin",
                             Name = "SuperAdministrator",
                             NormalizedName = "SUPERADMINISTRATOR"
@@ -4584,20 +4864,20 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "84392224-964a-493b-9b8d-58eaaa678757",
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(3118),
+                            ConcurrencyStamp = "d3272b54-b246-4385-9a27-af64e3cce9d8",
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(8216),
                             CreatedBy = "admin",
                             Email = "admin@kodetek.co.ke",
                             EmailConfirmed = true,
                             FirstName = "SchoolSoft",
                             LastName = "Administrator",
                             LockoutEnabled = false,
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(3119),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(8221),
                             ModifiedBy = "admin",
                             MustChangePassword = false,
                             NormalizedEmail = "ADMIN@KODETEK.CO.KE",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPt2ckGgXDc/X5icIO1KNITrv8UX87L7MJiecjVFU2EdtvKz2MYYapnEJcG32G9mMA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBwYMB6ImORFJP+HC32GjjaqimsmxvCWIin3CGpPZmcjttfw7uVjvb26InzATUXcmQ==",
                             PhoneNumber = "+254724920000",
                             PhoneNumberConfirmed = true,
                             TwoFactorEnabled = false,
@@ -5940,10 +6220,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2790),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7503),
                             CreatedBy = "admin",
                             Description = "",
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2790),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7506),
                             ModifiedBy = "admin",
                             Name = "Supplier",
                             Rank = 1
@@ -5990,10 +6270,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2808),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7579),
                             CreatedBy = "admin",
                             Description = "",
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2809),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7582),
                             ModifiedBy = "admin",
                             Name = "Contract",
                             Rank = 1
@@ -6040,10 +6320,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2870),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7822),
                             CreatedBy = "admin",
                             Description = "",
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2870),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7824),
                             ModifiedBy = "admin",
                             Name = "Male",
                             Rank = 1
@@ -6134,10 +6414,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2834),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7664),
                             CreatedBy = "admin",
                             Description = "",
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2835),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7666),
                             ModifiedBy = "admin",
                             Name = "Kenyan",
                             Rank = 1
@@ -6335,10 +6615,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2852),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7750),
                             CreatedBy = "admin",
                             Description = "",
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2853),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7753),
                             ModifiedBy = "admin",
                             Name = "Christian",
                             Rank = 1
@@ -6435,11 +6715,11 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 1,
                             Code = "SC001",
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2765),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7399),
                             CreatedBy = "admin",
                             Description = "",
                             ForTeaching = false,
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2767),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7403),
                             ModifiedBy = "admin",
                             Name = "Non-teaching",
                             Rank = 1
@@ -7588,13 +7868,13 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 1,
                             Address = "Admin",
-                            Created = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2983),
+                            Created = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7967),
                             CreatedBy = "admin",
-                            DateOfBirth = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2980),
+                            DateOfBirth = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7963),
                             Email = "admin@kodetek.co.ke",
                             FullName = "Admin",
                             GenderId = 1,
-                            Modified = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2983),
+                            Modified = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7968),
                             ModifiedBy = "admin",
                             NationalityId = 1,
                             OtherDetails = "Admin",
@@ -7604,9 +7884,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                             UPI = "Admin",
                             CurrentlyEmployed = true,
                             DesignationId = 1,
-                            EmploymentDate = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2933),
+                            EmploymentDate = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7937),
                             EmploymentTypeId = 1,
-                            EndofEmploymentDate = new DateTime(2026, 10, 27, 19, 58, 52, 684, DateTimeKind.Local).AddTicks(2934),
+                            EndofEmploymentDate = new DateTime(2026, 10, 30, 10, 6, 55, 85, DateTimeKind.Local).AddTicks(7940),
                             ExcludeFromPayroll = false,
                             IdNumber = "Admin",
                             KraPinNo = "Admin",
@@ -7657,275 +7937,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.HasIndex("LearningModeId");
 
                     b.HasDiscriminator().HasValue("Student");
-                });
-
-            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionCandidate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("BallotOrder")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int>("ElectionContestId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsElected")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<DateTime?>("LeadershipRecordedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("PhotoFile")
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<string>("RunningMatePhotoFile")
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<int?>("RunningMateStudentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Slogan")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StatusNote")
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TieBreak")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Votes")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RunningMateStudentId");
-
-                    b.HasIndex("StudentId");
-
-                    b.HasIndex("ElectionContestId", "StudentId")
-                        .IsUnique();
-
-                    b.ToTable("ElectionCandidates");
-                });
-
-            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionVoter", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int>("ElectionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GenderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("LearningLevelId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int>("SchoolClassId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SchoolClassId");
-
-                    b.HasIndex("StudentId");
-
-                    b.HasIndex("ElectionId", "StudentId")
-                        .IsUnique();
-
-                    b.ToTable("ElectionVoters");
-                });
-
-            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionBallotChoice", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("BallotId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<int?>("ElectionCandidateId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ElectionContestId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ElectionId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BallotId");
-
-                    b.HasIndex("ElectionCandidateId");
-
-                    b.HasIndex("ElectionContestId");
-
-                    b.HasIndex("ElectionId");
-
-                    b.ToTable("ElectionBallotChoices");
-                });
-
-            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionStation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int>("ElectionId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int?>("OfficerUserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ElectionId");
-
-                    b.HasIndex("OfficerUserId");
-
-                    b.ToTable("ElectionStations");
-                });
-
-            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionStationClass", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int>("ElectionStationId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int>("SchoolClassId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SchoolClassId");
-
-                    b.HasIndex("ElectionStationId", "SchoolClassId")
-                        .IsUnique();
-
-                    b.ToTable("ElectionStationClasses");
-                });
-
-            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionVoteCast", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int>("ElectionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ElectionStationId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("Modified")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ElectionStationId");
-
-                    b.HasIndex("StudentId");
-
-                    b.HasIndex("ElectionId", "StudentId")
-                        .IsUnique();
-
-                    b.ToTable("ElectionVoteCasts");
                 });
 
             modelBuilder.Entity("CompetencySpecificOutcome", b =>
@@ -8802,6 +8813,46 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Navigation("AcademicYear");
                 });
 
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionBallotChoice", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Elections.ElectionCandidate", null)
+                        .WithMany()
+                        .HasForeignKey("ElectionCandidateId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Elections.ElectionContest", null)
+                        .WithMany()
+                        .HasForeignKey("ElectionContestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionCandidate", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Elections.ElectionContest", "ElectionContest")
+                        .WithMany("Candidates")
+                        .HasForeignKey("ElectionContestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "RunningMateStudent")
+                        .WithMany()
+                        .HasForeignKey("RunningMateStudentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ElectionContest");
+
+                    b.Navigation("RunningMateStudent");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionContest", b =>
                 {
                     b.HasOne("SchoolWebApp.Core.Entities.School.EducationLevel", "EducationLevel")
@@ -8894,6 +8945,97 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Election");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionStation", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Elections.Election", "Election")
+                        .WithMany()
+                        .HasForeignKey("ElectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Identity.AppUser", "OfficerUser")
+                        .WithMany()
+                        .HasForeignKey("OfficerUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Election");
+
+                    b.Navigation("OfficerUser");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionStationClass", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Elections.ElectionStation", "ElectionStation")
+                        .WithMany("Classes")
+                        .HasForeignKey("ElectionStationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Class.SchoolClass", "SchoolClass")
+                        .WithMany()
+                        .HasForeignKey("SchoolClassId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ElectionStation");
+
+                    b.Navigation("SchoolClass");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionVoteCast", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Elections.Election", "Election")
+                        .WithMany()
+                        .HasForeignKey("ElectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Elections.ElectionStation", "ElectionStation")
+                        .WithMany()
+                        .HasForeignKey("ElectionStationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Election");
+
+                    b.Navigation("ElectionStation");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionVoter", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Elections.Election", "Election")
+                        .WithMany()
+                        .HasForeignKey("ElectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Class.SchoolClass", "SchoolClass")
+                        .WithMany()
+                        .HasForeignKey("SchoolClassId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Election");
+
+                    b.Navigation("SchoolClass");
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.Account", b =>
@@ -9105,6 +9247,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("OriginalPaymentId");
 
+                    b.HasOne("SchoolWebApp.Core.Entities.Sponsorships.SponsorPayment", "SponsorPayment")
+                        .WithMany("StudentReceipts")
+                        .HasForeignKey("SponsorPaymentId");
+
                     b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId")
@@ -9117,6 +9263,8 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Navigation("BankAccount");
 
                     b.Navigation("OriginalPayment");
+
+                    b.Navigation("SponsorPayment");
 
                     b.Navigation("Student");
 
@@ -9815,137 +9963,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Navigation("LearningMode");
                 });
 
-            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionCandidate", b =>
-                {
-                    b.HasOne("SchoolWebApp.Core.Entities.Elections.ElectionContest", "ElectionContest")
-                        .WithMany("Candidates")
-                        .HasForeignKey("ElectionContestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "RunningMateStudent")
-                        .WithMany()
-                        .HasForeignKey("RunningMateStudentId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ElectionContest");
-
-                    b.Navigation("RunningMateStudent");
-
-                    b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionVoter", b =>
-                {
-                    b.HasOne("SchoolWebApp.Core.Entities.Elections.Election", "Election")
-                        .WithMany()
-                        .HasForeignKey("ElectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SchoolWebApp.Core.Entities.Class.SchoolClass", "SchoolClass")
-                        .WithMany()
-                        .HasForeignKey("SchoolClassId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Election");
-
-                    b.Navigation("SchoolClass");
-
-                    b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionBallotChoice", b =>
-                {
-                    b.HasOne("SchoolWebApp.Core.Entities.Elections.ElectionCandidate", null)
-                        .WithMany()
-                        .HasForeignKey("ElectionCandidateId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("SchoolWebApp.Core.Entities.Elections.ElectionContest", null)
-                        .WithMany()
-                        .HasForeignKey("ElectionContestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionStation", b =>
-                {
-                    b.HasOne("SchoolWebApp.Core.Entities.Elections.Election", "Election")
-                        .WithMany()
-                        .HasForeignKey("ElectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SchoolWebApp.Core.Entities.Identity.AppUser", "OfficerUser")
-                        .WithMany()
-                        .HasForeignKey("OfficerUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Election");
-
-                    b.Navigation("OfficerUser");
-                });
-
-            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionStationClass", b =>
-                {
-                    b.HasOne("SchoolWebApp.Core.Entities.Elections.ElectionStation", "ElectionStation")
-                        .WithMany("Classes")
-                        .HasForeignKey("ElectionStationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SchoolWebApp.Core.Entities.Class.SchoolClass", "SchoolClass")
-                        .WithMany()
-                        .HasForeignKey("SchoolClassId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ElectionStation");
-
-                    b.Navigation("SchoolClass");
-                });
-
-            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionVoteCast", b =>
-                {
-                    b.HasOne("SchoolWebApp.Core.Entities.Elections.Election", "Election")
-                        .WithMany()
-                        .HasForeignKey("ElectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SchoolWebApp.Core.Entities.Elections.ElectionStation", "ElectionStation")
-                        .WithMany()
-                        .HasForeignKey("ElectionStationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SchoolWebApp.Core.Entities.Students.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Election");
-
-                    b.Navigation("ElectionStation");
-
-                    b.Navigation("Student");
-                });
-
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Academics.AcademicYear", b =>
                 {
                     b.Navigation("SchoolClasses");
@@ -10173,11 +10190,21 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Navigation("StageChanges");
                 });
 
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionContest", b =>
+                {
+                    b.Navigation("Candidates");
+                });
+
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionPosition", b =>
                 {
                     b.Navigation("Contests");
 
                     b.Navigation("Levels");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionStation", b =>
+                {
+                    b.Navigation("Classes");
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Finance.Account", b =>
@@ -10339,6 +10366,11 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Navigation("SchoolClassLeaders");
                 });
 
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Sponsorships.SponsorPayment", b =>
+                {
+                    b.Navigation("StudentReceipts");
+                });
+
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Sponsorships.Sponsorship", b =>
                 {
                     b.Navigation("FeeCategories");
@@ -10410,16 +10442,6 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Navigation("StudentResponsibilities");
 
                     b.Navigation("StudentValues");
-                });
-
-            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionContest", b =>
-                {
-                    b.Navigation("Candidates");
-                });
-
-            modelBuilder.Entity("SchoolWebApp.Core.Entities.Elections.ElectionStation", b =>
-                {
-                    b.Navigation("Classes");
                 });
 #pragma warning restore 612, 618
         }

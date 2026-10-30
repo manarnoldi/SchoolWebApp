@@ -7,6 +7,7 @@ using SchoolWebApp.Core.Entities.Sponsorships;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.API.Licensing;
 using SchoolWebApp.API.Security;
+using SchoolWebApp.API.Services;
 
 namespace SchoolWebApp.API.Controllers.Finance
 {
@@ -20,10 +21,21 @@ namespace SchoolWebApp.API.Controllers.Finance
         private readonly ILogger<StudentInvoicesController> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly SponsorAllocator _allocator;
 
-        public StudentInvoicesController(ILogger<StudentInvoicesController> logger, IUnitOfWork unitOfWork, IMapper mapper)
+        public StudentInvoicesController(ILogger<StudentInvoicesController> logger, IUnitOfWork unitOfWork, IMapper mapper, SponsorAllocator allocator)
         {
-            _logger = logger; _unitOfWork = unitOfWork; _mapper = mapper;
+            _logger = logger; _unitOfWork = unitOfWork; _mapper = mapper; _allocator = allocator;
+        }
+
+        // New pledges on invoices: any credit those sponsors hold goes onto them straight away.
+        private async Task ApplySponsorCredit(IEnumerable<StudentInvoiceItem> items)
+        {
+            var sponsorshipIds = items.Where(i => i.SponsorshipId != null && i.SponsoredAmount > 0).Select(i => i.SponsorshipId!.Value).Distinct().ToList();
+            if (sponsorshipIds.Count == 0) return;
+            var sponsorIds = (await _unitOfWork.Repository<Sponsorship>().Find(s => sponsorshipIds.Contains(s.Id)))
+                .Select(s => s.SponsorId).Distinct().ToList();
+            foreach (var id in sponsorIds) await _allocator.ApplyHeldCredit(id);
         }
 
         [HttpGet]
@@ -63,10 +75,12 @@ namespace SchoolWebApp.API.Controllers.Finance
             if (string.IsNullOrEmpty(invoice.InvoiceNumber))
                 invoice.InvoiceNumber = $"INV-{DateTime.Now:yyyyMMddHHmmssfff}";
             invoice.TotalAmount = model.Items.Sum(i => i.Amount - i.Discount);
+            foreach (var it in invoice.Items) { it.SponsorPaidAmount = 0; if (it.SponsorshipId == null) it.SponsoredAmount = 0; }
             _unitOfWork.StudentInvoices.Create(invoice);
             await _unitOfWork.SaveChangesAsync();
 
             await AutoPostInvoiceJournal(invoice);
+            await ApplySponsorCredit(invoice.Items);
 
             return Ok(_mapper.Map<StudentInvoiceDto>(invoice));
         }
@@ -135,7 +149,8 @@ namespace SchoolWebApp.API.Controllers.Finance
                         Discount = 0
                     };
 
-                    // Find the first sponsorship that covers this fee category.
+                    // Find the first sponsorship that covers this fee category. It pledges its share of the fee: the
+                    // student is still invoiced the whole fee, and stays responsible for it if the sponsor does not pay.
                     // Empty FeeCategories list = covers all categories.
                     var matching = applicable.FirstOrDefault(s =>
                         s.FeeCategories.Count == 0 || s.FeeCategories.Any(fc => fc.FeeCategoryId == fi.FeeCategoryId));
@@ -160,7 +175,7 @@ namespace SchoolWebApp.API.Controllers.Finance
 
                         if (coveredAmount > 0)
                         {
-                            item.Discount = coveredAmount;
+                            item.SponsoredAmount = coveredAmount;
                             item.SponsorshipId = matching.Id;
                             sponsoredLineCount++;
                             totalSponsored += coveredAmount;
@@ -184,6 +199,7 @@ namespace SchoolWebApp.API.Controllers.Finance
 
             foreach (var inv in createdInvoices)
                 await AutoPostInvoiceJournal(inv);
+            await ApplySponsorCredit(createdInvoices.SelectMany(i => i.Items));
 
             return Ok(new
             {
@@ -220,24 +236,43 @@ namespace SchoolWebApp.API.Controllers.Finance
             var existing = await _unitOfWork.StudentInvoices.GetByIdWithDetails(id);
             if (existing == null) return NotFound();
 
-            // Remove old items
-            foreach (var oldItem in existing.Items.ToList())
-                _unitOfWork.StudentInvoiceItems.Delete(oldItem);
-            await _unitOfWork.SaveChangesAsync();
-
-            // Add new items
+            // Lines are changed in place, so what has been paid on each (and by which sponsor) stays with it. A line
+            // with money on it cannot be dropped, and a pledge cannot fall below what the sponsor has already paid.
+            var keep = model.Items.Where(i => i.Id != null).Select(i => i.Id!.Value).ToHashSet();
+            foreach (var old in existing.Items.Where(i => !keep.Contains(i.Id)).ToList())
+            {
+                if (old.PaidAmount > 0)
+                    return BadRequest(new { message = "A fee line that has been paid cannot be removed from the invoice." });
+                _unitOfWork.StudentInvoiceItems.Delete(old);
+            }
             foreach (var item in model.Items)
             {
-                _unitOfWork.StudentInvoiceItems.Create(new StudentInvoiceItem
+                var line = item.Id != null ? existing.Items.FirstOrDefault(i => i.Id == item.Id) : null;
+                var pledged = item.SponsorshipId != null ? item.SponsoredAmount : 0;
+                if (line != null && pledged < line.SponsorPaidAmount)
+                    return BadRequest(new { message = $"The sponsor has already paid {line.SponsorPaidAmount:N2} on a line; its pledge cannot be less." });
+                if (line == null)
                 {
-                    StudentInvoiceId = existing.Id,
-                    FeeCategoryId = item.FeeCategoryId,
-                    Amount = item.Amount,
-                    Discount = item.Discount,
-                    SponsorshipId = item.SponsorshipId,
-                    Description = item.Description
-                });
+                    _unitOfWork.StudentInvoiceItems.Create(new StudentInvoiceItem
+                    {
+                        StudentInvoiceId = existing.Id,
+                        FeeCategoryId = item.FeeCategoryId,
+                        Amount = item.Amount,
+                        Discount = item.Discount,
+                        SponsorshipId = item.SponsorshipId,
+                        SponsoredAmount = pledged,
+                        Description = item.Description
+                    });
+                    continue;
+                }
+                line.FeeCategoryId = item.FeeCategoryId;
+                line.Amount = item.Amount;
+                line.Discount = item.Discount;
+                line.SponsorshipId = item.SponsorshipId;
+                line.SponsoredAmount = pledged;
+                line.Description = item.Description;
             }
+            await _unitOfWork.SaveChangesAsync();
 
             // Recalculate total
             existing.TotalAmount = model.Items.Sum(i => i.Amount - i.Discount);
@@ -265,6 +300,7 @@ namespace SchoolWebApp.API.Controllers.Finance
             }
             await _unitOfWork.SaveChangesAsync();
             await AutoPostInvoiceJournal(existing);
+            await ApplySponsorCredit(existing.Items);
 
             return Ok(_mapper.Map<StudentInvoiceDto>(await _unitOfWork.StudentInvoices.GetByIdWithDetails(id)));
         }
@@ -329,64 +365,24 @@ namespace SchoolWebApp.API.Controllers.Finance
                 ? invoice.Items
                 : (await _unitOfWork.StudentInvoices.GetByIdWithDetails(invoice.Id))?.Items ?? new List<StudentInvoiceItem>();
 
-            // Pre-load sponsorships referenced by these items to find their receivable accounts.
-            var sponsorshipIds = items.Where(i => i.SponsorshipId.HasValue).Select(i => i.SponsorshipId!.Value).Distinct().ToList();
-            var sponsorReceivableBySponsorship = new Dictionary<int, (int? receivableAccountId, string sponsorName)>();
-            if (sponsorshipIds.Any())
-            {
-                var sponsorships = await _unitOfWork.Repository<SchoolWebApp.Core.Entities.Sponsorships.Sponsorship>()
-                    .Find(s => sponsorshipIds.Contains(s.Id), includeProperties: "Sponsor");
-                foreach (var sp in sponsorships)
-                {
-                    sponsorReceivableBySponsorship[sp.Id] = (sp.Sponsor?.ReceivableAccountId, sp.Sponsor?.Name ?? "Sponsor");
-                }
-            }
-
-            // Build journal lines:
-            //   Debit  main Debtors  → sum of (Amount - Discount) across all items (what the student owes)
-            //   Debit  Sponsor AR    → item.Discount per sponsor's receivable account (sponsor owes the subsidy)
-            //                          If no sponsor receivable is configured, fall back to main Debtors so income stays balanced.
-            //   Credit Income        → full Amount per fee category income account (revenue recognized in full)
+            // Debit Student Debtors with what the student is invoiced (every fee less any discount) and credit each fee's
+            // income account the same. A sponsor's pledge is not a separate debt: the student owes the whole invoice
+            // until the sponsor (or the family) pays it.
             var studentDebitTotal = 0m;
-            var sponsorDebitByAccount = new Dictionary<int, decimal>();
             var creditByIncomeAccount = new Dictionary<int, decimal>();
 
             foreach (var item in items)
             {
                 var cat = await _unitOfWork.FeeCategories.GetById(item.FeeCategoryId);
                 if (cat?.IncomeAccountId == null) continue;
-
-                var fullAmount = item.Amount;
-                var discount = item.Discount;
-                var studentPortion = fullAmount - discount;
-
-                studentDebitTotal += studentPortion;
-
-                if (discount > 0)
-                {
-                    int? sponsorAcct = null;
-                    if (item.SponsorshipId.HasValue && sponsorReceivableBySponsorship.TryGetValue(item.SponsorshipId.Value, out var sr))
-                        sponsorAcct = sr.receivableAccountId;
-                    // No sponsor linked or sponsor has no AR account → treat discount as pure write-off (reduce revenue).
-                    if (sponsorAcct.HasValue)
-                    {
-                        if (!sponsorDebitByAccount.ContainsKey(sponsorAcct.Value))
-                            sponsorDebitByAccount[sponsorAcct.Value] = 0;
-                        sponsorDebitByAccount[sponsorAcct.Value] += discount;
-                    }
-                    else
-                    {
-                        // No sponsor AR - income drops by the discount amount (net into revenue line).
-                        fullAmount = studentPortion;
-                    }
-                }
-
+                var charged = item.Amount - item.Discount;
+                studentDebitTotal += charged;
                 if (!creditByIncomeAccount.ContainsKey(cat.IncomeAccountId.Value))
                     creditByIncomeAccount[cat.IncomeAccountId.Value] = 0;
-                creditByIncomeAccount[cat.IncomeAccountId.Value] += fullAmount;
+                creditByIncomeAccount[cat.IncomeAccountId.Value] += charged;
             }
 
-            if (creditByIncomeAccount.Count == 0 || studentDebitTotal <= 0 && sponsorDebitByAccount.Count == 0) return;
+            if (creditByIncomeAccount.Count == 0 || studentDebitTotal <= 0) return;
 
             var journal = new JournalEntry
             {
@@ -398,7 +394,7 @@ namespace SchoolWebApp.API.Controllers.Finance
                 Lines = new List<JournalLine>()
             };
 
-            // Debit Debtors for the student's net portion
+            // Debit Debtors for what the student is invoiced
             if (studentDebitTotal > 0)
             {
                 journal.Lines.Add(new JournalLine
@@ -407,18 +403,6 @@ namespace SchoolWebApp.API.Controllers.Finance
                     Debit = studentDebitTotal,
                     Credit = 0,
                     Description = $"Student debtors - {invoice.InvoiceNumber}"
-                });
-            }
-
-            // Debit each sponsor's receivable
-            foreach (var kvp in sponsorDebitByAccount)
-            {
-                journal.Lines.Add(new JournalLine
-                {
-                    AccountId = kvp.Key,
-                    Debit = kvp.Value,
-                    Credit = 0,
-                    Description = $"Sponsor receivable - {invoice.InvoiceNumber}"
                 });
             }
 

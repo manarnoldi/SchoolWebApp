@@ -432,6 +432,7 @@ export class FinanceReportsComponent implements OnInit {
 
     outstandingInvoiced(): number { return (this.allOutstanding || []).reduce((s, r) => s + (r.totalInvoiced || 0), 0); }
     outstandingPaid(): number { return (this.allOutstanding || []).reduce((s, r) => s + (r.totalPaid || 0), 0); }
+    outstandingAwaiting(): number { return (this.outstanding || []).reduce((s, r) => s + (r.awaitingSponsor || 0), 0); }
     outstandingAll(): number { return (this.allOutstanding || []).reduce((s, r) => s + (r.balance || 0), 0); }
 
     feeOnlyOwing = false;
@@ -722,9 +723,6 @@ export class FinanceReportsComponent implements OnInit {
         this.expandedDiscountStudents.clear();
         if (!open) this.expandedDiscountStudents.add(studentId);
     }
-
-    discountFees(): number { return (this.discountReport?.students || []).reduce((n: number, s: any) => n + (s.totalFees || 0), 0); }
-    discountInvoiced(): number { return (this.discountReport?.students || []).reduce((n: number, s: any) => n + (s.totalInvoiced || 0), 0); }
 
     isDiscountStudentExpanded(studentId: number): boolean {
         return this.expandedDiscountStudents.has(studentId);

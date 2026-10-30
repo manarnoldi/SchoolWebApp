@@ -6,7 +6,7 @@
         <!-- Add Modal -->
         <div class="modal-backdrop fade show" *ngIf="showForm"></div>
         <div class="modal fade show d-block" *ngIf="showForm" tabindex="-1">
-            <div class="modal-dialog modal-lg" style="margin-top: 50px;">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable" style="margin-top: 30px;">
                 <div class="modal-content">
                     <div class="modal-header bg-success text-white py-2">
                         <h5 class="modal-title"><i class="fas fa-hand-holding-usd me-1"></i> New Sponsor Payment</h5>
@@ -51,13 +51,48 @@
                                 <textarea class="form-control form-control-sm" rows="2" [(ngModel)]="item.description"></textarea>
                             </div>
                         </div>
-                        <div class="alert alert-info mt-2 py-1" style="font-size:0.8rem;">
-                            <i class="fas fa-info-circle me-1"></i> A journal entry (Debit Bank/Cash, Credit Sponsor Receivable) is automatically posted when you save.
+                        <div class="alert alert-info mt-2 py-1 mb-2" style="font-size:0.8rem;" *ngIf="!allocation">
+                            <i class="fas fa-info-circle me-1"></i> Next you will see how this payment goes onto the sponsored students' invoices, oldest pledge first, and can change it before saving.
                         </div>
+
+                        <!-- Step 2: how the payment goes onto the students' invoices -->
+                        <ng-container *ngIf="allocation">
+                            <div class="d-flex align-items-center flex-wrap gap-3 border-top pt-2 mb-1" style="font-size:0.85rem;">
+                                <strong><i class="fas fa-users me-1"></i> Onto students' invoices</strong>
+                                <span>To students: <strong>{{ allocatedTotal() | number:'1.2-2' }}</strong></span>
+                                <span [class.text-warning-emphasis]="heldAmount() > 0">Held as credit: <strong>{{ heldAmount() | number:'1.2-2' }}</strong></span>
+                                <span class="text-muted">Pledges still to pay: {{ allocation.totalDue | number:'1.2-2' }}</span>
+                                <button class="btn btn-sm btn-link p-0 ms-auto" (click)="reproposeAllocation()" title="Spread the payment again, oldest pledge first"><i class="fas fa-undo me-1"></i>Oldest first</button>
+                            </div>
+                            <div class="table-responsive" style="max-height: 340px; overflow-y: auto;">
+                                <table class="table table-sm table-hover mb-0" style="font-size:0.82rem;">
+                                    <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
+                                        <tr><th>Invoice</th><th>Student</th><th>Term</th><th class="text-end">Pledged</th><th class="text-end">Already paid</th><th class="text-end">Still to pay</th><th class="text-end" style="width:140px;">This payment</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let l of allocation.lines" [class.table-success]="l.amount > 0">
+                                            <td>{{ l.invoiceNumber }}<div class="text-muted small">{{ l.invoiceDate | date:'mediumDate' }}</div></td>
+                                            <td>{{ l.studentUPI }} - {{ l.studentName }}</td>
+                                            <td>{{ l.term }}</td>
+                                            <td class="text-end">{{ l.pledged | number:'1.2-2' }}</td>
+                                            <td class="text-end">{{ l.sponsorPaid | number:'1.2-2' }}</td>
+                                            <td class="text-end">{{ l.due | number:'1.2-2' }}</td>
+                                            <td><input type="number" min="0" [max]="l.due" class="form-control form-control-sm text-end" [(ngModel)]="l.amount" (blur)="clampLine(l)" /></td>
+                                        </tr>
+                                        <tr *ngIf="!allocation.lines?.length"><td colspan="7" class="text-center text-muted p-3">This sponsor has no pledges waiting to be paid. The whole payment will be held as its credit.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="alert alert-warning py-1 mt-2 mb-0" style="font-size:0.8rem;" *ngIf="heldAmount() > 0">
+                                <i class="fas fa-piggy-bank me-1"></i> {{ heldAmount() | number:'1.2-2' }} will be held as the sponsor's credit (Sponsor Advances) and put on its students' invoices as its next pledges fall due.
+                            </div>
+                        </ng-container>
                     </div>
                     <div class="modal-footer py-1">
                         <button class="btn btn-sm btn-secondary" (click)="cancel()">Cancel</button>
-                        <button class="btn btn-sm btn-success" (click)="save()"><i class="fas fa-save"></i> Record Payment</button>
+                        <button class="btn btn-sm btn-outline-primary" *ngIf="allocation" (click)="allocation = null"><i class="fas fa-arrow-left"></i> Back</button>
+                        <button class="btn btn-sm btn-primary" *ngIf="!allocation" (click)="review()">Next: onto students' invoices <i class="fas fa-arrow-right"></i></button>
+                        <button class="btn btn-sm btn-success" *ngIf="allocation" (click)="save()"><i class="fas fa-save"></i> Record Payment</button>
                     </div>
                 </div>
             </div>
@@ -107,6 +142,8 @@
                             <th class="text-end">Amount</th>
                             <th>Method</th>
                             <th>Received To</th>
+                            <th class="text-end">On invoices</th>
+                            <th class="text-end">Held</th>
                             <th>Description</th>
                             <th style="min-width:60px;">Action</th>
                         </tr>
@@ -119,13 +156,16 @@
                             <td class="text-end"><a role="button" class="fw-bold text-success" (click)="openPayment(p)" title="Open the payment">{{ p.amount | number:'1.2-2' }}</a></td>
                             <td><span class="badge bg-secondary">{{ getMethodLabel(p.paymentMethod) }}</span></td>
                             <td><small>{{ p.bankAccountName || '-' }}</small></td>
+                            <td class="text-end text-nowrap"><small>{{ p.applied | number:'1.2-2' }}<span class="text-muted" *ngIf="p.invoiceCount"> · {{ p.invoiceCount }} inv</span></small></td>
+                            <td class="text-end"><small [class.text-warning-emphasis]="(p.held || 0) > 0" [class.fw-semibold]="(p.held || 0) > 0">{{ (p.held || 0) > 0 ? (p.held | number:'1.2-2') : '-' }}</small></td>
                             <td><small>{{ p.description || '-' }}</small></td>
                             <td>
-                                <button class="btn btn-outline-danger btn-sm" (click)="delete(p)" title="Delete"><i class="fas fa-trash"></i></button>
+                                <button class="btn btn-outline-warning btn-sm me-1" *ngIf="(p.held || 0) > 0" (click)="applyCredit(p)" title="Put this sponsor's held credit on its pledges now due"><i class="fas fa-hand-holding-usd"></i></button>
+                                <button class="btn btn-outline-danger btn-sm" (click)="delete(p)" title="Delete: also takes it back off the students' invoices"><i class="fas fa-trash"></i></button>
                             </td>
                         </tr>
                         <tr *ngIf="filtered().length === 0">
-                            <td colspan="8" class="text-center text-muted p-3"><i class="fas fa-info-circle me-1"></i> No sponsor payments.</td>
+                            <td colspan="10" class="text-center text-muted p-3"><i class="fas fa-info-circle me-1"></i> No sponsor payments.</td>
                         </tr>
                     </tbody>
                 </table>

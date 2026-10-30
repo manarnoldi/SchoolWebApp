@@ -256,12 +256,12 @@ export class SponsorshipsComponent implements OnInit {
             html: `<div style="text-align:left; font-size:0.9rem;">
                 <p>This will look at every <strong>open</strong> invoice in scope and:</p>
                 <ul>
-                    <li>Apply the sponsorship discount to lines that match a covered fee category</li>
+                    <li>Record the sponsor's pledge on lines that match a covered fee category - the student is still invoiced the whole fee and owes it if the sponsor does not pay</li>
                     <li>Skip lines already linked to another sponsorship</li>
                     <li>Skip fully-paid invoices</li>
-                    <li>Post an adjustment journal: <strong>Dr Sponsor Receivable / Cr Student Debtors</strong></li>
+                    <li>Put any credit the sponsor already holds onto these pledges</li>
                 </ul>
-                <p class="text-muted" style="font-size:0.8rem;">For partially-paid invoices, the discount is capped at the unpaid portion of each line.</p>
+                <p class="text-muted" style="font-size:0.8rem;">For partially-paid invoices, the pledge is capped at the unpaid part of each line.</p>
             </div>`,
             width: 560, position: 'top', padding: '1em',
             icon: 'question', showCancelButton: true, confirmButtonText: 'Apply'
@@ -280,8 +280,8 @@ export class SponsorshipsComponent implements OnInit {
     private showApplySummary(s: Sponsorship, resp: any) {
         let html = `
             <div style="text-align:left; font-size:0.9rem;">
-                <p><strong>${resp.appliedInvoices || 0}</strong> invoice${(resp.appliedInvoices === 1) ? '' : 's'} updated, <strong>${resp.appliedItems || 0}</strong> line${(resp.appliedItems === 1) ? '' : 's'} sponsored.</p>
-                <p>Total applied: <strong>${(+resp.totalApplied || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong></p>
+                <p><strong>${resp.appliedInvoices || 0}</strong> invoice${(resp.appliedInvoices === 1) ? '' : 's'} updated, <strong>${resp.appliedItems || 0}</strong> line${(resp.appliedItems === 1) ? '' : 's'} pledged.</p>
+                <p>Total pledged: <strong>${(+resp.totalApplied || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong></p>
                 <hr/>
                 <p class="text-muted" style="font-size:0.8rem;">
                     Skipped: ${resp.skippedAlreadySponsoredItems || 0} already-sponsored line${(resp.skippedAlreadySponsoredItems === 1) ? '' : 's'},

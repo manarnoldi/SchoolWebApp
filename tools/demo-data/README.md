@@ -32,7 +32,9 @@ documents and elections are kept, so the demo shows a full, working school.
    It clears any finance test data, then records through the API: fee
    structures per class level and term, invoices, about 2,700 fee payments
    (M-Pesa, bank, cash; earlier terms nearly all paid, the latest one still
-   coming in), sponsorships and sponsor payments, a budget per department and
+   coming in), sponsorships (each pledging part of its students' invoices, which
+   still carry the whole fee) and sponsor payments put onto those invoices, a
+   Sponsor Advances account (2310) for sponsor money not yet needed, a budget per department and
    the monthly expenses against it, approved through the real workflows. The
    school's accountant gets a login (Accounts role) who records it all.
    Payments run daily up to `--through` (set it to the demo day), so the

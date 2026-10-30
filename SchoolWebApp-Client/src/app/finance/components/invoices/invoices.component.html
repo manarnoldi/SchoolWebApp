@@ -105,12 +105,13 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th style="width:5%;" class="text-center">Include</th>
-                                        <th style="width:22%;">Fee Category</th>
+                                        <th style="width:19%;">Fee Category</th>
                                         <th style="width:9%;" class="text-center">Source</th>
-                                        <th style="width:12%;" class="text-end">Amount</th>
-                                        <th style="width:18%;">Sponsorship</th>
-                                        <th style="width:11%;" class="text-end">Discount</th>
-                                        <th style="width:18%;">Description</th>
+                                        <th style="width:11%;" class="text-end">Amount</th>
+                                        <th style="width:10%;" class="text-end">Discount</th>
+                                        <th style="width:17%;">Sponsorship</th>
+                                        <th style="width:11%;" class="text-end" title="The part the sponsor is expected to pay. The student is still invoiced the whole fee.">Sponsor pledge</th>
+                                        <th style="width:13%;">Description</th>
                                         <th style="width:5%;"></th>
                                     </tr>
                                 </thead>
@@ -134,6 +135,7 @@
                                             <span *ngIf="!it._fromStructure" class="badge bg-info">Ad-hoc</span>
                                         </td>
                                         <td><input type="number" min="0" class="form-control form-control-sm text-end" [(ngModel)]="it.amount" [readonly]="it._fromStructure" [class.bg-light]="it._fromStructure" /></td>
+                                        <td><input type="number" min="0" class="form-control form-control-sm text-end" [(ngModel)]="it.discount" /></td>
                                         <td>
                                             <select class="form-select form-select-sm" [(ngModel)]="it.sponsorshipId" (ngModelChange)="onSponsorshipChange(it)">
                                                 <option [ngValue]="null">None</option>
@@ -142,21 +144,21 @@
                                                 </option>
                                             </select>
                                         </td>
-                                        <td><input type="number" min="0" class="form-control form-control-sm text-end" [(ngModel)]="it.discount" /></td>
+                                        <td><input type="number" min="0" class="form-control form-control-sm text-end" [(ngModel)]="it.sponsoredAmount" [disabled]="!it.sponsorshipId" /></td>
                                         <td><input class="form-control form-control-sm" [(ngModel)]="it.description" /></td>
                                         <td class="text-center">
                                             <button *ngIf="!it._fromStructure" class="btn btn-sm btn-outline-danger" (click)="removeInvoiceItem(it)" title="Remove"><i class="fas fa-times"></i></button>
                                         </td>
                                     </tr>
                                     <tr *ngIf="editInvoice.items.length === 0">
-                                        <td colspan="8" class="text-center text-muted p-2"><i class="fas fa-info-circle"></i> No items.</td>
+                                        <td colspan="9" class="text-center text-muted p-2"><i class="fas fa-info-circle"></i> No items.</td>
                                     </tr>
                                 </tbody>
                                 <tfoot *ngIf="editInvoice.items.length > 0">
                                     <tr class="table-warning fw-bold">
                                         <td colspan="3" class="text-end">TOTAL</td>
                                         <td class="text-end">{{ getEditTotal() | number:'1.2-2' }}</td>
-                                        <td colspan="4"></td>
+                                        <td colspan="5"></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -197,7 +199,8 @@
                                     <th>Fee Category</th>
                                     <th class="text-end">Amount</th>
                                     <th class="text-end">Discount</th>
-                                    <th class="text-end">Net</th>
+                                    <th class="text-end">Invoiced</th>
+                                    <th class="text-end" title="The part a sponsor is expected to pay; the student owes it if the sponsor does not">Sponsor pledge</th>
                                     <th class="text-end">Paid</th>
                                     <th class="text-end">Balance</th>
                                     <th>Description</th>
@@ -210,6 +213,7 @@
                                     <td class="text-end">{{ it.amount | number:'1.2-2' }}</td>
                                     <td class="text-end">{{ it.discount | number:'1.2-2' }}</td>
                                     <td class="text-end">{{ (it.amount! - (it.discount || 0)) | number:'1.2-2' }}</td>
+                                    <td class="text-end text-primary">{{ it.sponsoredAmount ? (it.sponsoredAmount | number:'1.2-2') : '' }}</td>
                                     <td class="text-end text-success">{{ it.paidAmount | number:'1.2-2' }}</td>
                                     <td class="text-end fw-bold" [class.text-danger]="(it.amount! - (it.discount || 0) - (it.paidAmount || 0)) > 0">{{ (it.amount! - (it.discount || 0) - (it.paidAmount || 0)) | number:'1.2-2' }}</td>
                                     <td><small>{{ it.description }}</small></td>
@@ -219,6 +223,7 @@
                                 <tr class="table-warning fw-bold">
                                     <td colspan="4" class="text-end">TOTAL</td>
                                     <td class="text-end">{{ getDetailTotal() | number:'1.2-2' }}</td>
+                                    <td class="text-end text-primary">{{ getDetailPledgedTotal() ? (getDetailPledgedTotal() | number:'1.2-2') : '' }}</td>
                                     <td class="text-end text-success">{{ getDetailPaidTotal() | number:'1.2-2' }}</td>
                                     <td class="text-end">{{ (getDetailTotal() - getDetailPaidTotal()) | number:'1.2-2' }}</td>
                                     <td></td>

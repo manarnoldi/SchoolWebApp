@@ -303,7 +303,7 @@ export class FinanceInvoicesComponent implements OnInit {
                 <p><strong>${studentsTotal}</strong> invoice${studentsTotal === 1 ? '' : 's'} created.</p>
                 ${sponsored > 0
                     ? `<p><strong>${sponsored}</strong> student${sponsored === 1 ? '' : 's'} matched an active sponsorship (${lines} line${lines === 1 ? '' : 's'} covered).</p>
-                       <p>Total sponsored: <strong>${(+total || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong></p>
+                       <p>Pledged by sponsors (still invoiced to the students): <strong>${(+total || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong></p>
                        ${perSponsorHtml}`
                     : '<p class="text-muted"><i class="fas fa-info-circle me-1"></i> No active sponsorships applied to these invoices.</p>'}
             </div>`;
@@ -333,6 +333,9 @@ export class FinanceInvoicesComponent implements OnInit {
         if (!this.viewDetail) return 0;
         return (this.viewDetail.items || []).reduce((s, i) => s + (+i.amount! || 0) - (+i.discount! || 0), 0);
     };
+
+    getDetailPledgedTotal = (): number =>
+        (this.viewDetail?.items || []).reduce((s, i) => s + (+i.sponsoredAmount! || 0), 0);
 
     getDetailPaidTotal = (): number => {
         if (!this.viewDetail) return 0;
@@ -382,22 +385,23 @@ export class FinanceInvoicesComponent implements OnInit {
             !s.feeCategoryIds || s.feeCategoryIds.length === 0 || s.feeCategoryIds.includes(catId));
     };
 
-    // When the user picks a sponsorship on a line, auto-compute the discount from the sponsorship's coverage.
+    // When the user picks a sponsorship on a line, work out its pledge from the sponsorship's coverage. The student is
+    // still invoiced the whole fee; the pledge is the part the sponsor is expected to pay.
     onSponsorshipChange = (item: any) => {
-        if (!item.sponsorshipId) { item.discount = 0; return; }
+        if (!item.sponsorshipId) { item.sponsoredAmount = 0; return; }
         let sp = this.activeSponsorships.find(s => s.id === +item.sponsorshipId);
         if (!sp) return;
         let amt = +item.amount || 0;
         switch (sp.coverageType) {
             case SponsorshipCoverageType.FullCoverage:
-                item.discount = amt;
+                item.sponsoredAmount = amt;
                 break;
             case SponsorshipCoverageType.Percentage:
-                item.discount = Math.round((amt * (sp.percentage / 100)) * 100) / 100;
+                item.sponsoredAmount = Math.round((amt * (sp.percentage / 100)) * 100) / 100;
                 break;
             case SponsorshipCoverageType.FixedAmount:
                 // Per-line cap equals item amount (bulk's across-line allocation isn't replicated here - manual edit).
-                item.discount = Math.min(sp.fixedAmount || 0, amt);
+                item.sponsoredAmount = Math.min(sp.fixedAmount || 0, amt);
                 break;
         }
     };
@@ -505,6 +509,7 @@ export class FinanceInvoicesComponent implements OnInit {
                 Amount: +i.amount! || 0,
                 Discount: +i.discount! || 0,
                 SponsorshipId: i.sponsorshipId ? +i.sponsorshipId : null,
+                SponsoredAmount: i.sponsorshipId ? +i.sponsoredAmount || 0 : 0,
                 Description: i.description
             }))
         };

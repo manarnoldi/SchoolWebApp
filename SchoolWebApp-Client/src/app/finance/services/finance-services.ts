@@ -212,13 +212,6 @@ export class SponsorService {
     create(payload: any): Observable<Sponsor> { return this.http.post<Sponsor>('/sponsors', payload); }
     update(id: number, payload: any): Observable<Sponsor> { return this.http.put<Sponsor>(`/sponsors/${id}`, payload); }
     delete(id: number): Observable<any> { return this.http.delete(`/sponsors/${id}`); }
-    statement(id: number, from?: string, to?: string): Observable<any> {
-        let params: string[] = [];
-        if (from) params.push(`from=${from}`);
-        if (to) params.push(`to=${to}`);
-        let q = params.length ? '?' + params.join('&') : '';
-        return this.http.get<any>(`/sponsors/${id}/statement${q}`);
-    }
 }
 
 @Injectable({providedIn: 'root'})
@@ -249,4 +242,9 @@ export class SponsorPaymentService {
     getAll(): Observable<SponsorPayment[]> { return this.http.get<SponsorPayment[]>('/sponsorPayments'); }
     create(payload: any): Observable<any> { return this.http.post('/sponsorPayments', payload); }
     delete(id: number): Observable<any> { return this.http.delete(`/sponsorPayments/${id}`); }
+    // The sponsor's pledges still to pay, with an amount spread over them oldest first.
+    proposal(sponsorId: number, amount: number): Observable<any> {
+        return this.http.get<any>(`/sponsorPayments/proposal?sponsorId=${sponsorId}&amount=${amount}`);
+    }
+    applyCredit(sponsorId: number): Observable<any> { return this.http.post(`/sponsorPayments/applyCredit?sponsorId=${sponsorId}`, {}); }
 }

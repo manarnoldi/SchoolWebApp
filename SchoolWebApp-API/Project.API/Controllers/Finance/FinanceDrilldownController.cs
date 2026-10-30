@@ -146,40 +146,53 @@ namespace SchoolWebApp.API.Controllers.Finance
                 .Include(i => i.Student).Include(i => i.AcademicYear).Include(i => i.Session)
                 .Include(i => i.Items).ThenInclude(it => it.FeeCategory)
                 .Include(i => i.Items).ThenInclude(it => it.Sponsorship).ThenInclude(s => s!.Sponsor)
-                .Include(i => i.Payments)
+                .Include(i => i.Payments).ThenInclude(p => p.SponsorPayment).ThenInclude(sp => sp!.Sponsor)
                 .FirstOrDefaultAsync(i => i.Id == id);
             if (inv == null) return null;
             var journal = await JournalFor($"INV-JNL-{inv.InvoiceNumber}");
             var balance = inv.TotalAmount - inv.PaidAmount - inv.DiscountAmount;
-            var sponsorShare = inv.Items.Where(it => it.SponsorshipId != null).Sum(it => it.Discount);
+            var pledged = inv.Items.Sum(it => it.SponsoredAmount);
+            var bySponsor = inv.Items.Sum(it => it.SponsorPaidAmount);
+            var awaiting = inv.Items.Sum(it => Math.Max(0, Math.Min(it.SponsoredAmount - it.SponsorPaidAmount, it.Amount - it.Discount - it.PaidAmount)));
+            var sponsors = string.Join(", ", inv.Items.Where(it => it.SponsoredAmount > 0).Select(it => it.Sponsorship?.Sponsor?.Name).Where(n => n != null).Distinct());
+            // The student is invoiced the whole fee and owes all of it; a sponsor's pledge says who is expected to pay
+            // part of it. The tiles split what has come in by who paid it.
             return new
             {
                 kind = "Invoice", reference = inv.InvoiceNumber, date = inv.InvoiceDate, status = Label(inv.Status),
+                note = pledged > 0
+                    ? $"{sponsors} pledged {pledged:N2} of this invoice. The student stays responsible for the whole of it: what a sponsor does not pay is still owed by the family."
+                    : null,
                 fields = new[]
                 {
-                    Field("Student", $"{inv.Student?.UPI} - {inv.Student?.FullName}"),
+                    Field("Invoiced", inv.TotalAmount - inv.DiscountAmount),
+                    Field("Pledged by sponsor", pledged > 0 ? pledged : null),
+                    Field("Paid by sponsor", pledged > 0 ? bySponsor : null),
+                    Field(pledged > 0 ? "Paid by family" : "Paid", inv.PaidAmount - bySponsor),
+                    Field("Balance", balance),
+                    Field("Student", $"{inv.Student?.UPI} - {inv.Student?.FullName}",
+                        new { kind = "statement", studentId = inv.StudentId, academicYearId = inv.AcademicYearId }),
                     Field("Year / Term", $"{inv.AcademicYear?.Name} / {inv.Session?.SessionName}"),
                     Field("Due date", inv.DueDate),
-                    Field("Sponsor's share", sponsorShare > 0 ? sponsorShare : null),
-                    Field(sponsorShare > 0 ? "Total for the family" : "Total", inv.TotalAmount),
-                    Field(sponsorShare > 0 ? "Paid by the family" : "Paid", inv.PaidAmount),
-                    Field(sponsorShare > 0 ? "Family's balance" : "Balance", balance),
+                    Field("Awaiting sponsor", awaiting > 0 ? $"{awaiting:N2} of the balance" : null),
                     Field("Description", inv.Description), Field("Recorded by", inv.CreatedBy),
                     Field("Accounting entry", journal?.ReferenceNumber, journal == null ? null : Doc("journal", journal.Id))
                 },
                 sections = new[]
                 {
-                    // Who pays what: the sponsor (or a discount) takes part of each fee, the family the rest.
-                    Section("Items", new[] { "Fee category", "Description", "Fee", "Sponsor / discount", "Sponsor", "Family pays", "Paid by family" },
-                        inv.Items.Select(it => Row(new object?[] { it.FeeCategory?.Name, it.Description, it.Amount,
-                            it.Discount == 0 ? null : it.Discount, it.Sponsorship?.Sponsor?.Name, it.Amount - it.Discount, it.PaidAmount })),
-                        new object?[] { "Total", null, inv.Items.Sum(it => it.Amount), inv.Items.Sum(it => it.Discount), null,
-                            inv.Items.Sum(it => it.Amount - it.Discount), inv.Items.Sum(it => it.PaidAmount) }),
-                    Section("Payments", new[] { "Receipt", "Date", "Type", "Method", "Amount" },
+                    // Each fee: any discount, what a sponsor pledged and has paid, what the family has paid, and what is left.
+                    Section("Items", new[] { "Fee", "Amount", "Discount", "Sponsor", "Pledged", "Paid by sponsor", "Paid by family", "Balance" },
+                        inv.Items.Select(it => Row(new object?[] { it.FeeCategory?.Name, it.Amount, it.Discount == 0 ? null : it.Discount,
+                            it.SponsoredAmount > 0 ? it.Sponsorship?.Sponsor?.Name : null, it.SponsoredAmount == 0 ? null : it.SponsoredAmount,
+                            it.SponsoredAmount == 0 ? null : it.SponsorPaidAmount, it.PaidAmount - it.SponsorPaidAmount,
+                            it.Amount - it.Discount - it.PaidAmount })),
+                        new object?[] { "Total", inv.Items.Sum(it => it.Amount), inv.Items.Sum(it => it.Discount), null, pledged, bySponsor,
+                            inv.Items.Sum(it => it.PaidAmount - it.SponsorPaidAmount), inv.Items.Sum(it => it.Amount - it.Discount - it.PaidAmount) }),
+                    Section("Payments", new[] { "Receipt", "Date", "From", "Type", "Method", "Amount" },
                         inv.Payments.OrderBy(p => p.PaymentDate).Select(p => Row(new object?[] { p.ReceiptNumber, p.PaymentDate,
-                            Label(p.PaymentType), Label(p.PaymentMethod), p.Amount }, Doc("payment", p.Id)))),
+                            p.SponsorPayment?.Sponsor?.Name ?? "Family", Label(p.PaymentType), Label(p.PaymentMethod), p.Amount }, Doc("payment", p.Id)))),
                     journal == null ? null : JournalSection(journal)
-                }.Where(s => s != null)
+                }.Where(x => x != null)
             };
         }
 
@@ -188,11 +201,14 @@ namespace SchoolWebApp.API.Controllers.Finance
             var p = await _db.Payments.AsNoTracking()
                 .Include(x => x.Student).Include(x => x.StudentInvoice).Include(x => x.BankAccount).Include(x => x.OriginalPayment)
                 .Include(x => x.Allocations).ThenInclude(a => a.StudentInvoiceItem).ThenInclude(i => i!.FeeCategory)
+                .Include(x => x.SponsorPayment).ThenInclude(sp => sp!.Sponsor)
                 .FirstOrDefaultAsync(x => x.Id == id);
             if (p == null) return null;
+            // A sponsor's money on the invoice is posted by the sponsor payment's journal, not one of its own.
+            var sponsorPay = p.SponsorPayment;
             var prefix = p.PaymentType == PaymentType.Receipt ? "PAY-JNL-" : "CN-JNL-";
-            var journal = await JournalFor(prefix + p.ReceiptNumber);
-            var kind = p.PaymentType switch { PaymentType.CreditNote => "Credit note", PaymentType.DebitNote => "Debit note", _ => "Receipt" };
+            var journal = sponsorPay != null ? await JournalFor($"SP-JNL-{sponsorPay.ReferenceNumber}") : await JournalFor(prefix + p.ReceiptNumber);
+            var kind = p.PaymentType switch { PaymentType.CreditNote => "Credit note", PaymentType.DebitNote => "Debit note", _ => sponsorPay != null ? "Sponsor receipt" : "Receipt" };
             var inv = p.StudentInvoice;
 
             // Where the invoice stood once this receipt was in: everything received on it up to and
@@ -220,7 +236,9 @@ namespace SchoolWebApp.API.Controllers.Finance
             }
             fields.AddRange(new[]
             {
-                Field(p.PaymentType == PaymentType.Receipt ? "Received from" : "Student", $"{p.Student?.UPI} - {p.Student?.FullName}",
+                Field("Paid by", sponsorPay?.Sponsor?.Name, sponsorPay == null ? null : Doc("sponsorPayment", sponsorPay.Id)),
+                Field("Sponsor payment", sponsorPay?.ReferenceNumber, sponsorPay == null ? null : Doc("sponsorPayment", sponsorPay.Id)),
+                Field(p.PaymentType == PaymentType.Receipt && sponsorPay == null ? "Received from" : "Student", $"{p.Student?.UPI} - {p.Student?.FullName}",
                     new { kind = "statement", studentId = p.StudentId, academicYearId = inv?.AcademicYearId }),
                 Field("For invoice", inv?.InvoiceNumber, p.StudentInvoiceId == null ? null : Doc("invoice", p.StudentInvoiceId.Value)),
                 Field("Original receipt", p.OriginalPayment?.ReceiptNumber, p.OriginalPaymentId == null ? null : Doc("payment", p.OriginalPaymentId.Value)),
@@ -288,54 +306,41 @@ namespace SchoolWebApp.API.Controllers.Finance
             if (p == null) return null;
             var journal = await JournalFor($"SP-JNL-{p.ReferenceNumber}");
 
-            // A sponsor payment is recorded against the sponsor, not against invoices. To show what this one
-            // paid for, the sponsor's payments are applied to its share of invoices oldest first, and this
-            // payment's part of that is listed, invoice by invoice.
-            var shares = await _db.StudentInvoiceItems.AsNoTracking()
-                .Where(i => i.Sponsorship!.SponsorId == p.SponsorId && i.Discount > 0)
-                .GroupBy(i => new { i.StudentInvoiceId, i.StudentInvoice!.InvoiceNumber, i.StudentInvoice.InvoiceDate,
-                    i.StudentInvoice.Student!.UPI, i.StudentInvoice.Student.FullName, Term = i.StudentInvoice.Session!.SessionName })
-                .Select(g => new { g.Key.StudentInvoiceId, g.Key.InvoiceNumber, g.Key.InvoiceDate, g.Key.UPI, g.Key.FullName, g.Key.Term, Share = g.Sum(i => i.Discount) })
+            // Where the money went: a receipt on each student's invoice, against the fees the sponsor pledged.
+            var receipts = await _db.Payments.AsNoTracking()
+                .Include(r => r.Student).Include(r => r.StudentInvoice).ThenInclude(i => i!.Session)
+                .Where(r => r.SponsorPaymentId == p.Id)
+                .OrderBy(r => r.StudentInvoice!.InvoiceDate).ThenBy(r => r.Id)
                 .ToListAsync();
-            shares = shares.OrderBy(s => s.InvoiceDate).ThenBy(s => s.StudentInvoiceId).ToList();
-            var paidBefore = await _db.SponsorPayments.AsNoTracking()
-                .Where(s => s.SponsorId == p.SponsorId && (s.PaymentDate < p.PaymentDate || (s.PaymentDate == p.PaymentDate && s.Id < p.Id)))
-                .SumAsync(s => s.Amount);
-
-            // Earlier payments use up the oldest shares; this one carries on from where they stopped.
-            var applied = new List<object>();
-            decimal skip = paidBefore, left = p.Amount, appliedTotal = 0;
-            foreach (var s in shares)
-            {
-                if (left <= 0) break;
-                var open = s.Share;
-                var used = Math.Min(skip, open);
-                skip -= used; open -= used;
-                if (open <= 0) continue;
-                var take = Math.Min(left, open);
-                left -= take; appliedTotal += take;
-                applied.Add(Row(new object?[] { s.InvoiceDate, s.InvoiceNumber, $"{s.UPI} - {s.FullName}", s.Term, s.Share, take,
-                    open - take == 0 ? null : open - take }, Doc("invoice", s.StudentInvoiceId)));
-            }
+            var applied = receipts.Sum(r => r.Amount);
+            var held = p.Amount - applied;
+            var later = await _db.JournalEntries.AsNoTracking().Include(j => j.Lines).ThenInclude(l => l.Account)
+                .Where(j => j.ReferenceNumber.StartsWith($"SPA-JNL-{p.ReferenceNumber}-")).ToListAsync();
 
             var sections = new List<object>
             {
-                Section("Invoices this payment settles", new[] { "Invoice date", "Invoice", "Student", "Term", "Sponsor's share", "Paid by this payment", "Still due from sponsor" },
-                    applied, new object?[] { "Total", null, null, null, null, appliedTotal, null })
+                Section("Applied to students' invoices", new[] { "Date", "Receipt", "Student", "Invoice", "Term", "Amount" },
+                    receipts.Select(r => Row(new object?[] { r.PaymentDate, r.ReceiptNumber, $"{r.Student?.UPI} - {r.Student?.FullName}",
+                        r.StudentInvoice?.InvoiceNumber, r.StudentInvoice?.Session?.SessionName, r.Amount }, Doc("payment", r.Id))),
+                    new object?[] { "Total", null, null, null, null, applied })
             };
             if (journal != null) sections.Add(JournalSection(journal));
+            foreach (var j in later) sections.Add(JournalSection(j));
 
             return new
             {
                 kind = "Sponsor payment", reference = p.ReferenceNumber, date = p.PaymentDate, status = (string?)null,
-                note = "A sponsor payment is not tied to invoices when it is recorded, so the sponsor's payments are applied to its share of student invoices, oldest first. "
-                    + "Each row is the part of this payment that went to that invoice; open a row to see the invoice and the sponsor's share on it.",
+                note = held > 0
+                    ? $"{held:N2} of this payment is held as {p.Sponsor?.Name}'s credit and goes onto its students' invoices as the sponsor's next pledges fall due."
+                    : "All of this payment is on the students' invoices. Open a row for the receipt on the student.",
                 fields = new[]
                 {
                     Field("Amount", p.Amount),
-                    Field("Applied to invoices", appliedTotal),
-                    Field("Paid in advance", left > 0 ? left : null),
-                    Field("Sponsor", p.Sponsor?.Name), Field("Method", Label(p.PaymentMethod)),
+                    Field("Applied to students", applied),
+                    Field("Held as credit", held > 0 ? held : null),
+                    Field("Sponsor", p.Sponsor?.Name, Doc("sponsor", p.SponsorId)),
+                    Field("Students", receipts.Select(r => r.StudentId).Distinct().Count().ToString()),
+                    Field("Method", Label(p.PaymentMethod)),
                     Field("Transaction ref", p.TransactionReference), Field("Received into", p.BankAccount?.Name),
                     Field("Description", p.Description), Field("Recorded by", p.CreatedBy)
                 },
@@ -343,32 +348,28 @@ namespace SchoolWebApp.API.Controllers.Finance
             };
         }
 
-        // A sponsor's account: its share of each invoice is a charge, each payment a credit, with what
-        // it owes after each line; then the students it sponsors.
+        // A sponsor's account: what it pledged on its students' invoices, what it has paid onto them, the credit it
+        // holds, its payments, and its students one by one.
         private async Task<object?> SponsorDoc(int id)
         {
-            var sp = await _db.Sponsors.AsNoTracking().Include(s => s.ReceivableAccount).FirstOrDefaultAsync(s => s.Id == id);
+            var sp = await _db.Sponsors.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id);
             if (sp == null) return null;
-            var charges = await _db.StudentInvoiceItems.AsNoTracking()
-                .Where(i => i.Sponsorship!.SponsorId == id && i.Discount > 0)
-                .GroupBy(i => new { i.StudentInvoiceId, i.StudentInvoice!.InvoiceNumber, i.StudentInvoice.InvoiceDate,
-                    i.StudentInvoice.Student!.UPI, i.StudentInvoice.Student.FullName, Term = i.StudentInvoice.Session!.SessionName })
-                .Select(g => new { g.Key.StudentInvoiceId, g.Key.InvoiceNumber, g.Key.InvoiceDate, g.Key.UPI, g.Key.FullName, g.Key.Term,
-                    Fees = string.Join(", ", g.Select(i => i.FeeCategory!.Name)), Amount = g.Sum(i => i.Discount) })
+            var pledges = await _db.StudentInvoiceItems.AsNoTracking()
+                .Where(i => i.Sponsorship!.SponsorId == id && i.SponsoredAmount > 0)
+                .Select(i => new { i.StudentInvoice!.StudentId, i.StudentInvoice.Student!.UPI, i.StudentInvoice.Student.FullName,
+                    i.StudentInvoice.AcademicYearId, i.SponsoredAmount, i.SponsorPaidAmount,
+                    Open = i.Amount - i.Discount - i.PaidAmount })
                 .ToListAsync();
-            var payments = await _db.SponsorPayments.AsNoTracking().Where(p => p.SponsorId == id).ToListAsync();
+            var payments = await _db.SponsorPayments.AsNoTracking().Where(p => p.SponsorId == id).OrderBy(p => p.PaymentDate).ToListAsync();
+            var appliedBy = await _db.Payments.AsNoTracking().Where(r => r.SponsorPayment != null && r.SponsorPayment.SponsorId == id)
+                .GroupBy(r => r.SponsorPaymentId!.Value).Select(g => new { Id = g.Key, Amount = g.Sum(r => r.Amount) })
+                .ToDictionaryAsync(a => a.Id, a => a.Amount);
 
-            var lines = charges.Select(c => new { Date = c.InvoiceDate, Order = 0, Id = c.StudentInvoiceId, Type = "Invoice share", Ref = c.InvoiceNumber,
-                    Detail = $"{c.UPI} - {c.FullName}, {c.Term} ({c.Fees})", Charge = c.Amount, Paid = 0m, Drill = Doc("invoice", c.StudentInvoiceId) })
-                .Concat(payments.Select(p => new { Date = p.PaymentDate, Order = 1, Id = p.Id, Type = "Payment", Ref = p.ReferenceNumber,
-                    Detail = p.Description ?? "", Charge = 0m, Paid = p.Amount, Drill = Doc("sponsorPayment", p.Id) }))
-                .OrderBy(l => l.Date).ThenBy(l => l.Order).ThenBy(l => l.Id).ToList();
-            decimal owed = 0;
-            var rows = lines.Select(l =>
-            {
-                owed += l.Charge - l.Paid;
-                return Row(new object?[] { l.Date, l.Type, l.Ref, l.Detail, l.Charge == 0 ? null : l.Charge, l.Paid == 0 ? null : l.Paid, owed }, l.Drill);
-            }).ToList();
+            var pledged = pledges.Sum(x => x.SponsoredAmount);
+            var paidOn = pledges.Sum(x => x.SponsorPaidAmount);
+            var received = payments.Sum(p => p.Amount);
+            var held = received - appliedBy.Values.Sum();
+            var outstanding = pledges.Sum(x => Math.Max(0, Math.Min(x.SponsoredAmount - x.SponsorPaidAmount, x.Open)));
 
             var sponsorships = await _db.Sponsorships.AsNoTracking().Where(s => s.SponsorId == id)
                 .Select(s => new { s.StudentId, Upi = s.Student!.UPI, Student = s.Student.FullName, Class = s.SchoolClass!.Name,
@@ -386,26 +387,33 @@ namespace SchoolWebApp.API.Controllers.Finance
             return new
             {
                 kind = "Sponsor", reference = sp.Name, date = (DateTime?)null, status = sp.IsActive ? "Active" : "Inactive",
-                note = "Owed is what the sponsor owes after each line: its share of each invoice adds to it, each payment takes it down. Open a line for the invoice or the payment.",
+                note = "Pledged is the part of its students' fees the sponsor has promised. Each payment goes onto those students' invoices; what is not yet needed is held as credit. "
+                    + "Students stay responsible for any pledge the sponsor does not pay.",
                 fields = new[]
                 {
-                    Field("Sponsor's share of invoices", charges.Sum(c => c.Amount)),
-                    Field("Paid by sponsor", payments.Sum(p => p.Amount)),
-                    Field("Sponsor's balance", owed),
-                    Field("Type", Label(sp.SponsorType)), Field("Contact", sp.ContactName), Field("Email", sp.Email), Field("Phone", sp.Phone),
-                    Field("Receivable account", sp.ReceivableAccount == null ? null : $"{sp.ReceivableAccount.Code} - {sp.ReceivableAccount.Name}",
-                        sp.ReceivableAccountId == null ? null : Ledger(sp.ReceivableAccountId.Value))
+                    Field("Pledged", pledged),
+                    Field("Paid onto invoices", paidOn),
+                    Field("Pledges outstanding", outstanding),
+                    Field("Held as credit", held > 0 ? held : null),
+                    Field("Received in all", received.ToString("N2")),
+                    Field("Type", Label(sp.SponsorType)), Field("Contact", sp.ContactName), Field("Email", sp.Email), Field("Phone", sp.Phone)
                 },
                 sections = new[]
                 {
-                    Section("Statement", new[] { "Date", "Type", "Reference", "Details", "Charged", "Paid", "Owed" }, rows,
-                        new object?[] { "Total", null, null, null, charges.Sum(c => c.Amount), payments.Sum(p => p.Amount), owed }),
-                    Section("Students sponsored", new[] { "Student", "Year", "Term", "Covers", "Status" },
+                    Section("Payments received", new[] { "Date", "Reference", "Description", "Amount", "On invoices", "Held" },
+                        payments.Select(p => Row(new object?[] { p.PaymentDate, p.ReferenceNumber, p.Description, p.Amount,
+                            appliedBy.GetValueOrDefault(p.Id), p.Amount - appliedBy.GetValueOrDefault(p.Id) is var h && h > 0 ? h : null },
+                            Doc("sponsorPayment", p.Id))),
+                        new object?[] { "Total", null, null, received, appliedBy.Values.Sum(), held > 0 ? held : null }),
+                    Section("Students", new[] { "Student", "Pledged", "Paid by sponsor", "Outstanding" },
+                        pledges.GroupBy(x => new { x.StudentId, x.UPI, x.FullName }).OrderBy(g => g.Key.FullName)
+                            .Select(g => Row(new object?[] { $"{g.Key.UPI} - {g.Key.FullName}", g.Sum(x => x.SponsoredAmount), g.Sum(x => x.SponsorPaidAmount),
+                                g.Sum(x => Math.Max(0, Math.Min(x.SponsoredAmount - x.SponsorPaidAmount, x.Open))) },
+                                new { kind = "statement", studentId = g.Key.StudentId, academicYearId = g.First().AcademicYearId }))),
+                    Section("Sponsorships", new[] { "Beneficiary", "Year", "Term", "Covers", "Status" },
                         sponsorships.OrderBy(s => s.Student ?? s.Class).Select(s => Row(new object?[] {
                             s.StudentId == null ? $"Class {s.Class}" : $"{s.Upi} - {s.Student}", s.Year, s.Term ?? "All terms",
-                            Covers(s.CoverageType, s.Percentage, s.FixedAmount, s.Fees),
-                            Label(s.Status) },
-                            s.StudentId == null ? null : new { kind = "statement", studentId = s.StudentId, academicYearId = s.AcademicYearId, label = s.Year })))
+                            Covers(s.CoverageType, s.Percentage, s.FixedAmount, s.Fees), Label(s.Status) })))
                 }
             };
         }
@@ -483,6 +491,19 @@ namespace SchoolWebApp.API.Controllers.Finance
                 foreach (var s in await _db.SponsorPayments.AsNoTracking().Where(s => sp.Contains(s.ReferenceNumber))
                              .Select(s => new { s.Id, s.ReferenceNumber, s.Sponsor!.Name }).ToListAsync())
                     result[$"SP-JNL-{s.ReferenceNumber}"] = new Source("sponsorPayment", s.Id, s.ReferenceNumber, s.Name);
+
+            // SPA-JNL-<sponsor payment>-<time>: that payment's held credit applied to invoices later.
+            var spa = refs.Where(r => r.StartsWith("SPA-JNL-") && r.LastIndexOf('-') > "SPA-JNL-".Length)
+                .ToDictionary(r => r, r => r["SPA-JNL-".Length..r.LastIndexOf('-')]);
+            if (spa.Count > 0)
+            {
+                var spaRefs = spa.Values.Distinct().ToList();
+                var found = await _db.SponsorPayments.AsNoTracking().Where(s => spaRefs.Contains(s.ReferenceNumber))
+                    .Select(s => new { s.Id, s.ReferenceNumber, s.Sponsor!.Name }).ToListAsync();
+                foreach (var kv in spa)
+                    if (found.FirstOrDefault(s => s.ReferenceNumber == kv.Value) is { } s2)
+                        result[kv.Key] = new Source("sponsorPayment", s2.Id, s2.ReferenceNumber, s2.Name);
+            }
 
             return result;
         }

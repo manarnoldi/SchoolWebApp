@@ -44,14 +44,6 @@
                                 <label class="form-label mb-0" style="font-size:0.8rem;">Address</label>
                                 <input class="form-control form-control-sm" [(ngModel)]="item.address" />
                             </div>
-                            <div class="col-md-8">
-                                <label class="form-label mb-0" style="font-size:0.8rem;">Sponsor Receivable Account</label>
-                                <select class="form-select form-select-sm" [(ngModel)]="item.receivableAccountId">
-                                    <option [ngValue]="null">-- None (use default Debtors) --</option>
-                                    <option *ngFor="let a of receivableAccounts" [ngValue]="a.id">{{ a.code }} - {{ a.name }}</option>
-                                </select>
-                                <small class="text-muted">Asset account used to track AR owed by this sponsor.</small>
-                            </div>
                             <div class="col-md-4 d-flex align-items-end">
                                 <div class="icheck-primary">
                                     <input type="checkbox" id="sponsorActive" [checked]="item.isActive" (change)="item.isActive = !item.isActive"/>
@@ -98,7 +90,6 @@
                             <th>Contact</th>
                             <th>Email</th>
                             <th>Phone</th>
-                            <th>AR Account</th>
                             <th>Status</th>
                             <th style="min-width:140px;">Action</th>
                         </tr>
@@ -111,7 +102,6 @@
                             <td>{{ s.contactName || '-' }}</td>
                             <td><small>{{ s.email || '-' }}</small></td>
                             <td><small>{{ s.phone || '-' }}</small></td>
-                            <td><small>{{ s.receivableAccountName || '(default)' }}</small></td>
                             <td><span class="badge" [ngClass]="s.isActive ? 'bg-success' : 'bg-secondary'">{{ s.isActive ? 'Active' : 'Inactive' }}</span></td>
                             <td>
                                 <button class="btn btn-outline-info btn-sm" (click)="openStatement(s)" title="Statement"><i class="fas fa-book"></i></button>
@@ -120,7 +110,7 @@
                             </td>
                         </tr>
                         <tr *ngIf="filtered().length === 0">
-                            <td colspan="9" class="text-center text-muted p-3"><i class="fas fa-info-circle me-1"></i> No sponsors.</td>
+                            <td colspan="8" class="text-center text-muted p-3"><i class="fas fa-info-circle me-1"></i> No sponsors.</td>
                         </tr>
                     </tbody>
                 </table>

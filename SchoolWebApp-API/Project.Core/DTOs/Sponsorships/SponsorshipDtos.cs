@@ -93,6 +93,11 @@ namespace SchoolWebApp.Core.DTOs.Sponsorships
         public int? BankAccountId { get; set; }
         public string? BankAccountName { get; set; }
         public string? Description { get; set; }
+
+        // How much of it is on students' invoices, on how many, and what is held as the sponsor's credit.
+        public decimal Applied { get; set; }
+        public int InvoiceCount { get; set; }
+        public decimal Held { get; set; }
     }
 
     public class CreateSponsorPaymentDto
@@ -105,5 +110,15 @@ namespace SchoolWebApp.Core.DTOs.Sponsorships
         [StringLength(100)] public string? TransactionReference { get; set; }
         public int? BankAccountId { get; set; }
         [StringLength(500)] public string? Description { get; set; }
+
+        // How the money goes onto students' invoices, as reviewed by the bursar. Left out, it is spread over the
+        // sponsor's pledges oldest first. Anything not allocated is held as the sponsor's credit.
+        public List<SponsorAllocationDto>? Allocations { get; set; }
+    }
+
+    public class SponsorAllocationDto
+    {
+        public int StudentInvoiceId { get; set; }
+        public decimal Amount { get; set; }
     }
 }

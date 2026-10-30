@@ -67,6 +67,11 @@ namespace SchoolWebApp.Core.Entities.Finance
         public string? Reason { get; set; }
 
         public List<PaymentAllocation> Allocations { get; set; } = new();
+
+        // Set when this receipt is a sponsor's money applied to the student's invoice: the sponsor payment it
+        // came from. Such receipts post no journal of their own (the sponsor payment's journal covers them).
+        public int? SponsorPaymentId { get; set; }
+        public SchoolWebApp.Core.Entities.Sponsorships.SponsorPayment? SponsorPayment { get; set; }
     }
 
     public class PaymentAllocation : Base

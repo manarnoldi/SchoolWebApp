@@ -58,6 +58,10 @@ export class StudentInvoiceItem {
     public discount?: number;
     public paidAmount?: number;
     public description?: string;
+    // A sponsor's pledge on the line: the student is invoiced the whole fee; the sponsor is expected to pay this part.
+    public sponsorshipId?: number | null;
+    public sponsoredAmount?: number;
+    public sponsorPaidAmount?: number;
 }
 
 export class StudentInvoice extends ResourceModel<StudentInvoice> {

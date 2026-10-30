@@ -5,8 +5,9 @@ using System.ComponentModel.DataAnnotations;
 namespace SchoolWebApp.Core.Entities.Sponsorships
 {
     /// <summary>
-    /// Records money actually received from a sponsor against their outstanding receivable.
-    /// Journal: Debit Bank/Cash, Credit Sponsor Receivable.
+    /// Money received from a sponsor. It is applied to the sponsored part of its students' invoices as receipts
+    /// on each student (StudentReceipts); what is not yet applied is held as the sponsor's credit.
+    /// Journal: Debit Bank/Cash, Credit Student Debtors (applied) and Sponsor Advances (held).
     /// </summary>
     public class SponsorPayment : Base
     {
@@ -31,5 +32,7 @@ namespace SchoolWebApp.Core.Entities.Sponsorships
 
         [StringLength(500)]
         public string? Description { get; set; }
+
+        public List<Payment> StudentReceipts { get; set; } = new();
     }
 }
