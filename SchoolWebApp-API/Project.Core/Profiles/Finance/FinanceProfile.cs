@@ -71,6 +71,8 @@ namespace SchoolWebApp.Core.Profiles.Finance
                 .ForMember(d => d.OriginalReceiptNumber, o => o.MapFrom(s => s.OriginalPayment != null ? s.OriginalPayment.ReceiptNumber : null))
                 .ForMember(d => d.ApprovalStatus, o => o.MapFrom(s => (int)s.ApprovalStatus))
                 .ForMember(d => d.ApprovalStatusLabel, o => o.MapFrom(s => s.ApprovalStatus.ToString()))
+                .ForMember(d => d.SponsorName, o => o.MapFrom(s => s.SponsorPayment != null && s.SponsorPayment.Sponsor != null ? s.SponsorPayment.Sponsor.Name : null))
+                .ForMember(d => d.SponsorPaymentReference, o => o.MapFrom(s => s.SponsorPayment != null ? s.SponsorPayment.ReferenceNumber : null))
                 .ForMember(d => d.Allocations, o => o.MapFrom(s => s.Allocations));
             CreateMap<CreatePaymentDto, Payment>();
 

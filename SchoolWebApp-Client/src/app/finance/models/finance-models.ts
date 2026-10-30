@@ -101,6 +101,10 @@ export class PaymentAllocation {
 
 export class Payment extends ResourceModel<Payment> {
     public receiptNumber?: string;
+    // Set when a sponsor paid it (its money applied to the student's invoice); empty when the family paid.
+    public sponsorPaymentId?: number | null;
+    public sponsorName?: string;
+    public sponsorPaymentReference?: string;
     public paymentType?: PaymentType;
     public studentId?: number;
     public studentName?: string;

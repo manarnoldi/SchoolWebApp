@@ -53,6 +53,8 @@ export class PaymentsComponent implements OnInit {
 
     filterStudentSearch: string = '';
     filterMethodId: any = null;
+    // Who paid: null = anyone, 'family', 'sponsor', or a sponsor's name.
+    filterPaidBy: any = null;
     filterDateFrom: string = '';
     filterDateTo: string = '';
     filterYearId: any = null;
@@ -266,6 +268,9 @@ export class PaymentsComponent implements OnInit {
         });
     };
 
+    // The sponsors among the payments loaded, for the Paid by filter.
+    sponsorNames = (): string[] => [...new Set(this.payments.map((p) => p.sponsorName).filter((n): n is string => !!n))].sort();
+
     filtered = (): Payment[] => {
         return this.payments.filter((p) => {
             let inv = p.studentInvoiceId ? this.invoiceMap.get(+p.studentInvoiceId) : null;
@@ -279,6 +284,9 @@ export class PaymentsComponent implements OnInit {
                 if (!name.includes(q) && !upi.includes(q)) return false;
             }
             if (this.filterMethodId != null && p.paymentMethod != this.filterMethodId) return false;
+            if (this.filterPaidBy === 'family' && p.sponsorPaymentId) return false;
+            if (this.filterPaidBy === 'sponsor' && !p.sponsorPaymentId) return false;
+            if (this.filterPaidBy && this.filterPaidBy !== 'family' && this.filterPaidBy !== 'sponsor' && p.sponsorName !== this.filterPaidBy) return false;
             if (this.filterDateFrom && new Date(p.paymentDate as any) < new Date(this.filterDateFrom)) return false;
             if (this.filterDateTo && new Date(p.paymentDate as any) > new Date(this.filterDateTo + 'T23:59:59')) return false;
             return true;
@@ -288,6 +296,7 @@ export class PaymentsComponent implements OnInit {
     clearFilters = () => {
         this.filterStudentSearch = '';
         this.filterMethodId = null;
+        this.filterPaidBy = null;
         this.filterDateFrom = '';
         this.filterDateTo = '';
         this.filterClassId = null;

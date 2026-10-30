@@ -30,6 +30,11 @@ namespace SchoolWebApp.Core.DTOs.Finance.Payment
         public string? OriginalReceiptNumber { get; set; }
         public int ApprovalStatus { get; set; }
         public string? ApprovalStatusLabel { get; set; }
+
+        // A sponsor's money applied to the student's invoice: the sponsor and its payment. Empty when the family paid.
+        public int? SponsorPaymentId { get; set; }
+        public string? SponsorName { get; set; }
+        public string? SponsorPaymentReference { get; set; }
         public List<PaymentAllocationDto> Allocations { get; set; } = new();
     }
 }

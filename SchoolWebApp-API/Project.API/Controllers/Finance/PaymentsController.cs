@@ -29,14 +29,14 @@ namespace SchoolWebApp.API.Controllers.Finance
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var items = await _unitOfWork.Payments.Find(includeProperties: "Student,StudentInvoice,BankAccount,OriginalPayment");
+            var items = await _unitOfWork.Payments.Find(includeProperties: "Student,StudentInvoice,BankAccount,OriginalPayment,SponsorPayment.Sponsor");
             return Ok(_mapper.Map<List<PaymentDto>>(items));
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var item = await _unitOfWork.Payments.GetById(id, "Student,StudentInvoice,BankAccount,OriginalPayment,Allocations.StudentInvoiceItem.FeeCategory");
+            var item = await _unitOfWork.Payments.GetById(id, "Student,StudentInvoice,BankAccount,OriginalPayment,Allocations.StudentInvoiceItem.FeeCategory,SponsorPayment.Sponsor");
             if (item == null) return NotFound();
             return Ok(_mapper.Map<PaymentDto>(item));
         }
