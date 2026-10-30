@@ -169,7 +169,8 @@ export class PayrollReportsComponent implements OnInit, OnDestroy {
     };
 
     printBankSchedule = () => {
-        this.printReport(this.bankPrint, 'Bank Schedule', 'portrait');
+        // Landscape: bank, branch and account numbers sit on one line each.
+        this.printReport(this.bankPrint, 'Bank Schedule', 'landscape');
     };
 
     private printReport(source: ElementRef<HTMLElement> | undefined, name: string,

@@ -66,6 +66,8 @@ table.rp tr.totals td { font-weight: bold; border-top: 2px solid #000; backgroun
 /* A report printed one person to a page (the P9 cards). */
 .rp-page { break-after: page; page-break-after: always; }
 .rp-page:last-child { break-after: auto; page-break-after: auto; }
+/* A P9 sits in the middle of its landscape sheet (190mm high inside the margins), not at the top. */
+.p9-page { min-height: 185mm; display: flex !important; flex-direction: column; justify-content: center; }
 .rp-form { font-size: 8pt; text-align: center; margin-bottom: 1mm; }
 .p9-details { display: flex; gap: 6mm; margin: 2mm 0 3mm; }
 .p9-details > div { flex: 1; border: 1px solid #555; padding: 1.5mm 2mm; }

@@ -244,6 +244,7 @@
                             <th>Employee</th>
                             <th>EMP No</th>
                             <th>Bank</th>
+                            <th>Branch</th>
                             <th>Account No</th>
                             <th class="text-end">Net Pay</th>
                         </tr>
@@ -253,17 +254,17 @@
                             <td>{{ (page-1) * pageSize + i + 1 }}</td>
                             <td><strong>{{ ps.staffName }}</strong></td>
                             <td><small>{{ ps.staffUpi }}</small></td>
-                            <td>{{ ps.bankName }}{{ ps.bankBranch ? ', ' + ps.bankBranch : '' }}</td>
+                            <td>{{ ps.bankName }}</td><td>{{ ps.bankBranch }}</td>
                             <td>{{ ps.bankAccountNumber }}</td>
                             <td class="text-end fw-bold">{{ ps.netPay | number:'1.2-2' }}</td>
                         </tr>
                         <tr *ngIf="payslips.length === 0">
-                            <td colspan="6" class="text-center text-muted p-2"><i class="fas fa-info-circle"></i> No data.</td>
+                            <td colspan="7" class="text-center text-muted p-2"><i class="fas fa-info-circle"></i> No data.</td>
                         </tr>
                     </tbody>
                     <tfoot *ngIf="payslips.length > 0">
                         <tr class="table-warning fw-bold">
-                            <td colspan="5" class="text-end">TOTAL</td>
+                            <td colspan="6" class="text-end">TOTAL</td>
                             <td class="text-end">{{ totalNet | number:'1.2-2' }}</td>
                         </tr>
                     </tfoot>
@@ -456,6 +457,7 @@
                         <th>Employee</th>
                         <th>EMP No</th>
                         <th>Bank</th>
+                        <th>Branch</th>
                         <th>Account No</th>
                         <th class="num">Net Pay (KES)</th>
                     </tr>
@@ -465,12 +467,12 @@
                         <td>{{ i + 1 }}</td>
                         <td class="name">{{ ps.staffName }}</td>
                         <td>{{ ps.staffUpi }}</td>
-                        <td>{{ ps.bankName }}{{ ps.bankBranch ? ', ' + ps.bankBranch : '' }}</td>
+                        <td>{{ ps.bankName }}</td><td>{{ ps.bankBranch }}</td>
                         <td>{{ ps.bankAccountNumber }}</td>
                         <td class="num">{{ ps.netPay | number:'1.2-2' }}</td>
                     </tr>
                     <tr class="totals">
-                        <td colspan="5" style="text-align:right;">TOTAL</td>
+                        <td colspan="6" style="text-align:right;">TOTAL</td>
                         <td class="num">{{ totalNet | number:'1.2-2' }}</td>
                     </tr>
                 </tbody>

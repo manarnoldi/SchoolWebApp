@@ -58,7 +58,7 @@ import {P9Employee, P9Row} from '@/payroll/models/payroll-models';
         </div>`
 })
 export class P9CardComponent {
-    @HostBinding('class') hostClass = 'rp-page';
+    @HostBinding('class') hostClass = 'rp-page p9-page';
     @HostBinding('style.display') display = 'block';
     @Input() e!: P9Employee;
     @Input() year: number | null = null;
