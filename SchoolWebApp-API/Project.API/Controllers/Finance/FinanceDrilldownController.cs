@@ -246,7 +246,35 @@ namespace SchoolWebApp.API.Controllers.Finance
         {
             var p = await _db.SponsorPayments.AsNoTracking().Include(x => x.Sponsor).Include(x => x.BankAccount).FirstOrDefaultAsync(x => x.Id == id);
             if (p == null) return null;
-            var journal = await JournalFor($"SP-JNL-{p.ReferenceNumber}");
+            var journal = await _db.JournalEntries.AsNoTracking().Include(j => j.Lines).ThenInclude(l => l.Account)
+                .FirstOrDefaultAsync(j => j.ReferenceNumber == $"SP-JNL-{p.ReferenceNumber}");
+
+            // A sponsor payment is not allocated to invoices, so show what the sponsor carries for the
+            // academic year it was paid in: its share of each student's invoices that year.
+            var year = await _db.AcademicYears.AsNoTracking()
+                .FirstOrDefaultAsync(y => y.StartDate <= p.PaymentDate && y.EndDate >= p.PaymentDate);
+            var yearId = year?.Id ?? 0;
+            var covered = await _db.StudentInvoiceItems.AsNoTracking()
+                .Where(i => i.Sponsorship!.SponsorId == p.SponsorId && i.Discount > 0 && i.StudentInvoice!.AcademicYearId == yearId)
+                .GroupBy(i => new { i.StudentInvoice!.StudentId, i.StudentInvoice.Student!.UPI, i.StudentInvoice.Student.FullName })
+                .Select(g => new { g.Key.StudentId, g.Key.UPI, g.Key.FullName, Invoices = g.Select(i => i.StudentInvoiceId).Distinct().Count(), Amount = g.Sum(i => i.Discount) })
+                .OrderBy(g => g.FullName).ToListAsync();
+            var sponsorPaid = year == null ? 0 : await _db.SponsorPayments.AsNoTracking()
+                .Where(s => s.SponsorId == p.SponsorId && s.PaymentDate >= year.StartDate && s.PaymentDate <= year.EndDate).SumAsync(s => s.Amount);
+
+            var sections = new List<object>();
+            if (journal != null)
+                sections.Add(Section("Accounting entry", new[] { "Account", "Description", "Debit", "Credit" },
+                    journal.Lines.Select(l => Row(new object?[] { $"{l.Account?.Code} - {l.Account?.Name}", l.Description,
+                        l.Debit == 0 ? null : l.Debit, l.Credit == 0 ? null : l.Credit }, Ledger(l.AccountId))),
+                    new object?[] { "Total", null, journal.Lines.Sum(l => l.Debit), journal.Lines.Sum(l => l.Credit) }));
+            if (year != null)
+                sections.Add(Section($"Students covered by {p.Sponsor?.Name} in {year.Name}", new[] { "UPI", "Student", "Invoices", "Sponsor's share" },
+                    // The count goes as text so it is not shown as money (3.00).
+                    covered.Select(c => Row(new object?[] { c.UPI, c.FullName, c.Invoices.ToString(), c.Amount },
+                        new { kind = "statement", studentId = c.StudentId, academicYearId = year.Id, label = year.Name })),
+                    new object?[] { "Total", null, null, covered.Sum(c => c.Amount) }));
+
             return new
             {
                 kind = "Sponsor payment", reference = p.ReferenceNumber, date = p.PaymentDate, status = (string?)null,
@@ -255,9 +283,12 @@ namespace SchoolWebApp.API.Controllers.Finance
                     Field("Sponsor", p.Sponsor?.Name), Field("Amount", p.Amount), Field("Method", Label(p.PaymentMethod)),
                     Field("Transaction ref", p.TransactionReference), Field("Received into", p.BankAccount?.Name),
                     Field("Description", p.Description), Field("Recorded by", p.CreatedBy),
-                    Field("Accounting entry", journal?.ReferenceNumber, journal == null ? null : Doc("journal", journal.Id))
+                    Field("Accounting entry", journal?.ReferenceNumber, journal == null ? null : Doc("journal", journal.Id)),
+                    Field($"Sponsor's share {year?.Name}", year == null ? null : covered.Sum(c => c.Amount)),
+                    Field($"Paid by sponsor {year?.Name}", year == null ? null : sponsorPaid),
+                    Field("Sponsor's balance", year == null ? null : covered.Sum(c => c.Amount) - sponsorPaid)
                 },
-                sections = Array.Empty<object>()
+                sections
             };
         }
 

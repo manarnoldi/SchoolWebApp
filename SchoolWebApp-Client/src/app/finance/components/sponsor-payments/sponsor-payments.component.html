@@ -113,10 +113,10 @@
                     </thead>
                     <tbody>
                         <tr *ngFor="let p of filtered() | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize">
-                            <td><strong>{{ p.referenceNumber }}</strong></td>
+                            <td><a role="button" class="fw-bold text-primary" (click)="openPayment(p)" title="Open the payment">{{ p.referenceNumber }}</a></td>
                             <td><small>{{ p.paymentDate | date:'mediumDate' }}</small></td>
                             <td>{{ p.sponsorName }}</td>
-                            <td class="text-end fw-bold text-success">{{ p.amount | number:'1.2-2' }}</td>
+                            <td class="text-end"><a role="button" class="fw-bold text-success" (click)="openPayment(p)" title="Open the payment">{{ p.amount | number:'1.2-2' }}</a></td>
                             <td><span class="badge bg-secondary">{{ getMethodLabel(p.paymentMethod) }}</span></td>
                             <td><small>{{ p.bankAccountName || '-' }}</small></td>
                             <td><small>{{ p.description || '-' }}</small></td>
@@ -137,3 +137,4 @@
 
     </div>
 </section>
+<app-finance-drilldown #drill backLabel="Sponsor Payments"></app-finance-drilldown>

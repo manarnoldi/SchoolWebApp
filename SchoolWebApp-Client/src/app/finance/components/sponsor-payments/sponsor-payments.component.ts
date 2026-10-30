@@ -1,4 +1,5 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {FinanceDrilldownComponent} from '@/finance/components/reports/drilldown/finance-drilldown.component';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
@@ -19,6 +20,7 @@ export class SponsorPaymentsComponent implements OnInit {
         {link: ['/finance/sponsor-payments'], title: 'Sponsor Payments'}
     ];
     dashboardTitle = 'Finance: Sponsor Payments';
+    @ViewChild('drill') drillDown!: FinanceDrilldownComponent;
 
     payments: SponsorPayment[] = [];
     sponsors: Sponsor[] = [];
@@ -137,5 +139,11 @@ export class SponsorPaymentsComponent implements OnInit {
         });
     };
 
-    getMethodLabel = (m: any): string => this.paymentMethods.find(x => x.value === m)?.label || '';
+    // The payment's details, its accounting entry and the students the sponsor covers that year.
+    openPayment = (p: SponsorPayment) => {
+        let today = formatDate(new Date(), 'yyyy-MM-dd', 'en');
+        this.drillDown.show({kind: 'document', type: 'sponsorPayment', id: +p.id!}, {from: `${String(p.paymentDate).slice(0, 4)}-01-01`, to: today});
+    };
+
+    getMethodLabel =(m: any): string => this.paymentMethods.find(x => x.value === m)?.label || '';
 }

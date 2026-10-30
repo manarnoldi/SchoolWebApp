@@ -4,9 +4,11 @@
         <div class="modal-dialog modal-xl modal-dialog-scrollable" (click)="$event.stopPropagation()">
             <div class="modal-content">
                 <div class="modal-header py-2">
-                    <button class="btn btn-sm btn-outline-secondary me-2" *ngIf="stack.length > 1" (click)="back()" title="Back"><i class="fas fa-arrow-left"></i></button>
+                    <button class="btn btn-sm btn-outline-secondary me-2" *ngIf="stack.length > 1 || backLabel" (click)="back()"
+                        [title]="stack.length > 1 ? 'Back' : 'Back to ' + backLabel"><i class="fas fa-arrow-left"></i></button>
                     <div class="flex-grow-1 me-2">
-                        <div class="trail" *ngIf="stack.length > 1">
+                        <div class="trail" *ngIf="stack.length > 1 || backLabel">
+                            <ng-container *ngIf="backLabel"><a role="button" (click)="close()">{{ backLabel }}</a><span class="mx-1">›</span></ng-container>
                             <ng-container *ngFor="let s of stack; let i = index; let last = last">
                                 <a role="button" *ngIf="!last" (click)="backTo(i)">{{ s.title }}</a>
                                 <span *ngIf="!last" class="mx-1">›</span>

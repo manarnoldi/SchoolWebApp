@@ -1,4 +1,4 @@
-import {Component, HostListener} from '@angular/core';
+import {Component, HostListener, Input} from '@angular/core';
 import {formatDate, formatNumber} from '@angular/common';
 import {Observable, map} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
@@ -28,6 +28,8 @@ interface DrillView {title: string; subtitle?: string; fields: {label: string; v
     styleUrls: ['./finance-drilldown.component.scss']
 })
 export class FinanceDrilldownComponent {
+    // Opened from a list page: the page's name, shown first in the trail with a back arrow to it.
+    @Input() backLabel = '';
     stack: DrillView[] = [];
     loading = false;
     // Long lists show this many rows until "Show all" is pressed.
@@ -52,7 +54,7 @@ export class FinanceDrilldownComponent {
         this.push(d.kind === 'ledger' ? {kind: 'ledger', accountId: d.accountId} : d);
     }
 
-    back() { this.stack.pop(); }
+    back() { if (this.stack.length > 1) this.stack.pop(); else this.close(); }
     backTo(i: number) { this.stack = this.stack.slice(0, i + 1); }
     close() { this.stack = []; this.loading = false; }
 
