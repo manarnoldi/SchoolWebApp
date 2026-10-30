@@ -394,7 +394,7 @@ export class FinanceReportsComponent implements OnInit {
     // Discounts: the students matching the search (name, Adm No, class or an invoice number).
     discountStudents(): any[] {
         return (this.discountReport?.students || []).filter((s: any) =>
-            this.matches('discounts', s.studentName, s.studentUPI, s.className, ...(s.invoices || []).map((i: any) => i.invoiceNumber)));
+            this.matches('discounts', s.studentName, s.studentUPI, s.className, s.givenBy, ...(s.invoices || []).map((i: any) => i.invoiceNumber)));
     }
 
     // Expenses: each category's expenses matching the search (reference, vendor, description).
@@ -714,6 +714,7 @@ export class FinanceReportsComponent implements OnInit {
         if (!open) this.expandedDiscountStudents.add(studentId);
     }
 
+    discountFees(): number { return (this.discountReport?.students || []).reduce((n: number, s: any) => n + (s.totalFees || 0), 0); }
     discountInvoiced(): number { return (this.discountReport?.students || []).reduce((n: number, s: any) => n + (s.totalInvoiced || 0), 0); }
 
     isDiscountStudentExpanded(studentId: number): boolean {

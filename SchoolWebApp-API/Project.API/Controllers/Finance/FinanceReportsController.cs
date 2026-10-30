@@ -540,7 +540,7 @@ namespace SchoolWebApp.API.Controllers.Finance
             var student = await _unitOfWork.Students.GetById(studentId);
             if (student == null) return NotFound(new { message = "Student not found." });
 
-            var invoicesQuery = (await _unitOfWork.StudentInvoices.Find(includeProperties: "AcademicYear,Session,Items.FeeCategory"))
+            var invoicesQuery = (await _unitOfWork.StudentInvoices.Find(includeProperties: "AcademicYear,Session,Items.FeeCategory,Items.Sponsorship.Sponsor"))
                 .Where(i => i.StudentId == studentId);
             if (academicYearId.HasValue) invoicesQuery = invoicesQuery.Where(i => i.AcademicYearId == academicYearId.Value);
             if (sessionId.HasValue) invoicesQuery = invoicesQuery.Where(i => i.SessionId == sessionId.Value);
@@ -564,8 +564,14 @@ namespace SchoolWebApp.API.Controllers.Finance
             foreach (var inv in invoices)
             {
                 var itemDesc = string.Join(", ", inv.Items.Select(it => it.FeeCategory?.Name ?? "").Where(n => !string.IsNullOrEmpty(n)));
-                transactions.Add((inv.InvoiceDate, "Invoice", inv.InvoiceNumber,
-                    itemDesc.Length > 0 ? itemDesc : (inv.Description ?? ""), inv.TotalAmount, 0m, inv.CreatedBy, null, "invoice", inv.Id));
+                if (itemDesc.Length == 0) itemDesc = inv.Description ?? "";
+                // The statement carries only what the family owes; when a sponsor or a discount took part of the
+                // fees off, the line says so, or the discount would be invisible here.
+                var off = inv.Items.Where(it => it.Discount > 0).GroupBy(it => it.Sponsorship?.Sponsor?.Name ?? "school discount")
+                    .Select(g => $"{g.Sum(it => it.Discount):N0} from {g.Key}").ToList();
+                if (off.Count > 0)
+                    itemDesc += $" (fees {inv.Items.Sum(it => it.Amount):N0} less {string.Join(", ", off)})";
+                transactions.Add((inv.InvoiceDate, "Invoice", inv.InvoiceNumber, itemDesc, inv.TotalAmount, 0m, inv.CreatedBy, null, "invoice", inv.Id));
             }
 
             foreach (var p in payments)
@@ -619,12 +625,15 @@ namespace SchoolWebApp.API.Controllers.Finance
         public async Task<IActionResult> StudentDiscounts(int? academicYearId, int? sessionId, int? schoolClassId)
         {
             var invoices = (await _unitOfWork.StudentInvoices.Find(
-                includeProperties: "Student,AcademicYear,Session,Items.FeeCategory")).ToList();
+                includeProperties: "Student,AcademicYear,Session,Items.FeeCategory,Items.Sponsorship.Sponsor")).ToList();
 
             if (academicYearId.HasValue)
                 invoices = invoices.Where(i => i.AcademicYearId == academicYearId.Value).ToList();
             if (sessionId.HasValue)
                 invoices = invoices.Where(i => i.SessionId == sessionId.Value).ToList();
+
+            // Who gave a discount: the sponsor funding it, or the school when no sponsorship is behind it.
+            static string GivenBy(StudentInvoiceItem it) => it.Sponsorship?.Sponsor?.Name ?? "School discount";
 
             // Only keep invoices with any discounted line or header discount
             invoices = invoices.Where(i => i.DiscountAmount > 0 || i.Items.Any(it => it.Discount > 0)).ToList();
@@ -673,6 +682,7 @@ namespace SchoolWebApp.API.Controllers.Finance
                             feeCategory = it.FeeCategory?.Name,
                             amount = it.Amount,
                             discount = it.Discount,
+                            givenBy = GivenBy(it),
                             description = it.Description
                         }).ToList(),
                         itemDiscount = inv.Items.Sum(it => it.Discount)
@@ -687,6 +697,10 @@ namespace SchoolWebApp.API.Controllers.Finance
                         className = string.IsNullOrEmpty(classInfo.Item2) ? "(No Class Assigned)" : classInfo.Item2,
                         levelRank = classInfo.Item3,
                         totalDiscount,
+                        // Fees before any discount, and who gave the discounts.
+                        totalFees = g.Sum(i => i.TotalAmount) + totalDiscount,
+                        givenBy = string.Join(", ", g.SelectMany(i => i.Items).Where(it => it.Discount > 0).Select(GivenBy)
+                            .Concat(g.Any(i => i.DiscountAmount > 0) ? new[] { "School discount" } : Array.Empty<string>()).Distinct()),
                         totalInvoiced = g.Sum(i => i.TotalAmount),
                         invoiceCount = g.Count(),
                         invoices = invoiceRows
