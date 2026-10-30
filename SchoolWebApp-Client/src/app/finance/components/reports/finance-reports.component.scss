@@ -70,4 +70,10 @@
 }
 @media print {
     .report-scroll, .students-scroll { max-height: none !important; overflow: visible !important; }
+    // The app keeps a card whole on paper; a report runs over pages, so it may split (or it starts on page 2,
+    // leaving page 1 blank). Its column headings repeat on each page.
+    .card { break-inside: auto !important; }
+    thead { display: table-header-group; }
+    thead th { position: static !important; }
+    tr { break-inside: avoid; }
 }
