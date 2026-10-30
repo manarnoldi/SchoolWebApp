@@ -49,11 +49,11 @@
     }
 }
 
-// The class table's header: title left, search centred, switch right.
-.fee-head {
+// A report table's header: title left, search centred, switches or actions right.
+.fee-head, .report-head {
     display: flex; align-items: center; gap: 12px;
     .side { flex: 1 1 0; display: flex; align-items: center; min-width: 0; }
-    .fee-search {
+    .fee-search, .report-search {
         flex: 0 1 460px; display: flex; align-items: center; gap: 8px;
         .box { position: relative; flex: 1 1 auto; display: flex; align-items: center; }
         .box > .fa-search { position: absolute; left: 9px; color: #94a3b8; font-size: 0.8rem; }
@@ -61,4 +61,13 @@
         .clear { position: absolute; right: 8px; color: #94a3b8; }
         .found { white-space: nowrap; font-size: 0.75rem; color: #475569; }
     }
+}
+
+// A long list scrolls in its own box under pinned headings; printed, it runs in full.
+.report-scroll {
+    max-height: 60vh; overflow-y: auto;
+    thead th { position: sticky; top: 0; z-index: 1; background: #f1f5f9; }
+}
+@media print {
+    .report-scroll, .students-scroll { max-height: none !important; overflow: visible !important; }
 }

@@ -363,37 +363,56 @@
                         <option [ngValue]="s.id" *ngFor="let s of outstandingSessions">{{ s.sessionName }}</option>
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label mb-0" style="font-size:0.8rem;">Student (name or Adm No)</label>
-                    <input class="form-control form-control-sm" [(ngModel)]="outstandingSearch" (ngModelChange)="applyOutstandingSearch()" placeholder="Type to search..." />
-                </div>
                 <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadOutstanding()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>
                 <div class="col-auto"><button class="btn btn-sm btn-outline-secondary" (click)="clearOutstandingFilters()" title="Clear"><i class="fas fa-times"></i></button></div>
-                <div class="col text-end" *ngIf="outstanding.length > 0">
-                    <button class="btn btn-sm btn-outline-success me-1" *ngIf="messageSender.available" (click)="remindOutstanding()"
+                <div class="col text-end" *ngIf="allOutstanding.length > 0">
+                    <button class="btn btn-sm btn-outline-success me-1" *ngIf="messageSender.available && outstanding.length" (click)="remindOutstanding()"
                         title="Send a fee balance reminder to the parents of every learner listed. The message states each learner's total outstanding balance."><i class="fas fa-paper-plane"></i> Send reminders</button>
                     <button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button>
                 </div>
             </div>
-            <div class="card card-outline card-primary" *ngIf="outstanding.length > 0">
-                <div class="card-header py-1 bg-info text-white d-flex justify-content-between">
-                    <strong>Outstanding Balances</strong>
-                    <span class="badge bg-light text-dark">{{ outstanding.length }} student(s) | Total: {{ outstandingTotal() | number:'1.2-2' }}</span>
+            <ng-container *ngIf="allOutstanding.length > 0">
+                <div class="row g-2 mb-2 d-print-none">
+                    <div class="col-md-3"><div class="small-box bg-primary p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ allOutstanding.length }}</h5><div>Students with a balance</div></div></div></div>
+                    <div class="col-md-3"><div class="small-box bg-info p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ outstandingInvoiced() | number:'1.0-2' }}</h5><div>Invoiced to them</div></div></div></div>
+                    <div class="col-md-3"><div class="small-box bg-success p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ outstandingPaid() | number:'1.0-2' }}</h5><div>Paid by them</div></div></div></div>
+                    <div class="col-md-3"><div class="small-box bg-warning p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ outstandingAll() | number:'1.0-2' }}</h5><div>Outstanding</div></div></div></div>
                 </div>
-                <div class="card-body p-0">
-                    <table class="table table-striped table-hover table-sm mb-0">
-                        <thead class="table-light"><tr><th>#</th><th>Adm No</th><th>Student</th><th class="text-end">Invoiced</th><th class="text-end">Paid</th><th class="text-end">Balance</th></tr></thead>
-                        <tbody>
-                            <tr *ngFor="let r of outstanding; index as i" class="drill-row" (click)="openStatement(r.studentId, outstandingYearId, outstandingSessionId)" title="See the student's statement">
-                                <td>{{ i + 1 }}</td><td><strong>{{ r.studentUPI }}</strong></td><td>{{ r.studentName }}</td>
-                                <td class="text-end">{{ r.totalInvoiced | number:'1.2-2' }}</td>
-                                <td class="text-end text-success">{{ r.totalPaid | number:'1.2-2' }}</td>
-                                <td class="text-end fw-bold text-danger">{{ r.balance | number:'1.2-2' }}</td>
-                            </tr>
-                        </tbody>
-                        <tfoot><tr class="table-warning fw-bold"><td colspan="3" class="text-end">TOTAL</td><td></td><td></td><td class="text-end">{{ outstandingTotal() | number:'1.2-2' }}</td></tr></tfoot>
-                    </table>
+                <div class="card card-outline card-primary mb-2">
+                    <div class="card-header py-1 px-2 report-head d-print-none">
+                        <div class="side">
+                            <strong class="small"><i class="fas fa-exclamation-triangle me-1"></i> Students with a balance</strong>
+                            <span class="badge bg-info ms-2">{{ allOutstanding.length }}</span>
+                        </div>
+                        <div class="report-search">
+                            <div class="box">
+                                <i class="fas fa-search"></i>
+                                <input class="form-control form-control-sm" [(ngModel)]="outstandingSearch" (ngModelChange)="applyOutstandingSearch()" placeholder="Find a student by name or Adm No" />
+                                <button class="btn btn-sm btn-link p-0 clear" *ngIf="outstandingSearch" (click)="outstandingSearch = ''; applyOutstandingSearch()" title="Clear the search"><i class="fas fa-times"></i></button>
+                            </div>
+                            <small class="found" *ngIf="outstandingSearch.trim()">{{ outstanding.length ? plural(outstanding.length, 'student') + ' found' : 'none found' }}</small>
+                        </div>
+                        <div class="side"></div>
+                    </div>
+                    <div class="card-body p-0 report-scroll">
+                        <table class="table table-striped table-hover table-sm mb-0">
+                            <thead class="table-light"><tr><th>#</th><th>Adm No</th><th>Student</th><th class="text-end">Invoiced</th><th class="text-end">Paid</th><th class="text-end">Balance</th></tr></thead>
+                            <tbody>
+                                <tr *ngFor="let r of outstanding; index as i" class="drill-row" (click)="openStatement(r.studentId, outstandingYearId, outstandingSessionId)" title="See the student's statement">
+                                    <td>{{ i + 1 }}</td><td>{{ r.studentUPI }}</td><td>{{ r.studentName }}</td>
+                                    <td class="text-end">{{ r.totalInvoiced | number:'1.2-2' }}</td>
+                                    <td class="text-end">{{ r.totalPaid | number:'1.2-2' }}</td>
+                                    <td class="text-end fw-semibold text-danger">{{ r.balance | number:'1.2-2' }}</td>
+                                </tr>
+                                <tr *ngIf="!outstanding.length"><td colspan="6" class="text-center text-muted p-3">No student matches "{{ outstandingSearch.trim() }}".</td></tr>
+                            </tbody>
+                            <tfoot><tr class="table-warning fw-bold"><td colspan="3">{{ outstandingSearch.trim() ? 'Students found' : 'All students' }}</td><td></td><td></td><td class="text-end">{{ outstandingTotal() | number:'1.2-2' }}</td></tr></tfoot>
+                        </table>
+                    </div>
                 </div>
+            </ng-container>
+            <div class="text-center text-muted p-3" *ngIf="outstandingLoadedEmpty()">
+                <i class="fas fa-info-circle me-1"></i> No student has a balance for the selected filters.
             </div>
         </div>
 
@@ -406,6 +425,102 @@
                 <div class="col text-end" *ngIf="expenseReport"><button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button></div>
             </div>
             <div *ngIf="expenseReport">
+                <div *ngIf="!expenseReport.byCategory?.length" class="alert alert-info">
+                    <i class="fas fa-info-circle me-1"></i> No expenses found for the selected dates.
+                </div>
+
+                <ng-container *ngIf="expenseReport.byCategory?.length">
+                    <div class="row g-2 mb-2 d-print-none">
+                        <div class="col-md-3"><div class="small-box bg-danger p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ expenseReport.totalAmount | number:'1.0-2' }}</h5><div>Total spent</div></div></div></div>
+                        <div class="col-md-3"><div class="small-box bg-info p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ expenseReport.totalCount }}</h5><div>Expenses</div></div></div></div>
+                        <div class="col-md-3"><div class="small-box bg-primary p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ expenseReport.byCategory.length }}</h5><div>Categories</div></div></div></div>
+                        <div class="col-md-3"><div class="small-box bg-warning p-2 mb-0"><div class="inner"><h5 class="mb-0 text-truncate">{{ largestCategory()?.category }}</h5><div>Largest: {{ largestCategory()?.amount | number:'1.0-2' }}</div></div></div></div>
+                    </div>
+
+                    <!-- On screen: one row per category; a category opens to its expenses -->
+                    <div class="card card-outline card-primary mb-2 d-print-none">
+                        <div class="card-header py-1 px-2 report-head">
+                            <div class="side">
+                                <strong class="small"><i class="fas fa-money-bill-wave me-1"></i> Spending by category</strong>
+                                <span class="badge bg-info ms-2">{{ expenseReport.byCategory.length }}</span>
+                            </div>
+                            <div class="report-search">
+                                <div class="box">
+                                    <i class="fas fa-search"></i>
+                                    <input class="form-control form-control-sm" [(ngModel)]="query.expenses" placeholder="Find by reference, vendor or description" />
+                                    <button class="btn btn-sm btn-link p-0 clear" *ngIf="query.expenses" (click)="query.expenses = ''" title="Clear the search"><i class="fas fa-times"></i></button>
+                                </div>
+                                <small class="found" *ngIf="searching('expenses')">{{ expenseSearchSummary() }}</small>
+                            </div>
+                            <div class="side"></div>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-sm mb-0 class-summary">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width:28px;"></th>
+                                        <th>Category</th>
+                                        <th class="text-end">Expenses</th>
+                                        <th class="text-end">Amount</th>
+                                        <th style="width:28%;">Share of spending</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ng-container *ngFor="let c of expenseReport.byCategory">
+                                      <ng-container *ngIf="!searching('expenses') || categoryExpenses(c).length">
+                                        <tr class="class-row" [class.open]="isOpen('expenses', c.categoryId)" (click)="toggleOpen('expenses', c.categoryId)"
+                                            [title]="searching('expenses') ? '' : isOpen('expenses', c.categoryId) ? 'Fold this category' : 'See the expenses'">
+                                            <td class="text-muted"><i class="fas" [ngClass]="isOpen('expenses', c.categoryId) ? 'fa-chevron-down' : 'fa-chevron-right'"></i></td>
+                                            <td class="fw-semibold">{{ c.category }}</td>
+                                            <td class="text-end">{{ c.count }}</td>
+                                            <td class="text-end fw-semibold">{{ c.amount | number:'1.2-2' }}</td>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="progress flex-grow-1" style="height: 8px;">
+                                                        <div class="progress-bar bg-info" [style.width.%]="expenseReport.totalAmount ? c.amount / expenseReport.totalAmount * 100 : 0"></div>
+                                                    </div>
+                                                    <small class="rate">{{ (expenseReport.totalAmount ? c.amount / expenseReport.totalAmount * 100 : 0) | number:'1.0-0' }}%</small>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="isOpen('expenses', c.categoryId)" class="students-row">
+                                            <td></td>
+                                            <td colspan="4" class="p-0 pb-2">
+                                                <div class="students-scroll">
+                                                <table class="table table-sm table-hover mb-0 students">
+                                                    <thead><tr><th>Ref #</th><th>Date</th><th>Vendor</th><th>Description</th><th class="text-end">Amount</th></tr></thead>
+                                                    <tbody>
+                                                        <tr *ngFor="let d of categoryExpenses(c)" class="drill-row" (click)="openDocument('expense', d.expenseId)" title="Open the expense">
+                                                            <td>{{ d.referenceNumber }}</td>
+                                                            <td class="text-nowrap">{{ d.date | date:'mediumDate' }}</td>
+                                                            <td>{{ d.vendor || '-' }}</td>
+                                                            <td>{{ d.description }}</td>
+                                                            <td class="text-end fw-semibold">{{ d.amount | number:'1.2-2' }}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                      </ng-container>
+                                    </ng-container>
+                                    <tr *ngIf="searching('expenses') && expenseSearchSummary() === 'none found'"><td colspan="5" class="text-center text-muted p-3">No expense matches "{{ query.expenses.trim() }}".</td></tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-warning fw-bold">
+                                        <td></td>
+                                        <td>All categories</td>
+                                        <td class="text-end">{{ expenseReport.totalCount }}</td>
+                                        <td class="text-end">{{ expenseReport.totalAmount | number:'1.2-2' }}</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Printed: the category summary and every expense -->
+                    <div class="d-print-block">
                 <!-- Summary by category -->
                 <div class="card card-outline card-primary mb-1">
                     <div class="card-header py-1 bg-info text-white d-flex justify-content-between">
@@ -446,6 +561,8 @@
                         </table>
                     </div>
                 </div>
+                    </div>
+                </ng-container>
             </div>
         </div>
 
@@ -483,19 +600,106 @@
             </div>
 
             <div *ngIf="feeBalancesReport">
-                <!-- Summary -->
-                <div class="card card-outline card-primary mb-2 d-print-none" *ngIf="feeBalancesReport.totalClasses > 0">
-                    <div class="card-header py-1 bg-info text-white d-flex justify-content-between">
-                        <strong>Summary</strong>
-                        <span class="badge bg-light text-dark">{{ feeBalancesReport.totalClasses }} class(es) | Grand Total: {{ feeBalancesReport.grandTotal | number:'1.2-2' }}</span>
-                    </div>
-                </div>
-
                 <div *ngIf="feeBalancesReport.totalClasses === 0" class="alert alert-info">
                     <i class="fas fa-info-circle me-1"></i> No fee balances found for the selected filters.
                 </div>
 
-                <!-- Per-class sections (each on its own page when printing) -->
+                <ng-container *ngIf="feeBalancesReport.totalClasses > 0">
+                    <div class="row g-2 mb-2 d-print-none">
+                        <div class="col-md-3"><div class="small-box bg-primary p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ balanceTotals().students }}</h5><div>Students with a balance</div></div></div></div>
+                        <div class="col-md-3"><div class="small-box bg-info p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ balanceTotals().invoiced | number:'1.0-2' }}</h5><div>Invoiced to them</div></div></div></div>
+                        <div class="col-md-3"><div class="small-box bg-success p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ balanceTotals().paid | number:'1.0-2' }}</h5><div>Paid by them</div></div></div></div>
+                        <div class="col-md-3"><div class="small-box bg-warning p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ feeBalancesReport.grandTotal | number:'1.0-2' }}</h5><div>Outstanding</div></div></div></div>
+                    </div>
+
+                    <!-- On screen: one row per class; a class opens to its students -->
+                    <div class="card card-outline card-primary mb-2 d-print-none">
+                        <div class="card-header py-1 px-2 report-head">
+                            <div class="side">
+                                <strong class="small"><i class="fas fa-users me-1"></i> Balances by class</strong>
+                                <span class="badge bg-info ms-2">{{ feeBalancesReport.totalClasses }}</span>
+                            </div>
+                            <div class="report-search">
+                                <div class="box">
+                                    <i class="fas fa-search"></i>
+                                    <input class="form-control form-control-sm" [(ngModel)]="query.feeBalancesByClass" placeholder="Find a student by name or Adm No" />
+                                    <button class="btn btn-sm btn-link p-0 clear" *ngIf="query.feeBalancesByClass" (click)="query.feeBalancesByClass = ''" title="Clear the search"><i class="fas fa-times"></i></button>
+                                </div>
+                                <small class="found" *ngIf="searching('feeBalancesByClass')">{{ balanceSearchSummary() }}</small>
+                            </div>
+                            <div class="side"></div>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-sm mb-0 class-summary">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width:28px;"></th>
+                                        <th>Class</th>
+                                        <th class="text-end">Students owing</th>
+                                        <th class="text-end">Invoiced</th>
+                                        <th class="text-end">Paid</th>
+                                        <th class="text-end">Balance</th>
+                                        <th style="width:90px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ng-container *ngFor="let cls of feeBalancesReport.classes; let idx = index">
+                                      <ng-container *ngIf="!searching('feeBalancesByClass') || balanceStudents(cls).length">
+                                        <tr class="class-row" [class.open]="isOpen('feeBalancesByClass', idx)" (click)="toggleOpen('feeBalancesByClass', idx)"
+                                            [title]="searching('feeBalancesByClass') ? '' : isOpen('feeBalancesByClass', idx) ? 'Fold this class' : 'See the students in this class'">
+                                            <td class="text-muted"><i class="fas" [ngClass]="isOpen('feeBalancesByClass', idx) ? 'fa-chevron-down' : 'fa-chevron-right'"></i></td>
+                                            <td class="fw-semibold">{{ cls.className }}</td>
+                                            <td class="text-end">{{ cls.studentCount }}</td>
+                                            <td class="text-end">{{ classSum(cls, 'totalInvoiced') | number:'1.2-2' }}</td>
+                                            <td class="text-end">{{ classSum(cls, 'totalPaid') | number:'1.2-2' }}</td>
+                                            <td class="text-end fw-semibold text-danger">{{ cls.totalBalance | number:'1.2-2' }}</td>
+                                            <td class="text-end">
+                                                <button *ngIf="messageSender.available" class="btn btn-xs btn-outline-success py-0 px-1" style="font-size: 0.75rem;"
+                                                    (click)="$event.stopPropagation(); remindFeeBalances(cls)" title="Send fee balance reminders to this class's parents"><i class="fas fa-paper-plane"></i> Remind</button>
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="isOpen('feeBalancesByClass', idx)" class="students-row">
+                                            <td></td>
+                                            <td colspan="6" class="p-0 pb-2">
+                                                <div class="students-scroll">
+                                                <table class="table table-sm table-hover mb-0 students">
+                                                    <thead><tr><th style="width:6%;">#</th><th style="width:14%;">Adm No</th><th>Student</th><th class="text-end">Invoiced</th><th class="text-end">Paid</th><th class="text-end">Balance</th></tr></thead>
+                                                    <tbody>
+                                                        <tr *ngFor="let s of balanceStudents(cls); index as i" class="drill-row" (click)="openStatement(s.studentId, feeBalanceYearId, feeBalanceSessionId)" title="See the student's statement">
+                                                            <td>{{ i + 1 }}</td>
+                                                            <td>{{ s.studentUPI }}</td>
+                                                            <td>{{ s.studentName }}</td>
+                                                            <td class="text-end">{{ s.totalInvoiced | number:'1.2-2' }}</td>
+                                                            <td class="text-end">{{ s.totalPaid | number:'1.2-2' }}</td>
+                                                            <td class="text-end fw-semibold text-danger">{{ s.balance | number:'1.2-2' }}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                      </ng-container>
+                                    </ng-container>
+                                    <tr *ngIf="searching('feeBalancesByClass') && balanceSearchSummary() === 'none found'"><td colspan="7" class="text-center text-muted p-3">No student matches "{{ query.feeBalancesByClass.trim() }}".</td></tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-warning fw-bold">
+                                        <td></td>
+                                        <td>All classes</td>
+                                        <td class="text-end">{{ balanceTotals().students }}</td>
+                                        <td class="text-end">{{ balanceTotals().invoiced | number:'1.2-2' }}</td>
+                                        <td class="text-end">{{ balanceTotals().paid | number:'1.2-2' }}</td>
+                                        <td class="text-end">{{ feeBalancesReport.grandTotal | number:'1.2-2' }}</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <div class="d-print-block">
+                <!-- Printed: every class in full with signature lines, each on its own page -->
                 <div *ngFor="let cls of feeBalancesReport.classes; let idx = index" [style.page-break-before]="idx > 0 ? 'always' : 'auto'">
                     <div class="card card-outline card-primary mb-3">
                         <div class="card-header py-1 bg-info text-white d-flex justify-content-between">
@@ -547,6 +751,7 @@
                             </div>
                         </div>
                     </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -790,15 +995,29 @@
                 <div class="col text-end" *ngIf="discountReport?.students?.length"><button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button></div>
             </div>
 
-            <div class="card card-outline card-primary" *ngIf="discountReport">
-                <div class="card-header py-1 bg-info text-white">
-                    <strong>Student Discounts</strong>
-                    <span class="float-end">
-                        Students: <strong>{{ discountReport.studentCount }}</strong>
-                        | Total Discount: <strong>{{ discountReport.grandTotalDiscount | number:'1.2-2' }}</strong>
-                    </span>
+            <div class="row g-2 mb-2 d-print-none" *ngIf="discountReport?.students?.length">
+                <div class="col-md-4"><div class="small-box bg-primary p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ discountReport.studentCount }}</h5><div>Students with a discount</div></div></div></div>
+                <div class="col-md-4"><div class="small-box bg-info p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ discountInvoiced() | number:'1.0-2' }}</h5><div>Left for families after discounts</div></div></div></div>
+                <div class="col-md-4"><div class="small-box bg-success p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ discountReport.grandTotalDiscount | number:'1.0-2' }}</h5><div>Discounts and sponsorships</div></div></div></div>
+            </div>
+
+            <div class="card card-outline card-primary" *ngIf="discountReport?.students?.length">
+                <div class="card-header py-1 px-2 report-head d-print-none">
+                    <div class="side">
+                        <strong class="small"><i class="fas fa-percentage me-1"></i> Student discounts</strong>
+                        <span class="badge bg-info ms-2">{{ discountReport.studentCount }}</span>
+                    </div>
+                    <div class="report-search">
+                        <div class="box">
+                            <i class="fas fa-search"></i>
+                            <input class="form-control form-control-sm" [(ngModel)]="query.discounts" placeholder="Find by name, Adm No, class or invoice" />
+                            <button class="btn btn-sm btn-link p-0 clear" *ngIf="query.discounts" (click)="query.discounts = ''" title="Clear the search"><i class="fas fa-times"></i></button>
+                        </div>
+                        <small class="found" *ngIf="searching('discounts')">{{ discountStudents().length ? plural(discountStudents().length, 'student') + ' found' : 'none found' }}</small>
+                    </div>
+                    <div class="side"></div>
                 </div>
-                <div class="card-body p-0">
+                <div class="card-body p-0 report-scroll">
                     <table class="table table-striped table-hover table-sm mb-0">
                         <thead class="table-light">
                             <tr>
@@ -808,13 +1027,13 @@
                                 <th>Student</th>
                                 <th>Class</th>
                                 <th class="text-end">Invoices</th>
-                                <th class="text-end">Invoiced</th>
+                                <th class="text-end">Invoiced after discount</th>
                                 <th class="text-end">Total Discount</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <ng-container *ngFor="let s of discountReport.students; let i = index">
-                                <tr style="cursor:pointer;" (click)="toggleDiscountStudent(s.studentId)">
+                            <ng-container *ngFor="let s of discountStudents(); let i = index">
+                                <tr style="cursor:pointer;" (click)="toggleDiscountStudent(s.studentId)" [class.table-active]="isDiscountStudentExpanded(s.studentId)" [title]="isDiscountStudentExpanded(s.studentId) ? 'Fold' : 'See the invoices and discounts'">
                                     <td class="d-print-none"><i class="fas" [ngClass]="isDiscountStudentExpanded(s.studentId) ? 'fa-chevron-down' : 'fa-chevron-right'"></i></td>
                                     <td class="d-none d-print-table-cell"></td>
                                     <td>{{ i + 1 }}</td>
@@ -867,6 +1086,7 @@
                                     </td>
                                 </tr>
                             </ng-container>
+                            <tr *ngIf="!discountStudents().length"><td colspan="8" class="text-center text-muted p-3">No student matches "{{ query.discounts.trim() }}".</td></tr>
                         </tbody>
                         <tfoot>
                             <tr class="table-warning fw-bold">
@@ -935,15 +1155,29 @@
                 <div class="col text-end" *ngIf="notesReport?.notes?.length"><button class="btn btn-sm btn-outline-secondary" (click)="printReport()"><i class="fas fa-print"></i> Print</button></div>
             </div>
 
-            <div class="card card-outline card-primary" *ngIf="notesReport">
-                <div class="card-header py-1 bg-info text-white">
-                    <strong>Credit &amp; Debit Notes: {{ fromDate | date:'mediumDate' }} to {{ toDate | date:'mediumDate' }}</strong>
-                    <span class="float-end">
-                        Credits: <strong>{{ notesReport.creditCount }}</strong> ({{ notesReport.totalCredit | number:'1.2-2' }})
-                        | Debits: <strong>{{ notesReport.debitCount }}</strong> ({{ notesReport.totalDebit | number:'1.2-2' }})
-                    </span>
+            <div class="row g-2 mb-2 d-print-none" *ngIf="notesReport?.notes?.length">
+                <div class="col-md-4"><div class="small-box bg-warning p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ notesReport.totalCredit | number:'1.0-2' }}</h5><div>{{ plural(notesReport.creditCount, 'credit note') }}</div></div></div></div>
+                <div class="col-md-4"><div class="small-box bg-primary p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ notesReport.totalDebit | number:'1.0-2' }}</h5><div>{{ plural(notesReport.debitCount, 'debit note') }}</div></div></div></div>
+                <div class="col-md-4"><div class="small-box bg-info p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ (notesReport.totalDebit - notesReport.totalCredit) | number:'1.0-2' }}</h5><div>Net effect on fees owed</div></div></div></div>
+            </div>
+
+            <div class="card card-outline card-primary" *ngIf="notesReport?.notes?.length">
+                <div class="card-header py-1 px-2 report-head d-print-none">
+                    <div class="side">
+                        <strong class="small"><i class="fas fa-file-invoice me-1"></i> Credit &amp; debit notes</strong>
+                        <span class="badge bg-info ms-2">{{ notesReport.notes.length }}</span>
+                    </div>
+                    <div class="report-search">
+                        <div class="box">
+                            <i class="fas fa-search"></i>
+                            <input class="form-control form-control-sm" [(ngModel)]="query.notes" placeholder="Find by note, student, invoice or reason" />
+                            <button class="btn btn-sm btn-link p-0 clear" *ngIf="query.notes" (click)="query.notes = ''" title="Clear the search"><i class="fas fa-times"></i></button>
+                        </div>
+                        <small class="found" *ngIf="searching('notes')">{{ notesShown().length ? plural(notesShown().length, 'note') + ' found' : 'none found' }}</small>
+                    </div>
+                    <div class="side"></div>
                 </div>
-                <div class="card-body p-0">
+                <div class="card-body p-0 report-scroll">
                     <table class="table table-striped table-hover table-sm mb-0">
                         <thead class="table-light">
                             <tr>
@@ -963,7 +1197,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let n of notesReport.notes; let i = index" class="drill-row" (click)="openDocument('payment', n.id)" title="Open the note">
+                            <tr *ngFor="let n of notesShown(); let i = index" class="drill-row" (click)="openDocument('payment', n.id)" title="Open the note">
                                 <td>{{ i + 1 }}</td>
                                 <td><strong>{{ n.receiptNumber }}</strong></td>
                                 <td>

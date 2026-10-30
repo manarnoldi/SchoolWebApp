@@ -11,7 +11,7 @@ import {SchoolClassesService} from '@/class/services/school-classes.service';
 import {StudentClassService} from '@/students/services/student-class.service';
 import {Status} from '@/core/enums/status';
 import {formatDate} from '@angular/common';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
     selector: 'app-finance-reports',
@@ -134,6 +134,7 @@ export class FinanceReportsComponent implements OnInit {
         private classSvc: SchoolClassesService,
         private studentClassSvc: StudentClassService,
         private route: ActivatedRoute,
+        private router: Router,
         public messageSender: StandardMessageSender
     ) {}
 
@@ -143,6 +144,14 @@ export class FinanceReportsComponent implements OnInit {
         this.reportGroup = group;
         let defaults: any = {fees: 'feeCollection', expenses: 'expenses', statements: 'trialBalance'};
         this.activeTab = defaults[this.reportGroup] || 'feeCollection';
+        // The tab is kept in the address (?tab=outstanding), so a refresh or a shared link opens on it.
+        this.route.queryParamMap.subscribe((q) => {
+            let tab = q.get('tab');
+            if (tab && this.isInGroup(tab) && tab !== this.activeTab) {
+                this.activeTab = tab;
+                this.autoLoad();
+            }
+        });
         let titles: any = {fees: 'Fee Reports', expenses: 'Expenses Report', statements: 'Statements'};
         this.dashboardTitle = 'Finance: ' + (titles[this.reportGroup] || 'Reports');
         this.breadcrumbs = [
@@ -201,6 +210,8 @@ export class FinanceReportsComponent implements OnInit {
     switchTab(tab: string) {
         this.activeTab = tab;
         this.autoLoad();
+        // Into the address without a new history entry for every tab clicked.
+        this.router.navigate([], {relativeTo: this.route, queryParams: {tab}, queryParamsHandling: 'merge', replaceUrl: true});
     }
 
     // A tab opens on its report for the default filters (this year, this term, all classes) rather
@@ -227,7 +238,7 @@ export class FinanceReportsComponent implements OnInit {
             balanceSheet: () => (this.balanceSheet = null),
             consolidatedBudget: () => (this.consolidatedBudget = null),
             feeCollection: () => (this.feeCollection = null),
-            outstanding: () => { this.allOutstanding = []; this.outstanding = []; },
+            outstanding: () => { this.allOutstanding = []; this.outstanding = []; this.outstandingLoaded = false; },
             feeBalancesByClass: () => (this.feeBalancesReport = null),
             studentStatement: () => (this.studentStatement = null),
             discounts: () => (this.discountReport = null),
@@ -334,6 +345,86 @@ export class FinanceReportsComponent implements OnInit {
             parts.push(`Period: ${this.feeCollectionFrom ? fmt(this.feeCollectionFrom) : 'start'} to ${this.feeCollectionTo ? fmt(this.feeCollectionTo) : 'today'}`);
         return parts.join(' | ');
     }
+
+    // ---------- Report tables shared by the tabs: one group open at a time, a search across them all ----------
+
+    // The open group on each tab (a class, a category, a student), and each tab's search text.
+    openKey: Record<string, any> = {};
+    query: Record<string, string> = {outstanding: '', feeBalancesByClass: '', discounts: '', expenses: '', notes: ''};
+
+    searching(tab: string): boolean { return !!(this.query[tab] || '').trim(); }
+
+    // While searching, every group with a match shows open; otherwise only the one clicked.
+    isOpen(tab: string, key: any): boolean { return this.searching(tab) || this.openKey[tab] === key; }
+
+    toggleOpen(tab: string, key: any) {
+        if (this.searching(tab)) return;
+        this.openKey[tab] = this.openKey[tab] === key ? null : key;
+    }
+
+    matches(tab: string, ...fields: any[]): boolean {
+        let q = (this.query[tab] || '').trim().toLowerCase();
+        return !q || fields.some((f) => String(f ?? '').toLowerCase().includes(q));
+    }
+
+    plural(n: number, one: string, many = one + 's'): string { return `${n} ${n === 1 ? one : many}`; }
+
+    // Balances by class: the students in a class matching the search.
+    balanceStudents(cls: any): any[] {
+        return (cls.students || []).filter((s: any) => this.matches('feeBalancesByClass', s.studentName, s.studentUPI));
+    }
+
+    classSum(cls: any, field: string): number { return (cls.students || []).reduce((n: number, s: any) => n + (+s[field] || 0), 0); }
+
+    balanceTotals(): {invoiced: number; paid: number; students: number} {
+        let classes = this.feeBalancesReport?.classes || [];
+        return {
+            invoiced: classes.reduce((n: number, c: any) => n + this.classSum(c, 'totalInvoiced'), 0),
+            paid: classes.reduce((n: number, c: any) => n + this.classSum(c, 'totalPaid'), 0),
+            students: classes.reduce((n: number, c: any) => n + (c.studentCount || 0), 0)
+        };
+    }
+
+    balanceSearchSummary(): string {
+        let found = (this.feeBalancesReport?.classes || []).map((c: any) => this.balanceStudents(c).length);
+        let students = found.reduce((a: number, b: number) => a + b, 0);
+        return students ? `${this.plural(students, 'student')} in ${this.plural(found.filter((n: number) => n > 0).length, 'class', 'classes')}` : 'none found';
+    }
+
+    // Discounts: the students matching the search (name, Adm No, class or an invoice number).
+    discountStudents(): any[] {
+        return (this.discountReport?.students || []).filter((s: any) =>
+            this.matches('discounts', s.studentName, s.studentUPI, s.className, ...(s.invoices || []).map((i: any) => i.invoiceNumber)));
+    }
+
+    // Expenses: each category's expenses matching the search (reference, vendor, description).
+    categoryExpenses(c: any): any[] {
+        return (this.expenseReport?.detail || []).filter((d: any) => d.expenseCategoryId === c.categoryId &&
+            this.matches('expenses', d.referenceNumber, d.vendor, d.description, d.category));
+    }
+
+    expenseSearchSummary(): string {
+        let found = (this.expenseReport?.byCategory || []).map((c: any) => this.categoryExpenses(c).length);
+        let n = found.reduce((a: number, b: number) => a + b, 0);
+        return n ? `${this.plural(n, 'expense')} in ${this.plural(found.filter((x: number) => x > 0).length, 'category', 'categories')}` : 'none found';
+    }
+
+    largestCategory(): any {
+        return (this.expenseReport?.byCategory || []).reduce((a: any, b: any) => (!a || b.amount > a.amount ? b : a), null);
+    }
+
+    notesShown(): any[] {
+        return (this.notesReport?.notes || []).filter((n: any) =>
+            this.matches('notes', n.receiptNumber, n.studentName, n.studentUPI, n.invoiceNumber, n.className, n.reason, n.description));
+    }
+
+    // Loaded and empty, as against not loaded yet.
+    outstandingLoaded = false;
+    outstandingLoadedEmpty(): boolean { return this.outstandingLoaded && !this.allOutstanding.length; }
+
+    outstandingInvoiced(): number { return (this.allOutstanding || []).reduce((s, r) => s + (r.totalInvoiced || 0), 0); }
+    outstandingPaid(): number { return (this.allOutstanding || []).reduce((s, r) => s + (r.totalPaid || 0), 0); }
+    outstandingAll(): number { return (this.allOutstanding || []).reduce((s, r) => s + (r.balance || 0), 0); }
 
     feeOnlyOwing = false;
 
@@ -499,6 +590,7 @@ export class FinanceReportsComponent implements OnInit {
         this.reportsSvc.outstandingBalances(this.outstandingYearId, this.outstandingSessionId).subscribe({
             next: (r) => {
                 this.allOutstanding = r || [];
+                this.outstandingLoaded = true;
                 this.applyOutstandingSearch();
                 this.isLoading = false;
             },
@@ -532,7 +624,8 @@ export class FinanceReportsComponent implements OnInit {
         this.feeBalanceSessions = this.feeBalanceYearId
             ? this.allSessions.filter((s: any) => s.academicYearId == this.feeBalanceYearId)
             : [];
-        this.feeBalanceSessionId = null;
+        let activeSession = this.feeBalanceSessions.find((s: any) => s.status === true);
+        this.feeBalanceSessionId = activeSession ? activeSession.id : null;
         this.feeBalanceClasses = [];
         this.feeBalanceClassId = null;
         if (this.feeBalanceYearId) {
@@ -549,7 +642,7 @@ export class FinanceReportsComponent implements OnInit {
     loadFeeBalancesByClass() {
         this.isLoading = true;
         this.reportsSvc.feeBalancesByClass(this.feeBalanceYearId, this.feeBalanceSessionId, this.feeBalanceClassId).subscribe({
-            next: (r) => { this.feeBalancesReport = r; this.isLoading = false; },
+            next: (r) => { this.feeBalancesReport = r; this.openKey['feeBalancesByClass'] = 0; this.isLoading = false; },
             error: (err) => { this.isLoading = false; this.toastr.error(err.error?.message || 'Error.'); }
         });
     }
@@ -569,7 +662,7 @@ export class FinanceReportsComponent implements OnInit {
         if (!this.fromDate || !this.toDate) return;
         this.isLoading = true;
         this.reportsSvc.expenseReport(this.fromDate, this.toDate).subscribe({
-            next: (r) => { this.expenseReport = r; this.isLoading = false; },
+            next: (r) => { this.expenseReport = r; this.openKey['expenses'] = r?.byCategory?.[0]?.categoryId ?? null; this.isLoading = false; },
             error: (err) => { this.isLoading = false; this.toastr.error(err.error?.message || 'Error.'); }
         });
     }
@@ -614,10 +707,14 @@ export class FinanceReportsComponent implements OnInit {
         this.discountReport = null;
     }
 
+    // One student open at a time, as on the other report tabs.
     toggleDiscountStudent(studentId: number) {
-        if (this.expandedDiscountStudents.has(studentId)) this.expandedDiscountStudents.delete(studentId);
-        else this.expandedDiscountStudents.add(studentId);
+        let open = this.expandedDiscountStudents.has(studentId);
+        this.expandedDiscountStudents.clear();
+        if (!open) this.expandedDiscountStudents.add(studentId);
     }
+
+    discountInvoiced(): number { return (this.discountReport?.students || []).reduce((n: number, s: any) => n + (s.totalInvoiced || 0), 0); }
 
     isDiscountStudentExpanded(studentId: number): boolean {
         return this.expandedDiscountStudents.has(studentId);
@@ -725,9 +822,11 @@ export class FinanceReportsComponent implements OnInit {
         });
     }
 
+    // One department open at a time, as on the other report tabs; the printout shows them all.
     toggleDept(deptId: number) {
-        if (this.expandedDepts.has(deptId)) this.expandedDepts.delete(deptId);
-        else this.expandedDepts.add(deptId);
+        let open = this.expandedDepts.has(deptId);
+        this.expandedDepts.clear();
+        if (!open) this.expandedDepts.add(deptId);
     }
 
     isDeptExpanded(deptId: number): boolean {
