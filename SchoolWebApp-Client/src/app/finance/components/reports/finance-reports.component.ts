@@ -89,7 +89,7 @@ export class FinanceReportsComponent implements OnInit {
     // Optional: left empty, the year and term decide what is in the report.
     feeCollectionFrom: string = '';
     feeCollectionTo: string = '';
-    // Classes opened on screen; the first opens on load, the rest when clicked. Printing shows all.
+    // The class open on screen (one at a time); the first opens on load. Printing shows all.
     openFeeClasses = new Set<number>();
 
     // Student discounts
@@ -335,13 +335,28 @@ export class FinanceReportsComponent implements OnInit {
         return parts.join(' | ');
     }
 
-    toggleFeeClass(idx: number) {
-        if (this.openFeeClasses.has(idx)) this.openFeeClasses.delete(idx);
-        else this.openFeeClasses.add(idx);
+    feeOnlyOwing = false;
+
+    // Share of what was invoiced that has come in, 0-100.
+    collectionRate(c: {totalInvoiced: number; totalCollected: number}): number {
+        return c.totalInvoiced > 0 ? Math.min(100, (c.totalCollected / c.totalInvoiced) * 100) : 0;
     }
 
-    setAllFeeClasses(open: boolean) {
-        this.openFeeClasses = new Set(open ? (this.feeCollection?.classes || []).map((_: any, i: number) => i) : []);
+    rateClass(rate: number): string {
+        return rate >= 90 ? 'bg-success' : rate >= 70 ? 'bg-warning' : 'bg-danger';
+    }
+
+    feeStudents(cls: any): any[] {
+        return this.feeOnlyOwing ? (cls.students || []).filter((s: any) => s.balance > 0) : cls.students || [];
+    }
+
+    feeStudentTotal(): number {
+        return (this.feeCollection?.classes || []).reduce((n: number, c: any) => n + (c.studentCount || 0), 0);
+    }
+
+    // One class open at a time: opening another folds the one that was open; clicking the open one folds it.
+    toggleFeeClass(idx: number) {
+        this.openFeeClasses = new Set(this.openFeeClasses.has(idx) ? [] : [idx]);
     }
 
     clearFeeCollectionFilters() {

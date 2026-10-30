@@ -35,6 +35,14 @@
 .drill-row:hover td { color: #1e40af; }
 @media print { .drill-row:hover td { color: inherit; } }
 
-// A folded class shows only its header on screen; printing always shows every class in full.
-.fold-body.folded { display: none; }
-@media print { .fold-body.folded { display: block !important; } }
+// Fee collection by class: a class row opens to its students, set in beneath it.
+.class-summary {
+    > tbody > tr.class-row { cursor: pointer; }
+    > tbody > tr.class-row:hover > td, > tbody > tr.class-row.open > td { background: #e8f4fd; }
+    > tbody > tr.students-row > td { background: #f8fafc; }
+    .rate { min-width: 34px; text-align: right; color: #475569; }
+    table.students {
+        background: #fff; border: 1px solid #e2e8f0; font-size: 0.85rem;
+        thead th { background: #f1f5f9; font-weight: 600; }
+    }
+}
