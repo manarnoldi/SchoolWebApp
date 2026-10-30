@@ -2,7 +2,7 @@
 // Fills an anonymised demo copy with a year of payroll: complete staff payroll
 // details (KRA PIN, ID, NSSF and SHA numbers, bank accounts), salary structures
 // with allowances and deductions (union dues, SACCO, welfare, HELB, insurance,
-// pension), loans and salary advances, and a payroll for every month from
+// pension), NITA paid by the school as the law has it, loans and salary advances, and a payroll for every month from
 // January to the last full month before --through. Each month is processed by the
 // accountant, reviewed by one administrator and approved by another, and its
 // journal posts to the ledger. Everything goes through the API, so the payslips,
@@ -171,6 +171,14 @@ DELETE FROM loanadvances; DELETE FROM employeesalaryitems; DELETE FROM employees
 SET FOREIGN_KEY_CHECKS = 1;
 -- Approved payroll posts straight to the ledger: the two-step approval is the review.
 UPDATE globalsettings SET SettingValue = 'auto' WHERE Module = 'Finance' AND SettingKey = 'PayrollJournalMode';
+-- NITA as the law has it: KES 50 a month per employee, paid by the school, not deducted from pay.
+INSERT INTO accounts (Code, Name, AccountType, Description, IsActive, Created, CreatedBy, Modified, ModifiedBy)
+    SELECT '2150', 'NITA Levy Payable', 2, 'Industrial training levy owed to NITA', 1, '2025-12-01', 'admin', '2025-12-01', 'admin'
+    FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM accounts WHERE Code = '2150');
+UPDATE deductiontypes SET IsEmployerCost = 1, IsTaxDeductible = 0, IsRetirementContribution = 0,
+    LiabilityAccountId = (SELECT Id FROM accounts WHERE Code = '2150'),
+    Description = 'Industrial training levy, KES 50 a month per employee, paid by the school'
+    WHERE Code = 'NITA';
 INSERT INTO designations (Name, Description, \`Rank\`, Created, CreatedBy, Modified, ModifiedBy)
     SELECT d.n, d.n, d.r, NOW(), 'admin', NOW(), 'admin' FROM (SELECT 'Deputy Head Teacher' n, 4 r UNION ALL SELECT 'Cook', 10
         UNION ALL SELECT 'Driver', 11 UNION ALL SELECT 'Cleaner', 12 UNION ALL SELECT 'Security Guard', 13) d

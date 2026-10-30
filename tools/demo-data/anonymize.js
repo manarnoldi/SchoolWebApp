@@ -142,9 +142,10 @@ function identityHash(password) {
 
 // ---------- Build the SQL ----------
 const sql = ['SET NAMES utf8mb4;', 'SET FOREIGN_KEY_CHECKS = 0;'];
-const people = query('SELECT Id, Discriminator, FullName, GenderId, PhoneNumber, Email, Address, IdNumber, KraPinNo, NhifNo, NssfNo, UPI FROM person');
+const people = query('SELECT Id, Discriminator, FullName, GenderId, PhoneNumber, Email, Address, IdNumber, KraPinNo, NhifNo, NssfNo, UPI FROM person ORDER BY Id');
 const byPerson = new Map();
 let n = 0;
+let emp = 0;
 for (const p of people) {
     const name = newName(p.FullName, isFemale(p.GenderId, p.FullName));
     if (!name) continue;
@@ -159,8 +160,9 @@ for (const p of people) {
         KraPinNo: reshape(p.KraPinNo, 1),
         NhifNo: reshape(p.NhifNo),
         NssfNo: reshape(p.NssfNo),
-        // Staff numbers (e.g. TSC numbers) identify a teacher; admission numbers are kept.
-        UPI: p.Discriminator === 'StaffDetails' ? reshape(p.UPI) : p.UPI
+        // Staff numbers identify a teacher, and the school's own mix of formats would show through a
+        // reshape: staff are numbered afresh, EMP0001 up in record order. Admission numbers are kept.
+        UPI: p.Discriminator === 'StaffDetails' ? `EMP${String(++emp).padStart(4, '0')}` : p.UPI
     };
     // The recorded gender follows the title, so a "Mr." is not shown as female.
     if (name.title && !/^(DR|TR)/i.test(name.title)) set.GenderId = /^(MD|MRS|MS|MISS|MADAM)/i.test(name.title) ? 2 : 1;

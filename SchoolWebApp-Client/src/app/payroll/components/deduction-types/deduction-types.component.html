@@ -78,6 +78,24 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- NITA: the law has the employer pay it; some schools recover it from staff. -->
+                            <div class="row g-1 mt-1">
+                                <div class="col-md-12">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="dtEmployerCost"
+                                            [(ngModel)]="item.isEmployerCost" (ngModelChange)="onEmployerCostChange()"
+                                            [disabled]="item.isSystemComputed">
+                                        <label for="dtEmployerCost" class="form-check-label" style="font-size:0.8rem;">
+                                            <strong>Paid by the employer</strong>
+                                        </label>
+                                    </div>
+                                    <small class="text-muted">
+                                        Worked out the same way but never taken from pay - the school bears it (NITA, as the
+                                        law intends). It is charged to salary expense and owed to the liability account when
+                                        payroll posts, and shows on the statutory returns. Leave off to deduct it from staff.
+                                    </small>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- How payroll treats this deduction for tax. Configured here
@@ -90,7 +108,7 @@
                                     <div class="form-check form-switch">
                                         <input class="form-check-input" type="checkbox" id="dtRetirement"
                                             [(ngModel)]="item.isRetirementContribution"
-                                            (ngModelChange)="onRetirementChange()">
+                                            (ngModelChange)="onRetirementChange()" [disabled]="item.isEmployerCost">
                                         <label for="dtRetirement" class="form-check-label" style="font-size:0.8rem;">
                                             <strong>Retirement contribution (pension / provident fund)</strong>
                                         </label>
@@ -108,7 +126,7 @@
                                     <div class="form-check form-switch">
                                         <input class="form-check-input" type="checkbox" id="dtTaxDeductible"
                                             [(ngModel)]="item.isTaxDeductible"
-                                            [disabled]="item.isRetirementContribution">
+                                            [disabled]="item.isRetirementContribution || item.isEmployerCost">
                                         <label for="dtTaxDeductible" class="form-check-label" style="font-size:0.8rem;">
                                             <strong>Tax deductible</strong>
                                         </label>
@@ -207,6 +225,7 @@
                                     <span *ngIf="c.calculationMethod !== 1">{{ c.defaultValue | number:'1.0-2' }}</span>
                                 </span>
                                 <span *ngIf="!c.isSystemComputed && !c.appliesToAll" class="text-muted">Per employee</span>
+                                <span *ngIf="c.isEmployerCost" class="badge bg-warning text-dark ms-1" title="Paid by the school, not deducted from pay">Employer pays</span>
                             </td>
                             <td class="text-nowrap">
                                 <span *ngIf="c.isTaxDeductible" class="badge bg-success"

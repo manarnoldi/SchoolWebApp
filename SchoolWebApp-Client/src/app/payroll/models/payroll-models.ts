@@ -37,6 +37,8 @@ export class DeductionType extends ResourceModel<DeductionType> {
     public taxDeductibleCap?: number | null;
     // Pooled with NSSF under the retirement relief limits.
     public isRetirementContribution?: boolean;
+    // Paid by the employer, not deducted from pay (NITA where the school bears it).
+    public isEmployerCost?: boolean;
     // Liability account credited when payroll posts to the GL; null uses the general one.
     public liabilityAccountId?: number | null;
     public description?: string;
@@ -165,6 +167,9 @@ export class Payslip extends ResourceModel<Payslip> {
     public departmentName?: string;
     public bankName?: string;
     public bankBranch?: string;
+    // Levies the employer pays for this employee (never off net pay), and their lines.
+    public employerCosts?: number;
+    public employerCostLines?: {name?: string; code?: string; amount?: number}[];
     public bankAccountNumber?: string;
     public basicSalary?: number;
     public houseAllowance?: number;

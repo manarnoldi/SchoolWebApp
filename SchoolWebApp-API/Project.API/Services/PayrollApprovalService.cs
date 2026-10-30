@@ -183,11 +183,13 @@ namespace SchoolWebApp.API.Services
         /// <summary>
         /// Builds, but does not save, the journal for an approved payroll period.
         ///
-        /// Debit  salary expense  = gross pay + employer NSSF + net pay rounding
+        /// Debit  salary expense  = gross pay + employer NSSF and Housing Levy + other
+        ///                          employer-paid levies (NITA) + net pay rounding
         /// Credit cash            = net pay
         /// Credit PAYE / NSSF (employee + employer) / SHIF / Housing Levy payables
-        /// Credit each other deduction to its own liability account (pension scheme,
-        ///        SACCO, welfare) - or the general payroll deductions account
+        /// Credit each other deduction, and each employer-paid levy, to its own liability
+        ///        account (pension scheme, SACCO, welfare, NITA) - or the general payroll
+        ///        deductions account
         /// Credit staff loans receivable = loan and advance instalments recovered
         ///
         /// It is dated the last day of the payroll month: the salaries are that
@@ -253,7 +255,7 @@ namespace SchoolWebApp.API.Services
                 var accountId = category.SalaryExpenseAccountId ?? salaryExpId;
 
                 Line(accountId,
-                    group.Sum(p => p.GrossPay + p.NssfEmployer + p.AhlEmployer + p.RoundingAdjustment), 0,
+                    group.Sum(p => p.GrossPay + p.NssfEmployer + p.AhlEmployer + p.EmployerCosts + p.RoundingAdjustment), 0,
                     $"Salary expense - {categoryName} - {period.Name}",
                     $"a salary expense account for the '{categoryName}' staff category (or SalaryExpenseAccountId)");
             }

@@ -9,9 +9,9 @@ import {AuthService} from '@/core/services/auth.service';
 import {ApprovalService} from '@/approvals/services/approval.service';
 import {ApprovalRequestStatus} from '@/approvals/models/approval.models';
 
-// Payroll Processing: the periods on top (create, process, approve) and the
-// chosen period's payslips underneath (check, fix statutory numbers, print), so
-// the whole monthly run happens on one page.
+// Payroll Processing: the periods (create, process, approve), with a period's
+// payslips in a pop-up to check them and fix statutory numbers and bank details.
+// Payslips are printed from Payroll Reports > Payslips.
 //
 // A processed payroll goes through the Payroll approval workflow - reviewed, then
 // approved - when the school has it on; otherwise it is approved with one click.
@@ -29,8 +29,10 @@ export class PayrollPeriodsComponent implements OnInit {
     periods: PayrollPeriod[] = [];
     // The period whose payslips show below the table.
     selectedPeriodId: number | null = null;
-    // Bumped after a (re-)process so the payslips below reload.
+    // Bumped after a (re-)process so the payslips reload.
     payslipsReload = 0;
+    // The payslips pop-up for the selected period.
+    payslipsOpen = false;
 
     // Approval: whether the workflow is on, each period's request, and the period
     // whose approval pop-up is open.
@@ -144,6 +146,7 @@ export class PayrollPeriodsComponent implements OnInit {
 
     selectPeriod = (p: PayrollPeriod) => {
         this.selectedPeriodId = +p.id;
+        this.payslipsOpen = true;
     };
 
     isSelected = (p: PayrollPeriod): boolean => +p.id === this.selectedPeriodId;
@@ -190,6 +193,7 @@ export class PayrollPeriodsComponent implements OnInit {
                         this.toastr.success(isRerun ? 'Payroll re-processed successfully.' : 'Payroll processed successfully.');
                         // Show the new payslips straight away for checking.
                         this.selectedPeriodId = +p.id;
+                        this.payslipsOpen = true;
                         this.load(true);
                     },
                     error: (err) => this.toastr.error(err.error?.message || 'Error processing.')

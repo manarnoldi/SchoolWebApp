@@ -49,6 +49,9 @@ namespace SchoolWebApp.Core.Entities.Payroll
         /// payroll journal can charge it to salary expense and credit the levy payable.
         /// </summary>
         public decimal AhlEmployer { get; set; }
+        // Other levies the employer pays for this employee (deduction types marked
+        // IsEmployerCost, such as NITA). Their lines are kept with the deductions.
+        public decimal EmployerCosts { get; set; }
 
         // Other deductions
         public decimal OtherDeductions { get; set; }

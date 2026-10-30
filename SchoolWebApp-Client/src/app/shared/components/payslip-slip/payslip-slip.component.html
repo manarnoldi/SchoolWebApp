@@ -14,9 +14,10 @@
         <div><span class="k">KRA PIN</span><span class="v">{{ p.kraPin || '-' }}</span></div>
         <div><span class="k">ID No</span><span class="v">{{ p.idNumber || '-' }}</span></div>
         <div><span class="k">NSSF No</span><span class="v">{{ p.nssfNumber || '-' }}</span></div>
-        <div><span class="k">SHA No</span><span class="v">{{ p.shaNumber || '-' }}</span></div>
         <div *ngIf="p.designationName"><span class="k">Role</span><span class="v">{{ p.designationName }}</span></div>
-        <div *ngIf="p.bankName"><span class="k">Paid to</span><span class="v">{{ p.bankName }}{{ p.bankBranch ? ', ' + p.bankBranch : '' }} - {{ p.bankAccountNumber || '-' }}</span></div>
+        <!-- SHA numbers are long; they get the full width rather than being cut short. -->
+        <div class="wide"><span class="k">SHA No</span><span class="v">{{ p.shaNumber || '-' }}</span></div>
+        <div *ngIf="p.bankName" class="wide"><span class="k">Paid to</span><span class="v">{{ p.bankName }}{{ p.bankBranch ? ', ' + p.bankBranch : '' }} - {{ p.bankAccountNumber || '-' }}</span></div>
     </div>
 </div>
 

@@ -40,6 +40,11 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" [class.active]="reportType === 'payslips'" (click)="setTab('payslips')" style="cursor:pointer;">
+                    <i class="fas fa-file-invoice-dollar me-1"></i> Payslips
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" [class.active]="reportType === 'p9'" (click)="setTab('p9')" style="cursor:pointer;">
                     <i class="fas fa-id-card me-1"></i> P9 Tax Cards
                 </a>
@@ -184,6 +189,11 @@
                             <tr class="table-info">
                                 <td colspan="2" class="text-end"><strong>Total Housing Levy Remittance</strong></td>
                                 <td class="text-end fw-bold">{{ totalAhlRemittance | number:'1.2-2' }}</td>
+                            </tr>
+                            <tr *ngFor="let l of employerLevies">
+                                <td><strong>{{ l.name }} (Employer)</strong></td>
+                                <td>Paid by the school - not deducted from pay</td>
+                                <td class="text-end fw-bold">{{ l.amount | number:'1.2-2' }}</td>
                             </tr>
                         </tbody>
                         <tfoot>
@@ -407,6 +417,11 @@
                         <td colspan="2" style="text-align:right;">Total Housing Levy Remittance</td>
                         <td class="num">{{ totalAhlRemittance | number:'1.2-2' }}</td>
                     </tr>
+                    <tr *ngFor="let l of employerLevies">
+                        <td class="strong">{{ l.name }} (Employer)</td>
+                        <td>Paid by the school - not deducted from pay</td>
+                        <td class="num">{{ l.amount | number:'1.2-2' }}</td>
+                    </tr>
                     <tr class="totals">
                         <td colspan="2" style="text-align:right;">GRAND TOTAL STATUTORY</td>
                         <td class="num">{{ totalStatutory | number:'1.2-2' }}</td>
@@ -476,6 +491,11 @@
                     <div class="line"></div><div class="label">Date</div>
                 </div>
             </div>
+        </div>
+
+        <!-- Payslips Tab: the loaded period's slips, printed one at a time or all, two to a sheet -->
+        <div class="mt-1" *ngIf="reportType === 'payslips' && loadedPeriod && payslips.length > 0">
+            <app-payroll-payslips mode="print" [period]="loadedPeriod"></app-payroll-payslips>
         </div>
 
         <!-- P9 Tab: one employee's tax deduction card for the year -->

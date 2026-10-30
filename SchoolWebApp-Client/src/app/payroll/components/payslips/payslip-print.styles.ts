@@ -53,7 +53,10 @@ html, body { margin: 0; padding: 0; background: #fff; }
 /* Employee: two columns of label/value pairs so six identifiers take three lines */
 .payslip .payslip-employee { padding: 4px 8px; border-bottom: 1px solid #0000cd; }
 .payslip .emp-name { font-weight: bold; text-transform: uppercase; margin-bottom: 1px; }
-.payslip .emp-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 10px; row-gap: 0; }
+/* Two equal columns that never grow to fit a long value (it is cut short instead);
+   the bank line runs across both. */
+.payslip .emp-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 10px; row-gap: 0; }
+.payslip .emp-grid > div.wide { grid-column: 1 / -1; }
 .payslip .emp-grid > div { display: flex; gap: 4px; }
 .payslip .emp-grid .k { min-width: 15mm; }
 .payslip .emp-grid .k::after { content: ':'; }

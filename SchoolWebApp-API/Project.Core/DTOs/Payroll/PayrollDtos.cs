@@ -42,6 +42,8 @@ namespace SchoolWebApp.Core.DTOs.Payroll
         public decimal? TaxDeductibleCap { get; set; }
         /// <summary>Pooled with NSSF under the retirement relief limits.</summary>
         public bool IsRetirementContribution { get; set; }
+        /// <summary>Paid by the employer, not deducted from pay (NITA where the school bears it).</summary>
+        public bool IsEmployerCost { get; set; }
         /// <summary>Liability account credited when payroll posts to the GL; null uses the general one.</summary>
         public int? LiabilityAccountId { get; set; }
         [StringLength(500)] public string? Description { get; set; }
@@ -227,6 +229,9 @@ namespace SchoolWebApp.Core.DTOs.Payroll
         // The employer's matching Housing Levy. Never shown on a payslip - it is an
         // employer cost - but reported for remittance with the employee share.
         public decimal AhlEmployer { get; set; }
+        /// <summary>Levies the employer pays (NITA where the school bears it); never off net pay.</summary>
+        public decimal EmployerCosts { get; set; }
+        public List<PayslipLineDto> EmployerCostLines { get; set; } = new();
         public decimal OtherDeductions { get; set; }
         public decimal LoanDeductions { get; set; }
         public decimal TotalDeductions { get; set; }

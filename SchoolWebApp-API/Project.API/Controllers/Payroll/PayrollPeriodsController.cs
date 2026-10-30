@@ -243,6 +243,9 @@ namespace SchoolWebApp.API.Controllers.Payroll
                 .Where(e => e.IsSystemComputed).Select(e => e.Id).ToHashSet();
             var systemDeductionTypeIds = deductionTypes
                 .Where(d => d.IsSystemComputed).Select(d => d.Id).ToHashSet();
+            // Levies the school pays itself (NITA, where it bears it) rather than deducts.
+            var employerCostTypeIds = deductionTypes
+                .Where(d => d.IsEmployerCost).Select(d => d.Id).ToHashSet();
 
             // --- If re-processing, unwind the previous run before rebuilding ---
             if (period.Payslips.Any())
@@ -336,6 +339,11 @@ namespace SchoolWebApp.API.Controllers.Payroll
                         : (type.DefaultValue ?? 0m);
                     if (amount > 0) deductionLines.Add((type.Id, amount));
                 }
+
+                // Employer-paid levies are worked out like any deduction but never come
+                // off pay, count for tax or reliefs: they are a cost to the school, kept apart.
+                var employerLines = deductionLines.Where(l => employerCostTypeIds.Contains(l.TypeId)).ToList();
+                deductionLines = deductionLines.Where(l => !employerCostTypeIds.Contains(l.TypeId)).ToList();
 
                 // b. NSSF Employee - every tier in the set in force for this period.
                 var tierAmounts = nssfBands
@@ -506,6 +514,7 @@ namespace SchoolWebApp.API.Controllers.Payroll
                     Ahl = ahl,
                     NssfEmployer = nssfEmployer,
                     AhlEmployer = ahlEmployer,
+                    EmployerCosts = employerLines.Sum(l => l.Amount),
                     OtherDeductions = otherDeductions,
                     LoanDeductions = loanDeductions,
                     TotalDeductions = totalDeductions,
@@ -559,8 +568,9 @@ namespace SchoolWebApp.API.Controllers.Payroll
                     _unitOfWork.PayslipDeductions.Create(new PayslipDeduction
                     { PayslipId = payslip.Id, DeductionTypeId = ahlType.Id, Amount = ahl });
 
-                // Deduction lines - salary structure plus applies-to-all types
-                foreach (var line in deductionLines)
+                // Deduction lines - salary structure plus applies-to-all types - and the
+                // employer-paid levies, kept with them so the journal credits each to its account.
+                foreach (var line in deductionLines.Concat(employerLines))
                 {
                     _unitOfWork.PayslipDeductions.Create(new PayslipDeduction
                     { PayslipId = payslip.Id, DeductionTypeId = line.TypeId, Amount = line.Amount });

@@ -63,6 +63,15 @@ namespace SchoolWebApp.Core.Entities.Payroll
         /// marked here is handled by that pool and never also by IsTaxDeductible.
         /// </summary>
         public bool IsRetirementContribution { get; set; }
+        /// <summary>
+        /// Paid by the employer, not deducted from pay - NITA, where the school bears
+        /// the levy as the law intends. It is worked out like any other deduction
+        /// (per employee or applies to all, fixed or a percentage of gross) but never
+        /// comes off net pay or appears among the payslip's deductions: it is a cost
+        /// of employment, charged to salary expense and owed to the liability account
+        /// when payroll posts. A school that recovers the levy from staff leaves it off.
+        /// </summary>
+        public bool IsEmployerCost { get; set; }
 
         /// <summary>
         /// The liability account the deducted money is credited to when an approved

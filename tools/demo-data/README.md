@@ -52,7 +52,9 @@ shows a full, working school.
    KRA PIN, ID, NSSF and SHA numbers and bank account, brings back five former
    staff as a cook, two drivers, a cleaner and a guard, and gives everyone a salary
    structure (house and transport allowances, responsibility allowances, union
-   dues, SACCO, welfare, HELB, insurance and pension). Each month from January to
+   dues, SACCO, welfare, HELB, insurance and pension). NITA is set to be paid by
+   the school (KES 50 per employee, owed to a NITA Levy Payable account, 2150),
+   not deducted from pay. Each month from January to
    the last one ended by `--through` is processed by the accountant, reviewed and
    approved by two administrators through the Payroll approval workflow, and
    posted to the ledger at month end. Along the way: overtime for the drivers and
@@ -77,7 +79,7 @@ shows a full, working school.
 
 - Students and staff: names (same number of parts, title and capitals, and
   matching gender), phones, emails, addresses, ID / KRA / NHIF / NSSF
-  numbers, staff numbers, dates of birth (moved up to four months), health
+  numbers, staff numbers (renumbered EMP0001 up, in record order), dates of birth (moved up to four months), health
   notes and pick-up details. Admission numbers are kept.
 - Logins: user names and names follow their staff member; every login except
   `admin` gets the password `Demo@2026` (change with `--password`), so the demo

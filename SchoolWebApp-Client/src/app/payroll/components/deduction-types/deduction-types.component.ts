@@ -20,7 +20,7 @@ export class PayrollDeductionTypesComponent implements OnInit {
     dashboardTitle = 'Payroll: Deduction Types';
 
     items: DeductionType[] = [];
-    item: DeductionType = new DeductionType({isActive: true, isStatutory: false, isTaxDeductible: false, taxDeductibleCap: null, isRetirementContribution: false, liabilityAccountId: null, calculationMethod: 0, defaultValue: null, appliesToAll: false, isSystemComputed: false});
+    item: DeductionType = new DeductionType({isActive: true, isStatutory: false, isTaxDeductible: false, taxDeductibleCap: null, isRetirementContribution: false, isEmployerCost: false, liabilityAccountId: null, calculationMethod: 0, defaultValue: null, appliesToAll: false, isSystemComputed: false});
     editMode: boolean = false;
     showForm: boolean = false;
 
@@ -63,7 +63,7 @@ export class PayrollDeductionTypesComponent implements OnInit {
         });
     }
 
-    addNew() { this.item = new DeductionType({isActive: true, isStatutory: false, isTaxDeductible: false, taxDeductibleCap: null, isRetirementContribution: false, liabilityAccountId: null, calculationMethod: 0, defaultValue: null, appliesToAll: false, isSystemComputed: false}); this.editMode = false; this.showForm = true; }
+    addNew() { this.item = new DeductionType({isActive: true, isStatutory: false, isTaxDeductible: false, taxDeductibleCap: null, isRetirementContribution: false, isEmployerCost: false, liabilityAccountId: null, calculationMethod: 0, defaultValue: null, appliesToAll: false, isSystemComputed: false}); this.editMode = false; this.showForm = true; }
     edit(x: DeductionType) { this.item = new DeductionType(x); this.editMode = true; this.showForm = true; }
     cancel() { this.showForm = false; }
 
@@ -73,6 +73,15 @@ export class PayrollDeductionTypesComponent implements OnInit {
         if (this.item.isRetirementContribution) {
             this.item.isTaxDeductible = false;
             this.item.taxDeductibleCap = null;
+        }
+    }
+
+    // Paid by the school, so nothing is taken from the employee: no tax treatment applies.
+    onEmployerCostChange() {
+        if (this.item.isEmployerCost) {
+            this.item.isTaxDeductible = false;
+            this.item.taxDeductibleCap = null;
+            this.item.isRetirementContribution = false;
         }
     }
 

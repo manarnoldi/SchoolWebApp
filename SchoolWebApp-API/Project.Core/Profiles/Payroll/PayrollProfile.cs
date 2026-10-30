@@ -74,7 +74,9 @@ namespace SchoolWebApp.Core.Profiles.Payroll
                 .ForMember(d => d.DesignationName, o => o.MapFrom(s =>
                     s.StaffDetails != null && s.StaffDetails.Designation != null ? s.StaffDetails.Designation.Name : null))
                 .ForMember(d => d.Earnings, o => o.MapFrom(s => s.Earnings))
-                .ForMember(d => d.Deductions, o => o.MapFrom(s => s.Deductions));
+                // Employer-paid levies are not deductions from the employee: they are listed apart.
+                .ForMember(d => d.Deductions, o => o.MapFrom(s => s.Deductions.Where(x => x.DeductionType == null || !x.DeductionType.IsEmployerCost)))
+                .ForMember(d => d.EmployerCostLines, o => o.MapFrom(s => s.Deductions.Where(x => x.DeductionType != null && x.DeductionType.IsEmployerCost)));
 
             CreateMap<PayslipEarning, PayslipLineDto>()
                 .ForMember(d => d.Name, o => o.MapFrom(s => s.EarningType != null ? s.EarningType.Name : null))

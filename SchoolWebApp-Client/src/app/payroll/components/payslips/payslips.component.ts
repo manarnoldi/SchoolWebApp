@@ -1,5 +1,6 @@
 import {Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
+import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {forkJoin, of} from 'rxjs';
 import {Payslip, PayrollPeriod} from '@/payroll/models/payroll-models';
 import {PayrollPeriodService} from '@/payroll/services/payroll-services';
@@ -9,10 +10,11 @@ import {GlobalSettingService} from '@/settings/services/global-setting.service';
 import {printInFrame, removePrintFrame} from '@/shared/utils/print-frame';
 import {PAYSLIP_PRINT_CSS} from './payslip-print.styles';
 
-// The payslips of one payroll period: list, search, statutory-number fixes and
-// printing. It sits under the periods table on the Processing page, which
-// passes in the period chosen there - so processing, checking the slips,
-// approving and printing all happen in one place.
+// The payslips of one payroll period. Two uses:
+// - "check": the Processing page's pop-up - list and totals, any slip viewed on
+//   screen, and the statutory numbers and bank details fixed - before approval;
+// - "print": the Payslips tab under Payroll Reports - print one or all, for an
+//   approved period.
 @Component({
     selector: 'app-payroll-payslips',
     templateUrl: './payslips.component.html',
@@ -21,12 +23,19 @@ import {PAYSLIP_PRINT_CSS} from './payslip-print.styles';
 export class PayrollPayslipsComponent implements OnInit, OnChanges, OnDestroy {
     // The rendered slips, copied into the print frame by runPrint().
     @ViewChild('printArea') printArea?: ElementRef<HTMLElement>;
+    // The slip being viewed, rendered hidden and shown in a frame with the payslip stylesheet.
+    @ViewChild('previewSource') previewSource?: ElementRef<HTMLElement>;
+    previewHtml: SafeHtml | null = null;
 
     // The period whose payslips are shown; null until one is chosen.
     @Input() period: PayrollPeriod | null = null;
     // Bumped by the Processing page after a (re-)process, so the slips reload
     // even though the same period stays selected.
     @Input() reloadToken = 0;
+    @Input() mode: 'check' | 'print' = 'check';
+
+    // The slip shown on screen in check mode; null when none is open.
+    previewOne: Payslip | null = null;
 
     payslips: Payslip[] = [];
 
@@ -60,7 +69,8 @@ export class PayrollPayslipsComponent implements OnInit, OnChanges, OnDestroy {
         private svc: PayrollPeriodService,
         private schoolSvc: SchoolDetailsService,
         private staffSvc: StaffDetailsService,
-        private globalSettingSvc: GlobalSettingService
+        private globalSettingSvc: GlobalSettingService,
+        private sanitizer: DomSanitizer
     ) {}
 
     ngOnInit(): void {
@@ -83,7 +93,7 @@ export class PayrollPayslipsComponent implements OnInit, OnChanges, OnDestroy {
         // period (after re-processing) keeps the search and page.
         let periodChanged = changes['period'] &&
             +(changes['period'].previousValue?.id || 0) !== +(this.period?.id || 0);
-        if (periodChanged) this.searchText = '';
+        if (periodChanged) { this.searchText = ''; this.previewOne = null; }
         if (periodChanged || changes['reloadToken']) this.loadPayslips(!periodChanged);
     }
 
@@ -212,6 +222,27 @@ export class PayrollPayslipsComponent implements OnInit, OnChanges, OnDestroy {
     // row still shows the payroll that was run before they were excluded.
     printable(): Payslip[] {
         return this.filtered().filter((p) => !p.excludeFromPayroll);
+    }
+
+    // Check mode: show one slip on screen, as it will print.
+    preview(p: Payslip): void {
+        this.previewOne = this.previewOne?.id === p.id ? null : p;
+        this.previewHtml = null;
+        if (!this.previewOne) return;
+        // Let Angular render the slip, then show it with the stylesheet it prints with.
+        setTimeout(() => {
+            let slip = this.previewSource?.nativeElement.innerHTML || '';
+            this.previewHtml = this.sanitizer.bypassSecurityTrustHtml(
+                `<!doctype html><html><head><meta charset="utf-8"><style>${PAYSLIP_PRINT_CSS}
+                body { display: flex; justify-content: center; padding: 8px; }</style></head><body>${slip}</body></html>`);
+        });
+    }
+
+    // The frame takes the slip's height, so the pop-up scrolls rather than the frame.
+    fitPreview(e: Event): void {
+        let frame = e.target as HTMLIFrameElement;
+        let h = frame.contentDocument?.body?.scrollHeight;
+        if (h) frame.style.height = (h + 20) + 'px';
     }
 
     print(p: Payslip): void {

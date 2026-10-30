@@ -37,7 +37,9 @@ export class PayrollReportsComponent implements OnInit, OnDestroy {
     selectedPeriodId: number | null = null;
     payslips: Payslip[] = [];
     // The open tab, kept in the URL (?tab=) so a refresh or a shared link opens it.
-    reportType: 'muster' | 'statutory' | 'bank' | 'p9' = 'muster';
+    reportType: 'muster' | 'statutory' | 'bank' | 'payslips' | 'p9' = 'muster';
+    // The period the loaded report is for - the Payslips tab prints its slips.
+    loadedPeriod: PayrollPeriod | null = null;
 
     // P9A tax deduction cards: a year's pay and PAYE per employee, from approved payroll.
     p9Years: number[] = [];
@@ -87,7 +89,9 @@ export class PayrollReportsComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         let tab = this.route.snapshot.queryParamMap.get('tab');
-        if (tab === 'muster' || tab === 'statutory' || tab === 'bank' || tab === 'p9') this.reportType = tab;
+        if (tab === 'muster' || tab === 'statutory' || tab === 'bank' || tab === 'payslips' || tab === 'p9') this.reportType = tab;
+        // A link from Processing names the period to open.
+        let fromLink = +(this.route.snapshot.queryParamMap.get('periodId') || 0);
         this.svc.get('/payrollPeriods').subscribe({
             // Reports only cover payroll that has been signed off. A Draft or
             // Processed period can still be re-run, so its figures are not final
@@ -96,6 +100,7 @@ export class PayrollReportsComponent implements OnInit, OnDestroy {
                 this.periods = (data || []).filter((p) => p.status === 2 || p.status === 3);
                 this.p9Years = [...new Set(this.periods.map((p) => +p.year!))].sort((a, b) => b - a);
                 this.p9Year = this.p9Years[0] ?? null;
+                if (fromLink && this.periods.some((p) => +p.id === fromLink)) { this.selectedPeriodId = fromLink; this.loadReport(); }
                 if (this.reportType === 'p9') this.loadP9();
             },
             error: (err) => this.toastr.error(err.error?.message || 'Error loading periods.')
@@ -118,7 +123,7 @@ export class PayrollReportsComponent implements OnInit, OnDestroy {
         removePrintFrame();
     }
 
-    setTab = (tab: 'muster' | 'statutory' | 'bank' | 'p9') => {
+    setTab = (tab: 'muster' | 'statutory' | 'bank' | 'payslips' | 'p9') => {
         this.reportType = tab;
         this.router.navigate([], {relativeTo: this.route, queryParams: {tab}, queryParamsHandling: 'merge', replaceUrl: true});
         if (tab === 'p9' && !this.p9Loaded) this.loadP9();
@@ -203,8 +208,17 @@ export class PayrollReportsComponent implements OnInit, OnDestroy {
     get totalNssfRemittance(): number { return this.totalNssf + this.totalNssfEmployer; }
     // Housing Levy is remitted as the employee's 1.5% plus the employer's match.
     get totalAhlRemittance(): number { return this.totalAhl + this.totalAhlEmployer; }
+    // Levies the school pays itself (NITA where it bears it), by type.
+    get employerLevies(): {name: string; amount: number}[] {
+        let byName = new Map<string, number>();
+        for (let p of this.payslips || [])
+            for (let l of p.employerCostLines || [])
+                byName.set(l.name || 'Levy', (byName.get(l.name || 'Levy') || 0) + (+l.amount! || 0));
+        return [...byName].map(([name, amount]) => ({name, amount}));
+    }
+    get totalEmployerLevies(): number { return this.employerLevies.reduce((s, l) => s + l.amount, 0); }
     get totalStatutory(): number {
-        return this.totalPaye + this.totalNssfRemittance + this.totalShif + this.totalAhlRemittance;
+        return this.totalPaye + this.totalNssfRemittance + this.totalShif + this.totalAhlRemittance + this.totalEmployerLevies;
     }
 
     loadReport = () => {
@@ -216,6 +230,7 @@ export class PayrollReportsComponent implements OnInit, OnDestroy {
             next: (data) => {
                 this.payslips = data || [];
                 this.page = 1;
+                this.loadedPeriod = this.periods.find((p) => +p.id === +this.selectedPeriodId!) || null;
             },
             error: (err) => this.toastr.error(err.error?.message || 'Error loading report.')
         });
