@@ -1,8 +1,9 @@
 # Demo data
 
 The `shulenova` demo site runs on a copy of a real school's database with
-every person in it replaced by an invented one. Marks, fees, payroll, teaching
-documents and elections are kept, so the demo shows a full, working school.
+every person in it replaced by an invented one. Marks, teaching documents and
+elections are kept, and a year of finance and payroll is invented, so the demo
+shows a full, working school.
 
 ## Making a fresh copy
 
@@ -41,7 +42,26 @@ documents and elections are kept, so the demo shows a full, working school.
    Payments run daily up to `--through` (set it to the demo day), so the
    dashboard shows money collected "today".
 
-4. Check nothing is left from the original:
+4. Add a year of invented payroll, with the API still running:
+
+   ```
+   MYSQL_PWD=... node tools/demo-data/payroll.js --db shulenova --api http://localhost:5198 --through 2026-11-05
+   ```
+
+   It deletes the payroll in the copy, then fills in every paid staff member's
+   KRA PIN, ID, NSSF and SHA numbers and bank account, brings back five former
+   staff as a cook, two drivers, a cleaner and a guard, and gives everyone a salary
+   structure (house and transport allowances, responsibility allowances, union
+   dues, SACCO, welfare, HELB, insurance and pension). Each month from January to
+   the last one ended by `--through` is processed by the accountant, reviewed and
+   approved by two administrators through the Payroll approval workflow, and
+   posted to the ledger at month end. Along the way: overtime for the drivers and
+   cook in term time, an acting allowance (March to May), leave allowance in
+   August, a promotion to deputy head in July, a teacher joining in May and one
+   leaving at the end of June, and loans and salary advances. It reopens the
+   terms finance.js closed while it posts into them, and closes them again.
+
+5. Check nothing is left from the original:
 
    ```
    MYSQL_PWD=... node tools/demo-data/check.js --source swikunda --db shulenova
@@ -51,7 +71,7 @@ documents and elections are kept, so the demo shows a full, working school.
    name still found, by table. Ordinary words that are also names (Junior,
    Christian, Adam and Love in CRE lessons) are expected.
 
-5. Dump `shulenova` and restore it on the demo site's database.
+6. Dump `shulenova` and restore it on the demo site's database.
 
 ## What changes
 

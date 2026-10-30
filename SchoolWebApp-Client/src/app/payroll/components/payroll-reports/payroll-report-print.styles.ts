@@ -63,6 +63,24 @@ table.rp tr.totals td { font-weight: bold; border-top: 2px solid #000; backgroun
 /* Keep the header shading and totals bands when printed */
 * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
+/* A report printed one person to a page (the P9 cards). */
+.rp-page { break-after: page; page-break-after: always; }
+.rp-page:last-child { break-after: auto; page-break-after: auto; }
+.rp-form { font-size: 8pt; text-align: center; margin-bottom: 1mm; }
+.p9-details { display: flex; gap: 6mm; margin: 2mm 0 3mm; }
+.p9-details > div { flex: 1; border: 1px solid #555; padding: 1.5mm 2mm; }
+.p9-details .k { color: #333; font-size: 0.9em; }
+.p9-details .v { font-weight: bold; }
+/* Eighteen columns across the page: smaller type, and headings that wrap. */
+table.rp.p9 th, table.rp.p9 td { font-size: 7pt; }
+table.rp.p9 th { white-space: normal; text-align: right; vertical-align: bottom; }
+table.rp.p9 th:first-child { text-align: left; }
+table.rp th.code { text-align: center; }
+table.rp td.month { white-space: nowrap; }
+.p9-foot { display: flex; gap: 6mm; margin-top: 3mm; break-inside: avoid; page-break-inside: avoid; }
+.p9-foot > div { flex: 1; }
+.p9-foot .line { border-bottom: 1px solid #000; height: 6mm; margin-bottom: 1mm; }
+
 /* Sign-off */
 .rp-signoff {
     display: flex;

@@ -3,8 +3,8 @@
 <section class="content">
     <div class="container-fluid px-1">
 
-        <!-- Period Selector + Report Type -->
-        <div class="row g-1 mb-2 align-items-end">
+        <!-- Period Selector (the P9 tab picks a year instead) -->
+        <div class="row g-1 mb-2 align-items-end" *ngIf="reportType !== 'p9'">
             <div class="col-md-4">
                 <label class="form-label mb-0" style="font-size:0.8rem;">Payroll Period <small class="text-muted">(approved only)</small></label>
                 <select class="form-select form-select-sm" [(ngModel)]="selectedPeriodId">
@@ -23,20 +23,25 @@
         </div>
 
         <!-- Report Type Tabs -->
-        <ul class="nav nav-tabs mb-0" *ngIf="payslips.length > 0">
+        <ul class="nav nav-tabs mb-0">
             <li class="nav-item">
-                <a class="nav-link" [class.active]="reportType === 'muster'" (click)="reportType = 'muster'" style="cursor:pointer;">
+                <a class="nav-link" [class.active]="reportType === 'muster'" (click)="setTab('muster')" style="cursor:pointer;">
                     <i class="fas fa-table me-1"></i> Muster Roll
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" [class.active]="reportType === 'statutory'" (click)="reportType = 'statutory'" style="cursor:pointer;">
+                <a class="nav-link" [class.active]="reportType === 'statutory'" (click)="setTab('statutory')" style="cursor:pointer;">
                     <i class="fas fa-landmark me-1"></i> Statutory Returns
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" [class.active]="reportType === 'bank'" (click)="reportType = 'bank'" style="cursor:pointer;">
+                <a class="nav-link" [class.active]="reportType === 'bank'" (click)="setTab('bank')" style="cursor:pointer;">
                     <i class="fas fa-university me-1"></i> Bank Schedule
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" [class.active]="reportType === 'p9'" (click)="setTab('p9')" style="cursor:pointer;">
+                    <i class="fas fa-id-card me-1"></i> P9 Tax Cards
                 </a>
             </li>
         </ul>
@@ -243,7 +248,7 @@
                             <td>{{ (page-1) * pageSize + i + 1 }}</td>
                             <td><strong>{{ ps.staffName }}</strong></td>
                             <td><small>{{ ps.staffUpi }}</small></td>
-                            <td>{{ ps.bankName }}</td>
+                            <td>{{ ps.bankName }}{{ ps.bankBranch ? ', ' + ps.bankBranch : '' }}</td>
                             <td>{{ ps.bankAccountNumber }}</td>
                             <td class="text-end fw-bold">{{ ps.netPay | number:'1.2-2' }}</td>
                         </tr>
@@ -450,7 +455,7 @@
                         <td>{{ i + 1 }}</td>
                         <td class="name">{{ ps.staffName }}</td>
                         <td>{{ ps.staffUpi }}</td>
-                        <td>{{ ps.bankName }}</td>
+                        <td>{{ ps.bankName }}{{ ps.bankBranch ? ', ' + ps.bankBranch : '' }}</td>
                         <td>{{ ps.bankAccountNumber }}</td>
                         <td class="num">{{ ps.netPay | number:'1.2-2' }}</td>
                     </tr>
@@ -473,8 +478,132 @@
             </div>
         </div>
 
+        <!-- P9 Tab: one employee's tax deduction card for the year -->
+        <div class="card card-outline card-primary" *ngIf="reportType === 'p9'">
+            <div class="card-header py-1 d-flex flex-wrap gap-2 justify-content-between align-items-center bg-info text-white">
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <strong><i class="fas fa-id-card me-1"></i> P9A Tax Deduction Card</strong>
+                    <select class="form-select form-select-sm" style="width:auto;" [(ngModel)]="p9Year" (ngModelChange)="p9YearChanged()" title="Year">
+                        <option *ngFor="let y of p9Years" [ngValue]="y">{{ y }}</option>
+                    </select>
+                    <select class="form-select form-select-sm" style="width:auto; max-width:320px;" [(ngModel)]="p9StaffId" title="Employee" [disabled]="!p9Employees.length">
+                        <option *ngFor="let e of p9Employees" [ngValue]="e.staffId">{{ e.name }}</option>
+                    </select>
+                    <span class="badge bg-light text-dark" *ngIf="p9Loaded">{{ p9Employees.length }} employees</span>
+                </div>
+                <div>
+                    <button class="btn btn-light btn-sm" (click)="printP9(false)" [disabled]="!p9Selected()" title="Print this employee's card (A4 landscape)">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                    <button class="btn btn-light btn-sm ms-1" (click)="printP9(true)" [disabled]="!p9Employees.length" title="Print every employee's card, one to a page">
+                        <i class="fas fa-print"></i> Print all
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-2" *ngIf="p9Selected() as e">
+                <div class="row g-2 mb-2" style="font-size:0.8rem;">
+                    <div class="col-md-3"><small class="text-muted d-block">Employee</small><strong>{{ e.name }}</strong></div>
+                    <div class="col-md-2"><small class="text-muted d-block">Staff No</small><strong>{{ e.staffNo || '-' }}</strong></div>
+                    <div class="col-md-2"><small class="text-muted d-block">KRA PIN</small><strong [class.text-danger]="!e.kraPin">{{ e.kraPin || 'Missing' }}</strong></div>
+                    <div class="col-md-2"><small class="text-muted d-block">Employer PIN</small><strong>{{ employerKraPin || '-' }}</strong></div>
+                    <div class="col-md-3 text-md-end"><small class="text-muted d-block">PAYE for {{ p9Year }}</small><strong class="text-success">{{ p9Total(e, 'paye') | number:'1.2-2' }}</strong></div>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table class="table table-sm table-bordered table-hover mb-1" style="font-size:0.74rem;">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Month</th>
+                                <th *ngFor="let c of p9Cols" class="text-end" [title]="c.title">
+                                    <span class="d-block text-muted">{{ c.code || '&nbsp;' }}</span>{{ c.title }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let m of p9Months(e)" [class.text-muted]="!m.row">
+                                <td>{{ m.name }}</td>
+                                <td *ngFor="let c of p9Cols" class="text-end">{{ m.row ? (m.row[c.key] | number:'1.2-2') : '' }}</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-warning fw-bold">
+                                <td>Totals</td>
+                                <td *ngFor="let c of p9Cols" class="text-end">{{ p9Total(e, c.key) | number:'1.2-2' }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <small class="text-muted">
+                    From approved payroll only. D is taxable pay (non-taxable allowances are left out); housing levy, SHIF and
+                    PRMF come off before tax, as the Tax Laws (Amendment) Act 2024 provides.
+                </small>
+            </div>
+            <div class="card-body text-center text-muted p-4" *ngIf="p9Loaded && !p9Employees.length">
+                <i class="fas fa-info-circle fa-2x mb-2 d-block"></i>
+                No approved payroll for {{ p9Year }} yet.
+            </div>
+            <div class="card-body text-center text-muted p-4" *ngIf="!p9Years.length">
+                <i class="fas fa-info-circle fa-2x mb-2 d-block"></i>
+                No approved payroll yet.
+            </div>
+            <div class="card-body text-center text-muted p-3" *ngIf="p9Loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+        </div>
+
+        <!-- P9 print source: never shown. printP9() fills p9Printing and prints it,
+             one card to a page. -->
+        <div #p9Print style="display:none;">
+            <div class="rp-page" *ngFor="let e of p9Printing">
+                <div class="rp-form">KENYA REVENUE AUTHORITY - DOMESTIC TAXES DEPARTMENT</div>
+                <div class="rp-header">
+                    <div class="rp-title">P9A - TAX DEDUCTION CARD YEAR {{ p9Year }}</div>
+                </div>
+                <div class="p9-details">
+                    <div><div class="k">Employer's name</div><div class="v">{{ schoolName }}</div></div>
+                    <div><div class="k">Employer's PIN</div><div class="v">{{ employerKraPin || '-' }}</div></div>
+                    <div><div class="k">Employee's main name</div><div class="v">{{ mainName(e) }}</div></div>
+                    <div><div class="k">Employee's other names</div><div class="v">{{ otherNames(e) || '-' }}</div></div>
+                    <div><div class="k">Employee's PIN</div><div class="v">{{ e.kraPin || '-' }}</div></div>
+                </div>
+                <table class="rp p9">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th *ngFor="let c of p9Cols" class="num">{{ c.title }}</th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th *ngFor="let c of p9Cols" class="code">{{ c.code }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let m of p9Months(e)">
+                            <td class="month">{{ m.name }}</td>
+                            <td *ngFor="let c of p9Cols" class="num">{{ m.row ? (m.row[c.key] | number:'1.2-2') : '' }}</td>
+                        </tr>
+                        <tr class="totals">
+                            <td>TOTALS</td>
+                            <td *ngFor="let c of p9Cols" class="num">{{ p9Total(e, c.key) | number:'1.2-2' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="p9-foot">
+                    <div>
+                        <div>Total chargeable pay (col. H): <strong>KES {{ p9Total(e, 'chargeable') | number:'1.2-2' }}</strong></div>
+                        <div>Total tax (col. L): <strong>KES {{ p9Total(e, 'paye') | number:'1.2-2' }}</strong></div>
+                        <div style="margin-top:2mm;">Housing levy, SHIF and PRMF are allowable deductions (Tax Laws (Amendment) Act 2024).</div>
+                    </div>
+                    <div>
+                        <div class="line"></div>
+                        <div>Employer's signature and stamp</div>
+                    </div>
+                    <div>
+                        <div>Printed {{ printedOn | date:'d MMM yyyy' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- No data message -->
-        <div class="text-center text-muted p-4" *ngIf="payslips.length === 0 && selectedPeriodId">
+        <div class="text-center text-muted p-4" *ngIf="payslips.length === 0 && selectedPeriodId && reportType !== 'p9'">
             <i class="fas fa-info-circle fa-2x mb-2 d-block"></i>
             <p>Select a period and click "Load Report" to view payroll reports.</p>
         </div>

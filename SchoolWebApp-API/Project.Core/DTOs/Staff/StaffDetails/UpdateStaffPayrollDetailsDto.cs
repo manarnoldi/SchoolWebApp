@@ -18,6 +18,11 @@ namespace SchoolWebApp.Core.DTOs.Staff.StaffDetails
         /// <summary>SHA number - still stored in the legacy NhifNo column.</summary>
         [StringLength(255)] public string? NhifNo { get; set; }
 
+        /// <summary>Where net pay is sent.</summary>
+        [StringLength(100)] public string? BankName { get; set; }
+        [StringLength(100)] public string? BankBranch { get; set; }
+        [StringLength(50)] public string? BankAccountNumber { get; set; }
+
         /// <summary>
         /// True for people held on the staff list but not paid through payroll,
         /// such as suppliers and contractors.

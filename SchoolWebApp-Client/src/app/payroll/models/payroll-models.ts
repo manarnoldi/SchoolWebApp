@@ -164,6 +164,7 @@ export class Payslip extends ResourceModel<Payslip> {
     public designationName?: string;
     public departmentName?: string;
     public bankName?: string;
+    public bankBranch?: string;
     public bankAccountNumber?: string;
     public basicSalary?: number;
     public houseAllowance?: number;
@@ -213,4 +214,35 @@ export class PayrollPeriod extends ResourceModel<PayrollPeriod> {
     public totalNssf?: number;
     public totalShif?: number;
     constructor(m?: Partial<PayrollPeriod>) { super(m); }
+}
+
+// One month on a P9A tax deduction card, in KRA's columns.
+export interface P9Row {
+    month: number;
+    basic: number;          // A
+    benefits: number;       // B - taxable allowances and benefits
+    quarters: number;       // C
+    gross: number;          // D
+    e1: number;             // E1 - the limit as a share of basic pay
+    e2: number;             // E2 - retirement contributions paid
+    e3: number;             // E3 - the fixed monthly limit
+    ownerOccupiedInterest: number; // F
+    retirement: number;     // G - retirement relief allowed
+    ahl: number;
+    shif: number;
+    otherDeductible: number;
+    chargeable: number;     // H
+    taxCharged: number;     // J
+    personalRelief: number; // K
+    insuranceRelief: number;
+    paye: number;           // L
+}
+
+export interface P9Employee {
+    staffId: number;
+    name: string;
+    staffNo?: string;
+    kraPin?: string;
+    idNumber?: string;
+    rows: P9Row[];
 }

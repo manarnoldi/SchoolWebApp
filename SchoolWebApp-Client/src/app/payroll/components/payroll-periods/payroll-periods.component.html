@@ -85,7 +85,8 @@
                             [class.table-primary]="isSelected(p)"
                             [title]="'Show the payslips for ' + p.name">
                             <td><strong>{{ p.name }}</strong></td>
-                            <td><span class="badge" [ngClass]="getStatusClass(p.status!)">{{ getStatusLabel(p.status!) }}</span></td>
+                            <td><span class="badge" [ngClass]="statusClass(p)">{{ statusLabel(p) }}</span>
+                                <span *ngIf="awaitsMe(p)" class="badge rounded-pill bg-warning text-dark ms-1" title="Waiting for your approval">Your turn</span></td>
                             <td class="text-center"><span class="badge bg-info">{{ p.payslipCount || 0 }}</span></td>
                             <td class="text-end">{{ p.totalGross | number:'1.2-2' }}</td>
                             <td class="text-end fw-bold">{{ p.totalNet | number:'1.2-2' }}</td>
@@ -103,11 +104,17 @@
                                 </button>
                                 <!-- A processed period can be run again until it is approved, so
                                      salary or staff corrections can be picked up. -->
-                                <button *ngIf="p.status === 1" class="btn btn-sm btn-outline-warning ms-1" (click)="process(p)" title="Re-process (replaces the current payslips)">
+                                <button *ngIf="p.status === 1 && !withApprovers(p)" class="btn btn-sm btn-outline-warning ms-1" (click)="process(p)" title="Re-process (replaces the current payslips)">
                                     <i class="fas fa-redo"></i>
                                 </button>
-                                <button *ngIf="p.status === 1" class="btn btn-sm btn-outline-success ms-1" (click)="approve(p)" title="Approve">
+                                <button *ngIf="p.status === 1 && !workflowOn" class="btn btn-sm btn-outline-success ms-1" (click)="approve(p)" title="Approve">
                                     <i class="fas fa-check"></i>
+                                </button>
+                                <!-- With the workflow on: submit for approval, or act on it, or see who approved it. -->
+                                <button *ngIf="workflowOn && p.status !== 0" class="btn btn-sm ms-1"
+                                    [ngClass]="awaitsMe(p) ? 'btn-success' : 'btn-outline-success'" (click)="openApproval(p)"
+                                    [title]="p.status === 1 && !approvalStatus(p) ? 'Submit for approval' : 'Approval'">
+                                    <i class="fas fa-user-check"></i>
                                 </button>
                                 <button *ngIf="p.status === 0" class="btn btn-sm btn-outline-danger ms-1" (click)="delete(p)" title="Delete">
                                     <i class="fas fa-trash"></i>
@@ -123,6 +130,47 @@
                 <app-table-paging (pageChangedEvent)="pageChanged($event)"
                     (pageSizeChangedEvent)="pageSizeChanged($event)"
                     [collectionSize]="periods.length"></app-table-paging>
+        </div>
+
+        <!-- Approval pop-up: the period's totals, then the workflow (approvers to pick and
+             submit, or approve / return / reject, and the trail so far). -->
+        <div class="modal-backdrop fade show d-print-none" *ngIf="approvalFor"></div>
+        <div class="modal fade show d-block d-print-none" *ngIf="approvalFor" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable" style="margin-top: 30px;">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white py-2">
+                        <h5 class="modal-title"><i class="fas fa-user-check me-1"></i> Payroll approval: {{ approvalFor.name }}</h5>
+                        <button type="button" class="close text-white" (click)="closeApproval()" aria-label="Close"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body p-2">
+                        <div class="row g-2 mb-2 text-center">
+                            <div class="col"><div class="border rounded p-2"><small class="text-muted d-block">Payslips</small><strong>{{ approvalFor.payslipCount || 0 }}</strong></div></div>
+                            <div class="col"><div class="border rounded p-2"><small class="text-muted d-block">Gross pay</small><strong>{{ approvalFor.totalGross | number:'1.2-2' }}</strong></div></div>
+                            <div class="col"><div class="border rounded p-2"><small class="text-muted d-block">PAYE</small><strong>{{ approvalFor.totalPaye | number:'1.2-2' }}</strong></div></div>
+                            <div class="col"><div class="border rounded p-2"><small class="text-muted d-block">Net pay</small><strong class="text-success">{{ approvalFor.totalNet | number:'1.2-2' }}</strong></div></div>
+                        </div>
+                        <div class="alert alert-light border py-1 px-2 mb-2" style="font-size:0.8rem;">
+                            <i class="fas fa-info-circle text-info me-1"></i>
+                            The payslips are listed under the periods table. Once the final approver approves, the payroll is locked
+                            and its journal goes to the ledger, dated the last day of {{ approvalFor.name }}. While it is with the
+                            approvers it cannot be re-processed; an approver can return it for changes.
+                        </div>
+                        <app-approval-webpart
+                            formKey="Payroll"
+                            [entityType]="entityType"
+                            [entityId]="+approvalFor.id"
+                            [currentUserId]="currentUserId"
+                            (statusChanged)="onApprovalChanged()"></app-approval-webpart>
+                        <!-- Once approved the panel above steps aside; the trail stays readable here. -->
+                        <app-approval-history *ngIf="approvalStatus(approvalFor) === 2"
+                            [entityType]="entityType"
+                            [entityId]="+approvalFor.id"></app-approval-history>
+                    </div>
+                    <div class="modal-footer py-1">
+                        <button class="btn btn-sm btn-secondary" (click)="closeApproval()">Close</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Payslips for the selected period: check them before approving, fix

@@ -23,6 +23,9 @@ export class StaffDetailsService extends ResourceService<StaffDetails> {
             idNumber?: string | null;
             nssfNo?: string | null;
             nhifNo?: string | null;
+            bankName?: string | null;
+            bankBranch?: string | null;
+            bankAccountNumber?: string | null;
             excludeFromPayroll: boolean;
         }
     ): Observable<any> => {

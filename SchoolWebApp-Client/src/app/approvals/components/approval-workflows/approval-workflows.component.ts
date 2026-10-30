@@ -29,6 +29,7 @@ export class ApprovalWorkflowsComponent implements OnInit {
         {value: 'Expense', label: 'Expense Request'},
         {value: 'JournalEntry', label: 'Journal Entry'},
         {value: 'CreditDebitNote', label: 'Credit / Debit Note'},
+        {value: 'Payroll', label: 'Payroll'},
         {value: 'SchemeOfWork', label: 'Scheme of Work'},
         {value: 'LessonPlanWeek', label: 'Lesson Plans (weekly)'}
     ];

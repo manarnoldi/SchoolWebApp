@@ -13,6 +13,8 @@ using SchoolWebApp.Core.Interfaces.IRepositories;
 using System;
 using System.Linq.Expressions;
 using SchoolWebApp.API.Security;
+using Microsoft.EntityFrameworkCore;
+using Project.Infrastructure.Data;
 
 namespace SchoolWebApp.API.Controllers.Staff
 {
@@ -25,8 +27,10 @@ namespace SchoolWebApp.API.Controllers.Staff
         private readonly ILogger<StaffDetailsController> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public StaffDetailsController(ILogger<StaffDetailsController> logger, IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly ApplicationDbContext _db;
+        public StaffDetailsController(ILogger<StaffDetailsController> logger, IUnitOfWork unitOfWork, IMapper mapper, ApplicationDbContext db)
         {
+            _db = db;
             _logger = logger;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -279,6 +283,12 @@ namespace SchoolWebApp.API.Controllers.Staff
                 try
                 {
                     var _item = _mapper.Map<StaffDetails>(model);
+                    // Bank details are kept with the payroll details, not on this form: keep what is stored.
+                    var bank = await _db.Set<StaffDetails>().AsNoTracking().Where(s => s.Id == model.Id)
+                        .Select(s => new { s.BankName, s.BankBranch, s.BankAccountNumber }).FirstAsync();
+                    _item.BankName = bank.BankName;
+                    _item.BankBranch = bank.BankBranch;
+                    _item.BankAccountNumber = bank.BankAccountNumber;
                     _unitOfWork.StaffDetails.Update(_item);
                     await _unitOfWork.SaveChangesAsync();
                     return Ok();
@@ -323,6 +333,9 @@ namespace SchoolWebApp.API.Controllers.Staff
                 _item.IdNumber = Blank(model.IdNumber);
                 _item.NssfNo = Blank(model.NssfNo);
                 _item.NhifNo = Blank(model.NhifNo);
+                _item.BankName = Blank(model.BankName);
+                _item.BankBranch = Blank(model.BankBranch);
+                _item.BankAccountNumber = Blank(model.BankAccountNumber);
                 _item.ExcludeFromPayroll = model.ExcludeFromPayroll;
 
                 _unitOfWork.StaffDetails.Update(_item);

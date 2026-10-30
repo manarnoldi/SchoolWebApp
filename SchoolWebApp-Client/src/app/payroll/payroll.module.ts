@@ -2,6 +2,7 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterModule} from '@angular/router';
 import {SharedModule} from '@/shared/shared.module';
+import {ApprovalsModule} from '@/approvals/approvals.module';
 import {PayrollComponent} from './payroll.component';
 import {PayrollEarningTypesComponent} from './components/earning-types/earning-types.component';
 import {PayrollDeductionTypesComponent} from './components/deduction-types/deduction-types.component';
@@ -31,6 +32,6 @@ import {PayrollReliefsComponent} from './components/payroll-reliefs/payroll-reli
         PayrollReportsComponent
     ],
     // RouterModule for the "Back to Dropdowns" links on the payroll set-up pages.
-    imports: [CommonModule, RouterModule, SharedModule]
+    imports: [CommonModule, RouterModule, SharedModule, ApprovalsModule]
 })
 export class PayrollModule {}

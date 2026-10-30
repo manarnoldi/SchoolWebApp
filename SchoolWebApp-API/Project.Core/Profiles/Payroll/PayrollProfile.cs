@@ -67,6 +67,9 @@ namespace SchoolWebApp.Core.Profiles.Payroll
                 // SHA (formerly NHIF) is still stored in the NhifNo column.
                 .ForMember(d => d.ShaNumber, o => o.MapFrom(s => s.StaffDetails != null ? s.StaffDetails.NhifNo : null))
                 .ForMember(d => d.ExcludeFromPayroll, o => o.MapFrom(s => s.StaffDetails != null && s.StaffDetails.ExcludeFromPayroll))
+                .ForMember(d => d.BankName, o => o.MapFrom(s => s.StaffDetails != null ? s.StaffDetails.BankName : null))
+                .ForMember(d => d.BankBranch, o => o.MapFrom(s => s.StaffDetails != null ? s.StaffDetails.BankBranch : null))
+                .ForMember(d => d.BankAccountNumber, o => o.MapFrom(s => s.StaffDetails != null ? s.StaffDetails.BankAccountNumber : null))
                 .ForMember(d => d.PeriodName, o => o.MapFrom(s => s.PayrollPeriod != null ? s.PayrollPeriod.Name : null))
                 .ForMember(d => d.DesignationName, o => o.MapFrom(s =>
                     s.StaffDetails != null && s.StaffDetails.Designation != null ? s.StaffDetails.Designation.Name : null))

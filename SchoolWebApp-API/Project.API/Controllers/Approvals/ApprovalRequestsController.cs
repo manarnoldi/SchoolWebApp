@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project.Infrastructure.Data;
+using SchoolWebApp.API.Services;
 using SchoolWebApp.API.Services.TeachingDocuments;
 using SchoolWebApp.Core.DTOs.Approvals;
 using SchoolWebApp.Core.Entities.Approvals;
@@ -24,11 +25,13 @@ namespace SchoolWebApp.API.Controllers.Approvals
         private readonly UserManager<AppUser> _userManager;
         private readonly ILogger<ApprovalRequestsController> _logger;
         private readonly TeachingDocumentService _teachingDocs;
+        private readonly PayrollApprovalService _payroll;
 
         public ApprovalRequestsController(ApplicationDbContext db, IMapper mapper,
             UserManager<AppUser> userManager, ILogger<ApprovalRequestsController> logger,
-            TeachingDocumentService teachingDocs)
+            TeachingDocumentService teachingDocs, PayrollApprovalService payroll)
         {
+            _payroll = payroll;
             _db = db;
             _mapper = mapper;
             _userManager = userManager;
@@ -155,6 +158,11 @@ namespace SchoolWebApp.API.Controllers.Approvals
             // Teaching documents: only their teacher submits them, and not empty.
             var invalid = await _teachingDocs.ValidateSubmitAsync(model.EntityType, model.EntityId);
             if (invalid != null) return BadRequest(new { message = invalid });
+            if (model.EntityType == PayrollApprovalService.EntityType)
+            {
+                var problem = await _payroll.SubmitProblemAsync(model.EntityId);
+                if (problem != null) return BadRequest(new { message = problem });
+            }
 
             // Validate step assignments match workflow steps
             var assignmentByRank = model.StepAssignments.ToDictionary(a => a.StepRank, a => a.AssignedToUserId);
@@ -256,6 +264,14 @@ namespace SchoolWebApp.API.Controllers.Approvals
                 if (step.IsFinal || request.ApprovalWorkflow!.Steps.Max(s => s.Rank) == currentAction.StepRank)
                 {
                     request.Status = ApprovalRequestStatus.Approved;
+                    // A payroll's approval posts its journal, which can fail (accounts not set up, a closed
+                    // accounting period). It is saved together with this request, so a failure leaves the
+                    // request with this approver rather than approved over a payroll that is not.
+                    if (request.EntityType == PayrollApprovalService.EntityType)
+                    {
+                        var (ok, message) = await _payroll.ApproveAsync(request.EntityId, currentUser.Id);
+                        if (!ok) return BadRequest(new { message });
+                    }
                     await _db.SaveChangesAsync();
                     await FinalizeEntityApproval(request);
                 }
@@ -311,7 +327,12 @@ namespace SchoolWebApp.API.Controllers.Approvals
                 return BadRequest(new { message = "Only approved requests can be reversed." });
 
             // Undo entity-specific side effects + reset entity to draft
-            await ReverseEntityApproval(request);
+            if (request.EntityType == PayrollApprovalService.EntityType)
+            {
+                var problem = await _payroll.UnapproveAsync(request.EntityId);
+                if (problem != null) return BadRequest(new { message = problem });
+            }
+            else await ReverseEntityApproval(request);
 
             // Mark the request itself as reversed and leave an audit trail
             request.Status = ApprovalRequestStatus.Reversed;

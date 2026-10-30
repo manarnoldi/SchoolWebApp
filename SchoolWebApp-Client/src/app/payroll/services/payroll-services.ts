@@ -4,7 +4,7 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {
     EarningType, DeductionType, TaxBand, PayrollSetting,
-    EmployeeSalary, LoanAdvance, PayrollPeriod, Payslip, NssfBand, PayrollRelief
+    EmployeeSalary, LoanAdvance, PayrollPeriod, Payslip, NssfBand, PayrollRelief, P9Employee
 } from '../models/payroll-models';
 
 @Injectable({providedIn: 'root'})
@@ -69,5 +69,10 @@ export class PayrollPeriodService extends ResourceService<PayrollPeriod> {
     }
     getPayslip(id: number): Observable<Payslip> {
         return this.http.get<Payslip>(`/payrollPeriods/payslip/${id}`);
+    }
+    // P9A tax deduction cards for a year: everyone paid, or one employee.
+    getP9(year: number, staffId?: number | null): Observable<{year: number; employees: P9Employee[]}> {
+        let q = `year=${year}` + (staffId ? `&staffId=${staffId}` : '');
+        return this.http.get<{year: number; employees: P9Employee[]}>(`/payrollPeriods/p9?${q}`);
     }
 }

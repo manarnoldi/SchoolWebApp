@@ -19,7 +19,7 @@
 //                    coming in on the day of the demo)
 //          --seed <number> (default 2026)
 // Any finance data already in the copy (test invoices, payments, expenses,
-// budgets, non-payroll journals) is cleared first, so it can be run again.
+// budgets, journals other than payroll's) is cleared first, so it can be run again.
 //
 // It also gives the school's accountant a login (the Accounts role, with the
 // finance menus), who records the fees and expenses; expenses are approved by
@@ -129,8 +129,8 @@ DELETE FROM budgetamendmentlines; DELETE FROM budgetamendments; DELETE FROM budg
 DELETE a FROM approvalstepactions a JOIN approvalrequests r ON r.Id = a.ApprovalRequestId
     WHERE r.EntityType IN ('Expense', 'Budget', 'BudgetAmendment', 'JournalEntry', 'CreditDebitNote');
 DELETE FROM approvalrequests WHERE EntityType IN ('Expense', 'Budget', 'BudgetAmendment', 'JournalEntry', 'CreditDebitNote');
-DELETE l FROM journallines l JOIN journalentries j ON j.Id = l.JournalEntryId WHERE j.Description NOT LIKE 'Payroll%';
-DELETE FROM journalentries WHERE Description NOT LIKE 'Payroll%';
+DELETE l FROM journallines l JOIN journalentries j ON j.Id = l.JournalEntryId WHERE j.ReferenceNumber NOT LIKE 'PRL-JNL-%';
+DELETE FROM journalentries WHERE ReferenceNumber NOT LIKE 'PRL-JNL-%';
 DELETE FROM accountingperiodcloses;
 SET FOREIGN_KEY_CHECKS = 1;
 INSERT INTO accounts (Code, Name, AccountType, Description, IsActive, Created, CreatedBy, Modified, ModifiedBy)
@@ -490,9 +490,9 @@ UPDATE approvalrequests r JOIN budgets b ON r.EntityType = 'Budget' AND r.Entity
 UPDATE approvalstepactions a JOIN approvalrequests r ON r.Id = a.ApprovalRequestId
     SET a.ActionedAt = r.SubmittedAt + INTERVAL a.StepRank * 3 HOUR, a.Created = r.SubmittedAt, a.Modified = a.ActionedAt
     WHERE r.EntityType IN ('Expense', 'Budget') AND a.ActionedAt IS NOT NULL;
-UPDATE journalentries SET Created = EntryDate + INTERVAL 17 HOUR, Modified = Created WHERE Description NOT LIKE 'Payroll%';
+UPDATE journalentries SET Created = EntryDate + INTERVAL 17 HOUR, Modified = Created WHERE ReferenceNumber NOT LIKE 'PRL-JNL-%';
 UPDATE journallines l JOIN journalentries j ON j.Id = l.JournalEntryId SET l.Created = j.Created, l.Modified = j.Created
-    WHERE j.Description NOT LIKE 'Payroll%';
+    WHERE j.ReferenceNumber NOT LIKE 'PRL-JNL-%';
 DELETE FROM auditlogs;
 `);
 

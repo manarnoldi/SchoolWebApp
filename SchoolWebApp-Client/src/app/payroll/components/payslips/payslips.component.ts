@@ -47,13 +47,13 @@ export class PayrollPayslipsComponent implements OnInit, OnChanges, OnDestroy {
     pageChanged = (p: number) => { this.page = p; };
     pageSizeChanged = (s: number) => { this.pageSize = s; };
 
-    // Editing the statutory numbers that print on the payslip. Deliberately
-    // limited to these four - the rest of the staff record is managed on the
-    // Staff Details page.
+    // Editing the statutory numbers and bank details that print on the payslip.
+    // Deliberately limited to these - the rest of the staff record is managed on
+    // the Staff Details page.
     showIdentifiers = false;
     savingIdentifiers = false;
     identifiersFor: Payslip | null = null;
-    identifiers = {kraPinNo: '', idNumber: '', nssfNo: '', nhifNo: '', excludeFromPayroll: false};
+    identifiers = {kraPinNo: '', idNumber: '', nssfNo: '', nhifNo: '', bankName: '', bankBranch: '', bankAccountNumber: '', excludeFromPayroll: false};
 
     constructor(
         private toastr: ToastrService,
@@ -161,6 +161,9 @@ export class PayrollPayslipsComponent implements OnInit, OnChanges, OnDestroy {
             idNumber: p.idNumber || '',
             nssfNo: p.nssfNumber || '',
             nhifNo: p.shaNumber || '',
+            bankName: p.bankName || '',
+            bankBranch: p.bankBranch || '',
+            bankAccountNumber: p.bankAccountNumber || '',
             excludeFromPayroll: !!p.excludeFromPayroll
         };
         this.showIdentifiers = true;
@@ -180,6 +183,9 @@ export class PayrollPayslipsComponent implements OnInit, OnChanges, OnDestroy {
             idNumber: this.identifiers.idNumber?.trim() || null,
             nssfNo: this.identifiers.nssfNo?.trim() || null,
             nhifNo: this.identifiers.nhifNo?.trim() || null,
+            bankName: this.identifiers.bankName?.trim() || null,
+            bankBranch: this.identifiers.bankBranch?.trim() || null,
+            bankAccountNumber: this.identifiers.bankAccountNumber?.trim() || null,
             excludeFromPayroll: !!this.identifiers.excludeFromPayroll
         }).subscribe({
             next: () => {

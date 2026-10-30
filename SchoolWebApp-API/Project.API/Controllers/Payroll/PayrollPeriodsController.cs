@@ -6,6 +6,9 @@ using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Payroll;
 using SchoolWebApp.Core.Entities.Finance;
 using SchoolWebApp.Core.Interfaces.IRepositories;
+using Microsoft.EntityFrameworkCore;
+using Project.Infrastructure.Data;
+using SchoolWebApp.API.Services;
 using System.Globalization;
 using SchoolWebApp.API.Licensing;
 using SchoolWebApp.API.Security;
@@ -22,10 +25,13 @@ namespace SchoolWebApp.API.Controllers.Payroll
         private readonly ILogger<PayrollPeriodsController> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly PayrollApprovalService _approval;
+        private readonly ApplicationDbContext _db;
 
-        public PayrollPeriodsController(ILogger<PayrollPeriodsController> logger, IUnitOfWork unitOfWork, IMapper mapper)
+        public PayrollPeriodsController(ILogger<PayrollPeriodsController> logger, IUnitOfWork unitOfWork, IMapper mapper,
+            PayrollApprovalService approval, ApplicationDbContext db)
         {
-            _logger = logger; _unitOfWork = unitOfWork; _mapper = mapper;
+            _logger = logger; _unitOfWork = unitOfWork; _mapper = mapper; _approval = approval; _db = db;
         }
 
         // GET api/payrollPeriods
@@ -131,6 +137,8 @@ namespace SchoolWebApp.API.Controllers.Payroll
 
             if (period.Status == PayrollPeriodStatus.Approved || period.Status == PayrollPeriodStatus.Posted)
                 return BadRequest("Cannot process an approved or posted payroll period.");
+            var locked = await _approval.LockedReasonAsync(id);
+            if (locked != null) return BadRequest(locked);
 
             // --- Load reference data ---
             var settings = (await _unitOfWork.PayrollSettings.Find(s => s.IsActive)).ToList();
@@ -272,8 +280,10 @@ namespace SchoolWebApp.API.Controllers.Payroll
             // --- Get active staff who are actually on the payroll ---
             // People kept on the staff list but paid outside payroll (suppliers,
             // contractors) are flagged ExcludeFromPayroll and never get a payslip.
+            // Someone who joins later in the year is not paid for the months before they started.
+            var periodEnd = periodStart.AddMonths(1).AddDays(-1);
             var activeStaff = (await _unitOfWork.StaffDetails.SearchForStaff(null, null, Status.Active))
-                .Where(s => !s.ExcludeFromPayroll)
+                .Where(s => !s.ExcludeFromPayroll && (s.EmploymentDate == null || s.EmploymentDate.Value.Date <= periodEnd))
                 .ToList();
 
             // --- Process each employee ---
@@ -591,63 +601,77 @@ namespace SchoolWebApp.API.Controllers.Payroll
         }
 
         // POST api/payrollPeriods/5/approve
+        // A single-click approval, for a school that has switched the payroll approval workflow off. With the
+        // workflow on, a payroll is submitted for approval instead and its final approver approves it.
         [HttpPost("{id}/approve")]
         public async Task<IActionResult> Approve(int id)
         {
-            var period = await _unitOfWork.PayrollPeriods.GetByIdWithPayslips(id);
-            if (period == null) return NotFound();
-
-            if (period.Status != PayrollPeriodStatus.Processed)
-                return BadRequest("Only processed payroll periods can be approved.");
-
-            var approvedAt = DateTime.UtcNow;
-            var mode = await GetPayrollJournalMode();
-
-            // Build the GL journal before anything is committed. A payroll must not
-            // end up approved on a journal that is incomplete or does not balance,
-            // so any problem stops the approval rather than surfacing afterwards.
-            JournalEntry? journal = null;
-            if (mode != PayrollJournalMode.Off)
-            {
-                var (built, problem) = await BuildPayrollJournal(period, approvedAt);
-                if (problem != null) return BadRequest(problem);
-                journal = built;
-            }
-
-            if (journal != null && mode == PayrollJournalMode.Draft)
-            {
-                // Handed to finance rather than posted: it sits in Journal Entries as
-                // a draft with every figure filled in, and reaches the ledger only
-                // once it has been reviewed, submitted and approved there.
-                journal.IsPosted = false;
-                journal.Status = JournalEntryStatus.Draft;
-                journal.Description = $"Payroll {period.Name} - generated for review";
-            }
-
-            period.Status = PayrollPeriodStatus.Approved;
-            period.ApprovedDate = approvedAt;
-            if (journal != null) _unitOfWork.JournalEntries.Create(journal);
-            await _unitOfWork.SaveChangesAsync();
-
-            string message = mode switch
-            {
-                PayrollJournalMode.Off =>
-                    "Payroll period approved. No journal was created - payroll journal posting is switched off, so post it manually under Finance > Journal Entries.",
-                _ when journal == null =>
-                    "Payroll period approved. No journal was created because the salary expense and cash accounts are not set up under Finance settings.",
-                PayrollJournalMode.Draft =>
-                    $"Payroll period approved. Journal {journal!.ReferenceNumber} is waiting as a draft under Finance > Journal Entries for review and approval.",
-                _ => "Payroll period approved and posted to GL."
-            };
-            return Ok(new { message });
+            if (await _approval.WorkflowActiveAsync())
+                return BadRequest("Payroll is approved through its approval workflow: submit it for approval instead.");
+            var (ok, message) = await _approval.ApproveAsync(id, null);
+            return ok ? Ok(new { message }) : BadRequest(message);
         }
 
-        private async Task<int?> GetSettingAccountId(string key)
+        // GET api/payrollPeriods/p9?year=2026&staffId=5
+        /// <summary>
+        /// The P9A tax deduction card: each employee's pay, deductions and PAYE month by month for the year,
+        /// in KRA's columns, from approved payroll only. Without staffId, everyone paid that year.
+        /// </summary>
+        [HttpGet("p9")]
+        public async Task<IActionResult> P9(int year, int? staffId)
         {
-            var settings = await _unitOfWork.Repository<SchoolWebApp.Core.Entities.Settings.GlobalSetting>()
-                .Find(s => s.Module == "Finance" && s.SettingKey == key);
-            var val = settings.FirstOrDefault()?.SettingValue;
-            return int.TryParse(val, out var id) ? id : null;
+            var settings = (await _unitOfWork.PayrollSettings.Find(s => s.IsActive)).ToList();
+            decimal Setting(string key) => settings.FirstOrDefault(s => s.Key == key)?.Value ?? 0m;
+            var percent = Setting("RetirementReliefPercent");
+            var cap = Setting("RetirementReliefCap");
+            var retirementTypeIds = (await _unitOfWork.DeductionTypes.Find(d => d.IsRetirementContribution))
+                .Select(d => d.Id).ToHashSet();
+
+            var slips = await _db.Payslips.AsNoTracking()
+                .Include(p => p.PayrollPeriod).Include(p => p.StaffDetails).Include(p => p.Deductions)
+                .Where(p => p.PayrollPeriod!.Year == year
+                            && (p.PayrollPeriod.Status == PayrollPeriodStatus.Approved || p.PayrollPeriod.Status == PayrollPeriodStatus.Posted)
+                            && (staffId == null || p.StaffDetailsId == staffId))
+                .ToListAsync();
+
+            var employees = slips.GroupBy(p => p.StaffDetailsId).Select(g =>
+            {
+                var staff = g.First().StaffDetails!;
+                var rows = g.OrderBy(p => p.PayrollPeriod!.Month).Select(p => new
+                {
+                    month = p.PayrollPeriod!.Month,
+                    basic = p.BasicSalary,
+                    // Taxable earnings other than basic pay: allowances and benefits.
+                    benefits = p.TaxablePay - p.BasicSalary,
+                    quarters = 0m,
+                    gross = p.TaxablePay,
+                    // E: retirement contributions - the limit as a share of basic, what was paid, the fixed cap.
+                    e1 = Math.Round(p.BasicSalary * percent / 100m, 2),
+                    e2 = p.NssfEmployee + p.Deductions.Where(d => retirementTypeIds.Contains(d.DeductionTypeId)).Sum(d => d.Amount),
+                    e3 = cap,
+                    ownerOccupiedInterest = 0m,
+                    retirement = p.RetirementRelief,
+                    ahl = p.Ahl,
+                    shif = p.Shif,
+                    otherDeductible = p.OtherTaxDeductible,
+                    chargeable = p.TaxableIncome,
+                    taxCharged = p.GrossTax,
+                    personalRelief = p.PersonalRelief,
+                    insuranceRelief = p.InsuranceRelief,
+                    paye = p.Paye
+                }).ToList();
+                return new
+                {
+                    staffId = staff.Id,
+                    name = staff.FullName,
+                    staffNo = staff.UPI,
+                    kraPin = staff.KraPinNo,
+                    idNumber = staff.IdNumber,
+                    rows
+                };
+            }).OrderBy(e => e.name).ToList();
+
+            return Ok(new { year, employees });
         }
 
         /// <summary>
@@ -669,161 +693,6 @@ namespace SchoolWebApp.API.Controllers.Payroll
             return (unit, method);
         }
 
-        private enum PayrollJournalMode { Auto, Draft, Off }
-
-        /// <summary>
-        /// What approving a payroll does in the ledger - the PayrollJournalMode finance
-        /// setting. "auto" posts at once, "draft" leaves a filled-in draft for finance
-        /// to review and approve, "off" creates nothing. A missing or unrecognised
-        /// value is treated as draft: nothing reaches the ledger without review.
-        /// </summary>
-        private async Task<PayrollJournalMode> GetPayrollJournalMode()
-        {
-            var settings = await _unitOfWork.Repository<SchoolWebApp.Core.Entities.Settings.GlobalSetting>()
-                .Find(s => s.Module == "Finance" && s.SettingKey == "PayrollJournalMode");
-            return (settings.FirstOrDefault()?.SettingValue ?? "").Trim().ToLowerInvariant() switch
-            {
-                "auto" => PayrollJournalMode.Auto,
-                "off" => PayrollJournalMode.Off,
-                _ => PayrollJournalMode.Draft
-            };
-        }
-
-        /// <summary>
-        /// Builds, but does not save, the journal for an approved payroll period.
-        ///
-        /// Debit  salary expense  = gross pay + employer NSSF + net pay rounding
-        /// Credit cash            = net pay
-        /// Credit PAYE / NSSF (employee + employer) / SHIF / Housing Levy payables
-        /// Credit each other deduction to its own liability account (pension scheme,
-        ///        SACCO, welfare) - or the general payroll deductions account
-        /// Credit staff loans receivable = loan and advance instalments recovered
-        ///
-        /// Previously only the statutory deductions were credited, so any payroll
-        /// with pension, welfare or loan deductions posted a journal that did not
-        /// balance - and an account setting that was missing simply dropped its line.
-        ///
-        /// Returns (null, null) when the GL is not set up at all, so payroll can still
-        /// be approved by a school that does not use the ledger. Returns a problem
-        /// message when it is set up but the journal cannot be completed or balanced.
-        /// </summary>
-        private async Task<(JournalEntry? Journal, string? Problem)> BuildPayrollJournal(
-            PayrollPeriod period, DateTime approvedAt)
-        {
-            if (period.Payslips.Count == 0) return (null, null);
-
-            var salaryExpId = await GetSettingAccountId("SalaryExpenseAccountId");
-            var cashId = await GetSettingAccountId("CashAccountId");
-
-            // Salaries are charged per staff category (teaching and non-teaching have
-            // their own expense accounts), with the SalaryExpenseAccountId setting as
-            // the fallback for a category that has no account of its own.
-            var categories = (await _unitOfWork.StaffCategories.Find())
-                .ToDictionary(c => c.Id, c => (c.Name, c.SalaryExpenseAccountId));
-
-            // Not set up at all: no cash account, or no salary account anywhere.
-            if (cashId == null) return (null, null);
-            if (salaryExpId == null && !categories.Values.Any(c => c.SalaryExpenseAccountId != null))
-                return (null, null);
-
-            var payeId = await GetSettingAccountId("PayeAccountId");
-            var nssfId = await GetSettingAccountId("NssfAccountId");
-            var shifId = await GetSettingAccountId("ShifAccountId");
-            var ahlId = await GetSettingAccountId("AhlAccountId");
-            var deductionsFallbackId = await GetSettingAccountId("PayrollDeductionsAccountId");
-            var staffLoansId = await GetSettingAccountId("StaffLoansAccountId");
-
-            var slips = period.Payslips;
-            var lines = new List<JournalLine>();
-            var missing = new List<string>();
-
-            void Line(int? accountId, decimal debit, decimal credit, string description, string missingSetting)
-            {
-                if (debit == 0 && credit == 0) return;
-                if (accountId == null) { missing.Add(missingSetting); return; }
-                lines.Add(new JournalLine
-                {
-                    AccountId = accountId.Value,
-                    Debit = debit,
-                    Credit = credit,
-                    Description = description
-                });
-            }
-
-            var totalNssfEr = slips.Sum(p => p.NssfEmployer);
-
-            // Salary expense, one debit per staff category. Each carries that
-            // category's gross pay, the employer's NSSF and Housing Levy, and net pay
-            // rounding - the employer contributions are costs of employment, and the
-            // rounding is a real cost (or saving) since cash paid is rounded.
-            foreach (var group in slips.GroupBy(p => p.StaffDetails?.StaffCategoryId))
-            {
-                var hasCategory = group.Key != null && categories.ContainsKey(group.Key.Value);
-                var category = hasCategory ? categories[group.Key!.Value] : default;
-                var categoryName = hasCategory ? category.Name : "Uncategorised";
-                var accountId = category.SalaryExpenseAccountId ?? salaryExpId;
-
-                Line(accountId,
-                    group.Sum(p => p.GrossPay + p.NssfEmployer + p.AhlEmployer + p.RoundingAdjustment), 0,
-                    $"Salary expense - {categoryName} - {period.Name}",
-                    $"a salary expense account for the '{categoryName}' staff category (or SalaryExpenseAccountId)");
-            }
-            Line(cashId, 0, slips.Sum(p => p.NetPay),
-                $"Net salaries paid - {period.Name}", "CashAccountId");
-
-            Line(payeId, 0, slips.Sum(p => p.Paye),
-                $"PAYE payable - {period.Name}", "PayeAccountId");
-            Line(nssfId, 0, slips.Sum(p => p.NssfEmployee) + totalNssfEr,
-                $"NSSF payable - {period.Name}", "NssfAccountId");
-            Line(shifId, 0, slips.Sum(p => p.Shif),
-                $"SHIF payable - {period.Name}", "ShifAccountId");
-            // Employee and employer levy together - both are owed to the Housing Fund.
-            Line(ahlId, 0, slips.Sum(p => p.Ahl + p.AhlEmployer),
-                $"Housing Levy payable (employee and employer) - {period.Name}", "AhlAccountId");
-
-            // Other deductions, grouped by type so each is owed to the right party.
-            // Statutory rows are skipped - they are credited from the totals above.
-            var allDeductionRows = slips.SelectMany(p => p.Deductions).ToList();
-            foreach (var group in allDeductionRows
-                         .Where(d => d.LoanAdvanceId == null
-                                     && (d.DeductionType == null || !d.DeductionType.IsSystemComputed))
-                         .GroupBy(d => d.DeductionTypeId))
-            {
-                var type = group.First().DeductionType;
-                Line(type?.LiabilityAccountId ?? deductionsFallbackId, 0, group.Sum(d => d.Amount),
-                    $"{type?.Name ?? "Payroll deduction"} payable - {period.Name}",
-                    type?.LiabilityAccountId == null
-                        ? $"a liability account for '{type?.Name ?? "deduction"}' (or PayrollDeductionsAccountId)"
-                        : "PayrollDeductionsAccountId");
-            }
-
-            // Loan and advance instalments reduce what staff owe the school.
-            Line(staffLoansId, 0, allDeductionRows.Where(d => d.LoanAdvanceId != null).Sum(d => d.Amount),
-                $"Staff loan and advance recoveries - {period.Name}", "StaffLoansAccountId");
-
-            if (missing.Count > 0)
-                return (null, "Payroll could not be posted to the GL, so it has not been approved. Set up these accounts under Finance settings first: "
-                    + string.Join(", ", missing.Distinct()) + ".");
-
-            var debits = lines.Sum(l => l.Debit);
-            var credits = lines.Sum(l => l.Credit);
-            if (Math.Round(debits - credits, 2) != 0)
-                return (null, $"The payroll journal for {period.Name} does not balance (debits {debits:N2}, credits {credits:N2}), so it has not been approved. Re-process the period and try again.");
-
-            return (new JournalEntry
-            {
-                // PRL (payroll), not PAY: fee payment journals are PAY-JNL-<receipt>,
-                // and sharing the prefix made payroll journals impossible to pick
-                // out by reference alone.
-                ReferenceNumber = $"PRL-JNL-{period.Name?.Replace(" ", "-") ?? $"{period.Month}-{period.Year}"}",
-                EntryDate = approvedAt,
-                Description = $"Auto-posted: Payroll {period.Name}",
-                IsPosted = true,
-                Status = JournalEntryStatus.Approved,
-                Lines = lines
-            }, null);
-        }
-
         // DELETE api/payrollPeriods/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
@@ -833,6 +702,8 @@ namespace SchoolWebApp.API.Controllers.Payroll
 
             if (period.Status != PayrollPeriodStatus.Draft)
                 return BadRequest("Only draft payroll periods can be deleted.");
+            var locked = await _approval.LockedReasonAsync(id);
+            if (locked != null) return BadRequest(locked);
 
             // Delete any payslips and their line items
             foreach (var payslip in period.Payslips)

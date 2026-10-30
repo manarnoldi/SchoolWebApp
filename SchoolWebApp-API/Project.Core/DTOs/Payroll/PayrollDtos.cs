@@ -202,6 +202,7 @@ namespace SchoolWebApp.Core.DTOs.Payroll
         public string? DesignationName { get; set; }
         public string? DepartmentName { get; set; }
         public string? BankName { get; set; }
+        public string? BankBranch { get; set; }
         public string? BankAccountNumber { get; set; }
 
         public decimal BasicSalary { get; set; }

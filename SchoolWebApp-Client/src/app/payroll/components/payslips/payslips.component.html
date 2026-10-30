@@ -33,6 +33,21 @@
                         <input type="text" class="form-control form-control-sm" [(ngModel)]="identifiers.nhifNo" maxlength="255" />
                     </div>
                 </div>
+                <!-- Where net pay goes: printed on the payslip and the bank schedule. -->
+                <div class="row g-1 mt-1">
+                    <div class="col-md-4">
+                        <label class="form-label mb-0" style="font-size:0.8rem;">Bank</label>
+                        <input type="text" class="form-control form-control-sm" [(ngModel)]="identifiers.bankName" maxlength="100" placeholder="e.g. KCB Bank" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label mb-0" style="font-size:0.8rem;">Branch</label>
+                        <input type="text" class="form-control form-control-sm" [(ngModel)]="identifiers.bankBranch" maxlength="100" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label mb-0" style="font-size:0.8rem;">Account No</label>
+                        <input type="text" class="form-control form-control-sm" [(ngModel)]="identifiers.bankAccountNumber" maxlength="50" />
+                    </div>
+                </div>
                 <hr class="my-2">
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" id="excludeFromPayrollSwitch"
