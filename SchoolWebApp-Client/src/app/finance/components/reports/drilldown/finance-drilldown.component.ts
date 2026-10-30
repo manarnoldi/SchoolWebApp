@@ -106,6 +106,7 @@ export class FinanceDrilldownComponent implements OnDestroy {
                 subtitle: this.fmt(d.date),
                 icon: DOC_ICONS[t.type],
                 status: d.status,
+                note: d.note,
                 fields: d.fields || [],
                 sections: (d.sections || []).filter((s: DrillSection) => s.rows.length)
             })));
