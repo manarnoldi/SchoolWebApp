@@ -157,8 +157,12 @@
                     <option *ngFor="let s of statuses" [ngValue]="s.value">{{ s.label }}</option>
                 </select>
             </div>
+            <div class="col-md-3">
+                <label class="form-label mb-0" style="font-size:0.8rem;">Search</label>
+                <input class="form-control form-control-sm" [(ngModel)]="search" (ngModelChange)="page = 1" placeholder="Student name, student number or class" />
+            </div>
             <div class="col-auto">
-                <button class="btn btn-sm btn-outline-secondary" (click)="clearFilters()"><i class="fas fa-times"></i></button>
+                <button class="btn btn-sm btn-outline-secondary" (click)="clearFilters()" title="Clear the filters and search"><i class="fas fa-times"></i></button>
             </div>
             <div class="col text-end">
                 <button class="btn btn-sm btn-primary" (click)="addNew()"><i class="fas fa-plus"></i> Add Sponsorship</button>
@@ -182,6 +186,7 @@
                             <th>Coverage</th>
                             <th>Start - End</th>
                             <th>Status</th>
+                            <th>On invoices</th>
                             <th style="min-width:100px;">Action</th>
                         </tr>
                     </thead>
@@ -194,23 +199,38 @@
                                 <small *ngIf="s.schoolClassId && !s.studentId"><i class="fas fa-users me-1"></i> {{ s.schoolClassName }}</small>
                             </td>
                             <td><small>{{ s.academicYearName }}<span *ngIf="s.sessionName"> / {{ s.sessionName }}</span></small></td>
-                            <td><strong>{{ coverageLabel(s.coverageType) }}</strong><br/><small class="text-muted">{{ coverageSummary(s) }}</small></td>
-                            <td><small>{{ s.startDate | date:'mediumDate' }} <span *ngIf="s.endDate">→ {{ s.endDate | date:'mediumDate' }}</span></small></td>
+                            <td class="text-nowrap"><strong>{{ coverageLabel(s.coverageType) }}</strong> <span class="badge rounded-pill bg-info-subtle text-info-emphasis border border-info-subtle ms-1">{{ coverageSummary(s) }}</span></td>
+                            <td class="text-nowrap"><small>{{ s.startDate | date:'mediumDate' }} <span *ngIf="s.endDate">→ {{ s.endDate | date:'mediumDate' }}</span></small></td>
                             <td><span class="badge" [ngClass]="statusBadge(s.status)">{{ statusLabel(s.status) }}</span></td>
                             <td>
-                                <button class="btn btn-outline-success btn-sm" (click)="applyToExisting(s)" title="Apply to existing open invoices"><i class="fas fa-bolt"></i></button>
-                                <button class="btn btn-outline-primary btn-sm ms-1" (click)="edit(s)" title="Edit"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-outline-danger btn-sm ms-1" (click)="delete(s)" title="Delete"><i class="fas fa-trash"></i></button>
+                                <ng-container *ngIf="s.appliedInvoices; else notApplied">
+                                    <span class="text-nowrap"><span class="badge bg-success-subtle text-success-emphasis border border-success-subtle"><i class="fas fa-check me-1"></i>Applied</span>
+                                    <small class="text-muted ms-1">{{ s.appliedInvoices }} invoice{{ s.appliedInvoices === 1 ? '' : 's' }} · {{ s.appliedAmount | number:'1.2-2' }}</small></span>
+                                </ng-container>
+                                <ng-template #notApplied><span class="badge bg-light text-muted border">Not applied yet</span></ng-template>
+                            </td>
+                            <td>
+                                <!-- Not yet on invoices: it can still be applied, changed or deleted -->
+                                <ng-container *ngIf="!s.appliedInvoices">
+                                    <button class="btn btn-outline-success btn-sm" (click)="applyToExisting(s)" title="Apply to existing open invoices"><i class="fas fa-bolt"></i></button>
+                                    <button class="btn btn-outline-primary btn-sm ms-1" (click)="edit(s)" title="Edit"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-outline-danger btn-sm ms-1" (click)="delete(s)" title="Delete"><i class="fas fa-trash"></i></button>
+                                </ng-container>
+                                <!-- On invoices: fixed; only ending it stops it reaching new invoices -->
+                                <ng-container *ngIf="s.appliedInvoices">
+                                    <button class="btn btn-outline-secondary btn-sm" *ngIf="isActive(s)" (click)="end(s)" title="End: no new invoice takes it; the invoices it is on stay as they are"><i class="fas fa-stop-circle me-1"></i>End</button>
+                                    <span class="text-muted ms-1" title="Already on student invoices, so it cannot be changed or deleted"><i class="fas fa-lock"></i></span>
+                                </ng-container>
                             </td>
                         </tr>
                         <tr *ngIf="filtered().length === 0">
-                            <td colspan="8" class="text-center text-muted p-3"><i class="fas fa-info-circle me-1"></i> No sponsorships.</td>
+                            <td colspan="9" class="text-center text-muted p-3"><i class="fas fa-info-circle me-1"></i> {{ search.trim() ? 'No sponsorship matches the search.' : 'No sponsorships.' }}</td>
                         </tr>
                     </tbody>
                 </table>
                 <app-table-paging (pageChangedEvent)="pageChanged($event)"
                     (pageSizeChangedEvent)="pageSizeChanged($event)"
-                    [collectionSize]="filtered().length"></app-table-paging>
+                    [collectionSize]="filtered().length" [pageSize]="pageSize" [page]="page"></app-table-paging>
             </div>
         </div>
 

@@ -229,6 +229,7 @@ export class SponsorshipService {
     create(payload: any): Observable<any> { return this.http.post('/sponsorships', payload); }
     update(id: number, payload: any): Observable<any> { return this.http.put(`/sponsorships/${id}`, payload); }
     delete(id: number): Observable<any> { return this.http.delete(`/sponsorships/${id}`); }
+    end(id: number): Observable<any> { return this.http.put(`/sponsorships/${id}/end`, {}); }
     byStudent(studentId: number, academicYearId?: number, sessionId?: number, onDate?: string): Observable<Sponsorship[]> {
         let params: string[] = [];
         if (academicYearId) params.push(`academicYearId=${academicYearId}`);

@@ -54,7 +54,7 @@ export class SponsorshipsComponent implements OnInit {
     filterStatus: any = null;
 
     page = 1;
-    pageSize = 10;
+    pageSize = 15;
     pageChanged = (p: number) => { this.page = p; };
     pageSizeChanged = (s: number) => { this.pageSize = s; };
 
@@ -121,19 +121,27 @@ export class SponsorshipsComponent implements OnInit {
         feeCategoryIds: []
     });
 
-    filtered = (): Sponsorship[] =>
-        this.sponsorships.filter(s => {
+    // Search by the beneficiary: student name, student number, or class.
+    search = '';
+
+    filtered = (): Sponsorship[] => {
+        let q = this.search.trim().toLowerCase();
+        return this.sponsorships.filter(s => {
+            if (q && ![s.studentName, s.studentUPI, s.schoolClassName].some(v => String(v ?? '').toLowerCase().includes(q))) return false;
             if (this.filterYearId && s.academicYearId != this.filterYearId) return false;
             if (this.filterSponsorId && s.sponsorId != this.filterSponsorId) return false;
             if (this.filterStatus != null && s.status !== +this.filterStatus) return false;
             return true;
         });
+    };
 
     clearFilters = () => {
         let active = this.academicYears.find((y: any) => y.status === true);
         this.filterYearId = active ? active.id : null;
         this.filterSponsorId = null;
         this.filterStatus = null;
+        this.search = '';
+        this.page = 1;
     };
 
     addNew = () => {
@@ -288,6 +296,28 @@ export class SponsorshipsComponent implements OnInit {
         });
     }
 
+    // Already on invoices: it cannot be changed or deleted, only ended so that no new invoice picks it up.
+    end = (s: Sponsorship) => {
+        let n = s.appliedInvoices || 0;
+        Swal.fire({
+            title: 'End this sponsorship?',
+            html: `<div style="text-align:left; font-size:0.9rem;">
+                <p><strong>${s.sponsorName}</strong> for <strong>${s.studentName || s.schoolClassName}</strong> is marked Ended from today, so no new invoice takes it.</p>
+                <p class="text-muted" style="font-size:0.8rem;">The ${n} invoice${n === 1 ? '' : 's'} it is already on stay as they are.</p>
+            </div>`,
+            icon: 'question', width: 460, position: 'top', padding: '1em',
+            showCancelButton: true, confirmButtonText: 'End sponsorship'
+        }).then(r => {
+            if (!r.value) return;
+            this.svc.end(+s.id!).subscribe({
+                next: () => { this.toastr.success('Sponsorship ended.'); this.load(); },
+                error: (err) => this.toastr.error(err.error?.message || 'Error ending the sponsorship.')
+            });
+        });
+    };
+
+    isActive = (s: Sponsorship): boolean => s.status === SponsorshipStatus.Active;
+
     delete = (s: Sponsorship) => {
         Swal.fire({
             title: 'Delete sponsorship?', icon: 'warning',
@@ -317,9 +347,12 @@ export class SponsorshipsComponent implements OnInit {
     statusLabel = (s: any): string =>
         this.statuses.find(x => x.value === s)?.label || '';
 
+    // The pill after the coverage type: how much, of which fees ("50% of Tuition", "All fees").
     coverageSummary = (s: Sponsorship): string => {
-        if (s.coverageType === SponsorshipCoverageType.FullCoverage) return 'Full';
-        if (s.coverageType === SponsorshipCoverageType.Percentage) return `${s.percentage}%`;
-        return (s.fixedAmount || 0).toLocaleString();
+        let names = (s.feeCategoryIds || []).map(id => this.feeCategories.find((c: any) => c.id === id)?.name).filter(Boolean);
+        let fees = names.length ? names.join(', ') : 'All fees';
+        if (s.coverageType === SponsorshipCoverageType.FullCoverage) return fees;
+        if (s.coverageType === SponsorshipCoverageType.Percentage) return `${s.percentage}% of ${fees}`;
+        return `${(s.fixedAmount || 0).toLocaleString()} per invoice · ${fees}`;
     };
 }

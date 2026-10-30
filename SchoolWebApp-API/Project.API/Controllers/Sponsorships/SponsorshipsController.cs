@@ -34,7 +34,7 @@ namespace SchoolWebApp.API.Controllers.Sponsorships
                 .Include(s => s.FeeCategories)
                 .OrderByDescending(s => s.StartDate)
                 .ToListAsync();
-            return Ok(_mapper.Map<List<SponsorshipDto>>(list));
+            return Ok(await WithApplied(_mapper.Map<List<SponsorshipDto>>(list)));
         }
 
         [HttpGet("{id}")]
@@ -49,7 +49,7 @@ namespace SchoolWebApp.API.Controllers.Sponsorships
                 .Include(s => s.FeeCategories)
                 .FirstOrDefaultAsync(s => s.Id == id);
             if (item == null) return NotFound();
-            return Ok(_mapper.Map<SponsorshipDto>(item));
+            return Ok((await WithApplied(new List<SponsorshipDto> { _mapper.Map<SponsorshipDto>(item) }))[0]);
         }
 
         [HttpPost]
@@ -87,6 +87,9 @@ namespace SchoolWebApp.API.Controllers.Sponsorships
             if (!ModelState.IsValid) return BadRequest(ModelState);
             var item = await _db.Sponsorships.Include(s => s.FeeCategories).FirstOrDefaultAsync(s => s.Id == id);
             if (item == null) return NotFound();
+            // Changing a sponsorship already on invoices would leave them disagreeing with it.
+            if (await _db.StudentInvoiceItems.AnyAsync(i => i.SponsorshipId == id))
+                return BadRequest(new { message = "This sponsorship is already on student invoices, so it cannot be changed. End it instead." });
             if (model.StudentId == null && model.SchoolClassId == null)
                 return BadRequest(new { message = "Either a student or a school class must be selected." });
 
@@ -117,11 +120,37 @@ namespace SchoolWebApp.API.Controllers.Sponsorships
             var item = await _db.Sponsorships.Include(s => s.FeeCategories).FirstOrDefaultAsync(s => s.Id == id);
             if (item == null) return NotFound();
             var used = await _db.StudentInvoiceItems.AnyAsync(i => i.SponsorshipId == id);
-            if (used) return BadRequest(new { message = "This sponsorship has been applied to invoices and cannot be deleted. Mark it Ended instead." });
+            if (used) return BadRequest(new { message = "This sponsorship is already on student invoices, so it cannot be deleted. End it instead." });
             _db.SponsorshipFeeCategories.RemoveRange(item.FeeCategories);
             _db.Sponsorships.Remove(item);
             await _db.SaveChangesAsync();
             return Ok();
+        }
+
+        // PUT api/sponsorships/5/end - stops a sponsorship (the way to stop one already on invoices): it is
+        // marked Ended, from today if it ran later, so no new invoice picks it up. Invoices it is on stay as they are.
+        [HttpPut("{id}/end")]
+        public async Task<IActionResult> End(int id)
+        {
+            var item = await _db.Sponsorships.FirstOrDefaultAsync(s => s.Id == id);
+            if (item == null) return NotFound();
+            item.Status = SponsorshipStatus.Ended;
+            if (item.EndDate == null || item.EndDate > DateTime.Today) item.EndDate = DateTime.Today;
+            await _db.SaveChangesAsync();
+            return Ok();
+        }
+
+        // Each sponsorship's reach on student invoices: how many it is on, and how much it took off them.
+        private async Task<List<SponsorshipDto>> WithApplied(List<SponsorshipDto> list)
+        {
+            var ids = list.Select(s => s.Id).ToList();
+            var applied = await _db.StudentInvoiceItems.Where(i => i.SponsorshipId != null && ids.Contains(i.SponsorshipId.Value))
+                .GroupBy(i => i.SponsorshipId!.Value)
+                .Select(g => new { Id = g.Key, Invoices = g.Select(i => i.StudentInvoiceId).Distinct().Count(), Amount = g.Sum(i => i.Discount) })
+                .ToDictionaryAsync(a => a.Id);
+            foreach (var s in list)
+                if (applied.TryGetValue(s.Id, out var a)) { s.AppliedInvoices = a.Invoices; s.AppliedAmount = a.Amount; }
+            return list;
         }
 
         /// <summary>

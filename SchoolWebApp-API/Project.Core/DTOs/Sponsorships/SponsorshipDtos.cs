@@ -56,6 +56,10 @@ namespace SchoolWebApp.Core.DTOs.Sponsorships
         public string? Notes { get; set; }
         public SponsorshipStatus Status { get; set; }
         public List<int> FeeCategoryIds { get; set; } = new();
+
+        // How far it has reached student invoices: once applied it is fixed, and can only be ended.
+        public int AppliedInvoices { get; set; }
+        public decimal AppliedAmount { get; set; }
     }
 
     public class CreateSponsorshipDto

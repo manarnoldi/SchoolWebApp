@@ -53,6 +53,9 @@ export interface Sponsorship {
     notes?: string;
     status: SponsorshipStatus;
     feeCategoryIds: number[];
+    // Set once it is on student invoices; from then it can only be ended.
+    appliedInvoices?: number;
+    appliedAmount?: number;
 }
 
 export interface SponsorPayment {
