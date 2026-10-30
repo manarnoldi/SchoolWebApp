@@ -172,6 +172,8 @@ export class FinanceReportsComponent implements OnInit {
                 this.onDiscountYearChange();
                 this.notesYearId = this.selectedAcademicYearId;
                 this.onNotesYearChange();
+                this.filtersReady.years = true;
+                this.autoLoad();
             },
             error: () => {}
         });
@@ -184,6 +186,8 @@ export class FinanceReportsComponent implements OnInit {
                 this.onStatementYearChange();
                 this.onDiscountYearChange();
                 this.onNotesYearChange();
+                this.filtersReady.sessions = true;
+                this.autoLoad();
             },
             error: () => {}
         });
@@ -191,6 +195,33 @@ export class FinanceReportsComponent implements OnInit {
 
     switchTab(tab: string) {
         this.activeTab = tab;
+        this.autoLoad();
+    }
+
+    // A tab opens on its report for the default filters (this year, this term, all classes) rather
+    // than blank; once loaded, going back to it keeps what was there. The years and terms must be
+    // in first, since the defaults come from them. The student statement waits for a student.
+    private loadedTabs = new Set<string>();
+    private filtersReady = {years: false, sessions: false};
+
+    private autoLoad() {
+        if (!this.filtersReady.years || !this.filtersReady.sessions || this.loadedTabs.has(this.activeTab)) return;
+        let loaders: Record<string, () => void> = {
+            trialBalance: () => this.loadTrialBalance(),
+            incomeStatement: () => this.loadIncomeStatement(),
+            balanceSheet: () => this.loadBalanceSheet(),
+            consolidatedBudget: () => this.loadConsolidatedBudget(),
+            feeCollection: () => this.loadFeeCollection(),
+            outstanding: () => this.loadOutstanding(),
+            feeBalancesByClass: () => this.loadFeeBalancesByClass(),
+            discounts: () => this.loadStudentDiscounts(),
+            expenses: () => this.loadExpenseReport(),
+            notes: () => this.loadCreditDebitNotes()
+        };
+        let load = loaders[this.activeTab];
+        if (!load) return;
+        this.loadedTabs.add(this.activeTab);
+        load();
     }
 
     getAccountTypeLabel(t: any): string {
