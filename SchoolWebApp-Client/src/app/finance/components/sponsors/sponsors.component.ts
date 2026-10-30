@@ -1,4 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {FinanceDrilldownComponent} from '@/finance/components/reports/drilldown/finance-drilldown.component';
+import {formatDate} from '@angular/common';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
@@ -17,6 +19,7 @@ export class SponsorsComponent implements OnInit {
         {link: ['/finance/sponsors'], title: 'Sponsors'}
     ];
     dashboardTitle = 'Finance: Sponsors';
+    @ViewChild('drill') drillDown!: FinanceDrilldownComponent;
 
     sponsors: Sponsor[] = [];
     receivableAccounts: Account[] = [];
@@ -38,11 +41,6 @@ export class SponsorsComponent implements OnInit {
         {value: SponsorType.Other, label: 'Other'}
     ];
 
-    // Statement modal
-    statement: any = null;
-    statementFromDate: string = '';
-    statementToDate: string = '';
-    statementSponsor: Sponsor | null = null;
 
     constructor(private toastr: ToastrService, private svc: SponsorService, private accSvc: AccountService) {}
 
@@ -113,23 +111,11 @@ export class SponsorsComponent implements OnInit {
         });
     };
 
+    // The sponsor's account: its share of each invoice, its payments, what it owes, and the students it sponsors.
     openStatement = (s: Sponsor) => {
-        this.statementSponsor = s;
-        this.statement = null;
-        this.statementFromDate = '';
-        this.statementToDate = '';
-        this.loadStatement();
+        let today = formatDate(new Date(), 'yyyy-MM-dd', 'en');
+        this.drillDown.show({kind: 'document', type: 'sponsor', id: +s.id!}, {from: `${today.slice(0, 4)}-01-01`, to: today});
     };
-
-    loadStatement = () => {
-        if (!this.statementSponsor) return;
-        this.svc.statement(+this.statementSponsor.id!, this.statementFromDate, this.statementToDate).subscribe({
-            next: (s) => this.statement = s,
-            error: (err) => this.toastr.error(err.error?.message || 'Error loading statement.')
-        });
-    };
-
-    closeStatement = () => { this.statementSponsor = null; this.statement = null; };
 
     typeBadge = (t: any): string => {
         switch (t) {

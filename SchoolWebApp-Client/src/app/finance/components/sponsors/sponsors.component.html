@@ -68,71 +68,6 @@
             </div>
         </div>
 
-        <!-- Statement Modal -->
-        <div class="modal-backdrop fade show" *ngIf="statementSponsor"></div>
-        <div class="modal fade show d-block" *ngIf="statementSponsor" tabindex="-1">
-            <div class="modal-dialog modal-xl modal-dialog-scrollable" style="margin-top: 40px;">
-                <div class="modal-content">
-                    <div class="modal-header bg-info text-white py-2">
-                        <h5 class="modal-title"><i class="fas fa-book me-1"></i> Statement: {{ statementSponsor.name }}</h5>
-                        <button type="button" class="close text-white" (click)="closeStatement()"><span>&times;</span></button>
-                    </div>
-                    <div class="modal-body p-2">
-                        <div class="row g-1 mb-2">
-                            <div class="col-md-3">
-                                <label class="form-label mb-0" style="font-size:0.8rem;">From</label>
-                                <input type="date" class="form-control form-control-sm" [(ngModel)]="statementFromDate" />
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label mb-0" style="font-size:0.8rem;">To</label>
-                                <input type="date" class="form-control form-control-sm" [(ngModel)]="statementToDate" />
-                            </div>
-                            <div class="col-auto align-self-end">
-                                <button class="btn btn-sm btn-info" (click)="loadStatement()"><i class="fas fa-search"></i> Load</button>
-                            </div>
-                        </div>
-                        <div *ngIf="statement">
-                            <div class="row text-center mb-2" style="font-size:0.85rem;">
-                                <div class="col-md-4"><small class="text-muted d-block">Charges</small><strong class="text-danger">{{ statement.totalCharges | number:'1.2-2' }}</strong></div>
-                                <div class="col-md-4"><small class="text-muted d-block">Payments</small><strong class="text-success">{{ statement.totalPayments | number:'1.2-2' }}</strong></div>
-                                <div class="col-md-4"><small class="text-muted d-block">Balance</small><strong>{{ statement.balance | number:'1.2-2' }}</strong></div>
-                            </div>
-                            <table class="table table-sm table-striped mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Type</th>
-                                        <th>Ref</th>
-                                        <th>Description</th>
-                                        <th class="text-end">Debit</th>
-                                        <th class="text-end">Credit</th>
-                                        <th class="text-end">Balance</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let e of statement.entries">
-                                        <td><small>{{ e.date | date:'mediumDate' }}</small></td>
-                                        <td><span class="badge" [ngClass]="e.type === 'Charge' ? 'bg-danger' : 'bg-success'">{{ e.type }}</span></td>
-                                        <td>{{ e.reference }}</td>
-                                        <td><small>{{ e.description }}</small></td>
-                                        <td class="text-end">{{ e.debit ? (e.debit | number:'1.2-2') : '-' }}</td>
-                                        <td class="text-end">{{ e.credit ? (e.credit | number:'1.2-2') : '-' }}</td>
-                                        <td class="text-end fw-bold">{{ e.balance | number:'1.2-2' }}</td>
-                                    </tr>
-                                    <tr *ngIf="!statement.entries?.length">
-                                        <td colspan="7" class="text-center text-muted p-3"><i class="fas fa-info-circle me-1"></i> No entries for this period.</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="modal-footer py-1">
-                        <button class="btn btn-sm btn-secondary" (click)="closeStatement()">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Filters + Add button -->
         <div class="row g-1 mb-1 align-items-end">
             <div class="col-md-4">
@@ -171,7 +106,7 @@
                     <tbody>
                         <tr *ngFor="let s of filtered() | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize; index as i">
                             <td>{{ (page-1) * pageSize + i + 1 }}</td>
-                            <td><strong>{{ s.name }}</strong><br/><small class="text-muted">{{ s.description }}</small></td>
+                            <td><a role="button" class="fw-bold text-primary" (click)="openStatement(s)" title="Open the sponsor's statement">{{ s.name }}</a><br/><small class="text-muted">{{ s.description }}</small></td>
                             <td><span class="badge" [ngClass]="typeBadge(s.sponsorType)">{{ typeLabel(s.sponsorType) }}</span></td>
                             <td>{{ s.contactName || '-' }}</td>
                             <td><small>{{ s.email || '-' }}</small></td>
@@ -197,3 +132,4 @@
 
     </div>
 </section>
+<app-finance-drilldown #drill backLabel="Sponsors"></app-finance-drilldown>

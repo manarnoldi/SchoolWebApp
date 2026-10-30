@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project.Infrastructure.Data;
 using SchoolWebApp.Core.Entities.Finance;
+using SchoolWebApp.Core.Entities.Sponsorships;
 using SchoolWebApp.API.Licensing;
 using SchoolWebApp.API.Security;
 
@@ -126,6 +127,7 @@ namespace SchoolWebApp.API.Controllers.Finance
                 "expense" => await ExpenseDoc(id),
                 "journal" => await JournalDoc(id),
                 "sponsorPayment" => await SponsorPaymentDoc(id),
+                "sponsor" => await SponsorDoc(id),
                 _ => null
             };
             return doc == null ? NotFound(new { message = "Document not found." }) : Ok(doc);
@@ -338,6 +340,73 @@ namespace SchoolWebApp.API.Controllers.Finance
                     Field("Description", p.Description), Field("Recorded by", p.CreatedBy)
                 },
                 sections
+            };
+        }
+
+        // A sponsor's account: its share of each invoice is a charge, each payment a credit, with what
+        // it owes after each line; then the students it sponsors.
+        private async Task<object?> SponsorDoc(int id)
+        {
+            var sp = await _db.Sponsors.AsNoTracking().Include(s => s.ReceivableAccount).FirstOrDefaultAsync(s => s.Id == id);
+            if (sp == null) return null;
+            var charges = await _db.StudentInvoiceItems.AsNoTracking()
+                .Where(i => i.Sponsorship!.SponsorId == id && i.Discount > 0)
+                .GroupBy(i => new { i.StudentInvoiceId, i.StudentInvoice!.InvoiceNumber, i.StudentInvoice.InvoiceDate,
+                    i.StudentInvoice.Student!.UPI, i.StudentInvoice.Student.FullName, Term = i.StudentInvoice.Session!.SessionName })
+                .Select(g => new { g.Key.StudentInvoiceId, g.Key.InvoiceNumber, g.Key.InvoiceDate, g.Key.UPI, g.Key.FullName, g.Key.Term,
+                    Fees = string.Join(", ", g.Select(i => i.FeeCategory!.Name)), Amount = g.Sum(i => i.Discount) })
+                .ToListAsync();
+            var payments = await _db.SponsorPayments.AsNoTracking().Where(p => p.SponsorId == id).ToListAsync();
+
+            var lines = charges.Select(c => new { Date = c.InvoiceDate, Order = 0, Id = c.StudentInvoiceId, Type = "Invoice share", Ref = c.InvoiceNumber,
+                    Detail = $"{c.UPI} - {c.FullName}, {c.Term} ({c.Fees})", Charge = c.Amount, Paid = 0m, Drill = Doc("invoice", c.StudentInvoiceId) })
+                .Concat(payments.Select(p => new { Date = p.PaymentDate, Order = 1, Id = p.Id, Type = "Payment", Ref = p.ReferenceNumber,
+                    Detail = p.Description ?? "", Charge = 0m, Paid = p.Amount, Drill = Doc("sponsorPayment", p.Id) }))
+                .OrderBy(l => l.Date).ThenBy(l => l.Order).ThenBy(l => l.Id).ToList();
+            decimal owed = 0;
+            var rows = lines.Select(l =>
+            {
+                owed += l.Charge - l.Paid;
+                return Row(new object?[] { l.Date, l.Type, l.Ref, l.Detail, l.Charge == 0 ? null : l.Charge, l.Paid == 0 ? null : l.Paid, owed }, l.Drill);
+            }).ToList();
+
+            var sponsorships = await _db.Sponsorships.AsNoTracking().Where(s => s.SponsorId == id)
+                .Select(s => new { s.StudentId, Upi = s.Student!.UPI, Student = s.Student.FullName, Class = s.SchoolClass!.Name,
+                    Year = s.AcademicYear!.Name, s.AcademicYearId, Term = s.Session!.SessionName, s.CoverageType, s.Percentage, s.FixedAmount, s.Status,
+                    Fees = s.FeeCategories.Select(f => f.FeeCategory!.Name).ToList() })
+                .ToListAsync();
+            // What a sponsorship pays, in words: how much of which fees.
+            string Covers(SponsorshipCoverageType type, decimal pct, decimal fixedAmount, List<string> fees)
+            {
+                var what = fees.Count == 0 ? "all fees" : string.Join(", ", fees);
+                return type == SponsorshipCoverageType.FixedAmount ? $"Up to {fixedAmount:N2} per invoice of {what}"
+                    : type == SponsorshipCoverageType.FullCoverage || pct >= 100 ? $"All of {what}" : $"{pct:0.##}% of {what}";
+            }
+
+            return new
+            {
+                kind = "Sponsor", reference = sp.Name, date = (DateTime?)null, status = sp.IsActive ? "Active" : "Inactive",
+                note = "Owed is what the sponsor owes after each line: its share of each invoice adds to it, each payment takes it down. Open a line for the invoice or the payment.",
+                fields = new[]
+                {
+                    Field("Sponsor's share of invoices", charges.Sum(c => c.Amount)),
+                    Field("Paid by sponsor", payments.Sum(p => p.Amount)),
+                    Field("Sponsor's balance", owed),
+                    Field("Type", Label(sp.SponsorType)), Field("Contact", sp.ContactName), Field("Email", sp.Email), Field("Phone", sp.Phone),
+                    Field("Receivable account", sp.ReceivableAccount == null ? null : $"{sp.ReceivableAccount.Code} - {sp.ReceivableAccount.Name}",
+                        sp.ReceivableAccountId == null ? null : Ledger(sp.ReceivableAccountId.Value))
+                },
+                sections = new[]
+                {
+                    Section("Statement", new[] { "Date", "Type", "Reference", "Details", "Charged", "Paid", "Owed" }, rows,
+                        new object?[] { "Total", null, null, null, charges.Sum(c => c.Amount), payments.Sum(p => p.Amount), owed }),
+                    Section("Students sponsored", new[] { "Student", "Year", "Term", "Covers", "Status" },
+                        sponsorships.OrderBy(s => s.Student ?? s.Class).Select(s => Row(new object?[] {
+                            s.StudentId == null ? $"Class {s.Class}" : $"{s.Upi} - {s.Student}", s.Year, s.Term ?? "All terms",
+                            Covers(s.CoverageType, s.Percentage, s.FixedAmount, s.Fees),
+                            Label(s.Status) },
+                            s.StudentId == null ? null : new { kind = "statement", studentId = s.StudentId, academicYearId = s.AcademicYearId, label = s.Year })))
+                }
             };
         }
 

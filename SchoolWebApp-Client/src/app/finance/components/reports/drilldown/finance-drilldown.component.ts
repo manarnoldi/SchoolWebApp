@@ -22,7 +22,7 @@ interface DrillView {title: string; subtitle?: string; icon?: string; status?: s
 
 const DOC_ICONS: Record<string, string> = {
     invoice: 'fa-file-invoice', payment: 'fa-receipt', expense: 'fa-money-bill-wave',
-    journal: 'fa-pen', sponsorPayment: 'fa-hand-holding-usd'
+    journal: 'fa-pen', sponsorPayment: 'fa-hand-holding-usd', sponsor: 'fa-hands-helping'
 };
 
 // A pop-up over a finance report that lists the transactions behind a figure.
