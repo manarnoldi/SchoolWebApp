@@ -33,17 +33,24 @@ export class GlobalSettingsComponent implements OnInit {
     ];
     dashboardTitle = 'Global Settings';
 
-    collapsedModules: Set<string> = new Set();
+    // One section open at a time; the first opens on arrival.
+    openModule: string | null = 'General';
 
-    isModuleExpanded = (m: any): boolean => !this.collapsedModules.has(m.name);
+    isModuleExpanded = (m: any): boolean => this.openModule === m.name;
 
     toggleModule = (m: any) => {
-        if (this.collapsedModules.has(m.name)) {
-            this.collapsedModules.delete(m.name);
-        } else {
-            this.collapsedModules.add(m.name);
-        }
+        this.openModule = this.openModule === m.name ? null : m.name;
     };
+
+    // Settings changed since the last save, in one section or in all of them.
+    isChanged = (module: string, key: string): boolean => {
+        let k = module + '.' + key;
+        return (this.settingValues[k] || '') !== (this.originalValues[k] || '');
+    };
+
+    changedCount = (m?: any): number =>
+        (m ? [m] : this.modules).reduce((n: number, mod: any) =>
+            n + mod.settings.filter((s: any) => this.isChanged(mod.name, s.key)).length, 0);
 
     modules = [
         {
@@ -311,8 +318,8 @@ export class GlobalSettingsComponent implements OnInit {
     }
 
     private init() {
-        // Collapse all modules except the first one
-        this.modules.slice(1).forEach((m) => this.collapsedModules.add(m.name));
+        // Open the first section (the licence may have left some out)
+        this.openModule = this.modules[0]?.name ?? null;
         if (this.licence.has('Academics')) this.loadExamTypes();
         if (this.licence.has('Finance')) this.loadAccounts();
         // Inject the per-education-level "Exam Results" rows, THEN load values -
