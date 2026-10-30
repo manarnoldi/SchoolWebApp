@@ -177,13 +177,17 @@ namespace SchoolWebApp.API.Services.Communications
 
         public async Task<object> PaymentsAsync(PaymentMessageDto dto, CancellationToken ct = default)
         {
-            var template = await _communications.SystemTemplateAsync(MessageTypeCodes.FeePayment, ct);
             var payments = await _db.Payments.AsNoTracking()
                 .Where(p => dto.PaymentIds.Contains(p.Id) && p.PaymentType == PaymentType.Receipt
                             && p.ApprovalStatus == PaymentApprovalStatus.Approved)
-                .Select(p => new { p.Id, p.StudentId, p.ReceiptNumber, p.Amount })
+                .Select(p => new { p.Id, p.StudentId, p.ReceiptNumber, p.Amount, SponsorName = p.SponsorPayment != null ? p.SponsorPayment.Sponsor!.Name : null })
                 .ToListAsync(ct);
             if (payments.Count == 0) throw new CommunicationException("Only approved receipts can be acknowledged.");
+            // A sponsor's receipt tells the parents the sponsor paid, so it has its own template; the two are sent apart.
+            var bySponsor = payments.Any(p => p.SponsorName != null);
+            if (bySponsor && payments.Any(p => p.SponsorName == null))
+                throw new CommunicationException("Send sponsors' receipts separately from the families' receipts.");
+            var template = await _communications.SystemTemplateAsync(bySponsor ? MessageTypeCodes.SponsorFeePayment : MessageTypeCodes.FeePayment, ct);
 
             var studentIds = payments.Select(p => p.StudentId).Distinct().ToList();
             var contacts = await _resolver.ParentContactsAsync(studentIds, ct);
@@ -195,6 +199,7 @@ namespace SchoolWebApp.API.Services.Communications
                 {
                     t.Values["AmountPaid"] = MessageText.Money(p.Amount);
                     t.Values["ReceiptNumber"] = p.ReceiptNumber;
+                    t.Values["SponsorName"] = p.SponsorName;
                     t.Values["Balance"] = MessageText.Money(balances.GetValueOrDefault(p.StudentId));
                     targets.Add(t);
                 }

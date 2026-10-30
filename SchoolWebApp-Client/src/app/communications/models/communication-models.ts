@@ -73,6 +73,7 @@ export const MESSAGE_TYPE_LABELS: {[k: string]: string} = {
     FeeInvoice: 'Fee invoice',
     FeeBalance: 'Fee balance reminder',
     FeePayment: 'Fee payment',
+    SponsorFeePayment: 'Fee payment by a sponsor',
     Custom: 'Custom message'
 };
 

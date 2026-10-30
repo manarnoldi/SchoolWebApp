@@ -57,6 +57,8 @@ namespace SchoolWebApp.Core.Entities.Communications
         public const string FeeInvoice = "FeeInvoice";
         public const string FeeBalance = "FeeBalance";
         public const string FeePayment = "FeePayment";
+        // A sponsor's payment applied to the learner's fees: the parents are told the sponsor paid.
+        public const string SponsorFeePayment = "SponsorFeePayment";
         public const string Custom = "Custom";
     }
 }

@@ -63,6 +63,13 @@ namespace SchoolWebApp.API.Services.Communications
                 P("AmountPaid", "Amount received"),
                 P("ReceiptNumber", "Receipt number"),
                 P("Balance", "Fee balance after the payment")
+            }).ToList(),
+            [MessageTypeCodes.SponsorFeePayment] = Learner.Concat(new[]
+            {
+                P("SponsorName", "The sponsor who paid"),
+                P("AmountPaid", "Amount the sponsor paid for the learner"),
+                P("ReceiptNumber", "Receipt number"),
+                P("Balance", "Fee balance after the payment")
             }).ToList()
         };
 
