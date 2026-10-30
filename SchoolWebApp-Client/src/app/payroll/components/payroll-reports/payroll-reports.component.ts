@@ -41,6 +41,7 @@ export class PayrollReportsComponent implements OnInit, OnDestroy {
     reportType: 'muster' | 'statutory' | 'bank' | 'payslips' | 'p9' = 'muster';
     // The period the loaded report is for - the Payslips tab prints its slips.
     loadedPeriod: PayrollPeriod | null = null;
+    loading = false;
 
     // P9A tax deduction cards: a year's pay and PAYE per employee, from approved payroll.
     p9Years: number[] = [];
@@ -55,7 +56,7 @@ export class PayrollReportsComponent implements OnInit, OnDestroy {
     readonly p9Cols = P9CardComponent.COLUMNS;
 
     page: number = 1;
-    pageSize: number = 20;
+    pageSize: number = 15;
     pageChanged = (p: number) => { this.page = p; };
     pageSizeChanged = (s: number) => { this.pageSize = s; };
 
@@ -81,7 +82,10 @@ export class PayrollReportsComponent implements OnInit, OnDestroy {
                 this.periods = (data || []).filter((p) => p.status === 2 || p.status === 3);
                 this.p9Years = [...new Set(this.periods.map((p) => +p.year!))].sort((a, b) => b - a);
                 this.p9Year = this.p9Years[0] ?? null;
-                if (fromLink && this.periods.some((p) => +p.id === fromLink)) { this.selectedPeriodId = fromLink; this.loadReport(); }
+                // The period named by a link, otherwise the latest approved one - loaded straight away.
+                let latest = [...this.periods].sort((a, b) => (+b.year! * 100 + +b.month!) - (+a.year! * 100 + +a.month!))[0];
+                this.selectedPeriodId = fromLink && this.periods.some((p) => +p.id === fromLink) ? fromLink : (latest ? +latest.id : null);
+                if (this.selectedPeriodId) this.loadReport();
                 if (this.reportType === 'p9') this.loadP9();
             },
             error: (err) => this.toastr.error(err.error?.message || 'Error loading periods.')
@@ -196,18 +200,27 @@ export class PayrollReportsComponent implements OnInit, OnDestroy {
         return this.totalPaye + this.totalNssfRemittance + this.totalShif + this.totalAhlRemittance + this.totalEmployerLevies;
     }
 
+    // A different period: clear the old figures and load the new ones.
+    periodChanged = () => {
+        this.payslips = [];
+        this.loadedPeriod = null;
+        this.loadReport();
+    };
+
     loadReport = () => {
-        if (!this.selectedPeriodId) {
-            this.toastr.info('Select a payroll period first.');
-            return;
-        }
+        if (!this.selectedPeriodId) return;
+        this.loading = true;
         this.svc.getPayslips(+this.selectedPeriodId).subscribe({
             next: (data) => {
                 this.payslips = data || [];
                 this.page = 1;
                 this.loadedPeriod = this.periods.find((p) => +p.id === +this.selectedPeriodId!) || null;
+                this.loading = false;
             },
-            error: (err) => this.toastr.error(err.error?.message || 'Error loading report.')
+            error: (err) => {
+                this.loading = false;
+                this.toastr.error(err.error?.message || 'Error loading report.');
+            }
         });
     };
 

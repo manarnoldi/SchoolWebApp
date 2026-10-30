@@ -7,18 +7,13 @@
         <div class="row g-1 mb-2 align-items-end" *ngIf="reportType !== 'p9'">
             <div class="col-md-4">
                 <label class="form-label mb-0" style="font-size:0.8rem;">Payroll Period <small class="text-muted">(approved only)</small></label>
-                <select class="form-select form-select-sm" [(ngModel)]="selectedPeriodId">
+                <select class="form-select form-select-sm" [(ngModel)]="selectedPeriodId" (ngModelChange)="periodChanged()">
                     <option [ngValue]="null" hidden disabled>Select period</option>
                     <option [ngValue]="p.id" *ngFor="let p of periods">{{ p.name }}</option>
                 </select>
                 <small class="text-muted" *ngIf="periods.length === 0">
                     <i class="fas fa-info-circle"></i> No approved payroll periods yet.
                 </small>
-            </div>
-            <div class="col-md-2">
-                <button class="btn btn-sm btn-primary" (click)="loadReport()">
-                    <i class="fas fa-search"></i> Load Report
-                </button>
             </div>
         </div>
 
@@ -576,9 +571,12 @@
         </div>
 
         <!-- No data message -->
-        <div class="text-center text-muted p-4" *ngIf="payslips.length === 0 && selectedPeriodId && reportType !== 'p9'">
+        <div class="text-center text-muted p-4" *ngIf="reportType !== 'p9' && loading">
+            <i class="fas fa-spinner fa-spin"></i> Loading...
+        </div>
+        <div class="text-center text-muted p-4" *ngIf="reportType !== 'p9' && !loading && payslips.length === 0 && selectedPeriodId">
             <i class="fas fa-info-circle fa-2x mb-2 d-block"></i>
-            <p>Select a period and click "Load Report" to view payroll reports.</p>
+            <p>No payslips for this period.</p>
         </div>
 
     </div>
