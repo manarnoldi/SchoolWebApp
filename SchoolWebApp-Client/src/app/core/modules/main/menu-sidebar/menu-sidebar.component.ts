@@ -247,7 +247,7 @@ export const MENU = [
                     {name: 'Fee Structures', iconClasses: 'fas fa-file-invoice-dollar text-success', path: ['/finance/fee-structures']},
                     {name: 'Student Invoices', iconClasses: 'fas fa-file-invoice text-warning', path: ['/finance/invoices']},
                     {name: 'Fee Payments', iconClasses: 'fas fa-cash-register text-success', path: ['/finance/payments']},
-                    {name: 'Statements', iconClasses: 'fas fa-file-invoice-dollar text-primary', path: ['/finance/reports/statements']}
+                    {name: 'Fee Reports', iconClasses: 'fas fa-chart-bar text-info', path: ['/finance/reports/fees']}
                 ]
             },
             {
@@ -271,7 +271,7 @@ export const MENU = [
                 name: 'Reports',
                 iconClasses: 'fas fa-chart-bar text-info',
                 children: [
-                    {name: 'Fee Reports', iconClasses: 'fas fa-chart-bar text-info', path: ['/finance/reports/fees']},
+                    {name: 'Statements', iconClasses: 'fas fa-file-invoice-dollar text-primary', path: ['/finance/reports/statements']},
                     {name: 'Expenses Report', iconClasses: 'fas fa-money-bill-wave text-danger', path: ['/finance/reports/expenses']}
                 ]
             }
