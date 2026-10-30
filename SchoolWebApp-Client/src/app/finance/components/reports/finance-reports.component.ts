@@ -346,8 +346,14 @@ export class FinanceReportsComponent implements OnInit {
         return rate >= 90 ? 'bg-success' : rate >= 70 ? 'bg-warning' : 'bg-danger';
     }
 
+    // Search within the open class, by name or admission number.
+    feeStudentSearch = '';
+
     feeStudents(cls: any): any[] {
-        return this.feeOnlyOwing ? (cls.students || []).filter((s: any) => s.balance > 0) : cls.students || [];
+        let q = this.feeStudentSearch.trim().toLowerCase();
+        return (cls.students || []).filter((s: any) =>
+            (!this.feeOnlyOwing || s.balance > 0) &&
+            (!q || (s.studentName || '').toLowerCase().includes(q) || String(s.studentUPI || '').toLowerCase().includes(q)));
     }
 
     feeStudentTotal(): number {
@@ -357,6 +363,7 @@ export class FinanceReportsComponent implements OnInit {
     // One class open at a time: opening another folds the one that was open; clicking the open one folds it.
     toggleFeeClass(idx: number) {
         this.openFeeClasses = new Set(this.openFeeClasses.has(idx) ? [] : [idx]);
+        this.feeStudentSearch = '';
     }
 
     clearFeeCollectionFilters() {

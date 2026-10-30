@@ -41,8 +41,15 @@
     > tbody > tr.class-row:hover > td, > tbody > tr.class-row.open > td { background: #e8f4fd; }
     > tbody > tr.students-row > td { background: #f8fafc; }
     .rate { min-width: 34px; text-align: right; color: #475569; }
+    // Roughly 15 rows, then the list scrolls; its headings stay in view.
+    .students-scroll { max-height: 420px; overflow-y: auto; border: 1px solid #e2e8f0; background: #fff; }
     table.students {
-        background: #fff; border: 1px solid #e2e8f0; font-size: 0.85rem;
-        thead th { background: #f1f5f9; font-weight: 600; }
+        font-size: 0.85rem;
+        thead th { background: #f1f5f9; font-weight: 600; position: sticky; top: 0; z-index: 1; }
+    }
+    .students-search {
+        display: flex; align-items: center; gap: 8px; padding: 6px 8px; background: #fff;
+        border: 1px solid #e2e8f0; border-bottom: 0;
+        input { max-width: 320px; }
     }
 }
