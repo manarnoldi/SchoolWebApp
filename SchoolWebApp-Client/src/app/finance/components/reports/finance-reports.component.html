@@ -374,8 +374,8 @@
             <ng-container *ngIf="allOutstanding.length > 0">
                 <div class="row g-2 mb-2 d-print-none">
                     <div class="col-md-3"><div class="small-box bg-primary p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ allOutstanding.length }}</h5><div>Students with a balance</div></div></div></div>
-                    <div class="col-md-3"><div class="small-box bg-info p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ outstandingInvoiced() | number:'1.0-2' }}</h5><div>Invoiced to them</div></div></div></div>
-                    <div class="col-md-3"><div class="small-box bg-success p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ outstandingPaid() | number:'1.0-2' }}</h5><div>Paid by them</div></div></div></div>
+                    <div class="col-md-3"><div class="small-box bg-info p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ outstandingInvoiced() | number:'1.0-2' }}</h5><div>Invoiced to students who owe</div></div></div></div>
+                    <div class="col-md-3"><div class="small-box bg-success p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ outstandingPaid() | number:'1.0-2' }}</h5><div>Paid so far by students who owe</div></div></div></div>
                     <div class="col-md-3"><div class="small-box bg-warning p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ outstandingAll() | number:'1.0-2' }}</h5><div>Outstanding</div></div></div></div>
                 </div>
                 <div class="card card-outline card-primary mb-2">
@@ -607,8 +607,8 @@
                 <ng-container *ngIf="feeBalancesReport.totalClasses > 0">
                     <div class="row g-2 mb-2 d-print-none">
                         <div class="col-md-3"><div class="small-box bg-primary p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ balanceTotals().students }}</h5><div>Students with a balance</div></div></div></div>
-                        <div class="col-md-3"><div class="small-box bg-info p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ balanceTotals().invoiced | number:'1.0-2' }}</h5><div>Invoiced to them</div></div></div></div>
-                        <div class="col-md-3"><div class="small-box bg-success p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ balanceTotals().paid | number:'1.0-2' }}</h5><div>Paid by them</div></div></div></div>
+                        <div class="col-md-3"><div class="small-box bg-info p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ balanceTotals().invoiced | number:'1.0-2' }}</h5><div>Invoiced to students who owe</div></div></div></div>
+                        <div class="col-md-3"><div class="small-box bg-success p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ balanceTotals().paid | number:'1.0-2' }}</h5><div>Paid so far by students who owe</div></div></div></div>
                         <div class="col-md-3"><div class="small-box bg-warning p-2 mb-0"><div class="inner"><h5 class="mb-0">{{ feeBalancesReport.grandTotal | number:'1.0-2' }}</h5><div>Outstanding</div></div></div></div>
                     </div>
 
