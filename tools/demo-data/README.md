@@ -65,7 +65,24 @@ shows a full, working school.
    start in January), so staff have a closed year's P9 on their profile. It reopens the
    terms finance.js closed while it posts into them, and closes them again.
 
-5. Check nothing is left from the original:
+5. Add a year of teaching documents, with the API still running:
+
+   ```
+   MYSQL_PWD=... node tools/demo-data/teaching.js --db shulenova --api http://localhost:5198 --through 2026-11-05
+   ```
+
+   It deletes the teaching documents in the copy, then, signed in as each teacher,
+   writes a scheme of work for every subject allocation and term - laid out from
+   the KICD curriculum, the year's sub-strands shared between the terms by their
+   length, the weeks before the end-of-term assessment given to revision - a lesson
+   plan for every lesson (timetabled so no teacher is in two classes at once,
+   Kiswahili lessons planned in Kiswahili), and the record of work. The head of the
+   subject's department approves the schemes and each week's plans, and checks the
+   record of work weekly. The last term ends with a few weeks of plans not written
+   and a few waiting on the HOD, so the tracker has something to show. Allocations
+   with no curriculum loaded (special unit, day care, sign language) get no scheme.
+
+6. Check nothing is left from the original:
 
    ```
    MYSQL_PWD=... node tools/demo-data/check.js --source swikunda --db shulenova
@@ -75,7 +92,7 @@ shows a full, working school.
    name still found, by table. Ordinary words that are also names (Junior,
    Christian, Adam and Love in CRE lessons) are expected.
 
-6. Dump `shulenova` and restore it on the demo site's database.
+7. Dump `shulenova` and restore it on the demo site's database.
 
 ## What changes
 
