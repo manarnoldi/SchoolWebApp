@@ -73,9 +73,10 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
         private async Task<List<TeachingAssignmentDto>> AssignmentsAsync(Session session, TeachingUser me, bool oversee)
         {
             var mine = me.StaffDetailsId ?? -1;
-            var allocations = _db.StaffSubjects.AsNoTracking()
+            // Subjects and learning levels marked as not needing teaching documents stay out.
+            var allocations = TeachingDocumentService.NeedingDocuments(_db.StaffSubjects.AsNoTracking())
                 .Where(a => a.SchoolClass!.AcademicYearId == session.AcademicYearId);
-            var schemes = _db.SchemesOfWork.AsNoTracking().Where(s => s.SessionId == session.Id);
+            var schemes = TeachingDocumentService.NeedingDocuments(_db.SchemesOfWork.AsNoTracking()).Where(s => s.SessionId == session.Id);
             if (!oversee)
             {
                 allocations = allocations.Where(a => a.StaffDetailsId == mine);

@@ -55,6 +55,9 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
             if (session == null || cls == null || subject == null) return BadRequest(new { message = "Choose the term, class and subject." });
             if (cls.AcademicYearId != session.AcademicYearId)
                 return BadRequest(new { message = "The class belongs to a different academic year from the term." });
+            var level = await _db.LearningLevels.AsNoTracking().FirstOrDefaultAsync(l => l.Id == cls.LearningLevelId);
+            if (!subject.RequiresTeachingDocuments || level?.RequiresTeachingDocuments == false)
+                return BadRequest(new { message = $"{subject.Name} for {cls.Name} does not need teaching documents (see Subjects and Learning Levels)." });
             if (!me.IsAdmin && !await _db.StaffSubjects.AnyAsync(a =>
                     a.StaffDetailsId == staffId && a.SubjectId == model.SubjectId && a.SchoolClassId == model.SchoolClassId))
                 return BadRequest(new { message = "You are not allocated to this subject for the selected class." });

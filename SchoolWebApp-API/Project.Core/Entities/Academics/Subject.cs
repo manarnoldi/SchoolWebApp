@@ -29,6 +29,11 @@ namespace SchoolWebApp.Core.Entities.Academics
         public string? Description { get; set; }
         public bool Optional { get; set; }
         public bool Examinable { get; set; } = true;
+        /// <summary>
+        /// Whether teachers keep schemes of work, lesson plans and a record of work for it. Off for one with no
+        /// curriculum design to plan from (day care, say): it is then left out of Teaching Management.
+        /// </summary>
+        public bool RequiresTeachingDocuments { get; set; } = true;
         public int Rank { get; set; }
         public int SubjectGroupId { get; set; }
         public SubjectGroup? SubjectGroup { get; set; }

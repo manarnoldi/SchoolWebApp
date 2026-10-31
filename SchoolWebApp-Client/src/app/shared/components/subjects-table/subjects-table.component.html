@@ -39,7 +39,9 @@
                         </div>
                     </th>
                     <td>{{ item.id }}</td>
-                    <td>{{ item.name }}</td>
+                    <td>{{ item.name }}
+                        <span *ngIf="showAllCols && item.requiresTeachingDocuments === false" class="badge bg-light text-muted border ms-1"
+                            title="No schemes of work, lesson plans or record of work - left out of Teaching Management">No teaching docs</span></td>
                     <td>{{ item.code }}</td>
                     <td *ngIf="showAllCols">{{ item.abbr }}</td>
                     <td>{{ item.rank }}</td>

@@ -48,6 +48,16 @@ namespace SchoolWebApp.API.Services.TeachingDocuments
         public const string EntityScheme = "SchemeOfWork";
         public const string EntityLessonPlanWeek = "LessonPlanWeek";
         public const string WholeSchoolPermissionPath = "/teaching/admin";
+
+        /// <summary>
+        /// The allocations teaching documents are kept for: both the subject and the class's learning level
+        /// require them (Subjects and Learning Levels settings). The rest stay out of Teaching Management.
+        /// </summary>
+        public static IQueryable<SchoolWebApp.Core.Entities.Staff.StaffSubject> NeedingDocuments(IQueryable<SchoolWebApp.Core.Entities.Staff.StaffSubject> q) =>
+            q.Where(a => a.Subject!.RequiresTeachingDocuments && a.SchoolClass!.LearningLevel!.RequiresTeachingDocuments);
+
+        public static IQueryable<SchemeOfWork> NeedingDocuments(IQueryable<SchemeOfWork> q) =>
+            q.Where(s => s.Subject!.RequiresTeachingDocuments && s.SchoolClass!.LearningLevel!.RequiresTeachingDocuments);
         private const string SettingsModule = "TeachingDocuments";
 
         private readonly ApplicationDbContext _db;

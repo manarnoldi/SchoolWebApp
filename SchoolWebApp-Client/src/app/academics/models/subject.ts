@@ -12,6 +12,8 @@ export class Subject extends ResourceModel<Subject> {
     public description?: string;
     public optional?: boolean;
     public examinable?: boolean;
+    // Teachers keep schemes, lesson plans and a record of work for it; off leaves it out of Teaching Management.
+    public requiresTeachingDocuments?: boolean;
 
     public subjectGroupId?: number;
     public subjectGroup?: SubjectGroup;

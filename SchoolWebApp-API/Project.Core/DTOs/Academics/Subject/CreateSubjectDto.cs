@@ -27,6 +27,8 @@ namespace SchoolWebApp.Core.DTOs.Academics.Subject
         public string? Description { get; set; }
         public bool Optional { get; set; }
         public bool Examinable { get; set; } = true;
+        /// <summary>Teachers keep teaching documents for it; off leaves it out of Teaching Management.</summary>
+        public bool RequiresTeachingDocuments { get; set; } = true;
         public int Rank { get; set; }
         public int SubjectGroupId { get; set; }
         public SubjectGroupDto? SubjectGroup { get; set; }

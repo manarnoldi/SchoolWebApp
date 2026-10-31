@@ -58,6 +58,8 @@ namespace SchoolWebApp.API.Services.TeachingDocuments
         {
             public int StaffDetailsId { get; set; }
             public string StaffName { get; set; } = "";
+            // The subject or the class's learning level is marked as not needing teaching documents.
+            public bool NoDocuments { get; set; }
             public int SubjectId { get; set; }
             public string SubjectName { get; set; } = "";
             public string SubjectAbbr { get; set; } = "";
@@ -92,7 +94,7 @@ namespace SchoolWebApp.API.Services.TeachingDocuments
             foreach (var (subjectId, classId) in keys)
             {
                 var t = await TargetAsync(staffDetailsId, subjectId, classId, session);
-                if (t == null || !me.CanUploadFor(staffDetailsId, t.DepartmentId)) continue;
+                if (t == null || t.NoDocuments || !me.CanUploadFor(staffDetailsId, t.DepartmentId)) continue;
                 t.Scheme = schemes.FirstOrDefault(s => s.SubjectId == subjectId && s.SchoolClassId == classId);
                 targets.Add(t);
             }
@@ -125,7 +127,8 @@ namespace SchoolWebApp.API.Services.TeachingDocuments
                 StaffDetailsId = staffId, StaffName = staff,
                 SubjectId = subject.Id, SubjectName = subject.Name, SubjectAbbr = subject.Abbr, SubjectRank = subject.Rank, DepartmentId = subject.DepartmentId,
                 SchoolClassId = cls.Id, ClassName = cls.Name, LearningLevelId = cls.LearningLevelId,
-                LearningLevelName = cls.LearningLevel?.Name ?? "", Session = session
+                LearningLevelName = cls.LearningLevel?.Name ?? "", Session = session,
+                NoDocuments = !subject.RequiresTeachingDocuments || cls.LearningLevel?.RequiresTeachingDocuments == false
             };
         }
 
@@ -412,6 +415,11 @@ namespace SchoolWebApp.API.Services.TeachingDocuments
             if (t == null)
             {
                 Error(null, "The teacher, subject, class or term on this sheet no longer exists.");
+                return p;
+            }
+            if (t.NoDocuments)
+            {
+                Error(null, $"{t.SubjectName} for {t.ClassName} does not need teaching documents (see Subjects and Learning Levels).");
                 return p;
             }
             p.Target = t;

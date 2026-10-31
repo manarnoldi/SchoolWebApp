@@ -79,8 +79,10 @@ shows a full, working school.
    Kiswahili lessons planned in Kiswahili), and the record of work. The head of the
    subject's department approves the schemes and each week's plans, and checks the
    record of work weekly. The last term ends with a few weeks of plans not written
-   and a few waiting on the HOD, so the tracker has something to show. Allocations
-   with no curriculum loaded (special unit, day care, sign language) get no scheme.
+   and a few waiting on the HOD, so the tracker has something to show. Day care is
+   set to need no teaching documents (Learning Levels), so it stays out of Teaching
+   Management; the special unit and sign language, with no curriculum loaded yet,
+   get no scheme.
 
 6. Check nothing is left from the original:
 

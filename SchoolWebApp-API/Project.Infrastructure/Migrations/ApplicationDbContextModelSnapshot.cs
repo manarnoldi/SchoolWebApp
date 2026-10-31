@@ -396,6 +396,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Property<int>("Rank")
                         .HasColumnType("int");
 
+                    b.Property<bool>("RequiresTeachingDocuments")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<int?>("StaffDetailsId")
                         .HasColumnType("int");
 
@@ -658,65 +661,65 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             CreatedBy = "admin",
                             Description = "Default budget amendment approval workflow",
                             FormKey = "BudgetAmendment",
                             IsActive = true,
                             IsMakerChecker = true,
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             ModifiedBy = "admin",
                             Name = "Budget Amendment Approval"
                         },
                         new
                         {
                             Id = 2,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             CreatedBy = "admin",
                             Description = "Default expense approval workflow",
                             FormKey = "Expense",
                             IsActive = true,
                             IsMakerChecker = true,
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             ModifiedBy = "admin",
                             Name = "Expense Approval"
                         },
                         new
                         {
                             Id = 3,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             CreatedBy = "admin",
                             Description = "Default journal entry approval workflow",
                             FormKey = "JournalEntry",
                             IsActive = true,
                             IsMakerChecker = true,
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             ModifiedBy = "admin",
                             Name = "Journal Entry Approval"
                         },
                         new
                         {
                             Id = 4,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             CreatedBy = "admin",
                             Description = "Default credit/debit note approval workflow",
                             FormKey = "CreditDebitNote",
                             IsActive = true,
                             IsMakerChecker = true,
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             ModifiedBy = "admin",
                             Name = "Credit/Debit Note Approval"
                         },
                         new
                         {
                             Id = 5,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             CreatedBy = "admin",
                             Description = "Default budget approval workflow",
                             FormKey = "Budget",
                             IsActive = true,
                             IsMakerChecker = true,
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             ModifiedBy = "admin",
                             Name = "Budget Approval"
                         });
@@ -781,10 +784,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 1,
                             ApprovalWorkflowId = 1,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             CreatedBy = "admin",
                             IsFinal = false,
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             ModifiedBy = "admin",
                             Name = "Reviewer",
                             NotifyApplicant = true,
@@ -797,10 +800,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 2,
                             ApprovalWorkflowId = 1,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             CreatedBy = "admin",
                             IsFinal = true,
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             ModifiedBy = "admin",
                             Name = "Approver",
                             NotifyApplicant = true,
@@ -813,10 +816,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 3,
                             ApprovalWorkflowId = 2,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             CreatedBy = "admin",
                             IsFinal = false,
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             ModifiedBy = "admin",
                             Name = "Reviewer",
                             NotifyApplicant = true,
@@ -829,10 +832,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 4,
                             ApprovalWorkflowId = 2,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             CreatedBy = "admin",
                             IsFinal = true,
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             ModifiedBy = "admin",
                             Name = "Approver",
                             NotifyApplicant = true,
@@ -845,10 +848,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 5,
                             ApprovalWorkflowId = 3,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             CreatedBy = "admin",
                             IsFinal = false,
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             ModifiedBy = "admin",
                             Name = "Reviewer",
                             NotifyApplicant = true,
@@ -861,10 +864,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 6,
                             ApprovalWorkflowId = 3,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             CreatedBy = "admin",
                             IsFinal = true,
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             ModifiedBy = "admin",
                             Name = "Approver",
                             NotifyApplicant = true,
@@ -877,10 +880,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 7,
                             ApprovalWorkflowId = 4,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             CreatedBy = "admin",
                             IsFinal = false,
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             ModifiedBy = "admin",
                             Name = "Reviewer",
                             NotifyApplicant = true,
@@ -893,10 +896,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 8,
                             ApprovalWorkflowId = 4,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             CreatedBy = "admin",
                             IsFinal = true,
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             ModifiedBy = "admin",
                             Name = "Approver",
                             NotifyApplicant = true,
@@ -909,10 +912,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 9,
                             ApprovalWorkflowId = 5,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             CreatedBy = "admin",
                             IsFinal = false,
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             ModifiedBy = "admin",
                             Name = "Reviewer",
                             NotifyApplicant = true,
@@ -925,10 +928,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 10,
                             ApprovalWorkflowId = 5,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             CreatedBy = "admin",
                             IsFinal = true,
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 276, DateTimeKind.Local).AddTicks(4048),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
                             ModifiedBy = "admin",
                             Name = "Approver",
                             NotifyApplicant = true,
@@ -2698,6 +2701,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
 
                     b.Property<int>("Rank")
                         .HasColumnType("int");
+
+                    b.Property<bool>("RequiresTeachingDocuments")
+                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("Id");
 
@@ -4746,9 +4752,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(4414),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(3677),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(4428),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(3691),
                             ModifiedBy = "admin",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
@@ -4756,9 +4762,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 2,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(4528),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4406),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(4531),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4410),
                             ModifiedBy = "admin",
                             Name = "HeadTeacher",
                             NormalizedName = "HEADTEACHER"
@@ -4766,9 +4772,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 3,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(4581),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4441),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(4583),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4442),
                             ModifiedBy = "admin",
                             Name = "Teacher",
                             NormalizedName = "TEACHER"
@@ -4776,9 +4782,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 4,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(4630),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4467),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(4632),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4468),
                             ModifiedBy = "admin",
                             Name = "Student",
                             NormalizedName = "STUDENT"
@@ -4786,9 +4792,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 5,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(4675),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4493),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(4677),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4494),
                             ModifiedBy = "admin",
                             Name = "Parent",
                             NormalizedName = "PARENT"
@@ -4796,9 +4802,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 6,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(4723),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4518),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(4725),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4519),
                             ModifiedBy = "admin",
                             Name = "Accounts",
                             NormalizedName = "ACCOUNTS"
@@ -4806,9 +4812,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 7,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(4779),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4542),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(4781),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4543),
                             ModifiedBy = "admin",
                             Name = "Others",
                             NormalizedName = "OTHERS"
@@ -4816,9 +4822,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 8,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(4828),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4565),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(4829),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4566),
                             ModifiedBy = "admin",
                             Name = "SuperAdministrator",
                             NormalizedName = "SUPERADMINISTRATOR"
@@ -4924,20 +4930,20 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d0ce2de3-febf-4a77-9209-24f5c45070fd",
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(5436),
+                            ConcurrencyStamp = "9be7269a-c68d-48be-a635-bd501cf228e8",
+                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(5147),
                             CreatedBy = "admin",
                             Email = "admin@kodetek.co.ke",
                             EmailConfirmed = true,
                             FirstName = "SchoolSoft",
                             LastName = "Administrator",
                             LockoutEnabled = false,
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(5439),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(5149),
                             ModifiedBy = "admin",
                             MustChangePassword = false,
                             NormalizedEmail = "ADMIN@KODETEK.CO.KE",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHz7MwRN6ALgXTe+i1qY2Wb1ISk7xjC2eD+9PVaF52Zj1H6cx2YXzjWa+ZkLGkZ2dg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEE146A45wbYOlsNrCpgXpYZpZojpcWYlUt7OkyqTFgvbbB0QOMsZ/IQ7C5T8bEmBng==",
                             PhoneNumber = "+254724920000",
                             PhoneNumberConfirmed = true,
                             TwoFactorEnabled = false,
@@ -6286,10 +6292,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(4997),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4675),
                             CreatedBy = "admin",
                             Description = "",
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(4999),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4676),
                             ModifiedBy = "admin",
                             Name = "Supplier",
                             Rank = 1
@@ -6336,10 +6342,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(5040),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4701),
                             CreatedBy = "admin",
                             Description = "",
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(5042),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4702),
                             ModifiedBy = "admin",
                             Name = "Contract",
                             Rank = 1
@@ -6386,10 +6392,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(5175),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4846),
                             CreatedBy = "admin",
                             Description = "",
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(5177),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4847),
                             ModifiedBy = "admin",
                             Name = "Male",
                             Rank = 1
@@ -6480,10 +6486,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(5089),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4727),
                             CreatedBy = "admin",
                             Description = "",
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(5091),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4728),
                             ModifiedBy = "admin",
                             Name = "Kenyan",
                             Rank = 1
@@ -6681,10 +6687,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(5128),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4816),
                             CreatedBy = "admin",
                             Description = "",
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(5129),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4817),
                             ModifiedBy = "admin",
                             Name = "Christian",
                             Rank = 1
@@ -6781,11 +6787,11 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 1,
                             Code = "SC001",
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(4940),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4637),
                             CreatedBy = "admin",
                             Description = "",
                             ForTeaching = false,
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(4943),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4639),
                             ModifiedBy = "admin",
                             Name = "Non-teaching",
                             Rank = 1
@@ -7946,13 +7952,13 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 1,
                             Address = "Admin",
-                            Created = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(5264),
+                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4913),
                             CreatedBy = "admin",
-                            DateOfBirth = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(5260),
+                            DateOfBirth = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4909),
                             Email = "admin@kodetek.co.ke",
                             FullName = "Admin",
                             GenderId = 1,
-                            Modified = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(5264),
+                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4914),
                             ModifiedBy = "admin",
                             NationalityId = 1,
                             OtherDetails = "Admin",
@@ -7962,9 +7968,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                             UPI = "Admin",
                             CurrentlyEmployed = true,
                             DesignationId = 1,
-                            EmploymentDate = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(5248),
+                            EmploymentDate = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4900),
                             EmploymentTypeId = 1,
-                            EndofEmploymentDate = new DateTime(2026, 10, 30, 16, 0, 48, 207, DateTimeKind.Local).AddTicks(5250),
+                            EndofEmploymentDate = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4901),
                             ExcludeFromPayroll = false,
                             IdNumber = "Admin",
                             KraPinNo = "Admin",

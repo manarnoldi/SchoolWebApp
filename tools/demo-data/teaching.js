@@ -24,8 +24,9 @@
 //                    default two weeks from today)
 //          --seed <number> (default 2026)
 // The teaching documents already in the copy are deleted first, so it can be
-// run again. Allocations whose subject and grade have no curriculum loaded (the
-// special unit, day care, sign language) are left without schemes.
+// run again. Day care is marked as keeping no teaching documents (Learning Levels),
+// so it stays out of Teaching Management; other allocations whose subject and grade
+// have no curriculum loaded (the special unit, sign language) are left without schemes.
 
 const {execFileSync} = require('child_process');
 
@@ -242,7 +243,9 @@ DELETE a FROM approvalstepactions a JOIN approvalrequests r ON r.Id = a.Approval
 DELETE FROM approvalrequests WHERE EntityType IN ('SchemeOfWork', 'LessonPlanWeek');
 DELETE FROM recordofworkchecks; DELETE FROM recordofworkentries; DELETE FROM lessonplansteps; DELETE FROM lessonplans;
 DELETE FROM lessonplanweeks; DELETE FROM schemeofworklessons; DELETE FROM schemesofwork;
-SET FOREIGN_KEY_CHECKS = 1;`);
+SET FOREIGN_KEY_CHECKS = 1;
+-- Day care has no curriculum design to plan from, so it keeps no teaching documents.
+UPDATE learninglevels SET RequiresTeachingDocuments = 0 WHERE Name = 'Day Care';`);
     for (const u of new Set([...allocations.map((x) => x.teacher), ...hods, ...admins])) await tok(u);
 
     // ---------- 3. The terms ----------
