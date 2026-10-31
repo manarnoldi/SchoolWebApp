@@ -8,6 +8,8 @@ using SchoolWebApp.Core.Entities.Staff;
 using SchoolWebApp.API.Services.Academics;
 using SchoolWebApp.Core.Interfaces.IRepositories;
 using SchoolWebApp.API.Security;
+using Microsoft.EntityFrameworkCore;
+using Project.Infrastructure.Data;
 
 namespace SchoolWebApp.API.Controllers.Staff
 {
@@ -21,8 +23,11 @@ namespace SchoolWebApp.API.Controllers.Staff
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly SubjectLevelGuard _levelGuard;
-        public StaffSubjectsController(ILogger<StaffSubjectsController> logger, IUnitOfWork unitOfWork, IMapper mapper, SubjectLevelGuard levelGuard)
+        private readonly ApplicationDbContext _db;
+        public StaffSubjectsController(ILogger<StaffSubjectsController> logger, IUnitOfWork unitOfWork, IMapper mapper, SubjectLevelGuard levelGuard,
+            ApplicationDbContext db)
         {
+            _db = db;
             _logger = logger;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -101,6 +106,61 @@ namespace SchoolWebApp.API.Controllers.Staff
                 _logger.LogError(ex, $"An error occurred while retrieving the staff subjects by staff details id.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
+        }
+
+        // GET api/staffSubjects/bySubject/5?academicYearId=3
+        /// <summary>
+        /// The classes a subject is allocated to in a year, in grade and class order: each with its teacher(s),
+        /// the class's learners, and how many of them take the subject.
+        /// </summary>
+        /// <param name="subjectId">The subject</param>
+        /// <param name="academicYearId">The year - allocations are made per year</param>
+        [HttpGet("bySubject/{subjectId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetClassesBySubject(int subjectId, int academicYearId)
+        {
+            var allocations = await _db.StaffSubjects.AsNoTracking()
+                .Where(a => a.SubjectId == subjectId && a.SchoolClass!.AcademicYearId == academicYearId)
+                .Select(a => new
+                {
+                    a.SchoolClassId,
+                    ClassName = a.SchoolClass!.Name,
+                    ClassRank = a.SchoolClass.Rank,
+                    LearningLevel = a.SchoolClass.LearningLevel!.Name,
+                    LevelRank = a.SchoolClass.LearningLevel.Rank,
+                    Teacher = a.StaffDetails!.FullName,
+                    StaffNo = a.StaffDetails.UPI
+                })
+                .ToListAsync();
+            var classIds = allocations.Select(a => a.SchoolClassId).Distinct().ToList();
+            var learners = await _db.StudentClasses.AsNoTracking()
+                .Where(sc => classIds.Contains(sc.SchoolClassId) && sc.Student!.Status == SchoolWebApp.Core.Entities.Enums.Status.Active)
+                .GroupBy(sc => sc.SchoolClassId)
+                .Select(g => new { g.Key, Count = g.Select(x => x.StudentId).Distinct().Count() })
+                .ToDictionaryAsync(g => g.Key, g => g.Count);
+            var taking = await _db.StudentSubjects.AsNoTracking()
+                .Where(ss => ss.SubjectId == subjectId && classIds.Contains(ss.StudentClass!.SchoolClassId)
+                             && ss.StudentClass.Student!.Status == SchoolWebApp.Core.Entities.Enums.Status.Active)
+                .GroupBy(ss => ss.StudentClass!.SchoolClassId)
+                .Select(g => new { g.Key, Count = g.Select(x => x.StudentClass!.StudentId).Distinct().Count() })
+                .ToDictionaryAsync(g => g.Key, g => g.Count);
+
+            var result = allocations.GroupBy(a => a.SchoolClassId).Select(g =>
+            {
+                var c = g.First();
+                return new
+                {
+                    schoolClassId = g.Key,
+                    className = c.ClassName,
+                    learningLevel = c.LearningLevel,
+                    levelRank = c.LevelRank,
+                    classRank = c.ClassRank,
+                    teachers = g.Select(x => new { name = x.Teacher, staffNo = x.StaffNo }).Distinct().ToList(),
+                    learners = learners.GetValueOrDefault(g.Key),
+                    taking = taking.GetValueOrDefault(g.Key)
+                };
+            }).OrderBy(r => r.levelRank).ThenBy(r => r.classRank).ThenBy(r => r.className).ToList();
+            return Ok(result);
         }
 
         // GET api/staffSubjects/byAcademicYearId/5

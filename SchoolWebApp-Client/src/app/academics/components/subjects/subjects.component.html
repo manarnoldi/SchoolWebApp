@@ -42,7 +42,73 @@
             (pageChangedEvent)="pageChanged($event)"
             (pageSizeChangedEvent)="pageSizeChanged($event)"
             [subjects]="subjects" [showLoginControls]="false"
-            (editItemEvent)="editItem($event)" *ngIf="subjects"
+            (editItemEvent)="editItem($event)" (classesItemEvent)="openClasses($event)" *ngIf="subjects"
             (deleteItemEvent)="deleteItem($event)"></app-subjects-table>
     </div>
 </section>
+
+<!-- Classes pop-up: where the subject is taught in the chosen year, and by whom. -->
+<div class="modal-backdrop fade show" *ngIf="classesFor"></div>
+<div class="modal fade show d-block" *ngIf="classesFor" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" style="margin-top: 30px;">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white py-2">
+                <h5 class="modal-title"><i class="fas fa-chalkboard-teacher me-1"></i> {{ classesFor.name }}: classes</h5>
+                <button type="button" class="close text-white" (click)="closeClasses()" aria-label="Close"><span>&times;</span></button>
+            </div>
+            <div class="modal-body p-2">
+                <div class="d-flex flex-wrap align-items-end gap-2 mb-2">
+                    <div>
+                        <label class="form-label mb-0" style="font-size:0.8rem;">Year</label>
+                        <select class="form-select form-select-sm" style="min-width: 140px;" [(ngModel)]="classesYearId" (ngModelChange)="loadClasses()">
+                            <option *ngFor="let y of years" [ngValue]="+y.id">{{ y.name }}</option>
+                        </select>
+                    </div>
+                    <div class="ms-auto text-end" *ngIf="!classesLoading && classRows.length" style="font-size:0.85rem;">
+                        <span class="badge bg-info">{{ classRows.length }} {{ classRows.length === 1 ? 'class' : 'classes' }}</span>
+                        <span class="badge bg-secondary ms-1">{{ totalLearners() }} learners</span>
+                    </div>
+                </div>
+                <div class="text-center text-muted p-3" *ngIf="classesLoading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+                <div class="text-center text-muted p-3" *ngIf="!classesLoading && !classRows.length">
+                    <i class="fas fa-info-circle"></i> {{ classesFor.name }} is not allocated to any class in {{ yearName() }}.
+                </div>
+                <table class="table table-sm table-striped table-hover mb-0" *ngIf="!classesLoading && classRows.length">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Grade</th>
+                            <th>Class</th>
+                            <th>Teacher</th>
+                            <th class="text-end">Learners</th>
+                            <th class="text-end" title="Learners with the subject recorded under Students > Subjects">Taking it</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let r of classRows; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ r.learningLevel }}</td>
+                            <td><strong>{{ r.className }}</strong></td>
+                            <td>{{ teacherNames(r) }}</td>
+                            <td class="text-end">{{ r.learners }}</td>
+                            <td class="text-end">{{ r.taking }}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="table-light fw-bold">
+                        <tr>
+                            <td colspan="4" class="text-end">Total</td>
+                            <td class="text-end">{{ totalLearners() }}</td>
+                            <td class="text-end">{{ totalTaking() }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="modal-footer py-1">
+                <a class="btn btn-sm btn-outline-primary me-auto" [routerLink]="['/school/bulk-staff-subjects']">
+                    <i class="fas fa-bullseye"></i> Manage allocations
+                </a>
+                <button class="btn btn-sm btn-secondary" (click)="closeClasses()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

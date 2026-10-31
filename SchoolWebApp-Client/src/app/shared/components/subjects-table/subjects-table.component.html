@@ -23,6 +23,7 @@
                     <th>Department</th>
                     <th *ngIf="showAllCols">H.O.S</th>
                     <th *ngIf="showAllCols">Description</th>
+                    <th *ngIf="showAllCols">Classes</th>
                     <th *ngIf="showAllCols">Action</th>
                 </tr>
             </thead>
@@ -48,6 +49,12 @@
                     <td>{{ item.department?.name }}</td>
                     <td *ngIf="showAllCols">{{ item.staffDetails?.fullName }}</td>
                     <td *ngIf="showAllCols">{{ item.description }}</td>
+                    <td *ngIf="showAllCols" class="p-1">
+                        <button class="btn btn-sm btn-outline-info py-0" (click)="viewClasses(item)"
+                            [title]="'The classes ' + item.name + ' is allocated to'">
+                            <i class="fas fa-chalkboard-teacher"></i> Classes
+                        </button>
+                    </td>
                     <app-table-action *ngIf="showAllCols"
                         (editItemEvent)="editItem(item.id)"
                         (deleteItemEvent)="deleteItem(item.id)"></app-table-action>

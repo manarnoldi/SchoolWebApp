@@ -24,6 +24,8 @@ export class SubjectsTableComponent implements OnInit {
 
     @Output() editItemEvent = new EventEmitter<number>();
     @Output() deleteItemEvent = new EventEmitter<number>();
+    // The classes the subject is allocated to (Subjects page only).
+    @Output() classesItemEvent = new EventEmitter<Subject>();
 
     @ViewChild('checkAll') checkAllBox: ElementRef;
 
@@ -51,6 +53,10 @@ export class SubjectsTableComponent implements OnInit {
 
     deleteItem = (id: number) => {
         this.deleteItemEvent.emit(id);
+    };
+
+    viewClasses = (item: Subject) => {
+        this.classesItemEvent.emit(item);
     };
 
     editItem = (id: number) => {

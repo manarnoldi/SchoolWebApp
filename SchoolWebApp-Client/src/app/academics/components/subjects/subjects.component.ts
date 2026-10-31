@@ -14,6 +14,19 @@ import {DepartmentsService} from '@/school/services/departments.service';
 import {StaffDetailsService} from '@/staff/services/staff-details.service';
 import {ActivatedRoute} from '@angular/router';
 import Swal from 'sweetalert2';
+import {HttpClient} from '@angular/common/http';
+import {AcademicYear} from '@/school/models/academic-year';
+import {AcademicYearsService} from '@/school/services/academic-years.service';
+
+// One class a subject is allocated to in a year.
+interface SubjectClassRow {
+    schoolClassId: number;
+    className: string;
+    learningLevel: string;
+    teachers: {name: string; staffNo?: string}[];
+    learners: number;
+    taking: number;
+}
 
 @Component({
     selector: 'app-subjects',
@@ -47,14 +60,58 @@ export class SubjectsComponent implements OnInit {
     departments: Department[] = [];
     staffs: StaffDetails[] = [];
 
+    // The Classes pop-up: the subject, the year (allocations are yearly) and its classes.
+    classesFor: Subject | null = null;
+    years: AcademicYear[] = [];
+    classesYearId: number | null = null;
+    classRows: SubjectClassRow[] = [];
+    classesLoading = false;
+
     constructor(
         private toastr: ToastrService,
         private subjectsSvc: SubjectsService,
         private subjectGroupsSvc: SubjectGroupsService,
         private departmentsSvc: DepartmentsService,
         private staffsSvc: StaffDetailsService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private http: HttpClient,
+        private academicYearsSvc: AcademicYearsService
     ) {}
+
+    openClasses = (s: Subject) => {
+        this.classesFor = s;
+        this.classRows = [];
+        if (this.years.length) { this.loadClasses(); return; }
+        this.academicYearsSvc.get('/academicYears').subscribe({
+            next: (years) => {
+                this.years = [...(years || [])].sort((a, b) => +new Date(b.startDate!) - +new Date(a.startDate!));
+                // The year running today, else the latest.
+                let now = new Date();
+                let current = this.years.find((y) => new Date(y.startDate!) <= now && now <= new Date(y.endDate!)) || this.years[0];
+                this.classesYearId = current ? +current.id : null;
+                this.loadClasses();
+            },
+            error: () => this.toastr.error('The academic years could not be loaded.')
+        });
+    };
+
+    loadClasses = () => {
+        if (!this.classesFor || !this.classesYearId) return;
+        this.classesLoading = true;
+        this.classRows = [];
+        this.http.get<SubjectClassRow[]>(`/staffSubjects/bySubject/${this.classesFor.id}`, {params: {academicYearId: this.classesYearId}})
+            .subscribe({
+                next: (rows) => { this.classRows = rows || []; this.classesLoading = false; },
+                error: () => { this.classesLoading = false; this.toastr.error('The classes could not be loaded.'); }
+            });
+    };
+
+    closeClasses = () => { this.classesFor = null; };
+
+    teacherNames = (r: SubjectClassRow): string => r.teachers.map((t) => t.name).join(', ');
+    totalLearners = (): number => this.classRows.reduce((s, r) => s + r.learners, 0);
+    totalTaking = (): number => this.classRows.reduce((s, r) => s + r.taking, 0);
+    yearName = (): string => this.years.find((y) => +y.id === +this.classesYearId!)?.name || '';
 
     ngOnInit(): void {
         this.querySource = this.route.snapshot.queryParamMap.get('source') || '';
