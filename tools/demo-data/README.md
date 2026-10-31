@@ -84,7 +84,26 @@ shows a full, working school.
    Management; the special unit and sign language, with no curriculum loaded yet,
    get no scheme.
 
-6. Check nothing is left from the original:
+6. Add a year of CBE records, with the API still running (after teaching.js -
+   the assessments follow its schemes of work):
+
+   ```
+   MYSQL_PWD=... node tools/demo-data/cbe.js --db shulenova --api http://localhost:5198 --through 2026-11-05
+   ```
+
+   It deletes the learners' CBE records in the copy (keeping the leadership that
+   election results recorded), then, signed in as the teachers: grades every
+   specific outcome of the sub-strands each term's scheme covered, for every
+   learner taking the subject, in the week the sub-strand was finished, with the
+   sub-strand and strand grades worked out from them. A learner's grades follow
+   their exam marks in the subject that term. Each class teacher rates the
+   values at the end of every term (switched on in the term report card),
+   records the year's responsibilities and social skills, and the class's
+   community service project each term; a few older learners add their own
+   service. Every learner joins a club or sport (some two), recorded by the
+   activity's patron with participation, achievement and effort scores.
+
+7. Check nothing is left from the original:
 
    ```
    MYSQL_PWD=... node tools/demo-data/check.js --source swikunda --db shulenova
@@ -94,7 +113,7 @@ shows a full, working school.
    name still found, by table. Ordinary words that are also names (Junior,
    Christian, Adam and Love in CRE lessons) are expected.
 
-7. Dump `shulenova` and restore it on the demo site's database.
+8. Dump `shulenova` and restore it on the demo site's database.
 
 ## What changes
 

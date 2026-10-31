@@ -481,6 +481,9 @@ export class ReportFormComponent implements OnInit {
                 this.studentSubjectsSvc.get(`/studentSubjects/byStudentId/${studentId}`)
             ]).subscribe({
                 next: ([coCurrActivities, studentResponsibilities, communityService, studentSubjects]) => {
+                    // A term's report shows that term's community service and that year's responsibilities.
+                    communityService = ((communityService as any[]) || []).filter((cs) => cs.sessionId == this.filterSessionId);
+                    studentResponsibilities = ((studentResponsibilities as any[]) || []).filter((sr) => sr.academicYearId == this.filterAcademicYearId);
                     let examsByType = shared.examsByType as any[][];
 
                     // Build a set of subject IDs the student is allocated to

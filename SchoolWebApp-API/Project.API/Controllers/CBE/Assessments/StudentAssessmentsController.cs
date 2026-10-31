@@ -70,7 +70,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
         /// Returns null when allowed, or an IActionResult the caller should
         /// return immediately when blocked.
         /// </summary>
-        private async Task<IActionResult> CheckCanWriteAsync(int schoolClassId, int? strandId, int? subStrandId)
+        private async Task<IActionResult> CheckCanWriteAsync(int schoolClassId, int? strandId, int? subStrandId, int? specificOutcomeId = null)
         {
             if (await HasAdminAccessAsync()) return null;
 
@@ -98,6 +98,12 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
             {
                 var subStrand = await _unitOfWork.Repository<SubStrand>().GetById(subStrandId.Value, includeProperties: "Strand");
                 if (subStrand?.Strand != null) subjectId = subStrand.Strand.SubjectId;
+            }
+            // An outcome-level grade carries only its specific outcome; its sub-strand gives the strand.
+            if (subjectId == null && specificOutcomeId.HasValue && specificOutcomeId.Value > 0)
+            {
+                var outcome = await _unitOfWork.Repository<SpecificOutcome>().GetById(specificOutcomeId.Value, includeProperties: "SubStrand.Strand");
+                if (outcome?.SubStrand?.Strand != null) subjectId = outcome.SubStrand.Strand.SubjectId;
             }
             if (subjectId == null)
             {
@@ -198,7 +204,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
                 st.AssessmentTypeId == model.AssessmentTypeId && st.SchoolClassId == model.SchoolClassId))
                     return Conflict(new { message = $"The student assessment specified already exists" });
 
-                var authBlock = await CheckCanWriteAsync(model.SchoolClassId, model.StrandId, model.SubStrandId);
+                var authBlock = await CheckCanWriteAsync(model.SchoolClassId, model.StrandId, model.SubStrandId, model.SpecificOutcomeId);
                 if (authBlock != null) return authBlock;
 
                 try
@@ -227,7 +233,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
         /// payload are left untouched (NOT a full-set replace), so the client can
         /// send only the records that were added or changed. The same write
         /// authorization as the single-record endpoints is enforced once per
-        /// distinct (class, strand, sub-strand) tuple in the batch.
+        /// distinct (class, strand, sub-strand, outcome) tuple in the batch.
         /// </summary>
         [HttpPost("batch")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -240,14 +246,14 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
                 return BadRequest("No student assessments provided.");
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            // Authorize once per distinct (class, strand, sub-strand) tuple
+            // Authorize once per distinct (class, strand, sub-strand, outcome) tuple
             // rather than per row, then reject the whole batch if any is blocked.
             var scopes = model
-                .Select(m => new { m.SchoolClassId, m.StrandId, m.SubStrandId })
+                .Select(m => new { m.SchoolClassId, m.StrandId, m.SubStrandId, m.SpecificOutcomeId })
                 .Distinct();
             foreach (var s in scopes)
             {
-                var authBlock = await CheckCanWriteAsync(s.SchoolClassId, s.StrandId, s.SubStrandId);
+                var authBlock = await CheckCanWriteAsync(s.SchoolClassId, s.StrandId, s.SubStrandId, s.SpecificOutcomeId);
                 if (authBlock != null) return authBlock;
             }
 
@@ -296,7 +302,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
                 if (!itemExist)
                     return BadRequest($"The student assessment of Id- '{model.Id}' does not exist hence cannot be updated.");
 
-                var authBlock = await CheckCanWriteAsync(model.SchoolClassId, model.StrandId, model.SubStrandId);
+                var authBlock = await CheckCanWriteAsync(model.SchoolClassId, model.StrandId, model.SubStrandId, model.SpecificOutcomeId);
                 if (authBlock != null) return authBlock;
 
                 try
@@ -327,7 +333,7 @@ namespace SchoolWebApp.API.Controllers.CBE.Assessments
                 if (itemExists == null)
                     return BadRequest($"The student assessment of Id- '{id}' does not exist hence cannot be deleted.");
 
-                var authBlock = await CheckCanWriteAsync(itemExists.SchoolClassId, itemExists.StrandId, itemExists.SubStrandId);
+                var authBlock = await CheckCanWriteAsync(itemExists.SchoolClassId, itemExists.StrandId, itemExists.SubStrandId, itemExists.SpecificOutcomeId);
                 if (authBlock != null) return authBlock;
 
                 var entity = await _modelSvc.GetById(id);
