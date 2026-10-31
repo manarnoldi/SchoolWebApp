@@ -40,6 +40,65 @@
         </div>
     </div>
 
+    <!-- CBE assessments -->
+    <div class="col-xl-6 col-12 px-1 mb-1 grow" *ngIf="show.assessments">
+        <div class="card card-outline card-purple mb-0 h-100">
+            <div class="card-header py-1 d-flex align-items-center">
+                <span class="card-title-sm me-auto"><i class="fas fa-clipboard-check text-purple me-1"></i>CBE assessments<span class="text-muted fw-normal" *ngIf="assessments?.term"> - {{ assessments.term }}</span></span>
+                <a class="small" [routerLink]="['/reports/academics/assessment-report']">Assessment report</a>
+            </div>
+            <div class="card-body py-2" *ngIf="assessments; else loadingTpl">
+                <div class="row g-2 mb-2">
+                    <div class="col-4"><div class="tile bg-primary-subtle text-primary-emphasis" title="Active learners with at least one outcome graded this term">
+                        <i class="fas fa-user-check"></i><div class="v">{{ assessments.learnersAssessed }} <small class="fw-normal">/ {{ assessments.learners }}</small></div><div class="k">Learners assessed</div></div></div>
+                    <div class="col-4"><div class="tile bg-success-subtle text-success-emphasis" title="Learning areas, class by class, with outcomes graded this term">
+                        <i class="fas fa-book-open"></i><div class="v">{{ assessments.areasAssessed }} <small class="fw-normal">/ {{ assessments.areas }}</small></div><div class="k">Learning areas assessed</div></div></div>
+                    <div class="col-4"><div class="tile" [ngClass]="assessments.needSupport ? 'bg-danger-subtle text-danger-emphasis' : 'bg-light text-muted'"
+                        title="Learners with at least half of their outcome grades approaching or below expectation">
+                        <i class="fas fa-hands-helping"></i><div class="v">{{ assessments.needSupport }}</div><div class="k">Need support</div></div></div>
+                </div>
+
+                <!-- The term's outcome grades by level -->
+                <div class="d-flex small mb-1"><span class="me-auto text-muted">{{ assessments.total | number }} outcome grades</span>
+                    <b *ngIf="assessments.total">{{ assessments.below }}% below expectation</b></div>
+                <div class="split mb-1" *ngIf="assessments.total">
+                    <div *ngFor="let s of assessments.split" [style.flex-grow]="s.count" [style.background]="s.fill"
+                         [title]="s.label + ' expectation (' + s.abbr + '): ' + (s.count | number) + ' (' + s.pct + '%)'"></div>
+                </div>
+                <div class="d-flex flex-wrap gap-1 mb-2">
+                    <span class="badge rounded-pill bg-light text-dark border fw-normal" *ngFor="let s of assessments.split" [title]="s.label + ' expectation'">
+                        <i class="dot" [style.background]="s.fill"></i>{{ s.abbr }} <b>{{ s.pct }}%</b></span>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-7">
+                        <div class="small text-muted mb-1">By class - level mix and learning areas assessed</div>
+                        <div class="class-list">
+                            <div class="cls small" *ngFor="let c of assessments.classes">
+                                <span class="name" [title]="c.className">{{ c.className }}</span>
+                                <div class="split thin" *ngIf="c.areasAssessed; else noGrades"
+                                     [title]="c.className + ': ' + c.below + '% below expectation'">
+                                    <div *ngFor="let s of c.split" [style.flex-grow]="s.count" [style.background]="s.fill"></div>
+                                </div>
+                                <ng-template #noGrades><span class="text-muted fst-italic">No grades yet</span></ng-template>
+                                <span class="badge rounded-pill" [ngClass]="level(pct(c.areasAssessed, c.areas))"
+                                      [title]="c.areasAssessed + ' of ' + c.areas + ' learning areas assessed'">{{ c.areasAssessed }}/{{ c.areas }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5" *ngIf="assessments.weakest.length">
+                        <div class="small text-muted mb-1">Most below expectation</div>
+                        <div class="arrear small" *ngFor="let w of assessments.weakest">
+                            <span class="name" [title]="w.subject">{{ w.name }}</span>
+                            <div class="bar" [title]="(w.below | number) + ' of ' + (w.grades | number) + ' grades'"><div [style.width.%]="w.pct"></div></div>
+                            <b>{{ w.pct }}%</b>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Teaching -->
     <div class="col-xl-3 col-md-6 px-1 mb-1 grow" *ngIf="show.teaching">
         <div class="card card-outline card-primary mb-0 h-100">

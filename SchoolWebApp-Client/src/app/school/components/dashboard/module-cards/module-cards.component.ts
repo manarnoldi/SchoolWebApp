@@ -8,6 +8,15 @@ import {TrackerRow} from '@/teaching/models/teaching-models';
 import {STAGE_BADGES, STAGE_LABELS} from '@/elections/models/election-models';
 import {cardPath} from '@/core/models/dashboard-cards';
 
+// The CBE levels, exceeding to below expectation: greens at or above, warm below
+// (checked for colour-blind readers; every segment is also labelled).
+const CBE_LEVELS = [
+    {abbr: 'EE', label: 'Exceeding', fill: '#1f7a4d'},
+    {abbr: 'ME', label: 'Meeting', fill: '#4fae73'},
+    {abbr: 'AE', label: 'Approaching', fill: '#e8913a'},
+    {abbr: 'BE', label: 'Below', fill: '#b02a37'}
+];
+
 interface TeachingSummary {
     term: string;
     allocations: number;
@@ -20,7 +29,7 @@ interface TeachingSummary {
 }
 
 /**
- * The dashboard's module cards - fees, payroll, teaching, elections, messages.
+ * The dashboard's module cards - fees, CBE assessments, payroll, teaching, elections, messages.
  * A card shows when the school's licence has its module and the user may open
  * the pages it summarises (the API checks both again).
  */
@@ -58,14 +67,22 @@ interface TeachingSummary {
         .trend .bar { background: #b6d4fe; border-radius: 4px 4px 0 0; min-height: 2px; }
         .trend .bar.now { background: #0dcaf0; }
         .trend span { font-size: .65rem; color: #6c757d; text-align: center; }
+        /* CBE assessments: each class's level mix, scrolling past a dozen classes */
+        .split.thin { height: 8px; gap: 1px; }
+        .class-list { max-height: 210px; overflow-y: auto; }
+        .cls { display: grid; grid-template-columns: minmax(0, 1fr) 1.4fr 3.2em; gap: 8px; align-items: center; padding: 3px 0; border-top: 1px solid #f1f3f5; }
+        .cls .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .cls .badge { font-size: .68rem; }
+        .text-purple { color: #6f42c1; }
         .prog .badge { font-size: .7rem; }
         .election { padding: 4px 0; }
     `],
     templateUrl: './module-cards.component.html'
 })
 export class ModuleCardsComponent implements OnInit {
-    show = {finance: false, payroll: false, teaching: false, elections: false, communications: false};
+    show = {finance: false, assessments: false, payroll: false, teaching: false, elections: false, communications: false};
     finance: any = null;
+    assessments: any = null;
     payroll: any = null;
     teaching: TeachingSummary | null = null;
     elections: any[] | null = null;
@@ -96,6 +113,8 @@ export class ModuleCardsComponent implements OnInit {
                 }, error: () => (this.show.finance = false)}));
             this.card('Payroll', cardPath('payroll'), 'payroll', () =>
                 this.http.get('/dashboardCards/payroll').subscribe({next: (d) => this.setPayroll(d), error: () => (this.show.payroll = false)}));
+            this.card('Academics', cardPath('assessments'), 'assessments', () =>
+                this.http.get('/dashboardCards/assessments').subscribe({next: (d) => this.setAssessments(d), error: () => (this.show.assessments = false)}));
             this.card('Academics', cardPath('teaching'), 'teaching', () => this.loadTeaching());
             this.card('Elections', cardPath('elections'), 'elections', () =>
                 this.http.get<any[]>('/dashboardCards/elections').subscribe({
@@ -155,6 +174,28 @@ export class ModuleCardsComponent implements OnInit {
 
     pct(n: number, of: number): number {
         return of ? Math.round((100 * n) / of) : 0;
+    }
+
+    // CBE assessments: the term's level mix as split segments, the same for each class.
+    private setAssessments(d: any) {
+        if (!d?.term) {
+            this.show.assessments = false;
+            return;
+        }
+        const total = d.mix.reduce((n: number, x: number) => n + x, 0);
+        const split = (mix: number[]) => {
+            const n = mix.reduce((a, x) => a + x, 0);
+            return CBE_LEVELS.map((l, i) => ({...l, count: mix[i], pct: this.pct(mix[i], n)}));
+        };
+        this.assessments = {
+            ...d,
+            total,
+            split: split(d.mix),
+            below: this.pct(d.mix[2] + d.mix[3], total),
+            classes: d.classes.map((c: any) => ({...c, split: split(c.mix), below: this.pct(c.mix[2] + c.mix[3], c.mix.reduce((a: number, x: number) => a + x, 0))})),
+            // "Integrated Science (includes Health Education)" shows as "Integrated Science".
+            weakest: d.weakest.map((w: any) => ({...w, name: w.subject.replace(/\s*\(.*\)\s*$/, ''), pct: this.pct(w.below, w.grades)}))
+        };
     }
 
     private setPayroll(d: any) {

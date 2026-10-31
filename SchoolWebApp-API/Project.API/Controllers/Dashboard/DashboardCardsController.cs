@@ -6,6 +6,7 @@ using SchoolWebApp.API.Licensing;
 using SchoolWebApp.API.Services;
 using SchoolWebApp.Core.Entities.Communications;
 using SchoolWebApp.Core.Entities.Elections;
+using SchoolWebApp.Core.Entities.Enums;
 using SchoolWebApp.Core.Entities.Finance;
 
 namespace SchoolWebApp.API.Controllers.Dashboard
@@ -25,6 +26,7 @@ namespace SchoolWebApp.API.Controllers.Dashboard
         public static readonly string[] PayrollMenus = { "/dashboard/cards/payroll" };
         public static readonly string[] ElectionsMenus = { "/dashboard/cards/elections" };
         public static readonly string[] CommunicationsMenus = { "/dashboard/cards/messages" };
+        public static readonly string[] AssessmentsMenus = { "/dashboard/cards/assessments" };
 
         private readonly ApplicationDbContext _db;
         private readonly MenuAccessService _access;
@@ -182,6 +184,110 @@ namespace SchoolWebApp.API.Controllers.Dashboard
                 Total = counts.Sum(c => c.Count)
             });
         }
+
+        // GET api/dashboardCards/assessments - this term's CBE outcome grades: how much has
+        // been assessed, the EE/ME/AE/BE mix by class and learning area, and the learners
+        // most of whose grades are below expectation
+        [HttpGet("assessments")]
+        [RequiresModule(AppModules.Academics)]
+        public async Task<IActionResult> Assessments()
+        {
+            if (!await _access.CanAnyAsync(AssessmentsMenus)) return Forbid();
+            var today = DateTime.Today;
+            // The current term; before its first grades, the last term that has some.
+            var outcomeGrades = _db.StudentAssessments.AsNoTracking().Where(a => a.SpecificOutcomeId != null);
+            var session = await CurrentSessionAsync(today);
+            if (session == null || !await outcomeGrades.AnyAsync(a => a.SessionId == session.Id))
+                session = await _db.Sessions.AsNoTracking().Include(s => s.AcademicYear)
+                    .Where(s => s.StartDate <= today && outcomeGrades.Any(a => a.SessionId == s.Id))
+                    .OrderByDescending(s => s.StartDate).FirstOrDefaultAsync() ?? session;
+            if (session == null) return Ok(new { Term = (string?)null });
+
+            // Grades are bucketed by their level (EE, ME, AE, BE), so a 4- or 8-point scale reads the same.
+            var levelOf = (await _db.Grades.AsNoTracking().Select(g => new { g.Id, g.Abbr }).ToListAsync())
+                .ToDictionary(g => g.Id, g => (g.Abbr ?? "").Trim().ToUpperInvariant() is var a && a.Length >= 2 ? a[..2] : a);
+            int Level(int gradeId) => Array.IndexOf(CbeLevels, levelOf.GetValueOrDefault(gradeId, ""));
+
+            var cells = await outcomeGrades.Where(a => a.SessionId == session.Id)
+                .GroupBy(a => new { a.SchoolClassId, a.SpecificOutcome!.SubStrand!.Strand!.SubjectId, a.GradeId })
+                .Select(g => new { g.Key.SchoolClassId, g.Key.SubjectId, g.Key.GradeId, Count = g.Count() })
+                .ToListAsync();
+            var byStudent = await outcomeGrades.Where(a => a.SessionId == session.Id)
+                .GroupBy(a => new { a.StudentId, a.GradeId })
+                .Select(g => new { g.Key.StudentId, g.Key.GradeId, Count = g.Count() })
+                .ToListAsync();
+
+            // The learning areas each class is taught that have a curriculum to assess
+            // (those switched off for teaching documents, e.g. Day Care, have none).
+            var taught = await _db.StaffSubjects.AsNoTracking()
+                .Where(s => s.SchoolClass!.AcademicYearId == session.AcademicYearId
+                            && s.Subject!.RequiresTeachingDocuments && s.SchoolClass.LearningLevel!.RequiresTeachingDocuments)
+                .Select(s => new { s.SchoolClassId, s.SubjectId }).Distinct().ToListAsync();
+            var classIds = taught.Select(t => t.SchoolClassId).Union(cells.Select(c => c.SchoolClassId)).Distinct().ToList();
+            var classes = await _db.SchoolClasses.AsNoTracking().Where(c => classIds.Contains(c.Id))
+                .OrderBy(c => c.LearningLevel!.Rank).ThenBy(c => c.Rank).ThenBy(c => c.Name)
+                .Select(c => new { c.Id, c.Name }).ToListAsync();
+            var learners = await _db.StudentClasses.AsNoTracking()
+                .Where(sc => classIds.Contains(sc.SchoolClassId) && sc.Student!.Status == Status.Active)
+                .Select(sc => sc.StudentId).Distinct().CountAsync();
+            var subjectIds = cells.Select(c => c.SubjectId).Distinct().ToList();
+            var subjects = await _db.Subjects.AsNoTracking().Where(s => subjectIds.Contains(s.Id))
+                .ToDictionaryAsync(s => s.Id, s => s.Name);
+
+            int[] Mix(IEnumerable<(int GradeId, int Count)> rows)
+            {
+                var mix = new int[CbeLevels.Length];
+                foreach (var (gradeId, count) in rows)
+                    if (Level(gradeId) is var l && l >= 0) mix[l] += count;
+                return mix;
+            }
+            // Below expectation: approaching (AE) or below (BE).
+            static int Below(int[] mix) => mix[2] + mix[3];
+
+            var byClass = classes.Select(c =>
+            {
+                var own = cells.Where(x => x.SchoolClassId == c.Id).ToList();
+                var areas = taught.Where(t => t.SchoolClassId == c.Id).Select(t => t.SubjectId)
+                    .Union(own.Select(x => x.SubjectId)).Distinct().Count();
+                return new
+                {
+                    SchoolClassId = c.Id,
+                    ClassName = c.Name,
+                    Areas = areas,
+                    AreasAssessed = own.Select(x => x.SubjectId).Distinct().Count(),
+                    Mix = Mix(own.Select(x => (x.GradeId, x.Count)))
+                };
+            }).ToList();
+
+            // Learning areas with the largest share below expectation, school-wide - only
+            // those with enough grades to say so.
+            var weakest = cells.GroupBy(c => c.SubjectId)
+                .Select(g => new { SubjectId = g.Key, Mix = Mix(g.Select(x => (x.GradeId, x.Count))) })
+                .Where(s => s.Mix.Sum() >= 50)
+                .Select(s => new { Subject = subjects.GetValueOrDefault(s.SubjectId, "-"), Grades = s.Mix.Sum(), Below = Below(s.Mix) })
+                .OrderByDescending(s => (double)s.Below / s.Grades).Take(5).ToList();
+
+            // Needing support: at least half of a learner's (five or more) outcome grades below expectation.
+            var students = byStudent.GroupBy(s => s.StudentId)
+                .Select(g => Mix(g.Select(x => (x.GradeId, x.Count)))).ToList();
+            var needSupport = students.Count(m => m.Sum() >= 5 && Below(m) * 2 >= m.Sum());
+
+            return Ok(new
+            {
+                Term = $"{session.SessionName} {session.AcademicYear?.Name}",
+                Levels = CbeLevels,
+                Mix = Mix(cells.Select(c => (c.GradeId, c.Count))),
+                Learners = learners,
+                LearnersAssessed = students.Count,
+                Areas = byClass.Sum(c => c.Areas),
+                AreasAssessed = byClass.Sum(c => c.AreasAssessed),
+                NeedSupport = needSupport,
+                Classes = byClass.Where(c => c.Areas > 0),
+                Weakest = weakest
+            });
+        }
+
+        private static readonly string[] CbeLevels = { "EE", "ME", "AE", "BE" };
 
         private async Task<SchoolWebApp.Core.Entities.Class.Session?> CurrentSessionAsync(DateTime today) =>
             await _db.Sessions.AsNoTracking().Include(s => s.AcademicYear)
