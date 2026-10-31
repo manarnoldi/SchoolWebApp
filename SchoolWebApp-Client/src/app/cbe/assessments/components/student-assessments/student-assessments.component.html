@@ -3,6 +3,7 @@
     [breadcrumbs]="breadcrumbs"></app-dashboard-header>
 <hr class="mb-1">
 <a *ngIf="querySource==='dashboard'" class="btn btn-flat btn-sm btn-info mb-1" [routerLink]="['/']"><i class="fas fa-angle-double-left"></i> Dashboard</a>
+<button *ngIf="trackerUrl" class="btn btn-flat btn-sm btn-warning mb-1" (click)="backToTracker()"><i class="fas fa-arrow-left"></i> Back to tracker</button>
 <section class="content">
     <div class="container-fluid px-1">
         <div class="alert alert-warning d-flex align-items-center mb-1 py-2"

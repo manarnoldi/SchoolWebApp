@@ -1,0 +1,224 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+        <div class="card card-outline card-info mb-2">
+            <div class="card-body p-2">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-3">
+                        <app-term-picker [sessions]="context?.sessions || []" [(sessionId)]="sessionId" (sessionIdChange)="load()"></app-term-picker>
+                    </div>
+                    <div class="col-md-2" *ngIf="tracker && tracker.scope !== 'own'">
+                        <label class="form-label mb-0 small">Teacher</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="staffId" (ngModelChange)="narrowToTeacher()">
+                            <option [ngValue]="null">All</option>
+                            <option *ngFor="let t of teachers" [ngValue]="t.id">{{ t.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2" *ngIf="tracker && tracker.scope !== 'own'">
+                        <label class="form-label mb-0 small">Department</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="departmentId" (ngModelChange)="narrowSubject()">
+                            <option [ngValue]="null">All</option>
+                            <option *ngFor="let d of departments" [ngValue]="d.id">{{ d.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <label class="form-label mb-0 small">Grade</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="learningLevelId" (ngModelChange)="narrowSubject()">
+                            <option [ngValue]="null">All</option>
+                            <option *ngFor="let g of grades" [ngValue]="g.id">{{ g.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label mb-0 small">Learning area</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="subjectId" (ngModelChange)="syncUrl()">
+                            <option [ngValue]="null">All</option>
+                            <option *ngFor="let s of subjects" [ngValue]="s.id">{{ s.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label mb-0 small">Search</label>
+                        <input class="form-control form-control-sm" [(ngModel)]="search" (ngModelChange)="syncUrl()" placeholder="Teacher, learning area, class">
+                    </div>
+                </div>
+                <div class="d-flex align-items-center flex-wrap gap-1 mt-2">
+                    <span *ngFor="let s of legend" class="badge rounded-pill at-filter" [ngClass]="[classes[s], chipState(s)]"
+                          [title]="help[s] + ' - click to show only these, again to clear'" (click)="toggleStatus(s)">
+                        {{ labels[s] }} <b>{{ count(s) }}</b></span>
+                    <a href="javascript:void(0)" class="small ms-1" *ngIf="statuses.size" (click)="clearStatus()">clear</a>
+                    <small class="text-muted ms-2" *ngIf="tracker">
+                        Showing {{ tracker.scope === 'school' ? 'the whole school' : tracker.scope === 'department' ? 'your department(s) and your own learning areas' : 'your own learning areas' }}.
+                        A sub-strand's outcomes are due {{ tracker.graceDays }} days after the last scheme week teaching it, or by the end of term.
+                    </small>
+                    <span class="ms-auto d-flex gap-1">
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn" [ngClass]="view === 'classes' ? 'btn-info' : 'btn-outline-info'" (click)="setView('classes')">
+                                <i class="fas fa-th-list me-1"></i>By class</button>
+                            <button class="btn" [ngClass]="view === 'teachers' ? 'btn-info' : 'btn-outline-info'" (click)="setView('teachers')">
+                                <i class="fas fa-user-tie me-1"></i>By teacher</button>
+                        </div>
+                        <button class="btn btn-sm btn-outline-secondary" [disabled]="!tracker" (click)="exportCsv()" title="Export to Excel (CSV)"><i class="fas fa-file-csv"></i></button>
+                        <button class="btn btn-sm btn-outline-primary" [disabled]="!tracker" (click)="print()" title="Print"><i class="fas fa-print"></i></button>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- By class: one row per teacher, learning area and class -->
+        <div class="card mb-2" *ngIf="view === 'classes'">
+            <div class="card-body p-0 table-responsive at-scroll">
+                <table class="table table-sm table-hover mb-0 small align-middle">
+                    <thead>
+                        <tr>
+                            <th style="width: 24px;"></th>
+                            <th>Teacher</th>
+                            <th>Learning area</th>
+                            <th>Class</th>
+                            <th class="text-center">Learners</th>
+                            <th class="text-center" title="Sub-strands whose outcomes are due, of those in the scheme">Sub-strands due</th>
+                            <th style="min-width: 170px;" title="Outcomes due: graded for the class, partly graded, not graded">Outcomes graded</th>
+                            <th class="text-center" title="Grades on the outcomes due, against one per learner per outcome">Grades entered</th>
+                            <th>Last entry</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="loading"><td colspan="11" class="text-center text-muted"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr>
+                        <tr *ngIf="!loading && tracker && rows.length === 0">
+                            <td colspan="11" class="text-center text-muted">No subject allocations to show for this term.</td>
+                        </tr>
+                        <ng-container *ngFor="let r of rows">
+                            <tr class="at-row" [class.open]="openKey === key(r)" (click)="toggle(r)" [title]="rowTitle(r)">
+                                <td class="text-muted"><i class="fas" [ngClass]="openKey === key(r) ? 'fa-chevron-down' : 'fa-chevron-right'"></i></td>
+                                <td>{{ r.staffName }}</td>
+                                <td>{{ r.subjectName }}</td>
+                                <td>{{ r.className }}</td>
+                                <td class="text-center">{{ r.learners }}</td>
+                                <td class="text-center">{{ r.schemeOfWorkId ? r.subStrandsDue + ' / ' + r.subStrandsPlanned : '-' }}</td>
+                                <td>
+                                    <ng-container *ngIf="r.outcomesDue; else noneDue">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="at-bar flex-grow-1">
+                                                <div *ngFor="let b of bar(r)" [style.flex-grow]="b.n" [style.background]="b.fill" [title]="b.n + ' ' + b.label"></div>
+                                            </div>
+                                            <span class="text-nowrap">{{ r.outcomesGraded }} / {{ r.outcomesDue }}</span>
+                                        </div>
+                                        <div class="text-danger" style="font-size: .7rem;" *ngIf="r.outcomesOverdue">{{ r.outcomesOverdue }} not graded</div>
+                                    </ng-container>
+                                    <ng-template #noneDue>
+                                        <span class="text-muted" *ngIf="r.schemeOfWorkId">None due yet<span *ngIf="r.nextDueAt"> - next {{ r.nextDueAt | date:'d MMM':'UTC' }}</span></span>
+                                        <span class="text-muted" *ngIf="!r.schemeOfWorkId">{{ r.outcomesGradedThisTerm }} graded this term</span>
+                                    </ng-template>
+                                </td>
+                                <td class="text-center">{{ r.gradesExpected ? pct(r.gradesEntered, r.gradesExpected) + '%' : '-' }}</td>
+                                <td class="text-nowrap">{{ r.lastEntry ? (r.lastEntry | date:'d MMM':'UTC') : '-' }}</td>
+                                <td><span class="badge rounded-pill" [ngClass]="classes[r.status]" [title]="help[r.status]">{{ labels[r.status] }}</span></td>
+                                <td class="text-end">
+                                    <button class="btn btn-xs btn-outline-info py-0 px-1" title="Open Student Assessments for this class and learning area"
+                                            (click)="$event.stopPropagation(); openAssessments(r)"><i class="fas fa-external-link-alt"></i></button>
+                                </td>
+                            </tr>
+                            <tr class="at-detail" *ngIf="openKey === key(r)">
+                                <td colspan="11" class="p-2">
+                                    <div class="text-muted" *ngIf="detailLoading"><i class="fas fa-spinner fa-spin"></i> Loading…</div>
+                                    <div class="row g-3" *ngIf="detail">
+                                        <div class="col-lg-8">
+                                            <div class="small text-muted mb-1">
+                                                Sub-strands, with each specific outcome's learners graded (of {{ detail.learners }}).
+                                                <span class="at-chip bg-success-subtle text-success-emphasis">graded</span>
+                                                <span class="at-chip bg-warning-subtle text-warning-emphasis">part of the class</span>
+                                                <span class="at-chip bg-danger-subtle text-danger-emphasis">none</span>
+                                            </div>
+                                            <div class="text-muted" *ngIf="!detail.subStrands.length">No scheme of work and nothing graded this term.</div>
+                                            <table class="table table-sm table-bordered mb-0 bg-white" *ngIf="detail.subStrands.length">
+                                                <thead class="table-light">
+                                                    <tr><th>Strand / sub-strand</th><th class="text-center">Week</th><th>Due</th><th>Outcomes</th><th></th></tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngFor="let s of detail.subStrands" [class.text-muted]="s.inScheme && !s.due">
+                                                        <td><span class="text-muted">{{ s.strandName }} /</span> {{ s.subStrandName }}
+                                                            <span class="badge bg-light text-muted border ms-1" *ngIf="!s.inScheme" title="Graded this term but not in the scheme">not in scheme</span></td>
+                                                        <td class="text-center">{{ s.lastWeek || '-' }}</td>
+                                                        <td class="text-nowrap">
+                                                            <ng-container *ngIf="s.dueAt">{{ s.dueAt | date:'d MMM':'UTC' }}</ng-container>
+                                                            <span class="badge bg-light text-muted border ms-1" *ngIf="s.inScheme && !s.due">not yet</span>
+                                                        </td>
+                                                        <td>
+                                                            <span *ngFor="let o of s.outcomes; let i = index" class="at-chip" [ngClass]="chipClass(o.graded, detail.learners)"
+                                                                  [title]="o.name + ' - ' + o.graded + ' of ' + detail.learners + ' graded'">{{ o.graded }}</span>
+                                                            <span class="text-muted" *ngIf="!s.outcomes.length">no outcomes</span>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <button class="btn btn-xs btn-outline-info py-0 px-1 text-nowrap" (click)="openAssessments(r, s)"
+                                                                    title="Open this sub-strand's grade sheet in Student Assessments"><i class="fas fa-pen me-1"></i>Grades</button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="small text-muted mb-1">Learners missing grades on outcomes due</div>
+                                            <div class="text-success small" *ngIf="!detail.learnersMissing.length"><i class="fas fa-check me-1"></i>None - every learner has every grade due.</div>
+                                            <div class="at-missing" *ngIf="detail.learnersMissing.length">
+                                                <table class="table table-sm mb-0 bg-white">
+                                                    <tbody>
+                                                        <tr *ngFor="let l of detail.learnersMissing">
+                                                            <td>{{ l.name }} <span class="text-muted">{{ l.upi }}</span></td>
+                                                            <td class="text-end text-danger text-nowrap">{{ l.missing }} missing</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- By teacher: who to follow up -->
+        <div class="card mb-2" *ngIf="view === 'teachers'">
+            <div class="card-body p-0 table-responsive at-scroll">
+                <table class="table table-sm table-hover mb-0 small align-middle">
+                    <thead>
+                        <tr>
+                            <th>Teacher</th>
+                            <th class="text-center">Subject-classes</th>
+                            <th class="text-center">Up to date</th>
+                            <th class="text-center">Incomplete</th>
+                            <th class="text-center" title="Behind or not started">Behind</th>
+                            <th class="text-center">No scheme</th>
+                            <th style="min-width: 170px;">Outcomes graded</th>
+                            <th>Last entry</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="loading"><td colspan="8" class="text-center text-muted"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr>
+                        <tr *ngFor="let t of teacherTotals" class="at-row" (click)="showTeacher(t)" title="Show this teacher's subject-classes">
+                            <td>{{ t.staffName }}</td>
+                            <td class="text-center">{{ t.rows }}</td>
+                            <td class="text-center">{{ t.upToDate || '' }}</td>
+                            <td class="text-center"><span class="badge rounded-pill" [ngClass]="classes.Incomplete" *ngIf="t.incomplete">{{ t.incomplete }}</span></td>
+                            <td class="text-center"><span class="badge rounded-pill" [ngClass]="classes.Behind" *ngIf="t.behind">{{ t.behind }}</span></td>
+                            <td class="text-center"><span class="badge rounded-pill" [ngClass]="classes.NoScheme" *ngIf="t.noScheme">{{ t.noScheme }}</span></td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2" *ngIf="t.outcomesDue; else nothing">
+                                    <div class="at-bar flex-grow-1">
+                                        <div *ngFor="let b of bar(t)" [style.flex-grow]="b.n" [style.background]="b.fill" [title]="b.n + ' ' + b.label"></div>
+                                    </div>
+                                    <span class="text-nowrap">{{ t.outcomesGraded }} / {{ t.outcomesDue }}</span>
+                                </div>
+                                <ng-template #nothing><span class="text-muted">None due yet</span></ng-template>
+                            </td>
+                            <td class="text-nowrap">{{ t.lastEntry ? (t.lastEntry | date:'d MMM':'UTC') : '-' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>

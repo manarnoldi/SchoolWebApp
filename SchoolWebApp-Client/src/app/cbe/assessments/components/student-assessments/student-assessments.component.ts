@@ -39,6 +39,11 @@ import {catchError} from 'rxjs/operators';
 export class StudentAssessmentsComponent implements OnInit {
     isAuthLoading: boolean;
     querySource: string = '';
+    trackerUrl: string | null = null;
+
+    backToTracker() {
+        if (this.trackerUrl) this.router.navigateByUrl(this.trackerUrl);
+    }
 
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Dashboard'},
@@ -224,6 +229,9 @@ export class StudentAssessmentsComponent implements OnInit {
 
     ngOnInit(): void {
         this.querySource = this.route.snapshot.queryParamMap.get('source') || '';
+        // Opened from the assessment tracker: Back returns to it, filters and all.
+        let from = this.route.snapshot.queryParamMap.get('from');
+        this.trackerUrl = from && from.startsWith('/cbe/assessments/tracker') ? from : null;
 
         let user = this.authService.getCurrentUser();
         this.currentUserStaffId = user?.staffId ?? null;

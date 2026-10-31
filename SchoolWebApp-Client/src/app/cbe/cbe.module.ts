@@ -26,6 +26,8 @@ import { BroadOutcomeAddFormComponent } from './assessments/components/broad-out
 import { SpecificOutcomesComponent } from './assessments/components/specific-outcomes/specific-outcomes.component';
 import { SpecificOutcomeAddFormComponent } from './assessments/components/specific-outcomes/specific-outcome-add-form/specific-outcome-add-form.component';
 import { StudentAssessmentsComponent } from './assessments/components/student-assessments/student-assessments.component';
+import { AssessmentTrackerComponent } from './assessments/components/assessment-tracker/assessment-tracker.component';
+import { TeachingModule } from '@/teaching/teaching.module';
 import { StudentAssessmentAddFormComponent } from './assessments/components/student-assessments/student-assessment-add-form/student-assessment-add-form.component';
 import { ExamTypesComponent } from './exams/components/exam-types/exam-types.component';
 import { ExamsComponent } from './exams/components/exams/exams.component';
@@ -51,6 +53,7 @@ import { PCIAddFormComponent } from './assessments/components/pcis/pci-add-form/
 
 @NgModule({
   declarations: [
+    AssessmentTrackerComponent,
     CurriculumEditorComponent,
     CurriculumUploadComponent,
     CbeComponent,
@@ -99,7 +102,7 @@ import { PCIAddFormComponent } from './assessments/components/pcis/pci-add-form/
     PCIAddFormComponent
   ],
   imports: [
-    CommonModule, SharedModule, RouterModule
+    CommonModule, SharedModule, RouterModule, TeachingModule
   ]
 })
 export class CbeModule { }

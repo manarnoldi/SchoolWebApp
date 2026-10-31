@@ -66,83 +66,8 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
             if (me == null) return Unauthorized();
             var session = await _db.Sessions.AsNoTracking().FirstOrDefaultAsync(s => s.Id == sessionId);
             if (session == null) return NotFound(new { message = "Term not found." });
-            var rows = await AssignmentsAsync(session, me, scope == "oversee");
+            var rows = await _svc.AssignmentsAsync(session, me, scope == "oversee");
             return Ok(rows);
-        }
-
-        private async Task<List<TeachingAssignmentDto>> AssignmentsAsync(Session session, TeachingUser me, bool oversee)
-        {
-            var mine = me.StaffDetailsId ?? -1;
-            // Subjects and learning levels marked as not needing teaching documents stay out.
-            var allocations = TeachingDocumentService.NeedingDocuments(_db.StaffSubjects.AsNoTracking())
-                .Where(a => a.SchoolClass!.AcademicYearId == session.AcademicYearId);
-            var schemes = TeachingDocumentService.NeedingDocuments(_db.SchemesOfWork.AsNoTracking()).Where(s => s.SessionId == session.Id);
-            if (!oversee)
-            {
-                allocations = allocations.Where(a => a.StaffDetailsId == mine);
-                schemes = schemes.Where(s => s.StaffDetailsId == mine);
-            }
-            else if (!me.WholeSchool)
-            {
-                var depts = me.HodDepartmentIds.ToList();
-                allocations = allocations.Where(a => a.StaffDetailsId == mine || depts.Contains(a.Subject!.DepartmentId));
-                schemes = schemes.Where(s => s.StaffDetailsId == mine || depts.Contains(s.Subject!.DepartmentId));
-            }
-
-            var fromAllocations = await allocations.Select(a => new { a.StaffDetailsId, a.SubjectId, a.SchoolClassId }).ToListAsync();
-            var schemeList = await schemes.Select(s => new
-            {
-                s.Id, s.StaffDetailsId, s.SubjectId, s.SchoolClassId,
-                Lessons = s.Lessons.Count(l => l.SubStrandName != null && l.SubStrandName != "")
-            }).ToListAsync();
-
-            // A scheme whose allocation has since been removed still shows.
-            var keys = fromAllocations.Select(a => (a.StaffDetailsId, a.SubjectId, a.SchoolClassId))
-                .Concat(schemeList.Select(s => (s.StaffDetailsId, s.SubjectId, s.SchoolClassId)))
-                .Distinct().ToList();
-            if (keys.Count == 0) return new();
-
-            var staffIds = keys.Select(k => k.Item1).Distinct().ToList();
-            var subjectIds = keys.Select(k => k.Item2).Distinct().ToList();
-            var classIds = keys.Select(k => k.Item3).Distinct().ToList();
-            var staff = await _db.StaffDetails.AsNoTracking().Where(s => staffIds.Contains(s.Id))
-                .ToDictionaryAsync(s => s.Id, s => s.FullName);
-            var subjects = await _db.Subjects.AsNoTracking().Include(s => s.Department).Where(s => subjectIds.Contains(s.Id))
-                .ToDictionaryAsync(s => s.Id);
-            var classes = await _db.SchoolClasses.AsNoTracking().Include(c => c.LearningLevel).Where(c => classIds.Contains(c.Id))
-                .ToDictionaryAsync(c => c.Id);
-            var states = await _svc.ApprovalStatesAsync(TeachingDocumentService.EntityScheme, schemeList.Select(s => s.Id));
-
-            // Allocations left pointing at a deleted staff record have no one to show.
-            return keys.Where(k => staff.ContainsKey(k.Item1)).Select(k =>
-            {
-                var scheme = schemeList.FirstOrDefault(s => s.StaffDetailsId == k.Item1 && s.SubjectId == k.Item2 && s.SchoolClassId == k.Item3);
-                var subject = subjects.GetValueOrDefault(k.Item2);
-                var cls = classes.GetValueOrDefault(k.Item3);
-                return new TeachingAssignmentDto
-                {
-                    StaffDetailsId = k.Item1,
-                    StaffName = staff.GetValueOrDefault(k.Item1) ?? "",
-                    SubjectId = k.Item2,
-                    SubjectName = subject?.Name ?? "",
-                    SubjectRank = subject?.Rank ?? 0,
-                    SchoolClassId = k.Item3,
-                    ClassName = cls?.Name ?? "",
-                    LearningLevelId = cls?.LearningLevelId ?? 0,
-                    LearningLevelName = cls?.LearningLevel?.Name ?? "",
-                    LearningLevelRank = cls?.LearningLevel?.Rank ?? 0,
-                    DepartmentId = subject?.DepartmentId ?? 0,
-                    DepartmentName = subject?.Department?.Name,
-                    SchemeOfWorkId = scheme?.Id,
-                    SchemeStatus = scheme == null ? DocumentStatus.NotStarted : TeachingDocumentService.StatusOf(states.GetValueOrDefault(scheme.Id)),
-                    SchemeLessons = scheme?.Lessons ?? 0
-                };
-            })
-            // A teacher's subjects in their set order (Subjects > Rank), then by class.
-            .OrderBy(a => a.StaffName).ThenBy(a => a.SubjectRank).ThenBy(a => a.SubjectName).ThenBy(a => ClassRank(a))
-            .ToList();
-
-            int ClassRank(TeachingAssignmentDto a) => classes.GetValueOrDefault(a.SchoolClassId)?.Rank ?? 0;
         }
 
         // GET api/teachingDocuments/curriculum?subjectId=1&learningLevelId=2&sessionId=6
@@ -171,7 +96,7 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
             var due = await _svc.DueAsync();
             var termWeeks = TeachingDocumentService.TermWeeks(session);
 
-            var rows = (await AssignmentsAsync(session, me, oversee: true))
+            var rows = (await _svc.AssignmentsAsync(session, me, oversee: true))
                 .Where(a => departmentId == null || a.DepartmentId == departmentId)
                 .Where(a => learningLevelId == null || a.LearningLevelId == learningLevelId)
                 .Where(a => subjectId == null || a.SubjectId == subjectId)

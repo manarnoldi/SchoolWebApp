@@ -27,6 +27,8 @@ import {FillHeightDirective} from './components/fill-height.directive';
         TermPickerComponent,
         FillHeightDirective
     ],
-    imports: [CommonModule, RouterModule, SharedModule, ApprovalsModule]
+    imports: [CommonModule, RouterModule, SharedModule, ApprovalsModule],
+    // The term picker is shared with the assessment tracker (Academics).
+    exports: [TermPickerComponent]
 })
 export class TeachingModule {}

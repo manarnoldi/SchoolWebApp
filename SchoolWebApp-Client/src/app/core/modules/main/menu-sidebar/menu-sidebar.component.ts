@@ -165,6 +165,7 @@ export const MENU = [
                 iconClasses: 'fas fa-tasks text-info',
                 children: [
                     {name: 'Student Assessments', iconClasses: 'fas fa-bullseye text-info', path: ['/cbe/assessments/assessments']},
+                    {name: 'Assessment Tracker', iconClasses: 'fas fa-tasks text-info', path: ['/cbe/assessments/tracker']},
                     // Permission flag (not a navigable feature). When assigned to a role,
                     // members of that role can enter Student Assessment marks for any
                     // teacher / class / subject. Without it (and without Administrator

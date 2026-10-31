@@ -114,6 +114,7 @@ import { LearningExperiencesComponent } from './cbe/assessments/components/learn
 import { LessonAllocationsComponent } from './cbe/assessments/components/lesson-allocations/lesson-allocations.component';
 import { PCIsComponent } from './cbe/assessments/components/pcis/pcis.component';
 import { StudentAssessmentsComponent } from './cbe/assessments/components/student-assessments/student-assessments.component';
+import { AssessmentTrackerComponent } from './cbe/assessments/components/assessment-tracker/assessment-tracker.component';
 import { ExamTypesComponent as CbeExamTypesComponent } from './cbe/exams/components/exam-types/exam-types.component';
 import { ExamsComponent as CbeExamsComponent } from './cbe/exams/components/exams/exams.component';
 import { ExamRegisterListComponent } from './cbe/exams/components/exam-register-list/exam-register-list.component';
@@ -337,6 +338,7 @@ const routes: Routes = [
             {path: 'assessments/lesson-allocations', component: LessonAllocationsComponent},
             {path: 'assessments/pcis', component: PCIsComponent},
             {path: 'assessments/assessments', component: StudentAssessmentsComponent},
+            {path: 'assessments/tracker', component: AssessmentTrackerComponent},
             // Permission sentinel - see MENU note in menu-sidebar.component.ts.
             // Reuses the same component; the component reads its mode from the
             // user's MenuPermissions list.
