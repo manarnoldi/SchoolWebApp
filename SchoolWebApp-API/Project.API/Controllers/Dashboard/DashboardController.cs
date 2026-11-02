@@ -61,7 +61,10 @@ namespace SchoolWebApp.API.Controllers.Dashboard
             [FromQuery] int academicYearId,
             [FromQuery] int curriculumId,
             [FromQuery] int sessionId,
-            [FromQuery] int examTypeId)
+            [FromQuery] int examTypeId,
+            // One school exam of the type: a type allowing several a term (weekly exams)
+            // would otherwise be averaged across all of them.
+            [FromQuery] int? schoolExamId = null)
         {
             if (academicYearId <= 0 || curriculumId <= 0 || sessionId <= 0 || examTypeId <= 0)
                 return BadRequest("academicYearId, curriculumId, sessionId and examTypeId are all required.");
@@ -77,7 +80,7 @@ namespace SchoolWebApp.API.Controllers.Dashboard
                 .FirstOrDefaultAsync();
             var groupByType = !string.Equals(rankingBasis, "education_level", StringComparison.OrdinalIgnoreCase);
 
-            var cacheKey = $"dash.classExamSummary.{academicYearId}.{curriculumId}.{sessionId}.{examTypeId}.{(groupByType ? "type" : "level")}";
+            var cacheKey = $"dash.classExamSummary.{academicYearId}.{curriculumId}.{sessionId}.{examTypeId}.{schoolExamId}.{(groupByType ? "type" : "level")}";
             if (_cache.TryGetValue<List<ClassExamSummaryDto>>(cacheKey, out var cached) && cached != null)
                 return Ok(cached);
 
@@ -124,6 +127,7 @@ namespace SchoolWebApp.API.Controllers.Dashboard
                     .Where(e => e.SchoolExam != null
                                 && e.SchoolExam.SessionId == sessionId
                                 && e.SchoolExam.ExamTypeId == examTypeId
+                                && (schoolExamId == null || e.SchoolExamId == schoolExamId)
                                 && e.SchoolExam.IsReleased
                                 && e.SchoolExam.Session != null
                                 && e.SchoolExam.Session.AcademicYearId == academicYearId

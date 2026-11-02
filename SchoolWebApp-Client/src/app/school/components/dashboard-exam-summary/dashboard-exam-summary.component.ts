@@ -227,7 +227,8 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
             .set('academicYearId', String(this.selectedAcademicYearId))
             .set('curriculumId', String(this.activeCurriculumId))
             .set('sessionId', String(this.selectedSessionId))
-            .set('examTypeId', String(this.selectedExamTypeId));
+            .set('examTypeId', String(this.selectedExamTypeId))
+            .set('schoolExamId', String(this.selectedSchoolExamId));
 
         this.http
             .get<any[]>('/dashboard/classExamSummary', {params})

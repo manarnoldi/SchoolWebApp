@@ -147,7 +147,21 @@ election is invented, so the demo shows a full, working school.
    term, mostly with a reason - and the staff by the head teacher, with arrival
    and departure times, sick days, training and the odd late arrival.
 
-10. Stop the API and clear the audit trail the scripts wrote: it keeps the
+10. Add the candidate classes' weekly exams, with the API still running (after
+    attendance.js - a learner away that day sits no paper):
+
+    ```
+    MYSQL_PWD=... node tools/demo-data/weekly-exams.js --db shulenova --api http://localhost:5198
+    ```
+
+    It adds the exam type Weekly Exams (off the report forms, several a term)
+    and eight of them in Term 3, one a week - Fridays, or the nearest free day
+    in a week holding the term's main exams - for Grade 6 and Grade 9 only,
+    every subject out of 50. Marks follow each learner's Term 3 results and
+    creep up week by week; each subject teacher enters them and the exam is
+    released when marking closes.
+
+11. Stop the API and clear the audit trail the scripts wrote: it keeps the
     values records had before each change - the original staff numbers that
     payroll.js renumbered among them.
 
@@ -155,7 +169,7 @@ election is invented, so the demo shows a full, working school.
     MYSQL_PWD=... mysql -u root shulenova -e "DELETE FROM auditlogs;"
     ```
 
-11. Check nothing is left from the original:
+12. Check nothing is left from the original:
 
    ```
    MYSQL_PWD=... node tools/demo-data/check.js --source swikunda --db shulenova
@@ -165,7 +179,7 @@ election is invented, so the demo shows a full, working school.
    name still found, by table. Ordinary words that are also names (Junior,
    Christian, Adam and Love in CRE lessons) are expected.
 
-12. Dump `shulenova` and restore it on the demo site's database.
+13. Dump `shulenova` and restore it on the demo site's database.
 
 ## What changes
 

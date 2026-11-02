@@ -46,6 +46,9 @@ export class StaffDetailsTableComponent implements AfterViewInit, OnDestroy {
 
     constructor() {
         this.dtOptions = {
+            // 15 a page by default (DataTables shows 10).
+            pageLength: 15,
+            lengthMenu: [10, 15, 25, 50, 100],
             scrollX: true,
             columnDefs: [
                 {width: 150, targets: 8},
