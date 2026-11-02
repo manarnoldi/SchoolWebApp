@@ -23,10 +23,15 @@ export class AccessService {
         if (!this.mine$) {
             const user = JSON.parse(localStorage.getItem('current_user') || 'null');
             const superAdmin = !!user?.roles?.some((r: string) => r.toLowerCase() === 'superadministrator');
-            this.mine$ = (superAdmin ? of({allAccess: true, paths: []}) : this.menuPermSvc.getMyPermissions()).pipe(
-                catchError(() => of({allAccess: false, paths: [] as string[]})),
+            const request$: Observable<MyPermissions> = (superAdmin ? of({allAccess: true, paths: []}) : this.menuPermSvc.getMyPermissions()).pipe(
+                // A read that fails grants nothing for now but is not kept, so the next check asks again.
+                catchError(() => {
+                    if (this.mine$ === request$) this.mine$ = null;
+                    return of({allAccess: false, paths: [] as string[]});
+                }),
                 shareReplay(1)
             );
+            this.mine$ = request$;
         }
         return this.mine$;
     }
