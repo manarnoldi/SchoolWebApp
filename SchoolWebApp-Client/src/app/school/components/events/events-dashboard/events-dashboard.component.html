@@ -1,17 +1,9 @@
 <div class="card card-outline card-danger">
-    <div class="card-header">
-        <h3 class="card-title">
-            <i class="ion ion-calendar mr-1"></i>
-            Upcoming events
-        </h3>
-        <div class="card-tools" *ngIf="canManageEvents">
-            <a
-                [routerLink]="['/school/events']"
-                [queryParams]="{source: 'dashboard'}"
-                class="btn btn-success btn-sm btn-flat float-right" title="Add or manage events">
-                <i class="fas fa-plus"></i>
-            </a>
-        </div>
+    <!-- A compact header, as the module cards above have. -->
+    <div class="card-header py-1 d-flex align-items-center">
+        <span class="card-title-sm me-auto"><i class="far fa-calendar-alt text-danger me-1"></i>Upcoming events</span>
+        <a class="small" *ngIf="canManageEvents" [routerLink]="['/school/events']" [queryParams]="{source: 'dashboard'}"
+           title="Add or manage the school's events">Add event</a>
     </div>
     <div class="card-body p-1 eventCard">
         <div class="text-center text-muted small py-3" *ngIf="upcomingEvents.length === 0">

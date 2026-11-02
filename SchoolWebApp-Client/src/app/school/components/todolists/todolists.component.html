@@ -1,16 +1,13 @@
 <div class="card card-outline card-warning">
-    <div class="card-header">
-        <h3 class="card-title">
-            <i class="ion ion-clipboard mr-1"></i>
-            My To Do List
+    <!-- A compact header, as the module cards above have. -->
+    <div class="card-header py-1 d-flex align-items-center">
+        <span class="card-title-sm me-auto"><i class="fas fa-clipboard-list text-warning me-1"></i>My To Do List
             <span class="badge rounded-pill text-bg-danger ms-1" *ngIf="overdueCount" [title]="overdueCount + ' overdue'">{{ overdueCount }} overdue</span>
-        </h3>
-        <div class="card-tools" *ngIf="todoLists.length > pageSize">
-            <ngb-pagination [collectionSize]="todoLists.length" [(page)]="page"
-                [pageSize]="pageSize" (pageChange)="pageChanged($event)"
-                [maxSize]="5" [rotate]="true" [ellipses]="true" [boundaryLinks]="true"
-                size="sm"></ngb-pagination>
-        </div>
+        </span>
+        <ngb-pagination class="header-pager" *ngIf="todoLists.length > pageSize" [collectionSize]="todoLists.length" [(page)]="page"
+            [pageSize]="pageSize" (pageChange)="pageChanged($event)"
+            [maxSize]="5" [rotate]="true" [ellipses]="true" [boundaryLinks]="true"
+            size="sm"></ngb-pagination>
     </div>
     <div class="card-body p-1">
         <div class="text-center text-muted small py-3" *ngIf="todoLists.length === 0">
