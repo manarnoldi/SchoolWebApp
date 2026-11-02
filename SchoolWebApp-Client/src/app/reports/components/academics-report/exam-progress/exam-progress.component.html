@@ -106,7 +106,9 @@
                                 <th>Adm No</th>
                                 <th>Student</th>
                                 <th class="text-center" *ngFor="let s of sittings"
-                                    [title]="s.startDate | date:'fullDate'">{{ s.label }}</th>
+                                    [title]="(s.title ? s.title + ' - ' : '') + (s.startDate | date:'fullDate')">
+                                    {{ s.label }}<small class="d-block text-muted fw-normal">{{ s.date }}</small>
+                                </th>
                                 <th class="text-center" title="Exams sat out of those registered">Sat</th>
                                 <th class="text-center">Average</th>
                                 <th class="text-center" title="Last exam less the first one sat">Change</th>
@@ -226,7 +228,10 @@
                         <thead class="table-light">
                             <tr>
                                 <th>Subject</th>
-                                <th class="text-center" *ngFor="let s of sittings">{{ s.label }}</th>
+                                <th class="text-center" *ngFor="let s of sittings"
+                                    [title]="(s.title ? s.title + ' - ' : '') + (s.startDate | date:'fullDate')">
+                                    {{ s.label }}<small class="d-block text-muted fw-normal">{{ s.date }}</small>
+                                </th>
                                 <th class="text-center">Trend</th>
                                 <th class="text-center">Average</th>
                                 <th class="text-center">Change</th>

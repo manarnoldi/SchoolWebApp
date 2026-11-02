@@ -24,7 +24,11 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 // One sitting of the chosen exam type - a single week of a weekly marathon.
 interface Sitting {
     schoolExamId: number;
+    // Short column heading ("Exam 1"), with the date on a line of its own.
     label: string;
+    date: string;
+    // The exam's full description, for the heading's tooltip.
+    title: string;
     startDate: string;
 }
 
@@ -227,9 +231,12 @@ export class ExamProgressComponent implements OnInit {
                         .sort((a, b) => (a.examStartDate || '').localeCompare(b.examStartDate || ''));
                     if (!mine.length) return of(null);
 
-                    this.sittings = mine.map((se) => ({
+                    let labels = this.shortLabels(mine.map((se) => (se.description || '').split(' - ')[0].trim()));
+                    this.sittings = mine.map((se, i) => ({
                         schoolExamId: +se.id,
-                        label: se.description || this.asShortDate(se.examStartDate),
+                        label: labels[i] || `Exam ${i + 1}`,
+                        date: this.asShortDate(se.examStartDate),
+                        title: se.description || '',
                         startDate: se.examStartDate
                     }));
 
@@ -490,7 +497,18 @@ export class ExamProgressComponent implements OnInit {
     };
 
     private asShortDate = (d: string): string =>
-        d ? new Date(d).toLocaleDateString('en-GB', {day: '2-digit', month: 'short'}) : '';
+        d ? new Date(d).toLocaleDateString('en-GB', {weekday: 'short', day: 'numeric', month: 'short'}) : '';
+
+    // Drop the words every exam's name shares bar the last, so "Weekly Exam 1"
+    // .. "Weekly Exam 8" head their columns as "Exam 1" .. "Exam 8" - the card
+    // title already names the exam type.
+    private shortLabels = (names: string[]): string[] => {
+        let words = names.map((n) => n.split(/\s+/).filter(Boolean));
+        if (words.length < 2 || words.some((w) => !w.length)) return names;
+        let common = 0;
+        while (common < words[0].length - 1 && words.every((w) => w.length > common + 1 && w[common] === words[0][common])) common++;
+        return common < 2 ? names : words.map((w) => w.slice(common - 1).join(' '));
+    };
 
 
     // --- Printing ---------------------------------------------------------
@@ -591,7 +609,7 @@ export class ExamProgressComponent implements OnInit {
             {text: 'Adm No', style: 'tableHeader'},
             {text: 'Student', style: 'tableHeader'}
         ];
-        this.sittings.forEach((s) => head.push({text: s.label, style: 'tableHeader', alignment: 'center'}));
+        this.sittings.forEach((s) => head.push({text: [s.label, {text: '\n' + s.date, fontSize: 6, bold: false}], style: 'tableHeader', alignment: 'center'}));
         head.push(
             {text: 'Sat', style: 'tableHeader', alignment: 'center'},
             {text: 'Average', style: 'tableHeader', alignment: 'center'},
@@ -649,7 +667,7 @@ export class ExamProgressComponent implements OnInit {
         let subjectRows = this.subjectRowsFor(row.studentId);
 
         let head: any[] = [{text: 'Subject', style: 'tableHeader'}];
-        this.sittings.forEach((s) => head.push({text: s.label, style: 'tableHeader', alignment: 'center'}));
+        this.sittings.forEach((s) => head.push({text: [s.label, {text: '\n' + s.date, fontSize: 6, bold: false}], style: 'tableHeader', alignment: 'center'}));
         head.push(
             {text: 'Average', style: 'tableHeader', alignment: 'center'},
             {text: 'Change', style: 'tableHeader', alignment: 'center'}
