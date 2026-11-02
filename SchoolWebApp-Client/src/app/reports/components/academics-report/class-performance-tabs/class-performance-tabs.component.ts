@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 
 /**
@@ -19,4 +20,14 @@ export class ClassPerformanceTabsComponent {
         {link: ['/reports/academics/class-performance'], title: 'Academics: Class Performance'}
     ];
     activeNav: 'performance' | 'trend' = 'performance';
+
+    // The open tab lives in the URL (?tab=trend), so a refresh keeps it.
+    constructor(private route: ActivatedRoute, private router: Router) {
+        if (route.snapshot.queryParamMap.get('tab') === 'trend') this.activeNav = 'trend';
+    }
+
+    setTab(tab: 'performance' | 'trend') {
+        this.activeNav = tab;
+        this.router.navigate([], {relativeTo: this.route, queryParams: {tab}, queryParamsHandling: 'merge', replaceUrl: true});
+    }
 }

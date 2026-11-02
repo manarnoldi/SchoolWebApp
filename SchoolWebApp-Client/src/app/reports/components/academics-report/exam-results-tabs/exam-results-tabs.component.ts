@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 
 /**
@@ -26,17 +26,20 @@ export class ExamResultsTabsComponent {
 
     activeNav: 'exam' | 'reportForm' | 'annualReportForm' | 'missing' | 'classProgress' | 'studentProgress' | 'yearProgress' = 'exam';
     visited: {[k: string]: boolean} = {
-        exam: true, reportForm: false, annualReportForm: false, missing: false, classProgress: false, studentProgress: false, yearProgress: false
+        exam: false, reportForm: false, annualReportForm: false, missing: false, classProgress: false, studentProgress: false, yearProgress: false
     };
 
-    // A link can open a tab directly, e.g. ?tab=reportForm from a student's page.
-    constructor(route: ActivatedRoute) {
+    // The open tab lives in the URL (?tab=reportForm), so a refresh or a link -
+    // e.g. from a student's page - opens that tab rather than the first.
+    constructor(private route: ActivatedRoute, private router: Router) {
         const tab = route.snapshot.queryParamMap.get('tab') as any;
-        if (tab && tab in this.visited) this.setTab(tab);
+        this.setTab(tab && tab in this.visited ? tab : 'exam', false);
     }
 
-    setTab(tab: 'exam' | 'reportForm' | 'annualReportForm' | 'missing' | 'classProgress' | 'studentProgress' | 'yearProgress') {
+    setTab(tab: 'exam' | 'reportForm' | 'annualReportForm' | 'missing' | 'classProgress' | 'studentProgress' | 'yearProgress', syncUrl = true) {
         this.activeNav = tab;
         this.visited[tab] = true;
+        if (syncUrl)
+            this.router.navigate([], {relativeTo: this.route, queryParams: {tab}, queryParamsHandling: 'merge', replaceUrl: true});
     }
 }

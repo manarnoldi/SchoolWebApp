@@ -7,13 +7,13 @@
                 <ul class="nav nav-pills" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button type="button" class="nav-link {{ activeNav === 'performance' ? 'active' : '' }}"
-                            (click)="activeNav = 'performance'">
+                            (click)="setTab('performance')">
                             <i class="fas fa-chart-bar me-1"></i> Subject Performance
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button type="button" class="nav-link {{ activeNav === 'trend' ? 'active' : '' }}"
-                            (click)="activeNav = 'trend'">
+                            (click)="setTab('trend')">
                             <i class="fas fa-chart-line me-1"></i> Subject Performance Trend
                         </button>
                     </li>
