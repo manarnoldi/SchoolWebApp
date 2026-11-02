@@ -1,6 +1,7 @@
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {AuthService} from '@/core/services/auth.service';
 import {Component, OnInit} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
 import {SchoolDetailsService} from '../../services/school-details.service';
@@ -29,6 +30,9 @@ export class DashboardComponent implements OnInit {
     activeAcademicYear: string = '';
     currentDate: string = '';
     greeting: string = '';
+    greetName: string = '';
+    termLine: string = '';
+    termTitle: string = '';
 
     quickLinks: any[] = [];
 
@@ -37,6 +41,7 @@ export class DashboardComponent implements OnInit {
         private schoolDetailsSvc: SchoolDetailsService,
         private academicYearSvc: AcademicYearsService,
         private toastr: ToastrService,
+        private http: HttpClient,
         public licence: LicenceService,
         private access: AccessService
     ) {}
@@ -53,6 +58,7 @@ export class DashboardComponent implements OnInit {
         this.setGreeting();
         this.buildQuickLinks();
         this.loadSchoolInfo();
+        this.loadTerm();
     }
 
     setGreeting() {
@@ -60,6 +66,44 @@ export class DashboardComponent implements OnInit {
         if (hour < 12) this.greeting = 'Good morning';
         else if (hour < 17) this.greeting = 'Good afternoon';
         else this.greeting = 'Good evening';
+        this.greetName = DashboardComponent.addressAs(this.user);
+    }
+
+    // How staff address each other: "Madam Haji", "Mr. Arunga"; without a title, the
+    // first name ("Fidel"). A login with no staff record keeps its last name ("Administrator").
+    static addressAs(user: any): string {
+        if (!user) return 'User';
+        const proper = (s: string) => s.toLowerCase().replace(/(^|[\s'-])\S/g, (c) => c.toUpperCase());
+        const titles: Record<string, string> = {md: 'Madam', madam: 'Madam', mr: 'Mr.', mrs: 'Mrs.', ms: 'Ms.', miss: 'Miss',
+            dr: 'Dr.', tr: 'Tr.', prof: 'Prof.', rev: 'Rev.'};
+        const words = String(user.firstName || '').trim().split(/\s+/).filter(Boolean);
+        const last = String(user.lastName || '').trim();
+        const title = words.length ? titles[words[0].toLowerCase().replace(/\.$/, '')] : undefined;
+        if (title && last) return `${title} ${proper(last)}`;
+        if (user.staffId == null && last) return proper(last);
+        const given = title ? words[1] : words[0];
+        return given ? proper(given) : last ? proper(last) : 'User';
+    }
+
+    // Where the school is in its calendar: "Term 3 · week 10 of 13 · 12 days left",
+    // or between terms "Holiday · Term 1 2027 opens Mon 4 Jan".
+    loadTerm() {
+        this.http.get<any>('/dashboard/term').subscribe({
+            next: (t) => {
+                const day = (d: string) => DateTime.fromISO(d, {zone: 'utc'}).toFormat('ccc d LLL');
+                if (t.inSession) {
+                    const left = t.daysLeft === 0 ? 'ends today' : t.daysLeft === 1 ? '1 day left' : `${t.daysLeft} days left`;
+                    this.termLine = `${t.term} · week ${Math.min(t.week, t.weeks)} of ${t.weeks} · ${left}`;
+                    this.termTitle = `${t.term} ${t.year}: ${day(t.startDate)} to ${day(t.endDate)}`;
+                } else if (t.term) {
+                    this.termLine = `Holiday · ${t.term} ${t.year} opens ${day(t.startDate)}`;
+                    this.termTitle = t.lastTerm ? `${t.lastTerm} ${t.lastYear} closed ${day(t.lastEnded)}` : '';
+                } else if (t.lastTerm) {
+                    this.termLine = `Holiday · ${t.lastTerm} ${t.lastYear} closed ${day(t.lastEnded)}`;
+                }
+            },
+            error: () => {}
+        });
     }
 
     buildQuickLinks() {

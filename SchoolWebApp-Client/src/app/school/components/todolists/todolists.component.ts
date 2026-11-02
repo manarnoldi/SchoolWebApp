@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import {TodoList} from '../../models/todolist';
 import {TodolistsService} from '../../services/todolists.service';
 import {TodolistFormComponent} from './todolist-form/todolist-form.component';
+import {DateTime} from 'luxon';
 
 @Component({
     selector: 'app-todolists',
@@ -69,12 +70,13 @@ export class TodolistsComponent implements OnInit {
             .get('/ToDoLists/byUserId/' + this.curUserId)
             .subscribe(
                 (res) => {
+                    // Overdue and soonest due first.
                     this.todoLists = res
                         .filter((t) => !t.completed)
                         .sort(
                             (a, b) =>
-                                new Date(b.completeBy).getTime() -
-                                new Date(a.completeBy).getTime()
+                                new Date(a.completeBy).getTime() -
+                                new Date(b.completeBy).getTime()
                         );
                     this.completeBtnColors = this.todoLists.map((todo) =>
                         todo.completed ? 'text-success' : 'text-primary'
@@ -86,57 +88,75 @@ export class TodolistsComponent implements OnInit {
             );
     };
 
+    // Adding or changing a task is quick to undo, so it saves without asking.
     addItem = (todolistItem: TodoList) => {
-        Swal.fire({
-            title: `${this.editMode ? 'Update' : 'Add'} record?`,
-            text: `Confirm if you want to ${
-                this.editMode ? 'edit' : 'add'
-            } record.`,
-            width: 400,
-            position: 'top',
-            padding: '1em',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: `${this.editMode ? 'Update' : 'Add'}`,
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.value) {
-                todolistItem.userId = this.curUserId;
-                todolistItem.completed = false;
+        todolistItem.userId = this.curUserId;
+        todolistItem.completed = false;
 
-                if (this.editMode) {
-                    this.todoList.itemName = todolistItem.itemName;
-                    this.todoList.completed = false;
-                    this.todoList.completeBy = todolistItem.completeBy;
-                    this.todoList.userId = this.curUserId;
-                }
+        if (this.editMode) {
+            this.todoList.itemName = todolistItem.itemName;
+            this.todoList.completed = false;
+            this.todoList.completeBy = todolistItem.completeBy;
+            this.todoList.userId = this.curUserId;
+        }
 
-                let reqToProcess = this.editMode
-                    ? this.todoListSvc.update('/todolists', this.todoList)
-                    : this.todoListSvc.create(
-                          '/todolists',
-                          new TodoList(todolistItem)
-                      );
+        let reqToProcess = this.editMode
+            ? this.todoListSvc.update('/todolists', this.todoList)
+            : this.todoListSvc.create('/todolists', new TodoList(todolistItem));
 
-                let replyMsg = `Todo list item ${
-                    this.editMode ? 'updated' : 'created'
-                } successfully!`;
+        let replyMsg = this.editMode ? 'Task updated.' : 'Task added.';
 
-                forkJoin([reqToProcess]).subscribe(
-                    (res) => {
-                        this.editMode = false;
-                        this.toastr.success(replyMsg);
-                        this.todolistFormComponent.resetFormControls();
-                        this.loadUserTodoLists();
-                    },
-                    (err) => {
-                        this.toastr.error(err.error);
-                    }
-                );
-            } else if (result.dismiss === Swal.DismissReason.cancel) {
+        forkJoin([reqToProcess]).subscribe(
+            (res) => {
+                this.editMode = false;
+                this.toastr.success(replyMsg);
+                this.todolistFormComponent.resetFormControls();
+                this.loadUserTodoLists();
+            },
+            (err) => {
+                this.toastr.error(err.error);
             }
-        });
+        );
     };
+
+    // "Overdue 2 days", "Due in 25 min", "Due today 14:00", "Due tomorrow 08:00", "Due Fri 09:00", "Due 21 Nov".
+    dueLabel(t: TodoList): string {
+        const due = DateTime.fromJSDate(new Date(t.completeBy as any));
+        if (!due.isValid) return '';
+        const now = DateTime.now();
+        const mins = Math.round(due.diff(now, 'minutes').minutes);
+        if (mins < 0) {
+            const late = -mins;
+            if (late < 60) return `Overdue ${late} min`;
+            if (late < 1440) return `Overdue ${Math.floor(late / 60)} hr${late >= 120 ? 's' : ''}`;
+            const days = Math.floor(late / 1440);
+            return `Overdue ${days} day${days === 1 ? '' : 's'}`;
+        }
+        if (mins < 60) return `Due in ${mins} min`;
+        const days = Math.round(due.startOf('day').diff(now.startOf('day'), 'days').days);
+        if (days === 0) return `Due today ${due.toFormat('HH:mm')}`;
+        if (days === 1) return `Due tomorrow ${due.toFormat('HH:mm')}`;
+        if (days < 7) return `Due ${due.toFormat('ccc HH:mm')}`;
+        return `Due ${due.toFormat(due.year === now.year ? 'd LLL' : 'd LLL yyyy')}`;
+    }
+
+    // Red overdue, amber within the hour, blue later today, grey after that.
+    dueClass(t: TodoList): string {
+        const mins = (new Date(t.completeBy as any).getTime() - Date.now()) / 60000;
+        if (mins < 0) return 'text-bg-danger';
+        if (mins < 60) return 'text-bg-warning';
+        return DateTime.fromJSDate(new Date(t.completeBy as any)).hasSame(DateTime.now(), 'day')
+            ? 'text-bg-info' : 'bg-light text-dark border';
+    }
+
+    get overdueCount(): number {
+        return this.todoLists.filter((t) => new Date(t.completeBy as any).getTime() < Date.now()).length;
+    }
+
+    cancelEdit() {
+        this.editMode = false;
+        this.todolistFormComponent.resetFormControls();
+    }
 
     markCompleted = (todolistItem: TodoList) => {
         todolistItem.completed = true;

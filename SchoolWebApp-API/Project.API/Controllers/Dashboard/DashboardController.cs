@@ -6,6 +6,7 @@ using SchoolWebApp.Core.DTOs.Dashboard;
 using SchoolWebApp.Core.Entities.Academics;
 using SchoolWebApp.Core.Entities.Enums;
 using Project.Infrastructure.Data;
+using SchoolWebApp.API.Services.TeachingDocuments;
 
 namespace SchoolWebApp.API.Controllers.Dashboard
 {
@@ -278,6 +279,92 @@ namespace SchoolWebApp.API.Controllers.Dashboard
                 _logger.LogError(ex, "Failed to compute dashboard class exam summary.");
                 return StatusCode(StatusCodes.Status500InternalServerError, "Failed to compute dashboard class exam summary.");
             }
+        }
+
+        /// <summary>
+        /// The four summary cards in one request: active learners, parents and staff
+        /// (teaching and non-teaching, by staff category), each split by gender, and
+        /// how many active learners have no parent recorded.
+        /// </summary>
+        [HttpGet("summary")]
+        public async Task<IActionResult> GetSummary()
+        {
+            var genders = await _db.Genders.AsNoTracking().ToDictionaryAsync(g => g.Id, g => g.Name ?? "");
+            bool IsMale(int id) => string.Equals(genders.GetValueOrDefault(id), "Male", StringComparison.OrdinalIgnoreCase);
+            bool IsFemale(int id) => string.Equals(genders.GetValueOrDefault(id), "Female", StringComparison.OrdinalIgnoreCase);
+            object Split(List<(int GenderId, int Count)> rows) => new
+            {
+                Total = rows.Sum(r => r.Count),
+                Male = rows.Where(r => IsMale(r.GenderId)).Sum(r => r.Count),
+                Female = rows.Where(r => IsFemale(r.GenderId)).Sum(r => r.Count)
+            };
+
+            var students = (await _db.Students.AsNoTracking().Where(s => s.Status == Status.Active)
+                .GroupBy(s => s.GenderId).Select(g => new { g.Key, Count = g.Count() }).ToListAsync())
+                .Select(g => (g.Key, g.Count)).ToList();
+            var parents = (await _db.Parents.AsNoTracking().Where(p => p.Status == Status.Active)
+                .GroupBy(p => p.GenderId).Select(g => new { g.Key, Count = g.Count() }).ToListAsync())
+                .Select(g => (g.Key, g.Count)).ToList();
+            var withoutParent = await _db.Students.AsNoTracking()
+                .CountAsync(s => s.Status == Status.Active && !_db.StudentParents.Any(sp => sp.StudentId == s.Id));
+            var staff = await _db.StaffDetails.AsNoTracking().Where(s => s.Status == Status.Active)
+                .GroupBy(s => new { s.StaffCategory!.ForTeaching, s.GenderId })
+                .Select(g => new { g.Key.ForTeaching, g.Key.GenderId, Count = g.Count() }).ToListAsync();
+            // The staff list opens on one category; the first of each kind.
+            var categories = await _db.StaffCategories.AsNoTracking().OrderBy(c => c.Id)
+                .Select(c => new { c.Id, c.ForTeaching }).ToListAsync();
+
+            return Ok(new
+            {
+                Students = Split(students),
+                Parents = Split(parents),
+                StudentsWithoutParent = withoutParent,
+                TeachingStaff = Split(staff.Where(s => s.ForTeaching).Select(s => (s.GenderId, s.Count)).ToList()),
+                NonTeachingStaff = Split(staff.Where(s => !s.ForTeaching).Select(s => (s.GenderId, s.Count)).ToList()),
+                TeachingCategoryId = categories.FirstOrDefault(c => c.ForTeaching)?.Id,
+                NonTeachingCategoryId = categories.FirstOrDefault(c => !c.ForTeaching)?.Id
+            });
+        }
+
+        /// <summary>
+        /// Where the school is in its calendar, for the welcome banner: the term under
+        /// way with its week and days left, or - between terms - the term that opens next.
+        /// </summary>
+        [HttpGet("term")]
+        public async Task<IActionResult> GetTerm()
+        {
+            var today = DateTime.Today;
+            var sessions = await _db.Sessions.AsNoTracking().Include(s => s.AcademicYear)
+                .OrderBy(s => s.StartDate).ToListAsync();
+            var current = sessions.LastOrDefault(s => s.StartDate.Date <= today && today <= s.EndDate.Date);
+            if (current != null)
+            {
+                var week = (today - TeachingDocumentService.Week1Start(current)).Days / 7 + 1;
+                return Ok(new
+                {
+                    InSession = true,
+                    Term = current.SessionName,
+                    Year = current.AcademicYear?.Name,
+                    current.StartDate,
+                    current.EndDate,
+                    Week = week,
+                    Weeks = TeachingDocumentService.TermWeeks(current),
+                    DaysLeft = (current.EndDate.Date - today).Days
+                });
+            }
+            var next = sessions.FirstOrDefault(s => s.StartDate.Date > today);
+            var last = sessions.LastOrDefault(s => s.EndDate.Date < today);
+            return Ok(new
+            {
+                InSession = false,
+                Term = next?.SessionName,
+                Year = next?.AcademicYear?.Name,
+                StartDate = next?.StartDate,
+                EndDate = next?.EndDate,
+                LastTerm = last?.SessionName,
+                LastYear = last?.AcademicYear?.Name,
+                LastEnded = last?.EndDate
+            });
         }
 
         /// <summary>

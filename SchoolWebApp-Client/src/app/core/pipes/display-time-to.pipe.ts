@@ -15,7 +15,7 @@ export class DisplayTimeToPipe implements PipeTransform {
         if (dateDiffInMin < 60 && dateDiffInMin > 0) {
             returnStr = dateDiffInMin + ' mins';
         } else if (dateDiffInMin >= 60 && dateDiffInMin < 1440) {
-            hoursVal = Math.round((dateDiffInMin / 60)).toString();
+            hoursVal = Math.floor(dateDiffInMin / 60).toString();
             minsVal = (Math.round(dateDiffInMin % 60)).toString();
             returnStr = hoursVal + ' hrs, ' + minsVal + ' mins.';
         } else {

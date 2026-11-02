@@ -1,65 +1,44 @@
 <div class="row">
-    <div class="col-lg-3 col-6 px-1">
-        <a [routerLink]="['/students/details']"
-            [ngClass]="{ 'nounderline': true, 'disabled-link': studentCount <= 0 }"
-            [queryParams]="{status: status.Active, source:'dashboard'}">
-            <div class="small-box bg-info opacity-60 mb-1 ">
-                <div class="inner pt-1">
-                    <h4 class="mb-1">{{studentCount}}</h4>
-                    <div>Students</div>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-user-graduate fs-1"></i>
-                </div>
+    <div class="col-lg-3 col-6 px-1 mb-1">
+        <a class="stat bg-info-subtle text-info-emphasis" [routerLink]="['/students/details']"
+           [queryParams]="{status: status.Active, source: 'dashboard'}" title="Open the active learners">
+            <i class="fas fa-user-graduate"></i>
+            <div class="v">{{ summary ? (summary.students.total | number) : '…' }}</div>
+            <div class="k">Students</div>
+            <div class="s" *ngIf="summary?.students.total">{{ summary.students.male | number }} boys · {{ summary.students.female | number }} girls</div>
+        </a>
+    </div>
+    <div class="col-lg-3 col-6 px-1 mb-1">
+        <a class="stat bg-success-subtle text-success-emphasis" [routerLink]="['/students/parents']" [queryParams]="{active: true}"
+           title="Open the parents and guardians">
+            <i class="fas fa-user-friends"></i>
+            <div class="v">{{ summary ? (summary.parents.total | number) : '…' }}</div>
+            <div class="k">Parents</div>
+            <div class="s" *ngIf="summary">
+                <ng-container *ngIf="summary.parents.total; else noParents">{{ summary.parents.male | number }} men · {{ summary.parents.female | number }} women</ng-container>
+                <ng-template #noParents>None recorded yet</ng-template>
+                <span class="warn" *ngIf="summary.studentsWithoutParent && summary.students.total"
+                      [title]="summary.studentsWithoutParent + ' active learners have no parent or guardian recorded'">
+                    · {{ summary.studentsWithoutParent | number }} learners without</span>
             </div>
         </a>
     </div>
-    <div class="col-lg-3 col-6 px-0">
-        <a [routerLink]="['/students/parents']" [queryParams]='{active: true}'
-            [ngClass]="{ 'nounderline': true, 'disabled-link': parentsCount <= 0 }">
-            <div class="small-box bg-success opacity-60 mb-1">
-                <div class="inner pt-1">
-                    <h4 class="mb-1">{{parentsCount}}</h4>
-                    <div>Parents</div>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-user-alt fs-1"></i>
-                </div>
-            </div>
+    <div class="col-lg-3 col-6 px-1 mb-1">
+        <a class="stat bg-warning-subtle text-warning-emphasis" [routerLink]="['/staff/details']"
+           [queryParams]="{status: status.Active, staffCategoryId: summary?.teachingCategoryId, source: 'dashboard'}" title="Open the teaching staff">
+            <i class="fas fa-chalkboard-teacher"></i>
+            <div class="v">{{ summary ? (summary.teachingStaff.total | number) : '…' }}</div>
+            <div class="k">Teaching staff</div>
+            <div class="s" *ngIf="summary?.teachingStaff.total">{{ summary.teachingStaff.male | number }} men · {{ summary.teachingStaff.female | number }} women</div>
         </a>
     </div>
-    <div class="col-lg-3 col-6 px-1">
-        <a
-            [routerLink]="teachingStaffCategoryId > 0 ? ['/staff/details'] : null"
-            [queryParams]="{ status: status.Active, staffCategoryId: teachingStaffCategoryId, source: 'dashboard' }"
-            (click)="onStaffLinkClick($event, true)"
-            [ngClass]="{ 'nounderline': true, 'disabled-link': teachingStaffCategoryId <= 0 || teachingStaffCount <= 0 }">
-
-            <div class="small-box bg-warning opacity-60 mb-1">
-                <div class="inner pt-1">
-                    <h4 class="mb-1">{{ teachingStaffCount }}</h4>
-                    <div>Teaching Staff</div>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-user-tie fs-1"></i>
-                </div>
-            </div>
-        </a>
-    </div>
-    <div class="col-lg-3 col-6 pl-0 pr-1">
-        <a [routerLink]="nonTeachingStaffCategoryId > 0 ? ['/staff/details']: null"
-            [queryParams]="{status: status.Active, staffCategoryId: nonTeachingStaffCategoryId, source:'dashboard'}"
-            (click)="onStaffLinkClick($event, true)"
-            [ngClass]="{ 'nounderline': true, 'disabled-link': nonTeachingStaffCategoryId <= 0 || nonTeachingStaffCount <= 0 }">
-            <div class="small-box bg-danger opacity-60 mb-1">
-                <div class="inner pt-1">
-                    <h4 class="mb-1">{{nonTeachingStaffCount}}</h4>
-                    <div>Non-Teaching Staff</div>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-user fs-1"></i>
-                </div>
-            </div>
+    <div class="col-lg-3 col-6 px-1 mb-1">
+        <a class="stat bg-danger-subtle text-danger-emphasis" [routerLink]="['/staff/details']"
+           [queryParams]="{status: status.Active, staffCategoryId: summary?.nonTeachingCategoryId, source: 'dashboard'}" title="Open the non-teaching staff">
+            <i class="fas fa-user-tie"></i>
+            <div class="v">{{ summary ? (summary.nonTeachingStaff.total | number) : '…' }}</div>
+            <div class="k">Non-teaching staff</div>
+            <div class="s" *ngIf="summary?.nonTeachingStaff.total">{{ summary.nonTeachingStaff.male | number }} men · {{ summary.nonTeachingStaff.female | number }} women</div>
         </a>
     </div>
 </div>

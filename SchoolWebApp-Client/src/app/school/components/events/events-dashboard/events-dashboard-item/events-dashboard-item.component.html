@@ -1,46 +1,33 @@
 <div class="card mb-1">
-    <div class="row align-items-stretch">
-        <div class="col-2">
-            <div class="dateDisplay">
-                <div class="dateDay">{{ event.startDate | date: 'EEE' }}</div>
-                <div class="dateMonth">{{ event.startDate | date: 'MMM' }}</div>
-                <div class="dateDate">{{ event.startDate | date: 'dd' }}</div>
+    <div class="d-flex align-items-center gap-2">
+        <div class="dateDisplay" *ngIf="start">
+            <div class="dateDay">{{ start.toFormat('ccc') }}</div>
+            <div class="dateMonth">{{ start.toFormat('LLL') }}</div>
+            <div class="dateDate">{{ start.toFormat('dd') }}</div>
+        </div>
+        <div class="eventBox flex-grow-1">
+            <div class="d-flex align-items-start gap-2">
+                <div class="eventTitle me-auto">{{ event.eventName }}</div>
+                <span class="badge rounded-pill text-nowrap" *ngIf="when" [ngClass]="whenClass">{{ when }}</span>
+            </div>
+            <div class="eventDescription" *ngIf="event.description">
+                <ng-container *ngIf="event.description.length <= foldAt || showFullText; else folded">
+                    {{ event.description }}
+                    <a href="#" *ngIf="event.description.length > foldAt" (click)="toggleText(); $event.preventDefault()">less</a>
+                </ng-container>
+                <ng-template #folded>
+                    {{ event.description | slice:0:foldAt }}…
+                    <a href="#" (click)="toggleText(); $event.preventDefault()">more</a>
+                </ng-template>
+            </div>
+            <div class="eventLocation d-flex flex-wrap gap-3">
+                <span class="lineEventLocation" *ngIf="event.eventLocation">
+                    <i class="fas fa-map-marker-alt text-success me-1"></i>{{ event.eventLocation }}
+                </span>
+                <span class="lineEventDate ms-auto">
+                    <i class="far fa-calendar me-1"></i>{{ days }}
+                </span>
             </div>
         </div>
-        <div class="col-10 px-1">
-            <div class="eventBox">
-                <div class="eventTitle">{{ event.eventName }}</div>
-                <div class="eventDescription">
-                    <ng-container *ngIf="!showFullText">
-                        <span class="truncate-text">
-                            {{ event.description | slice:0:100 }}...
-                            <a href="#" (click)="toggleText(); $event.preventDefault()">more</a>
-                        </span>
-                    </ng-container>
-
-                    <ng-container *ngIf="showFullText">
-                        <span>
-                            {{ event.description }}
-                            <a href="#" (click)="toggleText(); $event.preventDefault()">less</a>
-                        </span>
-                    </ng-container>
-                    <div class="eventLocation">
-                        <span class='lineEventLocation'>
-                            <i class="fas fa-map-marker-alt text-success me-1"></i> {{
-                            event.eventLocation }}
-                        </span>
-                        <span class="float-right mr-3 lineEventDate">
-                            <i class="far fa-calendar"></i>
-                            {{ event.startDate | date:'EEEE, MMM d, y, h:mm:ss a'}}
-                        </span>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-        <!-- <div class="col-2 d-flex flex-column justify-content-between align-items-end">
-            <i role="button" class="fas fa-edit text-warning"></i>
-            <i role="button" class="fas fa-trash text-danger"></i>
-        </div> -->
     </div>
 </div>

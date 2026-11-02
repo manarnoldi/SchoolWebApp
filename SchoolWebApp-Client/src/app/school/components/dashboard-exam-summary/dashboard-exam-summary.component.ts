@@ -48,6 +48,8 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
 
     isLoading: boolean = false;
     hasLoaded: boolean = false;
+    // The term's released exams have been fetched (none may be released yet).
+    examsLoaded: boolean = false;
 
     // Signals when the component is being torn down. Every HTTP subscription
     // in this widget pipes through `takeUntil(destroy$)` so navigating away
@@ -135,6 +137,7 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
 
     private loadSchoolExams(autoLoad: boolean) {
         this.schoolExams = [];
+        this.examsLoaded = false;
         this.selectedSchoolExamId = this.selectedExamTypeId = null;
         if (!this.selectedSessionId || !this.activeCurriculumId || !this.selectedAcademicYearId) return;
         this.schoolExamSvc
@@ -146,6 +149,7 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
                     this.schoolExams = (items || [])
                         .filter((se: any) => se.isReleased)
                         .sort((a: any, b: any) => (b.examStartDate || '').localeCompare(a.examStartDate || ''));
+                    this.examsLoaded = true;
                     if (this.schoolExams.length === 0) return;
                     // Default to the configured exam type's released exam, else
                     // the most recent released one.
@@ -163,6 +167,7 @@ export class DashboardExamSummaryComponent implements OnInit, OnDestroy {
 
     onAcademicYearChange = () => {
         this.clearSummary();
+        this.examsLoaded = false;
         this.loadSessions(false);
     };
 

@@ -25,8 +25,8 @@
                     <td>{{ item.session?.sessionName }}</td>
                     <td>{{ item.eventName }}</td>
                     <td>{{ item.eventLocation }}</td>
-                    <td>{{ item.startDate | date: 'dd/MM/yyyy HH:mm'}}</td>
-                    <td>{{ item.endDate | date: 'dd/MM/yyyy HH:mm'}}</td>
+                    <td>{{ item.startDate | date: 'dd/MM/yyyy':'UTC'}}</td>
+                    <td>{{ item.endDate | date: 'dd/MM/yyyy':'UTC'}}</td>
                     <td>{{ item.description }}</td>
                     <app-table-action class="p-0"
                         (editItemEvent)="editItem(item.id)"

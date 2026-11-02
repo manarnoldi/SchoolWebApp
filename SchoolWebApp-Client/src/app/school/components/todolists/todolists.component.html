@@ -3,8 +3,9 @@
         <h3 class="card-title">
             <i class="ion ion-clipboard mr-1"></i>
             My To Do List
+            <span class="badge rounded-pill text-bg-danger ms-1" *ngIf="overdueCount" [title]="overdueCount + ' overdue'">{{ overdueCount }} overdue</span>
         </h3>
-        <div class="card-tools">
+        <div class="card-tools" *ngIf="todoLists.length > pageSize">
             <ngb-pagination [collectionSize]="todoLists.length" [(page)]="page"
                 [pageSize]="pageSize" (pageChange)="pageChanged($event)"
                 [maxSize]="5" [rotate]="true" [ellipses]="true" [boundaryLinks]="true"
@@ -12,45 +13,37 @@
         </div>
     </div>
     <div class="card-body p-1">
-        <ul class="todo-list" data-widget="todo-list">
+        <div class="text-center text-muted small py-3" *ngIf="todoLists.length === 0">
+            <i class="fas fa-check-double me-1 text-success"></i> Nothing to do. Add a task below.
+        </div>
+        <ul class="todo-list" data-widget="todo-list" *ngIf="todoLists.length">
             <li
                 *ngFor="let todoList of todoLists | slice: (page - 1) * pageSize: page * pageSize;let i= index"
-                class="card todo-item-box">
+                class="todo-item-box d-flex align-items-center gap-2">
                 <i [id]="(page - 1) * pageSize + i"
                     class="fas fa-check-circle"
                     [ngClass]="completeBtnColors[(page - 1) * pageSize + i]"
                     (mouseover)="onMouseOver((page - 1) * pageSize + i)"
                     (mouseout)="onMouseOut((page - 1) * pageSize + i)"
-                    role="button"
+                    role="button" title="Mark as done"
                     (click)="markCompleted(todoList)">
                 </i>
-                <span class="text" *ngIf="todoList.completed === true">
-                    <del>{{ todoList.itemName }}</del>
-                </span>
-                <span class="text" *ngIf="todoList.completed === false">
-                    {{ todoList.itemName }}
-                </span>
-                <span>
-                    <small class="badge" [ngClass]="todoList.timeToDeadline <0 ? 'badge-danger':
-                        todoList.timeToDeadline> 0 && todoList.timeToDeadline <60
-                            ? 'badge-warning':todoList.timeToDeadline>= 60 &&
-                            todoList.timeToDeadline <1440 ? 'badge-info': 'badge-success'">
-                        <i class="far fa-clock"></i> {{ todoList.completeBy | displayTimeTo
-                        }}
-                    </small>
-                    <span class="float-right">
-                        <i class="fas fa-edit text-warning" role="button"
-                            (click)="editRecord(todoList.id)"></i>
-                        <span> | </span>
-                        <i class="fas fa-trash text-danger" role="button"
-                            (click)="deleteRecord(todoList.id)"></i>
-                    </span>
+                <span class="flex-grow-1 todo-text">{{ todoList.itemName }}</span>
+                <small class="badge rounded-pill text-nowrap" [ngClass]="dueClass(todoList)"
+                       [title]="todoList.completeBy | date:'EEE d MMM y, HH:mm'">
+                    <i class="far fa-clock"></i> {{ dueLabel(todoList) }}
+                </small>
+                <span class="text-nowrap">
+                    <i class="fas fa-edit text-warning me-2" role="button" title="Edit"
+                        (click)="editRecord(todoList.id)"></i>
+                    <i class="fas fa-trash text-danger" role="button" title="Delete"
+                        (click)="deleteRecord(todoList.id)"></i>
                 </span>
             </li>
         </ul>
     </div>
     <div class="card-footer clearfix">
-        <app-todolist-form [editmode]="false"
-            (addToDoListItemEvent)="addItem($event)"></app-todolist-form>
+        <app-todolist-form [editmode]="editMode"
+            (addToDoListItemEvent)="addItem($event)" (cancelEvent)="cancelEdit()"></app-todolist-form>
     </div>
 </div>

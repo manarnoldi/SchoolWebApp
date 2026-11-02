@@ -13,9 +13,7 @@
                                     style="height: 50px; width: auto; border-radius: 6px; background: #fff; padding: 3px;">
                             </div>
                             <div class="col">
-                                <h5 class="mb-0 text-white">{{ greeting }}, {{ user?.lastName ||
-                                    'User'
-                                    }}!</h5>
+                                <h5 class="mb-0 text-white">{{ greeting }}, {{ greetName }}!</h5>
                                 <small class="text-white-50" *ngIf="schoolName">{{ schoolName
                                     }}<span
                                         *ngIf="schoolMotto"> - <em>{{ schoolMotto
@@ -30,6 +28,9 @@
                                     <i class="fas fa-graduation-cap mr-1"></i> Academic Year:
                                     <strong>{{
                                         activeAcademicYear }}</strong>
+                                </div>
+                                <div class="text-white" style="font-size: 0.85rem;" *ngIf="termLine" [title]="termTitle">
+                                    <i class="fas fa-school mr-1"></i> {{ termLine }}
                                 </div>
                             </div>
                         </div>

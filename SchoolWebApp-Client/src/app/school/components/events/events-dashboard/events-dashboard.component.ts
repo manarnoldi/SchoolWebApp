@@ -7,6 +7,14 @@ import {AuthService} from '@/core/services/auth.service';
 import {MenuPermissionService} from '@/security/services/menu-permission.service';
 import {of} from 'rxjs';
 import {catchError} from 'rxjs/operators';
+import {DateTime} from 'luxon';
+
+/** An event's date as 'yyyy-MM-dd': it is saved as midnight UTC, so read it in UTC. */
+export function eventDay(d: any): string {
+    if (!d) return '';
+    const v = typeof d === 'string' ? DateTime.fromISO(d, {zone: 'utc'}) : DateTime.fromJSDate(new Date(d), {zone: 'utc'});
+    return v.isValid ? v.toISODate()! : '';
+}
 
 @Component({
     selector: 'app-events-dashboard',
@@ -69,19 +77,16 @@ export class EventsDashboardComponent implements OnInit {
             });
     }
 
+    // Events are dates without a time, so they are compared as calendar days: one
+    // stays on the list until its last day is over, the soonest first.
     refreshItems() {
         this.eventsSvc.get('/events').subscribe({
             next: (events) => {
-                this.events = events.sort(
-                    (a, b) => +new Date(b.startDate) - +new Date(a.startDate)
-                );
-                this.upcomingEvents = this.events
-                    .filter((event) => new Date(event.startDate) >= this.now)
-                    .sort(
-                        (a, b) =>
-                            new Date(a.startDate).getTime() -
-                            new Date(b.startDate).getTime()
-                    )
+                const today = DateTime.now().toISODate();
+                this.events = events;
+                this.upcomingEvents = events
+                    .filter((e) => eventDay(e.endDate || e.startDate) >= today)
+                    .sort((a, b) => eventDay(a.startDate).localeCompare(eventDay(b.startDate)))
                     .slice(0, this.eventsLimit);
             },
             error: (err) => {
