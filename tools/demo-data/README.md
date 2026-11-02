@@ -1,9 +1,9 @@
 # Demo data
 
 The `shulenova` demo site runs on a copy of a real school's database with
-every person in it replaced by an invented one. Marks, teaching documents and
-elections are kept, and a year of finance and payroll is invented, so the demo
-shows a full, working school.
+every person in it replaced by an invented one. Marks are kept, and a year of
+finance, payroll, teaching documents, CBE records and a student council
+election is invented, so the demo shows a full, working school.
 
 ## Making a fresh copy
 
@@ -103,7 +103,25 @@ shows a full, working school.
    service. Every learner joins a club or sport (some two), recorded by the
    activity's patron with participation, achievement and effort scores.
 
-7. Check nothing is left from the original:
+7. Add the year's student council election, with the API still running (after
+   cbe.js - it rates candidates by their values):
+
+   ```
+   MYSQL_PWD=... node tools/demo-data/elections.js --db shulenova --api http://localhost:5198
+   ```
+
+   It deletes every election in the copy, with the leadership records they
+   wrote and the year's class presidents, then runs a new one through the API
+   as the head teacher: a School President and Deputy on a joint ticket, Games
+   Captains (a boy and a girl per section), a Girls' Representative voted for
+   by girls, an Environment & Health Prefect per section and a Class President
+   per class. Nominations run for a fortnight in January (one rejected, one
+   withdrawn), the register is frozen when they close, and on polling day each
+   class teacher issues their station's ballots; about nine in ten learners
+   vote. One class race ties and is settled by drawing lots; the results are
+   declared and the winners written to class leadership and responsibilities.
+
+8. Check nothing is left from the original:
 
    ```
    MYSQL_PWD=... node tools/demo-data/check.js --source swikunda --db shulenova
@@ -113,7 +131,7 @@ shows a full, working school.
    name still found, by table. Ordinary words that are also names (Junior,
    Christian, Adam and Love in CRE lessons) are expected.
 
-8. Dump `shulenova` and restore it on the demo site's database.
+9. Dump `shulenova` and restore it on the demo site's database.
 
 ## What changes
 
