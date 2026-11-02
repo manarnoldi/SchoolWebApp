@@ -74,29 +74,29 @@
     padding: 2px;
 }
 
+// The same type scale as My To Do List beside it: the item at 0.9rem bold, the
+// details under it at 0.8rem, badges at 0.72rem.
 .eventTitle {
     font-weight: 600;
-    font-size: 1.1rem;
-    margin-bottom: 0.2rem;
-    color: #333;
-}
-
-.eventDate {
     font-size: 0.9rem;
-    color: #757575;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.15rem;
+    color: #343a40;
 }
 
 .eventDescription {
-    font-size: 0.9rem;
-    color: #444;
-    margin-bottom: 0.5rem;
+    font-size: 0.8rem;
+    color: #495057;
+    margin-bottom: 0.25rem;
 }
 
 .eventLocation {
-    font-size: 0.9rem;
-    color: #333;
-    font-style: italic;
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.badge {
+    font-size: 0.72rem;
+    font-weight: 600;
 }
 
 .truncate-text {

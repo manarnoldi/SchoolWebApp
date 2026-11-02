@@ -1,3 +1,5 @@
+// The same type scale as Upcoming events beside it: the item at 0.9rem bold,
+// badges at 0.72rem.
 .todo-item-box {
     background-color: #f4f6f9;
     margin-bottom: 3px;
@@ -7,7 +9,14 @@
 }
 
 .todo-text {
-    font-weight: 500;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #343a40;
     min-width: 0;
     overflow-wrap: anywhere;
+}
+
+.badge {
+    font-size: 0.72rem;
+    font-weight: 600;
 }
