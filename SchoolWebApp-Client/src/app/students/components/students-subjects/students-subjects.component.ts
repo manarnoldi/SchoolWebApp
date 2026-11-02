@@ -20,6 +20,9 @@ import {ExamResultsService} from '@/academics/services/exam-results.service';
 import {StudentsSubjectsStateService} from '@/students/services/students-subjects-state.service';
 import {StudentsSubjectsSearchFormComponent} from './students-subjects-search-form/students-subjects-search-form.component';
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {currentYear, firstOf, topCurriculum} from '@/core/utils/current-defaults';
+import {matchOptionId, pushQueryParams, readQueryParam} from '@/shared/utils/query-param-sync';
 import {HttpClient} from '@angular/common/http';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin, of} from 'rxjs';
@@ -90,7 +93,9 @@ export class StudentsSubjectsComponent implements OnInit, AfterViewInit {
         private studentClassesSvc: StudentClassService,
         private studentSubjectsSvc: StudentSubjectsService,
         private examResultsSvc: ExamResultsService,
-        private stateSvc: StudentsSubjectsStateService
+        private stateSvc: StudentsSubjectsStateService,
+        private router: Router,
+        private route: ActivatedRoute
     ) {}
 
     ngOnInit(): void {
@@ -135,6 +140,7 @@ export class StudentsSubjectsComponent implements OnInit, AfterViewInit {
             schoolClassId: null,
             selectedStudentClassId: null
         });
+        this.syncUrl();
         if (curriculumId == null) return;
         this.educationLevelSvc
             .educationLevelsByCurriculum(curriculumId)
@@ -166,6 +172,7 @@ export class StudentsSubjectsComponent implements OnInit, AfterViewInit {
                 schoolClassId: null,
                 selectedStudentClassId: null
             });
+            this.syncUrl();
             return;
         }
         this.currentEducationLevelId = ely.educationLevelId;
@@ -176,6 +183,7 @@ export class StudentsSubjectsComponent implements OnInit, AfterViewInit {
             schoolClassId: null,
             selectedStudentClassId: null
         });
+        this.syncUrl();
         this.schoolClassSvc
             .getByEducationLevelandYear(
                 ely.educationLevelId,
@@ -222,6 +230,7 @@ export class StudentsSubjectsComponent implements OnInit, AfterViewInit {
             schoolClassId: schoolClassId ?? null,
             selectedStudentClassId: null
         });
+        this.syncUrl();
         if (schoolClassId == null) return;
         this.loadRowsForClass(schoolClassId);
     };
@@ -566,16 +575,56 @@ export class StudentsSubjectsComponent implements OnInit, AfterViewInit {
     }
 
     // Restores previous filter state when re-entering the page.
-    private restoreStateIfAny(): void {
-        const state = this.stateSvc.get();
-        if (!state || !state.curriculumId) return;
+    // Keeps the selections in the URL, so a refresh or a shared link opens
+    // the same class.
+    private syncUrl(): void {
+        const s = this.stateSvc.get() ?? {};
+        pushQueryParams(this.router, this.route, {
+            curriculumId: s.curriculumId,
+            academicYearId: s.academicYearId,
+            educationLevelId: s.educationLevelId,
+            schoolClassId: s.schoolClassId
+        });
+    }
 
+    // Restores the selections from the URL, else from the last visit (state
+    // service), else opens on the top curriculum, the current year and the
+    // first level and class - so the page never opens empty.
+    private restoreStateIfAny(): void {
         const waitForInitials = () => {
             if (!this.doneLoading) {
                 setTimeout(waitForInitials, 50);
                 return;
             }
-            this.searchForm?.setFormValues(state);
+            let state: any;
+            if (readQueryParam(this.route, 'curriculumId')) {
+                state = {
+                    curriculumId: matchOptionId(this.curricula, readQueryParam(this.route, 'curriculumId')),
+                    academicYearId: matchOptionId(this.academicYears, readQueryParam(this.route, 'academicYearId')),
+                    educationLevelId: readQueryParam(this.route, 'educationLevelId'),
+                    schoolClassId: readQueryParam(this.route, 'schoolClassId')
+                };
+            } else if (this.stateSvc.hasUsableFilter()) {
+                state = {...this.stateSvc.get()};
+            } else {
+                state = {
+                    curriculumId: topCurriculum(this.curricula)?.id ?? null,
+                    academicYearId: currentYear(this.academicYears)?.id ?? null,
+                    pickFirst: true
+                };
+            }
+            if (!state.curriculumId) return;
+            const save = () => {
+                this.stateSvc.set({
+                    curriculumId: state.curriculumId,
+                    academicYearId: state.academicYearId ?? null,
+                    educationLevelId: state.educationLevelId ?? null,
+                    schoolClassId: state.schoolClassId ?? null
+                });
+                this.searchForm?.setFormValues(state);
+                this.syncUrl();
+            };
+            save();
 
             this.educationLevelSvc
                 .educationLevelsByCurriculum(state.curriculumId!)
@@ -584,6 +633,10 @@ export class StudentsSubjectsComponent implements OnInit, AfterViewInit {
                         this.educationLevels = els.sort(
                             (a, b) => a.rank - b.rank
                         );
+                        state.educationLevelId = state.pickFirst
+                            ? firstOf(this.educationLevels)?.id ?? null
+                            : matchOptionId(this.educationLevels, state.educationLevelId);
+                        save();
                         if (!state.educationLevelId || !state.academicYearId)
                             return;
                         this.currentEducationLevelId = state.educationLevelId;
@@ -616,6 +669,10 @@ export class StudentsSubjectsComponent implements OnInit, AfterViewInit {
                                     this.schoolClasses = scs.sort(
                                         (a, b) => a.rank - b.rank
                                     );
+                                    state.schoolClassId = state.pickFirst
+                                        ? firstOf(this.schoolClasses)?.id ?? null
+                                        : matchOptionId(this.schoolClasses, state.schoolClassId);
+                                    save();
                                     if (!state.schoolClassId) return;
                                     this.currentSchoolClassId =
                                         state.schoolClassId;

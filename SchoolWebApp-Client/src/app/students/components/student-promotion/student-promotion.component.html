@@ -63,7 +63,8 @@
                                     <div class="col-md-6">
                                         <label class="form-label mb-0" style="font-size:0.8rem;">Class <span class="requiredField">*</span></label>
                                         <select class="form-select form-select-sm"
-                                            [(ngModel)]="toClassId">
+                                            [(ngModel)]="toClassId"
+                                            (change)="onFromClassChange()">
                                             <option [ngValue]="null" hidden disabled>Select class</option>
                                             <option [ngValue]="c.id" *ngFor="let c of toClasses">
                                                 {{ c.learningLevel?.name }}{{ c.schoolStream?.name ? ' - ' + c.schoolStream.name : '' }}

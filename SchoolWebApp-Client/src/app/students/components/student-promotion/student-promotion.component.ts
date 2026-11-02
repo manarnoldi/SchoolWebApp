@@ -9,6 +9,9 @@ import {SchoolClassesService} from '@/class/services/school-classes.service';
 import {StudentClassService} from '../../services/student-class.service';
 import {StudentClass} from '../../models/student-class';
 import {Status} from '@/core/enums/status';
+import {ActivatedRoute, Router} from '@angular/router';
+import {currentYear, firstOf} from '@/core/utils/current-defaults';
+import {matchOptionId, pushQueryParams, readQueryParam} from '@/shared/utils/query-param-sync';
 
 @Component({
     selector: 'app-student-promotion',
@@ -63,23 +66,84 @@ export class StudentPromotionComponent implements OnInit {
         private toastr: ToastrService,
         private academicYearSvc: AcademicYearsService,
         private schoolClassesSvc: SchoolClassesService,
-        private studentClassSvc: StudentClassService
+        private studentClassSvc: StudentClassService,
+        private route: ActivatedRoute,
+        private router: Router
     ) {}
 
     ngOnInit(): void {
         this.academicYearSvc.get('/academicYears').subscribe({
             next: (years) => {
                 this.academicYears = years.sort((a, b) => (a.rank || 0) - (b.rank || 0));
+                this.restoreSelections();
             },
             error: (err) => this.toastr.error(err.error)
         });
     }
 
-    onFromYearChange() {
+    // Selections come from the URL (refresh / shared link), else defaults: the
+    // current year's first class, into the next year if there is one (the
+    // promotion), else into the same year. The learners load either way; no
+    // assignment is made until asked.
+    private restoreSelections() {
+        let year = currentYear(this.academicYears);
+        let urlFromYear = readQueryParam(this.route, 'fromYearId');
+        this.fromYearId = urlFromYear ? matchOptionId(this.academicYears, urlFromYear) : year?.id ?? null;
+        let urlToYear = readQueryParam(this.route, 'toYearId');
+        this.toYearId = urlToYear ? matchOptionId(this.academicYears, urlToYear) : (this.nextYear(year) ?? year)?.id ?? null;
+        if (!this.fromYearId || !this.toYearId) return;
+
+        this.onFromYearChange(() => {
+            this.fromClassId = matchOptionId(this.fromClasses, readQueryParam(this.route, 'fromClassId'))
+                ?? firstOf(this.fromClasses)?.id ?? null;
+            this.onToYearChange(() => {
+                this.toClassId = matchOptionId(this.toClasses, readQueryParam(this.route, 'toClassId'))
+                    ?? this.defaultToClass()?.id ?? null;
+                this.syncUrl();
+                if (this.fromClassId && this.toClassId) this.loadStudents();
+            });
+        });
+    }
+
+    // The year starting after the given one, if set up yet.
+    private nextYear(year: any): any {
+        if (!year?.startDate) return null;
+        let start = String(year.startDate);
+        return this.academicYears
+            .filter((y) => y.startDate && String(y.startDate) > start)
+            .sort((a, b) => String(a.startDate).localeCompare(String(b.startDate)))[0] ?? null;
+    }
+
+    // Across years: the next level's class in the same stream. Within a year:
+    // another stream of the same level. Never the source class itself.
+    private defaultToClass(): any {
+        let from = this.fromClasses.find((c) => c.id == this.fromClassId);
+        let others = this.toClasses.filter((c) => c.id != this.fromClassId);
+        if (!from) return firstOf(others);
+        let rank = from.learningLevel?.rank ?? 0;
+        let match = +this.fromYearId === +this.toYearId
+            ? others.find((c) => c.learningLevelId == from.learningLevelId)
+            : others.find((c) => (c.learningLevel?.rank ?? 0) === rank + 1 && c.schoolStreamId == from.schoolStreamId)
+              ?? others.find((c) => (c.learningLevel?.rank ?? 0) === rank + 1);
+        return match ?? firstOf(others);
+    }
+
+    private syncUrl() {
+        pushQueryParams(this.router, this.route, {
+            fromYearId: this.fromYearId,
+            fromClassId: this.fromClassId,
+            toYearId: this.toYearId,
+            toClassId: this.toClassId
+        });
+    }
+
+    // `then` runs once the classes have loaded (used by the defaults).
+    onFromYearChange(then?: () => void) {
         this.fromClasses = [];
         this.fromClassId = null;
         this.students = [];
         this.hasLoaded = false;
+        if (!then) this.syncUrl();
         if (!this.fromYearId) return;
 
         this.schoolClassesSvc.getByAcademicYearId(parseInt(this.fromYearId)).subscribe({
@@ -89,18 +153,20 @@ export class StudentPromotionComponent implements OnInit {
                     let nameB = (b.learningLevel?.name || '') + (b.schoolStream?.name || '');
                     return nameA.localeCompare(nameB);
                 });
+                then?.();
             },
             error: (err) => this.toastr.error(err.error)
         });
     }
 
-    onToYearChange() {
+    onToYearChange(then?: () => void) {
         this.toClasses = [];
         this.toClassId = null;
         // Same-year switch is almost always a mid-year correction (e.g. 5E -> 5W)
         // where the source class membership should be cleared.
         this.removeFromSource = this.fromYearId && this.toYearId
             && +this.fromYearId === +this.toYearId;
+        if (!then) this.onFromClassChange();
         if (!this.toYearId) return;
 
         this.schoolClassesSvc.getByAcademicYearId(parseInt(this.toYearId)).subscribe({
@@ -110,17 +176,20 @@ export class StudentPromotionComponent implements OnInit {
                     let nameB = (b.learningLevel?.name || '') + (b.schoolStream?.name || '');
                     return nameA.localeCompare(nameB);
                 });
+                then?.();
             },
             error: (err) => this.toastr.error(err.error)
         });
     }
 
+    // Either class changing clears the lists until Load is pressed again.
     onFromClassChange() {
         this.students = [];
         this.hasLoaded = false;
         this.selectAll = false;
         this.selectAllRemoval = false;
         this.showPromoted = false;
+        this.syncUrl();
     }
 
     loadStudents() {

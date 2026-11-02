@@ -14,9 +14,14 @@ import {StudentAttendancesService} from '@/students/services/student-attendances
 import {StudentClassService} from '@/students/services/student-class.service';
 import {DatePipe} from '@angular/common';
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
-import {forkJoin} from 'rxjs';
+import {forkJoin, of} from 'rxjs';
+import {catchError, map, switchMap} from 'rxjs/operators';
 import {StudentsAttendancesTableComponent} from './students-attendances-table/students-attendances-table.component';
+import {StudentsAttendancesSearchFormComponent} from './students-attendances-search-form/students-attendances-search-form.component';
+import {currentYear, firstOf, topCurriculum} from '@/core/utils/current-defaults';
+import {matchOptionId, pushQueryParams, readQueryParam} from '@/shared/utils/query-param-sync';
 import Swal from 'sweetalert2';
 import {StudentAttendance} from '@/students/models/student-attendance';
 import {Status} from '@/core/enums/status';
@@ -30,6 +35,8 @@ import {GlobalSettingService} from '@/settings/services/global-setting.service';
 export class StudentsAttendancesComponent implements OnInit {
     @ViewChild(StudentsAttendancesTableComponent)
     studentsAttendancesTableComponent: StudentsAttendancesTableComponent;
+    @ViewChild(StudentsAttendancesSearchFormComponent)
+    searchForm: StudentsAttendancesSearchFormComponent;
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Home'},
         {
@@ -60,7 +67,9 @@ export class StudentsAttendancesComponent implements OnInit {
         private studentClassesSvc: StudentClassService,
         private studentAttendanceSvc: StudentAttendancesService,
         private globalSettingSvc: GlobalSettingService,
-        private datePipe: DatePipe
+        private datePipe: DatePipe,
+        private router: Router,
+        private route: ActivatedRoute
     ) {}
 
     ngOnInit(): void {
@@ -84,6 +93,7 @@ export class StudentsAttendancesComponent implements OnInit {
                     (a, b) => b.rank - a.rank
                 );
                 this.doneLoading = true;
+                this.restoreFromUrl();
             },
             error: (err) => {
                 this.toastr.error(err.error);
@@ -91,10 +101,76 @@ export class StudentsAttendancesComponent implements OnInit {
         });
     };
 
-    curriculumChanged = (curriculumId: number) => {
+    // Open on the filters in the URL (refresh / shared link), else on the top
+    // curriculum, current year, first level and class, and the class's latest
+    // day of attendance - then search, so the page never opens empty.
+    private restoreFromUrl = () => {
+        let form = this.searchForm?.studentAttendanceSearchForm;
+        if (!form) return;
+        let curriculumId = readQueryParam(this.route, 'curriculumId');
+        let fresh = !curriculumId;
+        let curriculum = fresh ? topCurriculum(this.curricula)?.id : matchOptionId(this.curricula, curriculumId);
+        let year = fresh
+            ? currentYear(this.academicYears)?.id
+            : matchOptionId(this.academicYears, readQueryParam(this.route, 'academicYearId'));
+        if (curriculum == null || year == null) return;
+        form.patchValue({curriculumId: curriculum, academicYearId: year});
+
+        this.curriculumChanged(curriculum, false, () => {
+            let level = fresh
+                ? firstOf(this.educationLevels)?.id
+                : matchOptionId(this.educationLevels, readQueryParam(this.route, 'educationLevelId'));
+            if (level == null) return;
+            form.patchValue({educationLevelId: level});
+            let ely = new EducationLevelYear();
+            ely.educationLevelId = level;
+            ely.academicYearId = year;
+            this.educationLevelYearChanged(ely, false, () => {
+                let schoolClass = fresh
+                    ? firstOf(this.schoolClasses)?.id
+                    : matchOptionId(this.schoolClasses, readQueryParam(this.route, 'schoolClassId'));
+                if (schoolClass == null) return;
+                form.patchValue({schoolClassId: schoolClass});
+                let urlDate = readQueryParam(this.route, 'date');
+                let date$ = !fresh && urlDate ? of(urlDate) : this.latestAttendanceDate(schoolClass);
+                date$.subscribe((date) => {
+                    if (date) form.patchValue({attendanceDate: date});
+                    this.searchForm.onSubmit();
+                });
+            });
+        });
+    };
+
+    // The class's most recent day with attendance up to today (today itself if
+    // it was marked), read off one learner's register; else today.
+    private latestAttendanceDate = (schoolClassId: any) => {
+        let today = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
+        return this.studentClassesSvc.getBySchoolClassId(schoolClassId, Status.Active).pipe(
+            switchMap((studentClasses) =>
+                studentClasses.length
+                    ? this.studentAttendanceSvc.get('/studentAttendances/byStudentClassId/' + studentClasses[0].id)
+                    : of([] as StudentAttendance[])
+            ),
+            map((records: StudentAttendance[]) => {
+                let days = (records || [])
+                    .map((r) => String(r.date ?? '').substring(0, 10))
+                    .filter((d) => d && d <= today)
+                    .sort();
+                return days.length ? days[days.length - 1] : today;
+            }),
+            catchError(() => of(today))
+        );
+    };
+
+    private syncUrl = (params: Record<string, unknown>) => pushQueryParams(this.router, this.route, params);
+
+    // `syncUrl` is off while restoring; `then` runs once the levels are in.
+    curriculumChanged = (curriculumId: number, syncUrl = true, then?: () => void) => {
         this.studentClasses = [];
         this.educationLevels = [];
         this.schoolClasses = [];
+        if (syncUrl)
+            this.syncUrl({curriculumId, educationLevelId: null, schoolClassId: null});
         this.educationLevelSvc
             .educationLevelsByCurriculum(curriculumId)
             .subscribe({
@@ -102,6 +178,7 @@ export class StudentsAttendancesComponent implements OnInit {
                     this.educationLevels = educationLevels.sort(
                         (a, b) => a.rank - b.rank
                     );
+                    then?.();
                 },
                 error: (err) => {
                     this.toastr.error(err.error);
@@ -109,9 +186,11 @@ export class StudentsAttendancesComponent implements OnInit {
             });
     };
 
-    educationLevelYearChanged = (ely: EducationLevelYear) => {
+    educationLevelYearChanged = (ely: EducationLevelYear, syncUrl = true, then?: () => void) => {
         this.studentClasses = [];
         this.schoolClasses = [];
+        if (syncUrl)
+            this.syncUrl({academicYearId: ely.academicYearId, educationLevelId: ely.educationLevelId, schoolClassId: null});
         this.schoolClassSvc
             .getByEducationLevelandYear(
                 ely.educationLevelId,
@@ -122,6 +201,7 @@ export class StudentsAttendancesComponent implements OnInit {
                     this.schoolClasses = schoolClasses.sort(
                         (a, b) => a.rank - b.rank
                     );
+                    then?.();
                 },
                 error: (err) => {
                     this.toastr.error(err.error);
@@ -131,11 +211,13 @@ export class StudentsAttendancesComponent implements OnInit {
 
     schoolClassChanged = (schoolClassId: number) => {
         this.studentClasses = [];
+        this.syncUrl({schoolClassId});
     };
 
     dateChanged = (selectedDate: Date) => {
         this.studentClasses = [];
         this.attendanceDate = selectedDate;
+        this.syncUrl({date: selectedDate});
     };
 
     deleteAttendance(id: number) {
@@ -209,6 +291,13 @@ export class StudentsAttendancesComponent implements OnInit {
             this.toastr.info('Select class before searching!');
         else {
             this.attendanceDate = saSearch.attendanceDate;
+            this.syncUrl({
+                curriculumId: saSearch.curriculumId,
+                academicYearId: saSearch.academicYearId,
+                educationLevelId: saSearch.educationLevelId,
+                schoolClassId: saSearch.schoolClassId,
+                date: saSearch.attendanceDate
+            });
             this.studentClassesSvc
                 .getBySchoolClassId(saSearch.schoolClassId, Status.Active)
                 .subscribe({
