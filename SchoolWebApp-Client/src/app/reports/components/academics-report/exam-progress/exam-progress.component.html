@@ -124,7 +124,7 @@
                                 <td class="text-center" *ngFor="let m of r.marks; index as mi">
                                     <span *ngIf="m != null">{{ m | number:'1.0-1' }}</span>
                                     <span *ngIf="m == null" class="text-muted">-</span>
-                                    <small class="d-block" *ngIf="weekDelta(r.marks, mi) != null"
+                                    <small class="ms-1" *ngIf="weekDelta(r.marks, mi) != null"
                                         [ngClass]="{'text-success': trend(weekDelta(r.marks, mi)) === 'up',
                                                     'text-danger': trend(weekDelta(r.marks, mi)) === 'down',
                                                     'text-muted': trend(weekDelta(r.marks, mi)) === 'flat'}">
@@ -243,7 +243,7 @@
                                 <td class="text-center" *ngFor="let m of sr.marks; index as mi">
                                     <span *ngIf="m != null">{{ m | number:'1.0-1' }}</span>
                                     <span *ngIf="m == null" class="text-muted">-</span>
-                                    <small class="d-block" *ngIf="weekDelta(sr.marks, mi) != null"
+                                    <small class="ms-1" *ngIf="weekDelta(sr.marks, mi) != null"
                                         [ngClass]="{'text-success': trend(weekDelta(sr.marks, mi)) === 'up',
                                                     'text-danger': trend(weekDelta(sr.marks, mi)) === 'down',
                                                     'text-muted': trend(weekDelta(sr.marks, mi)) === 'flat'}">

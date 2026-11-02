@@ -731,12 +731,11 @@ export class ExamProgressComponent implements OnInit {
         let d = this.weekDelta(marks, idx);
         if (m == null) return {text: '-', alignment: 'center', fontSize: 8, color: '#999'};
         if (d == null) return {text: String(m), alignment: 'center', fontSize: 8};
+        // The move from the previous exam follows the mark on the same line.
         return {
             alignment: 'center',
-            stack: [
-                {text: String(m), fontSize: 8, alignment: 'center'},
-                {text: `${d > 0 ? '+' : ''}${d}`, fontSize: 6, alignment: 'center', color: this.deltaColour(d)}
-            ]
+            fontSize: 8,
+            text: [String(m), {text: ` ${d > 0 ? '+' : ''}${d}`, fontSize: 6, color: this.deltaColour(d)}]
         };
     };
 
