@@ -24,6 +24,7 @@ import {ThemeService} from '../../services/theme.service';
 import {Status} from '@/core/enums/status';
 import {ActivatedRoute, Router} from '@angular/router';
 import {matchOptionId, pushQueryParams, readQueryParam} from '@/shared/utils/query-param-sync';
+import {currentSession, currentYear, firstOf, topCurriculum} from '@/core/utils/current-defaults';
 import {AuthService} from '@/core/services/auth.service';
 import {MenuPermissionService} from '@/security/services/menu-permission.service';
 import {StaffSubjectsService} from '@/staff/services/staff-subjects.service';
@@ -320,7 +321,10 @@ export class StudentAssessmentsComponent implements OnInit {
         const subStrandId = p.get('subStrandId');
         const specificOutcomeId = p.get('specificOutcomeId');
         const loaded = p.get('loaded');
-        if (!curriculumId) return;
+        if (!curriculumId) {
+            this.applyDefaults();
+            return;
+        }
 
         this.filterCurriculumId = matchOptionId(this.curricula, curriculumId);
         this.learningLevelSvc.getLearningLevelsByCurriculum(+curriculumId).subscribe((levels) => {
@@ -376,6 +380,89 @@ export class StudentAssessmentsComponent implements OnInit {
                             });
                         });
                     });
+                });
+            });
+        });
+    }
+
+    // Nothing in the URL: open on the current term, the first class assessed
+    // this term and its first subject (a teacher's own first), its teacher, and
+    // the sub-strand last assessed there (else the first), with the grid loaded.
+    private applyDefaults() {
+        let curriculum = topCurriculum(this.curricula);
+        let year = currentYear(this.academicYears);
+        if (!curriculum || !year) return;
+        this.filterCurriculumId = curriculum.id;
+        this.filterAcademicYearId = year.id;
+        if (!this.filterAssessmentTypeId) this.filterAssessmentTypeId = firstOf(this.assessmentTypes)?.id ?? null;
+        let mine$ = this.hasAdminAccess || !this.currentUserStaffId
+            ? of([])
+            : this.staffSubjectsSvc.getByStaffYearId(this.currentUserStaffId, year.id).pipe(catchError(() => of([])));
+        forkJoin([
+            this.learningLevelSvc.getLearningLevelsByCurriculum(curriculum.id),
+            this.sessionsSvc.get(`/sessions/byCurriculumYearId?curriculumId=${curriculum.id}&academicYearId=${year.id}`),
+            this.schoolClassesSvc.get(`/schoolClasses/byAcademicYearId/${year.id}`),
+            mine$
+        ]).subscribe(([levels, sessions, schoolClasses, mine]: [any[], any[], any[], any[]]) => {
+            this.learningLevels = levels.sort((a, b) => a.rank - b.rank);
+            this.sessions = sessions.sort((a, b) => a.rank - b.rank);
+            const currLLIds = this.learningLevels.map((ll) => +ll.id);
+            this.schoolClasses = schoolClasses.filter((sc) => currLLIds.includes(+sc.learningLevelId)).sort((a, b) => (a.rank || 0) - (b.rank || 0));
+            this.teacherAllocations = mine || [];
+            this.filterSessionId = currentSession(this.sessions)?.id ?? null;
+            let candidates = this.teacherAllocations.length
+                ? this.schoolClasses.filter((c) => this.teacherAllocations.some((a) => a.schoolClassId == c.id))
+                : this.schoolClasses;
+            if (!candidates.length || !this.filterSessionId) return this.syncUrl();
+            this.defaultClass(candidates, 0, year);
+        });
+    }
+
+    // Tries the candidate classes in order, settling on the first with
+    // assessments this term (Day Care, say, has none), else the first.
+    private defaultClass(candidates: any[], i: number, year: any) {
+        let cls = candidates[i];
+        this.filterSchoolClassId = cls.id;
+        forkJoin([
+            this.subjectsSvc.get(`/studentSubjects/subjectsBySchoolClassId/${cls.id}`),
+            this.staffSubjectsSvc.get(`/staffSubjects/bySchoolClassId/${cls.id}`).pipe(catchError(() => of([]))),
+            this.studentAssessmentSvc.get(`/studentAssessments/bySessionIdAndParams/${this.filterSessionId}?schoolClassId=${cls.id}`).pipe(catchError(() => of([])))
+        ]).subscribe(([subjects, classAllocations, assessed]: [any[], any[], any[]]) => {
+            if (!assessed.length && i + 1 < candidates.length && i < 5) return this.defaultClass(candidates, i + 1, year);
+            if (!assessed.length && i > 0) return this.defaultClass(candidates.slice(0, 1), 0, year);
+            this.subjects = subjects.sort((a, b) => (a.rank || 0) - (b.rank || 0));
+            let subject = this.subjects.find((s) => this.teacherAllocations.some((a) => a.schoolClassId == cls.id && a.subjectId == s.id))
+                ?? firstOf(this.subjects);
+            if (!subject) return this.syncUrl();
+            this.filterSubjectId = subject.id;
+            if (this.hasAdminAccess) {
+                let teacherId = classAllocations.find((a) => a.subjectId == subject.id)?.staffDetailsId;
+                this.filterStaffDetailsId = matchOptionId(this.teachers, teacherId != null ? String(teacherId) : null) ?? this.filterStaffDetailsId;
+            }
+            this.updateAllocationStatus();
+            forkJoin([
+                this.themeSvc.get(`/themes/bySubjectId?subjectId=${subject.id}&learningLvlId=${cls.learningLevelId}`),
+                this.strandSvc.get(`/strands/bySubjectId?subjectId=${subject.id}&learningLvlId=${cls.learningLevelId}&academicYearId=${year.id}`)
+            ]).subscribe(([themes, strands]: [any[], any[]]) => {
+                this.themes = themes.sort((a, b) => a.rank - b.rank);
+                this.strands = strands.sort((a, b) => a.rank - b.rank);
+                let strandIds = this.strands.map((s) => +s.id);
+                let last = assessed
+                    .filter((a) => strandIds.includes(+a.strandId) && (!this.filterAssessmentTypeId || a.assessmentTypeId == this.filterAssessmentTypeId))
+                    .sort((a, b) => String(b.assessmentDate || '').localeCompare(String(a.assessmentDate || '')))[0];
+                let strand = this.strands.find((s) => s.id == last?.strandId) ?? firstOf(this.strands);
+                if (!strand) return this.syncUrl();
+                this.filterStrandId = strand.id;
+                this.subStrandSvc.get(`/subStrands/byStrandId/${strand.id}`).subscribe((subStrands: any[]) => {
+                    this.subStrands = subStrands.sort((a, b) => a.rank - b.rank);
+                    let subStrand = this.subStrands.find((s) => s.id == last?.subStrandId) ?? firstOf(this.subStrands);
+                    if (!subStrand) return this.syncUrl();
+                    this.filterSubStrandId = subStrand.id;
+                    this.specificOutcomeSvc.get(`/specificOutcomes/bySubStrandId/${subStrand.id}`).subscribe((specs: any[]) => {
+                        this.specificOutcomes = specs.sort((a, b) => a.rank - b.rank);
+                    });
+                    this.syncUrl();
+                    if (this.filterAssessmentTypeId && this.filterStaffDetailsId) this.loadBulkAssessment();
                 });
             });
         });

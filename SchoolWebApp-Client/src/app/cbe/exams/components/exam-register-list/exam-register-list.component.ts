@@ -11,6 +11,7 @@ import {CurriculumService} from '@/academics/services/curriculum.service';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {SessionsService} from '@/class/services/sessions.service';
 import {SchoolClassesService} from '@/class/services/school-classes.service';
+import {currentSession, currentYear, topCurriculum} from '@/core/utils/current-defaults';
 
 /**
  * Browse / search / delete page for registered exams. Replaces the embedded
@@ -95,6 +96,10 @@ export class ExamRegisterListComponent implements OnInit {
                     .filter((y) => y.status === true)
                     .sort((a, b) => a.rank - b.rank);
                 this.examTypes = examTypes.sort((a, b) => a.rank - b.rank);
+                // Open on the current year and term rather than an empty page.
+                this.filterCurriculumId = topCurriculum(this.curricula)?.id ?? null;
+                this.filterAcademicYearId = currentYear(this.academicYears)?.id ?? null;
+                this.onAcademicYearChange(true);
             },
             error: (err) => this.toastr.error(err.error)
         });
@@ -110,7 +115,8 @@ export class ExamRegisterListComponent implements OnInit {
         this.selectedExamIds = [];
     };
 
-    onAcademicYearChange = () => {
+    // `pickTerm` selects the current term (first load only).
+    onAcademicYearChange = (pickTerm = false) => {
         this.sessions = this.schoolClasses = this.schoolExams = [];
         this.filterSessionId = this.filterSchoolClassId = null;
         this.filterSchoolExamId = this.filterExamTypeId = null;
@@ -131,6 +137,10 @@ export class ExamRegisterListComponent implements OnInit {
                     let nameB = (b.learningLevel?.rank ?? 999);
                     return nameA - nameB;
                 });
+                if (pickTerm && this.sessions.length) {
+                    this.filterSessionId = currentSession(this.sessions)?.id ?? null;
+                    this.onSessionChange();
+                }
             },
             error: (err) => this.toastr.error(err.error)
         });

@@ -19,6 +19,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
 import {MissingMarksStudent} from '@/reports/models/missing-marks-student';
+import {currentSession, currentYear, latestExam, topCurriculum} from '@/core/utils/current-defaults';
 
 @Component({
     selector: 'app-missing-marks-report',
@@ -69,10 +70,33 @@ export class MissingMarksReportComponent implements OnInit {
                     (a, b) => b.rank - a.rank
                 );
                 this.examTypes = examTypes.sort((a, b) => a.rank - b.rank);
+                this.applyDefaults();
             },
             error: (err) => {
                 this.toastr.error(err.error);
             }
+        });
+    }
+
+    // Open on the current year and term and the latest exam sat, with the
+    // report run. The filter form is set directly, then each step waits for
+    // the list the next one picks from.
+    private applyDefaults() {
+        let form = this.ssFilterFormComponent?.schoolSoftFilterForm;
+        let curriculumId = topCurriculum(this.curricula)?.id ?? null;
+        let acadYearId = currentYear(this.academicYears)?.id ?? null;
+        if (!form || !curriculumId || !acadYearId) return;
+        form.patchValue({curriculumId, academicYearId: acadYearId});
+        this.curriculumYearChanged(() => {
+            let sessionId = currentSession(this.sessions)?.id ?? null;
+            if (!sessionId) return;
+            form.patchValue({sessionId});
+            this.sessionChanged(+sessionId, () => {
+                let se = latestExam(this.schoolExams);
+                if (!se) return;
+                form.patchValue({schoolExamId: se.id});
+                this.onButtonSearchClick(new SchoolSoftFilter(form.value), true);
+            });
         });
     }
 
@@ -90,7 +114,7 @@ export class MissingMarksReportComponent implements OnInit {
         }
     };
 
-    curriculumYearChanged = () => {
+    curriculumYearChanged = (then?: () => void) => {
         this.sessions = [];
         this.missingMarksResults = []; this.groupedMissing = [];
         this.resetFormControls(true, true);
@@ -112,6 +136,7 @@ export class MissingMarksReportComponent implements OnInit {
                         this.sessions = sessions.sort(
                             (a, b) => a.rank - b.rank
                         );
+                        then?.();
                     },
                     error: (err) => {
                         this.toastr.error(err.error);
@@ -120,7 +145,7 @@ export class MissingMarksReportComponent implements OnInit {
         }
     };
 
-    sessionChanged = (sessionId: number) => {
+    sessionChanged = (sessionId: number, then?: () => void) => {
         this.resetFormControls(false, true);
         this.missingMarksResults = []; this.groupedMissing = [];
         this.schoolExams = [];
@@ -137,7 +162,10 @@ export class MissingMarksReportComponent implements OnInit {
         this.schoolExamSvc
             .get(`/schoolExams/examSearch?academicYearId=${acadYearId}&curriculumId=${curriculumId}&sessionId=${sessionId}`)
             .subscribe({
-                next: (items) => { this.schoolExams = items; },
+                next: (items) => {
+                    this.schoolExams = items;
+                    then?.();
+                },
                 error: (err) => this.toastr.error(err.error)
             });
     };
@@ -146,7 +174,8 @@ export class MissingMarksReportComponent implements OnInit {
         this.missingMarksResults = []; this.groupedMissing = [];
     };
 
-    onButtonSearchClick = (ssf: SchoolSoftFilter) => {
+    // `quiet`: the automatic first run doesn't toast when nothing is missing.
+    onButtonSearchClick = (ssf: SchoolSoftFilter, quiet = false) => {
         this.missingMarksResults = []; this.groupedMissing = [];
         if (!ssf?.academicYearId)
             this.toastr.info('Select academic year before searching!');
@@ -173,7 +202,7 @@ export class MissingMarksReportComponent implements OnInit {
                 .subscribe({
                     next: (examResults) => {
                         if (!examResults || examResults.length <= 0) {
-                            this.toastr.info(
+                            if (!quiet) this.toastr.info(
                                 'No missing marks found for the selections (or no exams are registered).'
                             );
                             return;

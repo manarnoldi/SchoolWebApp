@@ -15,6 +15,7 @@ import {StudentClassService} from '@/students/services/student-class.service';
 import {AuthService} from '@/core/services/auth.service';
 import {ReportsService} from '@/reports/services/reports.service';
 import {Status} from '@/core/enums/status';
+import {currentSession, currentYear, topCurriculum} from '@/core/utils/current-defaults';
 
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -113,6 +114,46 @@ export class ExamProgressComponent implements OnInit {
                 // ones this report is for.
                 this.examTypes = (examTypes as any[]).sort((a, b) =>
                     (b.allowMultiplePerTerm ? 1 : 0) - (a.allowMultiplePerTerm ? 1 : 0) || a.rank - b.rank);
+                this.applyDefaults();
+            },
+            error: (err) => this.toastr.error(err.error)
+        });
+    }
+
+    // Open on the current year and term, the first exam type (several-a-term
+    // types first) that has exams this term, and the first class sitting it,
+    // loaded - rather than empty boxes.
+    private applyDefaults() {
+        this.filterCurriculumId = topCurriculum(this.curricula)?.id ?? null;
+        this.filterAcademicYearId = currentYear(this.academicYears)?.id ?? null;
+        if (!this.filterCurriculumId || !this.filterAcademicYearId) return;
+        forkJoin([
+            this.sessionsSvc.get(`/sessions/byCurriculumYearId?curriculumId=${this.filterCurriculumId}&academicYearId=${this.filterAcademicYearId}`),
+            this.schoolClassesSvc.get(`/schoolClasses/byAcademicYearId/${this.filterAcademicYearId}`)
+        ]).subscribe({
+            next: ([sessions, classes]) => {
+                this.sessions = sessions;
+                this.schoolClasses = classes;
+                this.filterSessionId = currentSession(this.sessions)?.id ?? null;
+                if (!this.filterSessionId) return;
+                this.examSvc
+                    .get(`/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}`)
+                    .subscribe({
+                        next: (exams: any[]) => {
+                            let typeOf = (e: any) => +(e.examTypeId ?? e.examType?.id);
+                            let type = this.examTypes.find((et) => (exams || []).some((e) => typeOf(e) === +et.id));
+                            if (!type) return;
+                            this.filterExamTypeId = type.id;
+                            let sitting = new Set((exams || []).filter((e) => typeOf(e) === +type.id).map((e) => +e.schoolClassId));
+                            let cls = [...this.schoolClasses]
+                                .sort((a, b) => (a.rank || 0) - (b.rank || 0))
+                                .find((c) => sitting.has(+c.id));
+                            if (!cls) return;
+                            this.filterSchoolClassId = cls.id;
+                            this.loadReport();
+                        },
+                        error: () => {}
+                    });
             },
             error: (err) => this.toastr.error(err.error)
         });

@@ -19,6 +19,7 @@ import {AuthService} from '@/core/services/auth.service';
 import {ReportsService} from '@/reports/services/reports.service';
 import {SubjectAnalysisNoteService} from '@/reports/services/subject-analysis-note.service';
 import {Status} from '@/core/enums/status';
+import {currentYear, firstOf, topCurriculum} from '@/core/utils/current-defaults';
 
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -124,6 +125,7 @@ export class ClassPerformanceTrendComponent implements OnInit {
                 this.allGrades = allGrades;
                 this.gradingSettings = (gradingSettings as any[]) || [];
                 this.averageMethod = (avgSetting as any)?.settingValue || 'students_with_scores';
+                this.applyDefaults();
             },
             error: (err) => this.toastr.error(err.error)
         });
@@ -158,18 +160,36 @@ export class ClassPerformanceTrendComponent implements OnInit {
         this.narrative = '';
     };
 
-    onCurriculumChange = () => {
+    // Open on the current year and its first class, loaded. Each step waits
+    // for the list the next one picks from.
+    private applyDefaults() {
+        this.filterCurriculumId = topCurriculum(this.curricula)?.id ?? null;
+        if (!this.filterCurriculumId) return;
+        this.onCurriculumChange(() => {
+            this.filterAcademicYearId = currentYear(this.academicYears)?.id ?? null;
+            if (!this.filterAcademicYearId) return;
+            this.onAcademicYearChange(() => {
+                this.filterSchoolClassId = firstOf(this.schoolClasses)?.id ?? null;
+                if (this.filterSchoolClassId && this.schoolExamsInYear.length) this.loadReport();
+            });
+        });
+    }
+
+    onCurriculumChange = (then?: () => void) => {
         this.schoolClasses = this.schoolExamsInYear = [];
         this.filterAcademicYearId = this.filterSchoolClassId = null;
         this.resetOutput();
         if (!this.filterCurriculumId) return;
         this.learningLevelSvc.getLearningLevelsByCurriculum(this.filterCurriculumId).subscribe({
-            next: (levels) => { this.learningLevels = levels.sort((a, b) => a.rank - b.rank); },
+            next: (levels) => {
+                this.learningLevels = levels.sort((a, b) => a.rank - b.rank);
+                then?.();
+            },
             error: (err) => this.toastr.error(err.error)
         });
     };
 
-    onAcademicYearChange = () => {
+    onAcademicYearChange = (then?: () => void) => {
         this.schoolClasses = this.schoolExamsInYear = [];
         this.filterSchoolClassId = null;
         this.resetOutput();
@@ -208,6 +228,7 @@ export class ClassPerformanceTrendComponent implements OnInit {
                         ((a.examStartDate || '').localeCompare(b.examStartDate || '')));
                 this.focalExamId = this.schoolExamsInYear.length
                     ? this.schoolExamsInYear[this.schoolExamsInYear.length - 1].id : null;
+                then?.();
             },
             error: (err) => this.toastr.error(err.error)
         });

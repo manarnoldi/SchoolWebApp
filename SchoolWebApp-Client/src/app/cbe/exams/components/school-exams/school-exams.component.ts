@@ -10,6 +10,7 @@ import {CurriculumService} from '@/academics/services/curriculum.service';
 import {AcademicYearsService} from '@/school/services/academic-years.service';
 import {SessionsService} from '@/class/services/sessions.service';
 import {StandardMessageSender} from '@/communications/services/standard-message-sender.service';
+import {currentSession, currentYear, topCurriculum} from '@/core/utils/current-defaults';
 
 /**
  * Manage the exam "event" headers (SchoolExam): create / edit the type, term
@@ -83,6 +84,10 @@ export class SchoolExamsComponent implements OnInit {
                     .filter((y) => y.status === true)
                     .sort((a, b) => a.rank - b.rank);
                 this.examTypes = examTypes.sort((a, b) => a.rank - b.rank);
+                // Open on the current year and term rather than an empty page.
+                this.filterCurriculumId = topCurriculum(this.curricula)?.id ?? null;
+                this.filterAcademicYearId = currentYear(this.academicYears)?.id ?? null;
+                this.onAcademicYearChange(true);
             },
             error: (err) => this.toastr.error(err.error)
         });
@@ -96,7 +101,8 @@ export class SchoolExamsComponent implements OnInit {
         this.schoolExams = [];
     };
 
-    onAcademicYearChange = () => {
+    // `pickTerm` selects the current term (first load only).
+    onAcademicYearChange = (pickTerm = false) => {
         this.sessions = [];
         this.filterSessionId = null;
         this.schoolExams = [];
@@ -106,6 +112,7 @@ export class SchoolExamsComponent implements OnInit {
         ).subscribe({
             next: (sessions) => {
                 this.sessions = sessions.sort((a, b) => a.rank - b.rank);
+                if (pickTerm) this.filterSessionId = currentSession(this.sessions)?.id ?? null;
                 this.search();
             },
             error: (err) => this.toastr.error(err.error)

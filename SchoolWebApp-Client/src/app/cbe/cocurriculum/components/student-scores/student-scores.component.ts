@@ -3,8 +3,10 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin, of} from 'rxjs';
+import {catchError} from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import {matchOptionId, pushQueryParams, readQueryParam} from '@/shared/utils/query-param-sync';
+import {currentYear, firstOf, idOf, topCurriculum} from '@/core/utils/current-defaults';
 import {DirtyTracker} from '@/core/utils/dirty-tracker';
 import {StudentCoCurriculumActivity} from '../../models/student-co-curriculum-activity';
 import {StudentCoCurriculumScore} from '../../models/student-co-curriculum-score';
@@ -137,21 +139,48 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
         });
     }
 
+    // First open: the first class, and the activity most of its learners
+    // belong to (the first activity is often one the class has no one in).
+    private defaultActivity() {
+        let cls = firstOf(this.schoolClasses);
+        if (!cls) return;
+        this.filterSchoolClassId = cls.id;
+        forkJoin([
+            this.studentClassSvc.getBySchoolClassId(cls.id, Status.Active),
+            this.studentActivitySvc.get('/studentCoCurriculumActivities').pipe(catchError(() => of([])))
+        ]).subscribe(([studentClasses, memberships]: [any[], any[]]) => {
+            let ids = new Set(studentClasses.map((sc) => +(sc.studentId ?? sc.student?.id)));
+            let counts = new Map<number, number>();
+            memberships.filter((m) => ids.has(+m.studentId))
+                .forEach((m) => counts.set(+m.coCurriculumActivityId, (counts.get(+m.coCurriculumActivityId) || 0) + 1));
+            let top = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+            this.filterActivityId = (this.activities.find((a) => +a.id === top) ?? firstOf(this.activities))?.id ?? null;
+            if (this.filterActivityId) this.loadBatchScores();
+        });
+    }
+
     // Reads filter state from query params and replays the cascade so the
     // grid populates the same way it did before refresh.
     private restoreFromUrl() {
-        const curriculumId = readQueryParam(this.route, 'curriculumId');
-        const academicYearId = readQueryParam(this.route, 'academicYearId');
-        const schoolClassId = readQueryParam(this.route, 'schoolClassId');
-        const activityId = readQueryParam(this.route, 'activityId');
+        let curriculumId = readQueryParam(this.route, 'curriculumId');
+        let academicYearId = readQueryParam(this.route, 'academicYearId');
+        let schoolClassId = readQueryParam(this.route, 'schoolClassId');
+        let activityId = readQueryParam(this.route, 'activityId');
         const q = readQueryParam(this.route, 'q');
         const page = readQueryParam(this.route, 'page');
         const pageSize = readQueryParam(this.route, 'pageSize');
-        const loaded = readQueryParam(this.route, 'loaded');
+        let loaded = readQueryParam(this.route, 'loaded');
 
         if (q) this.searchText = q;
         if (page) this.tablePage = +page;
         if (pageSize) this.tablePageSize = +pageSize;
+        // Nothing in the URL: open on the current year, the first class and activity,
+        // loaded, rather than an empty page.
+        const fresh = !curriculumId;
+        if (fresh) {
+            curriculumId = idOf(topCurriculum(this.curricula));
+            academicYearId = idOf(currentYear(this.academicYears));
+        }
         if (!curriculumId) return;
 
         // matchOptionId aligns the URL string id with the canonical option id
@@ -171,6 +200,7 @@ export class StudentCoCurriculumScoresComponent implements OnInit {
                             this.schoolClasses = schoolClasses.filter((sc) =>
                                 currLLIds.includes(+sc.learningLevelId)
                             ).sort((a, b) => (a.rank || 0) - (b.rank || 0));
+                            if (fresh) return this.defaultActivity();
                             if (schoolClassId) this.filterSchoolClassId = matchOptionId(this.schoolClasses, schoolClassId);
                             if (activityId) this.filterActivityId = matchOptionId(this.activities, activityId);
 

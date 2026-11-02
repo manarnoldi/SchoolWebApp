@@ -2,7 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {gradeForPercent} from '@/shared/utils/grading';
 import {BreadCrumb} from '@/core/models/bread-crumb';
 import {ToastrService} from 'ngx-toastr';
-import {forkJoin} from 'rxjs';
+import {forkJoin, Observable, of} from 'rxjs';
+import {catchError, map} from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import {ExamResult} from '../../models/exam-result';
 import {ExamResultService} from '../../services/exam-result.service';
@@ -24,6 +25,7 @@ import {AuthService} from '@/core/services/auth.service';
 import {StaffSubjectsService} from '@/staff/services/staff-subjects.service';
 import {StaffSubject} from '@/staff/models/staff-subject';
 import {DirtyTracker} from '@/core/utils/dirty-tracker';
+import {currentSession, currentYear, firstOf, latestExam, topCurriculum} from '@/core/utils/current-defaults';
 
 @Component({
     selector: 'app-exam-results-bulk',
@@ -142,6 +144,7 @@ export class ExamResultsBulkComponent implements OnInit {
                 // Global default until a class (hence education level) is chosen;
                 // loadGrid re-resolves it for the selected class.
                 this.applyExamGrading(null);
+                this.applyDefaults();
             },
             error: (err) => this.toastr.error(err.error)
         });
@@ -163,33 +166,75 @@ export class ExamResultsBulkComponent implements OnInit {
         this.grades = this.allGrades.filter((g) => g.category === this.gradingCategory).sort((a, b) => a.rank - b.rank);
     };
 
-    onCurriculumChange = () => {
+    // Open on the current year and term, the latest exam sat and the first
+    // class that sat it (a teacher's own first), with the grid loaded. Each
+    // step waits for the list the next one picks from.
+    private applyDefaults() {
+        this.filterCurriculumId = topCurriculum(this.curricula)?.id ?? null;
+        if (!this.filterCurriculumId) return;
+        this.onCurriculumChange(() => {
+            this.filterAcademicYearId = currentYear(this.academicYears)?.id ?? null;
+            if (!this.filterAcademicYearId) return;
+            this.onAcademicYearChange(() => {
+                this.filterSessionId = currentSession(this.sessions)?.id ?? null;
+                if (!this.filterSessionId) return;
+                this.onSessionChange(() => {
+                    let se = latestExam(this.schoolExams);
+                    if (!se) return;
+                    this.filterSchoolExamId = se.id;
+                    this.onSchoolExamChange();
+                    this.examSvc
+                        .get(`/exams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}`)
+                        .pipe(catchError(() => of([])))
+                        .subscribe((exams: any[]) => {
+                            let sat = this.schoolClasses.filter((c) => exams.some((e) => e.schoolExamId == se.id && e.schoolClassId == c.id));
+                            let mine = this.teacherAllocations.map((a) => +a.schoolClassId);
+                            let cls = sat.find((c) => mine.includes(+c.id)) ?? firstOf(sat)
+                                ?? this.schoolClasses.find((c) => mine.includes(+c.id)) ?? firstOf(this.schoolClasses);
+                            if (!cls) return;
+                            this.filterSchoolClassId = cls.id;
+                            this.loadGrid();
+                        });
+                });
+            });
+        });
+    }
+
+    onCurriculumChange = (then?: () => void) => {
         this.sessions = this.schoolClasses = this.schoolExams = [];
         this.filterAcademicYearId = this.filterSessionId = this.filterSchoolClassId = null;
         this.filterSchoolExamId = this.filterExamTypeId = null;
         this.clearGrid();
         if (!this.filterCurriculumId) return;
         this.learningLevelSvc.getLearningLevelsByCurriculum(this.filterCurriculumId).subscribe({
-            next: (levels) => { this.learningLevels = levels.sort((a, b) => a.rank - b.rank); },
+            next: (levels) => {
+                this.learningLevels = levels.sort((a, b) => a.rank - b.rank);
+                then?.();
+            },
             error: (err) => this.toastr.error(err.error)
         });
     };
 
-    onAcademicYearChange = () => {
+    onAcademicYearChange = (then?: () => void) => {
         this.sessions = this.schoolClasses = this.schoolExams = [];
         this.filterSessionId = this.filterSchoolClassId = null;
         this.filterSchoolExamId = this.filterExamTypeId = null;
         this.clearGrid();
-        this.loadTeacherAllocations();
-        if (!this.filterAcademicYearId || !this.filterCurriculumId) return;
+        if (!this.filterAcademicYearId || !this.filterCurriculumId) {
+            this.teacherAllocations = [];
+            return;
+        }
         forkJoin([
             this.sessionsSvc.get(`/sessions/byCurriculumYearId?curriculumId=${this.filterCurriculumId}&academicYearId=${this.filterAcademicYearId}`),
-            this.schoolClassesSvc.get(`/schoolClasses/byAcademicYearId/${this.filterAcademicYearId}`)
+            this.schoolClassesSvc.get(`/schoolClasses/byAcademicYearId/${this.filterAcademicYearId}`),
+            this.teacherAllocations$()
         ]).subscribe({
-            next: ([sessions, schoolClasses]) => {
+            next: ([sessions, schoolClasses, allocations]) => {
+                this.teacherAllocations = allocations;
                 this.sessions = sessions.sort((a, b) => a.rank - b.rank);
                 let currLLIds = this.learningLevels.map((ll) => +ll.id);
                 this.schoolClasses = schoolClasses.filter((sc) => currLLIds.includes(+sc.learningLevelId)).sort((a, b) => (a.rank || 0) - (b.rank || 0));
+                then?.();
             },
             error: (err) => this.toastr.error(err.error)
         });
@@ -201,22 +246,16 @@ export class ExamResultsBulkComponent implements OnInit {
      * teacher's columns with a local filter. Non-teachers keep an empty list
      * and are never filtered.
      */
-    private loadTeacherAllocations() {
-        if (!this.currentUserIsTeacher || !this.currentUserStaffId || !this.filterAcademicYearId) {
-            this.teacherAllocations = [];
-            return;
-        }
-        this.staffSubjectsSvc
+    private teacherAllocations$(): Observable<StaffSubject[]> {
+        if (!this.currentUserIsTeacher || !this.currentUserStaffId || !this.filterAcademicYearId) return of([]);
+        return this.staffSubjectsSvc
             .getByStaffYearId(this.currentUserStaffId, this.filterAcademicYearId)
-            .subscribe({
-                next: (allocations) => { this.teacherAllocations = allocations || []; },
-                error: () => { this.teacherAllocations = []; }
-            });
+            .pipe(map((a) => a || []), catchError(() => of([])));
     }
 
     // Session drives the School Exam list (a school exam carries the exam type
     // the grid still filters by).
-    onSessionChange = () => {
+    onSessionChange = (then?: () => void) => {
         this.clearGrid();
         this.schoolExams = [];
         this.filterSchoolExamId = this.filterExamTypeId = null;
@@ -224,7 +263,10 @@ export class ExamResultsBulkComponent implements OnInit {
         this.schoolExamSvc
             .get(`/schoolExams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}`)
             .subscribe({
-                next: (items) => { this.schoolExams = items; },
+                next: (items) => {
+                    this.schoolExams = items;
+                    then?.();
+                },
                 error: (err) => this.toastr.error(err.error)
             });
     };

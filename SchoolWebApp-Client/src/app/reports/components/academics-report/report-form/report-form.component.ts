@@ -31,6 +31,7 @@ import {AuthService} from '@/core/services/auth.service';
 import {ReportsService} from '@/reports/services/reports.service';
 import {GlobalSettingService} from '@/settings/services/global-setting.service';
 import {Status} from '@/core/enums/status';
+import {currentSession, currentYear, firstOf, topCurriculum} from '@/core/utils/current-defaults';
 
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -163,7 +164,7 @@ export class ReportFormComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.openFromLink();
+        let linked = this.openFromLink();
         forkJoin([
             this.curriculaSvc.get('/curricula'),
             this.academicYearSvc.get('/academicYears'),
@@ -207,6 +208,7 @@ export class ReportFormComponent implements OnInit {
                     if (s.settingKey === 'ShowTermDates') this.showTermDates = s.settingValue !== 'false';
                     if (s.settingKey === 'CbeSectionDisplay') this.cbeSectionDisplay = s.settingValue || 'ratings';
                 });
+                if (!linked) this.applyDefaults();
             },
             error: (err) => this.toastr.error(err.error)
         });
@@ -214,11 +216,11 @@ export class ReportFormComponent implements OnInit {
 
     // Opened from a student's page: choose the curriculum, year, term and class,
     // load the class and tick the student (moved to the top), ready to print.
-    private openFromLink() {
+    private openFromLink(): boolean {
         const p = this.route.snapshot.queryParamMap;
         const curriculumId = +(p.get('curriculumId') || 0), yearId = +(p.get('academicYearId') || 0);
         const sessionId = +(p.get('sessionId') || 0), classId = +(p.get('schoolClassId') || 0), studentId = +(p.get('studentId') || 0);
-        if (!curriculumId || !yearId || !classId || !sessionId) return;
+        if (!curriculumId || !yearId || !classId || !sessionId) return false;
         this.filterCurriculumId = curriculumId;
         this.onCurriculumChange(() => {
             this.filterAcademicYearId = yearId;
@@ -231,6 +233,23 @@ export class ReportFormComponent implements OnInit {
                     row.selected = true;
                     this.studentRows = [row, ...this.studentRows.filter((r) => r !== row)];
                 });
+            });
+        });
+        return true;
+    }
+
+    // Otherwise open on the current year and term and the first class, its
+    // learners listed (nothing is generated until a report is asked for).
+    private applyDefaults() {
+        this.filterCurriculumId = topCurriculum(this.curricula)?.id ?? null;
+        if (!this.filterCurriculumId) return;
+        this.onCurriculumChange(() => {
+            this.filterAcademicYearId = currentYear(this.academicYears)?.id ?? null;
+            if (!this.filterAcademicYearId) return;
+            this.onAcademicYearChange(() => {
+                this.filterSessionId = currentSession(this.sessions)?.id ?? null;
+                this.filterSchoolClassId = firstOf(this.schoolClasses)?.id ?? null;
+                if (this.filterSessionId && this.filterSchoolClassId) this.loadStudents();
             });
         });
     }

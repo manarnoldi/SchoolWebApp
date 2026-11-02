@@ -5,6 +5,7 @@ import {forkJoin} from 'rxjs';
 import {ProfileExam} from '@/core/services/profiles.service';
 import {printInFrame, removePrintFrame} from '@/shared/utils/print-frame';
 import {PROGRESS_PRINT_CSS, progressReportPage} from '@/shared/utils/progress-report';
+import {currentYear, firstOf} from '@/core/utils/current-defaults';
 
 interface Learner {
     studentId: number;
@@ -86,9 +87,9 @@ export class YearProgressComponent implements OnInit, OnDestroy {
             next: ([years, school]) => {
                 this.years = (years || []).sort((a, b) => (b.rank || 0) - (a.rank || 0));
                 this.schoolName = (school || [])[0]?.name || '';
-                // The current year first.
-                this.yearId = (this.years.find((y) => y.status === true) || this.years[0])?.id ?? null;
-                this.loadClasses();
+                // Open on the current year and its first class, loaded.
+                this.yearId = currentYear(this.years)?.id ?? null;
+                this.loadClasses(true);
             },
             error: () => this.toastr.error('Error loading the years.')
         });
@@ -106,14 +107,20 @@ export class YearProgressComponent implements OnInit, OnDestroy {
         return this.years.find((y) => y.id === this.yearId)?.name || '';
     }
 
-    loadClasses() {
+    // `pickFirst` selects the first class and loads it (first load only).
+    loadClasses(pickFirst = false) {
         this.classId = null;
         this.classes = [];
         this.learners = [];
         this.learner = null;
         if (!this.yearId) return;
         this.http.get<any[]>(`/schoolClasses/byAcademicYearId/${this.yearId}`).subscribe({
-            next: (c) => (this.classes = (c || []).sort((a, b) => (a.rank || 0) - (b.rank || 0) || (a.name || '').localeCompare(b.name || ''))),
+            next: (c) => {
+                this.classes = (c || []).sort((a, b) => (a.rank || 0) - (b.rank || 0) || (a.name || '').localeCompare(b.name || ''));
+                if (!pickFirst) return;
+                this.classId = firstOf(this.classes)?.id ?? null;
+                this.load();
+            },
             error: () => this.toastr.error('Error loading the classes.')
         });
     }

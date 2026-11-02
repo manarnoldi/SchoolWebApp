@@ -5,6 +5,7 @@ import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
 import Swal from 'sweetalert2';
 import {matchOptionId, pushQueryParams, readQueryParam} from '@/shared/utils/query-param-sync';
+import {currentYear, firstOf, idOf, topCurriculum} from '@/core/utils/current-defaults';
 import {DirtyTracker} from '@/core/utils/dirty-tracker';
 import {StudentResponsibility} from '../../models/student-responsibility';
 import {StudentResponsibilityService} from '../../services/student-responsibility.service';
@@ -123,17 +124,24 @@ export class StudentResponsibilitiesComponent implements OnInit {
     // Reads filter state from query params + replays the cascade so the grid
     // populates the same way it did before refresh.
     private restoreFromUrl() {
-        const curriculumId = readQueryParam(this.route, 'curriculumId');
-        const academicYearId = readQueryParam(this.route, 'academicYearId');
-        const schoolClassId = readQueryParam(this.route, 'schoolClassId');
+        let curriculumId = readQueryParam(this.route, 'curriculumId');
+        let academicYearId = readQueryParam(this.route, 'academicYearId');
+        let schoolClassId = readQueryParam(this.route, 'schoolClassId');
         const q = readQueryParam(this.route, 'q');
         const page = readQueryParam(this.route, 'page');
         const pageSize = readQueryParam(this.route, 'pageSize');
-        const loaded = readQueryParam(this.route, 'loaded');
+        let loaded = readQueryParam(this.route, 'loaded');
 
         if (q) this.searchText = q;
         if (page) this.tablePage = +page;
         if (pageSize) this.tablePageSize = +pageSize;
+        // Nothing in the URL: open on the current year, the first class,
+        // loaded, rather than an empty page.
+        const fresh = !curriculumId;
+        if (fresh) {
+            curriculumId = idOf(topCurriculum(this.curricula));
+            academicYearId = idOf(currentYear(this.academicYears));
+        }
         if (!curriculumId) return;
 
         this.filterCurriculumId = matchOptionId(this.curricula, curriculumId);
@@ -150,6 +158,10 @@ export class StudentResponsibilitiesComponent implements OnInit {
                             this.schoolClasses = schoolClasses.filter((sc) =>
                                 currLLIds.includes(+sc.learningLevelId)
                             ).sort((a, b) => (a.rank || 0) - (b.rank || 0));
+                            if (fresh) {
+                                schoolClassId = idOf(firstOf(this.schoolClasses));
+                                loaded = '1';
+                            }
                             if (schoolClassId) this.filterSchoolClassId = matchOptionId(this.schoolClasses, schoolClassId);
                             if (schoolClassId && loaded) this.loadStudents();
                         }

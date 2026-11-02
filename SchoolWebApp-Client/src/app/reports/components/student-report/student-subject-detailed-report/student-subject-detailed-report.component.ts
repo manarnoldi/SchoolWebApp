@@ -17,6 +17,7 @@ import {StudentSubjectsService} from '@/students/services/student-subjects.servi
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin} from 'rxjs';
+import {currentYear, firstOf, topCurriculum} from '@/core/utils/current-defaults';
 
 // One row per student in the picked class showing that student's allocated
 // subjects on a single sheet, plus a printable class report. Data is pulled in
@@ -76,18 +77,44 @@ export class StudentSubjectDetailedReportComponent implements OnInit {
             next: ([curricula, academicYears]) => {
                 this.curricula = curricula.sort((a, b) => a.rank - b.rank);
                 this.academicYears = academicYears.sort((a, b) => b.rank - a.rank);
+                this.applyDefaults();
             },
             error: (err) => this.toastr.error(err.error)
         });
     };
 
-    curriculumChanged = (curriculumId: number) => {
+    // Open on the current year and the first level and class, listed. The
+    // filter form is set directly, then each step waits for the list the next
+    // one picks from.
+    private applyDefaults() {
+        let form = this.ssFilterFormComponent?.schoolSoftFilterForm;
+        let curriculumId = topCurriculum(this.curricula)?.id ?? null;
+        let academicYearId = currentYear(this.academicYears)?.id ?? null;
+        if (!form || !curriculumId || !academicYearId) return;
+        form.patchValue({curriculumId, academicYearId});
+        this.currentAcademicYearId = +academicYearId;
+        this.curriculumChanged(+curriculumId, () => {
+            let educationLevelId = firstOf(this.educationLevels)?.id ?? null;
+            if (!educationLevelId) return;
+            form.patchValue({educationLevelId});
+            this.currentEducationLevelId = +educationLevelId;
+            this.maybeLoadSchoolClasses(() => {
+                let schoolClassId = firstOf(this.schoolClasses)?.id ?? null;
+                if (!schoolClassId) return;
+                form.patchValue({schoolClassId});
+                this.schoolClassChanged(+schoolClassId);
+            });
+        });
+    }
+
+    curriculumChanged = (curriculumId: number, then?: () => void) => {
         this.resetDownstream();
         this.educationLevelSvc
             .educationLevelsByCurriculum(curriculumId)
             .subscribe({
                 next: (els) => {
                     this.educationLevels = els.sort((a, b) => a.rank - b.rank);
+                    then?.();
                 },
                 error: (err) => this.toastr.error(err.error)
             });
@@ -105,7 +132,7 @@ export class StudentSubjectDetailedReportComponent implements OnInit {
         this.maybeLoadSchoolClasses();
     };
 
-    private maybeLoadSchoolClasses() {
+    private maybeLoadSchoolClasses(then?: () => void) {
         if (!this.currentEducationLevelId || !this.currentAcademicYearId) return;
         this.schoolClassSvc
             .getByEducationLevelandYear(
@@ -115,6 +142,7 @@ export class StudentSubjectDetailedReportComponent implements OnInit {
             .subscribe({
                 next: (scs) => {
                     this.schoolClasses = scs.sort((a, b) => a.rank - b.rank);
+                    then?.();
                 },
                 error: (err) => this.toastr.error(err.error)
             });

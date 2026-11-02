@@ -22,6 +22,7 @@ import {AuthService} from '@/core/services/auth.service';
 import {ReportsService} from '@/reports/services/reports.service';
 import {StudentSubjectsService} from '@/students/services/student-subjects.service';
 import {Status} from '@/core/enums/status';
+import {currentSession, currentYear, firstOf, topCurriculum} from '@/core/utils/current-defaults';
 
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -119,6 +120,8 @@ export class AssessmentReportComponent implements OnInit {
                 this.selectedGradingCategory = this.gradingCategory;
                 this.allGrades = allGrades;
                 this.grades = allGrades.filter(g => g.category === this.gradingCategory).sort((a, b) => a.rank - b.rank);
+                // Not opened from a student's page: open on the current term.
+                if (!this.filterCurriculumId) this.applyDefaults();
             },
             error: (err) => this.toastr.error(err.error)
         });
@@ -144,6 +147,24 @@ export class AssessmentReportComponent implements OnInit {
                     row.selected = true;
                     this.studentRows = [row, ...this.studentRows.filter((r) => r !== row)];
                 });
+            });
+        });
+    }
+
+    // Open on the current year and term and the first class, with its
+    // learners listed.
+    private applyDefaults() {
+        this.filterCurriculumId = topCurriculum(this.curricula)?.id ?? null;
+        if (!this.filterCurriculumId) return;
+        this.onCurriculumChange(() => {
+            this.filterAcademicYearId = currentYear(this.academicYears)?.id ?? null;
+            if (!this.filterAcademicYearId) return;
+            this.onAcademicYearChange(() => {
+                this.filterSessionId = currentSession(this.sessions)?.id ?? null;
+                this.filterSchoolClassId = firstOf(this.schoolClasses)?.id ?? null;
+                if (!this.filterSessionId || !this.filterSchoolClassId) return;
+                this.onClassChange();
+                this.loadStudents();
             });
         });
     }

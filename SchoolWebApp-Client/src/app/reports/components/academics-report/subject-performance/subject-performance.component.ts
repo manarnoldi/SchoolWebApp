@@ -20,6 +20,7 @@ import {StaffSubjectsService} from '@/staff/services/staff-subjects.service';
 import {AuthService} from '@/core/services/auth.service';
 import {ReportsService} from '@/reports/services/reports.service';
 import {Status} from '@/core/enums/status';
+import {currentSession, currentYear, latestExam, topCurriculum} from '@/core/utils/current-defaults';
 
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -113,6 +114,7 @@ export class SubjectPerformanceComponent implements OnInit {
                 this.gradingSettings = (gradingSettings as any[]) || [];
                 this.rankingMethod = this.settingVal('RankingMethod') || 'mean_marks';
                 this.averageMethod = (avgSetting as any)?.settingValue || 'students_with_scores';
+                this.applyDefaults();
             },
             error: (err) => this.toastr.error(err.error)
         });
@@ -159,18 +161,43 @@ export class SubjectPerformanceComponent implements OnInit {
 
     onFilterChange = () => { this.loaded = false; this.classReports = []; };
 
-    onCurriculumChange = () => {
+    // Open on the current year and term and the latest exam sat, with the
+    // report loaded. Each step waits for the list the next one picks from.
+    private applyDefaults() {
+        this.filterCurriculumId = topCurriculum(this.curricula)?.id ?? null;
+        if (!this.filterCurriculumId) return;
+        this.onCurriculumChange(() => {
+            this.filterAcademicYearId = currentYear(this.academicYears)?.id ?? null;
+            if (!this.filterAcademicYearId) return;
+            this.onAcademicYearChange(() => {
+                this.filterSessionId = currentSession(this.sessions)?.id ?? null;
+                if (!this.filterSessionId) return;
+                this.onSessionChange(() => {
+                    let se = latestExam(this.schoolExams);
+                    if (!se) return;
+                    this.filterSchoolExamId = se.id;
+                    this.onSchoolExamChange();
+                    this.loadReport();
+                });
+            });
+        });
+    }
+
+    onCurriculumChange = (then?: () => void) => {
         this.sessions = this.schoolClasses = this.schoolExams = [];
         this.filterAcademicYearId = this.filterSessionId = this.filterSchoolExamId = this.filterExamTypeId = null;
         this.onFilterChange();
         if (!this.filterCurriculumId) return;
         this.learningLevelSvc.getLearningLevelsByCurriculum(this.filterCurriculumId).subscribe({
-            next: (levels) => { this.learningLevels = levels.sort((a, b) => a.rank - b.rank); },
+            next: (levels) => {
+                this.learningLevels = levels.sort((a, b) => a.rank - b.rank);
+                then?.();
+            },
             error: (err) => this.toastr.error(err.error)
         });
     };
 
-    onAcademicYearChange = () => {
+    onAcademicYearChange = (then?: () => void) => {
         this.sessions = this.schoolClasses = this.schoolExams = [];
         this.filterSessionId = this.filterSchoolExamId = this.filterExamTypeId = null;
         this.onFilterChange();
@@ -185,12 +212,13 @@ export class SubjectPerformanceComponent implements OnInit {
                 this.schoolClasses = schoolClasses
                     .filter((sc) => currLLIds.includes(+sc.learningLevelId))
                     .sort((a, b) => (a.rank || 0) - (b.rank || 0));
+                then?.();
             },
             error: (err) => this.toastr.error(err.error)
         });
     };
 
-    onSessionChange = () => {
+    onSessionChange = (then?: () => void) => {
         this.onFilterChange();
         this.schoolExams = [];
         this.filterSchoolExamId = this.filterExamTypeId = null;
@@ -198,7 +226,10 @@ export class SubjectPerformanceComponent implements OnInit {
         this.schoolExamSvc
             .get(`/schoolExams/examSearch?academicYearId=${this.filterAcademicYearId}&curriculumId=${this.filterCurriculumId}&sessionId=${this.filterSessionId}`)
             .subscribe({
-                next: (items) => { this.schoolExams = items; },
+                next: (items) => {
+                    this.schoolExams = items;
+                    then?.();
+                },
                 error: (err) => this.toastr.error(err.error)
             });
     };
