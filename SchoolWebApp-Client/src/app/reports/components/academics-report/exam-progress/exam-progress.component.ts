@@ -47,7 +47,10 @@ interface StudentRow {
 
 @Component({
     selector: 'app-exam-progress',
-    templateUrl: './exam-progress.component.html'
+    templateUrl: './exam-progress.component.html',
+    // One line per learner: the global td rule (white-space: normal !important)
+    // would otherwise wrap names and marks onto a second line.
+    styles: ['.text-nowrap td { white-space: nowrap !important; }']
 })
 export class ExamProgressComponent implements OnInit {
     // 'class' lists every learner's run with the class average; 'student' works
