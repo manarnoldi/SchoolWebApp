@@ -5,33 +5,56 @@ name: Deploy ShuleNova (API + UI)
 # The API serves both /api/* and the SPA from the same origin - no separate UI
 # site, no CORS surface, one SSL cert.
 #
-# Manually triggered. The `target` input maps onto a GitHub Environment of the
-# same name, where the per-school FTP credentials and remote path live (see the
-# required secrets/variables below). Add a new option + Environment to deploy
-# another school instance.
+# Manually triggered. Tick the schools to deploy to - every school is ticked by
+# default, so untick the ones to skip. Each school name maps onto a GitHub
+# Environment of the same name, where its FTP credentials and remote path live.
+# The app is built ONCE and the same publish artifact is deployed to each
+# ticked school (config is host-side, never uploaded).
 #
 # Per-environment SECRETS:   FTP_SERVER, FTP_USERNAME, FTP_PASSWORD,
-#                            FTP_SWIKUNDA_UI_PATH (remote folder)
+#                            FTP_SWIKUNDA_UI_PATH (remote folder - the same
+#                            secret name in every environment)
 # Per-environment VARIABLES: API_BASE_URL (public origin, e.g.
 #                            https://swikunda.kodetek.co.ke - no /api suffix),
 #                            FTP_PORT (optional, defaults to 21)
 on:
   workflow_dispatch:
     inputs:
-      target:
-        description: 'School to deploy to (must match an Environment in repo Settings)'
-        required: true
-        default: 'swikunda'
-        type: choice
-        options:
-          - swikunda
-          - shulenova   # demo site, anonymised data (tools/demo-data)
+      swikunda:
+        description: 'Deploy to swikunda'
+        type: boolean
+        default: true
+      shulenova:
+        description: 'Deploy to shulenova (demo site, anonymised data - tools/demo-data)'
+        type: boolean
+        default: true
 
 jobs:
-  deploy:
+  # Collect the ticked schools into the list to deploy to.
+  # WHEN ADDING A SCHOOL: add it in TWO places - a boolean input above AND an
+  # `add` line below - and create its GitHub Environment.
+  plan:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.target }}
+    outputs:
+      targets: ${{ steps.set.outputs.targets }}
+    steps:
+      - id: set
+        run: |
+          targets=()
+          add() { if [ "$2" = "true" ]; then targets+=("$1"); fi; }
+          add swikunda  "${{ inputs.swikunda }}"
+          add shulenova "${{ inputs.shulenova }}"
+          if [ ${#targets[@]} -eq 0 ]; then
+            echo "::error::No schools ticked - select at least one school to deploy."
+            exit 1
+          fi
+          json=$(printf '"%s",' "${targets[@]}")
+          echo "targets=[${json%,}]" >> "$GITHUB_OUTPUT"
+          echo "Deploying to: ${targets[*]}"
 
+  # Build the combined publish/ output once and share it with every deploy.
+  build:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -73,6 +96,37 @@ jobs:
         working-directory: SchoolWebApp-API/Project.API
         run: dotnet publish -c Release -o publish --no-restore /p:UseAppHost=false
 
+      - name: Upload publish artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: publish
+          path: SchoolWebApp-API/Project.API/publish/
+          retention-days: 1
+          include-hidden-files: true
+
+  # Deploy the shared artifact to each ticked school. fail-fast:false so one
+  # school's failure doesn't cancel the others; max-parallel:1 so the shared
+  # FTP host isn't hit concurrently and logs stay readable.
+  deploy:
+    needs: [plan, build]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        school: ${{ fromJson(needs.plan.outputs.targets) }}
+    environment: ${{ matrix.school }}
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4   # for .github/deploy/app_offline.htm
+
+      - name: Download publish artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: publish
+          path: SchoolWebApp-API/Project.API/publish/
+
       - name: Install lftp
         # Skip apt-get update - GitHub runners already index the Ubuntu archive
         # and refreshing it can take 5-10 minutes when mirrors are throttling.
@@ -85,7 +139,7 @@ jobs:
       # Excludes preserve host-side files: appsettings*.json (production MySQL
       # connection + JWT key, placed by hand), web.config (host-managed), and
       # logs/ (runtime NLog output).
-      - name: Deploy to ${{ inputs.target }}
+      - name: Deploy to ${{ matrix.school }}
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
@@ -203,4 +257,4 @@ jobs:
 
       - name: Summary
         run: |
-          echo "::notice::Deployed ShuleNova (API + UI) to '${{ inputs.target }}' from commit ${GITHUB_SHA::7}"
+          echo "::notice::Deployed ShuleNova (API + UI) to '${{ matrix.school }}' from commit ${GITHUB_SHA::7}"
