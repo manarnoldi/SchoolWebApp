@@ -121,7 +121,41 @@ election is invented, so the demo shows a full, working school.
    vote. One class race ties and is settled by drawing lots; the results are
    declared and the winners written to class leadership and responsibilities.
 
-8. Check nothing is left from the original:
+8. Add the learners' parents and guardians, with the API still running:
+
+   ```
+   MYSQL_PWD=... node tools/demo-data/parents.js --db shulenova --api http://localhost:5198
+   ```
+
+   It deletes every parent in the copy, then enters new ones through the API as
+   the administrator: learners sharing a surname are sometimes brothers and
+   sisters with the same parents; most learners have a father and a mother, some
+   one parent or a guardian (a grandmother, aunt or uncle). Each has an invented
+   Kenyan mobile number, an occupation and a postal address at the coast, some
+   an @example.com email; who pays, picks up and gets the school's SMS is set.
+
+9. Add a year of attendance, with the API still running:
+
+   ```
+   MYSQL_PWD=... node tools/demo-data/attendance.js --db shulenova --api http://localhost:5198 --through 2026-11-05
+   ```
+
+   It deletes all attendance in the copy, then marks every school day of the
+   year's terms (no public holidays or half-term breaks): each class by its
+   class teacher - most learners away the odd day, a few often, illness for days
+   at a time, more on Mondays, Fridays, in the long rains and at the start of
+   term, mostly with a reason - and the staff by the head teacher, with arrival
+   and departure times, sick days, training and the odd late arrival.
+
+10. Stop the API and clear the audit trail the scripts wrote: it keeps the
+    values records had before each change - the original staff numbers that
+    payroll.js renumbered among them.
+
+    ```
+    MYSQL_PWD=... mysql -u root shulenova -e "DELETE FROM auditlogs;"
+    ```
+
+11. Check nothing is left from the original:
 
    ```
    MYSQL_PWD=... node tools/demo-data/check.js --source swikunda --db shulenova
@@ -131,7 +165,7 @@ election is invented, so the demo shows a full, working school.
    name still found, by table. Ordinary words that are also names (Junior,
    Christian, Adam and Love in CRE lessons) are expected.
 
-9. Dump `shulenova` and restore it on the demo site's database.
+12. Dump `shulenova` and restore it on the demo site's database.
 
 ## What changes
 
