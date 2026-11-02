@@ -1,5 +1,8 @@
 import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {BreadCrumb} from '@/core/models/bread-crumb';
+import {currentYear, firstOf} from '@/core/utils/current-defaults';
+import {matchOptionId, pushQueryParams, readQueryParam} from '@/shared/utils/query-param-sync';
 import {ToastrService} from 'ngx-toastr';
 import {forkJoin, of} from 'rxjs';
 import {catchError} from 'rxjs/operators';
@@ -54,7 +57,9 @@ export class BulkStaffSubjectsComponent implements OnInit {
         private educationLevelSubjectSvc: EducationLevelSubjectService,
         private staffDetailsSvc: StaffDetailsService,
         private staffSubjectsSvc: StaffSubjectsService,
-        private staffCategoriesSvc: StaffCategoriesService
+        private staffCategoriesSvc: StaffCategoriesService,
+        private router: Router,
+        private route: ActivatedRoute
     ) {}
 
     ngOnInit(): void {
@@ -68,10 +73,21 @@ export class BulkStaffSubjectsComponent implements OnInit {
         ]).subscribe({
             next: ([academicYears, staffCategories]) => {
                 this.academicYears = academicYears.sort((a, b) => a.rank - b.rank);
-                let activeYear = this.academicYears.find((y) => y.status === true);
-                if (activeYear) {
-                    this.selectedAcademicYearId = activeYear.id;
-                    this.onAcademicYearChange();
+                // Open on the year and class in the URL (refresh / shared
+                // link), else the current year and its first class, with the
+                // class's allocations loaded.
+                // Read both before the year change rewrites the URL.
+                let urlYear = readQueryParam(this.route, 'academicYearId');
+                let urlClass = readQueryParam(this.route, 'schoolClassId');
+                let year = urlYear ? matchOptionId(this.academicYears, urlYear) : currentYear(this.academicYears)?.id;
+                if (year != null) {
+                    this.selectedAcademicYearId = year;
+                    this.onAcademicYearChange(() => {
+                        let schoolClass = urlClass ? matchOptionId(this.schoolClasses, urlClass) : firstOf(this.schoolClasses)?.id;
+                        if (schoolClass == null) return;
+                        this.selectedSchoolClassId = schoolClass;
+                        this.onSchoolClassChange();
+                    });
                 }
 
                 // Load teaching staff
@@ -91,11 +107,19 @@ export class BulkStaffSubjectsComponent implements OnInit {
         });
     }
 
-    onAcademicYearChange() {
+    private syncUrl = () =>
+        pushQueryParams(this.router, this.route, {
+            academicYearId: this.selectedAcademicYearId,
+            schoolClassId: this.selectedSchoolClassId
+        });
+
+    // `then` runs once the year's classes are in (first load only).
+    onAcademicYearChange(then?: () => void) {
         this.schoolClasses = [];
         this.selectedSchoolClassId = null;
         this.allocationRows = [];
         this.hasLoaded = false;
+        this.syncUrl();
         if (!this.selectedAcademicYearId) return;
 
         this.schoolClassesSvc.getByAcademicYearId(parseInt(this.selectedAcademicYearId)).subscribe({
@@ -105,6 +129,7 @@ export class BulkStaffSubjectsComponent implements OnInit {
                     let nameB = (b.learningLevel?.name || '') + (b.schoolStream?.name || '');
                     return nameA.localeCompare(nameB);
                 });
+                then?.();
             },
             error: (err) => this.toastr.error(err.error)
         });
@@ -113,6 +138,7 @@ export class BulkStaffSubjectsComponent implements OnInit {
     onSchoolClassChange() {
         this.allocationRows = [];
         this.hasLoaded = false;
+        this.syncUrl();
         if (!this.selectedSchoolClassId) return;
         this.loadSubjectsAndAllocations();
     }

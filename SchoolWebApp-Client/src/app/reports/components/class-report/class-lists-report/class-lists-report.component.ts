@@ -12,7 +12,10 @@ import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
 import {StudentClass} from '@/students/models/student-class';
 import {StudentClassService} from '@/students/services/student-class.service';
 import {Component, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
+import {currentYear, firstOf} from '@/core/utils/current-defaults';
+import {matchOptionId, pushQueryParams, readQueryParam} from '@/shared/utils/query-param-sync';
 import {forkJoin} from 'rxjs';
 
 @Component({
@@ -39,7 +42,9 @@ export class ClassListsReportComponent implements OnInit {
         private studentClassesSvc: StudentClassService,
         private schoolSvc: SchoolDetailsService,
         private classListRptSvc: ClassListReportService,
-        private classLeadershipsSvc: ClassLeadershipsService
+        private classLeadershipsSvc: ClassLeadershipsService,
+        private router: Router,
+        private route: ActivatedRoute
     ) {}
 
     ngOnInit(): void {
@@ -50,6 +55,29 @@ export class ClassListsReportComponent implements OnInit {
         return this.schoolClasses.filter((i) => i.isSelected).length;
     }
 
+    private syncUrl = (params: Record<string, unknown>) => pushQueryParams(this.router, this.route, params);
+
+    // Open on the filters in the URL (refresh / shared link), else on the
+    // current year's active learners - then list the classes and open the
+    // first one, so the page never opens empty.
+    private restoreFromUrl = () => {
+        let form = this.ssFilterFormComponent?.schoolSoftFilterForm;
+        if (!form) return;
+        let urlYear = readQueryParam(this.route, 'academicYearId');
+        let year = urlYear ? matchOptionId(this.academicYears, urlYear) : currentYear(this.academicYears)?.id;
+        if (year == null) return;
+        let urlStatus = readQueryParam(this.route, 'status');
+        let status = urlStatus != null && urlStatus !== '' ? +urlStatus : Status.Active;
+        form.patchValue({academicYearId: year, status});
+        this.currentStatus = status;
+        this.searchForDataMethod(new SchoolSoftFilter(form.value), () => {
+            let classId = urlYear
+                ? matchOptionId(this.schoolClasses, readQueryParam(this.route, 'schoolClassId'))
+                : firstOf(this.schoolClasses)?.id;
+            if (classId != null) this.schoolClassClicked(classId);
+        });
+    };
+
     schoolClassChanged = (classId: number) => {
         this.schoolClasses = [];
         this.studentClasses = [];
@@ -59,6 +87,7 @@ export class ClassListsReportComponent implements OnInit {
     schoolClassClicked = (schoolClassId: number) => {
         this.studentClasses = [];
         this.schoolClassLeaders = [];
+        this.syncUrl({schoolClassId});
 
         let scLeadersReq =
             this.classLeadershipsSvc.getBySchoolClassId(schoolClassId);
@@ -85,15 +114,18 @@ export class ClassListsReportComponent implements OnInit {
         this.schoolClasses = [];
         this.studentClasses = [];
         this.schoolClassLeaders = [];
+        this.syncUrl({status, schoolClassId: null});
     };
 
     academicYearChanged = (academicYearId: number) => {
         this.schoolClasses = [];
         this.studentClasses = [];
         this.schoolClassLeaders = [];
+        this.syncUrl({academicYearId, schoolClassId: null});
     };
 
-    searchForDataMethod = (ssFilter: SchoolSoftFilter) => {
+    // `then` runs once the classes are in (used when restoring).
+    searchForDataMethod = (ssFilter: SchoolSoftFilter, then?: () => void) => {
         if (!ssFilter.academicYearId || ssFilter.academicYearId == null) {
             this.toastr.error('Select academic year before clicking search!');
             return;
@@ -104,6 +136,7 @@ export class ClassListsReportComponent implements OnInit {
         this.schoolClasses = [];
         this.studentClasses = [];
         this.schoolClassLeaders = [];
+        this.syncUrl({academicYearId: ssFilter.academicYearId, status: ssFilter.status});
         this.schoolClassesSvc
             .getByAcademicYearId(ssFilter.academicYearId)
             .subscribe({
@@ -111,6 +144,7 @@ export class ClassListsReportComponent implements OnInit {
                     this.schoolClasses = schoolClasses.sort(
                         (a, b) => a.rank - b.rank
                     );
+                    then?.();
                 },
                 error: (err) => {
                     this.toastr.error(err.error);
@@ -161,6 +195,7 @@ export class ClassListsReportComponent implements OnInit {
                 this.academicYears = academicYears.sort(
                     (a, b) => b.rank - a.rank
                 );
+                this.restoreFromUrl();
             },
             error: (err) => {
                 this.toastr.error(err.error);

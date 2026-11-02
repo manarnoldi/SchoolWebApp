@@ -10,9 +10,12 @@ import {StaffAttendance} from '@/staff/models/staff-attendance';
 import {StaffDetails} from '@/staff/models/staff-details';
 import {StaffAttendancesService} from '@/staff/services/staff-attendances.service';
 import {StaffDetailsService} from '@/staff/services/staff-details.service';
+import {matchOptionId, pushQueryParams, readQueryParam} from '@/shared/utils/query-param-sync';
+import {staffReportDefaults} from '../staff-report-defaults';
 import {Component, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
-import {forkJoin} from 'rxjs';
+import {forkJoin, of} from 'rxjs';
 
 @Component({
     selector: 'app-staff-attendance-details-report',
@@ -36,6 +39,8 @@ export class StaffAttendanceDetailsReportComponent implements OnInit {
     currentRptYear: string;
     currentRptStatus: Status;
     currentRptStaffCategory: string;
+    // The staff member whose register shows on the right, highlighted in the list.
+    selectedStaffId: number | null = null;
 
     constructor(
         private toastr: ToastrService,
@@ -44,7 +49,9 @@ export class StaffAttendanceDetailsReportComponent implements OnInit {
         private staffAttendancesRptDetailsSvc: StaffAttendancesReportDetailsService,
         private staffAttendancesSvc: StaffAttendancesService,
         private staffCategoriesSvc: StaffCategoriesService,
-        private schoolSvc: SchoolDetailsService
+        private schoolSvc: SchoolDetailsService,
+        private router: Router,
+        private route: ActivatedRoute
     ) {}
 
     ngOnInit(): void {
@@ -66,6 +73,7 @@ export class StaffAttendanceDetailsReportComponent implements OnInit {
                     )
                 ].sort((a, b) => b - a);
                 this.months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+                this.restoreFromUrl();
             },
             error: (err) => {
                 this.toastr.error(err.error);
@@ -73,30 +81,72 @@ export class StaffAttendanceDetailsReportComponent implements OnInit {
         });
     };
 
+    // Open on the filters in the URL (refresh / shared link), else on active
+    // staff of the first category with staff, in the month of its latest
+    // attendance - then search and open the first staff member's register.
+    private restoreFromUrl = () => {
+        let form = this.ssFilterFormComponent?.schoolSoftFilterForm;
+        if (!form) return;
+        let urlCategory = readQueryParam(this.route, 'staffCategoryId');
+        let defaults$ = urlCategory
+            ? of({
+                  staffCategoryId: matchOptionId(this.staffCategories, urlCategory),
+                  month: +readQueryParam(this.route, 'month') || null,
+                  year: +readQueryParam(this.route, 'year') || null
+              })
+            : staffReportDefaults(this.staffDetailsSvc, this.staffAttendancesSvc, this.staffCategories, true);
+        defaults$.subscribe((d) => {
+            let status = readQueryParam(this.route, 'status');
+            form.patchValue({
+                staffCategoryId: d.staffCategoryId,
+                status: status != null && status !== '' ? +status : Status.Active,
+                month: d.month,
+                year: d.year
+            });
+            let staffId = readQueryParam(this.route, 'staffId');
+            this.searchForDataMethod(form.value, (staff) => {
+                let pick = (staffId && staff.find((s) => String(s.id) === staffId)) || staff[0];
+                if (pick) this.staffClicked(parseInt(pick.id));
+            });
+        });
+    };
+
+    private syncUrl = (params: Record<string, unknown>) => pushQueryParams(this.router, this.route, params);
+
     yearChanged = (year: number) => {
         this.staffAttendances = [];
         this.staffDetails = [];
-        this.currentRptYear = year.toString();
+        this.selectedStaffId = null;
+        this.currentRptYear = year?.toString();
+        this.syncUrl({year, staffId: null});
     };
 
     monthChanged = (month: number) => {
         this.staffAttendances = [];
         this.staffDetails = [];
+        this.selectedStaffId = null;
         this.currentRptMonth = month;
+        this.syncUrl({month, staffId: null});
     };
 
     statusChanged = (status: Status) => {
         this.staffAttendances = [];
         this.staffDetails = [];
+        this.selectedStaffId = null;
+        this.syncUrl({status, staffId: null});
     };
 
     staffCategoryChanged = (sCategoryId: number) => {
         this.staffAttendances = [];
         this.staffDetails = [];
+        this.selectedStaffId = null;
+        this.syncUrl({staffCategoryId: sCategoryId, staffId: null});
     };
 
     staffClicked = (staffId: number) => {
         this.staffAttendances = [];
+        this.selectedStaffId = staffId;
+        this.syncUrl({staffId});
         this.staffAttendancesSvc
             .searchStaffAttendancesObservable(
                 staffId,
@@ -117,8 +167,10 @@ export class StaffAttendanceDetailsReportComponent implements OnInit {
         return this.staffDetails.filter((i) => i.isSelected).length;
     }
 
-    searchForDataMethod = (saSearch: SchoolSoftFilter) => {
+    // `then` gets the staff list once it loads (used when opening the page).
+    searchForDataMethod = (saSearch: SchoolSoftFilter, then?: (staff: StaffDetails[]) => void) => {
         this.staffAttendances = [];
+        this.selectedStaffId = null;
         if (!saSearch.staffCategoryId || saSearch.staffCategoryId == null) {
             this.toastr.error('Select staff category before clicking search!');
             return;
@@ -135,9 +187,7 @@ export class StaffAttendanceDetailsReportComponent implements OnInit {
             return;
         }
 
-        this.currentRptMonth = this.months.find(
-            (m) => m == this.currentRptMonth
-        );
+        this.currentRptMonth = saSearch.month;
         this.currentRptYear = saSearch.year.toString();
         this.currentRptStatus = saSearch.status;
         this.currentRptStaffCategory = this.staffCategories.find(
@@ -149,6 +199,13 @@ export class StaffAttendanceDetailsReportComponent implements OnInit {
             .subscribe({
                 next: (staffDetails) => {
                     this.staffDetails = staffDetails;
+                    this.syncUrl({
+                        staffCategoryId: saSearch.staffCategoryId,
+                        status: saSearch.status,
+                        month: saSearch.month,
+                        year: saSearch.year
+                    });
+                    then?.(staffDetails);
                 },
                 error: (err) => {
                     this.toastr.error(err.error);

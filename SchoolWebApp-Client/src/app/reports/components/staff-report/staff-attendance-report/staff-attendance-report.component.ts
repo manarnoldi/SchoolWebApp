@@ -8,9 +8,14 @@ import {StaffCategory} from '@/settings/models/staff-category';
 import {StaffCategoriesService} from '@/settings/services/staff-categories.service';
 import {SchoolSoftFilter} from '@/shared/models/school-soft-filter';
 import {StaffAttendancesService} from '@/staff/services/staff-attendances.service';
-import {Component, OnInit} from '@angular/core';
+import {StaffDetailsService} from '@/staff/services/staff-details.service';
+import {SchoolSoftFilterFormComponent} from '@/shared/components/school-soft-filter-form/school-soft-filter-form.component';
+import {matchOptionId, pushQueryParams, readQueryParam} from '@/shared/utils/query-param-sync';
+import {staffReportDefaults} from '../staff-report-defaults';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
-import {forkJoin} from 'rxjs';
+import {forkJoin, of} from 'rxjs';
 
 @Component({
     selector: 'app-staff-attendance-report',
@@ -18,6 +23,9 @@ import {forkJoin} from 'rxjs';
     styleUrl: './staff-attendance-report.component.scss'
 })
 export class StaffAttendanceReportComponent implements OnInit {
+    @ViewChild(SchoolSoftFilterFormComponent)
+    ssFilterFormComponent: SchoolSoftFilterFormComponent;
+
     staffAttendancesRpt: StaffAttendancesReport[] = [];
     staffCategories: StaffCategory[] = [];
 
@@ -36,7 +44,10 @@ export class StaffAttendanceReportComponent implements OnInit {
         private staffAttendsRptSvc: StaffAttendancesReportService,
         private staffAttendancesSvc: StaffAttendancesService,
         private saRDSvc: StaffAttendancesReportDetailsService,
-        private schoolSvc: SchoolDetailsService
+        private schoolSvc: SchoolDetailsService,
+        private staffDetailsSvc: StaffDetailsService,
+        private router: Router,
+        private route: ActivatedRoute
     ) {}
 
     ngOnInit(): void {
@@ -58,6 +69,7 @@ export class StaffAttendanceReportComponent implements OnInit {
                     )
                 ].sort((a, b) => b - a);
                 this.months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+                this.restoreFromUrl();
             },
             error: (err) => {
                 this.toastr.error(err.error);
@@ -65,19 +77,51 @@ export class StaffAttendanceReportComponent implements OnInit {
         });
     };
 
+    // Open on the filters in the URL (refresh / shared link), else on active
+    // staff of the first category with staff, in the month of its latest
+    // attendance - then search, so the report never opens empty.
+    private restoreFromUrl = () => {
+        let form = this.ssFilterFormComponent?.schoolSoftFilterForm;
+        if (!form) return;
+        let urlCategory = readQueryParam(this.route, 'staffCategoryId');
+        let defaults$ = urlCategory
+            ? of({
+                  staffCategoryId: matchOptionId(this.staffCategories, urlCategory),
+                  month: +readQueryParam(this.route, 'month') || null,
+                  year: +readQueryParam(this.route, 'year') || null
+              })
+            : staffReportDefaults(this.staffDetailsSvc, this.staffAttendancesSvc, this.staffCategories, true);
+        defaults$.subscribe((d) => {
+            let status = readQueryParam(this.route, 'status');
+            form.patchValue({
+                staffCategoryId: d.staffCategoryId,
+                status: status != null && status !== '' ? +status : Status.Active,
+                month: d.month,
+                year: d.year
+            });
+            this.ssFilterFormComponent.onSubmit();
+        });
+    };
+
+    private syncUrl = (params: Record<string, unknown>) => pushQueryParams(this.router, this.route, params);
+
     statusChanged = (status: Status) => {
         this.resetControlls();
+        this.syncUrl({status});
     };
 
-    yearChanged = (selectedDate: Date) => {
+    yearChanged = (year: any) => {
         this.resetControlls();
+        this.syncUrl({year});
     };
 
-    monthChangedChanged = (employTypeId: number) => {
+    monthChangedChanged = (month: number) => {
         this.resetControlls();
+        this.syncUrl({month});
     };
     staffCategoryChanged = (sCategoryId: number) => {
         this.resetControlls();
+        this.syncUrl({staffCategoryId: sCategoryId});
     };
 
     resetControlls = () => {
@@ -118,6 +162,12 @@ export class StaffAttendanceReportComponent implements OnInit {
                         (s) => s.id == saSearch.staffCategoryId.toString()
                     ).name;
                     this.staffAttendancesRpt = staffAttendsRpt;
+                    this.syncUrl({
+                        staffCategoryId: saSearch.staffCategoryId,
+                        status: saSearch.status,
+                        month: saSearch.month,
+                        year: saSearch.year
+                    });
                 },
                 error: (err) => {
                     this.toastr.error(err.error);

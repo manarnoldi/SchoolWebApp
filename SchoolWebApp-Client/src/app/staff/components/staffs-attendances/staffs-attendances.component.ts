@@ -9,9 +9,13 @@ import {StaffAttendancesService} from '@/staff/services/staff-attendances.servic
 import {StaffDetailsService} from '@/staff/services/staff-details.service';
 import {DatePipe} from '@angular/common';
 import {Component, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
-import {forkJoin} from 'rxjs';
+import {forkJoin, of} from 'rxjs';
+import {catchError, map, switchMap} from 'rxjs/operators';
 import {StaffsAttendancesTableComponent} from '../../../shared/components/staffs-attendances-table/staffs-attendances-table.component';
+import {StaffsAttendancesSearchFormComponent} from '@/shared/components/staffs-attendances-search-form/staffs-attendances-search-form.component';
+import {matchOptionId, pushQueryParams, readQueryParam} from '@/shared/utils/query-param-sync';
 import Swal from 'sweetalert2';
 import {StaffAttendanceSearch} from '@/students/models/staff-attendance-search';
 import {Status} from '@/core/enums/status';
@@ -25,6 +29,8 @@ import {GlobalSettingService} from '@/settings/services/global-setting.service';
 export class StaffsAttendancesComponent implements OnInit {
     @ViewChild(StaffsAttendancesTableComponent)
     staffsAttendancesTableComponent: StaffsAttendancesTableComponent;
+    @ViewChild(StaffsAttendancesSearchFormComponent)
+    searchForm: StaffsAttendancesSearchFormComponent;
 
     breadcrumbs: BreadCrumb[] = [
         {link: ['/'], title: 'Home'},
@@ -48,7 +54,9 @@ export class StaffsAttendancesComponent implements OnInit {
         private staffsSvc: StaffDetailsService,
         private datePipe: DatePipe,
         private staffAttendancesSvc: StaffAttendancesService,
-        private globalSettingSvc: GlobalSettingService
+        private globalSettingSvc: GlobalSettingService,
+        private router: Router,
+        private route: ActivatedRoute
     ) {}
 
     ngOnInit(): void {
@@ -72,6 +80,7 @@ export class StaffsAttendancesComponent implements OnInit {
                 this.staffCategories = staffCategories;
                 this.employmentTypes = employmentTypes;
                 this.doneLoading = true;
+                this.restoreFromUrl();
             },
             error: (err) => {
                 this.toastr.error(err.error);
@@ -79,16 +88,67 @@ export class StaffsAttendancesComponent implements OnInit {
         });
     };
 
+    // Open on the filters in the URL (refresh / shared link), else on every
+    // category and employment type and the latest day of staff attendance -
+    // then search, so the page never opens empty.
+    private restoreFromUrl = () => {
+        let form = this.searchForm?.staffAttendanceSearchForm;
+        if (!form) return;
+        let staffCategoryId = matchOptionId(this.staffCategories, readQueryParam(this.route, 'staffCategoryId'));
+        let employmentTypeId = matchOptionId(this.employmentTypes, readQueryParam(this.route, 'employmentTypeId'));
+        form.patchValue({staffCategoryId, employmentTypeId});
+        let urlDate = readQueryParam(this.route, 'date');
+        let date$ = urlDate ? of(urlDate) : this.latestAttendanceDate(staffCategoryId, employmentTypeId);
+        date$.subscribe((date) => {
+            if (date) form.patchValue({attendanceDate: date});
+            this.searchForm.onSubmit();
+        });
+    };
+
+    // The most recent day with staff attendance up to today (today itself if
+    // it was marked), read off the first few staff members' registers; else
+    // today.
+    private latestAttendanceDate = (staffCategoryId: any, employmentTypeId: any) => {
+        let today = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
+        return this.staffsSvc.getBySearchDetails(Status.Active, employmentTypeId, staffCategoryId).pipe(
+            switchMap((staffs) =>
+                staffs.length
+                    ? forkJoin(
+                          staffs.slice(0, 3).map((s) =>
+                              this.staffAttendancesSvc
+                                  .get('/staffAttendances/byStaffDetailsId/' + s.id)
+                                  .pipe(catchError(() => of([] as StaffAttendance[])))
+                          )
+                      )
+                    : of([] as StaffAttendance[][])
+            ),
+            map((registers: StaffAttendance[][]) => {
+                let days = registers
+                    .flat()
+                    .map((r) => String(r.date ?? '').substring(0, 10))
+                    .filter((d) => d && d <= today)
+                    .sort();
+                return days.length ? days[days.length - 1] : today;
+            }),
+            catchError(() => of(today))
+        );
+    };
+
+    private syncUrl = (params: Record<string, unknown>) => pushQueryParams(this.router, this.route, params);
+
     dateChanged = (selectedDate: Date) => {
         this.staffs = [];
         this.attendanceDate = selectedDate;
+        this.syncUrl({date: selectedDate});
     };
 
     employmentTypeChanged = (employTypeId: number) => {
         this.staffs = [];
+        this.syncUrl({employmentTypeId: employTypeId});
     };
     staffCategoryChanged = (sCategoryId: number) => {
         this.staffs = [];
+        this.syncUrl({staffCategoryId: sCategoryId});
     };
 
     searchForDataMethod = (saSearch: StaffAttendanceSearch) => {
@@ -96,6 +156,11 @@ export class StaffsAttendancesComponent implements OnInit {
         this.saSearch = saSearch;
 
         this.attendanceDate = saSearch.attendanceDate;
+        this.syncUrl({
+            staffCategoryId: saSearch.staffCategoryId,
+            employmentTypeId: saSearch.employmentTypeId,
+            date: this.datePipe.transform(saSearch.attendanceDate, 'yyyy-MM-dd')
+        });
         this.staffsSvc
             .getBySearchDetails(
                 Status.Active,

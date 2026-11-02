@@ -115,7 +115,7 @@ export const MENU = [
                 name: 'Reports',
                 iconClasses: 'fas fa-chart-bar text-success',
                 children: [
-                    {name: 'Class List', iconClasses: 'fas fa-bullseye text-success', path: ['/reports/class/class-list']},
+                    {name: 'Class Lists', iconClasses: 'fas fa-bullseye text-success', path: ['/reports/class/class-list']},
                     {name: 'Attendance Report', iconClasses: 'fas fa-bullseye text-success', path: ['/reports/class/attendance']},
                     {name: 'Attendance Detailed', iconClasses: 'fas fa-bullseye text-success', path: ['/reports/class/attendance-details']}
                 ]
