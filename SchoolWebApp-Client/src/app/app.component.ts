@@ -103,15 +103,9 @@ export class AppComponent implements OnInit{
         root.classList.add('sidebar-collapse');
     }
 
-    ngOnInit(): void {
-        this.closeMenuOnSmallScreens();
-        this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => this.closeMenuOnSmallScreens());
-
-        // Prompt to refresh when a newer build is deployed while this tab is open.
-        this.versionCheck.init(10);
-
-        // Apply the configurable idle-logout timings from Security global
-        // settings (falling back to the constructor defaults of 30 min / 60 s).
+    // Apply the configurable idle-logout timings from Security global
+    // settings (falling back to the constructor defaults of 30 min / 60 s).
+    private loadIdleSettings() {
         this.globalSettingSvc.getByModule('Security').subscribe({
             next: (settings) => {
                 let num = (key: string, def: number): number => {
@@ -124,9 +118,22 @@ export class AppComponent implements OnInit{
             },
             error: () => {} // keep the defaults on failure
         });
+    }
+
+    ngOnInit(): void {
+        this.closeMenuOnSmallScreens();
+        this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => this.closeMenuOnSmallScreens());
+
+        // Prompt to refresh when a newer build is deployed while this tab is open.
+        this.versionCheck.init(10);
+
+        // The settings need a signed-in user: load them now if the page opens
+        // signed in, else once the user signs in (no 401 on the login page).
+        if (this.authService.isLoggedIn) this.loadIdleSettings();
 
         this.appService.getUserLoggedIn().subscribe((userLoggedIn) => {
             if (userLoggedIn) {
+                this.loadIdleSettings();
                 this.idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
                 this.idle.watch();
                 this.timedOut = false;
