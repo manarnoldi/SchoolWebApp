@@ -791,7 +791,7 @@
                         bindLabel="displayName"
                         bindValue="id"
                         [(ngModel)]="statementStudentId"
-                        (ngModelChange)="syncStatementUrl()"
+                        (ngModelChange)="studentStatement = null; syncStatementUrl()"
                         placeholder="Search by name or adm no..."
                         [searchable]="true"
                         [clearable]="true"
