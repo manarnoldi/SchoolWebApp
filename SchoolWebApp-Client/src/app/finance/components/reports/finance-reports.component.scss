@@ -77,3 +77,11 @@
     thead th { position: static !important; }
     tr { break-inside: avoid; }
 }
+
+// The statement's student search, the height and type of the small selects beside it.
+:host ::ng-deep .ng-select.ng-select-sm {
+    .ng-select-container { min-height: calc(1.5em + 0.5rem + 2px); height: calc(1.5em + 0.5rem + 2px); font-size: 0.875rem; border-radius: 0.25rem; }
+    .ng-select-container .ng-value-container { padding-left: 0.5rem; }
+    .ng-select-container .ng-value-container .ng-input { top: 0 !important; padding-left: 0.5rem; height: 100%; display: flex; align-items: center; }
+    .ng-dropdown-panel { font-size: 0.875rem; }
+}

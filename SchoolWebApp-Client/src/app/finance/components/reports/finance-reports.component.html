@@ -765,21 +765,21 @@
             <div class="row g-1 mb-1 align-items-end d-print-none" (change)="filterChanged($event)">
                 <div class="col-md-2">
                     <label class="form-label mb-0" style="font-size:0.8rem;">Academic Year</label>
-                    <select class="form-select form-select-sm" [(ngModel)]="statementYearId" (ngModelChange)="onStatementYearChange()">
+                    <select class="form-select form-select-sm" [(ngModel)]="statementYearId" (ngModelChange)="onStatementYearChange(); syncStatementUrl()">
                         <option [ngValue]="null">All</option>
                         <option [ngValue]="y.id" *ngFor="let y of academicYears">{{ y.name }}</option>
                     </select>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label mb-0" style="font-size:0.8rem;">Session</label>
-                    <select class="form-select form-select-sm" [(ngModel)]="statementSessionId" [disabled]="!statementYearId">
+                    <select class="form-select form-select-sm" [(ngModel)]="statementSessionId" (ngModelChange)="syncStatementUrl()" [disabled]="!statementYearId">
                         <option [ngValue]="null">All</option>
                         <option [ngValue]="s.id" *ngFor="let s of statementSessions">{{ s.sessionName }}</option>
                     </select>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label mb-0" style="font-size:0.8rem;">Class</label>
-                    <select class="form-select form-select-sm" [(ngModel)]="statementClassId" (ngModelChange)="onStatementClassChange()" [disabled]="!statementYearId">
+                    <select class="form-select form-select-sm" [(ngModel)]="statementClassId" (ngModelChange)="onStatementClassChange(); syncStatementUrl()" [disabled]="!statementYearId">
                         <option [ngValue]="null" hidden disabled>Select class</option>
                         <option [ngValue]="c.id" *ngFor="let c of statementClasses">{{ c.learningLevel?.name }}{{ c.schoolStream?.name ? ' - ' + c.schoolStream.name : '' }}</option>
                     </select>
@@ -791,11 +791,12 @@
                         bindLabel="displayName"
                         bindValue="id"
                         [(ngModel)]="statementStudentId"
+                        (ngModelChange)="syncStatementUrl()"
                         placeholder="Search by name or adm no..."
                         [searchable]="true"
                         [clearable]="true"
                         [disabled]="statementStudents.length === 0"
-                        class="form-control-sm p-0">
+                        class="ng-select-sm">
                     </ng-select>
                 </div>
                 <div class="col-auto"><button class="btn btn-sm btn-info" (click)="loadStudentStatement()" [disabled]="isLoading"><i class="fas fa-search"></i> Load</button></div>

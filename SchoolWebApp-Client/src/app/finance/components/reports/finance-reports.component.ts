@@ -12,6 +12,8 @@ import {StudentClassService} from '@/students/services/student-class.service';
 import {Status} from '@/core/enums/status';
 import {formatDate} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
+import {currentSession, firstOf} from '@/core/utils/current-defaults';
+import {matchOptionId, pushQueryParams} from '@/shared/utils/query-param-sync';
 
 @Component({
     selector: 'app-finance-reports',
@@ -268,6 +270,7 @@ export class FinanceReportsComponent implements OnInit {
             feeCollection: () => this.loadFeeCollection(),
             outstanding: () => this.loadOutstanding(),
             feeBalancesByClass: () => this.loadFeeBalancesByClass(),
+            studentStatement: () => this.openStatementTab(),
             discounts: () => this.loadStudentDiscounts(),
             expenses: () => this.loadExpenseReport(),
             notes: () => this.loadCreditDebitNotes()
@@ -494,7 +497,17 @@ export class FinanceReportsComponent implements OnInit {
     }
 
     // ========== Student Statement ==========
-    onStatementYearChange() {
+    // The tab opens on this term, the first class and its first learner, statement loaded - or on
+    // the filters in the address (?stYearId=&stSessionId=&stClassId=&stStudentId=), kept as they change.
+    private openStatementTab() {
+        let q = this.route.snapshot.queryParamMap;
+        let year = q.get('stYearId');
+        if (year) this.statementYearId = matchOptionId(this.academicYears, year);
+        this.onStatementYearChange({session: q.get('stSessionId'), cls: q.get('stClassId'), student: q.get('stStudentId')});
+    }
+
+    // `pick` (opening the tab) chooses the term, class and learner - from the address, else the defaults.
+    onStatementYearChange(pick?: {session: string | null; cls: string | null; student: string | null}) {
         this.statementSessions = this.statementYearId
             ? this.allSessions.filter((s: any) => s.academicYearId == this.statementYearId)
             : [];
@@ -504,18 +517,27 @@ export class FinanceReportsComponent implements OnInit {
         this.statementStudents = [];
         this.statementStudentId = null;
         this.studentStatement = null;
+        if (pick) {
+            this.statementSessionId = pick.session
+                ? matchOptionId(this.statementSessions, pick.session)
+                : currentSession(this.statementSessions)?.id ?? null;
+        }
         if (this.statementYearId) {
             this.classSvc.get(`/schoolClasses/byAcademicYearId/${this.statementYearId}`).subscribe({
                 next: (classes: any) => {
                     this.statementClasses = (classes || []).sort((a: any, b: any) =>
                         (a.learningLevel?.rank || 0) - (b.learningLevel?.rank || 0));
+                    if (!pick) return;
+                    this.statementClassId = pick.cls ? matchOptionId(this.statementClasses, pick.cls) : firstOf(this.statementClasses)?.id ?? null;
+                    this.onStatementClassChange(pick.student ?? '');
                 },
                 error: () => {}
             });
         }
     }
 
-    onStatementClassChange() {
+    // `pickStudent` (opening the tab): that learner, or '' for the first; then the statement loads.
+    onStatementClassChange(pickStudent?: string) {
         this.statementStudents = [];
         this.statementStudentId = null;
         this.studentStatement = null;
@@ -530,8 +552,23 @@ export class FinanceReportsComponent implements OnInit {
                         return s;
                     })
                     .sort((a: any, b: any) => (a.fullName || '').localeCompare(b.fullName || ''));
+                if (pickStudent === undefined) return;
+                this.statementStudentId = pickStudent ? matchOptionId(this.statementStudents, pickStudent) : firstOf(this.statementStudents)?.id ?? null;
+                if (this.statementStudentId) this.loadStudentStatement();
+                else this.syncStatementUrl();
             },
             error: () => {}
+        });
+    }
+
+    // Filters picked by hand go into the address (the cascades run on page load too, so not from there).
+    syncStatementUrl() {
+        if (this.activeTab !== 'studentStatement') return;
+        pushQueryParams(this.router, this.route, {
+            stYearId: this.statementYearId,
+            stSessionId: this.statementSessionId,
+            stClassId: this.statementClassId,
+            stStudentId: this.statementStudentId
         });
     }
 
@@ -540,6 +577,7 @@ export class FinanceReportsComponent implements OnInit {
             this.toastr.info('Please select a student.');
             return;
         }
+        this.syncStatementUrl();
         this.isLoading = true;
         this.reportsSvc.studentStatement(+this.statementStudentId, this.statementYearId, this.statementSessionId).subscribe({
             next: (r) => { this.studentStatement = r; this.isLoading = false; },
@@ -552,7 +590,7 @@ export class FinanceReportsComponent implements OnInit {
         let active = this.academicYears.find((y: any) => y.status === true);
         this.statementYearId = active ? active.id : null;
         this.onStatementYearChange();
-        this.studentStatement = null;
+        this.syncStatementUrl();
     }
 
     getStatementYearName(): string {
