@@ -5,5 +5,7 @@ namespace SchoolWebApp.Core.Entities.Identity
         public int Id { get; set; }
         public string? Name { get; set; }
         public string? NormalizedName { get; set; }
+        // How many users hold the role (the roles list only).
+        public int? UserCount { get; set; }
     }
 }

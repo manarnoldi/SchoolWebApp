@@ -25,6 +25,11 @@ export class RolesComponent implements OnInit {
     showForm = false;
     isLoading = false;
 
+    // The users holding a role, shown from its view button.
+    viewRole: AppRole = null;
+    roleUsers: {id: number; userName: string; email: string; fullName: string}[] = [];
+    roleUsersLoading = false;
+
     searchTerm: string = '';
     page = 1;
     pageSize = 15;
@@ -118,6 +123,16 @@ export class RolesComponent implements OnInit {
                     error: (err) => this.toastr.error(err.error?.error || err.error?.message || 'Error')
                 });
             }
+        });
+    }
+
+    showUsers(role: AppRole) {
+        this.viewRole = role;
+        this.roleUsers = [];
+        this.roleUsersLoading = true;
+        this.roleSvc.users(role.id).subscribe({
+            next: (users) => { this.roleUsers = users || []; this.roleUsersLoading = false; },
+            error: () => { this.roleUsersLoading = false; this.toastr.error('Error loading the users in this role'); }
         });
     }
 

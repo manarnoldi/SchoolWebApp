@@ -15,6 +15,10 @@ export class RoleService {
         return this.http.get<AppRole>(`/roles/${id}`);
     }
 
+    users(id: number): Observable<{id: number; userName: string; email: string; fullName: string}[]> {
+        return this.http.get<any[]>(`/roles/${id}/users`);
+    }
+
     create(role: any): Observable<any> {
         return this.http.post('/roles', role);
     }

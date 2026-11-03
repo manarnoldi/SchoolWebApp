@@ -12,11 +12,13 @@ namespace SchoolWebApp.API.Controllers
     public class RolesController : ControllerBase
     {
         private readonly RoleManager<AppRole> _roleManager;
+        private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
         private readonly ILogger<RolesController> _logger;
 
-        public RolesController(IMapper mapper, RoleManager<AppRole> roleManager, ILogger<RolesController> logger)
+        public RolesController(IMapper mapper, RoleManager<AppRole> roleManager, UserManager<AppUser> userManager, ILogger<RolesController> logger)
         {
+            _userManager = userManager;
             _mapper = mapper;
             _roleManager = roleManager;
             _logger = logger;
@@ -24,10 +26,25 @@ namespace SchoolWebApp.API.Controllers
 
         //GET: api/roles
         [HttpGet]
-        public IActionResult GetAllRoles()
+        public async Task<IActionResult> GetAllRoles()
         {
             var roles = _roleManager.Roles.ToList();
-            return Ok(_mapper.Map<IEnumerable<RoleToReturn>>(roles));
+            var result = _mapper.Map<List<RoleToReturn>>(roles);
+            foreach (var r in result)
+                r.UserCount = (await _userManager.GetUsersInRoleAsync(r.Name!)).Count;
+            return Ok(result);
+        }
+
+        //GET: api/roles/{id}/users - who holds the role
+        [HttpGet("{id}/users")]
+        public async Task<IActionResult> GetRoleUsers(int id)
+        {
+            var role = await _roleManager.FindByIdAsync(id.ToString());
+            if (role == null) return NotFound();
+            var users = await _userManager.GetUsersInRoleAsync(role.Name!);
+            return Ok(users
+                .OrderBy(u => u.FirstName).ThenBy(u => u.LastName)
+                .Select(u => new { u.Id, u.UserName, u.Email, FullName = $"{u.FirstName} {u.LastName}".Trim() }));
         }
 
         //GET: api/roles/{id}
