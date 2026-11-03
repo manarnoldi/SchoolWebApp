@@ -25,6 +25,8 @@ export class HeaderComponent implements OnInit {
     activeUsersCount = 0;
     // Administrators see when the licence needs attention (missing, expiring, expired).
     licenceAlert: LicenceStatus | null = null;
+    // A viewer is reminded that nothing they do is saved.
+    isViewer = false;
 
     constructor(
         private authService: AuthService,
@@ -41,6 +43,7 @@ export class HeaderComponent implements OnInit {
         this.searchForm = new UntypedFormGroup({
             search: new UntypedFormControl(null)
         });
+        this.isViewer = this.authService.isViewer;
         this.loadActiveUsers();
         this.loadLicenceAlert();
     }

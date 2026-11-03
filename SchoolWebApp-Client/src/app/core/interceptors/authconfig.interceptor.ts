@@ -2,11 +2,13 @@ import {Inject, Injectable} from '@angular/core';
 import {HttpInterceptor, HttpRequest, HttpHandler} from '@angular/common/http';
 import {AuthService} from '../services/auth.service';
 import {catchError, throwError} from 'rxjs';
+import {ToastrService} from 'ngx-toastr';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
     constructor(
         private authService: AuthService,
+        private toastr: ToastrService,
         @Inject('BASE_API_URL') private baseUrl: string
     ) {}
 
@@ -39,6 +41,10 @@ export class AuthInterceptor implements HttpInterceptor {
                     !req.url.endsWith('/auditevents/logout')
                 ) {
                     this.authService.doLogout();
+                } else if (error.status === 403 && error.error?.readOnly) {
+                    // A viewer tried to change something: one notice here for every page (the page's own
+                    // toast of the same message is dropped as a duplicate).
+                    this.toastr.warning(error.error.message, 'View only');
                 } else if (error.status === 409) {
                     // console.log(error);
                     //error.message =

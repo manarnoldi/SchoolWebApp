@@ -29,6 +29,10 @@
 </form>
 
 <ul class="navbar-nav ml-auto align-items-center">
+    <li class="nav-item" *ngIf="isViewer">
+        <span class="badge bg-warning text-dark me-2" title="This account can look at everything but not change anything">
+            <i class="fas fa-eye me-1"></i>View only</span>
+    </li>
     <!-- <app-messages></app-messages> -->
     <li class="nav-item" *ngIf="licenceAlert as l">
         <a class="nav-link" [routerLink]="['/settings/licence']" [title]="l.message || 'Licence'">

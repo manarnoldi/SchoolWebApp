@@ -334,6 +334,7 @@ namespace SchoolWebApp.API.Controllers.Academics
         /// bulk deallocation dialog to warn how many results will be deleted.
         /// </summary>
         [HttpPost("countByAllocations")]
+        [AllowForViewer]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CountByAllocations([FromBody] List<int> studentSubjectIds)

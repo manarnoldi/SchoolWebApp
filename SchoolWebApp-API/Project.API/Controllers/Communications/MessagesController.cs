@@ -71,6 +71,7 @@ namespace SchoolWebApp.API.Controllers.Communications
         }
 
         [HttpPost("preview")]
+        [AllowForViewer]
         public async Task<IActionResult> Preview(ComposeMessageDto model)
         {
             try

@@ -23,6 +23,7 @@ namespace SchoolWebApp.API.Controllers
 
         //POST: api/auth/login
         [HttpPost("login")]
+        [SchoolWebApp.API.Security.AllowForViewer]
         public async Task<ActionResult<AuthenticationResponse>> CreateBearerToken(AuthenticationRequest request)
         {
             if (!ModelState.IsValid) return BadRequest("Bad credentials");
@@ -43,7 +44,10 @@ namespace SchoolWebApp.API.Controllers
                 return BadRequest("Bad credentials");
             }
 
-            var token = _jwtService.CreateToken(user, await _userManager.GetRolesAsync(user));
+            var roles = await _userManager.GetRolesAsync(user);
+            var token = _jwtService.CreateToken(user, roles);
+            // A viewer can't change their password (a shared demo login stays usable), so is never asked to.
+            if (roles.Contains(SchoolWebApp.API.Security.ViewerRole.Name)) token.MustChangePassword = false;
 
             // Successful sign-in - record after the token is built so
             // a token-generation failure surfaces as LoginFailed

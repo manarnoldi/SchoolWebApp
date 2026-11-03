@@ -48,6 +48,7 @@ namespace SchoolWebApp.API.Controllers
         // accept-and-record; the response is 204 so the UI doesn't
         // have to parse anything.
         [HttpPost("print")]
+        [SchoolWebApp.API.Security.AllowForViewer]
         public async Task<IActionResult> Print([FromBody] PrintEventRequest body)
         {
             if (body == null) return BadRequest();
@@ -61,6 +62,7 @@ namespace SchoolWebApp.API.Controllers
         // Frontend should call this BEFORE clearing the token so the
         // request still carries it.
         [HttpPost("logout")]
+        [SchoolWebApp.API.Security.AllowForViewer]
         public async Task<IActionResult> Logout()
         {
             var name = User?.FindFirstValue("username") ?? User?.Identity?.Name;

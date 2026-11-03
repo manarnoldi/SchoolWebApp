@@ -76,6 +76,8 @@ builder.Services.AddControllers(
                options.Filters.Add<SchoolWebApp.API.Licensing.ModuleLicenceFilter>();
                // Each API answers only roles holding the menu of a page that uses it.
                options.Filters.Add<SchoolWebApp.API.Security.MenuPermissionFilter>();
+               // Viewers see but never change.
+               options.Filters.Add<SchoolWebApp.API.Security.ViewerReadOnlyFilter>();
                // options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
            }).AddNewtonsoftJson(options =>
            {

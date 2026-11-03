@@ -97,6 +97,12 @@ export class AuthService {
         });
     }
 
+    // A viewer (the Viewer role, on top of another) sees everything their other role does and changes nothing.
+    get isViewer(): boolean {
+        let user = this.currentUser || this.getCurrentUser();
+        return ((user?.roles || []) as any[]).some((r) => (r ?? '').toString() === 'Viewer');
+    }
+
     doLogout() {
         // Collapse the burst of concurrent 401s (one per in-flight request)
         // into a single logout so we don't fire N audit POSTs and N navigations.
