@@ -29,7 +29,8 @@ export class HeaderComponent implements OnInit {
     // A viewer is reminded that nothing they do is saved.
     isViewer = false;
     // The user guide, and for administrators their guide - unless guides are switched off (the demo site).
-    guides = {user: false, admin: false};
+    // and for SuperAdministrators the client presentation (shown even on the demo site).
+    guides = {user: false, admin: false, presentation: false};
 
     constructor(
         private authService: AuthService,
@@ -50,7 +51,7 @@ export class HeaderComponent implements OnInit {
         this.isViewer = this.authService.isViewer;
         this.loadActiveUsers();
         this.loadLicenceAlert();
-        this.http.get<{user: boolean; admin: boolean}>('/userGuide').subscribe({
+        this.http.get<{user: boolean; admin: boolean; presentation: boolean}>('/userGuide').subscribe({
             next: (g) => (this.guides = g),
             error: () => {}
         });

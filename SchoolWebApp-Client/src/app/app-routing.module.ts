@@ -200,6 +200,7 @@ const routes: Routes = [
             {path: 'profile', component: ProfileComponent},
             {path: 'help/user-guide', component: UserGuideComponent, data: {kind: 'user'}},
             {path: 'help/admin-guide', component: UserGuideComponent, data: {kind: 'admin'}},
+            {path: 'help/presentation', component: UserGuideComponent, data: {kind: 'presentation'}},
             {path: 'blank', component: BlankComponent},
             {path: 'sub-menu-1', component: SubMenuComponent},
             {path: 'sub-menu-2', component: BlankComponent},

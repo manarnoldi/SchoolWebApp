@@ -5,5 +5,5 @@
     <div class="text-center text-muted p-4" *ngIf="unavailable">
         <i class="fas fa-info-circle me-1"></i> The {{ title | lowercase }} is not available.
     </div>
-    <iframe *ngIf="html" [srcdoc]="html" class="ug-frame" [title]="'ShuleNova ' + title"></iframe>
+    <iframe *ngIf="html" [srcdoc]="html" class="ug-frame" allow="fullscreen" [title]="'ShuleNova ' + title"></iframe>
 </div>

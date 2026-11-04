@@ -12,6 +12,8 @@ namespace SchoolWebApp.API.Controllers
     /// tools/user-guide into Guides/. Served only to a signed-in user, only while
     /// Security > Show user guides is on (off on the demo site), and without the
     /// chapters of modules the school's licence does not include.
+    /// Also Kodetek's client presentation (tools/presentation), for SuperAdministrators only and
+    /// whatever the guides setting, so it can be shown from the demo site.
     /// </summary>
     [Authorize]
     [ApiController]
@@ -39,7 +41,17 @@ namespace SchoolWebApp.API.Controllers
         public async Task<IActionResult> Available()
         {
             var on = await GuidesOnAsync();
-            return Ok(new { user = on, admin = on && IsAdmin() });
+            return Ok(new { user = on, admin = on && IsAdmin(), presentation = User.IsInRole("SuperAdministrator") });
+        }
+
+        // GET api/userGuide/presentation - the client presentation as one HTML page
+        [HttpGet("presentation")]
+        public async Task<IActionResult> Presentation()
+        {
+            if (!User.IsInRole("SuperAdministrator")) return Forbid();
+            var path = Path.Combine(_env.ContentRootPath, "Guides", "presentation.html");
+            if (!System.IO.File.Exists(path)) return NotFound();
+            return Content(await System.IO.File.ReadAllTextAsync(path), "text/html; charset=utf-8");
         }
 
         // GET api/userGuide/user | api/userGuide/admin - the guide as one HTML page

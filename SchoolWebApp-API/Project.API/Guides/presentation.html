@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kodetek &amp; ShuleNova – Client Presentation</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400..800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+  html, body { margin: 0; height: 100%; background: #0B1424; overflow: hidden; font-family: 'DM Sans', Arial, sans-serif; }
+  #stage { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; transform-origin: center; }
+  #stage * { box-sizing: border-box; margin: 0; }
+  #stage section { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden;
+                   opacity: 0; visibility: hidden; transition: opacity .45s ease, visibility .45s; }
+  #stage section.on { opacity: 1; visibility: visible; }
+  #stage h1 { font-size: 96px; font-weight: 600; line-height: 1.1; }
+  #stage h2 { font-size: 64px; font-weight: 600; line-height: 1.15; }
+  #stage h3 { font-size: 44px; font-weight: 600; line-height: 1.2; }
+  #stage p { font-size: 32px; line-height: 1.4; }
+  #stage b { font-weight: 700; }
+  #stage img, #stage svg { display: block; flex-shrink: 0; }
+  #stage hr { border: 0; width: 100%; }
+  #stage aside { display: none; }
+  .xi { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  #bar { position: fixed; right: 16px; bottom: 16px; display: flex; gap: 6px; align-items: center; padding: 6px 10px;
+         background: rgba(14, 26, 47, .85); color: #F3F5FA; border-radius: 10px; font: 14px 'DM Sans', Arial, sans-serif;
+         transition: opacity .4s; z-index: 2; }
+  #bar.idle { opacity: 0; }
+  #bar button { background: none; border: 0; color: inherit; font: inherit; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+  #bar button:hover { background: rgba(255, 255, 255, .15); }
+  #count { min-width: 60px; text-align: center; }
+  #notes { position: fixed; left: 16px; right: 16px; bottom: 64px; max-height: 30%; overflow: auto; display: none; z-index: 2;
+           background: rgba(14, 26, 47, .92); color: #F3F5FA; padding: 14px 18px; border-radius: 10px; font: 18px/1.5 'DM Sans', Arial, sans-serif; }
+  #notes.show { display: block; }
+  @media print {
+    @page { size: 1920px 1080px; margin: 0; }
+    html, body { overflow: visible; height: auto; }
+    #stage { position: static; transform: none !important; }
+    #stage section { position: relative; opacity: 1; visibility: visible; page-break-after: always; }
+    #bar, #notes { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+<section id="cover" data-transition="fade" style="background:radial-gradient(ellipse at 85% 10%, #1D3A6B 0%, #0E1A2F 60%);color:#F3F5FA;font-family:'DM Sans', Arial, sans-serif;padding:112px 128px 112px;display:flex;flex-direction:column;justify-content:space-between;gap:40px">
+<div style="display:flex;flex-direction:row">
+<div style="background:#FBFBF8;padding:22px 32px;border-radius:18px;box-shadow:0 20px 50px rgba(0,0,0,0.35)">
+<img src="assets/presentation/kodetek.png" alt="Kodetek Investment Limited logo" style="width:620px;height:88px;object-fit:contain">
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:20px">
+<p style="font-size:28px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:#F7A325">Kodetek Investment Limited</p>
+<h1 style="font-family:'Outfit', Arial, sans-serif;font-size:104px;font-weight:700;line-height:1.02;color:#F3F5FA">For all your<br><span style="color:#5B9BE6">technology solutions.</span></h1>
+<p style="font-size:30px;color:#B8C3D9">Founded in <b style="color:#F3F5FA">2018</b>, building software for schools, clinics and businesses.</p>
+</div>
+<div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:24px">
+<div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-top:4px solid #F7A325;border-radius:18px;padding:28px 32px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:36px;font-weight:600;color:#F3F5FA">Arnold Shangala</h3>
+<p style="font-size:24px;color:#B8C3D9;line-height:1.3">Director &amp; Lead Software Engineer</p>
+</div>
+<div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-top:4px solid #5B9BE6;border-radius:18px;padding:28px 32px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:36px;font-weight:600;color:#F3F5FA">Nicky Kalu</h3>
+<p style="font-size:24px;color:#B8C3D9;line-height:1.3">Software Engineer</p>
+</div>
+<div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-top:4px solid #5B9BE6;border-radius:18px;padding:28px 32px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:36px;font-weight:600;color:#F3F5FA">Pascal Mbamungu</h3>
+<p style="font-size:24px;color:#B8C3D9;line-height:1.3">Software Engineer</p>
+</div>
+<div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-top:4px solid #9B87F0;border-radius:18px;padding:28px 32px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:36px;font-weight:600;color:#F3F5FA">Jason Mwamachi</h3>
+<p style="font-size:24px;color:#B8C3D9;line-height:1.3">Administrator</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:row;gap:48px;align-items:center">
+<div style="display:flex;flex-direction:row;gap:16px;align-items:center">
+<svg class="xi" viewBox="0 0 24 24" style="color:#F7A325;width:36px;height:36px" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+<p style="font-size:28px;color:#F3F5FA"><b>Offices:</b> Mombasa</p>
+</div>
+<div style="display:flex;flex-direction:row;gap:16px;align-items:center">
+<svg class="xi" viewBox="0 0 24 24" style="color:#F7A325;width:36px;height:36px" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+<p style="font-size:28px;color:#B8C3D9">Coming soon: a branch office in Kombani / Ukunda</p>
+</div>
+</div>
+<aside>Welcome everyone. We are Kodetek Investment Limited, a software company based in Mombasa, founded in 2018. I am Arnold, the director and lead software engineer. With me are Nicky Kalu and Pascal Mbamungu, our software engineers, and Jason Mwamachi, our administrator. We will soon open a branch office in Kombani / Ukunda, closer to schools on the south coast.</aside>
+</section>
+<section id="team" data-transition="fade" style="background:#F5F6FA;color:#1B2840;font-family:'DM Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#2B7BD6">Our team</p>
+<h2 style="font-family:'Outfit', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#0E1A2F">The people behind the software</h2>
+</div>
+<div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:28px">
+<div style="background:#FFFFFF;border:1px solid #E1E5EE;border-left:6px solid #F7A325;border-radius:20px;padding:28px 40px;display:flex;flex-direction:column;gap:12px;box-shadow:0 12px 32px rgba(14,26,47,0.06)">
+<div style="display:flex;flex-direction:column;gap:4px">
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:36px;font-weight:700;color:#0E1A2F">Arnold Shangala</h3>
+<p style="font-size:26px;font-weight:500;color:#B86E00">Director &amp; Lead Software Engineer</p>
+</div>
+<div style="display:flex;flex-direction:row;gap:20px;align-items:center"><p style="font-size:24px;font-weight:700;color:#FFFFFF;background:#2B7BD6;padding:4px 14px;border-radius:10px">2026</p><p style="font-size:28px;color:#3A4A63">MSc Digital Development</p></div>
+<div style="display:flex;flex-direction:row;gap:20px;align-items:center"><p style="font-size:24px;font-weight:700;color:#FFFFFF;background:#2B7BD6;padding:4px 14px;border-radius:10px">2020</p><p style="font-size:28px;color:#3A4A63">MSc Information Technology</p></div>
+<div style="display:flex;flex-direction:row;gap:20px;align-items:center"><p style="font-size:24px;font-weight:700;color:#FFFFFF;background:#2B7BD6;padding:4px 14px;border-radius:10px">2013</p><p style="font-size:28px;color:#3A4A63">BSc Computer Engineering</p></div>
+</div>
+<div style="background:#FFFFFF;border:1px solid #E1E5EE;border-left:6px solid #2B7BD6;border-radius:20px;padding:28px 40px;display:flex;flex-direction:column;gap:12px;box-shadow:0 12px 32px rgba(14,26,47,0.06)">
+<div style="display:flex;flex-direction:column;gap:4px">
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:36px;font-weight:700;color:#0E1A2F">Nicky Kalu</h3>
+<p style="font-size:26px;font-weight:500;color:#2B7BD6">Software Engineer</p>
+</div>
+<div style="display:flex;flex-direction:row;gap:20px;align-items:center"><p style="font-size:24px;font-weight:700;color:#FFFFFF;background:#2B7BD6;padding:4px 14px;border-radius:10px">2013</p><p style="font-size:28px;color:#3A4A63">BSc Computer Science</p></div>
+</div>
+<div style="background:#FFFFFF;border:1px solid #E1E5EE;border-left:6px solid #2B7BD6;border-radius:20px;padding:28px 40px;display:flex;flex-direction:column;gap:12px;box-shadow:0 12px 32px rgba(14,26,47,0.06)">
+<div style="display:flex;flex-direction:column;gap:4px">
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:36px;font-weight:700;color:#0E1A2F">Pascal Mbamungu</h3>
+<p style="font-size:26px;font-weight:500;color:#2B7BD6">Software Engineer</p>
+</div>
+<div style="display:flex;flex-direction:row;gap:20px;align-items:center"><p style="font-size:24px;font-weight:700;color:#FFFFFF;background:#2B7BD6;padding:4px 14px;border-radius:10px">2018</p><p style="font-size:28px;color:#3A4A63">BSc Business Information Technology</p></div>
+</div>
+<div style="background:#FFFFFF;border:1px solid #E1E5EE;border-left:6px solid #5B3FC4;border-radius:20px;padding:28px 40px;display:flex;flex-direction:column;gap:12px;box-shadow:0 12px 32px rgba(14,26,47,0.06)">
+<div style="display:flex;flex-direction:column;gap:4px">
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:36px;font-weight:700;color:#0E1A2F">Jason Mwamachi</h3>
+<p style="font-size:26px;font-weight:500;color:#5B3FC4">Administrator</p>
+</div>
+<div style="display:flex;flex-direction:row;gap:20px;align-items:center"><p style="font-size:24px;font-weight:700;color:#FFFFFF;background:#2B7BD6;padding:4px 14px;border-radius:10px">2014</p><p style="font-size:28px;color:#3A4A63">BSc Business Administration</p></div>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6C84">Kodetek Investment Limited</p>
+<aside>Our key staff and their qualifications. Between us we bring engineering, computer science, business IT and administration – the mix needed to build software and to support schools after go-live.</aside>
+</section>
+<section id="products" data-transition="fade" style="background:#F5F6FA;color:#1B2840;font-family:'DM Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#2B7BD6">Our products</p>
+<h2 style="font-family:'Outfit', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#0E1A2F">Software for schools, clinics and businesses</h2>
+</div>
+<div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:28px">
+<div style="background:#FFFFFF;border:1px solid #E1E5EE;border-radius:20px;padding:32px 44px;display:flex;flex-direction:column;gap:16px;box-shadow:0 12px 32px rgba(14,26,47,0.06)">
+<img src="assets/img/shule-nova-logo.png" alt="ShuleNova logo" style="width:330px;height:72px;object-fit:contain">
+<p style="font-size:28px;line-height:1.4;color:#3A4A63">School management: learners, staff, CBE and exams, fees and accounts, payroll, elections and parent SMS in one web app.</p>
+</div>
+<div style="background:#FFFFFF;border:1px solid #E1E5EE;border-radius:20px;padding:32px 44px;display:flex;flex-direction:column;gap:16px;box-shadow:0 12px 32px rgba(14,26,47,0.06)">
+<img src="assets/presentation/clinicnova.png" alt="ClinicNova logo" style="width:312px;height:72px;object-fit:contain">
+<p style="font-size:28px;line-height:1.4;color:#3A4A63">Clinic and hospital management: patient registration, outpatient visits, billing and finance.</p>
+</div>
+<div style="background:#FFFFFF;border:1px solid #E1E5EE;border-radius:20px;padding:32px 44px;display:flex;flex-direction:column;gap:16px;box-shadow:0 12px 32px rgba(14,26,47,0.06)">
+<img src="assets/presentation/ibms.png" alt="IBMS logo" style="width:318px;height:72px;object-fit:contain">
+<p style="font-size:28px;line-height:1.4;color:#3A4A63">Integrated Business Management System: shop sales, rentals, expenses, transactions and reports for growing businesses.</p>
+</div>
+<div style="background:#0E1A2F;border-radius:20px;padding:32px 44px;display:flex;flex-direction:column;gap:16px;box-shadow:0 12px 32px rgba(14,26,47,0.12)">
+<div style="display:flex;flex-direction:row;gap:20px;align-items:center;height:72px">
+<svg class="xi" viewBox="0 0 24 24" style="color:#F7A325;width:64px;height:64px" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:44px;font-weight:700;color:#F3F5FA">Custom applications</h3>
+</div>
+<p style="font-size:28px;line-height:1.4;color:#B8C3D9">Software built around your organisation’s own processes: web, mobile and integrations.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6C84">Kodetek Investment Limited</p>
+<aside>Four lines of work. ShuleNova, which we are here to show you today. ClinicNova for clinics and hospitals. IBMS, our integrated business management system for shops and rentals. And custom applications built to a client’s own processes.</aside>
+</section>
+<section id="clients" data-transition="fade" style="background:#0E1A2F;color:#F3F5FA;font-family:'DM Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#F7A325">Our clients</p>
+<h2 style="font-family:'Outfit', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#F3F5FA">Trusted by schools, clinics and businesses</h2>
+</div>
+<div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:28px">
+<div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:36px;display:flex;flex-direction:column;gap:16px">
+<svg class="xi" viewBox="0 0 24 24" style="color:#F7A325;width:40px;height:40px" aria-hidden="true"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:36px;font-weight:600;line-height:1.15;color:#F3F5FA">Kasidi High School</h3>
+</div>
+<div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:36px;display:flex;flex-direction:column;gap:16px">
+<svg class="xi" viewBox="0 0 24 24" style="color:#F7A325;width:40px;height:40px" aria-hidden="true"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:36px;font-weight:600;line-height:1.15;color:#F3F5FA">Swikunda Primary School</h3>
+</div>
+<div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:36px;display:flex;flex-direction:column;gap:16px">
+<svg class="xi" viewBox="0 0 24 24" style="color:#F7A325;width:40px;height:40px" aria-hidden="true"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:36px;font-weight:600;line-height:1.15;color:#F3F5FA">KP Senior School</h3>
+</div>
+<div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:36px;display:flex;flex-direction:column;gap:16px">
+<svg class="xi" viewBox="0 0 24 24" style="color:#F7A325;width:40px;height:40px" aria-hidden="true"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:36px;font-weight:600;line-height:1.15;color:#F3F5FA">Don Bosco Tech Africa</h3>
+</div>
+<div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:36px;display:flex;flex-direction:column;gap:16px">
+<svg class="xi" viewBox="0 0 24 24" style="color:#F7A325;width:40px;height:40px" aria-hidden="true"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:36px;font-weight:600;line-height:1.15;color:#F3F5FA">Ndoria Investment Limited</h3>
+</div>
+<div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:36px;display:flex;flex-direction:column;gap:16px">
+<svg class="xi" viewBox="0 0 24 24" style="color:#F7A325;width:40px;height:40px" aria-hidden="true"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:36px;font-weight:600;line-height:1.15;color:#F3F5FA">Dr. Mwasi Clinic, Ukunda</h3>
+</div>
+<div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:36px;display:flex;flex-direction:column;gap:16px">
+<svg class="xi" viewBox="0 0 24 24" style="color:#F7A325;width:40px;height:40px" aria-hidden="true"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:36px;font-weight:600;line-height:1.15;color:#F3F5FA">Senido Enterprises Limited</h3>
+</div>
+<div style="background:#2B7BD6;border-radius:20px;padding:36px;display:flex;flex-direction:column;justify-content:center">
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:36px;font-weight:600;line-height:1.15;color:#FFFFFF">…and many others</h3>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#8F9BB3">Kodetek Investment Limited</p>
+<aside>Some of the schools, clinics and businesses already running our systems, among many others. Happy to share references.</aside>
+</section>
+<section id="shulenova" data-transition="fade" style="background:radial-gradient(ellipse at 90% 90%, #2A2470 0%, #0E1A2F 65%);color:#F3F5FA;font-family:'DM Sans', Arial, sans-serif;padding:112px 128px;display:grid;grid-template-columns:620px 1fr;gap:64px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:row">
+<div style="background:#FBFBF8;padding:16px 24px;border-radius:16px">
+<img src="assets/img/shule-nova-logo.png" alt="ShuleNova logo" style="width:300px;height:80px;object-fit:contain">
+</div>
+</div>
+<h2 style="font-family:'Outfit', Arial, sans-serif;font-size:80px;font-weight:700;line-height:1.05;color:#F3F5FA">One system for the whole school</h2>
+<p style="font-size:30px;line-height:1.45;color:#B8C3D9">Web-based: runs on any phone, tablet or computer. Each school has its own secure site and data.</p>
+<div style="display:flex;flex-direction:row;flex-wrap:wrap;gap:12px">
+<p style="font-size:24px;font-weight:700;color:#0E1A2F;background:#F7A325;padding:8px 18px;border-radius:999px">Core</p>
+<p style="font-size:24px;font-weight:500;color:#F3F5FA;border:1px solid #5B9BE6;padding:8px 18px;border-radius:999px">Academics</p>
+<p style="font-size:24px;font-weight:500;color:#F3F5FA;border:1px solid #5B9BE6;padding:8px 18px;border-radius:999px">Finance</p>
+<p style="font-size:24px;font-weight:500;color:#F3F5FA;border:1px solid #5B9BE6;padding:8px 18px;border-radius:999px">Payroll</p>
+<p style="font-size:24px;font-weight:500;color:#F3F5FA;border:1px solid #5B9BE6;padding:8px 18px;border-radius:999px">Elections</p>
+<p style="font-size:24px;font-weight:500;color:#F3F5FA;border:1px solid #5B9BE6;padding:8px 18px;border-radius:999px">Communications</p>
+</div>
+</div>
+<div style="background:#FFFFFF;border-radius:20px;padding:12px;box-shadow:0 30px 80px rgba(0,0,0,0.45);display:flex">
+<img src="assets/guide/gs-dashboard-full.png" alt="The ShuleNova dashboard: students, staff, exam performance, fees and CBE assessments at a glance" style="width:956px;height:700px;object-fit:cover;border-radius:12px;object-position:50% 0%">
+</div>
+<aside>ShuleNova brings everything a school runs on into one place. The core – school, learners, staff, users and security – is always included; the five modules on top are Academics, Finance, Payroll, Elections and Communications. This is the dashboard the head teacher sees on sign-in. Next, a few points per module, then the live system.</aside>
+</section>
+<section id="core-1" data-transition="fade" style="background:#F5F6FA;color:#1B2840;font-family:'DM Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#2B7BD6">Core · always included</p>
+<h2 style="font-family:'Outfit', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#0E1A2F">School, learners and staff</h2>
+</div>
+<div style="display:flex;flex-direction:row;gap:64px;align-items:start">
+<div style="width:600px;display:flex;flex-direction:column;gap:26px">
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Learner records:</b> details, parents, subjects, class history and documents.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Promotion</b> of whole classes to the next grade in one step.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Attendance</b> for learners and staff, with daily and detailed reports.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Staff records</b> and the subjects each teacher handles.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">School calendar,</b> academic years, terms and classes.</p>
+</div>
+<div style="width:1000px;background:#FFFFFF;border:1px solid #E1E5EE;border-radius:20px;padding:12px;box-shadow:0 24px 60px rgba(14,26,47,0.14);display:flex">
+<img src="assets/guide/stu-record.png" alt="A learner’s full record in ShuleNova" style="width:976px;height:549px;object-fit:cover;border-radius:12px">
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6C84">ShuleNova · Kodetek Investment Limited</p>
+<aside>The core comes with every licence. Every learner has one full record: details, parents, subjects, class history. Promotion moves a class up at year end. Attendance for learners and staff with reports.</aside>
+</section>
+<section id="core-2" data-transition="fade" style="background:#F5F6FA;color:#1B2840;font-family:'DM Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#2B7BD6">Core · always included</p>
+<h2 style="font-family:'Outfit', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#0E1A2F">Security, control and approvals</h2>
+</div>
+<div style="display:flex;flex-direction:row;gap:64px;align-items:start">
+<div style="width:600px;display:flex;flex-direction:column;gap:26px">
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Roles and permissions:</b> each user sees only the menus their role allows.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">View-only accounts</b> for board members and auditors.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Approval workflows</b> with maker-checker: nobody approves their own request.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Audit logs:</b> who changed what, and when.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Built-in user guides</b> with screenshots, for staff and administrators.</p>
+</div>
+<div style="width:1000px;background:#FFFFFF;border:1px solid #E1E5EE;border-radius:20px;padding:12px;box-shadow:0 24px 60px rgba(14,26,47,0.14);display:flex">
+<img src="assets/guide/aset-workflows.png" alt="Setting up approval workflows in ShuleNova" style="width:976px;height:549px;object-fit:cover;border-radius:12px;object-position:50% 0%">
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6C84">ShuleNova · Kodetek Investment Limited</p>
+<aside>Control matters for a school’s money and records. Roles decide who sees what. A view-only role suits board members and auditors. Expenses, budgets, payroll and schemes of work go through approval steps you define. Every change is logged.</aside>
+</section>
+<section id="aca-1" data-transition="fade" style="background:#F5F6FA;color:#1B2840;font-family:'DM Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#2B7BD6">Academics · 1 of 3</p>
+<h2 style="font-family:'Outfit', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#0E1A2F">Exams, results and report forms</h2>
+</div>
+<div style="display:flex;flex-direction:row;gap:64px;align-items:start">
+<div style="width:600px;display:flex;flex-direction:column;gap:26px">
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Results entry</b> by each subject teacher, with a missing-marks check.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Broadsheets,</b> ranking and means worked out automatically.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Report forms</b> printed for a whole class in one click.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Subject and class performance</b> analysis, term on term.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Results by SMS</b> to parents straight from the results page.</p>
+</div>
+<div style="width:1000px;background:#FFFFFF;border:1px solid #E1E5EE;border-radius:20px;padding:12px;box-shadow:0 24px 60px rgba(14,26,47,0.14);display:flex">
+<img src="assets/presentation/exam-results.png" alt="A full exam broadsheet in ShuleNova: Grade 7E, 11 subjects" style="width:976px;height:549px;object-fit:cover;border-radius:12px">
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6C84">ShuleNova · Kodetek Investment Limited</p>
+<aside>Teachers enter marks for their own subjects; ShuleNova flags missing marks, builds the broadsheet, ranks learners and prints report forms for the whole class. Results can go to parents by SMS (with the Communications module).</aside>
+</section>
+<section id="aca-2" data-transition="fade" style="background:#F5F6FA;color:#1B2840;font-family:'DM Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#2B7BD6">Academics · 2 of 3</p>
+<h2 style="font-family:'Outfit', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#0E1A2F">Built for CBE</h2>
+</div>
+<div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:20px">
+<div style="background:#1E6B45;border-radius:18px;padding:24px 32px;display:flex;flex-direction:column;gap:4px">
+<p style="font-family:'Outfit', Arial, sans-serif;font-size:56px;font-weight:700;color:#FFFFFF;line-height:1.1">EE</p>
+<p style="font-size:24px;color:#E3F3EA">Exceeding Expectations</p>
+</div>
+<div style="background:#3E9A5E;border-radius:18px;padding:24px 32px;display:flex;flex-direction:column;gap:4px">
+<p style="font-family:'Outfit', Arial, sans-serif;font-size:56px;font-weight:700;color:#FFFFFF;line-height:1.1">ME</p>
+<p style="font-size:24px;color:#FFFFFF">Meeting Expectations</p>
+</div>
+<div style="background:#F7A325;border-radius:18px;padding:24px 32px;display:flex;flex-direction:column;gap:4px">
+<p style="font-family:'Outfit', Arial, sans-serif;font-size:56px;font-weight:700;color:#2A1A00;line-height:1.1">AE</p>
+<p style="font-size:24px;color:#2A1A00">Approaching Expectations</p>
+</div>
+<div style="background:#B3263A;border-radius:18px;padding:24px 32px;display:flex;flex-direction:column;gap:4px">
+<p style="font-family:'Outfit', Arial, sans-serif;font-size:56px;font-weight:700;color:#FFFFFF;line-height:1.1">BE</p>
+<p style="font-size:24px;color:#FFFFFF">Below Expectations</p>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:28px">
+<div style="background:#FFFFFF;border:1px solid #E1E5EE;border-radius:20px;padding:32px 40px;display:flex;flex-direction:column;gap:12px">
+<svg class="xi" viewBox="0 0 24 24" style="color:#2B7BD6;width:48px;height:48px" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:36px;font-weight:600;color:#0E1A2F">KICD designs loaded</h3>
+<p style="font-size:28px;line-height:1.4;color:#3A4A63">Strands, sub-strands and learning outcomes for every grade, ready to assess.</p>
+</div>
+<div style="background:#FFFFFF;border:1px solid #E1E5EE;border-radius:20px;padding:32px 40px;display:flex;flex-direction:column;gap:12px">
+<svg class="xi" viewBox="0 0 24 24" style="color:#2B7BD6;width:48px;height:48px" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:36px;font-weight:600;color:#0E1A2F">Assessment tracker</h3>
+<p style="font-size:28px;line-height:1.4;color:#3A4A63">See which classes and learning areas have been assessed, and who needs support.</p>
+</div>
+<div style="background:#FFFFFF;border:1px solid #E1E5EE;border-radius:20px;padding:32px 40px;display:flex;flex-direction:column;gap:12px">
+<svg class="xi" viewBox="0 0 24 24" style="color:#2B7BD6;width:48px;height:48px" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:36px;font-weight:600;color:#0E1A2F">Learner development</h3>
+<p style="font-size:28px;line-height:1.4;color:#3A4A63">Values, co-curricular activities and responsibilities on the report form.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6C84">ShuleNova · Kodetek Investment Limited</p>
+<aside>CBE is built in, not bolted on. The KICD curriculum designs are loaded grade by grade, so teachers assess each learning outcome as EE, ME, AE or BE. The tracker shows the head teacher what has been assessed and which learners need support. Values and co-curricular activities flow onto the report form.</aside>
+</section>
+<section id="aca-3" data-transition="fade" style="background:#F5F6FA;color:#1B2840;font-family:'DM Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#2B7BD6">Academics · 3 of 3</p>
+<h2 style="font-family:'Outfit', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#0E1A2F">Teaching management</h2>
+</div>
+<div style="display:flex;flex-direction:row;gap:64px;align-items:start">
+<div style="width:600px;display:flex;flex-direction:column;gap:26px">
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Schemes of work</b> uploaded per subject and class each term.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Weekly lesson plans</b> built from the curriculum.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Approval</b> by the head of department or head teacher.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Record of work:</b> what was actually taught.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Tracker</b> showing overdue schemes and plans at a glance.</p>
+</div>
+<div style="width:1000px;background:#FFFFFF;border:1px solid #E1E5EE;border-radius:20px;padding:12px;box-shadow:0 24px 60px rgba(14,26,47,0.14);display:flex">
+<img src="assets/guide/tch-tracker.png" alt="The teaching documents tracker in ShuleNova" style="width:976px;height:549px;object-fit:cover;border-radius:12px">
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6C84">ShuleNova · Kodetek Investment Limited</p>
+<aside>No more chasing paper schemes of work. Teachers upload schemes and write weekly lesson plans; heads of department approve them; the tracker shows what is overdue, and the record of work shows what was taught.</aside>
+</section>
+<section id="fin-1" data-transition="fade" style="background:#F5F6FA;color:#1B2840;font-family:'DM Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#2B7BD6">Finance · 1 of 3</p>
+<h2 style="font-family:'Outfit', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#0E1A2F">Fees, from invoice to receipt</h2>
+</div>
+<div style="display:flex;flex-direction:row;gap:64px;align-items:start">
+<div style="width:600px;display:flex;flex-direction:column;gap:26px">
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Fee structures</b> per class and term; invoice a whole class at once.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Payments</b> by M-Pesa, bank, cheque or card, with printed receipts.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Student statements</b> and outstanding balances by class.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Sponsors and discounts</b> handled properly.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Balance reminders</b> to parents by SMS.</p>
+</div>
+<div style="width:1000px;background:#FFFFFF;border:1px solid #E1E5EE;border-radius:20px;padding:12px;box-shadow:0 24px 60px rgba(14,26,47,0.14);display:flex">
+<img src="assets/guide/fin-statement.png" alt="A student fee statement in ShuleNova" style="width:976px;height:549px;object-fit:contain;border-radius:12px">
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6C84">ShuleNova · Kodetek Investment Limited</p>
+<aside>Set the fee structure once and invoice a class in one go. Record payments with the M-Pesa code or bank slip; the receipt prints immediately. Any learner’s statement is one click away, and balance reminders can go to parents by SMS.</aside>
+</section>
+<section id="fin-2" data-transition="fade" style="background:#F5F6FA;color:#1B2840;font-family:'DM Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#2B7BD6">Finance · 2 of 3</p>
+<h2 style="font-family:'Outfit', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#0E1A2F">Budgets and expenses under control</h2>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:28px">
+<div style="background:#FFFFFF;border:1px solid #E1E5EE;border-top:6px solid #2B7BD6;border-radius:20px;padding:40px;display:flex;flex-direction:column;gap:16px">
+<svg class="xi" viewBox="0 0 24 24" style="color:#2B7BD6;width:56px;height:56px" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:40px;font-weight:600;color:#0E1A2F">Budgets</h3>
+<p style="font-size:28px;line-height:1.4;color:#3A4A63">Plan the year’s budget, amend it when needed, and compare budget with actual spending.</p>
+</div>
+<div style="background:#FFFFFF;border:1px solid #E1E5EE;border-top:6px solid #F7A325;border-radius:20px;padding:40px;display:flex;flex-direction:column;gap:16px">
+<svg class="xi" viewBox="0 0 24 24" style="color:#B86E00;width:56px;height:56px" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:40px;font-weight:600;color:#0E1A2F">Expenses</h3>
+<p style="font-size:28px;line-height:1.4;color:#3A4A63">Staff request, approvers approve, then the bursar pays. Every shilling has a trail.</p>
+</div>
+<div style="background:#FFFFFF;border:1px solid #E1E5EE;border-top:6px solid #5B3FC4;border-radius:20px;padding:40px;display:flex;flex-direction:column;gap:16px">
+<svg class="xi" viewBox="0 0 24 24" style="color:#5B3FC4;width:56px;height:56px" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:40px;font-weight:600;color:#0E1A2F">Approvals</h3>
+<p style="font-size:28px;line-height:1.4;color:#3A4A63">Your own approval steps, with notifications at each step. Approved records are locked.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6C84">ShuleNova · Kodetek Investment Limited</p>
+<aside>Spending follows the budget. Expenses are requested, approved in the steps the school sets, then paid – and once approved, nothing can be quietly changed. Budget against actual shows where the money went.</aside>
+</section>
+<section id="fin-3" data-transition="fade" style="background:#F5F6FA;color:#1B2840;font-family:'DM Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#2B7BD6">Finance · 3 of 3</p>
+<h2 style="font-family:'Outfit', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#0E1A2F">Accounts that keep themselves</h2>
+</div>
+<div style="display:flex;flex-direction:row;gap:64px;align-items:start">
+<div style="width:600px;display:flex;flex-direction:column;gap:26px">
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Automatic journals</b> from invoices, payments, expenses and payroll.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Chart of accounts</b> and accounting periods you can close.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Trial balance, income statement</b> and balance sheet at any time.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Expense and fee reports</b> ready for the board.</p>
+</div>
+<div style="width:1000px;background:#FFFFFF;border:1px solid #E1E5EE;border-radius:20px;padding:12px;box-shadow:0 24px 60px rgba(14,26,47,0.14);display:flex">
+<img src="assets/guide/fin-income-statement.png" alt="The income statement in ShuleNova" style="width:976px;height:549px;object-fit:cover;border-radius:12px;object-position:50% 0%">
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6C84">ShuleNova · Kodetek Investment Limited</p>
+<aside>Behind the scenes, every invoice, payment, expense and payroll posts to the books automatically. The bursar can pull a trial balance, income statement or balance sheet whenever the board asks.</aside>
+</section>
+<section id="pay-1" data-transition="fade" style="background:#F5F6FA;color:#1B2840;font-family:'DM Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#2B7BD6">Payroll · 1 of 2</p>
+<h2 style="font-family:'Outfit', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#0E1A2F">Monthly payroll in minutes</h2>
+</div>
+<div style="display:flex;flex-direction:row;gap:64px;align-items:start">
+<div style="width:700px;display:flex;flex-direction:column;gap:26px">
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Employee salaries</b> with your own earning and deduction types.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Loans and salary advances</b> recovered in instalments.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Approval before posting:</b> a processed payroll is checked, approved, then locked.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Tax bands, NSSF bands and rates</b> editable when the law changes.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<p style="font-size:26px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#5F6C84">Calculated automatically</p>
+<div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:20px">
+<div style="background:#0E1A2F;border-radius:20px;padding:36px 40px;display:flex;flex-direction:column;gap:4px">
+<p style="font-family:'Outfit', Arial, sans-serif;font-size:64px;font-weight:700;color:#F7A325;line-height:1.1">PAYE</p>
+<p style="font-size:26px;color:#B8C3D9">Income tax, with reliefs</p>
+</div>
+<div style="background:#0E1A2F;border-radius:20px;padding:36px 40px;display:flex;flex-direction:column;gap:4px">
+<p style="font-family:'Outfit', Arial, sans-serif;font-size:64px;font-weight:700;color:#F7A325;line-height:1.1">NSSF</p>
+<p style="font-size:26px;color:#B8C3D9">Tier I and Tier II bands</p>
+</div>
+<div style="background:#0E1A2F;border-radius:20px;padding:36px 40px;display:flex;flex-direction:column;gap:4px">
+<p style="font-family:'Outfit', Arial, sans-serif;font-size:64px;font-weight:700;color:#F7A325;line-height:1.1">SHIF</p>
+<p style="font-size:26px;color:#B8C3D9">Social Health Insurance</p>
+</div>
+<div style="background:#0E1A2F;border-radius:20px;padding:36px 40px;display:flex;flex-direction:column;gap:4px">
+<p style="font-family:'Outfit', Arial, sans-serif;font-size:64px;font-weight:700;color:#F7A325;line-height:1.1">AHL</p>
+<p style="font-size:26px;color:#B8C3D9">Affordable Housing Levy</p>
+</div>
+</div>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6C84">ShuleNova · Kodetek Investment Limited</p>
+<aside>Payroll works out gross pay and all the statutory deductions – PAYE, NSSF, SHIF and the Housing Levy – plus loans and other deductions. The payroll is approved before it is locked and posted to the books.</aside>
+</section>
+<section id="pay-2" data-transition="fade" style="background:#F5F6FA;color:#1B2840;font-family:'DM Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#2B7BD6">Payroll · 2 of 2</p>
+<h2 style="font-family:'Outfit', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#0E1A2F">Payslips and returns, done</h2>
+</div>
+<div style="display:flex;flex-direction:row;gap:64px;align-items:start">
+<div style="width:600px;display:flex;flex-direction:column;gap:26px">
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Payslips</b> for every employee, printable in one batch.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">My Payslips:</b> staff view their own payslips online.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Bank schedule</b> and muster roll for paying salaries.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Statutory returns</b> and P9 forms at year end.</p>
+</div>
+<div style="width:1000px;background:#FFFFFF;border:1px solid #E1E5EE;border-radius:20px;padding:12px;box-shadow:0 24px 60px rgba(14,26,47,0.14);display:flex">
+<img src="assets/guide/pay-payslip-view.png" alt="A payslip in ShuleNova" style="width:976px;height:549px;object-fit:cover;border-radius:12px;object-position:50% 0%">
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6C84">ShuleNova · Kodetek Investment Limited</p>
+<aside>Once payroll is approved: payslips for everyone, the bank schedule, the muster roll, the statutory returns and P9s. Staff can see their own payslips without asking the bursar.</aside>
+</section>
+<section id="ele-1" data-transition="fade" style="background:#F5F6FA;color:#1B2840;font-family:'DM Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#2B7BD6">Elections · 1 of 2</p>
+<h2 style="font-family:'Outfit', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#0E1A2F">Student elections, start to finish</h2>
+</div>
+<div style="display:grid;grid-template-columns:repeat(5, 1fr);gap:20px">
+<div style="background:#FFFFFF;border:1px solid #E1E5EE;border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'Outfit', Arial, sans-serif;font-size:64px;font-weight:700;color:#2B7BD6;line-height:1">1</p>
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:32px;font-weight:600;color:#0E1A2F">Positions</h3>
+<p style="font-size:26px;line-height:1.4;color:#3A4A63">Head girl, head boy, prefects and more.</p>
+</div>
+<div style="background:#FFFFFF;border:1px solid #E1E5EE;border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'Outfit', Arial, sans-serif;font-size:64px;font-weight:700;color:#2B7BD6;line-height:1">2</p>
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:32px;font-weight:600;color:#0E1A2F">Nominations</h3>
+<p style="font-size:26px;line-height:1.4;color:#3A4A63">Candidates for each position.</p>
+</div>
+<div style="background:#FFFFFF;border:1px solid #E1E5EE;border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'Outfit', Arial, sans-serif;font-size:64px;font-weight:700;color:#2B7BD6;line-height:1">3</p>
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:32px;font-weight:600;color:#0E1A2F">Voter register</h3>
+<p style="font-size:26px;line-height:1.4;color:#3A4A63">Drawn from the class lists.</p>
+</div>
+<div style="background:#FFFFFF;border:1px solid #E1E5EE;border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'Outfit', Arial, sans-serif;font-size:64px;font-weight:700;color:#2B7BD6;line-height:1">4</p>
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:32px;font-weight:600;color:#0E1A2F">Polling stations</h3>
+<p style="font-size:26px;line-height:1.4;color:#3A4A63">Learners vote on a tablet, phone or computer.</p>
+</div>
+<div style="background:#0E1A2F;border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'Outfit', Arial, sans-serif;font-size:64px;font-weight:700;color:#F7A325;line-height:1">5</p>
+<h3 style="font-family:'Outfit', Arial, sans-serif;font-size:32px;font-weight:600;color:#F3F5FA">Live results</h3>
+<p style="font-size:26px;line-height:1.4;color:#B8C3D9">Counted instantly, declared on screen.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6C84">ShuleNova · Kodetek Investment Limited</p>
+<aside>Elections run entirely in ShuleNova: set up the positions, take nominations, the register comes from the class lists, learners vote at polling stations on any device, and the count is instant. No ballot papers, no counting late into the evening.</aside>
+</section>
+<section id="ele-2" data-transition="fade" style="background:#F5F6FA;color:#1B2840;font-family:'DM Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#2B7BD6">Elections · 2 of 2</p>
+<h2 style="font-family:'Outfit', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#0E1A2F">Results the moment voting closes</h2>
+</div>
+<div style="display:flex;flex-direction:row;gap:64px;align-items:start">
+<div style="width:600px;display:flex;flex-direction:column;gap:26px">
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Live count</b> and turnout on the big screen as votes come in.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">One learner, one vote,</b> checked against the register.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Declared winners</b> saved to each learner’s leadership record.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">History</b> of past elections kept for reference.</p>
+</div>
+<div style="width:1000px;background:#FFFFFF;border:1px solid #E1E5EE;border-radius:20px;padding:12px;box-shadow:0 24px 60px rgba(14,26,47,0.14);display:flex">
+<img src="assets/guide/ele-results.png" alt="Election results in ShuleNova" style="width:976px;height:549px;object-fit:cover;border-radius:12px;object-position:50% 0%">
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6C84">ShuleNova · Kodetek Investment Limited</p>
+<aside>Results show live as learners vote, with turnout. Each learner votes once. When the results are declared, winners go straight into their leadership records, which appear on the report form.</aside>
+</section>
+<section id="com-1" data-transition="fade" style="background:#F5F6FA;color:#1B2840;font-family:'DM Sans', Arial, sans-serif;padding:112px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#2B7BD6">Communications</p>
+<h2 style="font-family:'Outfit', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#0E1A2F">Reach every parent in seconds</h2>
+</div>
+<div style="display:flex;flex-direction:row;gap:64px;align-items:start">
+<div style="width:600px;display:flex;flex-direction:column;gap:26px">
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">SMS and email</b> to parents and staff: a class, a grade or the whole school.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Ready-made messages:</b> exam results, invoices, balance reminders, payment acknowledgements.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Templates</b> and a preview before anything is sent.</p>
+<p style="font-size:30px;line-height:1.35;color:#3A4A63"><b style="color:#0E1A2F">Delivery queue and SMS report</b> to track every message.</p>
+</div>
+<div style="width:1000px;background:#FFFFFF;border:1px solid #E1E5EE;border-radius:20px;padding:12px;box-shadow:0 24px 60px rgba(14,26,47,0.14);display:flex">
+<img src="assets/guide/com-compose-preview.png" alt="Composing and previewing a message to parents in ShuleNova" style="width:976px;height:549px;object-fit:cover;border-radius:12px;object-position:50% 0%">
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5F6C84">ShuleNova · Kodetek Investment Limited</p>
+<aside>Messages go out by SMS and email. Write your own notice, or send the standard ones – exam results, invoices, fee balance reminders and payment acknowledgements – from the page where that information lives. Everything is previewed first, queued, and reported.</aside>
+</section>
+<section id="pricing" data-transition="fade" style="background:radial-gradient(ellipse at 15% 0%, #1D3A6B 0%, #0E1A2F 60%);color:#F3F5FA;font-family:'DM Sans', Arial, sans-serif;padding:112px 128px 112px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#F7A325">Pricing</p>
+<h2 style="font-family:'Outfit', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.05;color:#F3F5FA">Simple monthly pricing</h2>
+</div>
+<div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:40px">
+<div style="background:rgba(255,255,255,0.06);border:2px solid rgba(255,255,255,0.18);border-radius:28px;padding:56px;display:flex;flex-direction:column;gap:24px">
+<p style="font-size:28px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#B8C3D9">One module</p>
+<p style="font-family:'Outfit', Arial, sans-serif;font-size:104px;font-weight:700;line-height:1;color:#F3F5FA">KSh 10,000</p>
+<p style="font-size:30px;color:#B8C3D9">per month</p>
+<hr style="border-top:1px solid #33456A">
+<p style="font-size:30px;line-height:1.45;color:#F3F5FA">Any one module of your choice, plus the core: school, learners, staff, users and security.</p>
+</div>
+<div style="background:#FBFBF8;border:2px solid #F7A325;border-radius:28px;padding:56px;display:flex;flex-direction:column;gap:24px;box-shadow:0 30px 80px rgba(247,163,37,0.25)">
+<div style="display:flex;flex-direction:row;justify-content:space-between;align-items:center">
+<p style="font-size:28px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#B86E00">Full system</p>
+<p style="font-size:24px;font-weight:700;color:#0E1A2F;background:#F7A325;padding:6px 18px;border-radius:999px">Best value</p>
+</div>
+<p style="font-family:'Outfit', Arial, sans-serif;font-size:104px;font-weight:700;line-height:1;color:#0E1A2F">KSh 15,000</p>
+<p style="font-size:30px;color:#3A4A63">per month</p>
+<hr style="border-top:1px solid #E1E5EE">
+<p style="font-size:30px;line-height:1.45;color:#1B2840">Add a second module for KSh 5,000 more and <b>unlock every module</b>: Academics, Finance, Payroll, Elections and Communications.</p>
+</div>
+</div>
+<aside>Pricing is simple. One module is KSh 10,000 a month. A second module adds KSh 5,000, making KSh 15,000 – and at KSh 15,000 you get the full system, every module. So any school that needs two modules should simply take everything.</aside>
+</section>
+<section id="thanks" data-transition="fade" style="background:radial-gradient(ellipse at 50% 120%, #2A2470 0%, #0E1A2F 65%);color:#F3F5FA;font-family:'DM Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:40px">
+<div style="background:#FBFBF8;padding:20px 32px;border-radius:18px">
+<img src="assets/presentation/kodetek.png" alt="Kodetek Investment Limited logo" style="width:560px;height:80px;object-fit:contain">
+</div>
+<h1 style="font-family:'Outfit', Arial, sans-serif;font-size:160px;font-weight:700;line-height:1;color:#F3F5FA;text-align:center">Thank you</h1>
+<p style="font-family:'Outfit', Arial, sans-serif;font-size:56px;font-weight:500;color:#F7A325;text-align:center">Questions?</p>
+<div style="display:flex;flex-direction:row;gap:48px;align-items:center">
+<div style="display:flex;flex-direction:row;gap:14px;align-items:center">
+<svg class="xi" viewBox="0 0 24 24" style="color:#5B9BE6;width:36px;height:36px" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+<p style="font-size:30px;color:#B8C3D9">www.kodetek.co.ke</p>
+</div>
+<div style="display:flex;flex-direction:row;gap:14px;align-items:center">
+<svg class="xi" viewBox="0 0 24 24" style="color:#5B9BE6;width:36px;height:36px" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+<p style="font-size:30px;color:#B8C3D9">Mombasa · soon Kombani / Ukunda</p>
+</div>
+</div>
+<aside>Thank you for your time. We are happy to take questions, and to arrange a trial site for your school.</aside>
+</section>
+</div>
+<div id="notes"></div>
+<div id="bar">
+  <button id="prev" title="Previous (Left arrow)">&#9664;</button>
+  <span id="count"></span>
+  <button id="next" title="Next (Right arrow or Space)">&#9654;</button>
+  <button id="notesBtn" title="Speaker notes (N)">Notes</button>
+  <button id="full" title="Full screen (F)">Full screen</button>
+</div>
+<script>
+(function () {
+  var stage = document.getElementById('stage');
+  var slides = stage.querySelectorAll('section');
+  var bar = document.getElementById('bar');
+  var notes = document.getElementById('notes');
+  var i = 0, idle;
+  function fit() {
+    var s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    stage.style.transform = 'translate(-50%, -50%) scale(' + s + ')';
+  }
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    for (var k = 0; k < slides.length; k++) slides[k].classList.toggle('on', k === i);
+    document.getElementById('count').textContent = (i + 1) + ' / ' + slides.length;
+    var aside = slides[i].querySelector('aside');
+    notes.textContent = aside ? aside.textContent : '';
+  }
+  function full() {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+  }
+  function wake() {
+    bar.classList.remove('idle');
+    clearTimeout(idle);
+    idle = setTimeout(function () { bar.classList.add('idle'); }, 2500);
+  }
+  document.addEventListener('keydown', function (e) {
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ' || k === 'Enter') show(i + 1);
+    else if (k === 'ArrowLeft' || k === 'PageUp' || k === 'Backspace') show(i - 1);
+    else if (k === 'Home') show(0);
+    else if (k === 'End') show(slides.length - 1);
+    else if (k === 'f' || k === 'F') full();
+    else if (k === 'n' || k === 'N') notes.classList.toggle('show');
+    else return;
+    e.preventDefault();
+  });
+  stage.addEventListener('click', function (e) { show(e.clientX < window.innerWidth / 3 ? i - 1 : i + 1); });
+  document.getElementById('prev').onclick = function () { show(i - 1); };
+  document.getElementById('next').onclick = function () { show(i + 1); };
+  document.getElementById('notesBtn').onclick = function () { notes.classList.toggle('show'); };
+  document.getElementById('full').onclick = full;
+  document.addEventListener('mousemove', wake);
+  window.addEventListener('resize', fit);
+  fit(); show(0); wake(); window.focus();
+})();
+</script>
+</body>
+</html>

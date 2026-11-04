@@ -43,6 +43,11 @@
             <i class="fas fa-book-reader text-danger"></i>
         </a>
     </li>
+    <li class="nav-item" *ngIf="guides.presentation">
+        <a class="nav-link" [routerLink]="['/help/presentation']" title="Presentation">
+            <i class="fas fa-chalkboard-teacher text-success"></i>
+        </a>
+    </li>
     <!-- <app-messages></app-messages> -->
     <li class="nav-item" *ngIf="licenceAlert as l">
         <a class="nav-link" [routerLink]="['/settings/licence']" [title]="l.message || 'Licence'">
