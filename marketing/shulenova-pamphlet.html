@@ -347,6 +347,59 @@
     }
     .quote-box em { font-style: italic; }
 
+    /* ====================== MOBILE APP NOTE (flap) ====================== */
+    .app-note {
+        background: #fff7e8;
+        border-left: 4px solid var(--accent);
+        padding: 8px 10px;
+        margin-top: 8px;
+        border-radius: 4px;
+    }
+    .app-note .ribbon {
+        background: var(--accent);
+        color: var(--brand-dark);
+        display: inline-block;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        padding: 2px 8px;
+        border-radius: 10px;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+    .panel .app-note p { font-size: 10.5px; color: var(--brand-dark); }
+
+    /* ====================== PRICING (back cover) ====================== */
+    .back-cover .price-box {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+        margin-top: 14px;
+    }
+    .back-cover .price {
+        flex: 1;
+        background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 10px;
+        padding: 8px 6px;
+        display: flex;
+        flex-direction: column;
+    }
+    .back-cover .price.best {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--brand-dark);
+    }
+    .back-cover .price .lbl {
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+    .back-cover .price .amt { font-size: 17px; font-weight: 800; }
+    .back-cover .price .per { font-size: 9px; }
+    .back-cover .price-note { font-size: 9.5px; color: rgba(255,255,255,0.85); margin-top: 6px; }
+
     @media print {
         body { background: white; }
         .page { margin: 0; box-shadow: none; }
@@ -383,9 +436,10 @@
         <p>ShuleNova replaces the patchwork of spreadsheets, paper mark-sheets and disconnected tools that slow your school down. Admissions, academics, fees, payroll and parent communication all live in one secure place - from the front office to the head teacher.</p>
 
         <div class="stat-row">
-            <div class="stat"><span class="num">12+</span><span class="lbl">Modules</span></div>
+            <div class="stat"><span class="num">5</span><span class="lbl">Modules + core</span></div>
             <div class="stat"><span class="num">24/7</span><span class="lbl">Access</span></div>
             <div class="stat"><span class="num">100%</span><span class="lbl">Cloud</span></div>
+            <div class="stat"><span class="num">2018</span><span class="lbl">Since</span></div>
         </div>
 
         <h3>Why schools love it</h3>
@@ -395,8 +449,14 @@
             <li>Parents get instant SMS &amp; email on results, fees and events</li>
             <li>Bursars track fees, sponsors, payroll and expenses in one ledger</li>
             <li>Heads see real-time performance and collection dashboards</li>
+            <li>Student elections on any device, results live</li>
             <li>Full audit trail on every record - complete accountability</li>
         </ul>
+
+        <div class="app-note">
+            <span class="ribbon">Coming January 2027</span>
+            <p>A ShuleNova <b>mobile app</b> for teachers' data entry - marks and attendance straight from the phone.</p>
+        </div>
 
         <div class="quote-box">
             <em>"ShuleNova brought our marks, report cards and fee statements together. Teachers finish results faster and parents now hear from us by SMS the same day - it has changed how the school runs."</em>
@@ -419,13 +479,27 @@
     <!-- RIGHT panel = back cover (when folded) -->
     <div class="panel back-cover">
         <h2>Ready to transform your school?</h2>
-        <p style="margin-top: 16px; max-width: 85%; font-size: 14px; font-weight: 700;">
+        <p style="margin-top: 16px; max-width: 85%; font-size: 14px; font-weight: 700; color: white;">
             Book a free walkthrough and see ShuleNova working with your own school's workflow - from admission to report card and fee statement.
         </p>
 
+        <div class="price-box">
+            <div class="price">
+                <span class="lbl">One module</span>
+                <span class="amt">KSh 10,000</span>
+                <span class="per">per month</span>
+            </div>
+            <div class="price best">
+                <span class="lbl">Full system</span>
+                <span class="amt">KSh 15,000</span>
+                <span class="per">per month - every module</span>
+            </div>
+        </div>
+        <p class="price-note">The core (school, learners, staff, users &amp; security) is always included.</p>
+
         <div class="contact-box">
-            <p><b>Kodetek Investment Limited</b></p>
-            <p>Mombasa, Kenya</p>
+            <p><b>Kodetek Investment Limited</b> - since 2018</p>
+            <p>Mombasa, Kenya - soon in Kombani / Ukunda</p>
             <p>Mobile: +254 724 924 465</p>
             <p>Email: info&#64;kodetek.co.ke</p>
             <p>Web: www.kodetek.co.ke</p>
@@ -506,10 +580,10 @@
         <p>Automatic SMS/email on fee balances, new invoices and every payment received - parents always know where they stand.</p>
 
         <h3>* Events &amp; announcements</h3>
-        <p>Broadcast meetings, closing dates, trips and emergencies to targeted classes or the entire school instantly.</p>
+        <p>Broadcast meetings, closing dates, trips and emergencies to targeted classes or the entire school - previewed first, with a delivery report for every message.</p>
 
-        <h3>* 99% uptime &amp; daily backups</h3>
-        <p>Your school stays online all year. We commit to 99% availability and back up records every single day, with rapid recovery.</p>
+        <h3>* Student elections</h3>
+        <p>Positions, nominations and a voter register from the class lists. Learners vote on a tablet, phone or computer; one learner, one vote, and results show live the moment voting closes.</p>
 
         <h3>* Security &amp; data protection</h3>
         <p>Multi-factor authentication, role-restricted access, encryption in transit and a full audit trail - aligned to the Kenya Data Protection Act.</p>
@@ -526,7 +600,7 @@
 
         <div class="feature-card">
             <h3>Payments &amp; receipts</h3>
-            <p>Receive cash, bank and mobile-money (M-Pesa) payments, auto-apportion across fee items and issue instant receipts.</p>
+            <p>Receive M-Pesa, bank, cheque, card and cash payments, auto-apportion across fee items and issue instant receipts.</p>
         </div>
 
         <div class="feature-card orange">
@@ -536,7 +610,7 @@
 
         <div class="feature-card purple">
             <h3>Payroll &amp; statutory</h3>
-            <p>Staff salaries with PAYE, NSSF, SHIF and Housing Levy computed automatically - payslips and payroll reports in a click.</p>
+            <p>Staff salaries with PAYE, NSSF, SHIF and Housing Levy computed automatically, loans recovered in instalments, and approval before posting - payslips and reports in a click.</p>
         </div>
 
         <div class="feature-card pink">
