@@ -3,6 +3,7 @@ import {Routes, RouterModule} from '@angular/router';
 import {MainComponent} from './core/modules/main/main.component';
 import {AuthGuard} from './core/guards/auth.guard';
 import {ProfileComponent} from './core/pages/profile/profile.component';
+import {UserGuideComponent} from './core/pages/user-guide/user-guide.component';
 import {BlankComponent} from './core/pages/blank/blank.component';
 import {SubMenuComponent} from './core/pages/main-menu/sub-menu/sub-menu.component';
 import {DashboardComponent} from './school/components/dashboard/dashboard.component';
@@ -197,6 +198,8 @@ const routes: Routes = [
         canActivateChild: [AuthGuard],
         children: [
             {path: 'profile', component: ProfileComponent},
+            {path: 'help/user-guide', component: UserGuideComponent, data: {kind: 'user'}},
+            {path: 'help/admin-guide', component: UserGuideComponent, data: {kind: 'admin'}},
             {path: 'blank', component: BlankComponent},
             {path: 'sub-menu-1', component: SubMenuComponent},
             {path: 'sub-menu-2', component: BlankComponent},

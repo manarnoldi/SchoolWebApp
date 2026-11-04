@@ -1,0 +1,162 @@
+[
+ {
+  "name": "asec-users",
+  "path": "/security/users",
+  "waitFor": "table tbody tr td strong"
+ },
+ {
+  "name": "asec-user-form",
+  "path": "/security/users",
+  "waitFor": "table tbody tr td strong",
+  "steps": [
+   {
+    "click": "tr:has-text('hemedi') button[title=Edit]",
+    "wait": 1500
+   }
+  ],
+  "element": ".modal.show .modal-content"
+ },
+ {
+  "name": "asec-reset-password",
+  "path": "/security/users",
+  "waitFor": "table tbody tr td strong",
+  "steps": [
+   {
+    "click": "tr:has-text('hemedi') button[title='Reset Password']",
+    "wait": 800
+   }
+  ],
+  "element": ".swal2-popup"
+ },
+ {
+  "name": "asec-roles",
+  "path": "/security/roles",
+  "waitFor": "table tbody tr td strong",
+  "steps": [
+   {
+    "select": [
+     "app-table-paging select",
+     "15 items per page"
+    ],
+    "wait": 500
+   }
+  ]
+ },
+ {
+  "name": "asec-role-users",
+  "path": "/security/roles",
+  "waitFor": "table tbody tr td strong",
+  "steps": [
+   {
+    "select": [
+     "app-table-paging select",
+     "15 items per page"
+    ],
+    "wait": 500
+   },
+   {
+    "click": "tr:has-text('HeadOfDepartment') button[title='View the users in this role']",
+    "wait": 1200
+   },
+   {
+    "eval": "document.querySelectorAll('.modal-dialog-scrollable').forEach(d=>d.classList.remove('modal-dialog-scrollable'))",
+    "wait": 300
+   }
+  ],
+  "element": ".modal.show .modal-content"
+ },
+ {
+  "name": "asec-menu-permissions",
+  "path": "/security/menu-permissions",
+  "waitFor": "text=Select Role",
+  "steps": [
+   {
+    "click": "a.list-group-item:has-text('HeadOfDepartment')",
+    "wait": 1500
+   }
+  ],
+  "height": 1300
+ },
+ {
+  "name": "asec-active-users",
+  "path": "/security/active-users",
+  "waitFor": "table",
+  "settle": 1200,
+  "element": "section.content"
+ },
+ {
+  "name": "asec-audit-logs",
+  "path": "/security/audit-logs",
+  "waitFor": "table tbody tr",
+  "settle": 1200,
+  "steps": [
+   {
+    "fill": [
+     "input[formControlName=startDate]",
+     "2026-01-01"
+    ]
+   },
+   {
+    "click": "button:has-text('Search')",
+    "wait": 1500
+   }
+  ]
+ },
+ {
+  "name": "asec-audit-detail",
+  "path": "/security/audit-logs",
+  "waitFor": "table tbody tr",
+  "steps": [
+   {
+    "select": [
+     "select[formControlName=action]",
+     "Create"
+    ],
+    "wait": 300
+   },
+   {
+    "fill": [
+     "input[formControlName=startDate]",
+     "2026-01-01"
+    ]
+   },
+   {
+    "click": "button:has-text('Search')",
+    "wait": 1500
+   },
+   {
+    "click": "a[title='View details']",
+    "wait": 1000
+   },
+   {
+    "eval": "document.querySelectorAll('.modal-dialog-scrollable').forEach(d=>d.classList.remove('modal-dialog-scrollable'))",
+    "wait": 300
+   }
+  ],
+  "element": ".modal.show .modal-content"
+ },
+ {
+  "name": "asec-error-logs",
+  "path": "/security/logs",
+  "waitFor": "table",
+  "settle": 1200,
+  "steps": [
+   {
+    "fill": [
+     "input[formControlName=startDate]",
+     "2026-01-01"
+    ]
+   },
+   {
+    "select": [
+     "select[formControlName=status]",
+     "all"
+    ]
+   },
+   {
+    "click": "button:has-text('Search')",
+    "wait": 1500
+   }
+  ]
+ }
+]

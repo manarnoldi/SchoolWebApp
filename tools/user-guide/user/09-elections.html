@@ -1,0 +1,144 @@
+<section class="chapter" id="elections" data-module="Elections">
+<h1 class="ch">Elections</h1>
+<p>ShuleNova runs student elections from start to finish: the positions, nominations, the voter register, polling stations where students vote on a tablet, phone or computer, the live count and the declared results, which can then be recorded in the students' leadership records.</p>
+<p>The <span class="path">Elections</span> menu has three pages:</p>
+<table>
+  <tr><th style="width:26%">Page</th><th>Who uses it</th></tr>
+  <tr><td>Manage Elections</td><td>The <strong>elections officers</strong>, who set elections up and run them.</td></tr>
+  <tr><td>Polling Station</td><td>The <strong>returning officers</strong>, usually class teachers, who let students vote at their station.</td></tr>
+  <tr><td>Results</td><td>Elections officers while polling is open; everyone with the page once the results are declared.</td></tr>
+</table>
+
+<h2 class="sub" id="ele-stages">How an Election Runs</h2>
+<p>An election moves through six stages, in order. The elections officer moves it on with the green button at the top of the election's page.</p>
+<table>
+  <tr><th style="width:24%">Stage</th><th style="width:22%">Button to reach it</th><th>What happens</th></tr>
+  <tr><td>Draft</td><td>(new election)</td><td>Set up the positions.</td></tr>
+  <tr><td>Nominations open</td><td><span class="ui">Open nominations</span></td><td>Candidates are nominated and approved. Polling stations are set up. Positions can still change.</td></tr>
+  <tr><td>Candidates final</td><td><span class="ui">Close nominations</span></td><td>The approved candidates go on the ballot. A frozen voter register is taken now. Positions are fixed.</td></tr>
+  <tr><td>Polling open</td><td><span class="ui">Open polling</span></td><td>Returning officers issue ballots; the count shows live.</td></tr>
+  <tr><td>Polling closed</td><td><span class="ui">Close polling</span></td><td>No more ballots. Ties are settled by drawing lots.</td></tr>
+  <tr><td>Results declared</td><td><span class="ui">Declare results</span></td><td>The leading candidates are elected; the results are final and visible to all staff.</td></tr>
+</table>
+<p>Each move asks you to confirm and lets you add a note for the record. Some moves can be undone from the <span class="ui">&#8943;</span> menu: back to draft from nominations, <span class="ui">Reopen nominations</span> from Candidates final (this clears the ballot order and a frozen register, which are taken again when nominations close), and <span class="ui">Reopen polling</span> until the results are declared.</p>
+<p>ShuleNova will not move on until the stage's work is done. It refuses to open nominations until every position has at least one race; to close nominations while a nomination still waits for approval or a race has no approved candidate; and to open polling until every class with voters has a polling station.</p>
+
+<h2 class="sub" id="ele-manage">Manage Elections</h2>
+<p><span class="path">Elections &gt; Manage Elections</span> lists the school's elections with their year, stage, number of positions and races, and the planned polling window. Filter by <span class="ui">Year</span> and <span class="ui">Stage</span>, or search by title. Click an election, or its <span class="ui">Open</span> button, to work on it.</p>
+<figure class="shot"><img src="assets/guide/ele-list.png" alt="The elections list"><figcaption>The school's elections</figcaption></figure>
+
+<h3>Creating an election</h3>
+<ol class="steps">
+  <li>Click <span class="ui">New election</span>.</li>
+  <li>Type the <span class="ui">Name</span> (for example "Student Council Elections 2026") and choose the <span class="ui">Academic year</span>. A <span class="ui">Description</span> is optional.</li>
+  <li>Choose the <span class="ui">Voter register</span>:
+    <ul>
+      <li><strong>Frozen</strong>: a snapshot of the voters taken when nominations close. A student who changes class afterwards votes where they were registered.</li>
+      <li><strong>Live</strong>: who may vote follows each student's current class until they vote.</li>
+    </ul></li>
+  <li>Set <span class="ui">Polling starts</span> and <span class="ui">Polling ends</span>. This is the planned window shown to returning officers; polling itself opens and closes only when you move the stage.</li>
+  <li>Set <span class="ui">Results refresh (seconds)</span>, how often the live results screen updates, and click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/ele-new.png" alt="The New election window"><figcaption>A new election</figcaption></figure>
+<p>The election opens on its own page: its name, year, register type and polling window at the top, the stages it has passed, and a tab for each part of the work. A tab opens when the election reaches its stage (Nominations, Voter register and Polling stations at Nominations open; Results at Polling open; Leadership once declared). <span class="ui">Edit election</span> and <span class="ui">Delete election</span> (drafts only) are in the <span class="ui">&#8943;</span> menu. The year can change only while the election is a draft, and the register type only until the register is taken.</p>
+
+<h3>Positions</h3>
+<p>The <span class="ui">Positions</span> tab lists the posts to be filled, such as School President, Games Captain or Class President, with their races, seats, the grades that vote and the grades that may stand.</p>
+<figure class="shot"><img src="assets/guide/ele-positions.png" alt="The Positions tab"><figcaption>An election's positions and their races</figcaption></figure>
+<ol class="steps">
+  <li>Click <span class="ui">Add position</span> and type the <span class="ui">Position</span> name and the number of <span class="ui">Seats</span>.</li>
+  <li>Under <span class="ui">Races</span>, choose how the post is contested:
+    <ul>
+      <li><strong>One for the whole school</strong>: all the chosen grades vote in one race (School President).</li>
+      <li><strong>One per school section</strong>: a separate race in each section, such as Upper primary and Junior School (Senator).</li>
+      <li><strong>One per grade</strong>: a separate race in each grade (Grade Prefect).</li>
+      <li><strong>One per class</strong>: a separate race in each class (Class Representative).</li>
+    </ul></li>
+  <li>Choose a <span class="ui">Gender rule</span> if needed: <span class="ui">Candidates of one gender</span> (pick the gender, and tick <span class="ui">Only voters of that gender vote</span> if only they vote, as for a Girls' Representative), or <span class="ui">Seats for each gender</span> (for example one boy and one girl per class).</li>
+  <li>For a post elected with a deputy, tick <span class="ui">Joint ticket</span> and type the running mate's title (for example "Deputy President"). One vote elects both. A joint ticket has one seat.</li>
+  <li>Under <span class="ui">Grades that vote</span>, tick the grades (click a section's button to tick all its grades). The box below shows the races this will make.</li>
+  <li>If only some of those grades may stand, tick <span class="ui">Only some of these grades may stand</span> and tick them (for example only Grade 8 for President).</li>
+  <li>Click <span class="ui">Save position</span>.</li>
+</ol>
+<p>The arrows at the start of a row set the order positions appear in. Positions can be changed until nominations close; after that they are fixed. A position showing "No races" has grades with no classes in the election's year.</p>
+
+<h3>Nominations</h3>
+<p>Once nominations are open, the <span class="ui">Nominations</span> tab shows each position with its candidates. Click a position to open it. The counts at the top show how many are approved, how many await approval, and how many races still have no approved candidate.</p>
+<figure class="shot"><img src="assets/guide/ele-nominations.png" alt="The Nominations tab"><figcaption>Candidates for School President, each with a running mate</figcaption></figure>
+<ol class="steps">
+  <li>Click <span class="ui">Nominate</span> on the position (or on the race, when a position has several).</li>
+  <li>Search for the student and click their name. Only students who may stand in that race are listed; one already standing elsewhere shows as taken.</li>
+  <li>For a joint ticket, pick the running mate on the right.</li>
+  <li>Type a <span class="ui">Slogan</span> if the candidate has one (it shows on the ballot), and click <span class="ui">Nominate</span>.</li>
+</ol>
+<p>A new nomination waits as <span class="ui">Nominated</span>. On each candidate's card:</p>
+<ul>
+  <li><span class="ui">Approve</span> puts the candidate on the ballot; <span class="ui">Reject</span> asks for a reason, which is shown on the card.</li>
+  <li><span class="ui">Unapprove</span> sends an approved candidate back to waiting; <span class="ui">Withdraw</span> records that the candidate stood down; <span class="ui">Restore</span> brings back a rejected or withdrawn one.</li>
+  <li>The edit button changes the slogan or running mate; the trash button deletes a mistaken entry (reject or withdraw instead to keep a record).</li>
+  <li>The camera button uploads a photo (JPEG, PNG or WebP, up to 3 MB). The photo on the student's record is used if there is one. Photos can be changed until polling opens.</li>
+</ul>
+<p>Use the <span class="ui">Position</span>, <span class="ui">Status</span> and <span class="ui">Search</span> filters to find candidates, and <span class="ui">Print candidates</span> for a list of the approved candidates. When nominations close, each approved candidate gets a ballot number (in name order).</p>
+
+<h3>Voter register</h3>
+<p>The <span class="ui">Voter register</span> tab shows how many students can vote and, for each race, its voters. Click a race on the left to list its voters; search by name, UPI or class, and <span class="ui">Print</span> the list. A lock shows when a frozen register has been taken, and when.</p>
+<figure class="shot"><img src="assets/guide/ele-register.png" alt="The Voter register tab"><figcaption>The voters in each race</figcaption></figure>
+
+<h3>Polling stations</h3>
+<p>Every class with voters must vote at a polling station, run by a returning officer. Set them up on the <span class="ui">Polling stations</span> tab while nominations are open.</p>
+<figure class="shot"><img src="assets/guide/ele-stations.png" alt="The Polling stations tab"><figcaption>One station per class, each with its returning officer and turnout</figcaption></figure>
+<ul>
+  <li><span class="ui">A station per class</span> makes one station for each class not yet covered, named after the class, with its class teacher as returning officer when they have a login.</li>
+  <li><span class="ui">Add station</span> makes one yourself: type a <span class="ui">Name</span> (for example "Junior School hall"), choose the <span class="ui">Returning officer</span> from the staff who have logins, tick the <span class="ui">Classes voting here</span>, and click <span class="ui">Save</span>.</li>
+</ul>
+<p>A warning lists the classes with no station yet; polling cannot open until there are none. A station with no returning officer can be run only by elections officers. Stations can be changed until polling closes, but a station where votes have been cast cannot be removed. During polling, the <span class="ui">Turnout</span> bars show how many have voted at each.</p>
+
+<h3>History</h3>
+<p>The <span class="ui">History</span> tab records every stage move: when, by whom, and the note given.</p>
+<figure class="shot"><img src="assets/guide/ele-history.png" alt="The stage history"><figcaption>Every stage move, with its note</figcaption></figure>
+
+<h2 class="sub" id="ele-polling">Polling Station</h2>
+<p>On polling day each returning officer opens <span class="path">Elections &gt; Polling Station</span>. It shows a card for each station they run (elections officers see every station), with its turnout. Stations appear here once the candidates are final. Click <span class="ui">Open station</span>.</p>
+<p>The station screen lists the station's voters, with counts of those who have <span class="ui">voted</span> and those <span class="ui">waiting</span>. Switch between <span class="ui">Not voted</span>, <span class="ui">Voted</span> and <span class="ui">All</span>, and use the search box to find a student by name, UPI or class.</p>
+<figure class="shot"><img src="assets/guide/ele-station-screen.png" alt="A polling station screen"><figcaption>A station's voters, with the students still to vote</figcaption></figure>
+
+<h3>Letting a student vote</h3>
+<ol class="steps">
+  <li>Find the student and click <span class="ui">Issue ballot</span>. Check the name, class and UPI shown are the student in front of you, then confirm.</li>
+  <li>Hand the screen to the student. The ballot fills the screen: one section for each race they vote in, with each candidate's number, photo, class and slogan (and running mate). The heading says how many to choose, for example "Choose one".</li>
+  <li>The student taps a candidate to choose them (tapping again removes the choice), then taps <span class="ui">Review my vote</span>.</li>
+  <li>The student checks their choices. A race left empty shows as "No choice - left blank". <span class="ui">Change</span> goes back; <span class="ui">Cast my vote</span> records the vote.</li>
+  <li>"Your vote has been recorded" appears. The student hands the screen back; click <span class="ui">Next voter</span> (it also returns by itself after a few seconds).</li>
+</ol>
+<p>If a student cannot finish, the returning officer clicks <span class="ui">Cancel</span> on the ballot. Nothing is recorded and the student can be issued a ballot again.</p>
+<div class="callout important"><span class="lbl">Secret and final.</span> A cast vote cannot be changed, and nobody can see how a student voted: ShuleNova records that the student voted separately from their choices. A student can vote only once, at their own station.</div>
+<div class="callout tip"><span class="lbl">On a tablet or phone.</span> The station screen is made for touch. While polling is open it keeps the screen awake where the browser allows it, and warns before a ballot in progress is lost to an accidental refresh. Use <span class="ui">&#8635;</span> to refresh the counts.</div>
+<p>When polling is not open the screen shows "Polling has not opened yet" or "Polling is closed" and no ballots can be issued.</p>
+
+<h2 class="sub" id="ele-results">Results</h2>
+<p><span class="path">Elections &gt; Results</span> shows a card for each election that has opened polling. Click <span class="ui">Live results</span> (or <span class="ui">Results</span> once declared). Elections officers also find the count on the election's <span class="ui">Results</span> tab, marked <span class="ui">Live</span> while polling is open.</p>
+<figure class="shot"><img src="assets/guide/ele-results-home.png" alt="An election on the Results page"><figcaption>Elections with results</figcaption></figure>
+<p>The results page shows the turnout, then a card for each race: every candidate's votes and percentage, with a crown on those leading (or elected). Below the races, the turnout at each station.</p>
+<figure class="shot"><img src="assets/guide/ele-results.png" alt="The results screen"><figcaption>The declared results, race by race</figcaption></figure>
+<ul>
+  <li>Until the results are declared they are marked <span class="ui">Provisional</span> and refresh by themselves (switch this off with <span class="ui">Auto</span>). Only elections officers see them before they are declared.</li>
+  <li>The <span class="ui">Count checks</span> tick means every race's ballots match the voters marked as voted. A race that does not match is flagged.</li>
+  <li>Pick one position from the list to show only its races. <span class="ui">Slideshow</span> shows the overview and then each race in turn, full screen, for a hall display; the full-screen button shows the page alone. Print or download the results as CSV with the buttons on the right.</li>
+</ul>
+
+<h3>Ties and declaring the results</h3>
+<p>After <span class="ui">Close polling</span>, the elections officer checks the count. A race where candidates tie for the last seat is marked <span class="ui">Tied</span>, and the results cannot be declared until it is settled:</p>
+<ol class="steps">
+  <li>Draw lots in the presence of the candidates.</li>
+  <li>Click <span class="ui">Draw lots</span> on the race, put the candidates in the order drawn with the arrows (the first takes the seat), and click <span class="ui">Record the draw</span>.</li>
+</ol>
+<p>Then click <span class="ui">Declare results</span>. The leading candidates are declared elected and the results become final and visible to all staff.</p>
+
+<h3>Recording the winners</h3>
+<p>Once declared, the <span class="ui">Leadership</span> tab (or <span class="ui">Leadership records</span> on the results page) puts the winners in the students' records.</p>
+<figure class="shot"><img src="assets/guide/ele-leadership.png" alt="The Leadership tab"><figcaption>Where each position's winners are recorded</figcaption></figure>
+<ol class="steps">
+  <li>For each position choose where its winners go: a <span class="ui">Class role</span> (for positions with a race per class; shown on the class) and/or a <span class="ui">Responsibility</span> for the year (shown on the report form). A running mate is recorded under the same responsibility with their title.</li>
+  <li>Click <span class="ui">Record winners</span>. Each winner then shows <span class="ui">Recorded</span> with the date.</li>
+</ol>
+</section>

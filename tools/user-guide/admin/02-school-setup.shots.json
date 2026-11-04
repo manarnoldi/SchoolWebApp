@@ -1,0 +1,93 @@
+[
+ {
+  "name": "asch-details",
+  "path": "/school/details",
+  "waitFor": "#name",
+  "settle": 1500,
+  "steps": [{"click": "text=Edit school details", "wait": 600}],
+  "height": 1000
+ },
+ {
+  "name": "asch-years",
+  "path": "/school/academicYears",
+  "waitFor": "table tbody tr"
+ },
+ {
+  "name": "asch-year-form",
+  "path": "/school/academicYears",
+  "waitFor": "table tbody tr",
+  "steps": [{"click": "text=Add academic year", "wait": 800}],
+  "element": ".modal.show .modal-content"
+ },
+ {
+  "name": "asch-sessions",
+  "path": "/school/sessions",
+  "waitFor": "app-school-soft-filter-form #academicYearId",
+  "steps": [
+   {"select": ["app-school-soft-filter-form #academicYearId", "2026"], "wait": 600},
+   {"click": "app-school-soft-filter-form button[type=submit]", "wait": 1500}
+  ]
+ },
+ {
+  "name": "asch-session-form",
+  "path": "/school/sessions",
+  "waitFor": "app-school-soft-filter-form #academicYearId",
+  "steps": [{"click": "text=Add session", "wait": 800}],
+  "element": ".modal.show .modal-content"
+ },
+ {
+  "name": "asch-classes",
+  "path": "/class/classes",
+  "waitFor": "app-school-soft-filter-form #academicYearId",
+  "steps": [
+   {"select": ["app-school-soft-filter-form #academicYearId", "2026"], "wait": 600},
+   {"click": "app-school-soft-filter-form button[type=submit]", "wait": 1500}
+  ]
+ },
+ {
+  "name": "asch-class-form",
+  "path": "/class/classes",
+  "waitFor": "app-school-soft-filter-form #academicYearId",
+  "steps": [{"click": "text=Add school class", "wait": 800}],
+  "element": ".modal.show .modal-content"
+ },
+ {
+  "name": "asch-class-copy",
+  "path": "/class/classes",
+  "waitFor": "app-school-soft-filter-form #academicYearId",
+  "steps": [
+   {"select": ["app-school-soft-filter-form #academicYearId", "2027"], "wait": 600},
+   {"click": "text=Copy classes from another year", "wait": 800}
+  ],
+  "element": ".swal2-popup"
+ },
+ {
+  "name": "asch-events",
+  "path": "/school/events",
+  "waitFor": "table tbody tr"
+ },
+ {
+  "name": "asch-event-form",
+  "path": "/school/events",
+  "waitFor": "table tbody tr",
+  "steps": [{"click": "text=Add event", "wait": 800}],
+  "element": ".modal.show .modal-content"
+ },
+ {
+  "name": "asch-dropdowns",
+  "path": "/settings/dropdowns",
+  "waitFor": "text=System Settings",
+  "steps": [{"click": "a.list-group-item:text-is('Learning Levels')", "wait": 1500}],
+  "height": 1000
+ },
+ {
+  "name": "asch-dropdown-form",
+  "path": "/settings/dropdowns",
+  "waitFor": "text=System Settings",
+  "steps": [
+   {"click": "a.list-group-item:text-is('Learning Levels')", "wait": 1200},
+   {"click": "tbody tr:nth-child(5) button[title=Edit]", "wait": 900}
+  ],
+  "element": "#dropdownItemModal .modal-content"
+ }
+]

@@ -1,0 +1,111 @@
+[
+ {
+  "name": "stf-list",
+  "path": "/staff/details",
+  "waitFor": "app-staff-details-table table tbody tr",
+  "settle": 1500
+ },
+ {
+  "name": "stf-record",
+  "path": "/staff/details",
+  "waitFor": "app-staff-details-table table tbody tr",
+  "steps": [
+   {
+    "fill": [
+     "app-staff-details-table input[type=search]",
+     "HEMEDI OCHIENG"
+    ],
+    "wait": 1000
+   },
+   {
+    "click": "app-staff-details-table table tbody tr:first-child i.fa-eye",
+    "wait": 2500
+   },
+   {
+    "waitFor": "#fullName"
+   }
+  ],
+  "settle": 1500
+ },
+ {
+  "name": "stf-manage",
+  "path": "/staff/details",
+  "waitFor": "app-staff-details-table table tbody tr",
+  "steps": [
+   {
+    "fill": [
+     "app-staff-details-table input[type=search]",
+     "MERCY JOY KIPTOO"
+    ],
+    "wait": 1000
+   },
+   {
+    "click": "app-staff-details-table table tbody tr:first-child i.fa-wrench",
+    "wait": 2500
+   },
+   {
+    "click": "#subjects-tab",
+    "wait": 1500
+   },
+   {
+    "select": [
+     "#subjects app-school-soft-filter-form #academicYearId",
+     "2026"
+    ],
+    "wait": 300
+   },
+   {
+    "click": "#subjects app-school-soft-filter-form button:has-text(\"Search\")",
+    "wait": 2000
+   }
+  ],
+  "settle": 1500
+ },
+ {
+  "name": "stf-attendance",
+  "path": "/staff/staff-attendances",
+  "waitFor": "app-staffs-attendances-table table tbody tr",
+  "settle": 2000
+ },
+ {
+  "name": "stf-subjects",
+  "path": "/school/bulk-staff-subjects",
+  "waitFor": "table tbody tr select",
+  "settle": 1500
+ },
+ {
+  "name": "stf-rpt-attendance",
+  "path": "/reports/staff/attendance",
+  "waitFor": "app-staff-attendance-report-table table tbody tr",
+  "settle": 1500
+ },
+ {
+  "name": "stf-rpt-attendance-detailed",
+  "path": "/reports/staff/attendance-details",
+  "waitFor": "app-staff-attendance-table table tbody tr",
+  "settle": 1500
+ },
+ {
+  "name": "stf-rpt-subjects",
+  "path": "/reports/staff/subject-allocation",
+  "waitFor": "app-staff-min-table table tbody tr",
+  "settle": 1500,
+  "steps": [
+   {
+    "select": [
+     "app-school-soft-filter-form #staffCategoryId",
+     "Teaching"
+    ],
+    "wait": 300
+   },
+   {
+    "click": "app-school-soft-filter-form button:has-text(\"Search\")",
+    "wait": 3000
+   },
+   {
+    "eval": "(()=>{const r=[...document.querySelectorAll(\"app-staff-min-table tbody tr\")].find(t=>{const b=t.querySelector(\".badge\");return b&&b.textContent.trim()!==\"0\"});r&&r.querySelector(\"a\").click();})()",
+    "wait": 2500
+   }
+  ]
+ }
+]

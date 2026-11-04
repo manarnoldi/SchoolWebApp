@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShuleNova - User Guide</title>
+<style>
+  :root {
+    --blue: #2B7BD6;      /* "Shule" in the logo: h2, links */
+    --purple: #5B3FC4;    /* "Nova": chapter headings */
+    --orange: #F7A325;    /* the ring: rules and accents */
+    --slate: #3D5A75;     /* the book: h3 */
+    --ink: #2f3640;
+    --muted: #6b7280;
+    --border: #d5dcea;
+    --soft: #f5f7fc;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; scroll-behavior: smooth; }
+  body {
+    margin: 0; background: #e9ecf2; color: var(--ink);
+    font-family: 'Segoe UI', Calibri, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 15px; line-height: 1.6;
+  }
+  .page { max-width: 980px; margin: 1.2rem auto; background: #fff; box-shadow: 0 2px 14px rgba(20,30,55,.14); }
+
+  /* ---- Cover ---- */
+  .cover { padding: 3.5rem 3rem 3rem; text-align: center; border-top: 6px solid var(--orange);
+    background: linear-gradient(160deg, #fff 55%, #eef1fb); }
+  .cover img { width: 420px; max-width: 90%; }
+  .cover h1 { margin: 2.2rem 0 .3rem; font-size: 2.1rem; color: var(--purple); letter-spacing: .02em; }
+  .cover .sub { color: var(--slate); font-size: 1.05rem; }
+  .cover .meta { margin-top: 2rem; color: var(--muted); font-size: .88rem; }
+
+  .content { padding: 1.4rem 3rem 2.5rem; border-top: 4px solid var(--blue); }
+  p { margin: 0 0 .85rem; }
+  a { color: var(--blue); }
+
+  /* ---- Contents ---- */
+  .toc-h, h1.ch { color: var(--purple); font-size: 1.5rem; font-weight: 700; margin: 0 0 1rem;
+    text-transform: uppercase; padding-bottom: .3rem; border-bottom: 2.5px solid var(--orange); }
+  .toc { list-style: none; padding: 0; margin: 0 0 1rem; columns: 2; column-gap: 2.5rem; counter-reset: tch; }
+  .toc ul { list-style: none; padding: 0; margin: 0; counter-reset: tsub; }
+  .toc li { margin: 0; }
+  .toc > li { break-inside: avoid; counter-increment: tch; }
+  .toc a { text-decoration: none; color: var(--ink); display: block; padding: .12rem 0; }
+  .toc > li > a { font-weight: 700; color: var(--purple); margin-top: .45rem; }
+  .toc > li > a::before { content: counter(tch) ". "; }
+  .toc ul > li { counter-increment: tsub; }
+  .toc ul > li > a { padding-left: 1.4rem; font-size: .93em; }
+  .toc ul > li > a::before { content: counter(tch) "." counter(tsub) " "; color: var(--muted); }
+  .toc a:hover { color: var(--orange); }
+
+  /* ---- Chapters: numbered as shown, so a chapter left out for the licence leaves no gap ---- */
+  .content { counter-reset: ch; }
+  .chapter { margin-top: 2.6rem; counter-increment: ch; counter-reset: sub; }
+  h1.ch::before { content: counter(ch) ". "; }
+  h2.sub { color: var(--blue); font-size: 1.22rem; margin: 1.8rem 0 .5rem; counter-increment: sub; }
+  h2.sub::before { content: counter(ch) "." counter(sub) " "; }
+  h3 { color: var(--slate); font-size: 1.03rem; margin: 1.3rem 0 .45rem; }
+  ul, ol { padding-left: 1.3rem; margin: 0 0 .85rem; }
+  li { margin-bottom: .3rem; }
+  ol.steps { counter-reset: step; list-style: none; padding: 0; }
+  ol.steps > li { counter-increment: step; position: relative; padding: .2rem 0 .2rem 2.1rem; }
+  ol.steps > li::before { content: counter(step); position: absolute; left: .2rem; top: .25rem; width: 1.45rem; height: 1.45rem;
+    background: var(--blue); color: #fff; border-radius: 50%; text-align: center; line-height: 1.45rem; font-weight: 700; font-size: .8rem; }
+
+  .callout { border: 1px solid var(--border); background: var(--soft); border-left: 4px solid var(--blue); padding: .55rem .9rem; margin: .9rem 0; font-size: .95em; }
+  .callout .lbl { font-weight: 700; color: var(--blue); }
+  .callout.important { border-left-color: var(--orange); }
+  .callout.important .lbl { color: #c2710c; }
+  .callout.tip { border-left-color: #2fb24b; }
+  .callout.tip .lbl { color: #1f8b3d; }
+
+  table { width: 100%; border-collapse: collapse; margin: .9rem 0; font-size: .93em; }
+  th { background: var(--slate); color: #fff; text-align: left; padding: .45rem .7rem; border: 1px solid #344d66; }
+  td { padding: .45rem .7rem; border: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: #f7f9fd; }
+
+  .ui { font-weight: 600; color: #1f2937; background: #eef1f8; border: 1px solid #d3d9e8; border-radius: 4px; padding: 0 .35em; white-space: nowrap; font-size: .93em; }
+  .path { color: var(--slate); font-weight: 600; }
+
+  figure.shot { margin: 1rem 0 1.3rem; }
+  figure.shot img { display: block; max-width: 100%; height: auto; border: 1px solid #c8d0e0; border-radius: 4px; box-shadow: 0 2px 8px rgba(20,30,55,.12); }
+  figure.shot figcaption { color: var(--muted); font-size: .85rem; margin-top: .35rem; text-align: center; font-style: italic; }
+
+  .doc-footer { text-align: center; color: var(--muted); font-size: .82rem; margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+
+  .print-btn { position: fixed; top: .8rem; right: 1rem; z-index: 50; background: var(--blue); color: #fff; border: 0;
+    padding: .5rem 1rem; border-radius: 6px; font: 600 .85rem 'Segoe UI', Arial, sans-serif; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+  .print-btn:hover { background: var(--purple); }
+
+  @media (max-width: 700px) {
+    .content, .cover { padding-left: 1rem; padding-right: 1rem; }
+    .toc { columns: 1; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; }
+    .print-btn { display: none; }
+    .cover { page-break-after: always; min-height: 90vh; padding-top: 25vh; }
+    .toc-wrap { page-break-after: always; }
+    .chapter { page-break-before: always; margin-top: 0; }
+    figure.shot { page-break-inside: avoid; }
+    h2.sub, h3 { page-break-after: avoid; }
+  }
+</style>
+</head>
+<body>
+<button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+<div class="page">
+  <div class="cover">
+    <img src="assets/img/shule-nova-logo.png" alt="ShuleNova">
+    <h1>User Guide</h1>
+    <div class="sub">Day-to-day use of ShuleNova for staff and teachers</div>
+    <div class="meta">Kodetek Investment Limited &middot; November 2026</div>
+  </div>
+  <div class="content">
+    <div class="toc-wrap">
+      <h2 class="toc-h">Contents</h2>
+      <ul class="toc">
+        <li><a href="#getting-started">Getting Started</a><ul><li><a href="#gs-sign-in">Signing In</a></li><li><a href="#gs-screen">Finding Your Way Around</a></li><li><a href="#gs-dashboard">The Dashboard</a></li><li><a href="#gs-notifications">Notifications and Approvals</a></li><li><a href="#gs-account">Your Account and Password</a></li><li><a href="#gs-sign-out">Signing Out and Staying Safe</a></li></ul></li>
+        <li><a href="#school">School</a><ul><li><a href="#sch-details">School Details</a></li><li><a href="#sch-events">Events (the School Calendar)</a></li><li><a href="#sch-classes">Classes</a></li><li><a href="#sch-reports">School Reports</a></li></ul></li>
+        <li><a href="#students">Students</a><ul><li><a href="#stu-details">Basic Details: the Learners List</a></li><li><a href="#stu-record">A Learner's Full Record</a></li><li><a href="#stu-parents">Parents</a></li><!--module:Academics--><li><a href="#stu-subjects">Subject Allocation</a></li><!--/module:Academics--><li><a href="#stu-attendance">Attendance</a></li><li><a href="#stu-promotion">Class Assignment (Promotion)</a></li></ul></li>
+        <li><a href="#staff">Staff</a><ul><li><a href="#stf-details">Staff Details</a></li><li><a href="#stf-attendance">Staff Attendance</a></li><!--module:Academics--><li><a href="#stf-subjects">Subject Allocation (Staff)</a></li><!--/module:Academics--><li><a href="#stf-reports">Staff Reports</a></li></ul></li>
+        <!--module:Academics--><li><a href="#academics">Academics</a><ul><li><a href="#aca-assessments">Student Assessments</a></li><li><a href="#aca-tracker">Assessment Tracker</a></li><li><a href="#aca-school-exams">School Exams</a></li><li><a href="#aca-register">Register Exams</a></li><li><a href="#aca-results">Results Entry</a></li><li><a href="#aca-development">Learner Development</a></li><li><a href="#aca-exam-reports">Exam Results and Report Forms</a></li><li><a href="#aca-assessment-report">Assessment Report</a></li><li><a href="#aca-subject-performance">Subject Performance</a></li><li><a href="#aca-class-performance">Class Performance</a></li><li><a href="#aca-subject-allocation">Student Subject Allocation</a></li></ul></li><!--/module:Academics-->
+        <!--module:Academics--><li><a href="#teaching">Teaching Management</a><ul><li><a href="#tch-schemes">Schemes of Work</a></li><li><a href="#tch-approving">Approving Schemes and Lesson Plans</a></li><li><a href="#tch-plans">Lesson Plans</a></li><li><a href="#tch-record">Record of Work</a></li><li><a href="#tch-tracker">Tracker</a></li><li><a href="#tch-curriculum">Curriculum</a></li></ul></li><!--/module:Academics-->
+        <!--module:Finance--><li><a href="#finance">Finance</a><ul><li><a href="#fin-approvals">How Approvals Work</a></li><li><a href="#fin-budget-register">Budget Register</a></li><li><a href="#fin-budgets">Budgets</a></li><li><a href="#fin-amendments">Budget Amendments</a></li><li><a href="#fin-fee-structures">Fee Structures</a></li><li><a href="#fin-invoices">Student Invoices</a></li><li><a href="#fin-payments">Fee Payments and Receipts</a></li><li><a href="#fin-fee-reports">Fee Reports</a></li><li><a href="#fin-sponsors">Sponsors</a></li><li><a href="#fin-sponsorships">Sponsorships</a></li><li><a href="#fin-sponsor-payments">Sponsor Payments</a></li><li><a href="#fin-expenses">Expenses</a></li><li><a href="#fin-journals">Journal Entries</a></li><li><a href="#fin-periods">Accounting Periods</a></li><li><a href="#fin-statements">Financial Statements</a></li><li><a href="#fin-expense-report">Expenses Report</a></li></ul></li><!--/module:Finance-->
+        <!--module:Payroll--><li><a href="#payroll">Payroll</a><ul><li><a href="#pay-salaries">Employee Salaries</a></li><li><a href="#pay-loans">Loans &amp; Advances</a></li><li><a href="#pay-processing">Processing</a></li><li><a href="#pay-reports">Reports</a></li><li><a href="#pay-my-payslips">My Payslips</a></li></ul></li><!--/module:Payroll-->
+        <!--module:Elections--><li><a href="#elections">Elections</a><ul><li><a href="#ele-stages">How an Election Runs</a></li><li><a href="#ele-manage">Manage Elections</a></li><li><a href="#ele-polling">Polling Station</a></li><li><a href="#ele-results">Results</a></li></ul></li><!--/module:Elections-->
+        <!--module:Communications--><li><a href="#communications">Communications</a><ul><li><a href="#com-send">Send Message</a></li><li><a href="#com-queue">Message Queue</a></li><li><a href="#com-templates">Templates</a></li><li><a href="#com-sms-report">SMS Report</a></li><li><a href="#com-from-pages">Sending to Parents from Other Pages</a></li></ul></li><!--/module:Communications-->
+      </ul>
+    </div>
+<section class="chapter" id="getting-started">
+<h1 class="ch">Getting Started</h1>
+<p>ShuleNova is your school's management system: learners and parents, staff, classes, assessments and exams, teaching documents, fees and accounts, payroll, elections and messages to parents, in one place in your web browser. This guide shows how to do the everyday work. The screens shown use a demonstration school; your school's names and figures will differ.</p>
+<div class="callout"><span class="lbl">What you see depends on you.</span> The menus you see follow the roles your administrator gave you, and the modules your school has bought. If this guide describes a page you cannot find, ask your administrator to give you access.</div>
+
+<h2 class="sub" id="gs-sign-in">Signing In</h2>
+<ol class="steps">
+  <li>Open your school's ShuleNova address in your browser (for example <span class="path">https://yourschool.kodetek.co.ke</span>).</li>
+  <li>Type your <span class="ui">Username</span> and <span class="ui">Password</span>. The eye button shows the password as you type it.</li>
+  <li>Tick <span class="ui">Remember me</span> on your own computer only, then click <span class="ui">Sign In</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/gs-login.png" alt="The sign-in page"><figcaption>The sign-in page</figcaption></figure>
+<p>The first time you sign in, or after an administrator resets your password, ShuleNova asks you to choose a new password before you continue.</p>
+<div class="callout tip"><span class="lbl">Forgot your password?</span> ShuleNova does not send reset emails. Ask your system administrator to reset it; you then choose your own at the next sign-in.</div>
+
+<h2 class="sub" id="gs-screen">Finding Your Way Around</h2>
+<p>Every page has the same frame:</p>
+<ul>
+  <li><strong>The menu</strong> on the left lists the areas you can use: School, Staff, Students, Academics and so on. Click an area to open its pages. The <span class="ui"><i>&#9776;</i></span> button at the top left hides the menu and gives the page more room.</li>
+  <li><strong>The top bar</strong> holds, from the right: your account menu, the notifications bell, and the guides.</li>
+  <li><strong>The page</strong> itself, with its title and the path back to the dashboard at the top right.</li>
+</ul>
+<figure class="shot"><img src="assets/guide/gs-header.png" alt="The top bar"><figcaption>The top bar: the guides, notifications and your account</figcaption></figure>
+<table>
+  <tr><th style="width:28%">Icon</th><th>What it does</th></tr>
+  <tr><td>Blue book</td><td>Opens this user guide.</td></tr>
+  <tr><td>Red book</td><td>Opens the administrator guide (administrators only).</td></tr>
+  <tr><td>Bell</td><td>Things waiting for you, such as approvals. The number shows how many.</td></tr>
+  <tr><td>Person</td><td>Your account: your profile, changing your password and signing out.</td></tr>
+</table>
+<p>Most lists have a search box, filters such as year, term and class above them, and page controls below them. A page often remembers your filters in its address, so a refresh or a bookmarked link opens the same view again.</p>
+
+<h2 class="sub" id="gs-dashboard">The Dashboard</h2>
+<p>After signing in you land on the dashboard: a summary of the school today. It greets you, shows the date, the academic year and the term (or the next term's opening date during a holiday), and then cards for each area your school uses.</p>
+<figure class="shot"><img src="assets/guide/gs-dashboard-full.png" alt="The dashboard"><figcaption>The dashboard</figcaption></figure>
+<table>
+  <tr><th style="width:28%">Card</th><th>What it shows</th></tr>
+  <tr><td>Counts</td><td>Active students, parents, teaching and non-teaching staff.</td></tr>
+  <tr><td>Class Exam Performance</td><td>Classes ranked by their average in an exam. Pick the year, term and exam and click <span class="ui">Load</span>.</td></tr>
+  <tr><td>Fees</td><td>Collected this term against what was invoiced, today's and this week's collections, the balance outstanding and the classes owing most.</td></tr>
+  <tr><td>CBE assessments</td><td>How many learners and learning areas have been assessed this term, and where learners need support.</td></tr>
+  <tr><td>Teaching documents</td><td>Schemes of work approved, lesson plans and lessons taught this term.</td></tr>
+  <tr><td>Elections</td><td>The latest election and its turnout.</td></tr>
+  <tr><td>To-do list</td><td>Your own reminders: type a task, give it a date if you like, and click <span class="ui">+</span>.</td></tr>
+  <tr><td>Upcoming events</td><td>The school calendar's next events.</td></tr>
+</table>
+<p>A card appears only when your school uses that module and you are allowed to see it. Links on a card's title bar (such as <span class="ui">Fee reports</span>) open the full page.</p>
+
+<h2 class="sub" id="gs-notifications">Notifications and Approvals</h2>
+<p>The bell shows the items waiting for <em>you</em>, most often requests to approve: an expense, a budget, a scheme of work or a lesson plan sent to you as the next approver. Click an item to open it, then approve or return it with a comment. Click <span class="ui">Refresh</span> to check for new ones.</p>
+<figure class="shot"><img src="assets/guide/gs-notifications.png" alt="The notifications list"><figcaption>Approvals waiting, under the bell</figcaption></figure>
+
+<h2 class="sub" id="gs-account">Your Account and Password</h2>
+<p>Click the person icon at the top right to see your name, email and roles, and to change your password or sign out.</p>
+<figure class="shot"><img src="assets/guide/gs-user-menu.png" alt="The account menu"><figcaption>The account menu</figcaption></figure>
+<p>Click your name to open <strong>My Profile</strong>, where you can also change your password: type your current password, then the new one twice, and save.<!--module:Payroll--> Staff paid through ShuleNova also find a <span class="ui">My payslips</span> button here.<!--/module:Payroll--></p>
+<figure class="shot"><img src="assets/guide/gs-profile.png" alt="My Profile"><figcaption>My Profile</figcaption></figure>
+
+<h2 class="sub" id="gs-sign-out">Signing Out and Staying Safe</h2>
+<ul>
+  <li>Always use <span class="ui">Sign out</span> in the account menu when you finish, above all on a shared computer.</li>
+  <li>If you leave ShuleNova idle, it shows an "Idle mode detected" warning with a countdown, then signs you out by itself (after 30 minutes unless your school chose otherwise). Click <span class="ui">Resume</span> to carry on, or <span class="ui">Log out</span>.</li>
+  <li>Never share your password. Everything you do is recorded against your name.</li>
+</ul>
+<div class="callout important"><span class="lbl">View-only accounts.</span> Some accounts (a board member, an auditor) can look at everything but change nothing. They show a yellow <span class="ui">View only</span> badge in the top bar, and any save is refused with the message "This account is view-only".</div>
+</section>
+
+<section class="chapter" id="school">
+<h1 class="ch">School</h1>
+<p>The <span class="path">School</span> menu holds the facts about your school: its details, its classes, the school calendar, and reports on classes and their attendance. Most staff only look at these pages; an administrator keeps them up to date.</p>
+<div class="callout"><span class="lbl">Setting up the year.</span> <span class="ui">Academic Years</span>, <span class="ui">Sessions</span> (terms) and creating the year's classes are set up by an administrator at the start of each year. They are described in the Administrator Guide.</div>
+
+<h2 class="sub" id="sch-details">School Details</h2>
+<p><span class="path">School &gt; Details</span> shows the school's name, logo, contacts, motto, vision and mission, and the school levels it offers. The report header and titles shown here are what appear at the top of printed reports, such as report forms and class lists.</p>
+<figure class="shot"><img src="assets/guide/sch-details.png" alt="The School Details page"><figcaption>School Details: everything greyed out is for reading only</figcaption></figure>
+<p>The fields are greyed out so that nothing changes by accident. Administrators see an <span class="ui">Edit school details</span> link at the top right: it opens the fields for changing (and lets you choose a new logo), and <span class="ui">Update Records</span> saves them. If something here is wrong, such as a phone number on your reports, tell your administrator.</p>
+
+<h2 class="sub" id="sch-events">Events (the School Calendar)</h2>
+<p><span class="path">School &gt; Events</span> is the school calendar: opening and closing days, exams, sports days, trips and meetings. The dashboard's <strong>Upcoming events</strong> card shows the next ones from this list.</p>
+<h3>Looking at the calendar</h3>
+<ol class="steps">
+  <li>Open <span class="path">School &gt; Events</span>. The current academic year's events are listed, latest first.</li>
+  <li>To see another year, pick it in the year box and click <span class="ui">Search</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/sch-events.png" alt="The events list"><figcaption>The school calendar for the year, latest events first</figcaption></figure>
+<p>Each row shows the term (session) the event falls in, its name, place, start and end dates, and a description.</p>
+<h3>Adding or changing an event</h3>
+<p>If you are allowed to manage events:</p>
+<ol class="steps">
+  <li>Click <span class="ui">Add event</span> at the top right.</li>
+  <li>Choose the <span class="ui">Academic year</span> and the <span class="ui">Session name</span> (term), then type the <span class="ui">Event name</span> and <span class="ui">Event location</span>. These four are required.</li>
+  <li>Set the <span class="ui">Event start date</span> and <span class="ui">Event end date</span> (the same date for a one-day event) and, if you like, a <span class="ui">Description</span>.</li>
+  <li>Click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/sch-event-form.png" alt="The event form"><figcaption>Adding an event</figcaption></figure>
+<p>To change an event, click the pencil in its <span class="ui">Action</span> column; the same form opens with its details. The bin deletes it after you confirm.</p>
+<div class="callout tip"><span class="lbl">Tip.</span> Administrators can also reach this page from the <span class="ui">Add event</span> link on the dashboard's Upcoming events card; a <span class="ui">Back to dashboard</span> button then takes you back.</div>
+
+<h2 class="sub" id="sch-classes">Classes</h2>
+<p><span class="path">School &gt; Classes</span> lists the year's classes: each grade and stream (for example <em>Grade 5 E</em> and <em>Grade 5 W</em>), with its class leaders and the number of learners in it.</p>
+<h3>Finding a year's classes</h3>
+<ol class="steps">
+  <li>Open <span class="path">School &gt; Classes</span>.</li>
+  <li>Check the year in the first box. The page may open on the latest year set up, which can be next year's (still empty) classes; pick the year you want.</li>
+  <li>Leave the curriculum as it is, or pick a <span class="ui">Level</span> (such as Junior School) to see only its classes, then click <span class="ui">Search</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/sch-classes.png" alt="The classes list"><figcaption>The year's classes, with their class leaders and learner counts</figcaption></figure>
+<table>
+  <tr><th style="width:28%">Column</th><th>What it shows</th></tr>
+  <tr><td>Class, Stream, Class name</td><td>The grade, the stream, and the full name used across ShuleNova.</td></tr>
+  <tr><td>Rank</td><td>The order the classes are listed in, lowest grade first.</td></tr>
+  <tr><td>Class Leaders</td><td>The class teacher and learner leaders (monitor, president and so on), with their roles.</td></tr>
+  <tr><td>Students</td><td>How many learners are in the class. Click the number to see them.</td></tr>
+  <tr><td>Leadership</td><td>The spanner opens the class's page, where its class leaders are added or changed.</td></tr>
+</table>
+<h3>Seeing who is in a class</h3>
+<p>Click the blue number in the <span class="ui">Students</span> column. A window lists the class's learners with their UPI (admission number), gender, phone and status. Click <span class="ui">Close</span> when done.</p>
+<figure class="shot"><img src="assets/guide/sch-class-students.png" alt="Learners in a class"><figcaption>The learners in a class</figcaption></figure>
+<p>Adding classes, copying last year's classes into a new year (<span class="ui">Copy classes from another year</span>) and editing a class are administrator tasks, covered in the Administrator Guide. Learners are placed in classes from <span class="path">Students &gt; Class Assignment</span> (see the Students chapter).</p>
+
+<h2 class="sub" id="sch-reports">School Reports</h2>
+<p><span class="path">School &gt; Reports</span> has three reports about classes. Each opens already filled in for the current year, so you see results straight away; change the filters and click <span class="ui">Search</span> to see something else. The filters you choose stay in the page address, so a refresh or a saved link shows the same report again.</p>
+<p>Printing makes a PDF that opens in a new browser tab, from which you print or save it.</p>
+
+<h3>Class Lists</h3>
+<p><span class="path">School &gt; Reports &gt; Class Lists</span> gives the list of learners in each class, for registers, notice boards or exam rooms.</p>
+<ol class="steps">
+  <li>Pick the year and the learners' status (normally <span class="ui">Active</span>; choose <span class="ui">Alumni</span>, <span class="ui">Suspended</span> or <span class="ui">Terminated</span> for those lists) and click <span class="ui">Search</span>. The year's classes appear on the left.</li>
+  <li>Click a class's name to see its class leaders and learners on the right.</li>
+  <li>To print, tick the box beside each class you want (the box in the heading ticks them all), then click <span class="ui">Print List</span>. With one class ticked the button reads <span class="ui">Preview List</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/sch-class-list.png" alt="The Class Lists report"><figcaption>Class Lists: a class's leaders and learners, one class ticked for printing</figcaption></figure>
+
+<h3>Attendance Report</h3>
+<p><span class="path">School &gt; Reports &gt; Attendance Report</span> shows a class's register for a month on one screen: a row per learner and a column per day, with <strong>P</strong> (present, green) or <strong>A</strong> (absent, red). Grey days have no register taken, such as weekends and holidays.</p>
+<ol class="steps">
+  <li>Pick the year, the class, the status (normally <span class="ui">Active</span>) and the month, and click <span class="ui">Search</span>. The page opens on the month of the class's latest register.</li>
+  <li>Click <span class="ui">Print</span> for the whole class's monthly register, or the printer icon at the end of a row for one learner's.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/sch-attendance-report.png" alt="The class attendance report"><figcaption>A class's register for the month</figcaption></figure>
+
+<h3>Attendance Detailed</h3>
+<p><span class="path">School &gt; Reports &gt; Attendance Detailed</span> lists one learner's attendance day by day for the month, with remarks, which is useful when talking to a parent about absences.</p>
+<ol class="steps">
+  <li>Pick the year, class, status and month and click <span class="ui">Search</span>. The class's learners appear on the left.</li>
+  <li>Click a learner's name to see their days on the right: the date and weekday, <em>Present</em> or <em>Absent</em>, and any remark.</li>
+  <li>To print, tick the learners you want and click <span class="ui">Print</span> (<span class="ui">Preview</span> when only one is ticked).</li>
+</ol>
+<figure class="shot"><img src="assets/guide/sch-attendance-detailed.png" alt="The detailed attendance report"><figcaption>One learner's attendance, day by day</figcaption></figure>
+<div class="callout tip"><span class="lbl">Where does attendance come from?</span> These reports show what class teachers record in <span class="path">Students &gt; Attendance</span>. A blank day means no register was taken for it.</div>
+</section>
+
+<section class="chapter" id="students">
+<h1 class="ch">Students</h1>
+<p>The <span class="path">Students</span> menu holds everything about your learners: their personal details, parents and guardians, the class they are in each year, their subjects and their daily attendance.</p>
+<table>
+  <tr><th style="width:28%">Page</th><th>What it is for</th></tr>
+  <tr><td>Basic Details</td><td>The list of learners, each learner's details, and their full record (class, parents, discipline, attendance, results, fees).</td></tr>
+  <tr><td>Parents</td><td>Parents and guardians, and which learners they are linked to.</td></tr>
+  <!--module:Academics--><tr><td>Subject Allocation</td><td>Which subjects each learner in a class takes.</td></tr><!--/module:Academics-->
+  <tr><td>Attendance</td><td>Taking the daily register for a class.</td></tr>
+  <tr><td>Class Assignment</td><td>Moving learners into another class: promotion at the end of the year, or a correction during it.</td></tr>
+</table>
+
+<h2 class="sub" id="stu-details">Basic Details: the Learners List</h2>
+<p><span class="path">Students &gt; Basic Details</span> lists the school's learners. It opens on the <span class="ui">Active</span> learners; to see others, choose <span class="ui">Suspended</span>, <span class="ui">Terminated</span> or <span class="ui">Alumni</span> in the status box and click <span class="ui">Search</span>.</p>
+<figure class="shot"><img src="assets/guide/stu-list.png" alt="The learners list"><figcaption>The learners list</figcaption></figure>
+<h3>Finding a learner</h3>
+<ol class="steps">
+  <li>Type part of the learner's name or admission number in the <span class="ui">Search</span> box above the list. The list narrows as you type.</li>
+  <li>Click a column heading (for example <span class="ui">Full name</span> or <span class="ui">Adm#</span>) to sort by it; click again to reverse the order.</li>
+  <li>Use <span class="ui">entries per page</span> and the page numbers at the bottom to see more.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/stu-list-search.png" alt="Searching the learners list"><figcaption>Searching for "maina" finds every learner with Maina in their name</figcaption></figure>
+<p>The four icons in the <span class="ui">Action</span> column are:</p>
+<table>
+  <tr><th style="width:28%">Icon</th><th>What it does</th></tr>
+  <tr><td>Eye</td><td>Views the learner's personal details.</td></tr>
+  <tr><td>Pencil</td><td>Opens the same details for changing.</td></tr>
+  <tr><td>Bin</td><td>Deletes the learner, after you confirm. Prefer changing their status (see below).</td></tr>
+  <tr><td>Spanner</td><td>Opens the learner's full record, with tabs for class, parents, attendance, results and more.</td></tr>
+</table>
+<p>Administrators also see <span class="ui">Export to Excel</span>, which saves the learners of the status chosen as a spreadsheet file.</p>
+
+<h3>A learner's details</h3>
+<p>The eye icon shows the learner's personal details: name, admission number, nationality, religion, gender, date of birth, contacts, learning mode (day or boarding), application and admission dates, address, health concerns and status. Everything is greyed out until you click <span class="ui">Edit student details</span> at the top right; <span class="ui">Update record</span> then saves your changes. <span class="ui">Manage other student details</span> opens the full record.</p>
+<figure class="shot"><img src="assets/guide/stu-record.png" alt="A learner's personal details"><figcaption>A learner's personal details</figcaption></figure>
+
+<h3>Adding a new learner</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add student</span> at the top right of the list.</li>
+  <li>Fill in at least the fields marked <span class="ui">*</span>: <span class="ui">Full name</span>, <span class="ui">Admission number</span>, <span class="ui">Nationality</span>, <span class="ui">Religion</span>, <span class="ui">Gender</span> and <span class="ui">Learning mode</span>. Add a photo with <span class="ui">Select student image</span> if you have one.</li>
+  <li>Click <span class="ui">Save record</span> and confirm.</li>
+  <li>Then open the learner's full record (the spanner) to put them in a class and link their parents, as described next. A learner who is not in a class does not appear on class lists, registers or exams.</li>
+</ol>
+<div class="callout important"><span class="lbl">A learner who leaves.</span> Don't delete a learner who has left or finished: edit their details and set <span class="ui">Student status</span> to <span class="ui">Terminated</span> (left the school), <span class="ui">Alumni</span> (finished) or <span class="ui">Suspended</span>. Their history (results, fees, attendance) is kept, and they drop off the Active lists. In the list, suspended learners show in yellow, terminated in red and alumni in green.</div>
+
+<h2 class="sub" id="stu-record">A Learner's Full Record</h2>
+<p>The spanner icon opens the learner's full record. A summary of their details sits at the top, and tabs below hold the rest. The tab you open is kept in the page address, so a refresh returns to it.</p>
+<figure class="shot"><img src="assets/guide/stu-manage.png" alt="A learner's full record, Parents details tab"><figcaption>A learner's record, on the Parents details tab</figcaption></figure>
+<table>
+  <tr><th style="width:28%">Tab</th><th>What it holds</th></tr>
+  <tr><td>Former school/s</td><td>Schools the learner attended before: name, curriculum, level, class and last exam score and position.</td></tr>
+  <tr><td>Class details</td><td>The class the learner is in for each year. Pick a year and click <span class="ui">Search</span>; <span class="ui">Add class</span> puts the learner in a class.</td></tr>
+  <tr><td>Parents details</td><td>The learner's parents and guardians, with their relationship and whether they receive messages, pay fees or may pick the learner up.</td></tr>
+  <tr><td>Discipline records</td><td>Incidents: dates, details, the type of occurrence and the outcome. <span class="ui">Add discipline</span> records one.</td></tr>
+  <tr><td>Subjects details</td><td>The subjects the learner takes<!--module:Academics--> (see Subject Allocation below)<!--/module:Academics-->.</td></tr>
+  <tr><td>Attendance details</td><td>The learner's attendance records. <span class="ui">Add attendance</span> records a single day for this learner.</td></tr>
+  <!--module:Academics--><tr><td>Academics</td><td>Progress through the year in a chart, each exam's marks, and prints of report forms and progress reports.</td></tr><!--/module:Academics-->
+  <!--module:Finance--><tr><td>Fees</td><td>What has been invoiced and paid, the balance and the statement, with prints of the fee statement, invoices, receipts and fee structure.</td></tr><!--/module:Finance-->
+  <tr><td>Leadership &amp; activities</td><td>Class leadership roles the learner has held<!--module:Academics-->, responsibilities and co-curricular activities<!--/module:Academics--><!--module:Elections-->, and elections they stood in<!--/module:Elections-->.</td></tr>
+</table>
+<!--module:Academics--><p>The Academics tab appears only to staff allowed to see results.</p><!--/module:Academics--><!--module:Finance--><p>The Fees tab appears only to staff allowed to see fees.</p><!--/module:Finance-->
+
+<h3>Seeing or changing a learner's class</h3>
+<ol class="steps">
+  <li>Open the <span class="ui">Class details</span> tab.</li>
+  <li>Pick the year and click <span class="ui">Search</span>. The tab may open on next year; choose the current one.</li>
+  <li>To put the learner in a class, click <span class="ui">Add class</span>, choose the year and class and save. To correct a class, use the pencil on its row.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/stu-manage-class.png" alt="The Class details tab"><figcaption>The learner's class for 2026</figcaption></figure>
+<p>For moving a whole class at once, use <a href="#stu-promotion">Class Assignment</a> instead.</p>
+
+<h3>Linking a parent</h3>
+<ol class="steps">
+  <li>Open the <span class="ui">Parents details</span> tab.</li>
+  <li>If the parent is already in ShuleNova (for example a brother or sister is already at the school), click <span class="ui">Add existing parent</span>, choose them and their relationship, and save.</li>
+  <li>Otherwise click <span class="ui">Add new parent</span>, fill in the parent's details and their <span class="ui">Relationship with student</span>, and save. The new parent is linked to this learner.</li>
+</ol>
+<!--module:Academics-->
+<h3>Following a learner's results</h3>
+<p>The <span class="ui">Academics</span> tab shows the learner's progress through the year: their mean in each exam against the class mean (green at or above it, red below), or subject by subject with <span class="ui">By subject</span>. Below the chart, click an exam to open its marks. Change the <span class="ui">Year</span>, or narrow the list to one <span class="ui">Term</span>; <span class="ui">Print</span> gives report forms and the progress report.</p>
+<figure class="shot"><img src="assets/guide/stu-manage-academics.png" alt="The Academics tab"><figcaption>A learner's progress through the year, and an exam's marks</figcaption></figure>
+<!--/module:Academics-->
+
+<h2 class="sub" id="stu-parents">Parents</h2>
+<p><span class="path">Students &gt; Parents</span> lists all parents and guardians. Search and sort it the same way as the learners list.</p>
+<figure class="shot"><img src="assets/guide/stu-parents.png" alt="The parents list"><figcaption>The parents list</figcaption></figure>
+<p>Three ticks describe each parent:</p>
+<table>
+  <tr><th style="width:28%">Tick</th><th>Meaning</th></tr>
+  <tr><td>Notifiable</td><td>Receives the school's messages about the learner<!--module:Communications--> (SMS and email from Communications)<!--/module:Communications-->.</td></tr>
+  <tr><td>Payer</td><td>Pays the learner's fees.</td></tr>
+  <tr><td>Picker</td><td>May collect the learner from school.</td></tr>
+</table>
+<h3>Viewing a parent and their children</h3>
+<ol class="steps">
+  <li>Click the eye icon on the parent's row.</li>
+  <li>The left side shows their details. Open <span class="ui">Parent's students</span> on the right to see every learner linked to them; click a learner's name to open their record.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/stu-parent-view.png" alt="A parent and their children"><figcaption>A parent's details and the learners linked to them</figcaption></figure>
+<h3>Adding or changing a parent</h3>
+<p>Click <span class="ui">Add parent</span>, or the pencil on a parent's row. The fields marked <span class="ui">*</span> are needed: <span class="ui">Parent number</span>, <span class="ui">Full name</span>, <span class="ui">Nationality</span>, <span class="ui">Religion</span>, <span class="ui">Gender</span> and <span class="ui">Occupation</span>. Set the <span class="ui">Notifiable?</span>, <span class="ui">Payer?</span> and <span class="ui">Picker?</span> ticks, add the phone number and email under <span class="ui">Other information</span>, and click <span class="ui">Save record</span>.</p>
+<div class="callout tip"><span class="lbl">Tip.</span> To add a parent and link them to a learner in one go, start from the learner's record (<span class="ui">Parents details</span> tab, <span class="ui">Add new parent</span>) rather than from this list.</div>
+
+<!--module:Academics-->
+<h2 class="sub" id="stu-subjects">Subject Allocation</h2>
+<p><span class="path">Students &gt; Subject Allocation</span> sets which subjects each learner takes. Exams and assessments only have a place for a learner's mark in the subjects allocated to them, so allocate subjects at the start of the year, before the first exam.</p>
+<h3>Seeing a class's subjects</h3>
+<ol class="steps">
+  <li>Pick the curriculum, year, level and class at the top. The class loads as soon as it is chosen.</li>
+  <li>Each learner's row lists their subjects.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/stu-subjects.png" alt="Subject allocations for a class"><figcaption>The subjects each learner in the class takes</figcaption></figure>
+<h3>Allocating subjects</h3>
+<ol class="steps">
+  <li>With the class shown, click <span class="ui">Add allocations</span>.</li>
+  <li>Tick the learners on the left (<span class="ui">Select all</span> for the whole class) and the subjects on the right.</li>
+  <li>Click <span class="ui">Save</span>. Every ticked learner gets every ticked subject; subjects a learner already has are skipped.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/stu-subjects-add.png" alt="Adding subject allocations"><figcaption>Giving the ticked learners the ticked subjects</figcaption></figure>
+<div class="callout tip"><span class="lbl">Religious education and options.</span> Give the whole class its common subjects in one go with <span class="ui">Select all</span>, then add each option (such as CRE or IRE) to just the learners who take it.</div>
+<h3>Removing subjects</h3>
+<p>Click the <strong>&times;</strong> on a subject to remove it from one learner, or tick learners and click <span class="ui">Delete selected</span> to remove all of their subjects. ShuleNova asks you to confirm first.</p>
+<div class="callout important"><span class="lbl">Removing a subject removes its marks.</span> If the learner already has exam results in that subject, they are deleted with it. The confirmation tells you how many results will go; read it before you click <span class="ui">Delete</span>.</div>
+<!--/module:Academics-->
+
+<h2 class="sub" id="stu-attendance">Attendance</h2>
+<p><span class="path">Students &gt; Attendance</span> is the class register. Class teachers mark it each day; the attendance reports under <span class="path">School &gt; Reports</span> are built from it.</p>
+<h3>Taking the register</h3>
+<ol class="steps">
+  <li>Pick the curriculum, year, level and class, and the date (no later than today), then click <span class="ui">Search</span>. The page opens on the first class and the last day a register was taken.</li>
+  <li>The class's learners are listed. On a new day nobody is ticked yet: tick <span class="ui">Present?</span> in the heading to tick everyone, then untick the learners who are absent. A learner left unticked is saved as absent.</li>
+  <li>Type a reason in <span class="ui">Remarks</span> for an absent learner (for example "Sick - parent called"). Your school may require a remark for every absence; ShuleNova then won't save until each absent learner has one.</li>
+  <li>Change <span class="ui">Time In</span> if a learner came late.</li>
+  <li>Click <span class="ui">Update Student Attendances</span> at the bottom and confirm.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/stu-attendance.png" alt="Taking the register"><figcaption>The register for a day: one learner marked absent, with a remark</figcaption></figure>
+<p>Searching a day that already has a register shows it as it was saved, so you can correct it and save again. The bin on a row deletes that learner's record for the day.</p>
+<div class="callout tip"><span class="lbl">Tip.</span> The class, date and other choices stay in the page address. Bookmark the page with your class chosen and it opens straight on your class each morning.</div>
+
+<h2 class="sub" id="stu-promotion">Class Assignment (Promotion)</h2>
+<p><span class="path">Students &gt; Class Assignment</span> moves learners from one class to another, many at a time. Use it at the end of the year to promote a class into next year's class, or during the year to correct a learner's class or stream (for example from 5E to 5W).</p>
+<div class="callout"><span class="lbl">Before promoting.</span> Next year's academic year and classes must already be set up by an administrator.</div>
+<h3>Promoting a class to next year</h3>
+<ol class="steps">
+  <li>Under <span class="ui">From (Current Class)</span>, choose this year and the class. Under <span class="ui">To (New Class)</span>, choose next year and the class the learners go up to. ShuleNova suggests the next grade in the same stream.</li>
+  <li>Leave <span class="ui">Also remove from source class</span> unticked, so the learners keep their record in this year's class.</li>
+  <li>Click <span class="ui">Load Students</span>. The learners still to move are listed under <span class="ui">Students to Assign</span>.</li>
+  <li>Tick the learners to promote (the box in the heading ticks them all). Leave unticked any learner repeating the year or leaving.</li>
+  <li>Click <span class="ui">Assign Selected</span> and confirm.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/stu-promotion.png" alt="Class Assignment"><figcaption>Promoting Day Care E 2026 into PP 1 E 2027, three learners ticked</figcaption></figure>
+<p>Learners already in the new class are listed under <span class="ui">Already Assigned</span>, so you can promote a class in several sittings without doubling anyone.</p>
+<h3>Correcting a class during the year</h3>
+<ol class="steps">
+  <li>Choose the same year on both sides, the learner's current class under <span class="ui">From</span> and the right class under <span class="ui">To</span>.</li>
+  <li><span class="ui">Also remove from source class</span> ticks itself when both years are the same; leave it ticked.</li>
+  <li>Click <span class="ui">Load Students</span>, tick the learners, and click <span class="ui">Move Selected</span>.</li>
+</ol>
+<p>A move keeps the learner's subjects, attendance and results for the year: they follow the learner into the new class.</p>
+<h3>Undoing a promotion</h3>
+<p>Tick learners under <span class="ui">Already Assigned</span> and click <span class="ui">Reverse Selected</span>. This removes them from the new class; their record in the old class stays. Reverse only before anything (subjects, attendance or marks) has been recorded for them in the new class.</p>
+</section>
+
+<section class="chapter" id="staff">
+<h1 class="ch">Staff</h1>
+<p>The <span class="path">Staff</span> menu holds the school's teaching and non-teaching staff: their details and employment records, their daily attendance<!--module:Academics-->, and which teacher takes which subject in each class<!--/module:Academics-->.</p>
+<table>
+  <tr><th style="width:28%">Page</th><th>What it is for</th></tr>
+  <tr><td>Staff Details</td><td>The list of staff, each staff member's details, and their full record.</td></tr>
+  <tr><td>Attendance</td><td>The daily staff register.</td></tr>
+  <!--module:Academics--><tr><td>Subject Allocation</td><td>Choosing the teacher of each subject in a class.</td></tr><!--/module:Academics-->
+  <tr><td>Reports</td><td>Staff attendance, month by month and day by day<!--module:Academics-->, and who teaches what<!--/module:Academics-->.</td></tr>
+</table>
+
+<h2 class="sub" id="stf-details">Staff Details</h2>
+<p><span class="path">Staff &gt; Staff Details</span> lists the staff. It opens on all <span class="ui">Active</span> staff. To narrow it, choose a <span class="ui">Staff category</span> (teaching or non-teaching), an <span class="ui">Employment type</span> (such as permanent, contract or casual) or another status, and click <span class="ui">Search</span>. Type in the <span class="ui">Search</span> box above the list to find someone by name or number.</p>
+<figure class="shot"><img src="assets/guide/stf-list.png" alt="The staff list"><figcaption>The staff list</figcaption></figure>
+<p>As in the learners list, the <span class="ui">Action</span> icons view (eye), edit (pencil) and delete (bin) a staff member, and the spanner opens their full record. Suspended staff show in yellow and terminated staff in red.</p>
+
+<h3>A staff member's details</h3>
+<p>The eye icon shows their details: name, nationality, religion, gender and status on the left, and three tabs on the right:</p>
+<ul>
+  <li><strong>Personal details</strong>: employment/TSC number, ID, staff number, date of birth, SHA, NSSF and KRA PIN numbers, and bank details.</li>
+  <li><strong>Employment details</strong>: employment date and end date, employment type, staff category and designation (Teacher, Deputy Head Teacher, Accountant and so on).</li>
+  <li><strong>Contact details</strong>: phone, email, address and other details.</li>
+</ul>
+<figure class="shot"><img src="assets/guide/stf-record.png" alt="A staff member's details"><figcaption>A staff member's details</figcaption></figure>
+<p>Click <span class="ui">Edit staff details</span> at the top right to change them, then save. Keep the statutory and bank numbers correct<!--module:Payroll-->: payroll uses them on payslips and returns<!--/module:Payroll-->.</p>
+
+<h3>Adding a staff member</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add staff</span> at the top right of the list.</li>
+  <li>Fill in at least the fields marked <span class="ui">*</span>: <span class="ui">Full name</span>, <span class="ui">Nationality</span>, <span class="ui">Religion</span>, <span class="ui">Gender</span>, the <span class="ui">Employment/TSC number</span>, and on the Employment details tab the <span class="ui">Employment type</span>, <span class="ui">Staff category</span> and <span class="ui">Designation</span>.</li>
+  <li>Save the record.</li>
+</ol>
+<div class="callout"><span class="lbl">Teaching staff.</span> Only staff in the <em>Teaching</em> category can be given subjects and classes, and appear in the teacher lists. A staff member's sign-in to ShuleNova is a separate user account, set up by an administrator.</div>
+<div class="callout important"><span class="lbl">Someone who leaves.</span> Don't delete a staff member who leaves: edit them and set <span class="ui">Staff status</span> to <span class="ui">Terminated</span>. Their records are kept and they drop off the active lists.</div>
+
+<h3>A staff member's full record</h3>
+<p>The spanner opens a summary of the staff member with these tabs below it:</p>
+<table>
+  <tr><th style="width:28%">Tab</th><th>What it holds</th></tr>
+  <tr><td>Attendance details</td><td>Their attendance records; <span class="ui">Add attendance</span> records one day.</td></tr>
+  <tr><td>Discipline details</td><td>Incidents and their outcomes; <span class="ui">Add discipline</span> records one.</td></tr>
+  <tr><td>Subjects assignments details</td><td>Teaching staff only: the subjects and classes they teach in a year. <span class="ui">Add subject</span> gives them one more.</td></tr>
+  <!--module:Academics--><tr><td>Teaching documents</td><td>Teaching staff only: for a term, each subject and class they teach, with their scheme of work, approved lesson plans and lessons taught.</td></tr><!--/module:Academics-->
+  <!--module:Payroll--><tr><td>Pay</td><td>Their payslips and yearly P9 tax cards. Staff see only their own, and only once a payroll is approved; payroll officers see everyone's.</td></tr><!--/module:Payroll-->
+  <tr><td>Duties</td><td>Class roles they hold (such as class teacher)<!--module:Elections--> and polling stations they ran as returning officer<!--/module:Elections-->.</td></tr>
+</table>
+<figure class="shot"><img src="assets/guide/stf-manage.png" alt="A teacher's record, Subjects tab"><figcaption>A teacher's record: the subjects and classes they teach in 2026</figcaption></figure>
+<div class="callout tip"><span class="lbl">Tip.</span> The Subjects tab, like other year filters, may open on the latest year set up, which can be next year. Pick the current year and click <span class="ui">Search</span>.</div>
+
+<h2 class="sub" id="stf-attendance">Staff Attendance</h2>
+<p><span class="path">Staff &gt; Attendance</span> is the daily staff register, usually kept by the deputy head or the secretary.</p>
+<ol class="steps">
+  <li>Choose the date (no later than today). Leave <span class="ui">Staff category</span> and <span class="ui">Employment type</span> empty for everyone, or choose one to list only those staff. Click <span class="ui">Search</span>. The page opens on the last day a register was taken.</li>
+  <li>Tick <span class="ui">Present?</span> for each staff member at work (the tick in the heading ticks everyone), and leave absent staff unticked.</li>
+  <li>Set the <span class="ui">Time In</span> (24-hour clock), and type a reason under <span class="ui">Remarks</span> for anyone absent, such as "Official duty" or "Sick leave". Your school may require a remark for every absence.</li>
+  <li>Click <span class="ui">Update Staff Attendances</span> and confirm.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/stf-attendance.png" alt="The staff register"><figcaption>The staff register for a day</figcaption></figure>
+<p>A day already marked is shown as it was saved, so you can correct it and save again. The bin removes one staff member's record for the day.</p>
+
+<!--module:Academics-->
+<h2 class="sub" id="stf-subjects">Subject Allocation (Staff)</h2>
+<p><span class="path">Staff &gt; Subject Allocation</span> sets the teacher of every subject in a class, on one screen. The teacher you set here is the one who enters that subject's marks and assessments for the class and prepares its teaching documents, so set it at the start of each year.</p>
+<ol class="steps">
+  <li>Choose the <span class="ui">Academic Year</span> and the <span class="ui">Class</span>. The class's subjects are listed, each with its teacher.</li>
+  <li>Pick a teacher in the <span class="ui">Assigned Teacher</span> box beside each subject, or <span class="ui">-- Not Assigned --</span> to clear it. Rows you change turn yellow and show <span class="ui">Modified</span>, and a badge counts the unsaved changes.</li>
+  <li>Click <span class="ui">Save All Changes</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/stf-subjects.png" alt="Subject allocation for a class"><figcaption>The teacher of each subject in a class</figcaption></figure>
+<table>
+  <tr><th style="width:28%">Status</th><th>Meaning</th></tr>
+  <tr><td>Allocated</td><td>The subject has a teacher, saved.</td></tr>
+  <tr><td>Unassigned</td><td>No teacher yet. Optional subjects that no learner in the class takes can stay unassigned.</td></tr>
+  <tr><td>Modified</td><td>Changed here but not yet saved.</td></tr>
+</table>
+<p>A row in red is a subject allocated to the class that does not belong to its level; choose <span class="ui">-- Remove allocation --</span> and save to clear it.</p>
+<!--/module:Academics-->
+
+<h2 class="sub" id="stf-reports">Staff Reports</h2>
+<p><span class="path">Staff &gt; Reports</span> has the staff reports. Like the school reports, each opens already filled in; change the filters and click <span class="ui">Search</span> to see something else. A report opens on the first staff category that has staff, which may be <em>Non-teaching</em>: choose <em>Teaching</em> for the teachers. Printing opens a PDF in a new tab.</p>
+
+<h3>Attendance Report</h3>
+<p>The month's register for a staff category: a row per staff member and a column per day, <strong>P</strong> for present and <strong>A</strong> for absent. Choose the category, status, month and year, and click <span class="ui">Search</span>. <span class="ui">Print</span> prints the whole list; the printer icon at the end of a row prints one person's month.</p>
+<figure class="shot"><img src="assets/guide/stf-rpt-attendance.png" alt="The staff attendance report"><figcaption>Staff attendance for October</figcaption></figure>
+
+<h3>Attendance Detailed</h3>
+<p>One staff member's attendance day by day, with the remarks given for absences. Choose the category, status, month and year and click <span class="ui">Search</span>, then click a name on the left. To print, tick the staff you want and click <span class="ui">Print</span> (<span class="ui">Preview</span> for one).</p>
+<figure class="shot"><img src="assets/guide/stf-rpt-attendance-detailed.png" alt="The detailed staff attendance report"><figcaption>One staff member's month, with the reason for an absence</figcaption></figure>
+
+<!--module:Academics-->
+<h3>Subject Allocation Report</h3>
+<p>What each teacher teaches in a year. Choose the year, the staff category (<em>Teaching</em>) and status, and click <span class="ui">Search</span>. The number beside each name is how many subject-classes they teach, which shows at a glance who carries the heaviest load and who has nothing yet. Click a name to list their subjects and classes; tick names and click <span class="ui">Print</span> for a printed copy.</p>
+<figure class="shot"><img src="assets/guide/stf-rpt-subjects.png" alt="The staff subject allocation report"><figcaption>Teachers with their number of subject-classes, and one teacher's list</figcaption></figure>
+<!--/module:Academics-->
+</section>
+
+<!--module:Academics-->
+<section class="chapter" id="academics" data-module="Academics">
+<h1 class="ch">Academics</h1>
+<p>The Academics menu is where teachers record how learners are doing: CBE assessment levels against each specific learning outcome, marks in the school's exams, and the learner-development records (co-curricular activities, responsibilities, community service and values) that appear on the report form. Its <span class="path">Reports</span> pages turn all of this into broadsheets, report forms and performance analysis.</p>
+<p>You find it under <span class="path">Academics</span> in the menu, in four groups: <strong>Assessments</strong>, <strong>Exams</strong>, <strong>Learner Development</strong> and <strong>Reports</strong>.</p>
+
+<div class="callout"><span class="lbl">Who can enter what.</span> A teacher enters assessments and exam marks only for the subjects and classes they are allocated to under <span class="path">Staff &gt; Subject Allocation</span>. Administrators can enter for any teacher, class and subject. So can any role given <span class="ui">Student Assessments (Admin)</span> in Menu Permissions (a Director of Studies, for example). That menu item is a permission, not a page: clicking it opens Student Assessments.</div>
+<p>Most pages here open already filled in: the current year and term, a first class and subject, with the list loaded. Change any filter and click the page's <span class="ui">Load</span> button to see something else. The filters are kept in the page's address, so a refresh or a bookmark brings back the same view.</p>
+
+<h2 class="sub" id="aca-assessments">Student Assessments</h2>
+<p>Student Assessments is where you grade learners against the curriculum's <strong>specific learning outcomes</strong>, one sub-strand at a time. Each grade is a CBE performance level such as <strong>EE</strong> (Exceeding Expectations), <strong>ME</strong> (Meeting), <strong>AE</strong> (Approaching) or <strong>BE</strong> (Below), with its points in brackets: <span class="ui">EE (4)</span>. Your school chooses the scale (4-point, or 8-point with levels like EE1 and EE2) in its grading settings.</p>
+
+<h3>Entering assessments for a sub-strand</h3>
+<ol class="steps">
+  <li>Open <span class="path">Academics &gt; Assessments &gt; Student Assessments</span>. The page opens on the current term and one of your classes and subjects, with the sub-strand you assessed last.</li>
+  <li>Check the filters across the top: <span class="ui">Curriculum</span>, <span class="ui">Year</span>, <span class="ui">Session</span> (the term), <span class="ui">Class</span>, <span class="ui">Subject</span>, then <span class="ui">Strand</span> and <span class="ui">Sub-Strand</span>. A <span class="ui">Theme</span> filter appears for subjects whose design groups strands into themes.</li>
+  <li>On the second row choose the <span class="ui">Assessment Type</span> (for example Formative Assessments) and the <span class="ui">Teacher</span>. A teacher sees only their own name here. The <span class="ui">Date</span> is optional.</li>
+  <li>Click <span class="ui">Load Assessments</span>. The grid lists every learner in the class, with one column per specific outcome in the sub-strand.</li>
+  <li>Pick a level in each cell. Leave a cell on <span class="ui">-</span> if you have not assessed that outcome yet.</li>
+  <li>Click <span class="ui">Save All Assessments</span> at the bottom. Only new or changed cells are sent. Saved cells turn green.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/aca-assessments.png" alt="Student Assessments grid for a sub-strand"><figcaption>One sub-strand's outcomes for a class, already graded</figcaption></figure>
+<ul>
+  <li>The header shows how many learners are listed and how many grades are saved. Use the search box to find a learner by admission number or name.</li>
+  <li>The <span class="ui">Average</span> row at the bottom shows the class's typical level for each outcome.</li>
+  <li>The small red <span class="ui">&times;</span> beside a saved grade deletes that one grade. <span class="ui">Delete All Saved</span> removes every saved grade in the grid, after a confirmation.</li>
+</ul>
+<div class="callout important"><span class="lbl">Not allocated?</span> If you pick a class and subject you do not teach, a yellow warning says "You are not allocated to this subject for the selected class" and the save button is disabled. Ask your administrator to allocate the subject to you under <span class="path">Staff &gt; Subject Allocation</span>.</div>
+<div class="callout tip"><span class="lbl">Tip.</span> Grade as you go: after each sub-strand is taught, load it and enter the levels. The Assessment Tracker counts a sub-strand as due a week after the last scheme-of-work week that teaches it.</div>
+
+<h2 class="sub" id="aca-tracker">Assessment Tracker</h2>
+<p>The Assessment Tracker shows how far each teacher has got with formative assessments this term. It has one row per teacher, learning area and class. The scheme of work says which sub-strands are due for assessment, and the grades entered show which are done. Teachers see their own rows. A Head of Department sees their department(s) and their own learning areas. Administrators see the whole school. The line under the filters tells you which of these you are seeing.</p>
+<figure class="shot"><img src="assets/guide/aca-tracker.png" alt="The Assessment Tracker by class"><figcaption>The tracker, by class</figcaption></figure>
+<table>
+  <tr><th style="width:24%">Column</th><th>What it shows</th></tr>
+  <tr><td>Sub-strands due</td><td>Sub-strands whose outcomes are due now, of those in the scheme of work.</td></tr>
+  <tr><td>Outcomes graded</td><td>Outcomes due that have grades. The bar is green for graded, amber for part of the class only, and red for none.</td></tr>
+  <tr><td>Grades entered</td><td>Grades on the outcomes due, as a share of one grade per learner per outcome.</td></tr>
+  <tr><td>Last entry</td><td>When grades were last entered.</td></tr>
+  <tr><td>Status</td><td><span class="ui">Up to date</span>, <span class="ui">Incomplete</span> (every outcome due has grades, but some only for part of the class), <span class="ui">Behind</span> (some outcomes due have no grades), <span class="ui">Not started</span>, <span class="ui">Nothing due yet</span>, or <span class="ui">No scheme</span> (no scheme of work this term, so nothing says what is due).</td></tr>
+</table>
+
+<h3>Following up</h3>
+<ol class="steps">
+  <li>Pick the <span class="ui">Term</span>, then narrow with <span class="ui">Teacher</span>, <span class="ui">Department</span>, <span class="ui">Grade</span>, <span class="ui">Learning area</span> or the search box.</li>
+  <li>Click a status chip (for example <span class="ui">Behind</span>) to show only those rows. Click it again, or <span class="ui">clear</span>, to show all.</li>
+  <li>Click a row to open it. On the left are its sub-strands, with each outcome's number of learners graded. On the right are the learners missing grades.</li>
+  <li>Click <span class="ui">Grades</span> on a sub-strand to open its grade sheet in Student Assessments. <span class="ui">Back to tracker</span> there returns you to the same view.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/aca-tracker-detail.png" alt="A tracker row opened to its sub-strands"><figcaption>A row opened: sub-strands, due dates and learners missing grades</figcaption></figure>
+<p><span class="ui">By teacher</span> switches to one line per teacher, with their subject-classes by status, furthest behind first. Click a teacher to see their rows. The two buttons on the right export the list to Excel (CSV) and print it.</p>
+
+<h2 class="sub" id="aca-school-exams">School Exams</h2>
+<p>A <strong>school exam</strong> is one sitting for the whole school in a term, such as the Opening Exam, Mid-Term Exam, End-Term Exam or a weekly exam. It sets the type, the dates and the mark-entry deadline. Each class and subject that sits it is then added under Register Exams. Usually the Director of Studies or an administrator sets these up.</p>
+<figure class="shot"><img src="assets/guide/aca-school-exams.png" alt="The School Exams list"><figcaption>The term's school exams</figcaption></figure>
+
+<h3>Creating a school exam</h3>
+<ol class="steps">
+  <li>Open <span class="path">Academics &gt; Exams &gt; School Exams</span> and check the <span class="ui">Curriculum</span> and <span class="ui">Year</span>.</li>
+  <li>Click <span class="ui">New School Exam</span>.</li>
+  <li>Choose the <span class="ui">Term (Session)</span> and <span class="ui">Exam Type</span>, then enter the <span class="ui">Start Date</span> and <span class="ui">End Date</span>.</li>
+  <li>Set a <span class="ui">Mark Entry Deadline</span> if you want one. It cannot be earlier than the end date. After it passes, teachers can no longer enter marks for this exam, though administrators can still correct them.</li>
+  <li>Add an optional <span class="ui">Description</span> (for example "Weekly Exam 3 - Fri 11 Sep") and click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/aca-school-exam-form.png" alt="New School Exam form"><figcaption>New School Exam</figcaption></figure>
+
+<h3>Releasing results</h3>
+<p>A new school exam is a <span class="ui">Draft</span>. When marking is finished, click the green bullhorn button on its row (<span class="ui">Release results</span>) to <strong>release</strong> it. Released results appear on the dashboard summary.<!--module:Communications--> The release box has a tick box, <span class="ui">Send the results to parents now</span>, that sends each learner's results to their parents. You can also send them later with the paper-plane button. A <span class="ui">Parents notified</span> badge shows once results have been sent.<!--/module:Communications--> The yellow undo button on a released exam reverts the release. That hides the results from the dashboard again, but does not recall messages already sent.</p>
+<p>The pencil edits a school exam. The bin deletes it, but only once its registered class and subject exams have been removed.</p>
+
+<h2 class="sub" id="aca-register">Register Exams</h2>
+<p>Registering says which classes sit which subjects in a school exam, and out of how many marks. Marks can only be entered for registered exams.</p>
+<figure class="shot"><img src="assets/guide/aca-register-list.png" alt="Registered exams list"><figcaption>Registered exams for a term</figcaption></figure>
+
+<h3>Registering a school exam's papers</h3>
+<ol class="steps">
+  <li>Open <span class="path">Academics &gt; Exams &gt; Register Exams</span> and click <span class="ui">Register New Exam(s)</span>.</li>
+  <li>Choose the <span class="ui">Curriculum</span>, <span class="ui">Year</span>, <span class="ui">Session (Term)</span> and <span class="ui">Education Level</span> (or <span class="ui">All Education Levels</span>).</li>
+  <li>Choose the <span class="ui">School Exam</span>. Its dates and mark-entry deadline show underneath. If the list is empty, create the school exam first.</li>
+  <li>Enter the <span class="ui">Exam Mark</span> (what each paper is out of, 100 by default) and an optional description.</li>
+  <li>Tick the <span class="ui">Subjects</span> and <span class="ui">Classes</span>, or use <span class="ui">Select All</span>. The button shows how many papers will be created, for example <span class="ui">Register Exams (24)</span>.</li>
+  <li>Click it and confirm. A subject that is not taught at a class's education level is skipped, and the confirmation says how many were skipped.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/aca-register-form.png" alt="Register New Exam(s) form"><figcaption>Registering a weekly exam for the lower-primary classes</figcaption></figure>
+<p>On the list, filter by <span class="ui">Class</span> or <span class="ui">School Exam</span>, or search by subject, class or type. The pencil changes a paper's <span class="ui">Exam Mark</span> or description. Its dates come from the school exam, so change those under School Exams. Tick rows and click <span class="ui">Delete Selected</span> to remove several at once.</p>
+
+<h2 class="sub" id="aca-results">Results Entry</h2>
+<p>Results Entry is where you type exam marks, a class at a time, with a column for each subject.</p>
+<ol class="steps">
+  <li>Open <span class="path">Academics &gt; Exams &gt; Results Entry</span>. It opens on the current term and the latest exam, with one of your classes loaded.</li>
+  <li>To change it, choose the <span class="ui">Session</span>, <span class="ui">Class</span> and <span class="ui">School Exam</span>, and click <span class="ui">Load Grid</span>.</li>
+  <li>Type each learner's score. Each column heading shows the subject's short name and what it is out of, such as <span class="ui">MAT (100)</span>. A score above that, or below zero, is cleared with a warning.</li>
+  <li>Click <span class="ui">Save All Results</span>. Only new or changed scores are saved. Saved scores show green.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/aca-results-entry.png" alt="Results Entry grid"><figcaption>Results Entry: a class's marks for one exam</figcaption></figure>
+<ul>
+  <li>A teacher sees only the subjects they are allocated to in that class. A grey cell is a subject the learner does not take.</li>
+  <li>The red <span class="ui">&times;</span> beside a saved score deletes it. <span class="ui">Delete All Results</span> deletes every saved score in the grid.</li>
+  <li>Once the school exam's mark entry deadline has passed, a teacher sees "The mark entry deadline for this exam has passed. Contact the administrator for any corrections."</li>
+</ul>
+<div class="callout"><span class="lbl">Two other entry pages.</span> The same marks can be entered one subject at a time, with an optional remark per learner (<span class="ui">CBE Exams: Exam Results</span>, <span class="path">/cbe/exams/exam-results</span>). They can also be entered one learner at a time across all their subjects (<span class="ui">CBE Exams: Results (Classwise)</span>, <span class="path">/cbe/exams/exam-results-classwise</span>). Neither has a menu item of its own. Open them by typing the address after your school's ShuleNova address. They save to the same results as Results Entry.</div>
+
+<h2 class="sub" id="aca-development">Learner Development</h2>
+<p>These pages record the parts of a learner's growth that are not exam marks. Each one prints in its own section of the report form. They all work the same way: the filters at the top, <span class="ui">Load</span> or <span class="ui">Load Students</span>, then a row per learner, and one save button at the bottom that sends only what changed. A search box finds a learner by admission number or name.</p>
+
+<h3>Co-curricular</h3>
+<p>Scores each learner in a co-curricular activity (music, football, scouts and so on) on the school's score types, such as Participation, Achievement and Effort.</p>
+<ol class="steps">
+  <li>Open <span class="path">Academics &gt; Learner Development &gt; Co-curricular</span>. Choose the <span class="ui">Year</span>, <span class="ui">Class</span> and <span class="ui">Activity</span>, and click <span class="ui">Load</span>.</li>
+  <li>For each learner who takes part, pick a rating under each score type and add remarks if you wish. The <span class="ui">Overall remark</span> is printed on the report form for that activity.</li>
+  <li>Click <span class="ui">Save All Scores</span>. A learner who is given a score is enrolled in the activity automatically.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/aca-cocurricular.png" alt="Co-curricular student scores"><figcaption>Co-curricular scores for one activity. Green rows are already saved.</figcaption></figure>
+<p>The bin on a row removes that learner from the activity, with their scores.</p>
+
+<h3>Responsibilities</h3>
+<p>Records the responsibilities a learner holds (class duties, keeping the environment clean) and the social skills they show (sharing, teamwork), for the year.</p>
+<ol class="steps">
+  <li>Open <span class="path">Academics &gt; Learner Development &gt; Responsibilities</span>. Choose the <span class="ui">Year</span> and <span class="ui">Class</span>, and click <span class="ui">Load Students</span>.</li>
+  <li>In the <span class="ui">Add</span> column pick a responsibility or social skill and click <span class="ui">+</span>. It appears in the middle column, marked <strong>R</strong> (responsibility) or <strong>S</strong> (social skill), with a box for remarks.</li>
+  <li>Click <span class="ui">Save All Assignments</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/aca-responsibilities.png" alt="Responsibilities and social skills"><figcaption>Responsibilities and social skills, with remarks</figcaption></figure>
+<p>The red <span class="ui">&times;</span> removes an item. An item that was already saved is removed straight away, after you confirm.</p>
+
+<h3>Community Service</h3>
+<p>Works like Responsibilities, but for each term: choose the <span class="ui">Year</span>, <span class="ui">Session</span> and <span class="ui">Class</span>, and click <span class="ui">Load Students</span>. Add the community-service activities each learner took part in, with remarks, and click <span class="ui">Save All Assignments</span>.</p>
+
+<h3>Values</h3>
+<p>Rates each learner each term on the values your school has set up (love, responsibility, respect, unity, peace, patriotism and so on).</p>
+<ol class="steps">
+  <li>Open <span class="path">Academics &gt; Learner Development &gt; Values</span>. Choose the <span class="ui">Year</span>, <span class="ui">Session</span> and <span class="ui">Class</span>, and click <span class="ui">Load Students</span>.</li>
+  <li>Under each value, pick a rating (for example Meets Expectation) and add an optional remark.</li>
+  <li>Click <span class="ui">Save All Scores</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/aca-values.png" alt="Values scores"><figcaption>Values: a rating and remark per value. Scroll right for the rest.</figcaption></figure>
+
+<h2 class="sub" id="aca-exam-reports">Exam Results and Report Forms</h2>
+<p><span class="path">Academics &gt; Reports &gt; Exam Results</span> gathers the exam reports on one page, as tabs: <span class="ui">Exam Results</span>, <span class="ui">Report Forms</span>, <span class="ui">Annual Report Forms</span>, <span class="ui">Missing Marks</span>, <span class="ui">Class Exam Progress</span>, <span class="ui">Student Exam Progress</span> and <span class="ui">Year Progress</span>.</p>
+
+<h3>The broadsheet (Exam Results tab)</h3>
+<p>The broadsheet lists a class's marks in one exam, with each learner's total, mean and rank.</p>
+<ol class="steps">
+  <li>Choose the <span class="ui">Session</span>, <span class="ui">Class</span> and <span class="ui">School Exam</span>, and click <span class="ui">Load</span>.</li>
+  <li>Read the subjects across, then <span class="ui">Total M</span> (marks), <span class="ui">Total P</span> (points), <span class="ui">Mean M</span>, <span class="ui">Mean P</span>, <span class="ui">Mean G</span> (grade) and <span class="ui">Rank</span>. The badge above the table shows how learners are ranked, for example by mean marks. Your school sets this.</li>
+  <li>Print it with <span class="ui">MKS</span> (marks), <span class="ui">PTS</span> (points), <span class="ui">GRD</span> (grades) or the combined broadsheet button.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/aca-broadsheet.png" alt="Exam broadsheet"><figcaption>The broadsheet for one class and exam</figcaption></figure>
+<!--module:Communications--><p>The green <span class="ui">Send</span> button sends each learner's results to their parents.</p><!--/module:Communications-->
+
+<h3>Printing report forms</h3>
+<p>The report form is the term's report for each learner: exam results, the CBE sections (values, co-curricular, responsibilities, community service), and lines for the class teacher's and head teacher's comments, which are written by hand.</p>
+<ol class="steps">
+  <li>Open the <span class="ui">Report Forms</span> tab. Choose the <span class="ui">Year</span>, <span class="ui">Session</span> and <span class="ui">Class</span>, and click <span class="ui">Load</span>.</li>
+  <li>For one learner, click the eye button to preview their report, or the printer button to print it.</li>
+  <li>For several, tick them (the box beside <span class="ui">#</span> ticks the whole class) and click <span class="ui">Preview</span> or <span class="ui">Print</span>. All the reports come out as one PDF, each learner starting on a new page.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/aca-report-forms.png" alt="Report Forms tab"><figcaption>Report Forms: tick learners, then preview or print</figcaption></figure>
+<p>The preview opens as a PDF in a new browser tab. A progress bar shows while a large class is being generated. <span class="ui">Annual Report Forms</span> works the same way but puts all of the year's terms on one form, so it asks only for the year and class.</p>
+
+<h3>Missing Marks</h3>
+<p>Before printing report forms, check the <span class="ui">Missing Marks</span> tab. Choose the year, curriculum, term and school exam and click <span class="ui">Search</span>. It lists every learner with a registered paper that has no mark, and the subject codes missing. <span class="ui">Print</span> gives the list to hand to subject teachers.</p>
+<figure class="shot"><img src="assets/guide/aca-missing-marks.png" alt="Missing marks report"><figcaption>Learners with missing marks, by class</figcaption></figure>
+
+<h3>Exam progress</h3>
+<ul>
+  <li><strong>Class Exam Progress</strong> follows a class through every exam of one type in a term (the weekly exams, say), oldest first. Each mark shows the change from that learner's previous exam. Choose the term, class and <span class="ui">Exam type</span>, click <span class="ui">Load Report</span>, and pick a <span class="ui">Subject</span> or keep the average. <span class="ui">Print</span> prints the class list with its chart.</li>
+  <li><strong>Student Exam Progress</strong> shows the same for one learner, subject by subject, with a trend for each. It prints for one learner, or for all of them, a page each in one PDF.</li>
+  <li><strong>Year Progress</strong> shows every exam of the year for a learner, against the class mean, as on the learner's own page. Choose the year and class, click <span class="ui">Load</span>, and print one learner or all.</li>
+</ul>
+<figure class="shot"><img src="assets/guide/aca-class-progress.png" alt="Class Exam Progress"><figcaption>Class Exam Progress: weekly exams across a term</figcaption></figure>
+
+<h2 class="sub" id="aca-assessment-report">Assessment Report</h2>
+<p>The Assessment Report is the CBE progress report: for each learner, every subject's strands, sub-strands and specific outcomes, with the level they reached this term and the grading key.</p>
+<ol class="steps">
+  <li>Open <span class="path">Academics &gt; Reports &gt; Assessment Report</span>. Choose the <span class="ui">Year</span>, <span class="ui">Session</span> and <span class="ui">Class</span>, and click <span class="ui">Load</span>.</li>
+  <li>Click the eye button to preview one learner's report, or the printer button to print it.</li>
+  <li>To print several, tick them and click <span class="ui">Print Selected</span>. They come out as one PDF.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/aca-assessment-report.png" alt="Assessment Report"><figcaption>The Assessment Report: one report per learner</figcaption></figure>
+
+<h2 class="sub" id="aca-subject-performance">Subject Performance</h2>
+<p><strong>Subject Performance</strong> ranks the subjects in each class for one exam. For each subject it shows the number of entries, the mean percentage, grade and points, the top learner(s) and the subject teacher. Choose the <span class="ui">Session</span> and <span class="ui">School Exam</span>, click <span class="ui">Load</span>, and <span class="ui">Print</span> if you need it on paper.</p>
+<figure class="shot"><img src="assets/guide/aca-subject-performance.png" alt="Subject Performance"><figcaption>Subjects ranked within each class</figcaption></figure>
+
+<h3>Subject Performance Trend</h3>
+<p>The second tab follows one subject in one class across every released exam of the year. It is useful for a subject teacher's or department's analysis.</p>
+<ol class="steps">
+  <li>Choose the <span class="ui">Year</span>, <span class="ui">Class</span> and <span class="ui">Subject</span>, and click <span class="ui">Load</span>.</li>
+  <li>Read the <strong>Performance Analysis</strong> (learners who sat, highest, lowest and mean score, and the mean grade for each exam), the <strong>Performance Distribution</strong> (how many learners at each level), the two charts, and the written <strong>Analysis</strong> that ShuleNova drafts from the figures.</li>
+  <li>Choose the exam under <span class="ui">Term / Exam</span>, type your <strong>Conclusion &amp; Action Plan</strong> for it, and click <span class="ui">Save</span>. The plan is kept for that subject, class and exam.</li>
+  <li><span class="ui">Preview</span> prints this subject's analysis. <span class="ui">Print All Subjects</span> builds one PDF with a page for every subject in the class, each with its action plan for the chosen exam.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/aca-subject-trend.png" alt="Subject Performance Trend"><figcaption>A subject's trend across the year, with the analysis and action plan</figcaption></figure>
+
+<h2 class="sub" id="aca-class-performance">Class Performance</h2>
+<p><strong>Class Performance</strong> ranks the classes in one exam by their average. Classes are grouped, and ranked within each group, by education level (pre-primary, lower primary, and so on). Each row shows the number of learners, the class average and grade, the top learner and the class teacher. Choose the <span class="ui">Session</span> and <span class="ui">School Exam</span> and click <span class="ui">Load</span>.</p>
+<figure class="shot"><img src="assets/guide/aca-class-performance.png" alt="Class Performance"><figcaption>Classes ranked within each education level</figcaption></figure>
+<p>The <span class="ui">Class Performance Trend</span> tab does for a whole class what Subject Performance Trend does for one subject: the class's results across the year's exams, charts, a written analysis, and an action plan you can save and print.</p>
+
+<h2 class="sub" id="aca-subject-allocation">Student Subject Allocation</h2>
+<p>This report lists every learner in a class with the subjects they are allocated, so you can check that each learner takes the right subjects before exams are registered and marks entered. Choose the year, curriculum, level and class, and click <span class="ui">Search</span>. Click <span class="ui">Print</span> for a printed copy. Subjects are allocated under <span class="path">Students &gt; Subject Allocation</span>.</p>
+<figure class="shot"><img src="assets/guide/aca-subject-allocation.png" alt="Student Subject Allocation report"><figcaption>Each learner's allocated subjects</figcaption></figure>
+</section>
+<!--/module:Academics-->
+
+<!--module:Academics-->
+<section class="chapter" id="teaching" data-module="Academics">
+<h1 class="ch">Teaching Management</h1>
+<p>Teaching Management holds a teacher's professional documents for each subject and class they teach: the <strong>scheme of work</strong> for the term, the weekly <strong>lesson plans</strong> prepared from it, and the <strong>record of work</strong> kept after each lesson. Schemes and lesson plans go to the Head of Department for approval; the <strong>Tracker</strong> shows at a glance who has done what. The <strong>Curriculum</strong> page shows the KICD curriculum design that all of these draw on.</p>
+<p>You find it under <span class="path">Teaching Management</span> in the menu.</p>
+
+<div class="callout"><span class="lbl">Who sees what.</span> Teachers see and edit their own documents, for the subjects and classes they are allocated under <span class="path">Staff &gt; Subject Allocation</span>. A Head of Department (the head set on a department) also sees every document in their department, and approves and checks them. Administrators, and roles given <span class="ui">Whole-school Access (Admin)</span> in Menu Permissions, see the whole school. That menu item is a permission, not a page of its own: clicking it opens the Tracker.</div>
+
+<table>
+  <tr><th style="width:24%">Status</th><th>Meaning</th></tr>
+  <tr><td>Not started</td><td>Nothing prepared yet (grey).</td></tr>
+  <tr><td>Draft</td><td>Started and saved, not yet sent for approval (amber).</td></tr>
+  <tr><td>Submitted</td><td>Waiting for the approver; locked for editing (blue).</td></tr>
+  <tr><td>Returned / Rejected</td><td>Sent back by the approver with a comment; the teacher corrects it and resubmits (red).</td></tr>
+  <tr><td>Approved</td><td>Fully approved (green).</td></tr>
+</table>
+
+<h2 class="sub" id="tch-schemes">Schemes of Work</h2>
+<p>A scheme of work lays out the term week by week and lesson by lesson: strand, sub-strand, lesson learning outcomes, learning experiences, key inquiry questions, learning resources and assessment methods. There is one scheme per subject, class and term. By default a scheme is due by the end of the seventh day after the term opens; the due date shows beside its status.</p>
+
+<h3>Finding your subjects</h3>
+<p>The page opens on your own subjects for the current term. Each row is a subject and class you teach, with the scheme's status and how many lessons it plans.</p>
+<ul>
+  <li>Change the <span class="ui">Year</span> and <span class="ui">Term</span> to see another term.</li>
+  <li>Heads of department and administrators have a <span class="ui">Showing</span> button that switches between <span class="ui">My subjects</span> and <span class="ui">My department(s)</span> (or <span class="ui">Whole school</span>). The <span class="ui">Teacher</span> and <span class="ui">Department</span> filters then appear.</li>
+  <li>Narrow the list with <span class="ui">Grade</span>, <span class="ui">Subject</span>, <span class="ui">Scheme status</span> or <span class="ui">Search</span> (teacher, subject or class). <span class="ui">Clear</span> removes the filters.</li>
+</ul>
+<figure class="shot"><img src="assets/guide/tch-schemes-list.png" alt="The Schemes of Work list"><figcaption>Schemes of Work, showing the whole school for Term 3</figcaption></figure>
+<div class="callout important"><span class="lbl">No subjects listed?</span> "You have no subjects allocated for this term" means no allocation has been made for you yet. If the page says your account is not linked to a staff record, ask the administrator to link it under <span class="path">Security &gt; Users</span>.</div>
+
+<h3>Starting a scheme</h3>
+<ol class="steps">
+  <li>Find the subject and class and click <span class="ui">Start scheme</span>.</li>
+  <li>Confirm with <span class="ui">Start</span>. The scheme is laid out over the term's weeks; you can change the number of weeks afterwards.</li>
+  <li>The scheme opens. Fill it in in one of three ways:
+    <ul>
+      <li><span class="ui">Fill from curriculum</span> lays the curriculum's sub-strands out across the weeks in order, giving each the number of lessons the curriculum sets, and skipping sub-strands already in an earlier term's scheme. Then check and edit each lesson.</li>
+      <li><span class="ui">Copy from&hellip;</span> lists other schemes for the same subject and grade (another stream, or an earlier year). Click <span class="ui">Copy</span> on one, then adjust it for your class.</li>
+      <li>Type the lessons in yourself.</li>
+    </ul>
+  </li>
+  <li>Click <span class="ui">Save</span>. An asterisk (<span class="ui">Save *</span>) means there are unsaved changes.</li>
+</ol>
+
+<h3>Editing the lessons</h3>
+<p>At the top, enter the <span class="ui">References</span> (the books and guides the scheme follows), the number of <span class="ui">Weeks</span> and <span class="ui">Lessons per week</span>; after changing these, click <span class="ui">Apply to the table</span>. Weeks with lessons filled in cannot be cut off: clear or remove their lessons first.</p>
+<p>The table is grouped by week. Click a week's bar to open or fold its lessons; the bar says how many lessons are filled in.</p>
+<ul>
+  <li>Pick the <span class="ui">Strand</span> and <span class="ui">Sub-strand</span> from the curriculum, or choose "- other (type) -" and type your own. The sub-strand list shows each one's lesson count and the weeks it is already scheduled in.</li>
+  <li><span class="ui">same as above</span> copies the previous lesson's strand and sub-strand; <span class="ui">refill</span> replaces the lesson's text with the curriculum's wording.</li>
+  <li><span class="ui">+ lesson</span> on a week bar adds a lesson; the red &times; removes one (and anything recorded against it in the record of work).</li>
+  <li>The blue button at the end of a row opens the lesson in a larger form. <span class="ui">Apply</span> puts your changes into the scheme, and <span class="ui">Previous</span> / <span class="ui">Next</span> move between lessons; the scheme is only saved when you click <span class="ui">Save</span> on the page.</li>
+  <li>A week with no lessons (half-term, exams) is fine.</li>
+</ul>
+<figure class="shot"><img src="assets/guide/tch-scheme-open.png" alt="An approved scheme of work"><figcaption>An approved scheme, read-only, with week 1 open</figcaption></figure>
+<p>A scheme that has been submitted or approved is shown read-only, like the one above. <span class="ui">Print</span> prints it at any time.</p>
+
+<h3>Working in Excel</h3>
+<p>If you prefer Excel, click <span class="ui">Download my workbook</span> on the list. It holds every subject and class you teach this term, one sheet each. Fill it in and click <span class="ui">Upload workbook</span>. A single scheme also has its own <span class="ui">Excel</span> and <span class="ui">Upload</span> buttons while it is a draft.</p>
+<figure class="shot"><img src="assets/guide/tch-scheme-upload.png" alt="Upload schemes of work"><figcaption>Uploading a filled workbook</figcaption></figure>
+<p>The workbook is checked first and nothing is saved until you confirm. Sheets left empty are passed over; a sheet with errors is not saved until you fix it and upload again. A Head of Department can download a teacher's workbook (pick the teacher in the filter first) and upload it for them, for example when typing in paper schemes. Uploading saves the schemes as drafts; you still submit each one from its page.</p>
+
+<h3>Submitting for approval</h3>
+<ol class="steps">
+  <li>Save the scheme. The <span class="ui">Approval</span> box below the table lists the workflow's steps. By default there is one, <strong>Head of Department</strong>, and the head of the subject's department is already picked.</li>
+  <li>Check the approver for each step (you cannot pick yourself), then click <span class="ui">Submit for Approval</span>. Unsaved changes are saved first.</li>
+  <li>The scheme is now <span class="ui">Submitted</span> and locked. The approver sees it under the bell in the top bar.</li>
+</ol>
+<p>If it comes back <span class="ui">Returned</span> (or <span class="ui">Rejected</span>), the approver's comment shows in the Approval box. Make the changes, save, and click <span class="ui">Resubmit for Approval</span>.</p>
+<div class="callout tip"><span class="lbl">Approved too soon?</span> Once approved, a scheme cannot be edited. A Super Administrator can use <span class="ui">Reverse Approval</span> to send it back to the teacher as a draft.</div>
+
+<h2 class="sub" id="tch-approving">Approving Schemes and Lesson Plans</h2>
+<p>Schemes of work and each week's lesson plans follow the same approval steps, set up by the administrator under <span class="path">Settings &gt; Approval Workflows</span>. Out of the box there is one step, the Head of Department; a school can add more, such as the Deputy Head Teacher.</p>
+<ol class="steps">
+  <li>Click the bell in the top bar and open the item waiting for you, or open the document from the Tracker.</li>
+  <li>Read the scheme or the week's plans.</li>
+  <li>In <span class="ui">Your action</span>, type a comment and click <span class="ui">Approve</span>, <span class="ui">Return</span> (back to the teacher to correct) or <span class="ui">Reject</span>. A comment is required to return or reject.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/tch-plans-approval.png" alt="The approval box"><figcaption>A week's lesson plans waiting for the Head of Department</figcaption></figure>
+<p>With several steps, approving passes the document to the next approver; it becomes Approved after the last step.</p>
+
+<h2 class="sub" id="tch-plans">Lesson Plans</h2>
+<p>Lesson plans are prepared a week at a time from the scheme of work, and a week's plans are submitted and approved together. By default a week's plans are due at 08:00 on the first day of that week.</p>
+
+<h3>Preparing a week</h3>
+<ol class="steps">
+  <li>Open <span class="path">Teaching Management &gt; Lesson Plans</span>, find the subject and class, and click <span class="ui">Lesson plans</span>. (A subject shows "No scheme yet" until its scheme of work is started.)</li>
+  <li>Pick a week in the strip at the top. Each button is coloured by status, and outlined in red when overdue. The current week opens by itself.</li>
+  <li>For a week not prepared yet, click <span class="ui">Prepare week N's lesson plans</span>. A plan is made for each of the scheme's lessons that week, with the strand, sub-strand, outcomes, inquiry questions and resources filled in and a suggested date.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/tch-plans-pending.png" alt="A week with no lesson plans yet"><figcaption>A week not prepared yet, and overdue</figcaption></figure>
+
+<h3>Completing each lesson</h3>
+<p>Click a lesson's bar to open it. Fill in or adjust:</p>
+<ul>
+  <li><span class="ui">Lesson</span> number, <span class="ui">Date</span>, <span class="ui">Start</span> and <span class="ui">End</span> time, and the <span class="ui">Roll</span> (learners in the class).</li>
+  <li><span class="ui">Strand</span> and <span class="ui">Sub-strand</span>, <span class="ui">Specific learning outcomes</span>, <span class="ui">Learning resources</span>, <span class="ui">Key inquiry question(s)</span> and <span class="ui">Organisation of learning</span>.</li>
+  <li><span class="ui">Lesson flow</span> (click to unfold): <span class="ui">Introduction</span>, <span class="ui">Lesson development</span> as numbered steps (<span class="ui">+ Step</span>, move up and down, remove), <span class="ui">Conclusion</span> and <span class="ui">Extended activities</span>, with the minutes for each part.</li>
+</ul>
+<p>Click <span class="ui">Save lesson N</span>, or <span class="ui">Save all</span> at the top for every changed lesson. A lesson can only be saved with its date, start and end time (end after start), roll and the minutes in the lesson flow; the page tells you what is missing. Each lesson's badge shows <span class="ui">Unsaved changes</span>, <span class="ui">Incomplete</span> or <span class="ui">Ready</span>.</p>
+<ul>
+  <li><span class="ui">Refresh from scheme</span> pulls in changes made to the scheme since the week was prepared. <span class="ui">Fill blanks</span> keeps what you typed; <span class="ui">Replace</span> overwrites with the scheme's wording. Dates and times are kept.</li>
+  <li><span class="ui">Lesson</span> adds an extra plan; <span class="ui">Remove lesson</span> removes one.</li>
+  <li><span class="ui">Print week</span> prints the week's plans (save first: unsaved changes are not printed).</li>
+</ul>
+<figure class="shot"><img src="assets/guide/tch-plans-week.png" alt="A week of lesson plans"><figcaption>A submitted week: the week strip, a lesson plan and the approval box</figcaption></figure>
+<p>When the week is complete, submit it in the <span class="ui">Approval</span> box exactly as for a scheme. Submitted plans are locked unless returned.</p>
+<p>Once a week is approved, each lesson shows an <span class="ui">After the lesson</span> panel with what the record of work says about it, and a link to record it there.</p>
+
+<h2 class="sub" id="tch-record">Record of Work</h2>
+<p>The record of work is kept after teaching: for every lesson in the scheme, whether it was taught, when, and what was covered. Only the teacher who owns the scheme fills it in.</p>
+<ol class="steps">
+  <li>Open <span class="path">Teaching Management &gt; Record of Work</span> and click <span class="ui">Record of work</span> on the subject and class.</li>
+  <li>Click a week's bar to open it. Each row is a lesson planned in the scheme.</li>
+  <li>Set the <span class="ui">Status</span> (<span class="ui">Taught</span>, <span class="ui">Partly taught</span> or <span class="ui">Not taught</span>), the <span class="ui">Date taught</span> (required for taught and partly taught), the <span class="ui">Work covered</span> and any <span class="ui">Remarks</span>, such as "Not taught - sports day; carried to next week".</li>
+  <li>Click <span class="ui">Save</span>. The button counts the lessons changed.</li>
+</ol>
+<p>The bar at the top shows coverage: lessons taught, partly taught (counted as half) and not taught, out of those planned, and how many weeks have been checked.</p>
+<figure class="shot"><img src="assets/guide/tch-record.png" alt="The record of work"><figcaption>A record of work with every week checked by the Head of Department</figcaption></figure>
+
+<h3>Checking a teacher's record (Heads of Department)</h3>
+<p>Once a teacher has recorded at least one lesson in a week, the Head of Department (or whole-school staff) sees <span class="ui">Check week N</span> on the week's bar. Click it, add an optional comment for the teacher, and click <span class="ui">Checked</span>. A checked week is locked for the teacher. The person who checked it, or an administrator, can click <span class="ui">remove check</span> to let the teacher change it again. You cannot check your own record of work.</p>
+
+<h2 class="sub" id="tch-tracker">Tracker</h2>
+<p>The Tracker is one grid for the term: a row for each teacher, subject and class, with a cell for the scheme, one for each week's lesson plans, and the record of work. Teachers see their own subjects, Heads of Department their department(s) too, and administrators the whole school.</p>
+<figure class="shot"><img src="assets/guide/tch-tracker.png" alt="The Tracker"><figcaption>The Tracker for the whole school</figcaption></figure>
+<ul>
+  <li>Cells are coloured by status and marked D (draft), S (submitted), R (returned), X (rejected) or &#10003; (approved). A red outline means overdue. Hover over a cell to see its status and due date.</li>
+  <li>The row under the headings counts how many of each column are submitted or approved.</li>
+  <li>The <span class="ui">Record of work</span> column shows lessons taught out of those planned, and the number of weeks checked.</li>
+  <li>Click a status label above the grid (<span class="ui">Draft</span>, <span class="ui">Submitted</span>, <span class="ui">Overdue</span> and so on) to show only rows with a document in that state; click it again, or <span class="ui">clear</span>, to show all.</li>
+  <li>Filter by <span class="ui">Teacher</span>, <span class="ui">Department</span>, <span class="ui">Grade</span>, <span class="ui">Subject</span> or <span class="ui">Search</span>.</li>
+  <li>Click any cell to open that scheme, week of lesson plans or record of work; <span class="ui">Back to tracker</span> brings you back. The two buttons on the right export the grid to CSV and print it.</li>
+</ul>
+<div class="callout tip"><span class="lbl">For heads of department.</span> Click <span class="ui">Submitted</span> to see everything waiting for approval, and <span class="ui">Overdue</span> to see who to follow up.</div>
+
+<h2 class="sub" id="tch-curriculum">Curriculum</h2>
+<p>The Curriculum page shows the full KICD curriculum design for a subject and grade, as loaded into ShuleNova. It is read-only; the administrator maintains it.</p>
+<ol class="steps">
+  <li>Choose the <span class="ui">Grade</span>, then the <span class="ui">Subject / learning area</span>.</li>
+  <li>The design opens with its essence statement and the subject's general learning outcomes, then the strands. Click a strand to open it.</li>
+  <li><span class="ui">Print</span> prints the design.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/tch-curriculum.png" alt="The curriculum design for Grade 6 English"><figcaption>Grade 6 English, with the first strand open</figcaption></figure>
+<p>For each sub-strand you see its number of lessons, the specific learning outcomes, suggested learning experiences and key inquiry questions, followed by the core competencies, values, pertinent contemporary issues, links to other learning areas, suggested resources and assessment methods, and the assessment rubric (Exceeds, Meets, Approaches and Below Expectations).</p>
+<figure class="shot"><img src="assets/guide/tch-curriculum-strand.png" alt="One sub-strand of the curriculum"><figcaption>One sub-strand of the design</figcaption></figure>
+<p>This is the same curriculum that <span class="ui">Fill from curriculum</span> and the strand and sub-strand lists in schemes and lesson plans use. If a subject shows "has not been loaded yet", ask the administrator to load it.</p>
+</section>
+<!--/module:Academics-->
+
+<!--module:Finance-->
+<section class="chapter" id="finance" data-module="Finance">
+<h1 class="ch">Finance</h1>
+<p>The <span class="path">Finance</span> menu is where the bursar and accounts clerks keep the school's money in order: the budget for the year, fee structures and the invoices raised from them, fee payments and receipts, sponsors who pay fees for learners, expenses, journal entries, and the reports and statements that come out of them. Behind every page is one set of books: an invoice, a payment or an approved expense goes straight into the ledger, so the reports are always up to date.</p>
+<table>
+  <tr><th style="width:28%">Menu</th><th>Pages</th></tr>
+  <tr><td>Budgets</td><td>Budget Register, Budgets, Budget Amendments</td></tr>
+  <tr><td>Fees</td><td>Fee Structures, Student Invoices, Fee Payments, Fee Reports</td></tr>
+  <tr><td>Sponsors</td><td>Sponsors, Sponsorships, Sponsor Payments</td></tr>
+  <tr><td>Expenses &amp; Accounts</td><td>Expenses, Journal Entries, Accounting Periods</td></tr>
+  <tr><td>Reports</td><td>Statements, Expenses Report</td></tr>
+</table>
+<div class="callout"><span class="lbl">Before you start.</span> Your administrator sets up the chart of accounts, the fee and expense categories, the finance settings and the approval workflows (see the Administrator Guide, <em>Finance Set-up</em>). If a list you need is empty, such as the fee categories when you build a fee structure, ask them.</div>
+
+<h2 class="sub" id="fin-approvals">How Approvals Work</h2>
+<p>Expenses, journal entries, budgets, budget amendments and credit or debit notes are not posted the moment they are saved. They go to one or more approvers first, in the steps your administrator set up under <span class="path">Settings &gt; Approval Workflows</span>. The form for each of these has an <strong>Approval</strong> box at the bottom.</p>
+<ol class="steps">
+  <li>Fill in the form. In the Approval box, pick an approver for each step from the people who hold that step's role.</li>
+  <li>Click <span class="ui">Save &amp; Submit for Approval</span>. The record is sent to the first step's approver, who sees it under the bell at the top of the page. If you only click <span class="ui">Save</span> (no approvers picked), it stays a draft; open it again with the edit button and submit it when you are ready.</li>
+  <li>The approver opens the record (the <span class="ui"><i>&#10003;&#10003;</i></span> Review / Approve button in the list, or the link under the bell), reads it, writes a comment if they wish and clicks <span class="ui">Approve</span>, <span class="ui">Return</span> or <span class="ui">Reject</span>. A comment is required to return or reject.</li>
+  <li>When the last step approves, the record takes effect: an expense or journal is posted to the ledger, an amendment changes the budget, a note changes the learner's invoice.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-expense-approve.png" alt="An expense waiting for approval"><figcaption>An approver's view: step 1 approved, step 2 waiting for their action</figcaption></figure>
+<ul>
+  <li><strong>Returned</strong> records come back to you with the approver's comment shown at the top of the Approval box. Correct the record and click <span class="ui">Resubmit for Approval</span>.</li>
+  <li><strong>Rejected</strong> records stop there. The comment says why.</li>
+  <li>Once submitted, a record is locked: the edit and delete buttons disappear. Depending on the school's setting, it stays editable until the first step approves. An approver can never edit or delete what they approve.</li>
+  <li>If the school switched on maker-checker for a workflow, you cannot pick yourself as an approver.</li>
+  <li>Only a Super Administrator can reverse an approval. The record then goes back to draft.</li>
+</ul>
+<div class="callout important"><span class="lbl">"No active workflow configured".</span> If the Approval box shows this message, nobody can approve the record and it cannot be posted. Ask your administrator to add a workflow for that form.</div>
+
+<h2 class="sub" id="fin-budget-register">Budget Register</h2>
+<p>A <strong>budget plan</strong> is the frame for one year's budgets: its name, academic year and dates. Each department then prepares its own budget inside the plan. Open <span class="path">Finance &gt; Budgets &gt; Budget Register</span>.</p>
+<figure class="shot"><img src="assets/guide/fin-budget-register.png" alt="The Budget Register"><figcaption>The Budget Register: one plan per year, with the number of department budgets in it</figcaption></figure>
+<h3>Adding a budget plan</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add Budget Plan</span>.</li>
+  <li>Give it a <span class="ui">Name</span> (for example "2027 Annual Budget"), choose the <span class="ui">Academic Year</span>, and check the <span class="ui">Start Date</span> and <span class="ui">End Date</span> (they start as 1 January to 31 December). The <span class="ui">Code</span> is given automatically.</li>
+  <li>Set the <span class="ui">Status</span>: <strong>Draft</strong> while you prepare it, <strong>Open</strong> when departments may add budgets to it, <strong>Closed</strong> when the year is over.</li>
+  <li>Click <span class="ui">Save</span>.</li>
+</ol>
+<p>The number in the <span class="ui">Budgets</span> column opens the Budgets page showing that plan's budgets. A plan that already holds budgets cannot be deleted.</p>
+<div class="callout tip"><span class="lbl">Only Open plans take budgets.</span> If the Budgets form says "No Open budget plans found", set the plan's status to Open here first.</div>
+
+<h2 class="sub" id="fin-budgets">Budgets</h2>
+<p>A budget is one department's income and spending plan for a budget plan: so much expected from each income account, so much allowed for each expense account. Open <span class="path">Finance &gt; Budgets &gt; Budgets</span>. The list opens on the current year's Open plan; use the <span class="ui">Budget Plan</span>, <span class="ui">Department</span> and <span class="ui">Status</span> filters to change it.</p>
+<figure class="shot"><img src="assets/guide/fin-budgets.png" alt="The Budgets list"><figcaption>Budgets: one per department, with total income and expense</figcaption></figure>
+<h3>Preparing a department's budget</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add Budget</span>.</li>
+  <li>Choose the <span class="ui">Budget Plan</span>. The academic year and dates fill in from the plan.</li>
+  <li>Choose the <span class="ui">Department</span>. The <span class="ui">Name</span> fills in by itself; you may change it. Add a <span class="ui">Description</span> if you wish.</li>
+  <li>Click <span class="ui">Save &amp; Add Lines</span>. The form stays open and the budget lines appear.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-budget-new.png" alt="A new budget"><figcaption>A new budget: the plan and department chosen, before the lines are added</figcaption></figure>
+<ol class="steps" style="counter-reset: step 4">
+  <li>Under <strong>Income Budget Lines</strong>, click <span class="ui">Add Income Line</span> for each expected income: pick the income account and type the <span class="ui">Budgeted Amount</span>. Do the same under <strong>Expenditure Budget Lines</strong> with <span class="ui">Add Expense Line</span>.</li>
+  <li>Check the summary at the bottom: total income, total expenditure and the net.</li>
+  <li>Pick the approvers in the Approval box and click <span class="ui">Save &amp; Submit for Approval</span>, or <span class="ui">Save Changes</span> to finish later.</li>
+</ol>
+<p>A budget must have at least one line before it can be saved again. Once approved, a budget can no longer be edited; change it with a <a href="#fin-amendments">budget amendment</a>.</p>
+<h3>Budget against actual</h3>
+<p>Click the <span class="ui"><i>chart</i></span> (View vs Actual) button on a budget to see, for each line, the budgeted amount, any approved amendments, the effective budget, what has actually been received or spent in the ledger, and the variance. The approval history is at the bottom.</p>
+<figure class="shot"><img src="assets/guide/fin-budget-actual.png" alt="Budget against actual"><figcaption>Budget vs Actual for one department</figcaption></figure>
+
+<h2 class="sub" id="fin-amendments">Budget Amendments</h2>
+<p>When a department needs more (or less) than it was given, raise a budget amendment rather than editing the budget. Open <span class="path">Finance &gt; Budgets &gt; Budget Amendments</span>; filter by year, budget and status (Pending, Approved, Rejected).</p>
+<h3>Raising an amendment</h3>
+<ol class="steps">
+  <li>Click <span class="ui">New Amendment</span> and choose the <span class="ui">Budget</span>. Its current lines and effective amounts appear.</li>
+  <li>Check the <span class="ui">Amendment Date</span> and type the <span class="ui">Reason</span> (required).</li>
+  <li>Click <span class="ui">Add Income Line</span> or <span class="ui">Add Expense Line</span>, pick the account and type the <span class="ui">New Amount</span>. A higher amount increases the budget; a lower one reduces it. The <span class="ui">Delta</span> column shows the change.</li>
+  <li>Check the <strong>Net Effect of this Amendment</strong> box: current income and expenditure, the change, and the projected net.</li>
+  <li>Pick the approvers and click <span class="ui">Save &amp; Submit for Approval</span>, or <span class="ui">Save</span> to submit later with the edit button.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-amendment-new.png" alt="A new budget amendment"><figcaption>A budget amendment adding a new expense line, with its net effect</figcaption></figure>
+<p>The budget changes only when the amendment is fully approved; until then its status is Pending. The <span class="ui"><i>eye</i></span> button shows an amendment's lines and approval history.</p>
+
+
+<h2 class="sub" id="fin-fee-structures">Fee Structures</h2>
+<p>A fee structure lists what learners at one learning level pay in one term: tuition, boarding, lunch, activity and so on, each a <strong>fee category</strong> with an amount. Invoices are generated from it. Open <span class="path">Finance &gt; Fees &gt; Fee Structures</span> and filter by year, session (term), education level, learning level and status.</p>
+<figure class="shot"><img src="assets/guide/fin-fee-structures.png" alt="Fee Structures list"><figcaption>Fee structures: one per learning level and term, with their total</figcaption></figure>
+<h3>Adding fee structures</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add Fee Structure</span>.</li>
+  <li>Choose the <span class="ui">Academic Year</span> and the <span class="ui">Session</span> (term), or tick <span class="ui">All</span> to make one for every term of the year.</li>
+  <li>Choose the <span class="ui">Education Level</span> and the <span class="ui">Learning Level</span> (for example Grade 4), or tick <span class="ui">All levels</span> to make one for every level in that education level. The form tells you how many fee structures it will create.</li>
+  <li>Click <span class="ui">Add Item</span> for each fee: choose the <span class="ui">Fee Category</span>, type the <span class="ui">Amount</span>, and tick <span class="ui">Mandatory</span> for fees every learner pays. Leave optional fees (transport, a club) unticked.</li>
+  <li>Click <span class="ui">Save</span>. Each structure is named by itself from the year, term and learning level.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-fee-structure-form.png" alt="The fee structure form"><figcaption>A new fee structure</figcaption></figure>
+<p>A fee category can appear only once in a structure. Click the number in the <span class="ui">Items</span> column to see a structure's fees.</p>
+<div class="callout tip"><span class="lbl">Same fees for several levels?</span> Tick <span class="ui">All levels</span> and <span class="ui">All</span> sessions to create the whole year in one go, then edit the few levels that differ.</div>
+
+<h2 class="sub" id="fin-invoices">Student Invoices</h2>
+<p>An invoice is what one learner owes for a term. Open <span class="path">Finance &gt; Fees &gt; Student Invoices</span>. Filter by year, session, class, status (Unpaid, Partially Paid, Paid, Overdue, Cancelled), sponsor, or search for a learner by name or admission number. Each row shows the total, what has been paid and the balance; a sponsor badge marks invoices a sponsor contributes to.</p>
+<figure class="shot"><img src="assets/guide/fin-invoices.png" alt="Student Invoices list"><figcaption>Student invoices for the term</figcaption></figure>
+<h3>Invoicing a class for the term</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Bulk Generate</span>.</li>
+  <li>Choose the <span class="ui">Academic Year</span>, the <span class="ui">Session</span>, the <span class="ui">Fee Structure</span> and the <span class="ui">Class</span>.</li>
+  <li>Set the <span class="ui">Invoice Date</span>, and the <span class="ui">Due Date</span> and <span class="ui">Description</span> if you want them.</li>
+  <li>Click <span class="ui">Generate Invoices</span> and confirm. One invoice is made for every active learner in the class, with the structure's <strong>mandatory</strong> fees. A summary then shows how many learners had a sponsorship applied and how much sponsors have pledged.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-invoice-bulk.png" alt="Bulk invoice generation"><figcaption>Bulk Invoice Generation</figcaption></figure>
+<h3>Adding optional fees, discounts and sponsors to one invoice</h3>
+<ol class="steps">
+  <li>Click the <span class="ui"><i>edit</i></span> (Edit items) button on the learner's invoice.</li>
+  <li>Fees from the fee structure are marked <strong>Mandatory</strong> or <strong>Optional</strong>. Tick <span class="ui">Include</span> for the optional fees this learner takes. Mandatory fees cannot be unticked, and their amounts are locked: to change one, change the fee structure.</li>
+  <li>Type a <span class="ui">Discount</span> on any line if the school has agreed one.</li>
+  <li>To have a sponsor pay part of a line, choose the <span class="ui">Sponsorship</span>; the <span class="ui">Sponsor pledge</span> fills in from the sponsorship's cover and can be adjusted.</li>
+  <li>For a one-off charge (a lost book, a trip), click <span class="ui">Add Item</span>, choose the fee category and type the amount. These <strong>Ad-hoc</strong> lines can be removed again.</li>
+  <li>Click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-invoice-edit.png" alt="Editing an invoice's items"><figcaption>An invoice's items: mandatory, optional and ad-hoc fees</figcaption></figure>
+<div class="callout"><span class="lbl">Sponsor pledges.</span> The learner is still invoiced the whole fee. The pledge is the part the sponsor is expected to pay; if the sponsor does not pay it, the family owes it.</div>
+<p>Click the number in the <span class="ui">Items</span> column to see an invoice in full: each fee, discount, sponsor pledge, what the sponsor and the family have paid, and the balance.</p>
+<!--module:Communications--><h3>Sending invoices to parents</h3>
+<p>The <span class="ui"><i>paper plane</i></span> button on a row sends that invoice to the learner's parents; <span class="ui">Send to parents</span> above the list sends every invoice listed, so filter to the class or term first. ShuleNova first shows how many SMS or emails will go out, which learners have no parent contact, and how the first message reads; click <span class="ui">Send</span> to queue them. The wording comes from the invoice template under <span class="path">Communications &gt; Templates</span>.</p><!--/module:Communications-->
+
+<h2 class="sub" id="fin-payments">Fee Payments and Receipts</h2>
+<p>Every fee payment is recorded here and gets a receipt number. Open <span class="path">Finance &gt; Fees &gt; Fee Payments</span>. Filter by year, session, class, learner, <span class="ui">Paid by</span> (the family, sponsors, or one sponsor), method and dates; the total of the payments listed shows at the top of the list.</p>
+<figure class="shot"><img src="assets/guide/fin-payments.png" alt="Fee Payments list"><figcaption>Fee payments, with receipt numbers and who paid</figcaption></figure>
+<h3>Recording a payment</h3>
+<ol class="steps">
+  <li>Click <span class="ui">New Payment</span>.</li>
+  <li>Under <strong>Find Student</strong>, choose the <span class="ui">Academic Year</span> (and <span class="ui">Session</span> if you like), the <span class="ui">Class</span>, then type a name or admission number in <span class="ui">Student</span> and pick the learner.</li>
+  <li>Under <strong>Payment Details</strong>, choose the invoice in <span class="ui">Apply to Invoice</span>; each shows its balance. Leave it <span class="ui">-- Unallocated --</span> only if the money is not for a particular invoice.</li>
+  <li>Enter the <span class="ui">Date</span>, the <span class="ui">Amount</span> and the <span class="ui">Method</span> (Cash, M-Pesa, Bank Transfer, Cheque, Card or Other). Choose the <span class="ui">Receiving Account</span> the money went into, and type the M-Pesa code or bank slip number in <span class="ui">Transaction Ref</span>.</li>
+  <li>Leave <span class="ui">Receipt #</span> blank to number the receipt automatically, or type the number of a manual receipt book.</li>
+  <li>Check the <strong>Fee Category Apportionment</strong>: how the payment is shared across the invoice's fees.</li>
+  <li>Click <span class="ui">Record Payment</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-payment-new.png" alt="The New Payment form"><figcaption>New Payment</figcaption></figure>
+<p>How a payment is shared across fees depends on the school's setting. In <strong>Auto</strong> mode ShuleNova pays the fees in order of priority (the fee category's rank) until the money runs out. In <strong>Manual</strong> mode you type the amount for each fee, and the total must equal the payment.</p>
+<h3>Viewing a receipt</h3>
+<p>Click the <span class="ui"><i>eye</i></span> (View) button. The receipt shows the learner, date, amount, method, invoice, receiving account and reference, who paid (the family or a sponsor) and how the money was shared across the fees.</p>
+<figure class="shot"><img src="assets/guide/fin-payment-view.png" alt="A receipt"><figcaption>A receipt and its allocation by fee category</figcaption></figure>
+<p>A payment made by a sponsor shows "Paid by" the sponsor. It is part of a sponsor payment, and can only be undone by deleting that payment under <span class="path">Sponsors &gt; Sponsor Payments</span>.</p>
+<!--module:Communications--><p>The <span class="ui"><i>paper plane</i></span> button on a receipt sends a payment acknowledgement to the learner's parents, after the same preview as for invoices.</p><!--/module:Communications-->
+<h3>Correcting a payment: credit and debit notes</h3>
+<p>Payments are never edited or deleted. A mistake is corrected with a note, which goes through approval:</p>
+<ul>
+  <li>A <strong>credit note</strong> (the <span class="ui"><i>minus</i></span> button) reverses all or part of a payment and puts the amount back on the invoice balance, for example a payment recorded against the wrong learner. It cannot be more than the payment.</li>
+  <li>A <strong>debit note</strong> (the <span class="ui"><i>plus</i></span> button) adds to the invoice total, increasing what the learner owes, for example a bounced cheque.</li>
+</ul>
+<ol class="steps">
+  <li>Click the credit or debit note button on the payment.</li>
+  <li>Type the <span class="ui">Amount</span> and the <span class="ui">Reason</span> (both required).</li>
+  <li>Pick the approvers and click <span class="ui">Issue &amp; Submit for Approval</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-credit-note.png" alt="A new credit note"><figcaption>Raising a credit note against a receipt</figcaption></figure>
+<p>The note appears in the payments list with its own number, type and status, and changes the invoice only when it is approved.</p>
+
+<h2 class="sub" id="fin-fee-reports">Fee Reports</h2>
+<p><span class="path">Finance &gt; Fees &gt; Fee Reports</span> has five tabs. Each opens on the current year and term already loaded; change the filters and click <span class="ui">Load</span>. Changing a filter clears the report until you load it again, so what is on screen always matches the filters. <span class="ui">Print</span> prints the report with the school's heading. The tab is kept in the page address, so a bookmark opens the same tab.</p>
+<p>Most rows can be clicked: a class opens to its learners, and a learner opens their statement in a panel on the right, from which you can open each invoice or receipt. The panel has buttons to print or download what it shows as a CSV file.</p>
+<h3>Fee Collection</h3>
+<p>For a year, term and (optionally) a class and dates: total invoiced, collected and outstanding, how many invoices are fully paid, and each class with its collection rate. Open a class to see its learners; search for a learner, or tick <span class="ui">Only students who owe</span>.</p>
+<figure class="shot"><img src="assets/guide/fin-fee-collection.png" alt="The Fee Collection report"><figcaption>Fee Collection by class</figcaption></figure>
+<h3>Outstanding</h3>
+<p>Every learner with a balance for the year and term: the balance brought forward from before, invoiced, paid, balance, and how much of it is awaiting a sponsor's payment.</p>
+<figure class="shot"><img src="assets/guide/fin-outstanding.png" alt="The Outstanding report"><figcaption>Learners with a balance</figcaption></figure>
+<h3>Balances by Class</h3>
+<p>The learners owing in each class, with totals. The printout has a <em>Parent Signature</em> column, useful for a class list to send home.</p>
+<figure class="shot"><img src="assets/guide/fin-balances-class.png" alt="Balances by Class"><figcaption>Balances by Class</figcaption></figure>
+<!--module:Communications--><div class="callout tip"><span class="lbl">Fee reminders.</span> On the Outstanding and Balances by Class tabs, <span class="ui">Send reminders</span> sends a fee balance reminder to the parents of every learner in the report, and <span class="ui">Remind</span> on a class sends to that class only. Each message states the learner's total balance. You see a preview before anything is sent.</div><!--/module:Communications-->
+<h3>Discounts &amp; Sponsorships</h3>
+<p>Learners who have a discount or a sponsor: their fees, the discount, what sponsors pledged and have paid, and the family's own share. Filter by sponsor, or choose the school's own discounts.</p>
+<figure class="shot"><img src="assets/guide/fin-discounts.png" alt="Discounts and Sponsorships report"><figcaption>Discounts &amp; Sponsorships</figcaption></figure>
+<h3>Student Statement</h3>
+<p>One learner's account: balance brought forward, every invoice, receipt, sponsor payment, credit and debit note in date order, with a running balance and who received each payment. It opens on the current term, the first class and its first learner. Choose the <span class="ui">Academic Year</span>, <span class="ui">Session</span>, <span class="ui">Class</span> and <span class="ui">Student</span>, then click <span class="ui">Load</span>. Click a line to open the invoice or receipt.</p>
+<figure class="shot"><img src="assets/guide/fin-statement.png" alt="A student statement"><figcaption>A learner's fee statement</figcaption></figure>
+<div class="callout tip"><span class="lbl">Answering a parent at the counter.</span> The Student Statement keeps the learner in the page address. Print it for the parent, or bookmark it.</div>
+
+<h2 class="sub" id="fin-sponsors">Sponsors</h2>
+<p>A sponsor is anyone other than the family who pays a learner's fees: an NGO or company, the school's own bursary fund, the government, a relative. Open <span class="path">Finance &gt; Sponsors &gt; Sponsors</span>.</p>
+<figure class="shot"><img src="assets/guide/fin-sponsors.png" alt="The Sponsors list"><figcaption>Sponsors</figcaption></figure>
+<ol class="steps">
+  <li>Click <span class="ui">Add Sponsor</span>.</li>
+  <li>Type the <span class="ui">Name</span> and choose the <span class="ui">Sponsor Type</span>: External (NGO / Foundation / Company), School (Internal Bursary Fund), Government, Parent or Other.</li>
+  <li>Add the <span class="ui">Contact Name</span>, <span class="ui">Email</span>, <span class="ui">Phone</span> and <span class="ui">Address</span>, and click <span class="ui">Save</span>.</li>
+</ol>
+<p>Click a sponsor's name (or the statement button) to open their statement for the year so far, with the pledges and payments behind it.</p>
+
+<h2 class="sub" id="fin-sponsorships">Sponsorships</h2>
+<p>A sponsorship says what a sponsor covers, for whom and for how long. Open <span class="path">Finance &gt; Sponsors &gt; Sponsorships</span>. The <span class="ui">On invoices</span> column shows how many invoices it has been applied to and the amount pledged on them.</p>
+<figure class="shot"><img src="assets/guide/fin-sponsorships.png" alt="The Sponsorships list"><figcaption>Sponsorships, and the invoices they are on</figcaption></figure>
+<h3>Adding a sponsorship</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add Sponsorship</span>.</li>
+  <li>Under <strong>Sponsor &amp; Period</strong>, choose the <span class="ui">Sponsor</span>, the <span class="ui">Academic Year</span>, and a <span class="ui">Session (Term)</span> or <span class="ui">-- Whole Year --</span>. Add start and end dates if needed, and leave the <span class="ui">Status</span> Active.</li>
+  <li>Under <strong>Beneficiary</strong>, choose the <span class="ui">Target</span>: an <span class="ui">Individual Student</span> (pick the class, then the student) or an <span class="ui">Entire Class</span>.</li>
+  <li>Under <strong>Coverage</strong>, choose <span class="ui">Full Coverage (100%)</span>, <span class="ui">Percentage</span> (1 to 100) or <span class="ui">Fixed Amount</span>. Tick the fee categories it covers, or leave them all unticked to cover every fee.</li>
+  <li>Click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-sponsorship-form.png" alt="The sponsorship form"><figcaption>A new sponsorship</figcaption></figure>
+<p>New invoices pick up active sponsorships by themselves. For invoices already raised, click the apply button (Apply to existing open invoices) on the sponsorship: it records the sponsor's pledge on the matching lines of every open invoice, skipping fully paid invoices and lines another sponsor already covers, and puts any credit the sponsor holds onto them.</p>
+<div class="callout important"><span class="lbl">Once on invoices, a sponsorship is fixed.</span> It can no longer be edited or deleted (a lock shows instead). To stop it, click <span class="ui">End</span>: no new invoice takes it from today, and the invoices it is already on stay as they are.</div>
+
+<h2 class="sub" id="fin-sponsor-payments">Sponsor Payments</h2>
+<p>When a sponsor sends money, record it once here and ShuleNova shares it across the sponsored learners' invoices. Open <span class="path">Finance &gt; Sponsors &gt; Sponsor Payments</span>.</p>
+<figure class="shot"><img src="assets/guide/fin-sponsor-payments.png" alt="Sponsor Payments list"><figcaption>Sponsor payments: how much went onto invoices and how much is held</figcaption></figure>
+<ol class="steps">
+  <li>Click <span class="ui">Record Payment</span>.</li>
+  <li>Choose the <span class="ui">Sponsor</span>, and enter the <span class="ui">Date</span>, <span class="ui">Amount</span>, <span class="ui">Method</span>, <span class="ui">Transaction Ref</span> and the <span class="ui">Bank / Cash Account</span> it went into.</li>
+  <li>Click <span class="ui">Next: onto students' invoices</span>. ShuleNova lists the sponsor's unpaid pledges, oldest first, and shares the payment across them. Change any amount in <span class="ui">This payment</span> if the sponsor said which learners it is for; <span class="ui">Oldest first</span> shares it again.</li>
+  <li>Click <span class="ui">Record Payment</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-sponsor-payment-new.png" alt="A sponsor payment shared across invoices"><figcaption>A sponsor payment shared across the sponsored learners' invoices, oldest pledge first</figcaption></figure>
+<p>Each learner's share appears as a receipt under Fee Payments, "Paid by" the sponsor. Money left over is <strong>held as credit</strong> for the sponsor and goes onto their learners' invoices as new pledges fall due; the <span class="ui">Held</span> column shows it, and its button puts held credit onto pledges now due. Deleting a sponsor payment also takes it off the learners' invoices.</p>
+
+<h2 class="sub" id="fin-expenses">Expenses</h2>
+<p>Every payment the school makes (suppliers, utilities, repairs, allowances) is recorded as an expense and approved before it reaches the books. Open <span class="path">Finance &gt; Expenses &amp; Accounts &gt; Expenses</span>. The list shows the current month; change <span class="ui">Date From</span> and <span class="ui">Date To</span> to see other dates.</p>
+<figure class="shot"><img src="assets/guide/fin-expenses.png" alt="The Expenses list"><figcaption>Expenses and their status</figcaption></figure>
+<h3>Recording an expense</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add Expense</span>.</li>
+  <li>Enter the <span class="ui">Date</span>, the <span class="ui">Payment Method</span>, the account it was <span class="ui">Paid From</span>, the <span class="ui">Transaction Ref</span> and a <span class="ui">Description</span>. The <span class="ui">Ref #</span> is given automatically.</li>
+  <li>Under <strong>Expense Lines</strong>, click <span class="ui">Add Line</span> for each item: choose the <span class="ui">Category</span>, type the <span class="ui">Vendor</span>, the <span class="ui">Amount</span> and a description. One expense can have several lines, for example one invoice from a supplier covering stationery and cleaning materials.</li>
+  <li>Pick the approvers and click <span class="ui">Save &amp; Submit for Approval</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-expense-form.png" alt="The expense form"><figcaption>A new expense with its lines and Approval box</figcaption></figure>
+<p>An expense is a <strong>Draft</strong> until it is fully <strong>Approved</strong> (and posted to the ledger) or <strong>Rejected</strong>. While it waits for its approvers the list still shows Draft; the edit and delete buttons disappear, and the Approval box in the expense shows which step it has reached. An approved expense cannot be edited or deleted. The <span class="ui"><i>eye</i></span> (Quick View) button shows an expense's lines.</p>
+<figure class="shot"><img src="assets/guide/fin-expense-view.png" alt="An expense's details"><figcaption>Quick View of an expense</figcaption></figure>
+
+<h2 class="sub" id="fin-journals">Journal Entries</h2>
+<p>Most entries in the books are made for you by invoices, payments, approved expenses<!--module:Payroll--> and payroll<!--/module:Payroll-->. A journal entry is for anything else: opening balances, moving money between bank and cash, depreciation, correcting a posting. Open <span class="path">Finance &gt; Expenses &amp; Accounts &gt; Journal Entries</span>; the list shows the current month.</p>
+<figure class="shot"><img src="assets/guide/fin-journals.png" alt="Journal Entries list"><figcaption>Journal entries</figcaption></figure>
+<ol class="steps">
+  <li>Click <span class="ui">New Entry</span>, set the <span class="ui">Entry Date</span> and a <span class="ui">Description</span>.</li>
+  <li>Click <span class="ui">Add Line</span> for each account: choose the <span class="ui">Account</span> and type a <span class="ui">Debit</span> or a <span class="ui">Credit</span>. A hint under the account shows on which side it normally increases.</li>
+  <li>When total debits equal total credits, the entry shows <strong>Balanced</strong> and the save button becomes active. An entry needs at least two lines.</li>
+  <li>Pick the approvers and click <span class="ui">Save &amp; Submit for Approval</span>.</li>
+</ol>
+<div class="callout important"><span class="lbl">Submit as you save.</span> A journal entry cannot be opened for editing once saved: there is no edit button. Pick the approvers before you save it. To change a draft entry, delete it and enter it again. Approved entries cannot be deleted.</div>
+<p>The entry is posted to the ledger when it is approved. Entries made automatically by payments, invoices and expenses also appear here, already approved. Use the <span class="ui"><i>eye</i></span> (Quick View) button to see its lines.</p>
+<figure class="shot"><img src="assets/guide/fin-journal-view.png" alt="A journal entry"><figcaption>A journal entry's lines</figcaption></figure>
+<!--module:Payroll--><div class="callout"><span class="lbl">Payroll journals.</span> Depending on the school's setting, approving a payroll can leave its journal here as a draft, with every figure filled in, for you to check, adjust and approve.</div><!--/module:Payroll-->
+
+<h2 class="sub" id="fin-periods">Accounting Periods</h2>
+<p>At the end of each term (or each year, as the school chose) the books are <strong>closed</strong>: the period's income less expenses is moved to Retained Earnings, and nothing dated in it can be recorded, changed or deleted any more. Open <span class="path">Finance &gt; Expenses &amp; Accounts &gt; Accounting Periods</span> and choose the <span class="ui">Academic Year</span>.</p>
+<figure class="shot"><img src="assets/guide/fin-periods.png" alt="Accounting Periods"><figcaption>Accounting periods, their surplus and status</figcaption></figure>
+<p>Each period shows its income, expenses and surplus, and a status: <strong>Current</strong>, <strong>Open</strong> (with the reasons it cannot close yet listed underneath), <strong>Ready to close</strong>, or <strong>Closed</strong> (with the date, who closed it and a link to the closing entry). A period cannot be closed until:</p>
+<ul>
+  <li>it has ended;</li>
+  <li>the period before it is closed;</li>
+  <li>every expense, journal entry and credit or debit note dated in it has been approved or rejected;</li>
+  <li>the Retained Earnings account is set in the finance settings.</li>
+</ul>
+<ol class="steps">
+  <li>When the period shows <strong>Ready to close</strong>, click <span class="ui">Close</span>.</li>
+  <li>Read the confirmation: the surplus or deficit going to Retained Earnings, and the dates that will be locked. Click <span class="ui">Close the period</span>.</li>
+</ol>
+<p>Learners' unpaid fees are not lost: they carry into the next period as the balance brought forward, and can still be paid. If something must be corrected after closing, an administrator can <span class="ui">Reopen</span> the latest closed period, which takes its closing entry out; close it again when the correction is done.</p>
+<div class="callout important"><span class="lbl">"... is closed".</span> If ShuleNova refuses a payment, invoice or expense with this message, its date falls in a closed period. Date it in the open period instead, or ask an administrator to reopen the period.</div>
+
+<h2 class="sub" id="fin-statements">Financial Statements</h2>
+<p><span class="path">Finance &gt; Reports &gt; Statements</span> has four tabs: Budget, Trial Balance, Profit &amp; Loss and Balance Sheet. Each opens loaded for this year to date; change the dates and click <span class="ui">Load</span>, and <span class="ui">Print</span> for a copy with the school's heading. Click any account to see the transactions behind its figure, and open each one from there.</p>
+<h3>Trial Balance</h3>
+<p>Every account's debit or credit total between the <span class="ui">From</span> and <span class="ui">To</span> dates. The two columns must agree.</p>
+<figure class="shot"><img src="assets/guide/fin-trial-balance.png" alt="The Trial Balance"><figcaption>Trial Balance</figcaption></figure>
+<h3>Profit &amp; Loss</h3>
+<p>Income and expenses by account between two dates, and the net profit (surplus) or loss.</p>
+<figure class="shot"><img src="assets/guide/fin-income-statement.png" alt="Profit and Loss"><figcaption>Profit &amp; Loss</figcaption></figure>
+<h3>Balance Sheet</h3>
+<p>Assets, liabilities and equity <span class="ui">As of Date</span>, with the total of liabilities and equity. Until the current period is closed, its surplus shows under Equity as "Surplus not yet closed"; closing the period moves it to Retained Earnings.</p>
+<figure class="shot"><img src="assets/guide/fin-balance-sheet.png" alt="The Balance Sheet"><figcaption>Balance Sheet</figcaption></figure>
+<h3>Budget</h3>
+<p>All departments' budgets for an academic year against what was actually received and spent: budgeted and actual income and expense, the net, and each department's lines with their variance. Click a line to see the transactions.</p>
+<figure class="shot"><img src="assets/guide/fin-budget-report.png" alt="The consolidated budget report"><figcaption>The school budget against actual, by department</figcaption></figure>
+
+<h2 class="sub" id="fin-expense-report">Expenses Report</h2>
+<p><span class="path">Finance &gt; Reports &gt; Expenses Report</span> has two tabs.</p>
+<ul>
+  <li><strong>Expenses</strong>: what was spent between two dates, in total and by category, with each category's share. Open a category to see its expenses, or search by reference, vendor or description; click an expense to open it.</li>
+  <li><strong>Credit/Debit Notes</strong>: the notes raised in a period, by year, term, class, type and status, with the total of each and their net effect on fees owed.</li>
+</ul>
+<figure class="shot"><img src="assets/guide/fin-expense-report.png" alt="The Expenses report"><figcaption>Expenses by category</figcaption></figure>
+</section>
+<!--/module:Finance-->
+
+<!--module:Payroll-->
+<section class="chapter" id="payroll" data-module="Payroll">
+<h1 class="ch">Payroll</h1>
+<p>ShuleNova pays your staff every month: it works out each person's gross pay, PAYE, NSSF, SHIF, the Housing Levy, other deductions and loan instalments, prints the payslips and produces the returns and bank schedule. The monthly work is done in this order:</p>
+<ol class="steps">
+  <li><strong>Employee Salaries</strong>: who is paid, and how much.</li>
+  <li><strong>Loans &amp; Advances</strong>: any loan or advance to recover from pay.</li>
+  <li><strong>Processing</strong>: create the month, process it, check the payslips, and send it for approval.</li>
+  <li><strong>Reports</strong>: once it is approved, print the payslips, muster roll, statutory returns, bank schedule and P9 cards.</li>
+</ol>
+<p>All four are under <span class="path">Payroll</span> in the menu. The rates and rules behind the calculation (tax bands, NSSF bands, reliefs and so on) are set up once by an administrator; see the administrator guide.</p>
+<div class="callout"><span class="lbl">Who sees payroll.</span> Payroll pages are for the people your school has made payroll officers. Every other member of staff sees only their own payslips, under <a href="#pay-my-payslips">My Payslips</a>.</div>
+
+<h2 class="sub" id="pay-salaries">Employee Salaries</h2>
+<p><span class="path">Payroll &gt; Employee Salaries</span> lists every active member of staff, one row each, with their basic salary, house, transport and other allowances, gross pay, the date the salary takes effect and whether it is active. The badges at the top count the staff with a salary, without one, and those excluded from payroll.</p>
+<figure class="shot"><img src="assets/guide/pay-salaries.png" alt="The Employee Salaries grid"><figcaption>Employee Salaries: one row per active member of staff</figcaption></figure>
+
+<h3>Setting or changing salaries</h3>
+<ol class="steps">
+  <li>Type the amounts straight into the row: <span class="ui">Basic Salary</span>, <span class="ui">House Allow.</span>, <span class="ui">Transport Allow.</span> and <span class="ui">Other Allow.</span> The <span class="ui">Gross</span> column adds them up as you type, and a changed row turns yellow.</li>
+  <li>Give each changed row an <span class="ui">Effective Date</span>. To use the same date for everyone listed, pick it in the <span class="ui">Effective Date</span> box at the top and click <span class="ui">Apply to all</span>.</li>
+  <li>Click <span class="ui">Save All</span>. The number on the button shows how many rows will be saved. <span class="ui">Discard</span> throws away the changes you have not saved.</li>
+</ol>
+<p>Use the <span class="ui">Staff Member</span> and <span class="ui">Show</span> filters (all, with salary, without salary, excluded from payroll) to narrow the list. A member of staff marked <span class="ui">Not set</span> has no salary yet and will not be paid until they have one.</p>
+
+<h3>Additional earnings and voluntary deductions</h3>
+<p>Some staff get more than the four standard amounts (overtime, a responsibility allowance) or have something taken off besides the statutory deductions (welfare, SACCO, union dues, an insurance premium). These are kept per employee:</p>
+<ol class="steps">
+  <li>Click the list button (<span class="ui">&#9776;</span>) at the end of the row. The <strong>Edit Employee Salary</strong> window opens.</li>
+  <li>Under <span class="ui">Additional Earnings</span> click <span class="ui">Add Earning</span>, choose the <span class="ui">Earning Type</span> and type the amount. Do the same under <span class="ui">Voluntary Deductions</span> with <span class="ui">Add Deduction</span>.</li>
+  <li>Check the <span class="ui">Gross Total</span>, <span class="ui">Total Deductions</span> and <span class="ui">Net Salary</span> at the bottom, then click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/pay-salary-details.png" alt="The Edit Employee Salary window"><figcaption>One employee's salary, extra earnings and voluntary deductions</figcaption></figure>
+<p>The net salary shown here leaves out PAYE, NSSF, SHIF and the Housing Levy; those are worked out when the payroll is processed. The number badge beside a name in the grid shows how many extra lines that person has.</p>
+<div class="callout tip"><span class="lbl">A new employee.</span> For someone with no salary yet, the window shows only the salary details. Save them first; the window then reopens with the earnings and deductions sections.</div>
+
+<h3>Statutory numbers and staff not on the payroll</h3>
+<p>A yellow warning above the grid counts the staff missing a KRA PIN, ID, NSSF or SHA number. Fix these before you process the payroll, or those lines print blank on the payslips and returns. Click the card button at the start of the row's actions (it shows a warning sign while something is missing) to open <strong>Payroll Details</strong>:</p>
+<figure class="shot"><img src="assets/guide/pay-payroll-details.png" alt="The Payroll Details window"><figcaption>Payroll Details: statutory numbers, and Exclude from payroll</figcaption></figure>
+<ul>
+  <li>Fill in the <span class="ui">KRA Pin</span>, <span class="ui">ID Number</span>, <span class="ui">NSSF No</span> and <span class="ui">SHA No</span> and click <span class="ui">Save</span>. They are saved on the staff record.</li>
+  <li>Switch on <span class="ui">Exclude from payroll</span> for people on the staff list who are not paid through payroll, such as suppliers or contractors. They stay on the staff list but are skipped when the payroll is processed and get no payslip.</li>
+</ul>
+<p>Names, staff category and employment details are changed on the staff record (<span class="path">Staff &gt; Staff Details</span>), not here.</p>
+<div class="callout important"><span class="lbl">Who gets paid.</span> Processing pays every active member of staff who has an active salary and is not excluded. Someone whose employment date is after the end of the month is not paid for that month. The trash button deletes a salary record; the person stays on the list but will not be paid.</div>
+
+<h2 class="sub" id="pay-loans">Loans &amp; Advances</h2>
+<p><span class="path">Payroll &gt; Loans &amp; Advances</span> lists the loans and salary advances being recovered from pay, with the principal, the monthly deduction, the balance still owed and the status (Active, Fully Paid or Cancelled).</p>
+<figure class="shot"><img src="assets/guide/pay-loans.png" alt="The Loans and Advances list"><figcaption>Loans and advances, with what is still owed</figcaption></figure>
+
+<h3>Recording a loan or advance</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add Loan / Advance</span>.</li>
+  <li>Choose the <span class="ui">Staff Member</span> and the <span class="ui">Issue Date</span>, and leave the <span class="ui">Status</span> at <span class="ui">Active</span>.</li>
+  <li>Type the <span class="ui">Principal Amount</span> and the <span class="ui">Monthly Deduction</span> (both must be more than 0) and the <span class="ui">Balance</span> still to recover, which for a new loan is normally the principal.</li>
+  <li>Add a <span class="ui">Description</span> (for example "Salary advance") and any <span class="ui">Notes</span>, then click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/pay-loan-form.png" alt="The New Loan / Advance window"><figcaption>A new loan or advance</figcaption></figure>
+<p>Each time the payroll is processed, every active loan takes its monthly deduction (or the balance, if that is smaller) from the employee's pay, and the balance goes down. When the balance reaches zero the loan becomes <span class="ui">Fully Paid</span> by itself. If a month is processed again, its instalments are put back first, so nothing is taken twice.</p>
+<div class="callout tip"><span class="lbl">Stopping a loan.</span> To stop recovering a loan, edit it and set the status to <span class="ui">Cancelled</span>. Use the filters at the top to see one person's loans, or only active ones.</div>
+
+<h2 class="sub" id="pay-processing">Processing</h2>
+<p><span class="path">Payroll &gt; Processing</span> lists the payroll months (periods) with their status, the number of payslips and the totals of gross pay, net pay and PAYE. Click any row to see its payslips.</p>
+<figure class="shot"><img src="assets/guide/pay-periods.png" alt="The Payroll Periods list"><figcaption>Payroll periods, newest first</figcaption></figure>
+<table>
+  <tr><th style="width:30%">Status</th><th>What it means</th></tr>
+  <tr><td>Draft</td><td>The month exists but has not been processed. It can be processed or deleted.</td></tr>
+  <tr><td>Processed (Not Approved)</td><td>Payslips have been worked out. Nothing is final yet: the month can be processed again after a correction.</td></tr>
+  <tr><td>Awaiting review / Awaiting final approval</td><td>Sent for approval and with the approvers. It cannot be processed again until an approver returns it.</td></tr>
+  <tr><td>Returned for changes / Rejected</td><td>The approvers sent it back. Make the correction, process it again, and resubmit.</td></tr>
+  <tr><td>Approved</td><td>Locked. Its payslips and reports can be printed, staff can see their payslips, and its journal goes to the accounts.</td></tr>
+</table>
+
+<h3>Creating the month</h3>
+<ol class="steps">
+  <li>Click <span class="ui">New Period</span>.</li>
+  <li>Choose the <span class="ui">Month</span>, check the <span class="ui">Year</span>, and click <span class="ui">Save</span>. The period is named after the month (for example "November 2026"). There can be only one period for each month.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/pay-new-period.png" alt="The New Payroll Period window"><figcaption>A new payroll month</figcaption></figure>
+
+<h3>Processing the payroll</h3>
+<ol class="steps">
+  <li>Make sure this month's salary changes, extra earnings and deductions, and loans are all entered.</li>
+  <li>On the Draft period's row, click the cog button (<span class="ui">Process</span>) and confirm.</li>
+  <li>ShuleNova works out every payslip and the period becomes <span class="ui">Processed (Not Approved)</span>.</li>
+</ol>
+<p>Found a mistake? Fix the salary or loan, then click the re-process button (<span class="ui">&#8635;</span>) on the period. Re-processing throws the period's payslips away and builds them again from the current salaries.</p>
+<div class="callout important"><span class="lbl">NSSF bands.</span> If processing stops with "No NSSF bands are in force", the NSSF rates for that month have not been set up. Ask your administrator.</div>
+
+<h3>Checking the payslips</h3>
+<p>Before sending the payroll for approval, check it. Click the period (or its eye button) to open its payslips: each employee's gross pay, NSSF, SHIF, Housing Levy, PAYE, total deductions and net pay, with the totals at the bottom. A yellow <span class="ui">Missing ...</span> badge beside a name shows which statutory numbers that person lacks.</p>
+<figure class="shot"><img src="assets/guide/pay-payslips-check.png" alt="Checking a period's payslips"><figcaption>A period's payslips, for checking</figcaption></figure>
+<p>Click the eye button on a row to see that payslip exactly as it will print, and use <span class="ui">Previous</span> and <span class="ui">Next</span> to go through them one by one. <span class="ui">Back to the list</span> returns to the table.</p>
+<figure class="shot"><img src="assets/guide/pay-payslip-view.png" alt="One payslip as it will print"><figcaption>One payslip, as it will print</figcaption></figure>
+
+<h3>Approval</h3>
+<p>Most schools have the payroll checked by a reviewer and approved by a final approver. Click the approval button (<span class="ui">person with a tick</span>) on a processed period:</p>
+<ol class="steps">
+  <li>The window shows the payslip count, gross pay, PAYE and net pay.</li>
+  <li>Pick the approver for each step and click <span class="ui">Submit for Approval</span>. The period now reads <span class="ui">Awaiting review</span>.</li>
+  <li>Each approver finds it under the bell (and as <span class="ui">Your turn</span> on the period). They open the approval window, type a comment and click <span class="ui">Approve</span>, <span class="ui">Return</span> (send back for changes) or <span class="ui">Reject</span>. A comment is required to return or reject.</li>
+  <li>When the final approver approves, the period becomes <span class="ui">Approved</span> and is locked.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/pay-approval.png" alt="The payroll approval window"><figcaption>An approved payroll, with who checked and approved it</figcaption></figure>
+<p>If your school has switched the payroll approval off, a single <span class="ui">Approve</span> button (<span class="ui">&#10003;</span>) appears on the processed period instead.</p>
+<div class="callout"><span class="lbl">After approval.</span> An approved payroll cannot be processed again or deleted. Approving also creates the salary journal in the accounts, dated the last day of the month. Only a Draft period can be deleted.</div>
+
+<h2 class="sub" id="pay-reports">Reports</h2>
+<p><span class="path">Payroll &gt; Reports</span> covers <strong>approved</strong> payrolls only; a payroll still being checked does not appear. Choose the <span class="ui">Payroll Period</span> (the latest approved month opens first) and a tab. Each tab has its own <span class="ui">Print</span> button.</p>
+<table>
+  <tr><th style="width:24%">Tab</th><th>What it shows</th></tr>
+  <tr><td>Muster Roll</td><td>Every employee's pay and deductions in one table, with totals.</td></tr>
+  <tr><td>Statutory Returns</td><td>The PAYE, NSSF (employee and employer), SHIF and Housing Levy (employee and employer) to remit, and any levy the school pays itself (such as NITA).</td></tr>
+  <tr><td>Bank Schedule</td><td>Each employee's bank, branch, account number and net pay, for the bank transfer.</td></tr>
+  <tr><td>Payslips</td><td>The payslips: print one, or <span class="ui">Print All</span>, two to an A4 sheet. Staff excluded from payroll are skipped.</td></tr>
+  <tr><td>P9 Tax Cards</td><td>The KRA P9A card for a year: pick the year and the employee, then <span class="ui">Print</span> one card or <span class="ui">Print all</span>.</td></tr>
+</table>
+<figure class="shot"><img src="assets/guide/pay-reports-muster.png" alt="The Muster Roll"><figcaption>The muster roll for a month</figcaption></figure>
+<figure class="shot"><img src="assets/guide/pay-reports-statutory.png" alt="Statutory Returns"><figcaption>What to remit for the month</figcaption></figure>
+<figure class="shot"><img src="assets/guide/pay-reports-bank.png" alt="The Bank Schedule"><figcaption>The bank schedule</figcaption></figure>
+<figure class="shot"><img src="assets/guide/pay-reports-p9.png" alt="A P9A tax deduction card"><figcaption>An employee's P9A card for the year</figcaption></figure>
+<div class="callout tip"><span class="lbl">Printing payslips straight after approval.</span> In the payslips window on the Processing page, an approved period shows a <span class="ui">Print payslips</span> link that opens this page on the Payslips tab for that month.</div>
+
+<h2 class="sub" id="pay-my-payslips">My Payslips</h2>
+<p>Every member of staff paid through ShuleNova can see and print their own payslips. Click your name in the account menu to open <strong>My Profile</strong>, then click <span class="ui">My payslips</span>.</p>
+<figure class="shot"><img src="assets/guide/pay-my-payslips.png" alt="My Payslips"><figcaption>Your own payslips and P9 cards</figcaption></figure>
+<ul>
+  <li>Each month's gross pay, deductions and net pay is listed, newest first. Click <span class="ui">Payslip</span> to print that month's slip.</li>
+  <li>A payslip appears once that month's payroll is approved.</li>
+  <li>Your P9 tax card for a year appears under <span class="ui">P9 tax cards</span> once the year has ended and all its payroll is approved. Print it for your tax return.</li>
+</ul>
+<p>If the page says your sign-in is not linked to a staff record, ask your administrator to link your user account to your staff record.</p>
+</section>
+<!--/module:Payroll-->
+
+<!--module:Elections-->
+<section class="chapter" id="elections" data-module="Elections">
+<h1 class="ch">Elections</h1>
+<p>ShuleNova runs student elections from start to finish: the positions, nominations, the voter register, polling stations where students vote on a tablet, phone or computer, the live count and the declared results, which can then be recorded in the students' leadership records.</p>
+<p>The <span class="path">Elections</span> menu has three pages:</p>
+<table>
+  <tr><th style="width:26%">Page</th><th>Who uses it</th></tr>
+  <tr><td>Manage Elections</td><td>The <strong>elections officers</strong>, who set elections up and run them.</td></tr>
+  <tr><td>Polling Station</td><td>The <strong>returning officers</strong>, usually class teachers, who let students vote at their station.</td></tr>
+  <tr><td>Results</td><td>Elections officers while polling is open; everyone with the page once the results are declared.</td></tr>
+</table>
+
+<h2 class="sub" id="ele-stages">How an Election Runs</h2>
+<p>An election moves through six stages, in order. The elections officer moves it on with the green button at the top of the election's page.</p>
+<table>
+  <tr><th style="width:24%">Stage</th><th style="width:22%">Button to reach it</th><th>What happens</th></tr>
+  <tr><td>Draft</td><td>(new election)</td><td>Set up the positions.</td></tr>
+  <tr><td>Nominations open</td><td><span class="ui">Open nominations</span></td><td>Candidates are nominated and approved. Polling stations are set up. Positions can still change.</td></tr>
+  <tr><td>Candidates final</td><td><span class="ui">Close nominations</span></td><td>The approved candidates go on the ballot. A frozen voter register is taken now. Positions are fixed.</td></tr>
+  <tr><td>Polling open</td><td><span class="ui">Open polling</span></td><td>Returning officers issue ballots; the count shows live.</td></tr>
+  <tr><td>Polling closed</td><td><span class="ui">Close polling</span></td><td>No more ballots. Ties are settled by drawing lots.</td></tr>
+  <tr><td>Results declared</td><td><span class="ui">Declare results</span></td><td>The leading candidates are elected; the results are final and visible to all staff.</td></tr>
+</table>
+<p>Each move asks you to confirm and lets you add a note for the record. Some moves can be undone from the <span class="ui">&#8943;</span> menu: back to draft from nominations, <span class="ui">Reopen nominations</span> from Candidates final (this clears the ballot order and a frozen register, which are taken again when nominations close), and <span class="ui">Reopen polling</span> until the results are declared.</p>
+<p>ShuleNova will not move on until the stage's work is done. It refuses to open nominations until every position has at least one race; to close nominations while a nomination still waits for approval or a race has no approved candidate; and to open polling until every class with voters has a polling station.</p>
+
+<h2 class="sub" id="ele-manage">Manage Elections</h2>
+<p><span class="path">Elections &gt; Manage Elections</span> lists the school's elections with their year, stage, number of positions and races, and the planned polling window. Filter by <span class="ui">Year</span> and <span class="ui">Stage</span>, or search by title. Click an election, or its <span class="ui">Open</span> button, to work on it.</p>
+<figure class="shot"><img src="assets/guide/ele-list.png" alt="The elections list"><figcaption>The school's elections</figcaption></figure>
+
+<h3>Creating an election</h3>
+<ol class="steps">
+  <li>Click <span class="ui">New election</span>.</li>
+  <li>Type the <span class="ui">Name</span> (for example "Student Council Elections 2026") and choose the <span class="ui">Academic year</span>. A <span class="ui">Description</span> is optional.</li>
+  <li>Choose the <span class="ui">Voter register</span>:
+    <ul>
+      <li><strong>Frozen</strong>: a snapshot of the voters taken when nominations close. A student who changes class afterwards votes where they were registered.</li>
+      <li><strong>Live</strong>: who may vote follows each student's current class until they vote.</li>
+    </ul></li>
+  <li>Set <span class="ui">Polling starts</span> and <span class="ui">Polling ends</span>. This is the planned window shown to returning officers; polling itself opens and closes only when you move the stage.</li>
+  <li>Set <span class="ui">Results refresh (seconds)</span>, how often the live results screen updates, and click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/ele-new.png" alt="The New election window"><figcaption>A new election</figcaption></figure>
+<p>The election opens on its own page: its name, year, register type and polling window at the top, the stages it has passed, and a tab for each part of the work. A tab opens when the election reaches its stage (Nominations, Voter register and Polling stations at Nominations open; Results at Polling open; Leadership once declared). <span class="ui">Edit election</span> and <span class="ui">Delete election</span> (drafts only) are in the <span class="ui">&#8943;</span> menu. The year can change only while the election is a draft, and the register type only until the register is taken.</p>
+
+<h3>Positions</h3>
+<p>The <span class="ui">Positions</span> tab lists the posts to be filled, such as School President, Games Captain or Class President, with their races, seats, the grades that vote and the grades that may stand.</p>
+<figure class="shot"><img src="assets/guide/ele-positions.png" alt="The Positions tab"><figcaption>An election's positions and their races</figcaption></figure>
+<ol class="steps">
+  <li>Click <span class="ui">Add position</span> and type the <span class="ui">Position</span> name and the number of <span class="ui">Seats</span>.</li>
+  <li>Under <span class="ui">Races</span>, choose how the post is contested:
+    <ul>
+      <li><strong>One for the whole school</strong>: all the chosen grades vote in one race (School President).</li>
+      <li><strong>One per school section</strong>: a separate race in each section, such as Upper primary and Junior School (Senator).</li>
+      <li><strong>One per grade</strong>: a separate race in each grade (Grade Prefect).</li>
+      <li><strong>One per class</strong>: a separate race in each class (Class Representative).</li>
+    </ul></li>
+  <li>Choose a <span class="ui">Gender rule</span> if needed: <span class="ui">Candidates of one gender</span> (pick the gender, and tick <span class="ui">Only voters of that gender vote</span> if only they vote, as for a Girls' Representative), or <span class="ui">Seats for each gender</span> (for example one boy and one girl per class).</li>
+  <li>For a post elected with a deputy, tick <span class="ui">Joint ticket</span> and type the running mate's title (for example "Deputy President"). One vote elects both. A joint ticket has one seat.</li>
+  <li>Under <span class="ui">Grades that vote</span>, tick the grades (click a section's button to tick all its grades). The box below shows the races this will make.</li>
+  <li>If only some of those grades may stand, tick <span class="ui">Only some of these grades may stand</span> and tick them (for example only Grade 8 for President).</li>
+  <li>Click <span class="ui">Save position</span>.</li>
+</ol>
+<p>The arrows at the start of a row set the order positions appear in. Positions can be changed until nominations close; after that they are fixed. A position showing "No races" has grades with no classes in the election's year.</p>
+
+<h3>Nominations</h3>
+<p>Once nominations are open, the <span class="ui">Nominations</span> tab shows each position with its candidates. Click a position to open it. The counts at the top show how many are approved, how many await approval, and how many races still have no approved candidate.</p>
+<figure class="shot"><img src="assets/guide/ele-nominations.png" alt="The Nominations tab"><figcaption>Candidates for School President, each with a running mate</figcaption></figure>
+<ol class="steps">
+  <li>Click <span class="ui">Nominate</span> on the position (or on the race, when a position has several).</li>
+  <li>Search for the student and click their name. Only students who may stand in that race are listed; one already standing elsewhere shows as taken.</li>
+  <li>For a joint ticket, pick the running mate on the right.</li>
+  <li>Type a <span class="ui">Slogan</span> if the candidate has one (it shows on the ballot), and click <span class="ui">Nominate</span>.</li>
+</ol>
+<p>A new nomination waits as <span class="ui">Nominated</span>. On each candidate's card:</p>
+<ul>
+  <li><span class="ui">Approve</span> puts the candidate on the ballot; <span class="ui">Reject</span> asks for a reason, which is shown on the card.</li>
+  <li><span class="ui">Unapprove</span> sends an approved candidate back to waiting; <span class="ui">Withdraw</span> records that the candidate stood down; <span class="ui">Restore</span> brings back a rejected or withdrawn one.</li>
+  <li>The edit button changes the slogan or running mate; the trash button deletes a mistaken entry (reject or withdraw instead to keep a record).</li>
+  <li>The camera button uploads a photo (JPEG, PNG or WebP, up to 3 MB). The photo on the student's record is used if there is one. Photos can be changed until polling opens.</li>
+</ul>
+<p>Use the <span class="ui">Position</span>, <span class="ui">Status</span> and <span class="ui">Search</span> filters to find candidates, and <span class="ui">Print candidates</span> for a list of the approved candidates. When nominations close, each approved candidate gets a ballot number (in name order).</p>
+
+<h3>Voter register</h3>
+<p>The <span class="ui">Voter register</span> tab shows how many students can vote and, for each race, its voters. Click a race on the left to list its voters; search by name, UPI or class, and <span class="ui">Print</span> the list. A lock shows when a frozen register has been taken, and when.</p>
+<figure class="shot"><img src="assets/guide/ele-register.png" alt="The Voter register tab"><figcaption>The voters in each race</figcaption></figure>
+
+<h3>Polling stations</h3>
+<p>Every class with voters must vote at a polling station, run by a returning officer. Set them up on the <span class="ui">Polling stations</span> tab while nominations are open.</p>
+<figure class="shot"><img src="assets/guide/ele-stations.png" alt="The Polling stations tab"><figcaption>One station per class, each with its returning officer and turnout</figcaption></figure>
+<ul>
+  <li><span class="ui">A station per class</span> makes one station for each class not yet covered, named after the class, with its class teacher as returning officer when they have a login.</li>
+  <li><span class="ui">Add station</span> makes one yourself: type a <span class="ui">Name</span> (for example "Junior School hall"), choose the <span class="ui">Returning officer</span> from the staff who have logins, tick the <span class="ui">Classes voting here</span>, and click <span class="ui">Save</span>.</li>
+</ul>
+<p>A warning lists the classes with no station yet; polling cannot open until there are none. A station with no returning officer can be run only by elections officers. Stations can be changed until polling closes, but a station where votes have been cast cannot be removed. During polling, the <span class="ui">Turnout</span> bars show how many have voted at each.</p>
+
+<h3>History</h3>
+<p>The <span class="ui">History</span> tab records every stage move: when, by whom, and the note given.</p>
+<figure class="shot"><img src="assets/guide/ele-history.png" alt="The stage history"><figcaption>Every stage move, with its note</figcaption></figure>
+
+<h2 class="sub" id="ele-polling">Polling Station</h2>
+<p>On polling day each returning officer opens <span class="path">Elections &gt; Polling Station</span>. It shows a card for each station they run (elections officers see every station), with its turnout. Stations appear here once the candidates are final. Click <span class="ui">Open station</span>.</p>
+<p>The station screen lists the station's voters, with counts of those who have <span class="ui">voted</span> and those <span class="ui">waiting</span>. Switch between <span class="ui">Not voted</span>, <span class="ui">Voted</span> and <span class="ui">All</span>, and use the search box to find a student by name, UPI or class.</p>
+<figure class="shot"><img src="assets/guide/ele-station-screen.png" alt="A polling station screen"><figcaption>A station's voters, with the students still to vote</figcaption></figure>
+
+<h3>Letting a student vote</h3>
+<ol class="steps">
+  <li>Find the student and click <span class="ui">Issue ballot</span>. Check the name, class and UPI shown are the student in front of you, then confirm.</li>
+  <li>Hand the screen to the student. The ballot fills the screen: one section for each race they vote in, with each candidate's number, photo, class and slogan (and running mate). The heading says how many to choose, for example "Choose one".</li>
+  <li>The student taps a candidate to choose them (tapping again removes the choice), then taps <span class="ui">Review my vote</span>.</li>
+  <li>The student checks their choices. A race left empty shows as "No choice - left blank". <span class="ui">Change</span> goes back; <span class="ui">Cast my vote</span> records the vote.</li>
+  <li>"Your vote has been recorded" appears. The student hands the screen back; click <span class="ui">Next voter</span> (it also returns by itself after a few seconds).</li>
+</ol>
+<p>If a student cannot finish, the returning officer clicks <span class="ui">Cancel</span> on the ballot. Nothing is recorded and the student can be issued a ballot again.</p>
+<div class="callout important"><span class="lbl">Secret and final.</span> A cast vote cannot be changed, and nobody can see how a student voted: ShuleNova records that the student voted separately from their choices. A student can vote only once, at their own station.</div>
+<div class="callout tip"><span class="lbl">On a tablet or phone.</span> The station screen is made for touch. While polling is open it keeps the screen awake where the browser allows it, and warns before a ballot in progress is lost to an accidental refresh. Use <span class="ui">&#8635;</span> to refresh the counts.</div>
+<p>When polling is not open the screen shows "Polling has not opened yet" or "Polling is closed" and no ballots can be issued.</p>
+
+<h2 class="sub" id="ele-results">Results</h2>
+<p><span class="path">Elections &gt; Results</span> shows a card for each election that has opened polling. Click <span class="ui">Live results</span> (or <span class="ui">Results</span> once declared). Elections officers also find the count on the election's <span class="ui">Results</span> tab, marked <span class="ui">Live</span> while polling is open.</p>
+<figure class="shot"><img src="assets/guide/ele-results-home.png" alt="An election on the Results page"><figcaption>Elections with results</figcaption></figure>
+<p>The results page shows the turnout, then a card for each race: every candidate's votes and percentage, with a crown on those leading (or elected). Below the races, the turnout at each station.</p>
+<figure class="shot"><img src="assets/guide/ele-results.png" alt="The results screen"><figcaption>The declared results, race by race</figcaption></figure>
+<ul>
+  <li>Until the results are declared they are marked <span class="ui">Provisional</span> and refresh by themselves (switch this off with <span class="ui">Auto</span>). Only elections officers see them before they are declared.</li>
+  <li>The <span class="ui">Count checks</span> tick means every race's ballots match the voters marked as voted. A race that does not match is flagged.</li>
+  <li>Pick one position from the list to show only its races. <span class="ui">Slideshow</span> shows the overview and then each race in turn, full screen, for a hall display; the full-screen button shows the page alone. Print or download the results as CSV with the buttons on the right.</li>
+</ul>
+
+<h3>Ties and declaring the results</h3>
+<p>After <span class="ui">Close polling</span>, the elections officer checks the count. A race where candidates tie for the last seat is marked <span class="ui">Tied</span>, and the results cannot be declared until it is settled:</p>
+<ol class="steps">
+  <li>Draw lots in the presence of the candidates.</li>
+  <li>Click <span class="ui">Draw lots</span> on the race, put the candidates in the order drawn with the arrows (the first takes the seat), and click <span class="ui">Record the draw</span>.</li>
+</ol>
+<p>Then click <span class="ui">Declare results</span>. The leading candidates are declared elected and the results become final and visible to all staff.</p>
+
+<h3>Recording the winners</h3>
+<p>Once declared, the <span class="ui">Leadership</span> tab (or <span class="ui">Leadership records</span> on the results page) puts the winners in the students' records.</p>
+<figure class="shot"><img src="assets/guide/ele-leadership.png" alt="The Leadership tab"><figcaption>Where each position's winners are recorded</figcaption></figure>
+<ol class="steps">
+  <li>For each position choose where its winners go: a <span class="ui">Class role</span> (for positions with a race per class; shown on the class) and/or a <span class="ui">Responsibility</span> for the year (shown on the report form). A running mate is recorded under the same responsibility with their title.</li>
+  <li>Click <span class="ui">Record winners</span>. Each winner then shows <span class="ui">Recorded</span> with the date.</li>
+</ol>
+</section>
+<!--/module:Elections-->
+
+<!--module:Communications-->
+<section class="chapter" id="communications" data-module="Communications">
+<h1 class="ch">Communications</h1>
+<p>Communications sends SMS and email to parents and staff: notices you write yourself, and the school's standard messages (exam results, fee invoices, balance reminders and payment acknowledgements) sent from the pages where that information lives. Every message goes into a queue and is sent in the background, so you can carry on working while a large send goes out. The menu holds <span class="path">Communications &gt; Send Message</span>, <span class="ui">Message Queue</span>, <span class="ui">Templates</span> and <span class="ui">SMS Report</span>.</p>
+<div class="callout important"><span class="lbl">Messages cost money and cannot be called back.</span> Each SMS is paid for by the part (see <a href="#com-sms-length">SMS length and cost</a>). Always click <span class="ui">Preview</span> and read the message as the first recipient will get it before you click <span class="ui">Send</span>.</div>
+<p>Sending needs one of the roles Administrator, HeadTeacher or Accounts (or SuperAdministrator), and access to the page you send from. If <span class="ui">Send</span> answers "You are not allowed to send messages", ask your administrator.</p>
+
+<h2 class="sub" id="com-send">Send Message</h2>
+<p><span class="path">Communications &gt; Send Message</span> writes a message of your own, such as a closing-day notice or a meeting reminder, and sends it to a group of parents or staff. The left side holds <strong>1. Recipients</strong> and <strong>2. Message</strong>; the right side shows the <strong>Preview</strong>.</p>
+<figure class="shot"><img src="assets/guide/com-compose.png" alt="The Send Message page"><figcaption>Send Message: two classes chosen and the message written</figcaption></figure>
+<div class="callout"><span class="lbl">Banners at the top.</span> A yellow "Test mode is on" banner means messages are recorded but do not reach real recipients: your administrator is still setting things up. A red "SMS sending is switched off for this school" (or email) under the message means that channel cannot be used yet.</div>
+
+<h3>Choosing the recipients</h3>
+<p>Click one of the eight buttons under <span class="ui">1. Recipients</span>, then make the choice it asks for:</p>
+<table>
+  <tr><th style="width:30%">Button</th><th>Who gets the message</th></tr>
+  <tr><td>All parents</td><td>The parents of every active learner.</td></tr>
+  <tr><td>Parents of classes</td><td>The parents of the learners in the <span class="ui">Classes</span> you pick (each class shows its number of learners).</td></tr>
+  <tr><td>Parents of education levels</td><td>The parents of every learner in the <span class="ui">Education levels</span> you pick, for example Junior School.</td></tr>
+  <tr><td>Parents of selected learners</td><td>The parents of the <span class="ui">Learners</span> you pick. <span class="ui">Filter by class</span> narrows the list; type a name or admission number to search.</td></tr>
+  <tr><td>All staff</td><td>Every active, currently employed staff member.</td></tr>
+  <tr><td>Staff by category</td><td>The staff in the <span class="ui">Staff categories</span> you pick, for example Teaching.</td></tr>
+  <tr><td>Selected staff</td><td>The <span class="ui">Staff members</span> you pick. A name marked "(no phone or email)" cannot be reached.</td></tr>
+  <tr><td>Other numbers / emails</td><td>Phone numbers and email addresses you type, one per line or separated by commas.</td></tr>
+</table>
+<p>Classes and learners are those of the current academic year. A parent with several learners in the selection gets <em>one</em> message, listing the learners. Where a parent's phone number and email are taken from (the parent's record or the learner's) is a school setting your administrator chooses.</p>
+
+<h3>Writing the message</h3>
+<ol class="steps">
+  <li>In <span class="ui">Send by</span>, choose <span class="ui">SMS</span>, <span class="ui">Email</span> or <span class="ui">SMS &amp; Email</span>. The page shows the boxes that channel needs: <span class="ui">SMS text</span>, and <span class="ui">Email subject</span> and <span class="ui">Email body</span>.</li>
+  <li>To reuse saved wording, pick it in <span class="ui">Start from a saved template</span>. It fills in the channel and the text, which you can still change.</li>
+  <li>Type a <span class="ui">Title</span>, such as "Half-term break". It is not sent; it names the send in the Message Queue so you can find it later.</li>
+  <li>Type the message. To put each recipient's own details into it, click in the text where they should go and click a button beside <span class="ui">Insert:</span>, for example <span class="ui">{ParentName}</span> or <span class="ui">{StudentName}</span>. Hover over a button to see what it stands for.</li>
+</ol>
+<table>
+  <tr><th style="width:30%">Placeholder</th><th>Becomes</th></tr>
+  <tr><td>{RecipientName}</td><td>The recipient's name, parent or staff member.</td></tr>
+  <tr><td>{ParentName}</td><td>The parent's name (parent messages).</td></tr>
+  <tr><td>{StudentName}</td><td>The learner's name, or names for a parent with several (parent messages).</td></tr>
+  <tr><td>{ClassName}</td><td>The learner's class (parent messages).</td></tr>
+  <tr><td>{StaffName}</td><td>The staff member's name (staff messages).</td></tr>
+  <tr><td>{SchoolName}, {SchoolPhone}, {SchoolEmail}</td><td>The school's name, telephone and email.</td></tr>
+  <tr><td>{Date}</td><td>Today's date.</td></tr>
+</table>
+
+<h3 id="com-sms-length">SMS length and cost</h3>
+<p>Under the SMS text the page counts the characters and the SMS parts each recipient will cost. The gateway charges per part:</p>
+<ul>
+  <li>Up to <strong>160</strong> characters is one part. A longer message is split into parts of <strong>153</strong> characters.</li>
+  <li>An emoji or a letter outside the SMS alphabet (most accented letters, for example) changes the whole message to another encoding: <strong>70</strong> characters in one part, <strong>67</strong> per part beyond. The page warns in red that this "more than doubles the cost". Curly quotes and long dashes are fine; they are sent as plain ones.</li>
+  <li>A few signs, such as <span class="ui">[ ] { } ~ | €</span>, count as two characters.</li>
+  <li>Placeholders are counted after they are filled in: a long name can push a message into a second part. The preview shows the real total.</li>
+</ul>
+<div class="callout tip"><span class="lbl">Keep it to one part.</span> A notice to 400 parents that runs to 161 characters costs 800 parts instead of 400. Shorten it until the counter says 1 part.</div>
+
+<h3>Previewing and sending</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Preview</span>. The right side shows how many <span class="ui">Recipients</span>, <span class="ui">SMS</span>, <span class="ui">SMS parts</span> and <span class="ui">Emails</span> the send will make, the message as the first recipient gets it, and the list of everyone it goes to.</li>
+  <li>Check the yellow note: recipients with no phone number or email for the chosen channel are skipped. Their phone or email shows in red in the list.</li>
+  <li>Click <span class="ui">Send</span>. A box asks "Send message?" and states once more what will be queued. Click <span class="ui">Send</span> in it to confirm.</li>
+  <li>ShuleNova says how many messages were queued and opens the Message Queue on your send, where you can watch it go out.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/com-compose-preview.png" alt="A message to the parents of two classes, previewed"><figcaption>A notice to the parents of two classes, previewed: 38 SMS, 2 parents skipped</figcaption></figure>
+<p><span class="ui">Clear</span> empties the form and starts again. If something is missing, ShuleNova says what, for example "Choose at least one class." or "Type the SMS text."</p>
+
+<h2 class="sub" id="com-queue">Message Queue</h2>
+<p><span class="path">Communications &gt; Message Queue</span> shows every message sent, from this page and from the "send to parents" buttons elsewhere. The page refreshes itself every 15 seconds while messages are still waiting; <span class="ui">Refresh</span> checks at once.</p>
+
+<h3>The Sends tab</h3>
+<p>Each send (all the messages queued at once) is one row: when and by whom it was queued, its title and recipients, its type, the number of messages, a progress bar with how many are still waiting, how many were delivered or failed, and the SMS parts used.</p>
+<figure class="shot"><img src="assets/guide/com-queue-sends.png" alt="The Sends tab"><figcaption>Sends: one is still going out; two have failures to retry</figcaption></figure>
+<ul>
+  <li>Click a send's title to see its messages on the Messages tab.</li>
+  <li>The blue <span class="ui"><i>&#8635;</i></span> button (Retry failed) queues the send's failed messages again.</li>
+  <li>The red <span class="ui"><i>&#8856;</i></span> button (Cancel waiting messages) stops the messages not yet sent. ShuleNova asks first; messages already sent are not affected.</li>
+</ul>
+
+<h3>The Messages tab</h3>
+<p>Every single message, newest first. The buttons along the top filter by status and show how many messages have each one. Below them, filter by <span class="ui">Channel</span>, <span class="ui">Type</span> and dates <span class="ui">From</span> and <span class="ui">To</span>, or type a name or number in <span class="ui">Search</span> and press Enter. <span class="ui">Clear</span> removes the filters. When you came from one send, "Showing one send only" appears with a link to <span class="ui">Show all messages</span>.</p>
+<figure class="shot"><img src="assets/guide/com-queue-messages.png" alt="The Messages tab"><figcaption>Messages, with their status; an error shows in red under the message</figcaption></figure>
+<table>
+  <tr><th style="width:22%">Status</th><th>Meaning</th></tr>
+  <tr><td>Queued</td><td>Waiting to go. A message that could not be sent yet also waits here, with the reason in red and the time of its next attempt.</td></tr>
+  <tr><td>Sending</td><td>Being handed to the gateway now.</td></tr>
+  <tr><td>Sent</td><td>Accepted by the SMS gateway or the mail server. For SMS, the delivery report is still awaited.</td></tr>
+  <tr><td>Delivered</td><td>The phone network confirmed the SMS reached the phone.</td></tr>
+  <tr><td>Undelivered</td><td>The network reported it could not deliver the SMS (phone off for days, number not in use).</td></tr>
+  <tr><td>Failed</td><td>Could not be sent, for example an invalid number, after all attempts.</td></tr>
+  <tr><td>Cancelled</td><td>Stopped by someone before it was sent.</td></tr>
+</table>
+<h3>Retries</h3>
+<p>ShuleNova retries a message the gateway could not take by itself: up to 5 attempts, waiting 2, 4, 8 and then 16 minutes between them. If SMS (or email) is switched off or not set up, the messages simply wait and are checked again every 10 minutes; this does not use up attempts. Delivery reports are collected every few minutes.</p>
+<p>Click a message to see all its details: the recipient, the number it went to, its status, when it was queued, sent and delivered, the attempts, the gateway's reply and any error, and the full text. In this window, <span class="ui">Retry</span> queues a failed or cancelled message again and <span class="ui">Cancel</span> stops one still queued. The same buttons appear at the end of the message's row.</p>
+<figure class="shot"><img src="assets/guide/com-queue-detail.png" alt="A failed message's details"><figcaption>A failed message: the error says why</figcaption></figure>
+<div class="callout tip"><span class="lbl">Before you retry.</span> Retrying an "Invalid mobile number" fails again. Correct the number on the parent's or learner's record first, then send that parent a new message.</div>
+
+<h2 class="sub" id="com-templates">Templates</h2>
+<p><span class="path">Communications &gt; Templates</span> holds the wording ShuleNova uses:</p>
+<ul>
+  <li><strong>Standard message types</strong>: exam results, new fee invoice, fee balance reminder, fee payment received and fee payment by a sponsor. Each has its channel (SMS, email or both), an <span class="ui">Active</span> switch and its wording. These are what the "send to parents" buttons send.</li>
+  <li><strong>Saved templates for custom messages</strong>: wording you send often, offered in <span class="ui">Start from a saved template</span> on Send Message. Only active templates are offered.</li>
+</ul>
+<figure class="shot"><img src="assets/guide/com-templates.png" alt="The Templates page"><figcaption>Message types and saved templates</figcaption></figure>
+<p>Administrators set up and change the templates; see the administrator guide. The text in braces, such as {Balance}, is filled in for each learner when the message is sent.</p>
+
+<h2 class="sub" id="com-sms-report">SMS Report</h2>
+<p><span class="path">Communications &gt; SMS Report</span> totals the SMS the school sent in a month, to check against the SMS provider's bill. Pick the <span class="ui">Month</span> and <span class="ui">Year</span>; the report opens on the current month.</p>
+<figure class="shot"><img src="assets/guide/com-sms-report.png" alt="The monthly SMS report"><figcaption>The monthly SMS report</figcaption></figure>
+<ul>
+  <li><strong>SMS sent</strong> and <strong>SMS parts (billable)</strong>: the messages the gateway accepted, and the parts you pay for.</li>
+  <li><strong>Delivered</strong>, with how many were not delivered and how many still await a delivery report.</li>
+  <li><strong>Amount</strong>: the parts times the price per part. It shows "-" until an administrator enters the price in the gateway settings.</li>
+  <li><strong>By message type</strong>, <strong>By day</strong> and <strong>Every SMS</strong> break the month down.</li>
+</ul>
+<p>Test messages and SMS that failed to send are not counted; the line under the cards says how many were left out. Months run in East Africa Time. <span class="ui">Export CSV</span> downloads every SMS of the month for a spreadsheet; <span class="ui">Print</span> prints the report.</p>
+
+<h2 class="sub" id="com-from-pages">Sending to Parents from Other Pages</h2>
+<p>Results and fee pages have their own send buttons (a paper-plane icon) that send a standard message type to the learners' parents, each parent getting their own learner's figures. The wording and channel come from <span class="path">Communications &gt; Templates</span>.</p>
+<table>
+  <tr><th style="width:30%">Page</th><th style="width:25%">Button</th><th>What it sends</th></tr>
+<!--module:Academics-->
+  <tr><td><span class="path">Academics &gt; Exams &gt; School Exams</span></td><td>Tick <span class="ui">Send the results to parents now</span> when you release an exam; or the green paper-plane on a released exam</td><td>Exam results, for every class that sat the exam. The tick sends straight away, without a preview. A <span class="ui">Parents notified</span> badge then shows on the exam; the button sends them again.</td></tr>
+  <tr><td><span class="path">Academics &gt; Reports &gt; Exam Results</span>, Exam Results tab</td><td><span class="ui">Send</span>, after <span class="ui">Load</span></td><td>Exam results for the class loaded, as the broadsheet worked them out (scores, mean, grade, position). Learners with no marks in the exam are left out.</td></tr>
+<!--/module:Academics-->
+<!--module:Finance-->
+  <tr><td><span class="path">Finance &gt; Fees &gt; Student Invoices</span></td><td><span class="ui">Send to parents</span> above the list; or the paper-plane on an invoice</td><td>New fee invoice. The top button sends every invoice the filters show; cancelled invoices are skipped.</td></tr>
+  <tr><td><span class="path">Finance &gt; Fees &gt; Fee Payments</span></td><td>The paper-plane on an approved receipt</td><td>Fee payment received (or Fee payment by a sponsor, for a sponsor's receipt), with the amount, receipt number and new balance.</td></tr>
+  <tr><td><span class="path">Finance &gt; Fees &gt; Fee Reports</span>, Outstanding and Balances by Class tabs</td><td><span class="ui">Send reminders</span>; or <span class="ui">Remind</span> on one class</td><td>Fee balance reminder to the parents of every learner listed (or in that class). The message states each learner's <em>whole</em> outstanding balance, whatever year or term the report shows.</td></tr>
+<!--/module:Finance-->
+</table>
+<figure class="shot"><img src="assets/guide/com-send-invoices.png" alt="Send buttons on Student Invoices"><figcaption>Student Invoices: <span class="ui">Send to parents</span> at the top, and a paper-plane on each invoice</figcaption></figure>
+<p>Except for the release tick, each button first shows a "Send to parents?" box: how many SMS (and parts) and emails will go, how many learners have no parent contact and will be skipped, and the first message exactly as it will read. Click <span class="ui">Send</span> to queue them, or <span class="ui">Cancel</span>. When they are queued, click the message that appears to open the Message Queue on that send.</p>
+<figure class="shot"><img src="assets/guide/com-send-confirm.png" alt="The Send to parents box for an invoice"><figcaption>Sending one invoice: two parents, the first message shown</figcaption></figure>
+<figure class="shot"><img src="assets/guide/com-exam-confirm.png" alt="The Send to parents box for exam results"><figcaption>Exam results for a whole exam: 8 learners have no parent contact</figcaption></figure>
+<div class="callout"><span class="lbl">If nothing is sent.</span> "The 'Fee payment received' message type is switched off" means an administrator has not turned that message type on under Templates (payment acknowledgements start switched off). "Nobody to send to" means none of the parents has a phone number or email for the message type's channel.</div>
+<p>The send buttons appear only when your school has the Communications module.</p>
+</section>
+<!--/module:Communications-->
+    <div class="doc-footer">ShuleNova &middot; User Guide &middot; November 2026</div>
+  </div>
+</div>
+<script>
+  // The guide is shown in a frame inside the app: a contents link scrolls here
+  // rather than navigating the frame away.
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var el = document.getElementById(a.getAttribute('href').slice(1));
+    if (el) { e.preventDefault(); el.scrollIntoView({behavior: 'smooth', block: 'start'}); }
+  });
+</script>
+</body>
+</html>

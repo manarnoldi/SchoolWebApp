@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShuleNova - {{TITLE}}</title>
+<style>
+  :root {
+    --blue: #2B7BD6;      /* "Shule" in the logo: h2, links */
+    --purple: #5B3FC4;    /* "Nova": chapter headings */
+    --orange: #F7A325;    /* the ring: rules and accents */
+    --slate: #3D5A75;     /* the book: h3 */
+    --ink: #2f3640;
+    --muted: #6b7280;
+    --border: #d5dcea;
+    --soft: #f5f7fc;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; scroll-behavior: smooth; }
+  body {
+    margin: 0; background: #e9ecf2; color: var(--ink);
+    font-family: 'Segoe UI', Calibri, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 15px; line-height: 1.6;
+  }
+  .page { max-width: 980px; margin: 1.2rem auto; background: #fff; box-shadow: 0 2px 14px rgba(20,30,55,.14); }
+
+  /* ---- Cover ---- */
+  .cover { padding: 3.5rem 3rem 3rem; text-align: center; border-top: 6px solid var(--orange);
+    background: linear-gradient(160deg, #fff 55%, #eef1fb); }
+  .cover img { width: 420px; max-width: 90%; }
+  .cover h1 { margin: 2.2rem 0 .3rem; font-size: 2.1rem; color: var(--purple); letter-spacing: .02em; }
+  .cover .sub { color: var(--slate); font-size: 1.05rem; }
+  .cover .meta { margin-top: 2rem; color: var(--muted); font-size: .88rem; }
+
+  .content { padding: 1.4rem 3rem 2.5rem; border-top: 4px solid var(--blue); }
+  p { margin: 0 0 .85rem; }
+  a { color: var(--blue); }
+
+  /* ---- Contents ---- */
+  .toc-h, h1.ch { color: var(--purple); font-size: 1.5rem; font-weight: 700; margin: 0 0 1rem;
+    text-transform: uppercase; padding-bottom: .3rem; border-bottom: 2.5px solid var(--orange); }
+  .toc { list-style: none; padding: 0; margin: 0 0 1rem; columns: 2; column-gap: 2.5rem; counter-reset: tch; }
+  .toc ul { list-style: none; padding: 0; margin: 0; counter-reset: tsub; }
+  .toc li { margin: 0; }
+  .toc > li { break-inside: avoid; counter-increment: tch; }
+  .toc a { text-decoration: none; color: var(--ink); display: block; padding: .12rem 0; }
+  .toc > li > a { font-weight: 700; color: var(--purple); margin-top: .45rem; }
+  .toc > li > a::before { content: counter(tch) ". "; }
+  .toc ul > li { counter-increment: tsub; }
+  .toc ul > li > a { padding-left: 1.4rem; font-size: .93em; }
+  .toc ul > li > a::before { content: counter(tch) "." counter(tsub) " "; color: var(--muted); }
+  .toc a:hover { color: var(--orange); }
+
+  /* ---- Chapters: numbered as shown, so a chapter left out for the licence leaves no gap ---- */
+  .content { counter-reset: ch; }
+  .chapter { margin-top: 2.6rem; counter-increment: ch; counter-reset: sub; }
+  h1.ch::before { content: counter(ch) ". "; }
+  h2.sub { color: var(--blue); font-size: 1.22rem; margin: 1.8rem 0 .5rem; counter-increment: sub; }
+  h2.sub::before { content: counter(ch) "." counter(sub) " "; }
+  h3 { color: var(--slate); font-size: 1.03rem; margin: 1.3rem 0 .45rem; }
+  ul, ol { padding-left: 1.3rem; margin: 0 0 .85rem; }
+  li { margin-bottom: .3rem; }
+  ol.steps { counter-reset: step; list-style: none; padding: 0; }
+  ol.steps > li { counter-increment: step; position: relative; padding: .2rem 0 .2rem 2.1rem; }
+  ol.steps > li::before { content: counter(step); position: absolute; left: .2rem; top: .25rem; width: 1.45rem; height: 1.45rem;
+    background: var(--blue); color: #fff; border-radius: 50%; text-align: center; line-height: 1.45rem; font-weight: 700; font-size: .8rem; }
+
+  .callout { border: 1px solid var(--border); background: var(--soft); border-left: 4px solid var(--blue); padding: .55rem .9rem; margin: .9rem 0; font-size: .95em; }
+  .callout .lbl { font-weight: 700; color: var(--blue); }
+  .callout.important { border-left-color: var(--orange); }
+  .callout.important .lbl { color: #c2710c; }
+  .callout.tip { border-left-color: #2fb24b; }
+  .callout.tip .lbl { color: #1f8b3d; }
+
+  table { width: 100%; border-collapse: collapse; margin: .9rem 0; font-size: .93em; }
+  th { background: var(--slate); color: #fff; text-align: left; padding: .45rem .7rem; border: 1px solid #344d66; }
+  td { padding: .45rem .7rem; border: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: #f7f9fd; }
+
+  .ui { font-weight: 600; color: #1f2937; background: #eef1f8; border: 1px solid #d3d9e8; border-radius: 4px; padding: 0 .35em; white-space: nowrap; font-size: .93em; }
+  .path { color: var(--slate); font-weight: 600; }
+
+  figure.shot { margin: 1rem 0 1.3rem; }
+  figure.shot img { display: block; max-width: 100%; height: auto; border: 1px solid #c8d0e0; border-radius: 4px; box-shadow: 0 2px 8px rgba(20,30,55,.12); }
+  figure.shot figcaption { color: var(--muted); font-size: .85rem; margin-top: .35rem; text-align: center; font-style: italic; }
+
+  .doc-footer { text-align: center; color: var(--muted); font-size: .82rem; margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+
+  .print-btn { position: fixed; top: .8rem; right: 1rem; z-index: 50; background: var(--blue); color: #fff; border: 0;
+    padding: .5rem 1rem; border-radius: 6px; font: 600 .85rem 'Segoe UI', Arial, sans-serif; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+  .print-btn:hover { background: var(--purple); }
+
+  @media (max-width: 700px) {
+    .content, .cover { padding-left: 1rem; padding-right: 1rem; }
+    .toc { columns: 1; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; }
+    .print-btn { display: none; }
+    .cover { page-break-after: always; min-height: 90vh; padding-top: 25vh; }
+    .toc-wrap { page-break-after: always; }
+    .chapter { page-break-before: always; margin-top: 0; }
+    figure.shot { page-break-inside: avoid; }
+    h2.sub, h3 { page-break-after: avoid; }
+  }
+</style>
+</head>
+<body>
+<button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+<div class="page">
+  <div class="cover">
+    <img src="assets/img/shule-nova-logo.png" alt="ShuleNova">
+    <h1>{{TITLE}}</h1>
+    <div class="sub">{{SUBTITLE}}</div>
+    <div class="meta">Kodetek Investment Limited &middot; {{DATE}}</div>
+  </div>
+  <div class="content">
+    <div class="toc-wrap">
+      <h2 class="toc-h">Contents</h2>
+      <ul class="toc">
+{{TOC}}
+      </ul>
+    </div>
+{{BODY}}
+    <div class="doc-footer">ShuleNova &middot; {{TITLE}} &middot; {{DATE}}</div>
+  </div>
+</div>
+<script>
+  // The guide is shown in a frame inside the app: a contents link scrolls here
+  // rather than navigating the frame away.
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var el = document.getElementById(a.getAttribute('href').slice(1));
+    if (el) { e.preventDefault(); el.scrollIntoView({behavior: 'smooth', block: 'start'}); }
+  });
+</script>
+</body>
+</html>

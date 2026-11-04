@@ -1,0 +1,73 @@
+<section class="chapter" id="admin-intro">
+<h1 class="ch">Introduction for Administrators</h1>
+<p>This guide is for the person who sets up and runs ShuleNova for a school: the system administrator. It covers what only an administrator does: the school's structure (years, terms, classes), user accounts and what each role may open, the settings that change how the system behaves, and the licence. Day-to-day work (marking a register, recording a payment, printing a report form) is in the <strong>User Guide</strong>, which every user can open.</p>
+<div class="callout"><span class="lbl">Work on the live site with care.</span> Everything you change here affects every user at once, and every change is recorded in the audit trail under your name. Where a page asks you to confirm, read the message before you click.</div>
+
+<h2 class="sub" id="aint-role">What the Administrator Does</h2>
+<ul>
+  <li><strong>Sets up the school</strong>: its details and logo, the academic years and terms, the classes and streams, the calendar of events, and the lists that fill the drop-down boxes all over the system.</li>
+  <li><strong>Manages people's access</strong>: creates a user account for each member of staff (and, if the school wants, for parents and learners), gives each account its roles, resets forgotten passwords and removes accounts that are no longer needed.</li>
+  <li><strong>Decides what each role sees</strong>: which menus and pages each role can open, and who approves expenses, budgets, schemes of work and other requests.</li>
+  <li><strong>Keeps an eye on the system</strong>: who is signed in, what has been changed and by whom, and any errors the system has recorded.</li>
+  <li><strong>Looks after the licence</strong>: checks when it expires and installs a new key from Kodetek when the school renews or adds a module.</li>
+</ul>
+
+<h2 class="sub" id="aint-roles">Administrator, SuperAdministrator and Other Roles</h2>
+<p>Every user account holds one or more <strong>roles</strong>. A role is a name (Teacher, Accounts, HeadTeacher&hellip;) with a set of menus attached to it. A user with several roles sees everything each of their roles sees.</p>
+<table>
+  <tr><th style="width:24%">Role</th><th>What it means</th></tr>
+  <tr><td>Administrator</td><td>Manages users and roles, menu permissions, approval workflows, the logs and the licence, and opens the administrator guide. What an Administrator sees in the side menu still follows the menus ticked for the Administrator role in <span class="path">Security &gt; Menu Permissions</span>.</td></tr>
+  <tr><td>SuperAdministrator</td><td>Sees every menu, whatever Menu Permissions say. Only a SuperAdministrator can give the SuperAdministrator role to someone or take it away, set up the SMS gateway, and reverse a request that has already been approved. Usually held by Kodetek's support account and at most one senior person at the school. Give it together with Administrator.</td></tr>
+  <tr><td>Viewer</td><td>View-only. Given <em>on top of</em> another role, the user sees what that role sees and can change nothing. For board members, auditors or a demonstration login. See <a href="#asec-viewer">The Viewer Role</a>.</td></tr>
+  <tr><td>Other roles</td><td>Teacher, HeadTeacher, DeputyHeadTeacher, HeadOfDepartment, Accounts and the rest. Each sees the menus ticked for it in Menu Permissions. You can add roles of your own.</td></tr>
+</table>
+<div class="callout tip"><span class="lbl">Keep the Administrator role to a few people.</span> An Administrator can create accounts and change anyone's access. Give it to the one or two people who run the system, not to every head of section.</div>
+
+<h2 class="sub" id="aint-checklist">Setting Up a New School: the Order to Follow</h2>
+<p>Much of ShuleNova depends on things set up before it: a class needs a year and a learning level, a learner needs a class, a mark needs a subject. Setting things up in this order saves going back.</p>
+<table>
+  <tr><th style="width:6%">#</th><th style="width:38%">What</th><th>Where</th></tr>
+  <tr><td>1</td><td>School name, logo, contacts, motto and report headings</td><td><span class="path">School &gt; Details</span> (<a href="#asch-details">School Details</a>)</td></tr>
+  <tr><td>2</td><td>Curricula, education level types, education levels, learning levels (the grades) and streams</td><td><span class="path">Settings &gt; Dropdowns</span> (<a href="#asch-dropdowns">Dropdowns</a>)</td></tr>
+  <tr><td>3</td><td>The academic year</td><td><span class="path">School &gt; Academic Years</span> (<a href="#asch-years">Academic Years</a>)</td></tr>
+  <tr><td>4</td><td>The year's terms with their dates</td><td><span class="path">School &gt; Sessions</span> (<a href="#asch-sessions">Sessions</a>)</td></tr>
+  <tr><td>5</td><td>The year's classes (grade + stream)</td><td><span class="path">School &gt; Classes</span> (<a href="#asch-classes">Classes</a>)</td></tr>
+  <tr><td>6</td><td>The general lists: genders, religions, relationships, designations, staff categories, departments and the rest</td><td><span class="path">Settings &gt; Dropdowns &gt; System Settings</span></td></tr>
+  <tr><td>7</td><td>Staff records, then a user account and roles for each</td><td><span class="path">Staff &gt; Staff Details</span>, then <span class="path">Security &gt; Users</span> (<a href="#asec-users">Users</a>)</td></tr>
+  <tr><td>8</td><td>What each role may open</td><td><span class="path">Security &gt; Menu Permissions</span> (<a href="#asec-menus">Menu Permissions</a>)</td></tr>
+  <tr><td>9</td><td>Learners and their parents, placed in their classes</td><td><span class="path">Students &gt; Basic Details</span> and <span class="path">Students &gt; Parents</span> (see the User Guide)</td></tr>
+  <tr><td>10</td><td>Global settings and approval workflows</td><td><span class="path">Settings &gt; Global Settings</span>, <span class="path">Settings &gt; Approval Workflows</span> (<a href="#aset-global">Global Settings</a>)</td></tr>
+  <tr><td>11</td><td>Each module the school has bought</td><td>The later chapters of this guide</td></tr>
+</table>
+<p>Then, for step 11:</p>
+<ul>
+  <!--module:Academics--><li><strong>Academics</strong>: subjects, the grading system, exam types, the CBE curriculum designs and subject allocation. See the Academics Set-up chapter.</li><!--/module:Academics-->
+  <!--module:Finance--><li><strong>Finance</strong>: the chart of accounts, fee and expense categories, fee structures and the finance settings. See the Finance chapter.</li><!--/module:Finance-->
+  <!--module:Payroll--><li><strong>Payroll</strong>: earning and deduction types, tax and NSSF bands, reliefs, and each employee's salary. See the Payroll chapter.</li><!--/module:Payroll-->
+  <!--module:Elections--><li><strong>Elections</strong>: the elections settings, then each election's posts and polling stations. See the Elections chapter.</li><!--/module:Elections-->
+  <!--module:Communications--><li><strong>Communications</strong>: the SMS gateway (by Kodetek or a SuperAdministrator), message templates and where parents' numbers come from. See the Communications chapter.</li><!--/module:Communications-->
+</ul>
+<div class="callout"><span class="lbl">Each new year.</span> At the start of every year you repeat steps 3 to 5 (a new year, its terms and its classes; the Classes page can copy last year's classes for you), then move learners up with <span class="path">Students &gt; Class Assignment</span>.</div>
+
+<h2 class="sub" id="aint-licence">The Licence</h2>
+<p>ShuleNova is sold as a core system plus paid modules. The <strong>core</strong> (dashboard, school, students, staff, settings, reports and security) is always included. The paid modules are:</p>
+<ul>
+  <li><strong>Academics</strong> (with Teaching Management): assessments, exams, report forms, schemes of work, lesson plans and records of work.</li>
+  <li><strong>Finance</strong>: budgets, fees, invoices, payments, sponsors, expenses and accounts.</li>
+  <li><strong>Payroll</strong>: salaries, loans, payroll processing and payslips.</li>
+  <li><strong>Elections</strong>: student elections, polling stations and results.</li>
+  <li><strong>Communications</strong>: SMS and email messages to parents and staff.</li>
+</ul>
+<p>The licence key Kodetek installs for the school says which modules it includes and until when. A module that is not licensed simply does not appear: its menus, its dashboard cards, its sections in Settings and its chapters in these guides are all hidden. Its data is not deleted. <a href="#aset-licence">The Licence</a> explains how to read the licence and install a new key.</p>
+<figure class="shot"><img src="assets/guide/aint-licence.png" alt="The modules in the school's licence"><figcaption>The modules in the school's licence, from Settings &gt; Licence</figcaption></figure>
+
+<h2 class="sub" id="aint-guides">How These Guides Work</h2>
+<p>The two book icons at the top right of every page open the guides:</p>
+<figure class="shot"><img src="assets/guide/aint-header.png" alt="The top bar with the two guide icons"><figcaption>The top bar: the User Guide (the first book) and the Administrator Guide (the red book)</figcaption></figure>
+<ul>
+  <li>The <strong>User Guide</strong> is for everyone who signs in.</li>
+  <li>The <strong>Administrator Guide</strong> (this one) shows only to users holding the Administrator or SuperAdministrator role.</li>
+  <li>Both show only the chapters and sections for the modules your licence includes, so they always match what the school can use.</li>
+</ul>
+<p>To hide both guides from everyone (for example on a demonstration site), switch off <span class="path">Settings &gt; Global Settings &gt; Security Settings &gt; Show user guides</span> and save. The icons are gone for each user the next time they sign in or refresh the page.</p>
+</section>

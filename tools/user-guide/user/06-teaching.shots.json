@@ -1,0 +1,176 @@
+[
+ {
+  "name": "tch-schemes-list",
+  "path": "/teaching/schemes?view=all",
+  "waitFor": "table tbody tr td .badge",
+  "settle": 1000
+ },
+ {
+  "name": "tch-scheme-open",
+  "path": "/teaching/schemes?view=all",
+  "waitFor": "table tbody tr td .badge",
+  "steps": [
+   {
+    "click": "button:has-text('Open scheme')"
+   },
+   {
+    "waitFor": "tr.td-week"
+   },
+   {
+    "wait": 800
+   }
+  ],
+  "settle": 1000
+ },
+ {
+  "name": "tch-scheme-upload",
+  "path": "/teaching/schemes?view=all",
+  "waitFor": "table tbody tr td .badge",
+  "steps": [
+   {
+    "click": "button:has-text('Upload workbook')"
+   },
+   {
+    "waitFor": "app-scheme-import .modal-content"
+   },
+   {
+    "wait": 500
+   }
+  ],
+  "element": "app-scheme-import .modal-content"
+ },
+ {
+  "name": "tch-plans-week",
+  "path": "/teaching/tracker",
+  "waitFor": "td.td-cell",
+  "steps": [
+   {
+    "click": "td.td-cell.td-submitted >> nth=1"
+   },
+   {
+    "waitFor": "app-approval-webpart .card"
+   },
+   {
+    "wait": 1500
+   }
+  ],
+  "settle": 1000,
+  "height": 1000
+ },
+ {
+  "name": "tch-plans-approval",
+  "path": "/teaching/tracker",
+  "waitFor": "td.td-cell",
+  "steps": [
+   {
+    "click": "td.td-cell.td-submitted >> nth=1"
+   },
+   {
+    "waitFor": "app-approval-webpart .card"
+   },
+   {
+    "wait": 1500
+   }
+  ],
+  "settle": 1000,
+  "element": "app-approval-webpart .card"
+ },
+ {
+  "name": "tch-plans-pending",
+  "path": "/teaching/tracker",
+  "waitFor": "td.td-cell",
+  "steps": [
+   {
+    "click": "td.td-cell.td-notstarted >> nth=0"
+   },
+   {
+    "waitFor": "button.td-cell.td-notstarted"
+   },
+   {
+    "click": "button.td-cell.td-notstarted >> nth=0"
+   },
+   {
+    "wait": 800
+   }
+  ],
+  "settle": 800,
+  "height": 520
+ },
+ {
+  "name": "tch-record",
+  "path": "/teaching/record-of-work?view=all",
+  "waitFor": "table tbody tr td .badge",
+  "steps": [
+   {
+    "click": "button:has-text('Record of work')"
+   },
+   {
+    "waitFor": "tr.td-week"
+   },
+   {
+    "wait": 800
+   }
+  ],
+  "settle": 1000
+ },
+ {
+  "name": "tch-tracker",
+  "path": "/teaching/tracker",
+  "waitFor": "td.td-cell",
+  "settle": 1000
+ },
+ {
+  "name": "tch-curriculum",
+  "path": "/teaching/curriculum",
+  "waitFor": "select",
+  "steps": [
+   {
+    "select": [
+     "select >> nth=0",
+     "Grade 6"
+    ],
+    "wait": 1500
+   },
+   {
+    "select": [
+     "select >> nth=1",
+     "English"
+    ]
+   },
+   {
+    "waitFor": ".cv-strand"
+   },
+   {
+    "wait": 800
+   }
+  ],
+  "settle": 800
+ },
+ {
+  "name": "tch-curriculum-strand",
+  "path": "/teaching/curriculum",
+  "waitFor": "select",
+  "steps": [
+   {
+    "select": [
+     "select >> nth=0",
+     "Grade 6"
+    ],
+    "wait": 1500
+   },
+   {
+    "select": [
+     "select >> nth=1",
+     "English"
+    ]
+   },
+   {
+    "waitFor": ".cv-strand.open .cv-sub"
+   },
+   {
+    "wait": 800
+   }
+  ],
+  "element": ".cv-strand.open .card-body > div:first-child"
+ }
+]

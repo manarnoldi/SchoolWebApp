@@ -1,0 +1,218 @@
+[
+ {
+  "name": "aca-assessments",
+  "path": "/cbe/assessments/assessments",
+  "waitFor": "table tbody tr td select",
+  "settle": 1500,
+  "height": 900
+ },
+ {
+  "name": "aca-tracker",
+  "path": "/cbe/assessments/tracker",
+  "waitFor": "tr.at-row",
+  "settle": 1200
+ },
+ {
+  "name": "aca-tracker-detail",
+  "path": "/cbe/assessments/tracker",
+  "waitFor": "tr.at-row",
+  "steps": [
+   {
+    "click": "tr.at-row"
+   },
+   {
+    "waitFor": "tr.at-detail table"
+   },
+   {
+    "wait": 800
+   }
+  ],
+  "height": 1000
+ },
+ {
+  "name": "aca-school-exams",
+  "path": "/cbe/exams/school-exams",
+  "waitFor": "table tbody tr td:nth-child(3)",
+  "settle": 1200
+ },
+ {
+  "name": "aca-school-exam-form",
+  "path": "/cbe/exams/school-exams",
+  "waitFor": "table tbody tr td:nth-child(3)",
+  "steps": [
+   {
+    "click": "button:has-text('New School Exam')",
+    "wait": 600
+   }
+  ],
+  "element": ".modal-content"
+ },
+ {
+  "name": "aca-register-list",
+  "path": "/cbe/exams/exams",
+  "waitFor": "table tbody tr td:nth-child(4)",
+  "settle": 1200
+ },
+ {
+  "name": "aca-register-form",
+  "path": "/cbe/exams/exams/register",
+  "waitFor": "select",
+  "steps": [
+   {
+    "wait": 2500
+   },
+   {
+    "select": [
+     "xpath=(//select)[1]",
+     {
+      "index": 1
+     }
+    ],
+    "wait": 1200
+   },
+   {
+    "select": [
+     "xpath=(//select)[2]",
+     "2026"
+    ],
+    "wait": 1500
+   },
+   {
+    "select": [
+     "xpath=(//select)[3]",
+     "Term 3"
+    ],
+    "wait": 1500
+   },
+   {
+    "select": [
+     "xpath=(//select)[4]",
+     {
+      "index": 3
+     }
+    ],
+    "wait": 2000
+   },
+   {
+    "select": [
+     "xpath=(//select)[5]",
+     {
+      "index": 1
+     }
+    ],
+    "wait": 1200
+   }
+  ],
+  "height": 900
+ },
+ {
+  "name": "aca-results-entry",
+  "path": "/cbe/exams/exam-results-bulk",
+  "waitFor": "table tbody tr input",
+  "settle": 1200,
+  "height": 900
+ },
+ {
+  "name": "aca-cocurricular",
+  "path": "/cbe/cocurriculum/student-scores",
+  "waitFor": "table tbody tr select",
+  "settle": 1200
+ },
+ {
+  "name": "aca-responsibilities",
+  "path": "/cbe/responsibilities/student-assignments",
+  "waitFor": "table tbody tr select",
+  "settle": 1200
+ },
+ {
+  "name": "aca-values",
+  "path": "/cbe/values/student-assignments",
+  "waitFor": "table tbody tr select",
+  "settle": 1200
+ },
+ {
+  "name": "aca-broadsheet",
+  "path": "/reports/academics/exam-results",
+  "waitFor": "app-broadsheet table tbody tr",
+  "settle": 1500
+ },
+ {
+  "name": "aca-report-forms",
+  "path": "/reports/academics/exam-results?tab=reportForm",
+  "waitFor": "app-report-form table tbody tr",
+  "settle": 1200
+ },
+ {
+  "name": "aca-missing-marks",
+  "path": "/reports/academics/exam-results?tab=missing",
+  "waitFor": "app-missing-marks-report",
+  "settle": 2500
+ },
+ {
+  "name": "aca-class-progress",
+  "path": "/reports/academics/exam-results?tab=classProgress",
+  "waitFor": "app-exam-progress",
+  "settle": 2500
+ },
+ {
+  "name": "aca-assessment-report",
+  "path": "/reports/academics/assessment-report",
+  "waitFor": "table tbody tr td:nth-child(3)",
+  "settle": 1200
+ },
+ {
+  "name": "aca-subject-performance",
+  "path": "/reports/academics/subject-performance",
+  "waitFor": "app-subject-performance table tbody tr",
+  "settle": 1500
+ },
+ {
+  "name": "aca-subject-trend",
+  "path": "/reports/academics/subject-performance",
+  "steps": [
+   {
+    "wait": 2500
+   },
+   {
+    "click": "button:has-text(\"Subject Performance Trend\")",
+    "wait": 3000
+   },
+   {
+    "select": [
+     "app-subject-performance-trend select >> nth=2",
+     "Grade 6E 2026"
+    ],
+    "wait": 2500
+   },
+   {
+    "select": [
+     "app-subject-performance-trend select >> nth=3",
+     "English"
+    ],
+    "wait": 1500
+   },
+   {
+    "click": "app-subject-performance-trend button:has-text(\"Load\")"
+   },
+   {
+    "waitFor": "app-subject-performance-trend .trend-chart"
+   },
+   {
+    "wait": 1500
+   }
+  ],
+  "height": 1500
+ },
+ {
+  "name": "aca-class-performance",
+  "path": "/reports/academics/class-performance",
+  "waitFor": "app-class-performance table tbody tr",
+  "settle": 1500
+ },
+ {
+  "name": "aca-subject-allocation",
+  "path": "/reports/academics/student-subject-allocation",
+  "waitFor": "table tbody tr td:nth-child(3)",
+  "settle": 1200
+ }
+]

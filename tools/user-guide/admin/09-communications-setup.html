@@ -1,0 +1,111 @@
+<section class="chapter" id="communications-setup" data-module="Communications">
+<h1 class="ch">Communications Set-up</h1>
+<p>Before the school can send SMS and email, four things are set up: the SMS gateway and email account (a SuperAdministrator's job), the wording and channel of each standard message, where parents' contacts are taken from, and who may send. This chapter takes them in that order. Day-to-day sending, the queue and the SMS report are in the user guide's Communications chapter.</p>
+
+<h2 class="sub" id="acom-gateway">Gateway Settings</h2>
+<p><span class="path">Communications &gt; Gateway Settings</span> holds the SMS provider account (TextSMS) and the email (SMTP) account. Only a <strong>SuperAdministrator</strong> can open it; anyone else sees "Only a SuperAdministrator can view or change the gateway settings."</p>
+<figure class="shot"><img src="assets/guide/acom-gateway.png" alt="The Gateway Settings page"><figcaption>Gateway Settings, live, with SMS switched on</figcaption></figure>
+<p>The banner at the top says which state the school is in: <strong>Live</strong> (green), where messages go to their real recipients, or <strong>Test mode is on</strong> (yellow).</p>
+
+<h3>Setting up SMS</h3>
+<p>Get these details from your SMS provider's account first.</p>
+<ol class="steps">
+  <li><span class="ui">API URL</span>: leave the provider's address as it is unless they give you another. Left blank, ShuleNova uses the TextSMS default.</li>
+  <li><span class="ui">API key</span>: paste the key from the provider. Once saved it shows a green <span class="ui">stored</span> badge and is never shown again; leave the box blank to keep it, or paste a new one to replace it.</li>
+  <li><span class="ui">Partner ID</span>: from the provider.</li>
+  <li><span class="ui">Sender ID</span>: the name parents see as the sender, up to 11 characters. It must be the sender ID the provider registered for the school, spelled exactly the same.</li>
+  <li><span class="ui">Price per SMS part (KES)</span>: what the provider charges per part. It is used only to value the monthly SMS report.</li>
+  <li>Switch on <span class="ui">Enabled</span> in the blue bar and click <span class="ui">Save settings</span>.</li>
+</ol>
+<p>SMS cannot be switched on without the API key, partner ID and sender ID; saving says which is missing, for example "The SMS sender ID is not set. SMS cannot be switched on without it." <span class="ui">Check SMS balance</span> asks the provider how many SMS credits remain.</p>
+
+<h3>Setting up email</h3>
+<ol class="steps">
+  <li>Fill in <span class="ui">SMTP host</span>, <span class="ui">Port</span> and <span class="ui">SSL / TLS</span> from your email provider. Port 465 uses SSL from the start; 587 upgrades with STARTTLS.</li>
+  <li><span class="ui">Username</span> and <span class="ui">Password</span> of the mailbox. Like the API key, the saved password shows <span class="ui">stored</span>; leave it blank to keep it.</li>
+  <li><span class="ui">From email</span> and <span class="ui">From name</span> (usually the school's name) are what parents see; <span class="ui">Reply-to email</span> is where their replies go, if not to the From address.</li>
+  <li>Switch on <span class="ui">Enabled</span> in the email bar and click <span class="ui">Save settings</span>. Email cannot be switched on without the host, the port and the from email.</li>
+</ol>
+
+<h3>Test mode</h3>
+<p>Use test mode while you set up, train staff or check wording. With <span class="ui">Test mode</span> on:</p>
+<ul>
+  <li>no message reaches a real parent or staff member;</li>
+  <li>up to 3 messages of each send go to the <span class="ui">Test phone number</span> and <span class="ui">Test email</span> instead, so you can see how they arrive; the rest are only recorded;</li>
+  <li>with no test number or email, nothing leaves the system at all; messages are only marked as sent so the queue and wording can be checked;</li>
+  <li>test messages show a <span class="ui">Test</span> badge in the queue and are not counted in the SMS report.</li>
+</ul>
+<p>The test phone number must be a valid Kenyan mobile number. Test messages to the test number go out even while SMS is switched off, which is how you try the gateway before going live.</p>
+
+<h3>Trying the gateways</h3>
+<p>Under <span class="ui">Try the gateways</span>, type a phone number or email and click <span class="ui">Send test SMS</span> or <span class="ui">Send test email</span>. This sends one real message straight away, whatever test mode says, so save the settings first. The result appears at once (for example "The gateway refused the SMS: ..."), and the message is recorded in the queue as a test.</p>
+<div class="callout important"><span class="lbl">Going live.</span> 1. Enter the SMS (and email) details and save. 2. Send a test SMS to your own phone. 3. With test mode on, send a real notice to one class and read it on the test phone. 4. Switch test mode off and save. From then on every send reaches real parents.</div>
+
+<h2 class="sub" id="acom-templates">Message Types and Templates</h2>
+<p><span class="path">Communications &gt; Templates</span> sets the wording of everything the school sends. Only Administrators and SuperAdministrators can change it.</p>
+
+<h3>Standard message types</h3>
+<p>These are the messages sent by the "send to parents" buttons on the results and fee pages. They cannot be deleted.</p>
+<figure class="shot"><img src="assets/guide/acom-templates.png" alt="Standard message types"><figcaption>The standard message types</figcaption></figure>
+<table>
+  <tr><th style="width:30%">Message type</th><th>Sent from</th></tr>
+  <tr><td>Exam results</td><td>Releasing an exam or the send button on School Exams, and the Exam Results report.</td></tr>
+  <tr><td>New fee invoice</td><td>Student Invoices.</td></tr>
+  <tr><td>Fee balance reminder</td><td>Fee Reports, Outstanding and Balances by Class.</td></tr>
+  <tr><td>Fee payment received</td><td>Fee Payments, for a family's receipt. Switched off when the module is installed.</td></tr>
+  <tr><td>Fee payment by a sponsor</td><td>Fee Payments, for a sponsor's receipt: tells the parents the sponsor paid. Starts the same as Fee payment received.</td></tr>
+</table>
+<ul>
+  <li><span class="ui">Send by</span> chooses SMS, Email or SMS &amp; Email. The change is saved as soon as you pick it.</li>
+  <li>The <span class="ui">Active</span> switch turns the message type on or off, also saved at once. While it is off, its send buttons answer "The '...' message type is switched off. Turn it on under Communications &gt; Templates."</li>
+  <li>The edit button opens the wording.</li>
+</ul>
+
+<h3>Editing the wording</h3>
+<ol class="steps">
+  <li>Click the edit button on the message type or template.</li>
+  <li>Change the <span class="ui">SMS text</span>, and the <span class="ui">Email subject</span> and <span class="ui">Email body</span> when it is sent by email. The email body is plain text; line breaks are kept.</li>
+  <li>To add a recipient's details, click in the text where they go, then click a placeholder on the right. Each message type has its own: exam results offer {SubjectScores}, {MeanGrade} and {Position}; invoices {InvoiceNumber}, {DueDate} and {Balance}; payments {AmountPaid} and {ReceiptNumber}; and so on.</li>
+  <li>Click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/acom-template-edit.png" alt="Editing the Exam results message type"><figcaption>Editing a message type, sent by SMS and email, with its placeholders</figcaption></figure>
+<p>The count under the SMS text is <em>before</em> placeholders are filled in. Names, subject scores and amounts make the real message longer; the preview when sending shows the real number of parts. The exam results SMS often runs to two parts per parent. An active message type must have the text its channel needs: "Enter the SMS text, or send this message type by email only."</p>
+
+<h3>Saved templates for custom messages</h3>
+<p>These are ready wording for <span class="ui">Send Message</span>, such as a closing-day notice or a meeting reminder.</p>
+<ol class="steps">
+  <li>Click <span class="ui">New template</span>.</li>
+  <li>Give it a <span class="ui">Name</span> (required) and, if you like, a <span class="ui">Description</span>, choose <span class="ui">Send by</span>, and leave <span class="ui">Active</span> ticked.</li>
+  <li>Type the text, using the placeholders on the right, and click <span class="ui">Save</span>.</li>
+</ol>
+<p>Only active templates are offered on Send Message. The red bin deletes a template; messages already sent with it are kept.</p>
+
+<h2 class="sub" id="acom-contacts">Where Parents' Contacts Come From</h2>
+<p><span class="path">Settings &gt; Global Settings</span>, <span class="ui">Communications Settings</span> section, has one setting, <span class="ui">Parent Contact Source</span>: where the phone number and email for messages to parents are taken from.</p>
+<figure class="shot"><img src="assets/guide/acom-global-comms.png" alt="The Communications Settings section of Global Settings"><figcaption>Settings &gt; Global Settings &gt; Communications Settings</figcaption></figure>
+<table>
+  <tr><th style="width:34%">Choice</th><th>Contacts used</th></tr>
+  <tr><td>Parent record, else student record</td><td>The linked parents' phone and email; for a learner whose linked parents have none, the contact on the learner's own record. This is the default.</td></tr>
+  <tr><td>Parent record only</td><td>Only the linked parents. Learners with no reachable parent are skipped.</td></tr>
+  <tr><td>Student record only</td><td>Only the contact on the learner's record. Suits a school whose records came from an older system, with the guardian's phone kept on the learner.</td></tr>
+</table>
+<p>When a learner has several linked parents and some are marked <span class="ui">Notifiable?</span> on their parent record, only those get messages; otherwise all the learner's active parents do. Phone numbers must be Kenyan mobile numbers (07..., 01... or 254...); a learner or parent with none is listed as skipped in the preview. Keep parents' numbers up to date under <span class="path">Students &gt; Parents</span>: that is the surest way to cut failed messages.</p>
+<p>Change the setting, then click <span class="ui">Save changes</span> at the top of the page.</p>
+
+<h2 class="sub" id="acom-permissions">Who Can Send</h2>
+<p>Three checks decide what a user can do:</p>
+<ol>
+  <li><strong>The module.</strong> Without Communications in the school's licence, the menu and every send button are hidden.</li>
+  <li><strong>Page access</strong>, from the role's menu permissions (<span class="path">Security &gt; Menu Permissions</span>). Each Communications page shows in the menu of a role given that page. The "send to parents" buttons work for a role with access to Communications <em>or</em> to the page the button is on: School Exams, Exam Results, Student Invoices, Fee Payments, Fee Reports or Statements.</li>
+  <li><strong>The role.</strong> Some actions need a particular role on top of page access.</li>
+</ol>
+<table>
+  <tr><th style="width:42%">Action</th><th>Roles</th></tr>
+  <tr><td>Open the queue, the templates and the SMS report; preview a message</td><td>Anyone with page access</td></tr>
+  <tr><td>Send a message, or send to parents from another page; retry or cancel messages</td><td>Administrator, SuperAdministrator, HeadTeacher, Accounts</td></tr>
+  <tr><td>Change message types and templates</td><td>Administrator, SuperAdministrator</td></tr>
+  <tr><td>Gateway Settings: view, change, test, check the balance</td><td>SuperAdministrator</td></tr>
+</table>
+<p>A user who lacks the role gets "You are not allowed to send messages." A View-only account can preview but nothing it sends is queued.</p>
+<div class="callout tip"><span class="lbl">Example.</span> To let the bursar send invoices and reminders but not class notices, give their role access to the fee pages and not to <span class="path">Communications &gt; Send Message</span>. With the Accounts role, the send buttons on those pages work for them.</div>
+</section>

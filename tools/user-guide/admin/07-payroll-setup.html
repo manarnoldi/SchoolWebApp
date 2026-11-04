@@ -1,0 +1,123 @@
+<section class="chapter" id="payroll-setup" data-module="Payroll">
+<h1 class="ch">Payroll Set-up</h1>
+<p>Before the first payroll is run, ShuleNova needs the school's pay items and the statutory rules: what staff can earn, what can be deducted, the PAYE tax bands, the NSSF tiers, the tax reliefs, and the rates for SHIF and the Housing Levy. This is done once, and then changed only when the law or the school's policy changes. The monthly payroll itself is described in the user guide.</p>
+<div class="callout"><span class="lbl">Where it lives.</span> The statutory set-up is under <span class="path">Settings &gt; Dropdowns &gt; Payroll Settings</span>, because it changes by law. The school's own choices (the employer KRA PIN, net pay rounding, the payroll accounts) are under <span class="path">Settings &gt; Global Settings</span>.</div>
+
+<h2 class="sub" id="apay-order">Recommended Set-up Order</h2>
+<ol class="steps">
+  <li><strong>Global Settings &gt; Payroll Settings</strong>: the school's KRA PIN and how net pay is rounded.</li>
+  <li><strong>Global Settings &gt; Finance Settings</strong> and <strong>Staff Categories</strong>: the accounts the payroll journal uses (only if the school keeps its accounts in ShuleNova).</li>
+  <li><strong>Earning Types</strong> and <strong>Deduction Types</strong>: the pay items.</li>
+  <li><strong>Tax Bands</strong>, <strong>NSSF Bands</strong> and <strong>Reliefs</strong>: the PAYE and NSSF rules.</li>
+  <li><strong>Rates &amp; Limits</strong>: SHIF, the Housing Levy and the retirement relief limits.</li>
+  <li><strong>Settings &gt; Approval Workflows</strong>: who reviews and approves the payroll.</li>
+  <li><strong>Security &gt; Menu Permissions</strong>: give the payroll officers' role the Payroll pages.</li>
+  <li><strong>Staff records</strong>: each employee's KRA PIN, ID, NSSF and SHA numbers and bank details; then their salaries under <span class="path">Payroll &gt; Employee Salaries</span>.</li>
+</ol>
+<p>Open <span class="path">Settings &gt; Dropdowns</span> and click <span class="ui">Payroll Settings</span> on the left. Its six links, in this order, open the set-up pages. Each page has a <span class="ui">Back to Dropdowns</span> button.</p>
+<figure class="shot"><img src="assets/guide/apay-dropdowns.png" alt="The Payroll Settings section of Dropdowns"><figcaption>Payroll Settings under Settings &gt; Dropdowns</figcaption></figure>
+
+<h2 class="sub" id="apay-global">Payroll in Global Settings</h2>
+<p>Open <span class="path">Settings &gt; Global Settings</span> and click <span class="ui">Payroll Settings</span> to open the section. Change a value, then click <span class="ui">Save changes</span> at the top.</p>
+<figure class="shot"><img src="assets/guide/apay-global-payroll.png" alt="Payroll Settings in Global Settings"><figcaption>The school's payroll policy</figcaption></figure>
+<table>
+  <tr><th style="width:26%">Setting</th><th>What it does</th></tr>
+  <tr><td>School KRA PIN</td><td>The school's KRA PIN as employer, printed in the payslip header and on the P9 cards. Leave blank to leave it off.</td></tr>
+  <tr><td>Round Net Pay To</td><td>Whole shillings (the default), no rounding, or the nearest 5, 10, 50 or 100 shillings. The difference prints on the payslip as Rounding, so every slip still adds up.</td></tr>
+  <tr><td>Net Pay Rounding Method</td><td>To the nearest unit, always down (never pays more than earned) or always up (never pays less).</td></tr>
+</table>
+<p>Rounding changes take effect the next time a period is processed.</p>
+<h3>The payroll accounts</h3>
+<p>When a payroll is approved, ShuleNova builds its salary journal. The <span class="ui">Finance Settings</span> section of Global Settings says what happens and which accounts it uses:</p>
+<ul>
+  <li><span class="ui">Payroll Journal</span>: <span class="ui">Draft for review</span> (recommended) leaves a filled-in journal under Journal Entries for finance to check and approve; <span class="ui">Post automatically on approval</span> puts it straight into the ledger; <span class="ui">Off</span> creates nothing.</li>
+  <li><span class="ui">PAYE Payable</span>, <span class="ui">NSSF Payable</span>, <span class="ui">SHIF Payable</span> and <span class="ui">Housing Levy</span> accounts; <span class="ui">Payroll Deductions Payable</span> for other deductions without an account of their own; <span class="ui">Staff Loans &amp; Advances</span> for loan recoveries.</li>
+  <li>Salaries are charged to the expense account on each staff category (<span class="path">Settings &gt; Dropdowns &gt; Staff Categories</span>), so teaching and non-teaching pay stay apart. <span class="ui">Default Salary Expense Account</span> is used only for a category with no account; leave it blank to have approval stop and say so instead.</li>
+</ul>
+<p>If the accounts are not set up at all, payroll can still be approved; no journal is made.</p>
+
+<h2 class="sub" id="apay-earnings">Earning Types</h2>
+<p>Earning types are the things staff can be paid. <span class="ui">Basic Salary</span>, <span class="ui">House Allowance</span> and <span class="ui">Transport Allowance</span> are marked <span class="ui">System</span>: they come from the columns of the salary grid and cannot be applied from here. Add the others your school pays, such as overtime, leave, hardship, acting or responsibility allowances.</p>
+<figure class="shot"><img src="assets/guide/apay-earning-types.png" alt="The Earning Types list"><figcaption>Earning types</figcaption></figure>
+<ol class="steps">
+  <li>Click <span class="ui">Add earning type</span>.</li>
+  <li>Type the <span class="ui">Name</span> and a short <span class="ui">Code</span>. Tick <span class="ui">Taxable</span> unless the law exempts it: a non-taxable earning is still paid but left out of taxable pay.</li>
+  <li>Under <span class="ui">Calculation</span>, choose the <span class="ui">Method</span>: <span class="ui">Fixed amount</span> or <span class="ui">Percentage of basic salary</span>, and the amount or percentage.</li>
+  <li>Switch on <span class="ui">Applies to all staff</span> only for an earning everyone gets. It is then paid to everyone on the payroll without adding it to each employee; someone with their own line for it keeps their own amount. Otherwise it is added per employee on the salary.</li>
+  <li>Click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/apay-earning-form.png" alt="The Edit Earning Type window"><figcaption>An earning type</figcaption></figure>
+<p>Untick <span class="ui">Active</span> to retire an earning type rather than deleting one that has been used.</p>
+
+<h2 class="sub" id="apay-deductions">Deduction Types</h2>
+<p>Deduction types are what can be taken off pay. <span class="ui">PAYE</span>, <span class="ui">NSSF Employee</span>, <span class="ui">SHIF</span> and <span class="ui">Affordable Housing Levy</span> are <span class="ui">System</span>: payroll works them out from the statutory rules. Add the school's others: SACCO, union dues, welfare, HELB, a pension scheme, insurance premiums.</p>
+<figure class="shot"><img src="assets/guide/apay-deduction-types.png" alt="The Deduction Types list"><figcaption>Deduction types, with how each is applied and treated for tax</figcaption></figure>
+<p>Click <span class="ui">Add deduction type</span> (or the edit button) and fill in:</p>
+<figure class="shot"><img src="assets/guide/apay-deduction-form.png" alt="The Edit Deduction Type window"><figcaption>A voluntary pension, pooled with NSSF for tax relief</figcaption></figure>
+<table>
+  <tr><th style="width:28%">Field</th><th>What it does</th></tr>
+  <tr><td>Name, Code, Statutory, Active</td><td>What the deduction is called and whether it is a statutory one.</td></tr>
+  <tr><td>Method and Amount</td><td><span class="ui">Fixed amount</span>, or <span class="ui">Percentage of gross pay</span>.</td></tr>
+  <tr><td>Applies to all staff</td><td>Deducted from everyone on the payroll without adding it to each employee. An employee with their own line keeps their own amount.</td></tr>
+  <tr><td>Paid by the employer</td><td>Worked out the same way but never taken from pay: the school bears it (NITA, as the law intends). It is charged to salary expense and shows on the statutory returns. Leave off to deduct it from staff.</td></tr>
+  <tr><td>Retirement contribution</td><td>For a pension or provident fund. It is pooled with the employee's NSSF, and the pool comes off taxable income up to the limits under Rates &amp; Limits.</td></tr>
+  <tr><td>Tax deductible and Monthly cap</td><td>For another deduction the law lets come off income before PAYE (a post-retirement medical fund, for instance), up to the cap. Leave the cap blank for none.</td></tr>
+  <tr><td>Liability account</td><td>Where the money deducted is owed to (the pension scheme, the SACCO, the union). Leave on the general Payroll Deductions Payable account if you do not need to see each separately.</td></tr>
+</table>
+<div class="callout tip"><span class="lbl">Insurance relief.</span> A deduction that earns a tax relief, such as an insurance premium, is linked from the relief itself (see Reliefs), not here.</div>
+
+<h2 class="sub" id="apay-tax">Tax Bands</h2>
+<p>The PAYE bands, applied in turn from the lowest: tax on the pay between each band's <span class="ui">Lower Limit</span> and <span class="ui">Upper Limit</span> at its <span class="ui">Rate (%)</span>.</p>
+<figure class="shot"><img src="assets/guide/apay-tax-bands.png" alt="The Tax Bands list"><figcaption>The PAYE bands</figcaption></figure>
+<ol class="steps">
+  <li>Click <span class="ui">Add tax band</span>, type a <span class="ui">Description</span> (for example "Up to KES 24,000"), the <span class="ui">Lower Limit</span>, <span class="ui">Upper Limit</span> and <span class="ui">Rate (%)</span>, and an <span class="ui">Effective Date</span>.</li>
+  <li>Make each band's lower limit the previous band's upper limit, starting from 0. Give the top band a very large upper limit (for example 99,999,999).</li>
+</ol>
+<div class="callout important"><span class="lbl">Only active bands count.</span> Every active band is used, whatever its effective date. When the law changes the bands, change the figures, or add the new bands and untick <span class="ui">Active</span> on the old ones, so that only one set is active.</div>
+
+<h2 class="sub" id="apay-nssf">NSSF Bands</h2>
+<p>NSSF is charged in tiers: each tier charges its rate on the pay between its two limits. The tiers sharing an effective date form one set, and each payroll month uses the most recent set in force for that month. The page shows each set with its dates, its maximum contribution a month and whether it is <span class="ui">In use now</span>, <span class="ui">Not yet in force</span> or <span class="ui">Superseded</span>.</p>
+<figure class="shot"><img src="assets/guide/apay-nssf-bands.png" alt="The NSSF Bands page"><figcaption>NSSF tiers, one set for each year's limits</figcaption></figure>
+<ol class="steps">
+  <li>Click <span class="ui">Add band</span>. Type the <span class="ui">Name</span> (for example "NSSF Tier I"), the <span class="ui">Tier</span> number, the date it is <span class="ui">Effective from</span>, the <span class="ui">Lower limit</span>, <span class="ui">Upper limit</span> and <span class="ui">Rate (%)</span>, and save.</li>
+  <li>Add the next tier to the same set with the <span class="ui">+ Tier</span> button on the set's header. Tier II's lower limit is normally Tier I's upper limit.</li>
+</ol>
+<div class="callout tip"><span class="lbl">When the limits change.</span> NSSF limits change most Februaries. Do not edit the old figures: add a new set dated from the day the new limits take effect. Re-processing an older month then still uses that month's limits. Payroll cannot be processed for a month with no NSSF set in force.</div>
+
+<h2 class="sub" id="apay-reliefs">Reliefs</h2>
+<p>A relief comes off the tax itself, after the bands have been applied, such as personal relief and insurance relief. (A <em>tax deductible</em> deduction is different: it comes off income before the bands, and is set on the deduction type.)</p>
+<figure class="shot"><img src="assets/guide/apay-reliefs.png" alt="The Reliefs list"><figcaption>Personal and insurance relief</figcaption></figure>
+<ol class="steps">
+  <li>Click <span class="ui">Add relief</span> and type the <span class="ui">Name</span> and <span class="ui">Code</span>.</li>
+  <li>Choose the <span class="ui">Basis</span>:
+    <ul>
+      <li><span class="ui">Fixed amount</span>: a flat sum each month, such as personal relief. Switch on <span class="ui">Applies to all staff</span> to give it to everyone, or link it to a deduction under <span class="ui">Worked out from</span> to give it only to staff who pay that deduction.</li>
+      <li><span class="ui">Percentage of a deduction</span>: a percentage of what the employee paid towards the deduction chosen under <span class="ui">Worked out from</span>, such as insurance relief on insurance premiums.</li>
+    </ul></li>
+  <li>Set a <span class="ui">Monthly cap</span> if the law limits it (leave blank for none) and save.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/apay-relief-form.png" alt="The Edit Relief window"><figcaption>Insurance relief: 15% of the premiums, capped at 5,000 a month</figcaption></figure>
+<div class="callout important"><span class="lbl">Personal relief.</span> Without at least a personal relief, PAYE is charged on the full tax.</div>
+
+<h2 class="sub" id="apay-rates">Rates &amp; Limits</h2>
+<p>The remaining statutory figures are kept as settings, each with a <span class="ui">Key</span> payroll looks for, a <span class="ui">Name</span> and a <span class="ui">Value</span>. Filter by <span class="ui">Category</span>, and use the edit button to change a value.</p>
+<figure class="shot"><img src="assets/guide/apay-rates.png" alt="The Rates and Limits list"><figcaption>SHIF, Housing Levy and retirement relief figures</figcaption></figure>
+<table>
+  <tr><th style="width:30%">Key</th><th>What it is</th></tr>
+  <tr><td><code>ShifRate</code></td><td>SHIF, as a percentage of gross pay (2.75).</td></tr>
+  <tr><td><code>ShifMinimum</code></td><td>The smallest SHIF deduction a month.</td></tr>
+  <tr><td><code>ShifRoundingUnit</code></td><td>1 rounds SHIF to the nearest shilling; 0 keeps the cents.</td></tr>
+  <tr><td><code>AhlRate</code></td><td>The Housing Levy taken from the employee, as a percentage of gross pay (1.5).</td></tr>
+  <tr><td><code>AhlEmployerRate</code></td><td>The school's matching Housing Levy, as a percentage of gross pay. It is a cost to the school, never deducted from pay.</td></tr>
+  <tr><td><code>RetirementReliefPercent</code></td><td>NSSF and pension contributions come off taxable income up to this percentage of basic pay...</td></tr>
+  <tr><td><code>RetirementReliefCap</code></td><td>...and up to this amount a month, whichever is lower. A limit of 0 is not applied.</td></tr>
+</table>
+<div class="callout important"><span class="lbl">Keep the keys exactly.</span> Payroll reads these by their key, and only while they are active. Change the value, never the key; a setting with a mistyped key, or an inactive one, counts as 0.</div>
+
+<h2 class="sub" id="apay-access">Approval and Access</h2>
+<ul>
+  <li><strong>Approval.</strong> Under <span class="path">Settings &gt; Approval Workflows</span>, the <span class="ui">Payroll</span> workflow sets who reviews and who approves a processed payroll. While it is active with at least one step, payroll officers submit each month for approval and only the final approver's approval locks it. If it is switched off, a payroll officer approves with a single click on the Processing page.</li>
+  <li><strong>Payroll officers.</strong> Give the payroll officers' role the Payroll pages under <span class="path">Security &gt; Menu Permissions</span>. Anyone holding <span class="ui">Processing</span> can open every employee's payslips, including ones not yet approved; everyone else sees only their own, once approved.</li>
+  <li><strong>My Payslips.</strong> A member of staff sees their own payslips only when their user account is linked to their staff record.</li>
+</ul>
+</section>

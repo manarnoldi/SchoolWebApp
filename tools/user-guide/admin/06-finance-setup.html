@@ -1,0 +1,79 @@
+<section class="chapter" id="finance-setup" data-module="Finance">
+<h1 class="ch">Finance Set-up</h1>
+<p>Before the bursar can raise an invoice or record an expense, ShuleNova needs the school's books set up: the chart of accounts, the fee and expense categories that point into it, the finance settings that say which accounts the automatic entries use, and the approval workflows. This chapter is for the administrator who does that, usually with the bursar beside them. Most of it is done once, when the school starts on ShuleNova; after that, the main yearly job is closing the accounting periods.</p>
+<div class="callout"><span class="lbl">Ask the accountant.</span> The chart of accounts is the school's accounting structure. Agree the account codes and names with the school's accountant or auditor before you enter them; changing them after a term's transactions have been posted is much harder.</div>
+
+<h2 class="sub" id="afin-order">Set-up Order for a New School</h2>
+<p>Each step relies on the one before it, so work down this list.</p>
+<table>
+  <tr><th style="width:5%">#</th><th style="width:35%">Step</th><th>Where</th></tr>
+  <tr><td>1</td><td>Chart of accounts: bank and cash, debtors, income, expense, liability and equity accounts</td><td><span class="path">Settings &gt; Dropdowns &gt; Finance &gt; Chart of Accounts</span></td></tr>
+  <tr><td>2</td><td>Fee categories, each pointing to an income account, ranked by priority</td><td><span class="path">Settings &gt; Dropdowns &gt; Finance &gt; Fee Categories</span></td></tr>
+  <tr><td>3</td><td>Expense categories, each pointing to an expense account</td><td><span class="path">Settings &gt; Dropdowns &gt; Finance &gt; Expense Categories</span></td></tr>
+  <tr><td>4</td><td>Finance settings: accounting period, apportioning, automatic journals and the default accounts</td><td><span class="path">Settings &gt; Global Settings &gt; Finance Settings</span></td></tr>
+  <tr><td>5</td><td>Approval workflows for Expense Request, Journal Entry, Credit / Debit Note and Budget Amendment, and the roles they use given to the right people</td><td><span class="path">Settings &gt; Approval Workflows</span> (see <a href="#aset-workflows">Approval Workflows</a>)</td></tr>
+  <tr><td>6</td><td>Departments, for budgets</td><td><span class="path">Settings &gt; Dropdowns &gt; System Settings</span></td></tr>
+  <tr><td>7</td><td>Opening balances: what is in the bank and cash, and what each learner owed when the school started on ShuleNova</td><td>The bursar: <span class="path">Finance &gt; Expenses &amp; Accounts &gt; Journal Entries</span></td></tr>
+  <tr><td>8</td><td>Fee structures, then the term's invoices</td><td>The bursar: <span class="path">Finance &gt; Fees</span> (see the User Guide, <em>Finance</em>)</td></tr>
+</table>
+<p>Give the bursar and accounts clerks a role that opens the Finance menu, and the approvers the roles named in the workflows (see <a href="#asec-users">Users</a>).</p>
+
+<h2 class="sub" id="afin-accounts">Chart of Accounts</h2>
+<p>Every amount ShuleNova posts lands in an account. Open <span class="path">Settings &gt; Dropdowns</span>, choose the <strong>Finance</strong> section on the left and click <span class="ui">Chart of Accounts</span>; the same list is also at <span class="path">/finance/accounts</span>, with filters for account type and status.</p>
+<figure class="shot"><img src="assets/guide/afin-accounts.png" alt="The chart of accounts"><figcaption>The chart of accounts</figcaption></figure>
+<p>Each account has a <span class="ui">Code</span>, a <span class="ui">Name</span>, a <span class="ui">Type</span>, an optional <span class="ui">Parent Account</span> (to group, for example, several bank accounts under one heading) and a <span class="ui">Description</span>. Untick <span class="ui">Active</span> to stop an account being offered on forms without losing its history.</p>
+<figure class="shot"><img src="assets/guide/afin-account-form.png" alt="New account form"><figcaption>Adding an account</figcaption></figure>
+<table>
+  <tr><th style="width:15%">Type</th><th style="width:15%">Usual codes</th><th>Examples a school needs</th></tr>
+  <tr><td>Asset</td><td>1000s</td><td>Cash on Hand, Bank - Main Account, Bank - M-Pesa, Accounts Receivable (Fees), Staff Loans &amp; Advances, furniture, buildings</td></tr>
+  <tr><td>Liability</td><td>2000s</td><td>Accounts Payable, Sponsor Advances<!--module:Payroll-->, PAYE, NSSF, SHIF, Housing Levy and other payroll deductions payable<!--/module:Payroll--></td></tr>
+  <tr><td>Equity</td><td>3000s</td><td>Retained Earnings</td></tr>
+  <tr><td>Income</td><td>4000s</td><td>Tuition, transport, meals, boarding and activity fee income, uniform sales</td></tr>
+  <tr><td>Expense</td><td>5000s</td><td>Teaching and non-teaching salaries, electricity, water, internet, stationery, cleaning, repairs, fuel, food</td></tr>
+</table>
+<div class="callout tip"><span class="lbl">One bank account per real account.</span> Make an asset account for every bank account, M-Pesa till or paybill and cash box the school takes money into. The bursar chooses one as the <em>Receiving Account</em> on each payment, so the trial balance shows each one's balance, ready to compare with the bank statement.</div>
+
+<h2 class="sub" id="afin-fee-categories">Fee Categories</h2>
+<p>A fee category is a kind of fee: Tuition, Transport, Meals, Boarding, Activity, Uniform, Exam. Fee structures and invoices are made of them. Open <span class="path">Settings &gt; Dropdowns &gt; Finance &gt; Fee Categories</span> (also at <span class="path">/finance/fee-categories</span>).</p>
+<figure class="shot"><img src="assets/guide/afin-dropdowns.png" alt="Fee categories under Dropdowns"><figcaption>Settings &gt; Dropdowns, Finance section: the fee categories</figcaption></figure>
+<ul>
+  <li><span class="ui">Name</span>: as parents will see it on invoices.</li>
+  <li><span class="ui">Income Account</span>: the income account its fees are posted to. Several categories may share one (an exam fee posted to tuition income, for example).</li>
+  <li><span class="ui">Rank</span>: the order in which a payment pays the fees off when the school uses automatic apportioning. Rank 1 is paid first. Put the fees the school most needs collected first at the top.</li>
+  <li><span class="ui">Active</span>: untick a category no longer charged.</li>
+</ul>
+<figure class="shot"><img src="assets/guide/afin-fee-categories.png" alt="Fee categories"><figcaption>Fee categories, their income accounts and ranks</figcaption></figure>
+<div class="callout important"><span class="lbl">Set the income account.</span> The income journal of an invoice leaves out any fee whose category has no income account, so that income never reaches the books. Check every category has one before the first invoices are raised.</div>
+
+<h2 class="sub" id="afin-expense-categories">Expense Categories</h2>
+<p>An expense category is what the bursar chooses on each line of an expense: Electricity, Stationery, Repairs, Food Supplies and so on. Each points to the expense account it is posted to. Open <span class="path">Settings &gt; Dropdowns &gt; Finance &gt; Expense Categories</span> (also at <span class="path">/finance/expense-categories</span>) and give each a <span class="ui">Name</span>, an <span class="ui">Expense Account</span>, a <span class="ui">Rank</span> (the order they are listed in) and a description.</p>
+<figure class="shot"><img src="assets/guide/afin-expense-categories.png" alt="Expense categories"><figcaption>Expense categories and their expense accounts</figcaption></figure>
+<p>Keep the list short and clear: an expense category that matches an account one to one makes the Expenses Report and the Profit &amp; Loss agree line for line.</p>
+
+<h2 class="sub" id="afin-settings">Finance Settings</h2>
+<p>Open <span class="path">Settings &gt; Global Settings</span> and click <span class="ui">Finance Settings</span>. Change what you need, then click <span class="ui">Save changes</span> at the top; the page counts the unsaved changes until you do.</p>
+<figure class="shot"><img src="assets/guide/afin-global-finance.png" alt="Finance settings"><figcaption>Settings &gt; Global Settings &gt; Finance Settings</figcaption></figure>
+<table>
+  <tr><th style="width:30%">Setting</th><th>What to choose</th></tr>
+  <tr><td>Accounting Period</td><td><strong>Termly</strong> closes the books at the end of each term, <strong>Yearly</strong> at the end of each academic year. A term runs from its first day to the day before the next term starts, so the holiday after it belongs to it.</td></tr>
+  <tr><td>Retained Earnings Account</td><td>The equity account each closed period's surplus is moved to. A period cannot be closed until this is set.</td></tr>
+  <tr><td>Payment Apportioning Mode</td><td><strong>Auto</strong> shares each payment across the invoice's fees by fee category rank. <strong>Manual</strong> makes the clerk type the amount for each fee.</td></tr>
+  <tr><td>Auto-Post Invoice Journal</td><td>On: each invoice posts Debit Debtors, Credit the fee's income account. Leave it on.</td></tr>
+  <tr><td>Auto-Post Payment Journal</td><td>On: each payment posts Debit the receiving bank or cash account, Credit Debtors. Leave it on.</td></tr>
+  <tr><td>Student Debtors Account</td><td>The asset account for what learners owe (for example 1200 Accounts Receivable (Fees)).</td></tr>
+  <tr><td>Default Cash/Bank Account</td><td>The asset account used when a payment's Receiving Account, or an expense's Paid From account, is left blank.</td></tr>
+  <tr><td>Sponsor Advances Account</td><td>The liability account that holds sponsor money not yet put onto learners' invoices.</td></tr>
+</table>
+<!--module:Payroll--><p>The same section holds the payroll accounts: the <span class="ui">Payroll Journal</span> mode (a draft journal for the bursar to check, posting automatically on approval, or off), the fallback salary expense account, the PAYE, NSSF, SHIF, Housing Levy and other deductions payable accounts, and the staff loans account. They are covered in the Payroll Set-up chapter.</p><!--/module:Payroll-->
+<div class="callout tip"><span class="lbl">Leave auto-posting on.</span> With both auto-post settings on, the trial balance, profit &amp; loss and balance sheet always match the fee records. Switch them off only if the accountant keeps the books elsewhere and posts journals by hand.</div>
+
+<h2 class="sub" id="afin-approvals">Approval Workflows for Finance</h2>
+<p>Expenses, journal entries, credit and debit notes and budget amendments are posted only when the last approver approves them. Each of these forms needs an active workflow under <span class="path">Settings &gt; Approval Workflows</span> (see <a href="#aset-workflows">Approval Workflows</a>): without one, the form shows "No active workflow configured" and nothing can be approved. A common choice is two steps, the bursar or accountant as Reviewer and the head teacher as Approver, with maker-checker on so that nobody approves their own expense.</p>
+<p>Approved records are locked. Only a SuperAdministrator can reverse an approval, which puts the record back to draft.</p>
+
+<h2 class="sub" id="afin-periods">Closing and Reopening Periods</h2>
+<p>The bursar closes each period under <span class="path">Finance &gt; Expenses &amp; Accounts &gt; Accounting Periods</span> once it has ended and everything in it is approved (see the User Guide). Closing moves the surplus to Retained Earnings and locks every date in the period: no payment, invoice, expense or journal dated in it can be added, changed or deleted.</p>
+<figure class="shot"><img src="assets/guide/afin-periods.png" alt="Accounting periods"><figcaption>Two closed terms and the current one</figcaption></figure>
+<p>When a mistake in a closed period must be corrected, an Administrator or SuperAdministrator can click <span class="ui">Reopen</span>. Only the latest closed period can be reopened; its closing entry is taken out, the correction can be made, and the period is then closed again. Reopen only with the accountant's agreement: reports already given to the board for that period will change.</p>
+<div class="callout important"><span class="lbl">Close in order.</span> A period cannot close while the one before it is still open, and a closed period can only be reopened after every later one has been reopened.</div>
+</section>

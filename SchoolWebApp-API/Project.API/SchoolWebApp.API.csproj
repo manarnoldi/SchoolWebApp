@@ -63,4 +63,11 @@
     <None Include="SeedData\**\*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <!-- The user guides (built by tools/user-guide), served by UserGuideController. -->
+  <ItemGroup>
+    <Content Remove="Guides\**" />
+    <None Remove="Guides\**" />
+    <None Include="Guides\**\*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

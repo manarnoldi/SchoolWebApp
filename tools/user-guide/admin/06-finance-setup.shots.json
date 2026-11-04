@@ -1,0 +1,71 @@
+[
+ {
+  "name": "afin-accounts",
+  "path": "/finance/accounts",
+  "waitFor": "table tbody tr",
+  "settle": 1200,
+  "height": 1000
+ },
+ {
+  "name": "afin-account-form",
+  "path": "/finance/accounts",
+  "waitFor": "table tbody tr",
+  "steps": [
+   {
+    "click": "button:has-text('Add Account')"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 800
+   }
+  ],
+  "element": ".modal-content"
+ },
+ {
+  "name": "afin-dropdowns",
+  "path": "/settings/dropdowns?category=Finance",
+  "settle": 1200,
+  "steps": [
+   {
+    "click": "a.list-group-item:has-text('Fee Categories')",
+    "wait": 1500
+   }
+  ]
+ },
+ {
+  "name": "afin-fee-categories",
+  "path": "/finance/fee-categories",
+  "waitFor": "table tbody tr",
+  "settle": 1200
+ },
+ {
+  "name": "afin-expense-categories",
+  "path": "/finance/expense-categories",
+  "waitFor": "table tbody tr",
+  "settle": 1200
+ },
+ {
+  "name": "afin-global-finance",
+  "path": "/settings/global-settings",
+  "settle": 1500,
+  "steps": [
+   {
+    "click": ".section-head:has-text('Finance Settings')",
+    "wait": 1500
+   },
+   {
+    "eval": "document.querySelectorAll('.settings-section.open, .settings-section.open *').forEach(e=>{const c=getComputedStyle(e); if(c.maxHeight!=='none'){e.style.maxHeight='none';} if(c.overflowY!=='visible'){e.style.overflowY='visible';}})",
+    "wait": 500
+   }
+  ],
+  "height": 2000,
+  "element": ".settings-section.open"
+ },
+ {
+  "name": "afin-periods",
+  "path": "/finance/accounting-periods",
+  "waitFor": "table tbody tr",
+  "settle": 2000,
+  "height": 500
+ }
+]

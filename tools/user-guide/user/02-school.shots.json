@@ -1,0 +1,104 @@
+[
+ {
+  "name": "sch-details",
+  "path": "/school/details",
+  "waitFor": "#name",
+  "settle": 1500
+ },
+ {
+  "name": "sch-events",
+  "path": "/school/events",
+  "waitFor": "table tbody tr",
+  "settle": 1500
+ },
+ {
+  "name": "sch-event-form",
+  "path": "/school/events",
+  "waitFor": "table tbody tr",
+  "steps": [
+   {
+    "click": "button:has-text('Add event')",
+    "wait": 800
+   },
+   {
+    "waitFor": "#eventFormModal .modal-content"
+   }
+  ],
+  "element": "#eventFormModal .modal-content"
+ },
+ {
+  "name": "sch-classes",
+  "path": "/class/classes",
+  "waitFor": "table tbody tr",
+  "settle": 2000,
+  "steps": [
+   {
+    "select": [
+     "app-school-soft-filter-form #academicYearId",
+     "2026"
+    ],
+    "wait": 300
+   },
+   {
+    "click": "app-school-soft-filter-form button:has-text(\"Search\")",
+    "wait": 2500
+   },
+   {
+    "waitFor": "table tbody tr a.badge"
+   }
+  ]
+ },
+ {
+  "name": "sch-class-students",
+  "path": "/class/classes",
+  "waitFor": "table tbody tr",
+  "steps": [
+   {
+    "select": [
+     "app-school-soft-filter-form #academicYearId",
+     "2026"
+    ],
+    "wait": 300
+   },
+   {
+    "click": "app-school-soft-filter-form button:has-text(\"Search\")",
+    "wait": 2500
+   },
+   {
+    "waitFor": "table tbody tr a.badge"
+   },
+   {
+    "click": "table tbody tr a.badge",
+    "wait": 1500
+   },
+   {
+    "waitFor": ".modal.show .modal-content table tbody tr"
+   }
+  ],
+  "element": ".modal.show .modal-content"
+ },
+ {
+  "name": "sch-class-list",
+  "path": "/reports/class/class-list",
+  "waitFor": "app-student-class-min-table table tbody tr",
+  "settle": 1500,
+  "steps": [
+   {
+    "click": "app-school-class-minimum-table tbody tr:nth-child(4) label",
+    "wait": 500
+   }
+  ]
+ },
+ {
+  "name": "sch-attendance-report",
+  "path": "/reports/class/attendance",
+  "waitFor": "app-class-attendance-report-table table tbody tr",
+  "settle": 1500
+ },
+ {
+  "name": "sch-attendance-detailed",
+  "path": "/reports/class/attendance-details",
+  "waitFor": "app-student-class-min-table table tbody tr",
+  "settle": 2000
+ }
+]

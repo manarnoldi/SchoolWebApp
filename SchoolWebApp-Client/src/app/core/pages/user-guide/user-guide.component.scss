@@ -1,0 +1,11 @@
+.ug-wrap {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 115px);
+}
+
+.ug-frame {
+    flex: 1 1 auto;
+    width: 100%;
+    border: 0;
+}

@@ -1,0 +1,121 @@
+[
+ {
+  "name": "apay-dropdowns",
+  "path": "/settings/dropdowns?category=Payroll%20Settings",
+  "waitFor": "a.list-group-item:has-text('Earning Types')",
+  "settle": 800,
+  "height": 620,
+  "element": "section.content .col-md-3"
+ },
+ {
+  "name": "apay-earning-types",
+  "path": "/payroll/earning-types",
+  "waitFor": "table tbody tr td strong",
+  "settle": 1000,
+  "height": 620
+ },
+ {
+  "name": "apay-earning-form",
+  "path": "/payroll/earning-types",
+  "waitFor": "table tbody tr td strong",
+  "steps": [
+   {
+    "click": "tr:has-text('Leave Allowance') button.btn-outline-primary"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 600
+   },
+   {
+    "eval": "document.querySelectorAll('.modal-dialog-scrollable').forEach(e=>e.classList.remove('modal-dialog-scrollable'))",
+    "wait": 300
+   }
+  ],
+  "element": ".modal-content"
+ },
+ {
+  "name": "apay-deduction-types",
+  "path": "/payroll/deduction-types",
+  "waitFor": "table tbody tr td strong",
+  "settle": 1000
+ },
+ {
+  "name": "apay-deduction-form",
+  "path": "/payroll/deduction-types",
+  "waitFor": "table tbody tr td strong",
+  "steps": [
+   {
+    "click": "tr:has-text('Pension - Voluntary') button.btn-outline-primary"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 800
+   },
+   {
+    "eval": "document.querySelectorAll('.modal-dialog-scrollable').forEach(e=>e.classList.remove('modal-dialog-scrollable'))",
+    "wait": 300
+   }
+  ],
+  "height": 1100,
+  "element": ".modal-content"
+ },
+ {
+  "name": "apay-tax-bands",
+  "path": "/payroll/tax-bands",
+  "waitFor": "table tbody tr td strong",
+  "settle": 1000,
+  "height": 520
+ },
+ {
+  "name": "apay-nssf-bands",
+  "path": "/payroll/nssf-bands",
+  "waitFor": "table tbody tr td",
+  "settle": 1000,
+  "height": 620
+ },
+ {
+  "name": "apay-reliefs",
+  "path": "/payroll/reliefs",
+  "waitFor": "table tbody tr td strong",
+  "settle": 1000,
+  "height": 480
+ },
+ {
+  "name": "apay-relief-form",
+  "path": "/payroll/reliefs",
+  "waitFor": "table tbody tr td strong",
+  "steps": [
+   {
+    "click": "tr:has-text('Insurance Relief') button.btn-outline-primary"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 600
+   },
+   {
+    "eval": "document.querySelectorAll('.modal-dialog-scrollable').forEach(e=>e.classList.remove('modal-dialog-scrollable'))",
+    "wait": 300
+   }
+  ],
+  "element": ".modal-content"
+ },
+ {
+  "name": "apay-rates",
+  "path": "/payroll/settings",
+  "waitFor": "table tbody tr td strong",
+  "settle": 1000,
+  "height": 620
+ },
+ {
+  "name": "apay-global-payroll",
+  "path": "/settings/global-settings",
+  "waitFor": ".section-head",
+  "steps": [
+   {
+    "click": ".section-head:has-text('Payroll Settings')",
+    "wait": 800
+   }
+  ],
+  "element": ".settings-section.open"
+ }
+]

@@ -292,7 +292,8 @@ export class GlobalSettingsComponent implements OnInit {
             icon: 'fas fa-shield-alt',
             settings: [
                 {key: 'IdleTimeoutMinutes', label: 'Idle timeout (minutes)', type: 'text', description: 'Sign the user out after this many minutes of inactivity. Default: 30.'},
-                {key: 'LogoutWarningSeconds', label: 'Logout warning countdown (seconds)', type: 'text', description: "How long the 'still there?' warning counts down before signing out. Default: 60."}
+                {key: 'LogoutWarningSeconds', label: 'Logout warning countdown (seconds)', type: 'text', description: "How long the 'still there?' warning counts down before signing out. Default: 60."},
+                {key: 'ShowUserGuides', label: 'Show user guides', type: 'boolean', description: 'The book icons at the top of every page: the user guide for everyone, the administrator guide for administrators. Each shows only the modules the school has bought. Switch off on a demo site.'}
             ]
         }
     ];

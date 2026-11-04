@@ -1,0 +1,136 @@
+<section class="chapter" id="communications" data-module="Communications">
+<h1 class="ch">Communications</h1>
+<p>Communications sends SMS and email to parents and staff: notices you write yourself, and the school's standard messages (exam results, fee invoices, balance reminders and payment acknowledgements) sent from the pages where that information lives. Every message goes into a queue and is sent in the background, so you can carry on working while a large send goes out. The menu holds <span class="path">Communications &gt; Send Message</span>, <span class="ui">Message Queue</span>, <span class="ui">Templates</span> and <span class="ui">SMS Report</span>.</p>
+<div class="callout important"><span class="lbl">Messages cost money and cannot be called back.</span> Each SMS is paid for by the part (see <a href="#com-sms-length">SMS length and cost</a>). Always click <span class="ui">Preview</span> and read the message as the first recipient will get it before you click <span class="ui">Send</span>.</div>
+<p>Sending needs one of the roles Administrator, HeadTeacher or Accounts (or SuperAdministrator), and access to the page you send from. If <span class="ui">Send</span> answers "You are not allowed to send messages", ask your administrator.</p>
+
+<h2 class="sub" id="com-send">Send Message</h2>
+<p><span class="path">Communications &gt; Send Message</span> writes a message of your own, such as a closing-day notice or a meeting reminder, and sends it to a group of parents or staff. The left side holds <strong>1. Recipients</strong> and <strong>2. Message</strong>; the right side shows the <strong>Preview</strong>.</p>
+<figure class="shot"><img src="assets/guide/com-compose.png" alt="The Send Message page"><figcaption>Send Message: two classes chosen and the message written</figcaption></figure>
+<div class="callout"><span class="lbl">Banners at the top.</span> A yellow "Test mode is on" banner means messages are recorded but do not reach real recipients: your administrator is still setting things up. A red "SMS sending is switched off for this school" (or email) under the message means that channel cannot be used yet.</div>
+
+<h3>Choosing the recipients</h3>
+<p>Click one of the eight buttons under <span class="ui">1. Recipients</span>, then make the choice it asks for:</p>
+<table>
+  <tr><th style="width:30%">Button</th><th>Who gets the message</th></tr>
+  <tr><td>All parents</td><td>The parents of every active learner.</td></tr>
+  <tr><td>Parents of classes</td><td>The parents of the learners in the <span class="ui">Classes</span> you pick (each class shows its number of learners).</td></tr>
+  <tr><td>Parents of education levels</td><td>The parents of every learner in the <span class="ui">Education levels</span> you pick, for example Junior School.</td></tr>
+  <tr><td>Parents of selected learners</td><td>The parents of the <span class="ui">Learners</span> you pick. <span class="ui">Filter by class</span> narrows the list; type a name or admission number to search.</td></tr>
+  <tr><td>All staff</td><td>Every active, currently employed staff member.</td></tr>
+  <tr><td>Staff by category</td><td>The staff in the <span class="ui">Staff categories</span> you pick, for example Teaching.</td></tr>
+  <tr><td>Selected staff</td><td>The <span class="ui">Staff members</span> you pick. A name marked "(no phone or email)" cannot be reached.</td></tr>
+  <tr><td>Other numbers / emails</td><td>Phone numbers and email addresses you type, one per line or separated by commas.</td></tr>
+</table>
+<p>Classes and learners are those of the current academic year. A parent with several learners in the selection gets <em>one</em> message, listing the learners. Where a parent's phone number and email are taken from (the parent's record or the learner's) is a school setting your administrator chooses.</p>
+
+<h3>Writing the message</h3>
+<ol class="steps">
+  <li>In <span class="ui">Send by</span>, choose <span class="ui">SMS</span>, <span class="ui">Email</span> or <span class="ui">SMS &amp; Email</span>. The page shows the boxes that channel needs: <span class="ui">SMS text</span>, and <span class="ui">Email subject</span> and <span class="ui">Email body</span>.</li>
+  <li>To reuse saved wording, pick it in <span class="ui">Start from a saved template</span>. It fills in the channel and the text, which you can still change.</li>
+  <li>Type a <span class="ui">Title</span>, such as "Half-term break". It is not sent; it names the send in the Message Queue so you can find it later.</li>
+  <li>Type the message. To put each recipient's own details into it, click in the text where they should go and click a button beside <span class="ui">Insert:</span>, for example <span class="ui">{ParentName}</span> or <span class="ui">{StudentName}</span>. Hover over a button to see what it stands for.</li>
+</ol>
+<table>
+  <tr><th style="width:30%">Placeholder</th><th>Becomes</th></tr>
+  <tr><td>{RecipientName}</td><td>The recipient's name, parent or staff member.</td></tr>
+  <tr><td>{ParentName}</td><td>The parent's name (parent messages).</td></tr>
+  <tr><td>{StudentName}</td><td>The learner's name, or names for a parent with several (parent messages).</td></tr>
+  <tr><td>{ClassName}</td><td>The learner's class (parent messages).</td></tr>
+  <tr><td>{StaffName}</td><td>The staff member's name (staff messages).</td></tr>
+  <tr><td>{SchoolName}, {SchoolPhone}, {SchoolEmail}</td><td>The school's name, telephone and email.</td></tr>
+  <tr><td>{Date}</td><td>Today's date.</td></tr>
+</table>
+
+<h3 id="com-sms-length">SMS length and cost</h3>
+<p>Under the SMS text the page counts the characters and the SMS parts each recipient will cost. The gateway charges per part:</p>
+<ul>
+  <li>Up to <strong>160</strong> characters is one part. A longer message is split into parts of <strong>153</strong> characters.</li>
+  <li>An emoji or a letter outside the SMS alphabet (most accented letters, for example) changes the whole message to another encoding: <strong>70</strong> characters in one part, <strong>67</strong> per part beyond. The page warns in red that this "more than doubles the cost". Curly quotes and long dashes are fine; they are sent as plain ones.</li>
+  <li>A few signs, such as <span class="ui">[ ] { } ~ | €</span>, count as two characters.</li>
+  <li>Placeholders are counted after they are filled in: a long name can push a message into a second part. The preview shows the real total.</li>
+</ul>
+<div class="callout tip"><span class="lbl">Keep it to one part.</span> A notice to 400 parents that runs to 161 characters costs 800 parts instead of 400. Shorten it until the counter says 1 part.</div>
+
+<h3>Previewing and sending</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Preview</span>. The right side shows how many <span class="ui">Recipients</span>, <span class="ui">SMS</span>, <span class="ui">SMS parts</span> and <span class="ui">Emails</span> the send will make, the message as the first recipient gets it, and the list of everyone it goes to.</li>
+  <li>Check the yellow note: recipients with no phone number or email for the chosen channel are skipped. Their phone or email shows in red in the list.</li>
+  <li>Click <span class="ui">Send</span>. A box asks "Send message?" and states once more what will be queued. Click <span class="ui">Send</span> in it to confirm.</li>
+  <li>ShuleNova says how many messages were queued and opens the Message Queue on your send, where you can watch it go out.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/com-compose-preview.png" alt="A message to the parents of two classes, previewed"><figcaption>A notice to the parents of two classes, previewed: 38 SMS, 2 parents skipped</figcaption></figure>
+<p><span class="ui">Clear</span> empties the form and starts again. If something is missing, ShuleNova says what, for example "Choose at least one class." or "Type the SMS text."</p>
+
+<h2 class="sub" id="com-queue">Message Queue</h2>
+<p><span class="path">Communications &gt; Message Queue</span> shows every message sent, from this page and from the "send to parents" buttons elsewhere. The page refreshes itself every 15 seconds while messages are still waiting; <span class="ui">Refresh</span> checks at once.</p>
+
+<h3>The Sends tab</h3>
+<p>Each send (all the messages queued at once) is one row: when and by whom it was queued, its title and recipients, its type, the number of messages, a progress bar with how many are still waiting, how many were delivered or failed, and the SMS parts used.</p>
+<figure class="shot"><img src="assets/guide/com-queue-sends.png" alt="The Sends tab"><figcaption>Sends: one is still going out; two have failures to retry</figcaption></figure>
+<ul>
+  <li>Click a send's title to see its messages on the Messages tab.</li>
+  <li>The blue <span class="ui"><i>&#8635;</i></span> button (Retry failed) queues the send's failed messages again.</li>
+  <li>The red <span class="ui"><i>&#8856;</i></span> button (Cancel waiting messages) stops the messages not yet sent. ShuleNova asks first; messages already sent are not affected.</li>
+</ul>
+
+<h3>The Messages tab</h3>
+<p>Every single message, newest first. The buttons along the top filter by status and show how many messages have each one. Below them, filter by <span class="ui">Channel</span>, <span class="ui">Type</span> and dates <span class="ui">From</span> and <span class="ui">To</span>, or type a name or number in <span class="ui">Search</span> and press Enter. <span class="ui">Clear</span> removes the filters. When you came from one send, "Showing one send only" appears with a link to <span class="ui">Show all messages</span>.</p>
+<figure class="shot"><img src="assets/guide/com-queue-messages.png" alt="The Messages tab"><figcaption>Messages, with their status; an error shows in red under the message</figcaption></figure>
+<table>
+  <tr><th style="width:22%">Status</th><th>Meaning</th></tr>
+  <tr><td>Queued</td><td>Waiting to go. A message that could not be sent yet also waits here, with the reason in red and the time of its next attempt.</td></tr>
+  <tr><td>Sending</td><td>Being handed to the gateway now.</td></tr>
+  <tr><td>Sent</td><td>Accepted by the SMS gateway or the mail server. For SMS, the delivery report is still awaited.</td></tr>
+  <tr><td>Delivered</td><td>The phone network confirmed the SMS reached the phone.</td></tr>
+  <tr><td>Undelivered</td><td>The network reported it could not deliver the SMS (phone off for days, number not in use).</td></tr>
+  <tr><td>Failed</td><td>Could not be sent, for example an invalid number, after all attempts.</td></tr>
+  <tr><td>Cancelled</td><td>Stopped by someone before it was sent.</td></tr>
+</table>
+<h3>Retries</h3>
+<p>ShuleNova retries a message the gateway could not take by itself: up to 5 attempts, waiting 2, 4, 8 and then 16 minutes between them. If SMS (or email) is switched off or not set up, the messages simply wait and are checked again every 10 minutes; this does not use up attempts. Delivery reports are collected every few minutes.</p>
+<p>Click a message to see all its details: the recipient, the number it went to, its status, when it was queued, sent and delivered, the attempts, the gateway's reply and any error, and the full text. In this window, <span class="ui">Retry</span> queues a failed or cancelled message again and <span class="ui">Cancel</span> stops one still queued. The same buttons appear at the end of the message's row.</p>
+<figure class="shot"><img src="assets/guide/com-queue-detail.png" alt="A failed message's details"><figcaption>A failed message: the error says why</figcaption></figure>
+<div class="callout tip"><span class="lbl">Before you retry.</span> Retrying an "Invalid mobile number" fails again. Correct the number on the parent's or learner's record first, then send that parent a new message.</div>
+
+<h2 class="sub" id="com-templates">Templates</h2>
+<p><span class="path">Communications &gt; Templates</span> holds the wording ShuleNova uses:</p>
+<ul>
+  <li><strong>Standard message types</strong>: exam results, new fee invoice, fee balance reminder, fee payment received and fee payment by a sponsor. Each has its channel (SMS, email or both), an <span class="ui">Active</span> switch and its wording. These are what the "send to parents" buttons send.</li>
+  <li><strong>Saved templates for custom messages</strong>: wording you send often, offered in <span class="ui">Start from a saved template</span> on Send Message. Only active templates are offered.</li>
+</ul>
+<figure class="shot"><img src="assets/guide/com-templates.png" alt="The Templates page"><figcaption>Message types and saved templates</figcaption></figure>
+<p>Administrators set up and change the templates; see the administrator guide. The text in braces, such as {Balance}, is filled in for each learner when the message is sent.</p>
+
+<h2 class="sub" id="com-sms-report">SMS Report</h2>
+<p><span class="path">Communications &gt; SMS Report</span> totals the SMS the school sent in a month, to check against the SMS provider's bill. Pick the <span class="ui">Month</span> and <span class="ui">Year</span>; the report opens on the current month.</p>
+<figure class="shot"><img src="assets/guide/com-sms-report.png" alt="The monthly SMS report"><figcaption>The monthly SMS report</figcaption></figure>
+<ul>
+  <li><strong>SMS sent</strong> and <strong>SMS parts (billable)</strong>: the messages the gateway accepted, and the parts you pay for.</li>
+  <li><strong>Delivered</strong>, with how many were not delivered and how many still await a delivery report.</li>
+  <li><strong>Amount</strong>: the parts times the price per part. It shows "-" until an administrator enters the price in the gateway settings.</li>
+  <li><strong>By message type</strong>, <strong>By day</strong> and <strong>Every SMS</strong> break the month down.</li>
+</ul>
+<p>Test messages and SMS that failed to send are not counted; the line under the cards says how many were left out. Months run in East Africa Time. <span class="ui">Export CSV</span> downloads every SMS of the month for a spreadsheet; <span class="ui">Print</span> prints the report.</p>
+
+<h2 class="sub" id="com-from-pages">Sending to Parents from Other Pages</h2>
+<p>Results and fee pages have their own send buttons (a paper-plane icon) that send a standard message type to the learners' parents, each parent getting their own learner's figures. The wording and channel come from <span class="path">Communications &gt; Templates</span>.</p>
+<table>
+  <tr><th style="width:30%">Page</th><th style="width:25%">Button</th><th>What it sends</th></tr>
+<!--module:Academics-->
+  <tr><td><span class="path">Academics &gt; Exams &gt; School Exams</span></td><td>Tick <span class="ui">Send the results to parents now</span> when you release an exam; or the green paper-plane on a released exam</td><td>Exam results, for every class that sat the exam. The tick sends straight away, without a preview. A <span class="ui">Parents notified</span> badge then shows on the exam; the button sends them again.</td></tr>
+  <tr><td><span class="path">Academics &gt; Reports &gt; Exam Results</span>, Exam Results tab</td><td><span class="ui">Send</span>, after <span class="ui">Load</span></td><td>Exam results for the class loaded, as the broadsheet worked them out (scores, mean, grade, position). Learners with no marks in the exam are left out.</td></tr>
+<!--/module:Academics-->
+<!--module:Finance-->
+  <tr><td><span class="path">Finance &gt; Fees &gt; Student Invoices</span></td><td><span class="ui">Send to parents</span> above the list; or the paper-plane on an invoice</td><td>New fee invoice. The top button sends every invoice the filters show; cancelled invoices are skipped.</td></tr>
+  <tr><td><span class="path">Finance &gt; Fees &gt; Fee Payments</span></td><td>The paper-plane on an approved receipt</td><td>Fee payment received (or Fee payment by a sponsor, for a sponsor's receipt), with the amount, receipt number and new balance.</td></tr>
+  <tr><td><span class="path">Finance &gt; Fees &gt; Fee Reports</span>, Outstanding and Balances by Class tabs</td><td><span class="ui">Send reminders</span>; or <span class="ui">Remind</span> on one class</td><td>Fee balance reminder to the parents of every learner listed (or in that class). The message states each learner's <em>whole</em> outstanding balance, whatever year or term the report shows.</td></tr>
+<!--/module:Finance-->
+</table>
+<figure class="shot"><img src="assets/guide/com-send-invoices.png" alt="Send buttons on Student Invoices"><figcaption>Student Invoices: <span class="ui">Send to parents</span> at the top, and a paper-plane on each invoice</figcaption></figure>
+<p>Except for the release tick, each button first shows a "Send to parents?" box: how many SMS (and parts) and emails will go, how many learners have no parent contact and will be skipped, and the first message exactly as it will read. Click <span class="ui">Send</span> to queue them, or <span class="ui">Cancel</span>. When they are queued, click the message that appears to open the Message Queue on that send.</p>
+<figure class="shot"><img src="assets/guide/com-send-confirm.png" alt="The Send to parents box for an invoice"><figcaption>Sending one invoice: two parents, the first message shown</figcaption></figure>
+<figure class="shot"><img src="assets/guide/com-exam-confirm.png" alt="The Send to parents box for exam results"><figcaption>Exam results for a whole exam: 8 learners have no parent contact</figcaption></figure>
+<div class="callout"><span class="lbl">If nothing is sent.</span> "The 'Fee payment received' message type is switched off" means an administrator has not turned that message type on under Templates (payment acknowledgements start switched off). "Nobody to send to" means none of the parents has a phone number or email for the message type's channel.</div>
+<p>The send buttons appear only when your school has the Communications module.</p>
+</section>

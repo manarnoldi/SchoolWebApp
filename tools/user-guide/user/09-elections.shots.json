@@ -1,0 +1,96 @@
+[
+ {
+  "name": "ele-list",
+  "path": "/elections/manage",
+  "waitFor": "table tbody tr td b",
+  "settle": 1000,
+  "height": 520
+ },
+ {
+  "name": "ele-new",
+  "path": "/elections/manage",
+  "waitFor": "table tbody tr td b",
+  "steps": [
+   {
+    "click": "button:has-text('New election')"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 600
+   }
+  ],
+  "element": ".modal-content"
+ },
+ {
+  "name": "ele-positions",
+  "path": "/elections/manage/8/positions",
+  "waitFor": "app-election-positions table tbody tr",
+  "settle": 1200,
+  "height": 660
+ },
+ {
+  "name": "ele-nominations",
+  "path": "/elections/manage/8/nominations",
+  "waitFor": ".el-candidate",
+  "settle": 1500,
+  "height": 1000
+ },
+ {
+  "name": "ele-register",
+  "path": "/elections/manage/8/register",
+  "waitFor": ".list-group-item-action",
+  "settle": 800,
+  "steps": [
+   {
+    "click": ".list-group-item-action"
+   },
+   {
+    "waitFor": "app-voter-register table tbody tr td",
+    "wait": 1200
+   }
+  ],
+  "height": 900
+ },
+ {
+  "name": "ele-stations",
+  "path": "/elections/manage/8/stations",
+  "waitFor": "app-stations table tbody tr td b",
+  "settle": 1200,
+  "height": 680
+ },
+ {
+  "name": "ele-station-screen",
+  "path": "/elections/polling/58",
+  "waitFor": "app-station-screen table tbody tr td b",
+  "settle": 1200,
+  "height": 520
+ },
+ {
+  "name": "ele-results-home",
+  "path": "/elections/results",
+  "waitFor": "app-results-home .card h5",
+  "settle": 1000,
+  "element": "app-results-home .col-xl-3"
+ },
+ {
+  "name": "ele-results",
+  "path": "/elections/results/8",
+  "waitFor": "app-results .card-header b",
+  "settle": 2500,
+  "height": 1000
+ },
+ {
+  "name": "ele-leadership",
+  "path": "/elections/manage/8/leadership",
+  "waitFor": "app-leadership .card-header b",
+  "settle": 1200,
+  "height": 900
+ },
+ {
+  "name": "ele-history",
+  "path": "/elections/manage/8/history",
+  "waitFor": "app-election-history table tbody tr",
+  "settle": 800,
+  "element": "app-election-history .card"
+ }
+]

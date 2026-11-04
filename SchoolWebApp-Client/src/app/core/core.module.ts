@@ -7,6 +7,7 @@ import {MainComponent} from './modules/main/main.component';
 import {MenuSidebarComponent} from './modules/main/menu-sidebar/menu-sidebar.component';
 import {BlankComponent} from './pages/blank/blank.component';
 import {ProfileComponent} from './pages/profile/profile.component';
+import {UserGuideComponent} from './pages/user-guide/user-guide.component';
 import {MenuItemComponent} from './components/menu-item/menu-item.component';
 import {SidebarSearchComponent} from './components/sidebar-search/sidebar-search.component';
 import {ControlSidebarComponent} from './modules/main/control-sidebar/control-sidebar.component';
@@ -43,6 +44,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
         MenuSidebarComponent,
         BlankComponent,
         ProfileComponent,
+        UserGuideComponent,
         MessagesComponent,
         NotificationsComponent,
         UserComponent,

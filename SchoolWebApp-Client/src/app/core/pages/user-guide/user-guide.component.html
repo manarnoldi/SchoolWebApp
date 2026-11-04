@@ -1,0 +1,9 @@
+<div class="ug-wrap">
+    <div class="text-center p-4" *ngIf="isLoading">
+        <i class="fas fa-spinner fa-spin"></i> Loading the {{ title | lowercase }}...
+    </div>
+    <div class="text-center text-muted p-4" *ngIf="unavailable">
+        <i class="fas fa-info-circle me-1"></i> The {{ title | lowercase }} is not available.
+    </div>
+    <iframe *ngIf="html" [srcdoc]="html" class="ug-frame" [title]="'ShuleNova ' + title"></iframe>
+</div>

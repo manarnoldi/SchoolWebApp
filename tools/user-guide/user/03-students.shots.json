@@ -1,0 +1,217 @@
+[
+ {
+  "name": "stu-list",
+  "path": "/students/details",
+  "waitFor": "app-students-table table tbody tr",
+  "settle": 1500
+ },
+ {
+  "name": "stu-list-search",
+  "path": "/students/details",
+  "waitFor": "app-students-table table tbody tr",
+  "steps": [
+   {
+    "fill": [
+     "app-students-table input[type=search]",
+     "maina"
+    ],
+    "wait": 1000
+   }
+  ],
+  "element": "app-students-table .card"
+ },
+ {
+  "name": "stu-record",
+  "path": "/students/details",
+  "waitFor": "app-students-table table tbody tr",
+  "steps": [
+   {
+    "fill": [
+     "app-students-table input[type=search]",
+     "JAYDEN BARAKA"
+    ],
+    "wait": 1000
+   },
+   {
+    "click": "app-students-table table tbody tr:first-child i.fa-eye",
+    "wait": 2500
+   },
+   {
+    "waitFor": "#fullName"
+   }
+  ],
+  "settle": 1500,
+  "height": 810
+ },
+ {
+  "name": "stu-manage",
+  "path": "/students/details",
+  "waitFor": "app-students-table table tbody tr",
+  "steps": [
+   {
+    "fill": [
+     "app-students-table input[type=search]",
+     "JAYDEN BARAKA"
+    ],
+    "wait": 1000
+   },
+   {
+    "click": "app-students-table table tbody tr:first-child i.fa-wrench",
+    "wait": 2500
+   },
+   {
+    "click": "#parents-tab",
+    "wait": 2000
+   }
+  ],
+  "settle": 1500,
+  "height": 900
+ },
+ {
+  "name": "stu-manage-class",
+  "path": "/students/details",
+  "waitFor": "app-students-table table tbody tr",
+  "steps": [
+   {
+    "fill": [
+     "app-students-table input[type=search]",
+     "JAYDEN BARAKA"
+    ],
+    "wait": 1000
+   },
+   {
+    "click": "app-students-table table tbody tr:first-child i.fa-wrench",
+    "wait": 2500
+   },
+   {
+    "click": "#class-tab",
+    "wait": 1000
+   },
+   {
+    "select": [
+     "#class app-school-soft-filter-form #academicYearId",
+     "2026"
+    ],
+    "wait": 300
+   },
+   {
+    "click": "#class app-school-soft-filter-form button:has-text(\"Search\")",
+    "wait": 2000
+   }
+  ],
+  "settle": 1000,
+  "element": ".tab-content"
+ },
+ {
+  "name": "stu-manage-academics",
+  "path": "/students/details",
+  "waitFor": "app-students-table table tbody tr",
+  "steps": [
+   {
+    "fill": [
+     "app-students-table input[type=search]",
+     "JAYDEN BARAKA"
+    ],
+    "wait": 1000
+   },
+   {
+    "click": "app-students-table table tbody tr:first-child i.fa-wrench",
+    "wait": 2500
+   },
+   {
+    "click": "#academics-tab",
+    "wait": 4000
+   }
+  ],
+  "settle": 2000,
+  "height": 1100
+ },
+ {
+  "name": "stu-parents",
+  "path": "/students/parents",
+  "waitFor": "app-parents-table table tbody tr",
+  "settle": 1500
+ },
+ {
+  "name": "stu-parent-view",
+  "path": "/students/parents",
+  "waitFor": "app-parents-table table tbody tr",
+  "steps": [
+   {
+    "click": "app-parents-table table tbody tr:first-child i.fa-eye",
+    "wait": 2500
+   },
+   {
+    "click": "#students-tab",
+    "wait": 1500
+   }
+  ],
+  "settle": 1500,
+  "height": 810
+ },
+ {
+  "name": "stu-subjects",
+  "path": "/students/students-subjects",
+  "waitFor": "table tbody tr td span.badge",
+  "settle": 1500
+ },
+ {
+  "name": "stu-subjects-add",
+  "path": "/students/students-subjects",
+  "waitFor": "table tbody tr td span.badge",
+  "steps": [
+   {
+    "click": "button:has-text('Add allocations')",
+    "wait": 1000
+   },
+   {
+    "click": ".modal-content .col-md-6:nth-child(1) li:nth-child(1) input",
+    "wait": 200
+   },
+   {
+    "click": ".modal-content .col-md-6:nth-child(2) li:nth-child(2) input",
+    "wait": 200
+   }
+  ],
+  "element": ".modal-content"
+ },
+ {
+  "name": "stu-attendance",
+  "path": "/students/students-attendances",
+  "waitFor": "app-students-attendances-table table tbody tr",
+  "settle": 2000,
+  "steps": [
+   {
+    "click": "app-students-attendances-table tbody tr:nth-child(3) td:nth-child(5) label",
+    "wait": 300
+   },
+   {
+    "fill": [
+     "app-students-attendances-table tbody tr:nth-child(3) textarea",
+     "Sick - parent called"
+    ],
+    "wait": 300
+   }
+  ]
+ },
+ {
+  "name": "stu-promotion",
+  "path": "/students/promotion",
+  "waitFor": "table tbody tr",
+  "settle": 2000,
+  "steps": [
+   {
+    "click": "table tbody tr:nth-child(1) input[type=checkbox]",
+    "wait": 200
+   },
+   {
+    "click": "table tbody tr:nth-child(2) input[type=checkbox]",
+    "wait": 200
+   },
+   {
+    "click": "table tbody tr:nth-child(3) input[type=checkbox]",
+    "wait": 300
+   }
+  ]
+ }
+]

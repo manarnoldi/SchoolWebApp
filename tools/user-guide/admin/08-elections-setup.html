@@ -1,0 +1,35 @@
+<section class="chapter" id="elections-setup" data-module="Elections">
+<h1 class="ch">Elections Set-up</h1>
+<p>Elections need little set-up: three defaults in Global Settings, and the right people given the right Elections pages. Running an election is described in the user guide.</p>
+
+<h2 class="sub" id="aele-settings">Elections Settings</h2>
+<p>Open <span class="path">Settings &gt; Global Settings</span> and click <span class="ui">Elections Settings</span>. Change a value, then click <span class="ui">Save changes</span> at the top.</p>
+<figure class="shot"><img src="assets/guide/aele-global-elections.png" alt="Elections Settings in Global Settings"><figcaption>The defaults for new elections</figcaption></figure>
+<table>
+  <tr><th style="width:28%">Setting</th><th>What it does</th></tr>
+  <tr><td>Voter register</td><td>The register type a new election starts with. <strong>Frozen (strict)</strong>: the register is a snapshot taken when nominations close, so a student who changes class afterwards votes where they were registered. <strong>Live (lenient)</strong>: who may vote follows each student's current class until they vote. Frozen is the default.</td></tr>
+  <tr><td>Results screen refresh (seconds)</td><td>How often a new election's live results screen refreshes. Default: 10.</td></tr>
+  <tr><td>Order of names on the ballot</td><td><strong>Alphabetical</strong>: every ballot lists the candidates in name order. <strong>Random</strong>: each ballot issued shows them in a fresh random order, so no candidate always appears first. Takes effect for the next ballot issued.</td></tr>
+</table>
+<p>The first two are only defaults: the elections officer can change the register type and the refresh time on each election (the register type only until the register is taken). The ballot order applies to every election.</p>
+
+<h2 class="sub" id="aele-roles">Who Does What</h2>
+<p>Access to elections follows the three Elections pages a role holds under <span class="path">Security &gt; Menu Permissions</span>.</p>
+<figure class="shot"><img src="assets/guide/aele-menu-permissions.png" alt="The Elections pages in Menu Permissions"><figcaption>The three Elections pages for a role</figcaption></figure>
+<table>
+  <tr><th style="width:22%">Page</th><th style="width:30%">Given at installation to</th><th>What it allows</th></tr>
+  <tr><td>Manage Elections</td><td>Administrator, HeadTeacher, DeputyHeadTeacher</td><td>Makes the user an <strong>elections officer</strong>: create and edit elections, set positions, nominate and approve candidates, set up polling stations, move the stages, see the live count, draw lots, declare the results and record the winners. Elections officers can also run any polling station.</td></tr>
+  <tr><td>Polling Station</td><td>Administrator, HeadTeacher, DeputyHeadTeacher, Teacher, HeadOfDepartment</td><td>Lets a <strong>returning officer</strong> open the stations they have been given and issue ballots there. Users without Manage Elections see only their own stations.</td></tr>
+  <tr><td>Results</td><td>Administrator, HeadTeacher, DeputyHeadTeacher</td><td>Opens the results page. The live count before the results are declared is shown only to elections officers; once declared, the results are open to anyone with this page.</td></tr>
+</table>
+<p>Users with the Administrator or SuperAdministrator role are always elections officers. The dashboard's Elections card is given to the roles that have Manage Elections.</p>
+
+<h3>Returning officers</h3>
+<p>A returning officer is chosen per polling station, not by role. Any user whose account is linked to a staff record can be picked. <span class="ui">A station per class</span> picks each class's class teacher (from the class leadership roles) automatically, when they have a login. So, before an election:</p>
+<ul>
+  <li>Make sure each class teacher has a user account linked to their staff record, and is set as the class teacher of their class.</li>
+  <li>Make sure the role they hold has the <span class="ui">Polling Station</span> page.</li>
+</ul>
+<div class="callout tip"><span class="lbl">Suggested arrangement.</span> Give Manage Elections only to the one or two staff who run the elections (for example the deputy head and the teacher in charge of student leadership), Polling Station to all teachers, and Results to the school's leadership. Student voters need no account: they vote on the returning officer's screen.</div>
+<div class="callout important"><span class="lbl">Adding a page to a role.</span> A role with no menu permissions at all sees the whole menu. Giving it a single Elections page would hide everything else, so add the Elections pages only to roles that already have their pages set.</div>
+</section>

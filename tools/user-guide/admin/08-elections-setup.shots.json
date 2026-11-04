@@ -1,0 +1,8 @@
+[
+ {"name": "aele-global-elections", "path": "/settings/global-settings", "waitFor": ".section-head",
+  "steps": [{"click": ".section-head:has-text('Elections Settings')", "wait": 800}],
+  "element": ".settings-section.open"},
+ {"name": "aele-menu-permissions", "path": "/security/menu-permissions", "waitFor": "a.list-group-item:has-text('HeadTeacher')",
+  "steps": [{"click": "a.list-group-item:has-text('HeadTeacher')"}, {"waitFor": "strong:text-is('Elections')", "wait": 1000}],
+  "element": "div.mb-1:has(> div > strong:text-is('Elections'))"}
+]

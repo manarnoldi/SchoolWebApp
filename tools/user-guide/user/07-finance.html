@@ -1,0 +1,280 @@
+<section class="chapter" id="finance" data-module="Finance">
+<h1 class="ch">Finance</h1>
+<p>The <span class="path">Finance</span> menu is where the bursar and accounts clerks keep the school's money in order: the budget for the year, fee structures and the invoices raised from them, fee payments and receipts, sponsors who pay fees for learners, expenses, journal entries, and the reports and statements that come out of them. Behind every page is one set of books: an invoice, a payment or an approved expense goes straight into the ledger, so the reports are always up to date.</p>
+<table>
+  <tr><th style="width:28%">Menu</th><th>Pages</th></tr>
+  <tr><td>Budgets</td><td>Budget Register, Budgets, Budget Amendments</td></tr>
+  <tr><td>Fees</td><td>Fee Structures, Student Invoices, Fee Payments, Fee Reports</td></tr>
+  <tr><td>Sponsors</td><td>Sponsors, Sponsorships, Sponsor Payments</td></tr>
+  <tr><td>Expenses &amp; Accounts</td><td>Expenses, Journal Entries, Accounting Periods</td></tr>
+  <tr><td>Reports</td><td>Statements, Expenses Report</td></tr>
+</table>
+<div class="callout"><span class="lbl">Before you start.</span> Your administrator sets up the chart of accounts, the fee and expense categories, the finance settings and the approval workflows (see the Administrator Guide, <em>Finance Set-up</em>). If a list you need is empty, such as the fee categories when you build a fee structure, ask them.</div>
+
+<h2 class="sub" id="fin-approvals">How Approvals Work</h2>
+<p>Expenses, journal entries, budgets, budget amendments and credit or debit notes are not posted the moment they are saved. They go to one or more approvers first, in the steps your administrator set up under <span class="path">Settings &gt; Approval Workflows</span>. The form for each of these has an <strong>Approval</strong> box at the bottom.</p>
+<ol class="steps">
+  <li>Fill in the form. In the Approval box, pick an approver for each step from the people who hold that step's role.</li>
+  <li>Click <span class="ui">Save &amp; Submit for Approval</span>. The record is sent to the first step's approver, who sees it under the bell at the top of the page. If you only click <span class="ui">Save</span> (no approvers picked), it stays a draft; open it again with the edit button and submit it when you are ready.</li>
+  <li>The approver opens the record (the <span class="ui"><i>&#10003;&#10003;</i></span> Review / Approve button in the list, or the link under the bell), reads it, writes a comment if they wish and clicks <span class="ui">Approve</span>, <span class="ui">Return</span> or <span class="ui">Reject</span>. A comment is required to return or reject.</li>
+  <li>When the last step approves, the record takes effect: an expense or journal is posted to the ledger, an amendment changes the budget, a note changes the learner's invoice.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-expense-approve.png" alt="An expense waiting for approval"><figcaption>An approver's view: step 1 approved, step 2 waiting for their action</figcaption></figure>
+<ul>
+  <li><strong>Returned</strong> records come back to you with the approver's comment shown at the top of the Approval box. Correct the record and click <span class="ui">Resubmit for Approval</span>.</li>
+  <li><strong>Rejected</strong> records stop there. The comment says why.</li>
+  <li>Once submitted, a record is locked: the edit and delete buttons disappear. Depending on the school's setting, it stays editable until the first step approves. An approver can never edit or delete what they approve.</li>
+  <li>If the school switched on maker-checker for a workflow, you cannot pick yourself as an approver.</li>
+  <li>Only a Super Administrator can reverse an approval. The record then goes back to draft.</li>
+</ul>
+<div class="callout important"><span class="lbl">"No active workflow configured".</span> If the Approval box shows this message, nobody can approve the record and it cannot be posted. Ask your administrator to add a workflow for that form.</div>
+
+<h2 class="sub" id="fin-budget-register">Budget Register</h2>
+<p>A <strong>budget plan</strong> is the frame for one year's budgets: its name, academic year and dates. Each department then prepares its own budget inside the plan. Open <span class="path">Finance &gt; Budgets &gt; Budget Register</span>.</p>
+<figure class="shot"><img src="assets/guide/fin-budget-register.png" alt="The Budget Register"><figcaption>The Budget Register: one plan per year, with the number of department budgets in it</figcaption></figure>
+<h3>Adding a budget plan</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add Budget Plan</span>.</li>
+  <li>Give it a <span class="ui">Name</span> (for example "2027 Annual Budget"), choose the <span class="ui">Academic Year</span>, and check the <span class="ui">Start Date</span> and <span class="ui">End Date</span> (they start as 1 January to 31 December). The <span class="ui">Code</span> is given automatically.</li>
+  <li>Set the <span class="ui">Status</span>: <strong>Draft</strong> while you prepare it, <strong>Open</strong> when departments may add budgets to it, <strong>Closed</strong> when the year is over.</li>
+  <li>Click <span class="ui">Save</span>.</li>
+</ol>
+<p>The number in the <span class="ui">Budgets</span> column opens the Budgets page showing that plan's budgets. A plan that already holds budgets cannot be deleted.</p>
+<div class="callout tip"><span class="lbl">Only Open plans take budgets.</span> If the Budgets form says "No Open budget plans found", set the plan's status to Open here first.</div>
+
+<h2 class="sub" id="fin-budgets">Budgets</h2>
+<p>A budget is one department's income and spending plan for a budget plan: so much expected from each income account, so much allowed for each expense account. Open <span class="path">Finance &gt; Budgets &gt; Budgets</span>. The list opens on the current year's Open plan; use the <span class="ui">Budget Plan</span>, <span class="ui">Department</span> and <span class="ui">Status</span> filters to change it.</p>
+<figure class="shot"><img src="assets/guide/fin-budgets.png" alt="The Budgets list"><figcaption>Budgets: one per department, with total income and expense</figcaption></figure>
+<h3>Preparing a department's budget</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add Budget</span>.</li>
+  <li>Choose the <span class="ui">Budget Plan</span>. The academic year and dates fill in from the plan.</li>
+  <li>Choose the <span class="ui">Department</span>. The <span class="ui">Name</span> fills in by itself; you may change it. Add a <span class="ui">Description</span> if you wish.</li>
+  <li>Click <span class="ui">Save &amp; Add Lines</span>. The form stays open and the budget lines appear.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-budget-new.png" alt="A new budget"><figcaption>A new budget: the plan and department chosen, before the lines are added</figcaption></figure>
+<ol class="steps" style="counter-reset: step 4">
+  <li>Under <strong>Income Budget Lines</strong>, click <span class="ui">Add Income Line</span> for each expected income: pick the income account and type the <span class="ui">Budgeted Amount</span>. Do the same under <strong>Expenditure Budget Lines</strong> with <span class="ui">Add Expense Line</span>.</li>
+  <li>Check the summary at the bottom: total income, total expenditure and the net.</li>
+  <li>Pick the approvers in the Approval box and click <span class="ui">Save &amp; Submit for Approval</span>, or <span class="ui">Save Changes</span> to finish later.</li>
+</ol>
+<p>A budget must have at least one line before it can be saved again. Once approved, a budget can no longer be edited; change it with a <a href="#fin-amendments">budget amendment</a>.</p>
+<h3>Budget against actual</h3>
+<p>Click the <span class="ui"><i>chart</i></span> (View vs Actual) button on a budget to see, for each line, the budgeted amount, any approved amendments, the effective budget, what has actually been received or spent in the ledger, and the variance. The approval history is at the bottom.</p>
+<figure class="shot"><img src="assets/guide/fin-budget-actual.png" alt="Budget against actual"><figcaption>Budget vs Actual for one department</figcaption></figure>
+
+<h2 class="sub" id="fin-amendments">Budget Amendments</h2>
+<p>When a department needs more (or less) than it was given, raise a budget amendment rather than editing the budget. Open <span class="path">Finance &gt; Budgets &gt; Budget Amendments</span>; filter by year, budget and status (Pending, Approved, Rejected).</p>
+<h3>Raising an amendment</h3>
+<ol class="steps">
+  <li>Click <span class="ui">New Amendment</span> and choose the <span class="ui">Budget</span>. Its current lines and effective amounts appear.</li>
+  <li>Check the <span class="ui">Amendment Date</span> and type the <span class="ui">Reason</span> (required).</li>
+  <li>Click <span class="ui">Add Income Line</span> or <span class="ui">Add Expense Line</span>, pick the account and type the <span class="ui">New Amount</span>. A higher amount increases the budget; a lower one reduces it. The <span class="ui">Delta</span> column shows the change.</li>
+  <li>Check the <strong>Net Effect of this Amendment</strong> box: current income and expenditure, the change, and the projected net.</li>
+  <li>Pick the approvers and click <span class="ui">Save &amp; Submit for Approval</span>, or <span class="ui">Save</span> to submit later with the edit button.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-amendment-new.png" alt="A new budget amendment"><figcaption>A budget amendment adding a new expense line, with its net effect</figcaption></figure>
+<p>The budget changes only when the amendment is fully approved; until then its status is Pending. The <span class="ui"><i>eye</i></span> button shows an amendment's lines and approval history.</p>
+
+
+<h2 class="sub" id="fin-fee-structures">Fee Structures</h2>
+<p>A fee structure lists what learners at one learning level pay in one term: tuition, boarding, lunch, activity and so on, each a <strong>fee category</strong> with an amount. Invoices are generated from it. Open <span class="path">Finance &gt; Fees &gt; Fee Structures</span> and filter by year, session (term), education level, learning level and status.</p>
+<figure class="shot"><img src="assets/guide/fin-fee-structures.png" alt="Fee Structures list"><figcaption>Fee structures: one per learning level and term, with their total</figcaption></figure>
+<h3>Adding fee structures</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add Fee Structure</span>.</li>
+  <li>Choose the <span class="ui">Academic Year</span> and the <span class="ui">Session</span> (term), or tick <span class="ui">All</span> to make one for every term of the year.</li>
+  <li>Choose the <span class="ui">Education Level</span> and the <span class="ui">Learning Level</span> (for example Grade 4), or tick <span class="ui">All levels</span> to make one for every level in that education level. The form tells you how many fee structures it will create.</li>
+  <li>Click <span class="ui">Add Item</span> for each fee: choose the <span class="ui">Fee Category</span>, type the <span class="ui">Amount</span>, and tick <span class="ui">Mandatory</span> for fees every learner pays. Leave optional fees (transport, a club) unticked.</li>
+  <li>Click <span class="ui">Save</span>. Each structure is named by itself from the year, term and learning level.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-fee-structure-form.png" alt="The fee structure form"><figcaption>A new fee structure</figcaption></figure>
+<p>A fee category can appear only once in a structure. Click the number in the <span class="ui">Items</span> column to see a structure's fees.</p>
+<div class="callout tip"><span class="lbl">Same fees for several levels?</span> Tick <span class="ui">All levels</span> and <span class="ui">All</span> sessions to create the whole year in one go, then edit the few levels that differ.</div>
+
+<h2 class="sub" id="fin-invoices">Student Invoices</h2>
+<p>An invoice is what one learner owes for a term. Open <span class="path">Finance &gt; Fees &gt; Student Invoices</span>. Filter by year, session, class, status (Unpaid, Partially Paid, Paid, Overdue, Cancelled), sponsor, or search for a learner by name or admission number. Each row shows the total, what has been paid and the balance; a sponsor badge marks invoices a sponsor contributes to.</p>
+<figure class="shot"><img src="assets/guide/fin-invoices.png" alt="Student Invoices list"><figcaption>Student invoices for the term</figcaption></figure>
+<h3>Invoicing a class for the term</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Bulk Generate</span>.</li>
+  <li>Choose the <span class="ui">Academic Year</span>, the <span class="ui">Session</span>, the <span class="ui">Fee Structure</span> and the <span class="ui">Class</span>.</li>
+  <li>Set the <span class="ui">Invoice Date</span>, and the <span class="ui">Due Date</span> and <span class="ui">Description</span> if you want them.</li>
+  <li>Click <span class="ui">Generate Invoices</span> and confirm. One invoice is made for every active learner in the class, with the structure's <strong>mandatory</strong> fees. A summary then shows how many learners had a sponsorship applied and how much sponsors have pledged.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-invoice-bulk.png" alt="Bulk invoice generation"><figcaption>Bulk Invoice Generation</figcaption></figure>
+<h3>Adding optional fees, discounts and sponsors to one invoice</h3>
+<ol class="steps">
+  <li>Click the <span class="ui"><i>edit</i></span> (Edit items) button on the learner's invoice.</li>
+  <li>Fees from the fee structure are marked <strong>Mandatory</strong> or <strong>Optional</strong>. Tick <span class="ui">Include</span> for the optional fees this learner takes. Mandatory fees cannot be unticked, and their amounts are locked: to change one, change the fee structure.</li>
+  <li>Type a <span class="ui">Discount</span> on any line if the school has agreed one.</li>
+  <li>To have a sponsor pay part of a line, choose the <span class="ui">Sponsorship</span>; the <span class="ui">Sponsor pledge</span> fills in from the sponsorship's cover and can be adjusted.</li>
+  <li>For a one-off charge (a lost book, a trip), click <span class="ui">Add Item</span>, choose the fee category and type the amount. These <strong>Ad-hoc</strong> lines can be removed again.</li>
+  <li>Click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-invoice-edit.png" alt="Editing an invoice's items"><figcaption>An invoice's items: mandatory, optional and ad-hoc fees</figcaption></figure>
+<div class="callout"><span class="lbl">Sponsor pledges.</span> The learner is still invoiced the whole fee. The pledge is the part the sponsor is expected to pay; if the sponsor does not pay it, the family owes it.</div>
+<p>Click the number in the <span class="ui">Items</span> column to see an invoice in full: each fee, discount, sponsor pledge, what the sponsor and the family have paid, and the balance.</p>
+<!--module:Communications--><h3>Sending invoices to parents</h3>
+<p>The <span class="ui"><i>paper plane</i></span> button on a row sends that invoice to the learner's parents; <span class="ui">Send to parents</span> above the list sends every invoice listed, so filter to the class or term first. ShuleNova first shows how many SMS or emails will go out, which learners have no parent contact, and how the first message reads; click <span class="ui">Send</span> to queue them. The wording comes from the invoice template under <span class="path">Communications &gt; Templates</span>.</p><!--/module:Communications-->
+
+<h2 class="sub" id="fin-payments">Fee Payments and Receipts</h2>
+<p>Every fee payment is recorded here and gets a receipt number. Open <span class="path">Finance &gt; Fees &gt; Fee Payments</span>. Filter by year, session, class, learner, <span class="ui">Paid by</span> (the family, sponsors, or one sponsor), method and dates; the total of the payments listed shows at the top of the list.</p>
+<figure class="shot"><img src="assets/guide/fin-payments.png" alt="Fee Payments list"><figcaption>Fee payments, with receipt numbers and who paid</figcaption></figure>
+<h3>Recording a payment</h3>
+<ol class="steps">
+  <li>Click <span class="ui">New Payment</span>.</li>
+  <li>Under <strong>Find Student</strong>, choose the <span class="ui">Academic Year</span> (and <span class="ui">Session</span> if you like), the <span class="ui">Class</span>, then type a name or admission number in <span class="ui">Student</span> and pick the learner.</li>
+  <li>Under <strong>Payment Details</strong>, choose the invoice in <span class="ui">Apply to Invoice</span>; each shows its balance. Leave it <span class="ui">-- Unallocated --</span> only if the money is not for a particular invoice.</li>
+  <li>Enter the <span class="ui">Date</span>, the <span class="ui">Amount</span> and the <span class="ui">Method</span> (Cash, M-Pesa, Bank Transfer, Cheque, Card or Other). Choose the <span class="ui">Receiving Account</span> the money went into, and type the M-Pesa code or bank slip number in <span class="ui">Transaction Ref</span>.</li>
+  <li>Leave <span class="ui">Receipt #</span> blank to number the receipt automatically, or type the number of a manual receipt book.</li>
+  <li>Check the <strong>Fee Category Apportionment</strong>: how the payment is shared across the invoice's fees.</li>
+  <li>Click <span class="ui">Record Payment</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-payment-new.png" alt="The New Payment form"><figcaption>New Payment</figcaption></figure>
+<p>How a payment is shared across fees depends on the school's setting. In <strong>Auto</strong> mode ShuleNova pays the fees in order of priority (the fee category's rank) until the money runs out. In <strong>Manual</strong> mode you type the amount for each fee, and the total must equal the payment.</p>
+<h3>Viewing a receipt</h3>
+<p>Click the <span class="ui"><i>eye</i></span> (View) button. The receipt shows the learner, date, amount, method, invoice, receiving account and reference, who paid (the family or a sponsor) and how the money was shared across the fees.</p>
+<figure class="shot"><img src="assets/guide/fin-payment-view.png" alt="A receipt"><figcaption>A receipt and its allocation by fee category</figcaption></figure>
+<p>A payment made by a sponsor shows "Paid by" the sponsor. It is part of a sponsor payment, and can only be undone by deleting that payment under <span class="path">Sponsors &gt; Sponsor Payments</span>.</p>
+<!--module:Communications--><p>The <span class="ui"><i>paper plane</i></span> button on a receipt sends a payment acknowledgement to the learner's parents, after the same preview as for invoices.</p><!--/module:Communications-->
+<h3>Correcting a payment: credit and debit notes</h3>
+<p>Payments are never edited or deleted. A mistake is corrected with a note, which goes through approval:</p>
+<ul>
+  <li>A <strong>credit note</strong> (the <span class="ui"><i>minus</i></span> button) reverses all or part of a payment and puts the amount back on the invoice balance, for example a payment recorded against the wrong learner. It cannot be more than the payment.</li>
+  <li>A <strong>debit note</strong> (the <span class="ui"><i>plus</i></span> button) adds to the invoice total, increasing what the learner owes, for example a bounced cheque.</li>
+</ul>
+<ol class="steps">
+  <li>Click the credit or debit note button on the payment.</li>
+  <li>Type the <span class="ui">Amount</span> and the <span class="ui">Reason</span> (both required).</li>
+  <li>Pick the approvers and click <span class="ui">Issue &amp; Submit for Approval</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-credit-note.png" alt="A new credit note"><figcaption>Raising a credit note against a receipt</figcaption></figure>
+<p>The note appears in the payments list with its own number, type and status, and changes the invoice only when it is approved.</p>
+
+<h2 class="sub" id="fin-fee-reports">Fee Reports</h2>
+<p><span class="path">Finance &gt; Fees &gt; Fee Reports</span> has five tabs. Each opens on the current year and term already loaded; change the filters and click <span class="ui">Load</span>. Changing a filter clears the report until you load it again, so what is on screen always matches the filters. <span class="ui">Print</span> prints the report with the school's heading. The tab is kept in the page address, so a bookmark opens the same tab.</p>
+<p>Most rows can be clicked: a class opens to its learners, and a learner opens their statement in a panel on the right, from which you can open each invoice or receipt. The panel has buttons to print or download what it shows as a CSV file.</p>
+<h3>Fee Collection</h3>
+<p>For a year, term and (optionally) a class and dates: total invoiced, collected and outstanding, how many invoices are fully paid, and each class with its collection rate. Open a class to see its learners; search for a learner, or tick <span class="ui">Only students who owe</span>.</p>
+<figure class="shot"><img src="assets/guide/fin-fee-collection.png" alt="The Fee Collection report"><figcaption>Fee Collection by class</figcaption></figure>
+<h3>Outstanding</h3>
+<p>Every learner with a balance for the year and term: the balance brought forward from before, invoiced, paid, balance, and how much of it is awaiting a sponsor's payment.</p>
+<figure class="shot"><img src="assets/guide/fin-outstanding.png" alt="The Outstanding report"><figcaption>Learners with a balance</figcaption></figure>
+<h3>Balances by Class</h3>
+<p>The learners owing in each class, with totals. The printout has a <em>Parent Signature</em> column, useful for a class list to send home.</p>
+<figure class="shot"><img src="assets/guide/fin-balances-class.png" alt="Balances by Class"><figcaption>Balances by Class</figcaption></figure>
+<!--module:Communications--><div class="callout tip"><span class="lbl">Fee reminders.</span> On the Outstanding and Balances by Class tabs, <span class="ui">Send reminders</span> sends a fee balance reminder to the parents of every learner in the report, and <span class="ui">Remind</span> on a class sends to that class only. Each message states the learner's total balance. You see a preview before anything is sent.</div><!--/module:Communications-->
+<h3>Discounts &amp; Sponsorships</h3>
+<p>Learners who have a discount or a sponsor: their fees, the discount, what sponsors pledged and have paid, and the family's own share. Filter by sponsor, or choose the school's own discounts.</p>
+<figure class="shot"><img src="assets/guide/fin-discounts.png" alt="Discounts and Sponsorships report"><figcaption>Discounts &amp; Sponsorships</figcaption></figure>
+<h3>Student Statement</h3>
+<p>One learner's account: balance brought forward, every invoice, receipt, sponsor payment, credit and debit note in date order, with a running balance and who received each payment. It opens on the current term, the first class and its first learner. Choose the <span class="ui">Academic Year</span>, <span class="ui">Session</span>, <span class="ui">Class</span> and <span class="ui">Student</span>, then click <span class="ui">Load</span>. Click a line to open the invoice or receipt.</p>
+<figure class="shot"><img src="assets/guide/fin-statement.png" alt="A student statement"><figcaption>A learner's fee statement</figcaption></figure>
+<div class="callout tip"><span class="lbl">Answering a parent at the counter.</span> The Student Statement keeps the learner in the page address. Print it for the parent, or bookmark it.</div>
+
+<h2 class="sub" id="fin-sponsors">Sponsors</h2>
+<p>A sponsor is anyone other than the family who pays a learner's fees: an NGO or company, the school's own bursary fund, the government, a relative. Open <span class="path">Finance &gt; Sponsors &gt; Sponsors</span>.</p>
+<figure class="shot"><img src="assets/guide/fin-sponsors.png" alt="The Sponsors list"><figcaption>Sponsors</figcaption></figure>
+<ol class="steps">
+  <li>Click <span class="ui">Add Sponsor</span>.</li>
+  <li>Type the <span class="ui">Name</span> and choose the <span class="ui">Sponsor Type</span>: External (NGO / Foundation / Company), School (Internal Bursary Fund), Government, Parent or Other.</li>
+  <li>Add the <span class="ui">Contact Name</span>, <span class="ui">Email</span>, <span class="ui">Phone</span> and <span class="ui">Address</span>, and click <span class="ui">Save</span>.</li>
+</ol>
+<p>Click a sponsor's name (or the statement button) to open their statement for the year so far, with the pledges and payments behind it.</p>
+
+<h2 class="sub" id="fin-sponsorships">Sponsorships</h2>
+<p>A sponsorship says what a sponsor covers, for whom and for how long. Open <span class="path">Finance &gt; Sponsors &gt; Sponsorships</span>. The <span class="ui">On invoices</span> column shows how many invoices it has been applied to and the amount pledged on them.</p>
+<figure class="shot"><img src="assets/guide/fin-sponsorships.png" alt="The Sponsorships list"><figcaption>Sponsorships, and the invoices they are on</figcaption></figure>
+<h3>Adding a sponsorship</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add Sponsorship</span>.</li>
+  <li>Under <strong>Sponsor &amp; Period</strong>, choose the <span class="ui">Sponsor</span>, the <span class="ui">Academic Year</span>, and a <span class="ui">Session (Term)</span> or <span class="ui">-- Whole Year --</span>. Add start and end dates if needed, and leave the <span class="ui">Status</span> Active.</li>
+  <li>Under <strong>Beneficiary</strong>, choose the <span class="ui">Target</span>: an <span class="ui">Individual Student</span> (pick the class, then the student) or an <span class="ui">Entire Class</span>.</li>
+  <li>Under <strong>Coverage</strong>, choose <span class="ui">Full Coverage (100%)</span>, <span class="ui">Percentage</span> (1 to 100) or <span class="ui">Fixed Amount</span>. Tick the fee categories it covers, or leave them all unticked to cover every fee.</li>
+  <li>Click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-sponsorship-form.png" alt="The sponsorship form"><figcaption>A new sponsorship</figcaption></figure>
+<p>New invoices pick up active sponsorships by themselves. For invoices already raised, click the apply button (Apply to existing open invoices) on the sponsorship: it records the sponsor's pledge on the matching lines of every open invoice, skipping fully paid invoices and lines another sponsor already covers, and puts any credit the sponsor holds onto them.</p>
+<div class="callout important"><span class="lbl">Once on invoices, a sponsorship is fixed.</span> It can no longer be edited or deleted (a lock shows instead). To stop it, click <span class="ui">End</span>: no new invoice takes it from today, and the invoices it is already on stay as they are.</div>
+
+<h2 class="sub" id="fin-sponsor-payments">Sponsor Payments</h2>
+<p>When a sponsor sends money, record it once here and ShuleNova shares it across the sponsored learners' invoices. Open <span class="path">Finance &gt; Sponsors &gt; Sponsor Payments</span>.</p>
+<figure class="shot"><img src="assets/guide/fin-sponsor-payments.png" alt="Sponsor Payments list"><figcaption>Sponsor payments: how much went onto invoices and how much is held</figcaption></figure>
+<ol class="steps">
+  <li>Click <span class="ui">Record Payment</span>.</li>
+  <li>Choose the <span class="ui">Sponsor</span>, and enter the <span class="ui">Date</span>, <span class="ui">Amount</span>, <span class="ui">Method</span>, <span class="ui">Transaction Ref</span> and the <span class="ui">Bank / Cash Account</span> it went into.</li>
+  <li>Click <span class="ui">Next: onto students' invoices</span>. ShuleNova lists the sponsor's unpaid pledges, oldest first, and shares the payment across them. Change any amount in <span class="ui">This payment</span> if the sponsor said which learners it is for; <span class="ui">Oldest first</span> shares it again.</li>
+  <li>Click <span class="ui">Record Payment</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-sponsor-payment-new.png" alt="A sponsor payment shared across invoices"><figcaption>A sponsor payment shared across the sponsored learners' invoices, oldest pledge first</figcaption></figure>
+<p>Each learner's share appears as a receipt under Fee Payments, "Paid by" the sponsor. Money left over is <strong>held as credit</strong> for the sponsor and goes onto their learners' invoices as new pledges fall due; the <span class="ui">Held</span> column shows it, and its button puts held credit onto pledges now due. Deleting a sponsor payment also takes it off the learners' invoices.</p>
+
+<h2 class="sub" id="fin-expenses">Expenses</h2>
+<p>Every payment the school makes (suppliers, utilities, repairs, allowances) is recorded as an expense and approved before it reaches the books. Open <span class="path">Finance &gt; Expenses &amp; Accounts &gt; Expenses</span>. The list shows the current month; change <span class="ui">Date From</span> and <span class="ui">Date To</span> to see other dates.</p>
+<figure class="shot"><img src="assets/guide/fin-expenses.png" alt="The Expenses list"><figcaption>Expenses and their status</figcaption></figure>
+<h3>Recording an expense</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add Expense</span>.</li>
+  <li>Enter the <span class="ui">Date</span>, the <span class="ui">Payment Method</span>, the account it was <span class="ui">Paid From</span>, the <span class="ui">Transaction Ref</span> and a <span class="ui">Description</span>. The <span class="ui">Ref #</span> is given automatically.</li>
+  <li>Under <strong>Expense Lines</strong>, click <span class="ui">Add Line</span> for each item: choose the <span class="ui">Category</span>, type the <span class="ui">Vendor</span>, the <span class="ui">Amount</span> and a description. One expense can have several lines, for example one invoice from a supplier covering stationery and cleaning materials.</li>
+  <li>Pick the approvers and click <span class="ui">Save &amp; Submit for Approval</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/fin-expense-form.png" alt="The expense form"><figcaption>A new expense with its lines and Approval box</figcaption></figure>
+<p>An expense is a <strong>Draft</strong> until it is fully <strong>Approved</strong> (and posted to the ledger) or <strong>Rejected</strong>. While it waits for its approvers the list still shows Draft; the edit and delete buttons disappear, and the Approval box in the expense shows which step it has reached. An approved expense cannot be edited or deleted. The <span class="ui"><i>eye</i></span> (Quick View) button shows an expense's lines.</p>
+<figure class="shot"><img src="assets/guide/fin-expense-view.png" alt="An expense's details"><figcaption>Quick View of an expense</figcaption></figure>
+
+<h2 class="sub" id="fin-journals">Journal Entries</h2>
+<p>Most entries in the books are made for you by invoices, payments, approved expenses<!--module:Payroll--> and payroll<!--/module:Payroll-->. A journal entry is for anything else: opening balances, moving money between bank and cash, depreciation, correcting a posting. Open <span class="path">Finance &gt; Expenses &amp; Accounts &gt; Journal Entries</span>; the list shows the current month.</p>
+<figure class="shot"><img src="assets/guide/fin-journals.png" alt="Journal Entries list"><figcaption>Journal entries</figcaption></figure>
+<ol class="steps">
+  <li>Click <span class="ui">New Entry</span>, set the <span class="ui">Entry Date</span> and a <span class="ui">Description</span>.</li>
+  <li>Click <span class="ui">Add Line</span> for each account: choose the <span class="ui">Account</span> and type a <span class="ui">Debit</span> or a <span class="ui">Credit</span>. A hint under the account shows on which side it normally increases.</li>
+  <li>When total debits equal total credits, the entry shows <strong>Balanced</strong> and the save button becomes active. An entry needs at least two lines.</li>
+  <li>Pick the approvers and click <span class="ui">Save &amp; Submit for Approval</span>.</li>
+</ol>
+<div class="callout important"><span class="lbl">Submit as you save.</span> A journal entry cannot be opened for editing once saved: there is no edit button. Pick the approvers before you save it. To change a draft entry, delete it and enter it again. Approved entries cannot be deleted.</div>
+<p>The entry is posted to the ledger when it is approved. Entries made automatically by payments, invoices and expenses also appear here, already approved. Use the <span class="ui"><i>eye</i></span> (Quick View) button to see its lines.</p>
+<figure class="shot"><img src="assets/guide/fin-journal-view.png" alt="A journal entry"><figcaption>A journal entry's lines</figcaption></figure>
+<!--module:Payroll--><div class="callout"><span class="lbl">Payroll journals.</span> Depending on the school's setting, approving a payroll can leave its journal here as a draft, with every figure filled in, for you to check, adjust and approve.</div><!--/module:Payroll-->
+
+<h2 class="sub" id="fin-periods">Accounting Periods</h2>
+<p>At the end of each term (or each year, as the school chose) the books are <strong>closed</strong>: the period's income less expenses is moved to Retained Earnings, and nothing dated in it can be recorded, changed or deleted any more. Open <span class="path">Finance &gt; Expenses &amp; Accounts &gt; Accounting Periods</span> and choose the <span class="ui">Academic Year</span>.</p>
+<figure class="shot"><img src="assets/guide/fin-periods.png" alt="Accounting Periods"><figcaption>Accounting periods, their surplus and status</figcaption></figure>
+<p>Each period shows its income, expenses and surplus, and a status: <strong>Current</strong>, <strong>Open</strong> (with the reasons it cannot close yet listed underneath), <strong>Ready to close</strong>, or <strong>Closed</strong> (with the date, who closed it and a link to the closing entry). A period cannot be closed until:</p>
+<ul>
+  <li>it has ended;</li>
+  <li>the period before it is closed;</li>
+  <li>every expense, journal entry and credit or debit note dated in it has been approved or rejected;</li>
+  <li>the Retained Earnings account is set in the finance settings.</li>
+</ul>
+<ol class="steps">
+  <li>When the period shows <strong>Ready to close</strong>, click <span class="ui">Close</span>.</li>
+  <li>Read the confirmation: the surplus or deficit going to Retained Earnings, and the dates that will be locked. Click <span class="ui">Close the period</span>.</li>
+</ol>
+<p>Learners' unpaid fees are not lost: they carry into the next period as the balance brought forward, and can still be paid. If something must be corrected after closing, an administrator can <span class="ui">Reopen</span> the latest closed period, which takes its closing entry out; close it again when the correction is done.</p>
+<div class="callout important"><span class="lbl">"... is closed".</span> If ShuleNova refuses a payment, invoice or expense with this message, its date falls in a closed period. Date it in the open period instead, or ask an administrator to reopen the period.</div>
+
+<h2 class="sub" id="fin-statements">Financial Statements</h2>
+<p><span class="path">Finance &gt; Reports &gt; Statements</span> has four tabs: Budget, Trial Balance, Profit &amp; Loss and Balance Sheet. Each opens loaded for this year to date; change the dates and click <span class="ui">Load</span>, and <span class="ui">Print</span> for a copy with the school's heading. Click any account to see the transactions behind its figure, and open each one from there.</p>
+<h3>Trial Balance</h3>
+<p>Every account's debit or credit total between the <span class="ui">From</span> and <span class="ui">To</span> dates. The two columns must agree.</p>
+<figure class="shot"><img src="assets/guide/fin-trial-balance.png" alt="The Trial Balance"><figcaption>Trial Balance</figcaption></figure>
+<h3>Profit &amp; Loss</h3>
+<p>Income and expenses by account between two dates, and the net profit (surplus) or loss.</p>
+<figure class="shot"><img src="assets/guide/fin-income-statement.png" alt="Profit and Loss"><figcaption>Profit &amp; Loss</figcaption></figure>
+<h3>Balance Sheet</h3>
+<p>Assets, liabilities and equity <span class="ui">As of Date</span>, with the total of liabilities and equity. Until the current period is closed, its surplus shows under Equity as "Surplus not yet closed"; closing the period moves it to Retained Earnings.</p>
+<figure class="shot"><img src="assets/guide/fin-balance-sheet.png" alt="The Balance Sheet"><figcaption>Balance Sheet</figcaption></figure>
+<h3>Budget</h3>
+<p>All departments' budgets for an academic year against what was actually received and spent: budgeted and actual income and expense, the net, and each department's lines with their variance. Click a line to see the transactions.</p>
+<figure class="shot"><img src="assets/guide/fin-budget-report.png" alt="The consolidated budget report"><figcaption>The school budget against actual, by department</figcaption></figure>
+
+<h2 class="sub" id="fin-expense-report">Expenses Report</h2>
+<p><span class="path">Finance &gt; Reports &gt; Expenses Report</span> has two tabs.</p>
+<ul>
+  <li><strong>Expenses</strong>: what was spent between two dates, in total and by category, with each category's share. Open a category to see its expenses, or search by reference, vendor or description; click an expense to open it.</li>
+  <li><strong>Credit/Debit Notes</strong>: the notes raised in a period, by year, term, class, type and status, with the total of each and their net effect on fees owed.</li>
+</ul>
+<figure class="shot"><img src="assets/guide/fin-expense-report.png" alt="The Expenses report"><figcaption>Expenses by category</figcaption></figure>
+</section>

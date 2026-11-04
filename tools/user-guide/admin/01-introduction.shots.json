@@ -1,0 +1,14 @@
+[
+ {
+  "name": "aint-header",
+  "path": "/",
+  "settle": 2000,
+  "element": "app-header"
+ },
+ {
+  "name": "aint-licence",
+  "path": "/settings/licence",
+  "waitFor": "text=Licensed to",
+  "element": ".card-primary .list-group"
+ }
+]

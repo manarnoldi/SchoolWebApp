@@ -1,0 +1,47 @@
+[
+ {
+  "name": "gs-login",
+  "path": "/login",
+  "anonymous": true,
+  "waitFor": "input[formControlName=\"username\"]"
+ },
+ {
+  "name": "gs-dashboard-full",
+  "path": "/",
+  "settle": 2500,
+  "height": 1420
+ },
+ {
+  "name": "gs-header",
+  "path": "/",
+  "settle": 2000,
+  "element": "app-header"
+ },
+ {
+  "name": "gs-user-menu",
+  "path": "/",
+  "steps": [
+   {
+    "click": "#userDropdownBtn",
+    "wait": 500
+   }
+  ],
+  "element": ".user-menu .dropdown-menu"
+ },
+ {
+  "name": "gs-profile",
+  "path": "/profile",
+  "waitFor": "h1"
+ },
+ {
+  "name": "gs-notifications",
+  "path": "/",
+  "steps": [
+   {
+    "click": "#notificationsDropdownBtn",
+    "wait": 600
+   }
+  ],
+  "element": "app-notifications .dropdown-menu"
+ }
+]

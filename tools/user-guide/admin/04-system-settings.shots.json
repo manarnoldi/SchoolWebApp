@@ -1,0 +1,46 @@
+[
+ {
+  "name": "aset-global",
+  "path": "/settings/global-settings",
+  "waitFor": ".settings-section.open table tbody tr",
+  "settle": 1500
+ },
+ {
+  "name": "aset-global-security",
+  "path": "/settings/global-settings",
+  "waitFor": ".settings-section.open table tbody tr",
+  "steps": [
+   {
+    "click": ".section-head:has-text('Security Settings')",
+    "wait": 800
+   }
+  ],
+  "element": ".settings-section.open"
+ },
+ {
+  "name": "aset-workflows",
+  "path": "/settings/approval-workflows",
+  "waitFor": "table tbody tr",
+  "settle": 1200,
+  "height": 1000
+ },
+ {
+  "name": "aset-workflow-edit",
+  "path": "/settings/approval-workflows",
+  "waitFor": "table tbody tr",
+  "steps": [
+   {
+    "click": "tr:has-text('Expense Request') button[title=Edit]",
+    "wait": 1000
+   }
+  ],
+  "element": ".col-md-5 .card"
+ },
+ {
+  "name": "aset-licence",
+  "path": "/settings/licence",
+  "waitFor": "text=Licensed to",
+  "settle": 1500,
+  "element": "section.content"
+ }
+]

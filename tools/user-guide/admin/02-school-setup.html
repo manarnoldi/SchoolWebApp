@@ -1,0 +1,136 @@
+<section class="chapter" id="admin-school-setup">
+<h1 class="ch">School Set-up</h1>
+<p>This chapter covers the school's structure: its details, the academic years and terms, the classes, the calendar, and the lists behind the drop-down boxes. Set these up first, in the order of the <a href="#aint-checklist">set-up checklist</a>; almost every other page depends on them.</p>
+<p>Most pages here work the same way: a list, an <span class="ui">Add&hellip;</span> button at the top right that opens a form, and an edit (pencil) and delete (bin) icon on each row. Where a list has filters (year, curriculum), choose them and click <span class="ui">Search</span>.</p>
+<div class="callout important"><span class="lbl">Deleting.</span> Do not delete a year, term, class or list item that is already in use. Records that point to it (learners, marks, invoices) depend on it. Correct its name instead, or close it.</div>
+
+<h2 class="sub" id="asch-details">School Details</h2>
+<p><span class="path">School &gt; Details</span> holds the school's name, logo and contacts, and the headings printed on report forms and other documents. The page opens read-only.</p>
+<h3>Editing the school details</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Edit school details</span> at the top right. The fields open for editing and a <span class="ui">Select logo</span> box appears under the logo.</li>
+  <li>Fill in or correct the fields (see the table below). To change the logo, click <span class="ui">Choose File</span> and pick an image; a square logo looks best.</li>
+  <li>Under <span class="ui">School levels available</span>, tick the levels the school runs: Pre-Primary, Lower Primary, Upper Primary, Junior school, Senior school.</li>
+  <li>Click <span class="ui">Update Records</span> and confirm. Click <span class="ui">Stop editing school details</span> to leave without saving.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/asch-details.png" alt="School details being edited"><figcaption>School details, open for editing</figcaption></figure>
+<table>
+  <tr><th style="width:28%">Field</th><th>Used for</th></tr>
+  <tr><td>School name, email, phone number, address, website</td><td>Printed on report forms, receipts, statements and letters.</td></tr>
+  <tr><td>Initials</td><td>The school's short name, used in codes and short headings.</td></tr>
+  <tr><td>Report header, title, subtitle, title details</td><td>The heading lines at the top of printed reports.</td></tr>
+  <tr><td>Motto, vision, mission</td><td>The school's statements, kept with its details.</td></tr>
+</table>
+<div class="callout"><span class="lbl">Only Administrators.</span> The <span class="ui">Edit school details</span> link shows only to users holding the Administrator role.</div>
+
+<h2 class="sub" id="asch-years">Academic Years</h2>
+<p><span class="path">School &gt; Academic Years</span> lists the school years. Every term, class and set of marks belongs to a year, so create the year before anything else in it.</p>
+<figure class="shot"><img src="assets/guide/asch-years.png" alt="The academic years list"><figcaption>The academic years</figcaption></figure>
+<h3>Adding a year</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add academic year</span>.</li>
+  <li>Type the <span class="ui">Academic year</span> (for example <em>2027</em>) and its <span class="ui">Abbreviation</span>.</li>
+  <li>Set the <span class="ui">Start date</span> and <span class="ui">End date</span>, and a <span class="ui">Rank</span>: the order the years are listed in (1, 2, 3&hellip;).</li>
+  <li>Switch <span class="ui">Is the year active?</span> on for the current year. The list shows an active year as <em>Open</em> and the others as <em>Closed</em>.</li>
+  <li>Click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/asch-year-form.png" alt="The academic year form"><figcaption>Adding an academic year</figcaption></figure>
+<div class="callout tip"><span class="lbl">One open year.</span> Keep only the current year open. Pages that pick "this year" by default (elections, for example) take the open year.</div>
+
+<h2 class="sub" id="asch-sessions">Sessions (Terms)</h2>
+<p><span class="path">School &gt; Sessions</span> holds the terms of each year. Choose the year and curriculum at the top and click <span class="ui">Search</span> to see that year's terms.</p>
+<figure class="shot"><img src="assets/guide/asch-sessions.png" alt="The terms of 2026"><figcaption>The three terms of a year</figcaption></figure>
+<h3>Adding a term</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add session</span>.</li>
+  <li>Choose the <span class="ui">Curriculum</span> and the <span class="ui">Academic year</span>.</li>
+  <li>Type the <span class="ui">Session name</span> (<em>Term 1</em>) and an <span class="ui">Abbreviation</span>, and choose the <span class="ui">Session type</span> (normally <em>Term</em>).</li>
+  <li>Give it a <span class="ui">Rank</span> (1 for Term 1, 2 for Term 2&hellip;).</li>
+  <li>Set the <span class="ui">Start date</span> (opening day) and <span class="ui">End date</span> (closing day). The end date cannot be before the start date.</li>
+  <li>Switch <span class="ui">Is the session active?</span> on for the current term, and click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/asch-session-form.png" alt="The session form"><figcaption>Adding a term</figcaption></figure>
+<div class="callout important"><span class="lbl">Get the dates right.</span> ShuleNova works out "the current term" from the dates: the term that today falls in, or during a holiday the last term that has started. The dashboard and the pages that open on the current term use it. The dates also print on report forms ("This term ends on / Next term begins on").</div>
+
+<h2 class="sub" id="asch-classes">Classes</h2>
+<p>A class in ShuleNova is a <strong>learning level</strong> (a grade, such as Grade 4) plus a <strong>stream</strong> (East, West&hellip;) in one academic year: <em>Grade 4E 2026</em>. Learners are placed in a class each year, and teachers are allocated to it. The learning levels and streams themselves are set up in <a href="#asch-dropdowns">Dropdowns</a>.</p>
+<p><span class="path">School &gt; Classes</span> lists a year's classes. Choose the year (and if you like the curriculum and level) and click <span class="ui">Search</span>. Each row shows the class leaders and, in <span class="ui">Students</span>, how many learners are in it; click the number to see them.</p>
+<figure class="shot"><img src="assets/guide/asch-classes.png" alt="The classes of 2026"><figcaption>A year's classes, with their leaders and learner counts</figcaption></figure>
+<h3>Adding a class</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add school class</span>.</li>
+  <li>Choose the <span class="ui">Academic year</span>, the <span class="ui">Class/Learning level</span> and the <span class="ui">Stream</span>.</li>
+  <li>Type the <span class="ui">Class name</span> as it should appear on lists and reports (for example <em>Grade 4E 2026</em>) and a <span class="ui">Rank</span> (the order classes are listed in: Day Care first, Grade 9 last).</li>
+  <li>Click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/asch-class-form.png" alt="The class form"><figcaption>Adding a class</figcaption></figure>
+<h3>Copying last year's classes into a new year</h3>
+<p>At the start of a year you do not need to add every class by hand.</p>
+<ol class="steps">
+  <li>Create the new academic year first.</li>
+  <li>On the Classes page choose the <strong>new</strong> year at the top.</li>
+  <li>Click <span class="ui">Copy classes from another year</span>, pick the year to copy from, and click <span class="ui">Copy classes</span>.</li>
+</ol>
+<p>Each class is copied with its level, stream and rank, and the year in its name is changed. Learners and class leaders are not copied (move learners up with <span class="path">Students &gt; Class Assignment</span>). Classes the new year already has are left as they are, so it is safe to run twice.</p>
+<figure class="shot"><img src="assets/guide/asch-class-copy.png" alt="Copy classes into another year"><figcaption>Copying classes into the new year</figcaption></figure>
+<h3>Class leaders</h3>
+<p>Click the spanner in the <span class="ui">Leadership</span> column to open a class and add its leaders: a learner, teacher or parent in a leadership role (class monitor, class president, Class CEO&hellip;). The roles themselves are the <em>Leadership Roles</em> list in Dropdowns.</p>
+
+<h2 class="sub" id="asch-events">Events</h2>
+<p><span class="path">School &gt; Events</span> is the school calendar: opening and closing days, exams, sports day, trips. The next few events show on everyone's dashboard. Choose the year and click <span class="ui">Search</span> to see its events.</p>
+<figure class="shot"><img src="assets/guide/asch-events.png" alt="The events of 2026"><figcaption>The school calendar</figcaption></figure>
+<h3>Adding an event</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add event</span>.</li>
+  <li>Choose the <span class="ui">Academic year</span> and the term (<span class="ui">Session name</span>).</li>
+  <li>Type the <span class="ui">Event name</span> and <span class="ui">Event location</span>, set the start and end dates, add a description if useful, and click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/asch-event-form.png" alt="The event form"><figcaption>Adding an event</figcaption></figure>
+<p>How many upcoming events the dashboard shows is set in <a href="#aset-global">Global Settings</a> (Upcoming Events on Dashboard).</p>
+
+<h2 class="sub" id="asch-dropdowns">Dropdowns</h2>
+<p><span class="path">Settings &gt; Dropdowns</span> holds the lists that fill the drop-down boxes across the system. The sections are down the left; click a section to open it and a list to see its items on the right.</p>
+<figure class="shot"><img src="assets/guide/asch-dropdowns.png" alt="The Dropdowns page with Learning Levels open"><figcaption>Dropdowns: the sections on the left, the Learning Levels list on the right</figcaption></figure>
+<h3>Adding or changing an item</h3>
+<ol class="steps">
+  <li>Open the section and click the list (for example <span class="ui">Learning Levels</span>).</li>
+  <li>Click <span class="ui">Add&hellip;</span> at the top of the list, or the pencil on a row to change it.</li>
+  <li>Fill in the fields. Most lists have a <span class="ui">Name</span>, a <span class="ui">Rank</span> (the order items are listed in boxes) and a <span class="ui">Description</span>.</li>
+  <li>Click <span class="ui">Save</span> (or <span class="ui">Update</span>).</li>
+</ol>
+<figure class="shot"><img src="assets/guide/asch-dropdown-form.png" alt="Editing a learning level"><figcaption>Editing a learning level</figcaption></figure>
+<p>The sections are:</p>
+<ul>
+  <li><strong>System Settings</strong>: the general lists, below. Always there.</li>
+  <li><strong>Academics</strong>: Curricula and Subject Groups, and links to Subjects, Edu-Level Subjects and the Grading System.<!--module:Academics--> Exam Types are here too; this section is covered in the Academics Set-up chapter.<!--/module:Academics--></li>
+  <!--module:Finance--><li><strong>Finance</strong>: the Chart of Accounts, Fee Categories and Expense Categories. See the Finance chapter.</li><!--/module:Finance-->
+  <!--module:Payroll--><li><strong>Payroll Settings</strong>: links to Earning Types, Deduction Types, Tax Bands, NSSF Bands, Reliefs and Rates &amp; Limits. See the Payroll chapter.</li><!--/module:Payroll-->
+  <!--module:Academics--><li><strong>CBE Settings</strong>: assessment types, competencies, values, co-curricular and community service lists, and the curriculum design pages. See the Academics Set-up chapter.</li><!--/module:Academics-->
+</ul>
+<h3>The school structure lists</h3>
+<p>These build the classes. Set them up in this order, since each one points to the one before:</p>
+<table>
+  <tr><th style="width:24%">List</th><th>What it holds</th></tr>
+  <tr><td>Curricula <small>(Academics section)</small></td><td>The curricula the school teaches, such as CBE. Each has a name and a code.</td></tr>
+  <tr><td>Education Level Types</td><td>The broad stages: Pre-primary, Primary, Junior School&hellip;</td></tr>
+  <tr><td>Education Levels</td><td>The levels within a curriculum (Pre-primary, Lower primary, Upper primary, Junior School&hellip;), each with its abbreviation, number of years, type and curriculum.</td></tr>
+  <tr><td>Learning Levels</td><td>The grades: Day Care, PP 1, Grade 1&hellip; Grade 9, each in its education level. <span class="ui">Requires Teaching Documents</span>: untick it for levels (such as day care) where teachers do not write schemes of work and lesson plans.</td></tr>
+  <tr><td>Streams</td><td>The streams a grade can be split into (East, West, or just one stream), with an abbreviation used in class names.</td></tr>
+</table>
+<h3>The general lists</h3>
+<table>
+  <tr><th style="width:24%">List</th><th>Used for</th></tr>
+  <tr><td>Genders, Religions, Nationalities</td><td>Learner, parent and staff records.</td></tr>
+  <tr><td>Relationships</td><td>How a parent or guardian is related to a learner (Father, Mother, Guardian&hellip;).</td></tr>
+  <tr><td>Occupations</td><td>Parents' occupations.</td></tr>
+  <tr><td>Designations</td><td>Staff job titles (Head Teacher, Teacher, Bursar&hellip;).</td></tr>
+  <tr><td>Employment Types</td><td>Permanent, contract, BOM and so on, on staff records.</td></tr>
+  <tr><td>Staff Categories</td><td>Teaching and non-teaching groups of staff, with a code and <span class="ui">For Teaching</span>.<!--module:Payroll--> The <span class="ui">Salary Expense Account</span> is where that category's salaries are charged in the payroll journal.<!--/module:Payroll--></td></tr>
+  <tr><td>Departments</td><td>The school's departments, each with its <span class="ui">Head of Department</span> (a member of staff). The code is made automatically from the prefix in Global Settings.</td></tr>
+  <tr><td>Learning Modes</td><td>How a learner attends (day, boarding&hellip;).</td></tr>
+  <tr><td>Session Types</td><td>The kinds of session (Term) chosen when adding a term.</td></tr>
+  <tr><td>Leadership Roles</td><td>Class leadership roles, each for a <span class="ui">Person Type</span>: Student, Teacher or Parent.</td></tr>
+  <tr><td>Occurrence Types, Outcomes</td><td>Discipline records for learners and staff: what happened and how it was resolved.</td></tr>
+</table>
+<div class="callout tip"><span class="lbl">Keep lists tidy.</span> Check a list for an existing item before adding a new one. Two items called "Guardian" and "guardian" make reports harder to read and cannot easily be merged later.</div>
+</section>

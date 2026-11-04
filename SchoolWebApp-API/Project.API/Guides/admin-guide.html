@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShuleNova - Administrator Guide</title>
+<style>
+  :root {
+    --blue: #2B7BD6;      /* "Shule" in the logo: h2, links */
+    --purple: #5B3FC4;    /* "Nova": chapter headings */
+    --orange: #F7A325;    /* the ring: rules and accents */
+    --slate: #3D5A75;     /* the book: h3 */
+    --ink: #2f3640;
+    --muted: #6b7280;
+    --border: #d5dcea;
+    --soft: #f5f7fc;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; scroll-behavior: smooth; }
+  body {
+    margin: 0; background: #e9ecf2; color: var(--ink);
+    font-family: 'Segoe UI', Calibri, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 15px; line-height: 1.6;
+  }
+  .page { max-width: 980px; margin: 1.2rem auto; background: #fff; box-shadow: 0 2px 14px rgba(20,30,55,.14); }
+
+  /* ---- Cover ---- */
+  .cover { padding: 3.5rem 3rem 3rem; text-align: center; border-top: 6px solid var(--orange);
+    background: linear-gradient(160deg, #fff 55%, #eef1fb); }
+  .cover img { width: 420px; max-width: 90%; }
+  .cover h1 { margin: 2.2rem 0 .3rem; font-size: 2.1rem; color: var(--purple); letter-spacing: .02em; }
+  .cover .sub { color: var(--slate); font-size: 1.05rem; }
+  .cover .meta { margin-top: 2rem; color: var(--muted); font-size: .88rem; }
+
+  .content { padding: 1.4rem 3rem 2.5rem; border-top: 4px solid var(--blue); }
+  p { margin: 0 0 .85rem; }
+  a { color: var(--blue); }
+
+  /* ---- Contents ---- */
+  .toc-h, h1.ch { color: var(--purple); font-size: 1.5rem; font-weight: 700; margin: 0 0 1rem;
+    text-transform: uppercase; padding-bottom: .3rem; border-bottom: 2.5px solid var(--orange); }
+  .toc { list-style: none; padding: 0; margin: 0 0 1rem; columns: 2; column-gap: 2.5rem; counter-reset: tch; }
+  .toc ul { list-style: none; padding: 0; margin: 0; counter-reset: tsub; }
+  .toc li { margin: 0; }
+  .toc > li { break-inside: avoid; counter-increment: tch; }
+  .toc a { text-decoration: none; color: var(--ink); display: block; padding: .12rem 0; }
+  .toc > li > a { font-weight: 700; color: var(--purple); margin-top: .45rem; }
+  .toc > li > a::before { content: counter(tch) ". "; }
+  .toc ul > li { counter-increment: tsub; }
+  .toc ul > li > a { padding-left: 1.4rem; font-size: .93em; }
+  .toc ul > li > a::before { content: counter(tch) "." counter(tsub) " "; color: var(--muted); }
+  .toc a:hover { color: var(--orange); }
+
+  /* ---- Chapters: numbered as shown, so a chapter left out for the licence leaves no gap ---- */
+  .content { counter-reset: ch; }
+  .chapter { margin-top: 2.6rem; counter-increment: ch; counter-reset: sub; }
+  h1.ch::before { content: counter(ch) ". "; }
+  h2.sub { color: var(--blue); font-size: 1.22rem; margin: 1.8rem 0 .5rem; counter-increment: sub; }
+  h2.sub::before { content: counter(ch) "." counter(sub) " "; }
+  h3 { color: var(--slate); font-size: 1.03rem; margin: 1.3rem 0 .45rem; }
+  ul, ol { padding-left: 1.3rem; margin: 0 0 .85rem; }
+  li { margin-bottom: .3rem; }
+  ol.steps { counter-reset: step; list-style: none; padding: 0; }
+  ol.steps > li { counter-increment: step; position: relative; padding: .2rem 0 .2rem 2.1rem; }
+  ol.steps > li::before { content: counter(step); position: absolute; left: .2rem; top: .25rem; width: 1.45rem; height: 1.45rem;
+    background: var(--blue); color: #fff; border-radius: 50%; text-align: center; line-height: 1.45rem; font-weight: 700; font-size: .8rem; }
+
+  .callout { border: 1px solid var(--border); background: var(--soft); border-left: 4px solid var(--blue); padding: .55rem .9rem; margin: .9rem 0; font-size: .95em; }
+  .callout .lbl { font-weight: 700; color: var(--blue); }
+  .callout.important { border-left-color: var(--orange); }
+  .callout.important .lbl { color: #c2710c; }
+  .callout.tip { border-left-color: #2fb24b; }
+  .callout.tip .lbl { color: #1f8b3d; }
+
+  table { width: 100%; border-collapse: collapse; margin: .9rem 0; font-size: .93em; }
+  th { background: var(--slate); color: #fff; text-align: left; padding: .45rem .7rem; border: 1px solid #344d66; }
+  td { padding: .45rem .7rem; border: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: #f7f9fd; }
+
+  .ui { font-weight: 600; color: #1f2937; background: #eef1f8; border: 1px solid #d3d9e8; border-radius: 4px; padding: 0 .35em; white-space: nowrap; font-size: .93em; }
+  .path { color: var(--slate); font-weight: 600; }
+
+  figure.shot { margin: 1rem 0 1.3rem; }
+  figure.shot img { display: block; max-width: 100%; height: auto; border: 1px solid #c8d0e0; border-radius: 4px; box-shadow: 0 2px 8px rgba(20,30,55,.12); }
+  figure.shot figcaption { color: var(--muted); font-size: .85rem; margin-top: .35rem; text-align: center; font-style: italic; }
+
+  .doc-footer { text-align: center; color: var(--muted); font-size: .82rem; margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+
+  .print-btn { position: fixed; top: .8rem; right: 1rem; z-index: 50; background: var(--blue); color: #fff; border: 0;
+    padding: .5rem 1rem; border-radius: 6px; font: 600 .85rem 'Segoe UI', Arial, sans-serif; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+  .print-btn:hover { background: var(--purple); }
+
+  @media (max-width: 700px) {
+    .content, .cover { padding-left: 1rem; padding-right: 1rem; }
+    .toc { columns: 1; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; }
+    .print-btn { display: none; }
+    .cover { page-break-after: always; min-height: 90vh; padding-top: 25vh; }
+    .toc-wrap { page-break-after: always; }
+    .chapter { page-break-before: always; margin-top: 0; }
+    figure.shot { page-break-inside: avoid; }
+    h2.sub, h3 { page-break-after: avoid; }
+  }
+</style>
+</head>
+<body>
+<button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+<div class="page">
+  <div class="cover">
+    <img src="assets/img/shule-nova-logo.png" alt="ShuleNova">
+    <h1>Administrator Guide</h1>
+    <div class="sub">Setting up and running ShuleNova for your school</div>
+    <div class="meta">Kodetek Investment Limited &middot; November 2026</div>
+  </div>
+  <div class="content">
+    <div class="toc-wrap">
+      <h2 class="toc-h">Contents</h2>
+      <ul class="toc">
+        <li><a href="#admin-intro">Introduction for Administrators</a><ul><li><a href="#aint-role">What the Administrator Does</a></li><li><a href="#aint-roles">Administrator, SuperAdministrator and Other Roles</a></li><li><a href="#aint-checklist">Setting Up a New School: the Order to Follow</a></li><li><a href="#aint-licence">The Licence</a></li><li><a href="#aint-guides">How These Guides Work</a></li></ul></li>
+        <li><a href="#admin-school-setup">School Set-up</a><ul><li><a href="#asch-details">School Details</a></li><li><a href="#asch-years">Academic Years</a></li><li><a href="#asch-sessions">Sessions (Terms)</a></li><li><a href="#asch-classes">Classes</a></li><li><a href="#asch-events">Events</a></li><li><a href="#asch-dropdowns">Dropdowns</a></li></ul></li>
+        <li><a href="#admin-users-security">Users and Security</a><ul><li><a href="#asec-users">Users</a></li><li><a href="#asec-roles">Roles</a></li><li><a href="#asec-menus">Menu Permissions</a></li><li><a href="#asec-active">Active Users</a></li><li><a href="#asec-audit">Audit Logs</a></li><li><a href="#asec-errors">Error Logs</a></li></ul></li>
+        <li><a href="#admin-system-settings">System Settings</a><ul><li><a href="#aset-global">Global Settings</a></li><li><a href="#aset-workflows">Approval Workflows</a></li><li><a href="#aset-licence">The Licence</a></li></ul></li>
+        <!--module:Academics--><li><a href="#academics-setup">Academics Set-up</a><ul><li><a href="#aaca-order">Set-up Order for a New Year or Term</a></li><li><a href="#aaca-dropdowns">The Dropdowns Page</a></li><li><a href="#aaca-subjects">Subjects</a></li><li><a href="#aaca-grading">The Grading System</a></li><li><a href="#aaca-exam-types">Exam Types</a></li><li><a href="#aaca-curriculum">Curriculum Designs (CBE)</a></li><li><a href="#aaca-allocation">Subject Allocation</a></li><li><a href="#aaca-global">Grading and Academic Settings</a></li><li><a href="#aaca-access">Who Sees What: Academic Permissions</a></li></ul></li><!--/module:Academics-->
+        <!--module:Finance--><li><a href="#finance-setup">Finance Set-up</a><ul><li><a href="#afin-order">Set-up Order for a New School</a></li><li><a href="#afin-accounts">Chart of Accounts</a></li><li><a href="#afin-fee-categories">Fee Categories</a></li><li><a href="#afin-expense-categories">Expense Categories</a></li><li><a href="#afin-settings">Finance Settings</a></li><li><a href="#afin-approvals">Approval Workflows for Finance</a></li><li><a href="#afin-periods">Closing and Reopening Periods</a></li></ul></li><!--/module:Finance-->
+        <!--module:Payroll--><li><a href="#payroll-setup">Payroll Set-up</a><ul><li><a href="#apay-order">Recommended Set-up Order</a></li><li><a href="#apay-global">Payroll in Global Settings</a></li><li><a href="#apay-earnings">Earning Types</a></li><li><a href="#apay-deductions">Deduction Types</a></li><li><a href="#apay-tax">Tax Bands</a></li><li><a href="#apay-nssf">NSSF Bands</a></li><li><a href="#apay-reliefs">Reliefs</a></li><li><a href="#apay-rates">Rates &amp; Limits</a></li><li><a href="#apay-access">Approval and Access</a></li></ul></li><!--/module:Payroll-->
+        <!--module:Elections--><li><a href="#elections-setup">Elections Set-up</a><ul><li><a href="#aele-settings">Elections Settings</a></li><li><a href="#aele-roles">Who Does What</a></li></ul></li><!--/module:Elections-->
+        <!--module:Communications--><li><a href="#communications-setup">Communications Set-up</a><ul><li><a href="#acom-gateway">Gateway Settings</a></li><li><a href="#acom-templates">Message Types and Templates</a></li><li><a href="#acom-contacts">Where Parents' Contacts Come From</a></li><li><a href="#acom-permissions">Who Can Send</a></li></ul></li><!--/module:Communications-->
+      </ul>
+    </div>
+<section class="chapter" id="admin-intro">
+<h1 class="ch">Introduction for Administrators</h1>
+<p>This guide is for the person who sets up and runs ShuleNova for a school: the system administrator. It covers what only an administrator does: the school's structure (years, terms, classes), user accounts and what each role may open, the settings that change how the system behaves, and the licence. Day-to-day work (marking a register, recording a payment, printing a report form) is in the <strong>User Guide</strong>, which every user can open.</p>
+<div class="callout"><span class="lbl">Work on the live site with care.</span> Everything you change here affects every user at once, and every change is recorded in the audit trail under your name. Where a page asks you to confirm, read the message before you click.</div>
+
+<h2 class="sub" id="aint-role">What the Administrator Does</h2>
+<ul>
+  <li><strong>Sets up the school</strong>: its details and logo, the academic years and terms, the classes and streams, the calendar of events, and the lists that fill the drop-down boxes all over the system.</li>
+  <li><strong>Manages people's access</strong>: creates a user account for each member of staff (and, if the school wants, for parents and learners), gives each account its roles, resets forgotten passwords and removes accounts that are no longer needed.</li>
+  <li><strong>Decides what each role sees</strong>: which menus and pages each role can open, and who approves expenses, budgets, schemes of work and other requests.</li>
+  <li><strong>Keeps an eye on the system</strong>: who is signed in, what has been changed and by whom, and any errors the system has recorded.</li>
+  <li><strong>Looks after the licence</strong>: checks when it expires and installs a new key from Kodetek when the school renews or adds a module.</li>
+</ul>
+
+<h2 class="sub" id="aint-roles">Administrator, SuperAdministrator and Other Roles</h2>
+<p>Every user account holds one or more <strong>roles</strong>. A role is a name (Teacher, Accounts, HeadTeacher&hellip;) with a set of menus attached to it. A user with several roles sees everything each of their roles sees.</p>
+<table>
+  <tr><th style="width:24%">Role</th><th>What it means</th></tr>
+  <tr><td>Administrator</td><td>Manages users and roles, menu permissions, approval workflows, the logs and the licence, and opens the administrator guide. What an Administrator sees in the side menu still follows the menus ticked for the Administrator role in <span class="path">Security &gt; Menu Permissions</span>.</td></tr>
+  <tr><td>SuperAdministrator</td><td>Sees every menu, whatever Menu Permissions say. Only a SuperAdministrator can give the SuperAdministrator role to someone or take it away, set up the SMS gateway, and reverse a request that has already been approved. Usually held by Kodetek's support account and at most one senior person at the school. Give it together with Administrator.</td></tr>
+  <tr><td>Viewer</td><td>View-only. Given <em>on top of</em> another role, the user sees what that role sees and can change nothing. For board members, auditors or a demonstration login. See <a href="#asec-viewer">The Viewer Role</a>.</td></tr>
+  <tr><td>Other roles</td><td>Teacher, HeadTeacher, DeputyHeadTeacher, HeadOfDepartment, Accounts and the rest. Each sees the menus ticked for it in Menu Permissions. You can add roles of your own.</td></tr>
+</table>
+<div class="callout tip"><span class="lbl">Keep the Administrator role to a few people.</span> An Administrator can create accounts and change anyone's access. Give it to the one or two people who run the system, not to every head of section.</div>
+
+<h2 class="sub" id="aint-checklist">Setting Up a New School: the Order to Follow</h2>
+<p>Much of ShuleNova depends on things set up before it: a class needs a year and a learning level, a learner needs a class, a mark needs a subject. Setting things up in this order saves going back.</p>
+<table>
+  <tr><th style="width:6%">#</th><th style="width:38%">What</th><th>Where</th></tr>
+  <tr><td>1</td><td>School name, logo, contacts, motto and report headings</td><td><span class="path">School &gt; Details</span> (<a href="#asch-details">School Details</a>)</td></tr>
+  <tr><td>2</td><td>Curricula, education level types, education levels, learning levels (the grades) and streams</td><td><span class="path">Settings &gt; Dropdowns</span> (<a href="#asch-dropdowns">Dropdowns</a>)</td></tr>
+  <tr><td>3</td><td>The academic year</td><td><span class="path">School &gt; Academic Years</span> (<a href="#asch-years">Academic Years</a>)</td></tr>
+  <tr><td>4</td><td>The year's terms with their dates</td><td><span class="path">School &gt; Sessions</span> (<a href="#asch-sessions">Sessions</a>)</td></tr>
+  <tr><td>5</td><td>The year's classes (grade + stream)</td><td><span class="path">School &gt; Classes</span> (<a href="#asch-classes">Classes</a>)</td></tr>
+  <tr><td>6</td><td>The general lists: genders, religions, relationships, designations, staff categories, departments and the rest</td><td><span class="path">Settings &gt; Dropdowns &gt; System Settings</span></td></tr>
+  <tr><td>7</td><td>Staff records, then a user account and roles for each</td><td><span class="path">Staff &gt; Staff Details</span>, then <span class="path">Security &gt; Users</span> (<a href="#asec-users">Users</a>)</td></tr>
+  <tr><td>8</td><td>What each role may open</td><td><span class="path">Security &gt; Menu Permissions</span> (<a href="#asec-menus">Menu Permissions</a>)</td></tr>
+  <tr><td>9</td><td>Learners and their parents, placed in their classes</td><td><span class="path">Students &gt; Basic Details</span> and <span class="path">Students &gt; Parents</span> (see the User Guide)</td></tr>
+  <tr><td>10</td><td>Global settings and approval workflows</td><td><span class="path">Settings &gt; Global Settings</span>, <span class="path">Settings &gt; Approval Workflows</span> (<a href="#aset-global">Global Settings</a>)</td></tr>
+  <tr><td>11</td><td>Each module the school has bought</td><td>The later chapters of this guide</td></tr>
+</table>
+<p>Then, for step 11:</p>
+<ul>
+  <!--module:Academics--><li><strong>Academics</strong>: subjects, the grading system, exam types, the CBE curriculum designs and subject allocation. See the Academics Set-up chapter.</li><!--/module:Academics-->
+  <!--module:Finance--><li><strong>Finance</strong>: the chart of accounts, fee and expense categories, fee structures and the finance settings. See the Finance chapter.</li><!--/module:Finance-->
+  <!--module:Payroll--><li><strong>Payroll</strong>: earning and deduction types, tax and NSSF bands, reliefs, and each employee's salary. See the Payroll chapter.</li><!--/module:Payroll-->
+  <!--module:Elections--><li><strong>Elections</strong>: the elections settings, then each election's posts and polling stations. See the Elections chapter.</li><!--/module:Elections-->
+  <!--module:Communications--><li><strong>Communications</strong>: the SMS gateway (by Kodetek or a SuperAdministrator), message templates and where parents' numbers come from. See the Communications chapter.</li><!--/module:Communications-->
+</ul>
+<div class="callout"><span class="lbl">Each new year.</span> At the start of every year you repeat steps 3 to 5 (a new year, its terms and its classes; the Classes page can copy last year's classes for you), then move learners up with <span class="path">Students &gt; Class Assignment</span>.</div>
+
+<h2 class="sub" id="aint-licence">The Licence</h2>
+<p>ShuleNova is sold as a core system plus paid modules. The <strong>core</strong> (dashboard, school, students, staff, settings, reports and security) is always included. The paid modules are:</p>
+<ul>
+  <li><strong>Academics</strong> (with Teaching Management): assessments, exams, report forms, schemes of work, lesson plans and records of work.</li>
+  <li><strong>Finance</strong>: budgets, fees, invoices, payments, sponsors, expenses and accounts.</li>
+  <li><strong>Payroll</strong>: salaries, loans, payroll processing and payslips.</li>
+  <li><strong>Elections</strong>: student elections, polling stations and results.</li>
+  <li><strong>Communications</strong>: SMS and email messages to parents and staff.</li>
+</ul>
+<p>The licence key Kodetek installs for the school says which modules it includes and until when. A module that is not licensed simply does not appear: its menus, its dashboard cards, its sections in Settings and its chapters in these guides are all hidden. Its data is not deleted. <a href="#aset-licence">The Licence</a> explains how to read the licence and install a new key.</p>
+<figure class="shot"><img src="assets/guide/aint-licence.png" alt="The modules in the school's licence"><figcaption>The modules in the school's licence, from Settings &gt; Licence</figcaption></figure>
+
+<h2 class="sub" id="aint-guides">How These Guides Work</h2>
+<p>The two book icons at the top right of every page open the guides:</p>
+<figure class="shot"><img src="assets/guide/aint-header.png" alt="The top bar with the two guide icons"><figcaption>The top bar: the User Guide (the first book) and the Administrator Guide (the red book)</figcaption></figure>
+<ul>
+  <li>The <strong>User Guide</strong> is for everyone who signs in.</li>
+  <li>The <strong>Administrator Guide</strong> (this one) shows only to users holding the Administrator or SuperAdministrator role.</li>
+  <li>Both show only the chapters and sections for the modules your licence includes, so they always match what the school can use.</li>
+</ul>
+<p>To hide both guides from everyone (for example on a demonstration site), switch off <span class="path">Settings &gt; Global Settings &gt; Security Settings &gt; Show user guides</span> and save. The icons are gone for each user the next time they sign in or refresh the page.</p>
+</section>
+
+<section class="chapter" id="admin-school-setup">
+<h1 class="ch">School Set-up</h1>
+<p>This chapter covers the school's structure: its details, the academic years and terms, the classes, the calendar, and the lists behind the drop-down boxes. Set these up first, in the order of the <a href="#aint-checklist">set-up checklist</a>; almost every other page depends on them.</p>
+<p>Most pages here work the same way: a list, an <span class="ui">Add&hellip;</span> button at the top right that opens a form, and an edit (pencil) and delete (bin) icon on each row. Where a list has filters (year, curriculum), choose them and click <span class="ui">Search</span>.</p>
+<div class="callout important"><span class="lbl">Deleting.</span> Do not delete a year, term, class or list item that is already in use. Records that point to it (learners, marks, invoices) depend on it. Correct its name instead, or close it.</div>
+
+<h2 class="sub" id="asch-details">School Details</h2>
+<p><span class="path">School &gt; Details</span> holds the school's name, logo and contacts, and the headings printed on report forms and other documents. The page opens read-only.</p>
+<h3>Editing the school details</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Edit school details</span> at the top right. The fields open for editing and a <span class="ui">Select logo</span> box appears under the logo.</li>
+  <li>Fill in or correct the fields (see the table below). To change the logo, click <span class="ui">Choose File</span> and pick an image; a square logo looks best.</li>
+  <li>Under <span class="ui">School levels available</span>, tick the levels the school runs: Pre-Primary, Lower Primary, Upper Primary, Junior school, Senior school.</li>
+  <li>Click <span class="ui">Update Records</span> and confirm. Click <span class="ui">Stop editing school details</span> to leave without saving.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/asch-details.png" alt="School details being edited"><figcaption>School details, open for editing</figcaption></figure>
+<table>
+  <tr><th style="width:28%">Field</th><th>Used for</th></tr>
+  <tr><td>School name, email, phone number, address, website</td><td>Printed on report forms, receipts, statements and letters.</td></tr>
+  <tr><td>Initials</td><td>The school's short name, used in codes and short headings.</td></tr>
+  <tr><td>Report header, title, subtitle, title details</td><td>The heading lines at the top of printed reports.</td></tr>
+  <tr><td>Motto, vision, mission</td><td>The school's statements, kept with its details.</td></tr>
+</table>
+<div class="callout"><span class="lbl">Only Administrators.</span> The <span class="ui">Edit school details</span> link shows only to users holding the Administrator role.</div>
+
+<h2 class="sub" id="asch-years">Academic Years</h2>
+<p><span class="path">School &gt; Academic Years</span> lists the school years. Every term, class and set of marks belongs to a year, so create the year before anything else in it.</p>
+<figure class="shot"><img src="assets/guide/asch-years.png" alt="The academic years list"><figcaption>The academic years</figcaption></figure>
+<h3>Adding a year</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add academic year</span>.</li>
+  <li>Type the <span class="ui">Academic year</span> (for example <em>2027</em>) and its <span class="ui">Abbreviation</span>.</li>
+  <li>Set the <span class="ui">Start date</span> and <span class="ui">End date</span>, and a <span class="ui">Rank</span>: the order the years are listed in (1, 2, 3&hellip;).</li>
+  <li>Switch <span class="ui">Is the year active?</span> on for the current year. The list shows an active year as <em>Open</em> and the others as <em>Closed</em>.</li>
+  <li>Click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/asch-year-form.png" alt="The academic year form"><figcaption>Adding an academic year</figcaption></figure>
+<div class="callout tip"><span class="lbl">One open year.</span> Keep only the current year open. Pages that pick "this year" by default (elections, for example) take the open year.</div>
+
+<h2 class="sub" id="asch-sessions">Sessions (Terms)</h2>
+<p><span class="path">School &gt; Sessions</span> holds the terms of each year. Choose the year and curriculum at the top and click <span class="ui">Search</span> to see that year's terms.</p>
+<figure class="shot"><img src="assets/guide/asch-sessions.png" alt="The terms of 2026"><figcaption>The three terms of a year</figcaption></figure>
+<h3>Adding a term</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add session</span>.</li>
+  <li>Choose the <span class="ui">Curriculum</span> and the <span class="ui">Academic year</span>.</li>
+  <li>Type the <span class="ui">Session name</span> (<em>Term 1</em>) and an <span class="ui">Abbreviation</span>, and choose the <span class="ui">Session type</span> (normally <em>Term</em>).</li>
+  <li>Give it a <span class="ui">Rank</span> (1 for Term 1, 2 for Term 2&hellip;).</li>
+  <li>Set the <span class="ui">Start date</span> (opening day) and <span class="ui">End date</span> (closing day). The end date cannot be before the start date.</li>
+  <li>Switch <span class="ui">Is the session active?</span> on for the current term, and click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/asch-session-form.png" alt="The session form"><figcaption>Adding a term</figcaption></figure>
+<div class="callout important"><span class="lbl">Get the dates right.</span> ShuleNova works out "the current term" from the dates: the term that today falls in, or during a holiday the last term that has started. The dashboard and the pages that open on the current term use it. The dates also print on report forms ("This term ends on / Next term begins on").</div>
+
+<h2 class="sub" id="asch-classes">Classes</h2>
+<p>A class in ShuleNova is a <strong>learning level</strong> (a grade, such as Grade 4) plus a <strong>stream</strong> (East, West&hellip;) in one academic year: <em>Grade 4E 2026</em>. Learners are placed in a class each year, and teachers are allocated to it. The learning levels and streams themselves are set up in <a href="#asch-dropdowns">Dropdowns</a>.</p>
+<p><span class="path">School &gt; Classes</span> lists a year's classes. Choose the year (and if you like the curriculum and level) and click <span class="ui">Search</span>. Each row shows the class leaders and, in <span class="ui">Students</span>, how many learners are in it; click the number to see them.</p>
+<figure class="shot"><img src="assets/guide/asch-classes.png" alt="The classes of 2026"><figcaption>A year's classes, with their leaders and learner counts</figcaption></figure>
+<h3>Adding a class</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add school class</span>.</li>
+  <li>Choose the <span class="ui">Academic year</span>, the <span class="ui">Class/Learning level</span> and the <span class="ui">Stream</span>.</li>
+  <li>Type the <span class="ui">Class name</span> as it should appear on lists and reports (for example <em>Grade 4E 2026</em>) and a <span class="ui">Rank</span> (the order classes are listed in: Day Care first, Grade 9 last).</li>
+  <li>Click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/asch-class-form.png" alt="The class form"><figcaption>Adding a class</figcaption></figure>
+<h3>Copying last year's classes into a new year</h3>
+<p>At the start of a year you do not need to add every class by hand.</p>
+<ol class="steps">
+  <li>Create the new academic year first.</li>
+  <li>On the Classes page choose the <strong>new</strong> year at the top.</li>
+  <li>Click <span class="ui">Copy classes from another year</span>, pick the year to copy from, and click <span class="ui">Copy classes</span>.</li>
+</ol>
+<p>Each class is copied with its level, stream and rank, and the year in its name is changed. Learners and class leaders are not copied (move learners up with <span class="path">Students &gt; Class Assignment</span>). Classes the new year already has are left as they are, so it is safe to run twice.</p>
+<figure class="shot"><img src="assets/guide/asch-class-copy.png" alt="Copy classes into another year"><figcaption>Copying classes into the new year</figcaption></figure>
+<h3>Class leaders</h3>
+<p>Click the spanner in the <span class="ui">Leadership</span> column to open a class and add its leaders: a learner, teacher or parent in a leadership role (class monitor, class president, Class CEO&hellip;). The roles themselves are the <em>Leadership Roles</em> list in Dropdowns.</p>
+
+<h2 class="sub" id="asch-events">Events</h2>
+<p><span class="path">School &gt; Events</span> is the school calendar: opening and closing days, exams, sports day, trips. The next few events show on everyone's dashboard. Choose the year and click <span class="ui">Search</span> to see its events.</p>
+<figure class="shot"><img src="assets/guide/asch-events.png" alt="The events of 2026"><figcaption>The school calendar</figcaption></figure>
+<h3>Adding an event</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add event</span>.</li>
+  <li>Choose the <span class="ui">Academic year</span> and the term (<span class="ui">Session name</span>).</li>
+  <li>Type the <span class="ui">Event name</span> and <span class="ui">Event location</span>, set the start and end dates, add a description if useful, and click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/asch-event-form.png" alt="The event form"><figcaption>Adding an event</figcaption></figure>
+<p>How many upcoming events the dashboard shows is set in <a href="#aset-global">Global Settings</a> (Upcoming Events on Dashboard).</p>
+
+<h2 class="sub" id="asch-dropdowns">Dropdowns</h2>
+<p><span class="path">Settings &gt; Dropdowns</span> holds the lists that fill the drop-down boxes across the system. The sections are down the left; click a section to open it and a list to see its items on the right.</p>
+<figure class="shot"><img src="assets/guide/asch-dropdowns.png" alt="The Dropdowns page with Learning Levels open"><figcaption>Dropdowns: the sections on the left, the Learning Levels list on the right</figcaption></figure>
+<h3>Adding or changing an item</h3>
+<ol class="steps">
+  <li>Open the section and click the list (for example <span class="ui">Learning Levels</span>).</li>
+  <li>Click <span class="ui">Add&hellip;</span> at the top of the list, or the pencil on a row to change it.</li>
+  <li>Fill in the fields. Most lists have a <span class="ui">Name</span>, a <span class="ui">Rank</span> (the order items are listed in boxes) and a <span class="ui">Description</span>.</li>
+  <li>Click <span class="ui">Save</span> (or <span class="ui">Update</span>).</li>
+</ol>
+<figure class="shot"><img src="assets/guide/asch-dropdown-form.png" alt="Editing a learning level"><figcaption>Editing a learning level</figcaption></figure>
+<p>The sections are:</p>
+<ul>
+  <li><strong>System Settings</strong>: the general lists, below. Always there.</li>
+  <li><strong>Academics</strong>: Curricula and Subject Groups, and links to Subjects, Edu-Level Subjects and the Grading System.<!--module:Academics--> Exam Types are here too; this section is covered in the Academics Set-up chapter.<!--/module:Academics--></li>
+  <!--module:Finance--><li><strong>Finance</strong>: the Chart of Accounts, Fee Categories and Expense Categories. See the Finance chapter.</li><!--/module:Finance-->
+  <!--module:Payroll--><li><strong>Payroll Settings</strong>: links to Earning Types, Deduction Types, Tax Bands, NSSF Bands, Reliefs and Rates &amp; Limits. See the Payroll chapter.</li><!--/module:Payroll-->
+  <!--module:Academics--><li><strong>CBE Settings</strong>: assessment types, competencies, values, co-curricular and community service lists, and the curriculum design pages. See the Academics Set-up chapter.</li><!--/module:Academics-->
+</ul>
+<h3>The school structure lists</h3>
+<p>These build the classes. Set them up in this order, since each one points to the one before:</p>
+<table>
+  <tr><th style="width:24%">List</th><th>What it holds</th></tr>
+  <tr><td>Curricula <small>(Academics section)</small></td><td>The curricula the school teaches, such as CBE. Each has a name and a code.</td></tr>
+  <tr><td>Education Level Types</td><td>The broad stages: Pre-primary, Primary, Junior School&hellip;</td></tr>
+  <tr><td>Education Levels</td><td>The levels within a curriculum (Pre-primary, Lower primary, Upper primary, Junior School&hellip;), each with its abbreviation, number of years, type and curriculum.</td></tr>
+  <tr><td>Learning Levels</td><td>The grades: Day Care, PP 1, Grade 1&hellip; Grade 9, each in its education level. <span class="ui">Requires Teaching Documents</span>: untick it for levels (such as day care) where teachers do not write schemes of work and lesson plans.</td></tr>
+  <tr><td>Streams</td><td>The streams a grade can be split into (East, West, or just one stream), with an abbreviation used in class names.</td></tr>
+</table>
+<h3>The general lists</h3>
+<table>
+  <tr><th style="width:24%">List</th><th>Used for</th></tr>
+  <tr><td>Genders, Religions, Nationalities</td><td>Learner, parent and staff records.</td></tr>
+  <tr><td>Relationships</td><td>How a parent or guardian is related to a learner (Father, Mother, Guardian&hellip;).</td></tr>
+  <tr><td>Occupations</td><td>Parents' occupations.</td></tr>
+  <tr><td>Designations</td><td>Staff job titles (Head Teacher, Teacher, Bursar&hellip;).</td></tr>
+  <tr><td>Employment Types</td><td>Permanent, contract, BOM and so on, on staff records.</td></tr>
+  <tr><td>Staff Categories</td><td>Teaching and non-teaching groups of staff, with a code and <span class="ui">For Teaching</span>.<!--module:Payroll--> The <span class="ui">Salary Expense Account</span> is where that category's salaries are charged in the payroll journal.<!--/module:Payroll--></td></tr>
+  <tr><td>Departments</td><td>The school's departments, each with its <span class="ui">Head of Department</span> (a member of staff). The code is made automatically from the prefix in Global Settings.</td></tr>
+  <tr><td>Learning Modes</td><td>How a learner attends (day, boarding&hellip;).</td></tr>
+  <tr><td>Session Types</td><td>The kinds of session (Term) chosen when adding a term.</td></tr>
+  <tr><td>Leadership Roles</td><td>Class leadership roles, each for a <span class="ui">Person Type</span>: Student, Teacher or Parent.</td></tr>
+  <tr><td>Occurrence Types, Outcomes</td><td>Discipline records for learners and staff: what happened and how it was resolved.</td></tr>
+</table>
+<div class="callout tip"><span class="lbl">Keep lists tidy.</span> Check a list for an existing item before adding a new one. Two items called "Guardian" and "guardian" make reports harder to read and cannot easily be merged later.</div>
+</section>
+
+<section class="chapter" id="admin-users-security">
+<h1 class="ch">Users and Security</h1>
+<p>Everyone who uses ShuleNova signs in with their own account. This chapter covers creating those accounts, giving them roles, choosing what each role can open, and checking who has done what. The pages are under the <span class="path">Security</span> menu.</p>
+<div class="callout"><span class="lbl">Can't see the Security menu?</span> A SuperAdministrator always sees it. Anyone else sees it only if <span class="path">Security</span> pages are ticked for one of their roles in <a href="#asec-menus">Menu Permissions</a>. An Administrator can also open the pages directly by their address, for example <span class="path">/security/users</span>.</div>
+
+<h2 class="sub" id="asec-users">Users</h2>
+<p><span class="path">Security &gt; Users</span> lists every account: the username, email and name, the person it is linked to (a member of staff, a learner or a parent) and its roles. Type in <span class="ui">Search</span> to find an account by username, email, name or linked person.</p>
+<figure class="shot"><img src="assets/guide/asec-users.png" alt="The users list"><figcaption>The users list</figcaption></figure>
+<p>Each row has three buttons: edit (pencil), <span class="ui">Reset Password</span> (key) and delete (bin).</p>
+
+<h3>Creating an account</h3>
+<p>Add the person first (<span class="path">Staff &gt; Staff Details</span>, or the learner or parent), then:</p>
+<ol class="steps">
+  <li>Click <span class="ui">Add User</span>.</li>
+  <li>Under <span class="ui">Linked Person</span>, click <span class="ui">Staff</span>, <span class="ui">Student</span> or <span class="ui">Parent</span>, then type a name, UPI or email in <span class="ui">Person</span> and pick the person. ShuleNova fills in the first name, last name and email from their record; you can still change them.</li>
+  <li>Type a <span class="ui">Username</span> (short and easy to type, such as the first name) and check the <span class="ui">Email</span>. Both must be unique.</li>
+  <li>Type a starting <span class="ui">Password</span> of at least 6 characters. The eye button shows what you typed.</li>
+  <li>Under <span class="ui">Roles</span>, tick the roles the person needs (for a teacher, <em>Teacher</em>; for the bursar, <em>Accounts</em>; and so on).</li>
+  <li>Click <span class="ui">Save</span> and confirm.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/asec-user-form.png" alt="Editing a user"><figcaption>A user linked to a member of staff, with the Teacher and HeadOfDepartment roles</figcaption></figure>
+<p>Give the person their username and starting password. At their first sign-in ShuleNova makes them choose their own password before they continue.</p>
+<div class="callout important"><span class="lbl">Link staff accounts.</span> Linking is optional, but many pages depend on it. A teacher sees "my classes", "my subjects" and their own schemes of work only through the staff record their account is linked to, and a head of department sees their department the same way. A person can be linked to one account only.</div>
+
+<h3>Changing an account or its roles</h3>
+<ol class="steps">
+  <li>Click the pencil on the account.</li>
+  <li>Change the details, tick or untick roles, or link a different person (<span class="ui">Clear</span> removes the link).</li>
+  <li>Leave <span class="ui">Password</span> blank to keep the current one.</li>
+  <li>Click <span class="ui">Update</span>. The role changes are saved straight after the details.</li>
+</ol>
+<p>A user's new roles take effect the next time they sign in.</p>
+<div class="callout"><span class="lbl">The lock on SuperAdministrator.</span> If you are not a SuperAdministrator yourself, the SuperAdministrator box is greyed out with a padlock: only a SuperAdministrator can give that role or take it away.</div>
+
+<h3>Resetting a forgotten password</h3>
+<p>ShuleNova does not send password reset emails. When someone forgets their password:</p>
+<ol class="steps">
+  <li>Click the key button on their account.</li>
+  <li>Type a temporary password (at least 6 characters) and click <span class="ui">Reset Password</span>.</li>
+  <li>Give the temporary password to the person privately. At their next sign-in they must choose a new one.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/asec-reset-password.png" alt="Resetting a password"><figcaption>Resetting a user's password</figcaption></figure>
+
+<h3>Removing an account</h3>
+<p>When someone leaves, click the bin on their account and confirm. The account is deleted and can no longer sign in; the audit trail still shows what was done under their name.</p>
+
+<h2 class="sub" id="asec-roles">Roles</h2>
+<p><span class="path">Security &gt; Roles</span> lists the roles, with how many users hold each one.</p>
+<figure class="shot"><img src="assets/guide/asec-roles.png" alt="The roles list"><figcaption>The roles and the number of users in each</figcaption></figure>
+<ul>
+  <li>Click the eye button on a role to see who holds it: their name, username and email.</li>
+  <li>Click <span class="ui">Add Role</span> to make a new role (for example <em>Librarian</em>), then choose its menus in <a href="#asec-menus">Menu Permissions</a> and give it to users on the Users page.</li>
+  <li>The pencil renames a role; the bin deletes it.</li>
+</ul>
+<figure class="shot"><img src="assets/guide/asec-role-users.png" alt="The users holding a role"><figcaption>The users holding a role</figcaption></figure>
+<div class="callout important"><span class="lbl">Do not rename or delete the built-in roles.</span> ShuleNova looks for some roles by name: Administrator, SuperAdministrator, Teacher, HeadTeacher, HeadOfDepartment, Accounts and Viewer among them. Renaming or deleting one of these breaks the features that rely on it. Add new roles instead.</div>
+
+<h3 id="asec-viewer">The Viewer role</h3>
+<p><strong>Viewer</strong> makes an account view-only. Give it <em>on top of</em> another role: the user sees exactly what that other role sees, and can change nothing. Administrator + Viewer sees the whole school; Accounts + Viewer sees the finance pages. It suits:</p>
+<ul>
+  <li>a board member or the school's owner who wants to look but not touch;</li>
+  <li>an auditor checking the books;</li>
+  <li>a shared demonstration login.</li>
+</ul>
+<p>A viewer's pages look normal, buttons included, but every save, change or delete is refused with "This account is view-only. Changes are not saved.", and a yellow <span class="ui">View only</span> badge shows in their top bar. They can still sign in and out and print. A viewer cannot change their own password either, and is never asked to, so a shared login keeps working. In the Users form the Viewer box is marked <span class="ui">view only</span>.</p>
+
+<h2 class="sub" id="asec-menus">Menu Permissions</h2>
+<p><span class="path">Security &gt; Menu Permissions</span> decides which menus and pages each role can open. It is the main way to control access: a user sees in the side menu only the pages ticked for at least one of their roles, and the system refuses the rest even if they type the address.</p>
+<ol class="steps">
+  <li>Click a role in <span class="ui">Select Role</span> on the left. Its menus appear on the right, grouped as in the side menu (Dashboard, School, Staff, Students&hellip;), with a count such as <em>5/6</em> of what is ticked in each group.</li>
+  <li>Tick or untick pages. The box on a group's dark bar ticks or unticks the whole group; <span class="ui">All</span> and <span class="ui">None</span> do the whole list.</li>
+  <li>Click <span class="ui">Save</span>. ShuleNova says how many pages will be added and removed; confirm.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/asec-menu-permissions.png" alt="Menu permissions for a role"><figcaption>The HeadOfDepartment role: the teaching documents card and the Teaching Management pages</figcaption></figure>
+<p>Users see the change the next time they sign in or refresh the page.</p>
+<h3>What else is on the list</h3>
+<ul>
+  <li><strong>Dashboard cards</strong>: under Dashboard, each dashboard card (class exam performance, fees, CBE assessments, teaching documents, payroll, elections, messages) is a permission of its own, so the fees card can go to the bursar and not to teachers.</li>
+  <li><strong>Permission flags</strong>: some entries are not pages but extra rights.<!--module:Academics--> <span class="ui">Student Assessments (Admin)</span> lets a role enter assessment marks for any teacher, class and subject, not only the role holder's own allocations. <span class="ui">Whole-school Access (Admin)</span> under Teaching Management lets a role see and open every teacher's schemes of work, lesson plans and records of work (heads of department see their own departments without it).<!--/module:Academics--> Tick them only for the roles that need them.</li>
+  <li><strong>Settings and set-up pages</strong>: saving on a set-up page (school details, years, terms, dropdowns, global settings) is accepted only from a role that holds that page.</li>
+  <li>Only the modules your licence includes are listed.</li>
+</ul>
+<div class="callout"><span class="lbl">SuperAdministrator.</span> Super Administrators have full access whatever is ticked for them here. Every other role, Administrator included, follows its ticks, so make sure the Administrator role holds every page administrators need.</div>
+<div class="callout tip"><span class="lbl">Start small.</span> A role with nothing ticked sees only the dashboard. When adding a role, tick what the job needs, sign in as a test user with that role, and add more if something is missing.</div>
+
+<h2 class="sub" id="asec-active">Active Users</h2>
+<p><span class="path">Security &gt; Active Users</span> lists who is signed in now, with when they signed in and from which IP address. Click <span class="ui">Refresh</span> to update it. Use it, for example, before an update to see who is working.</p>
+<figure class="shot"><img src="assets/guide/asec-active-users.png" alt="Active users"><figcaption>Users signed in now</figcaption></figure>
+<p>The list comes from the audit trail: a user whose last sign-in within the last 10 hours was not followed by a sign-out. Someone who closed their browser without signing out stays listed until their session would have expired.</p>
+
+<h2 class="sub" id="asec-audit">Audit Logs</h2>
+<p><span class="path">Security &gt; Audit Logs</span> (the audit trail) records who did what and when: every record created, changed or deleted, every sign-in, failed sign-in and sign-out, and printed documents.</p>
+<ol class="steps">
+  <li>Set the <span class="ui">From</span> and <span class="ui">To</span> dates (the page opens on today).</li>
+  <li>Narrow it if you like: a <span class="ui">User</span>, an <span class="ui">Action</span> (Create, Update, Delete, Login, LoginFailed, Logout&hellip;), an <span class="ui">Entity</span> (the kind of record), or words in the search box.</li>
+  <li>Click <span class="ui">Search</span>. <span class="ui">Export CSV</span> saves every matching row to open in Excel.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/asec-audit-logs.png" alt="The audit trail"><figcaption>The audit trail</figcaption></figure>
+<p>Click the eye on a row to see the detail: who, when, from where, and for a change the <span class="ui">Old values</span> and <span class="ui">New values</span> side by side.</p>
+<figure class="shot"><img src="assets/guide/asec-audit-detail.png" alt="An audit row in detail"><figcaption>One audit row: here a role given to a user</figcaption></figure>
+<div class="callout tip"><span class="lbl">Several failed sign-ins?</span> Filter on the action <em>LoginFailed</em>. Many failures for one username can mean someone is guessing a password; reset it and tell the user.</div>
+
+<h2 class="sub" id="asec-errors">Error Logs</h2>
+<p><span class="path">Security &gt; Error Logs</span> lists errors the system has recorded, for Kodetek's support team and for you. Filter by date, <span class="ui">Level</span> (Error, Warn), <span class="ui">Status</span> (Open only, Resolved only, All) and search, then click <span class="ui">Search</span>.</p>
+<figure class="shot"><img src="assets/guide/asec-error-logs.png" alt="The error logs"><figcaption>Recorded errors</figcaption></figure>
+<ul>
+  <li><span class="ui">View</span> opens the full entry: the message, the page address and the technical detail.</li>
+  <li>A badge such as <em>&times;3</em> means the same message appears several times on the page, most likely one incident.</li>
+  <li>Once a problem is dealt with, open it, add a note on what was done if you like, and click <span class="ui">Mark resolved</span>. <span class="ui">Reopen</span> undoes it.</li>
+</ul>
+<p>When reporting a problem to Kodetek, give the time it happened and the page you were on; support can match it to the entry here.</p>
+</section>
+
+<section class="chapter" id="admin-system-settings">
+<h1 class="ch">System Settings</h1>
+<p>Three pages under <span class="path">Settings</span> change how ShuleNova behaves for the whole school: <strong>Global Settings</strong> (choices such as how averages are worked out and when idle users are signed out), <strong>Approval Workflows</strong> (who approves what) and <strong>Licence</strong>.</p>
+
+<h2 class="sub" id="aset-global">Global Settings</h2>
+<p><span class="path">Settings &gt; Global Settings</span> groups the settings into sections. Click a section's bar to open it (one opens at a time). Each setting has a short description beside it.</p>
+<figure class="shot"><img src="assets/guide/aset-global.png" alt="Global Settings with the general section open"><figcaption>Global Settings, with the General Dashboard Settings open</figcaption></figure>
+<h3>Changing settings</h3>
+<ol class="steps">
+  <li>Open a section and change the values you need. A changed setting is highlighted, its section shows "<em>n</em> changed", and the bar at the top counts the unsaved changes.</li>
+  <li>You can change settings in several sections before saving.</li>
+  <li>Click <span class="ui">Save changes</span> at the top and confirm. Only the settings you changed are saved.</li>
+</ol>
+<p>If you leave the page without saving, the changes are lost. The bar says <em>All settings are saved</em> when nothing is waiting.</p>
+<h3>The sections</h3>
+<p>Only the sections for the modules your licence includes are shown.</p>
+<table>
+  <tr><th style="width:28%">Section</th><th>What it sets</th></tr>
+  <tr><td>General Dashboard Settings</td><td>How many to-do items and upcoming events the dashboard shows; whether it names the top student; the exam type the dashboard's class performance card shows; how class averages are worked out (only learners who sat the exam, or every learner allocated, absentees counting as 0); whether a reason is required for every absence in student and staff attendance; the prefixes for department codes and budget plan codes; and the <span class="ui">Approval Edit Lock Policy</span> (below).</td></tr>
+  <!--module:Finance--><tr><td>Finance Settings</td><td>The accounting period (termly or yearly), how payments are spread over invoice items, automatic journal posting, the payroll journal, and the default accounts (debtors, cash, PAYE and the rest). See the Finance chapter.</td></tr><!--/module:Finance-->
+  <!--module:Payroll--><tr><td>Payroll Settings</td><td>The school's KRA PIN for payslips, and how net pay is rounded. See the Payroll chapter.</td></tr><!--/module:Payroll-->
+  <!--module:Communications--><tr><td>Communications Settings</td><td>Where parents' phone numbers and emails for messages come from: the parent record, the learner record, or the parent and then the learner. See the Communications chapter.</td></tr><!--/module:Communications-->
+  <!--module:Academics--><tr><td>Teaching Management Settings</td><td>When schemes of work and lesson plans fall due, for the tracker's "overdue" marking.</td></tr>
+  <tr><td>Grading System Settings</td><td>The 4-point or 8-point grading for exams, assessments, values and co-curricular scores; ranking; how totals and means are worked out; broadsheet columns; and per-level overrides. See the Academics Set-up chapter.</td></tr>
+  <tr><td>Report Form Settings</td><td>What the report form shows: marks or grades, the values, co-curricular, responsibilities and community service sections, position, term dates and the title wording.</td></tr><!--/module:Academics-->
+  <!--module:Elections--><tr><td>Elections Settings</td><td>The defaults for new elections: the voter register (frozen or live), how often the results screen refreshes, and the order of names on the ballot.</td></tr><!--/module:Elections-->
+  <tr><td>Security Settings</td><td>Idle sign-out, the warning before it, and whether the user guides are shown (below).</td></tr>
+</table>
+<h3>Approval Edit Lock Policy</h3>
+<p>Under General Dashboard Settings, this decides when a record sent for approval (an expense, a budget, a scheme of work&hellip;) stops being editable:</p>
+<ul>
+  <li><strong>Strict</strong>: locked as soon as it is submitted.</li>
+  <li><strong>Lenient</strong>: still editable until the first approval step is approved.</li>
+</ul>
+<p>An approved record is always locked.</p>
+<h3>Security settings</h3>
+<figure class="shot"><img src="assets/guide/aset-global-security.png" alt="The Security Settings section"><figcaption>Security Settings</figcaption></figure>
+<table>
+  <tr><th style="width:30%">Setting</th><th>What it does</th></tr>
+  <tr><td>Idle timeout (minutes)</td><td>A user who does nothing for this long is signed out. Default 30. Use a shorter time where computers are shared, such as the staff room or the bursar's office.</td></tr>
+  <tr><td>Logout warning countdown (seconds)</td><td>Before signing someone out, ShuleNova shows an "Idle mode detected" warning that counts down for this many seconds; they can click <span class="ui">Resume</span> to carry on. Default 60.</td></tr>
+  <tr><td>Show user guides</td><td>Shows the two guide icons at the top of every page: the User Guide for everyone, the Administrator Guide for administrators. Switch it off on a demonstration site.</td></tr>
+</table>
+<p>New idle timings apply to each user from their next sign-in or page refresh.</p>
+
+<h2 class="sub" id="aset-workflows">Approval Workflows</h2>
+<p>Some records need approving before they count: an expense before it is paid, a scheme of work before it is used. An <strong>approval workflow</strong> sets the steps a kind of record goes through and the role that approves each step. <span class="path">Settings &gt; Approval Workflows</span> has the form on the left and the workflows already set up on the right.</p>
+<figure class="shot"><img src="assets/guide/aset-workflows.png" alt="Approval workflows"><figcaption>The approval workflows</figcaption></figure>
+<h3>How approval works</h3>
+<ol>
+  <li>The workflow says, for each step, which <strong>role</strong> approves it (for example step 1 <em>Reviewer: Accounts</em>, step 2 <em>Approver: HeadTeacher</em>).</li>
+  <li>When someone submits a record, they choose a person for each step from the users holding that step's role. If only one user holds the role, that person is picked for them.</li>
+  <li>Each approver finds the request under the bell at the top of the page, and approves it, rejects it or returns it with a comment. When the last step (marked <span class="ui">Final</span>) approves, the record is approved and locked.</li>
+</ol>
+<p>So for approval to work, the step's role must be given to the right people on the <a href="#asec-users">Users</a> page.</p>
+<h3>The forms that can have a workflow</h3>
+<table>
+  <tr><th style="width:30%">Form</th><th>What is approved</th></tr>
+  <!--module:Finance--><tr><td>Budget, Budget Amendment</td><td>A budget plan, and later changes to it.</td></tr>
+  <tr><td>Expense Request</td><td>An expense, before it is paid.</td></tr>
+  <tr><td>Journal Entry, Credit / Debit Note</td><td>Manual journal entries, and credit and debit notes.</td></tr><!--/module:Finance-->
+  <!--module:Payroll--><tr><td>Payroll</td><td>A processed payroll, before it is locked and posted.</td></tr><!--/module:Payroll-->
+  <!--module:Academics--><tr><td>Scheme of Work</td><td>A teacher's scheme of work for a subject and class, once a term.</td></tr>
+  <tr><td>Lesson Plans (weekly)</td><td>A week's lesson plans for one subject and class.</td></tr><!--/module:Academics-->
+</table>
+<p>A form can have only one <span class="ui">Active</span> workflow at a time.</p>
+<h3>Changing a workflow</h3>
+<ol class="steps">
+  <li>Click the pencil on the workflow in the list. Its details open in the form on the left (<span class="ui">Edit Workflow</span>).</li>
+  <li>Change the <span class="ui">Name</span> or <span class="ui">Description</span> if needed.</li>
+  <li>For each step, set the <span class="ui">Step Name</span> (Reviewer, Approver, Head of Department&hellip;) and the <span class="ui">Role</span> that approves it. Use <span class="ui">Add Step</span> for another step, the arrows to change the order and the bin to remove one. The last step is always the <span class="ui">Final</span> one.</li>
+  <li>Tick who is told at each step: <span class="ui">Notify next</span> (the next approver), <span class="ui">Notify previous</span> (the approver before) and <span class="ui">Notify applicant</span> (the person who submitted it).</li>
+  <li>Leave <span class="ui">Maker-checker (prevent self approval)</span> ticked so that nobody can name themselves as an approver of their own request.</li>
+  <li>Click <span class="ui">Update</span>. <span class="ui">Cancel Edit</span> leaves without saving.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/aset-workflow-edit.png" alt="Editing a workflow"><figcaption>Editing the expense workflow: two steps, both approved by an Administrator</figcaption></figure>
+<p>To create a workflow for a form that has none, fill in the same form without clicking a pencil first, choose the <span class="ui">Form</span>, and click <span class="ui">Create</span>.</p>
+<div class="callout important"><span class="lbl">Changes apply to new requests.</span> Requests already submitted keep the approvers chosen when they were sent. A request that has been approved can be reversed only by a SuperAdministrator.</div>
+
+<h2 class="sub" id="aset-licence">The Licence</h2>
+<p><span class="path">Settings &gt; Licence</span> shows the school's licence on the left and the place to install a new key on the right.</p>
+<figure class="shot"><img src="assets/guide/aset-licence.png" alt="The Licence page"><figcaption>The licence and the box for a new key</figcaption></figure>
+<h3>Reading the licence</h3>
+<ul>
+  <li><strong>Licensed to</strong>, <strong>Licence</strong> (its number), <strong>Site</strong> (the web address it is for, or <em>Any</em>), <strong>Issued</strong> and <strong>Valid until</strong>, with the days left.</li>
+  <li><strong>Modules</strong>: Core is always included. Each paid module shows <em>On</em>, <em>Not licensed</em>, or <em>Licence not valid</em> (it is in the licence, but the licence is not valid on this site or has run out).</li>
+  <li>The badge at the top right gives the licence's state:</li>
+</ul>
+<table>
+  <tr><th style="width:26%">State</th><th>Meaning</th></tr>
+  <tr><td>Active</td><td>All is well.</td></tr>
+  <tr><td>Expiring soon</td><td>Fewer than 30 days left. Contact Kodetek to renew.</td></tr>
+  <tr><td>Expired - grace period</td><td>The licence has run out, but the modules keep working for 14 more days. The page says the date they stop.</td></tr>
+  <tr><td>Expired</td><td>The grace period is over. Only the core features work until a new key is installed. No data is lost.</td></tr>
+  <tr><td>Invalid key</td><td>The key is damaged, usually not copied in full.</td></tr>
+  <tr><td>For another site</td><td>The key was issued for a different web address.</td></tr>
+  <tr><td>Not installed</td><td>No key yet: only the core features are available.</td></tr>
+</table>
+<p>When the state is anything but Active, a key icon with a short warning (such as <em>Licence expiring</em>) shows in every administrator's top bar; click it to open this page.</p>
+<h3>Installing a new key</h3>
+<p>To renew, or to add a module, contact Kodetek. They send a licence key: a long piece of text starting with <em>SNL1.</em></p>
+<ol class="steps">
+  <li>Copy the whole key from Kodetek's message.</li>
+  <li>Paste it into the <span class="ui">Install a licence key</span> box.</li>
+  <li>Click <span class="ui">Install</span>.</li>
+</ol>
+<p>The key is checked before it replaces the current one: a key that is damaged, for another site or already expired is refused with the reason, and the old licence stays. A good key takes effect at once; the page reloads and the menus show the modules it includes. Only Administrators and SuperAdministrators can install a key.</p>
+<div class="callout tip"><span class="lbl">Keep the key private.</span> Treat the key like a password: do not post it in group chats or share it with other schools. Kodetek can always send it again.</div>
+</section>
+
+<!--module:Academics-->
+<section class="chapter" id="academics-setup" data-module="Academics">
+<h1 class="ch">Academics Set-up</h1>
+<p>Before teachers can enter marks, plan lessons or print report forms, the school's academic structure has to be in place: the subjects and which grades take them, the grading bands, the exam types, the CBE curriculum designs, and who teaches what. This chapter is for the person who sets all that up, usually the deputy head (academics) or the director of studies. Most of it is done once and then checked at the start of each year or term.</p>
+<div class="callout"><span class="lbl">Two kinds of "grade".</span> In ShuleNova a <strong>grade</strong> (Grade 4, PP 1) is a <em>learning level</em>, a year of schooling. The <strong>grading system</strong> is the score bands (EE, ME, AE, BE) used to grade marks. This chapter uses "grade" for the first and "grading" for the second.</div>
+
+<h2 class="sub" id="aaca-order">Set-up Order for a New Year or Term</h2>
+<p>Each step relies on the one before it, so work down this list. Steps 1 to 3 are done once when the school starts on ShuleNova and only revisited when something changes.</p>
+<table>
+  <tr><th style="width:5%">#</th><th style="width:33%">Step</th><th>Where</th></tr>
+  <tr><td>1</td><td>Lookup lists: subject groups, exam types, competencies, values, activities</td><td><span class="path">Settings &gt; Dropdowns</span>, Academics and CBE Settings sections</td></tr>
+  <tr><td>2</td><td>Subjects and the grading system</td><td><span class="path">Settings &gt; Dropdowns &gt; Academics</span>: Subjects, Grading System</td></tr>
+  <tr><td>3</td><td>Curriculum designs: strands, sub-strands, outcomes and the rest</td><td><span class="path">Settings &gt; Dropdowns &gt; CBE Settings</span>: Curriculum Upload (Excel)</td></tr>
+  <tr><td>4</td><td>The academic year and its terms (sessions)</td><td><span class="path">School &gt; Academic Years</span>, <span class="path">School &gt; Sessions</span></td></tr>
+  <tr><td>5</td><td>The year's classes</td><td><span class="path">School &gt; Classes</span></td></tr>
+  <tr><td>6</td><td>Subjects for each education level in the new year (copy last year's)</td><td><span class="path">Settings &gt; Dropdowns &gt; Academics &gt; Edu-Level Subjects</span></td></tr>
+  <tr><td>7</td><td>Learners into their new classes</td><td><span class="path">Students &gt; Class Assignment</span></td></tr>
+  <tr><td>8</td><td>Teachers to subjects in each class</td><td><span class="path">Staff &gt; Subject Allocation</span></td></tr>
+  <tr><td>9</td><td>Learners to their subjects, above all the optional ones</td><td><span class="path">Students &gt; Subject Allocation</span></td></tr>
+  <tr><td>10</td><td>Each term's exams</td><td><span class="path">Academics &gt; Exams &gt; School Exams</span>, then <span class="path">Register Exams</span></td></tr>
+  <tr><td>11</td><td>Check the grading, ranking and report-form settings</td><td><span class="path">Settings &gt; Global Settings</span></td></tr>
+</table>
+<p>For a new <strong>term</strong> in the same year only step 10 is needed, plus any changes to allocations (step 8 or 9) when a teacher changes subjects or a learner drops one. The curriculum (strands and outcomes) is not tied to a year, so it carries over by itself.</p>
+
+<h2 class="sub" id="aaca-dropdowns">The Dropdowns Page</h2>
+<p>Most of the academic lists are kept on one page, <span class="path">Settings &gt; Dropdowns</span>. The left column has a section per area. Click a section's title to open it. Click a plain list name (such as <span class="ui">Exam Types</span>) to see its items on the right. The blue names with an arrow icon (such as <span class="ui">Subjects</span>) open a page of their own. Each of those pages has a <span class="ui">Back to Dropdowns</span> button that returns you to the same section.</p>
+<figure class="shot"><img src="assets/guide/aaca-dropdowns.png" alt="The Dropdowns page with the Academics section open and Exam Types selected"><figcaption>Settings &gt; Dropdowns, Academics section, with Exam Types selected</figcaption></figure>
+<h3>Adding or changing an item in a simple list</h3>
+<ol class="steps">
+  <li>Open the section and click the list name.</li>
+  <li>Click <span class="ui">Add &hellip;</span> at the top of the list (for example <span class="ui">Add Exam Types</span>), fill in the form and click <span class="ui">Save</span>.</li>
+  <li>To change an item, click its blue edit button; to remove one, the red delete button. Deleting cannot be undone, so change an item that is already in use rather than deleting it.</li>
+</ol>
+<p><span class="ui">Rank</span> sets the order an item appears in everywhere it is offered, lowest first. It is worth numbering ranks in tens (10, 20, 30) so you can slot a new item in later without renumbering.</p>
+<p>The <strong>Academics</strong> section holds Curricula, Subject Groups and Exam Types, plus links to Subjects, Edu-Level Subjects and the Grading System. The <strong>CBE Settings</strong> section holds the CBE lists and the curriculum design pages:</p>
+<figure class="shot"><img src="assets/guide/aaca-dropdowns-cbe.png" alt="The CBE Settings section of the Dropdowns page" style="max-width:300px"><figcaption>The CBE Settings section: simple lists first, then the pages they link to</figcaption></figure>
+
+<h3>The simple academic lists</h3>
+<table>
+  <tr><th style="width:24%">List</th><th style="width:40%">What it is for</th><th>Where it is used</th></tr>
+  <tr><td>Curricula</td><td>The curricula the school teaches (CBE). Each has a name and a code.</td><td>Education levels, the grading system, strands, exam registration.</td></tr>
+  <tr><td>Subject Groups</td><td>Groups of subjects, such as Languages, STEM or Social Sciences.</td><td>Every subject belongs to one.</td></tr>
+  <tr><td>Exam Types</td><td>The kinds of exam: opening, mid-term, end-term, weekly tests. See <a href="#aaca-exam-types">Exam Types</a>.</td><td>School exams, report forms, the dashboard.</td></tr>
+  <tr><td>Assessment Types</td><td>How a learner was assessed, for example observation, oral or written.</td><td>Chosen when entering Student Assessments.</td></tr>
+  <tr><td>Competencies</td><td>The seven CBE core competencies.</td><td>Linked to sub-strands in the curriculum design.</td></tr>
+  <tr><td>Values</td><td>The national values (Respect, Unity, Responsibility&hellip;).</td><td>The Values register for learners and the curriculum design.</td></tr>
+  <tr><td>Responsibilities &amp; Social Skills</td><td>The responsibilities and social skills learners are rated on. The <span class="ui">Category</span> must be typed exactly <strong>Responsibility</strong> or <strong>Social Skill</strong>.</td><td>Academics &gt; Learner Development &gt; Responsibilities, and the report form.</td></tr>
+  <tr><td>Co-curricular Activities</td><td>Clubs, sports and games (Football, Scouts, Music&hellip;).</td><td>Academics &gt; Learner Development &gt; Co-curricular.</td></tr>
+  <tr><td>Co-curricular Score Types</td><td>The headings a co-curricular activity is scored under, such as Participation or Skill.</td><td>One score column per type on the co-curricular scores page.</td></tr>
+  <tr><td>Community Service Activities</td><td>The community service learning activities.</td><td>Academics &gt; Learner Development &gt; Community Service.</td></tr>
+</table>
+<div class="callout tip"><span class="lbl">Learner development is ready to use.</span> Co-curricular, Values, Responsibilities and Community Service need only the lists above. Teachers then record each learner's activities and ratings under <span class="path">Academics &gt; Learner Development</span>. The ratings themselves (EE, ME, AE, BE) come with the system; whether they use the 4- or 8-point scale is set in <a href="#aaca-global">Global Settings</a>.</div>
+<p>The <strong>System Settings</strong> section also holds lists that academics depend on: <strong>Departments</strong> (with each department's <span class="ui">Head of Department</span>, see <a href="#aaca-access">Who Sees What</a>), <strong>Education Levels</strong> (Pre-primary, Lower primary&hellip;), <strong>Learning Levels</strong> (the grades themselves) and <strong>Streams</strong>. A learning level's <span class="ui">Requires Teaching Documents</span> switch takes a whole grade out of Teaching Management when it is off.</p>
+
+<h2 class="sub" id="aaca-subjects">Subjects</h2>
+<p>Open <span class="path">Settings &gt; Dropdowns &gt; Academics &gt; Subjects</span>. The list shows every subject (learning area) with its code, the number of lessons a week, whether it is optional, its group and department.</p>
+<figure class="shot"><img src="assets/guide/aaca-subjects.png" alt="The Subjects list"><figcaption>Academics: Subjects</figcaption></figure>
+<h3>Adding a subject</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add subject</span>.</li>
+  <li>Fill in the form (all fields marked * are required) and click <span class="ui">Save</span>, then confirm.</li>
+</ol>
+<table>
+  <tr><th style="width:30%">Field</th><th>What it means</th></tr>
+  <tr><td>Subject group, Department name</td><td>Where the subject belongs. The department decides which head of department oversees its teaching documents.</td></tr>
+  <tr><td>Subject name, code, abbreviation</td><td>The abbreviation is what appears in narrow columns, such as on the broadsheet.</td></tr>
+  <tr><td>Number of lessons/Week</td><td>The usual number of lessons. The curriculum design can set it per grade (see <a href="#aaca-curriculum">Curriculum Designs</a>).</td></tr>
+  <tr><td>Head of subject (HOS)</td><td>Optional: the member of staff who leads the subject.</td></tr>
+  <tr><td>Subject optional?</td><td>On for subjects only some learners take (French, a religious education). Optional subjects must be allocated to the learners who take them.</td></tr>
+  <tr><td>Examinable?</td><td>Off for a subject that is taught but not examined.</td></tr>
+  <tr><td>Requires teaching documents?</td><td>Schemes of work, lesson plans and record of work. Turn it off for a learning area with no curriculum design to plan from; it then stays out of Teaching Management. Such subjects show a <span class="ui">No teaching docs</span> tag in the list.</td></tr>
+</table>
+<p>The <span class="ui">Classes</span> button on a subject's row shows, for the chosen year, every class that takes the subject, its teacher, how many learners the class has and how many are taking the subject. Its <span class="ui">Manage allocations</span> button opens the staff allocation page.</p>
+
+<h3>Subjects for each education level and year</h3>
+<p>A subject is offered to a grade only once it is listed for that grade's <strong>education level</strong> in that <strong>academic year</strong>. Open <span class="path">Settings &gt; Dropdowns &gt; Academics &gt; Edu-Level Subjects</span>, choose the year and education level, and click <span class="ui">Search</span>.</p>
+<figure class="shot"><img src="assets/guide/aaca-edu-level-subjects.png" alt="The Edu-Level Subjects page"><figcaption>Academics: Edu-Level Subjects for Pre-primary in 2027</figcaption></figure>
+<ul>
+  <li><span class="ui">Add Edu-Level Subjects</span>: choose the academic year and education level, tick the subjects, and save.</li>
+  <li><span class="ui">Copy to Year</span>: copies the subjects listed on the screen to another academic year. At the start of a new year, open each education level for last year, click <span class="ui">Copy to Year</span>, pick the new year and click <span class="ui">Copy</span>.</li>
+</ul>
+<div class="callout important"><span class="lbl">Missing subject?</span> If a subject does not appear on the staff allocation page, in exam registration or in the curriculum upload for a grade, it is almost always missing here for that year and education level.</div>
+
+<h2 class="sub" id="aaca-grading">The Grading System</h2>
+<p>Open <span class="path">Settings &gt; Dropdowns &gt; Academics &gt; Grading System</span>. Each row is one grade band: a mark range and the grade, points and remarks it gives. The demonstration school has both the CBE scales:</p>
+<ul>
+  <li><strong>4-Point</strong>: EE, ME, AE, BE, worth 4 to 1 points.</li>
+  <li><strong>8-Point</strong>: EE 1, EE 2, ME 1, ME 2, AE 1, AE 2, BE 1, BE 2, worth 8 to 1 points.</li>
+</ul>
+<figure class="shot"><img src="assets/guide/aaca-grading.png" alt="The Grading System list"><figcaption>Academics: Grades, the 8-point and 4-point bands for CBE</figcaption></figure>
+<p>To add or change a band, click <span class="ui">Add grade</span> (or a row's edit button) and fill in the <span class="ui">Curriculum</span>, <span class="ui">Category</span> (4-Point or 8-Point), <span class="ui">Grade name</span>, <span class="ui">Abbreviation</span>, <span class="ui">Minimum score</span> and <span class="ui">Maximum score</span>, <span class="ui">Points</span>, <span class="ui">Rank</span> and the remarks in Swahili and English. The remarks print on report forms.</p>
+<div class="callout important"><span class="lbl">No gaps, no overlaps.</span> The bands of one category must cover every mark from 0 to 100 exactly once (for example 0&ndash;24, 25&ndash;49, 50&ndash;74, 75&ndash;100). A mark that falls in no band gets no grade.</div>
+<p>Which scale is used for exams, assessments, values and co-curricular scores is chosen in <a href="#aaca-global">Global Settings</a>.</p>
+
+<h2 class="sub" id="aaca-exam-types">Exam Types</h2>
+<p>Exam types are the kinds of exam the school sets. Every exam the school registers belongs to one. Manage them under <span class="path">Settings &gt; Dropdowns &gt; Academics &gt; Exam Types</span> (shown in <a href="#aaca-dropdowns">The Dropdowns Page</a>).</p>
+<figure class="shot"><img src="assets/guide/aaca-exam-type-form.png" alt="The Add Exam Types form" style="max-width:800px"><figcaption>Adding an exam type</figcaption></figure>
+<table>
+  <tr><th style="width:30%">Field</th><th>What it does</th></tr>
+  <tr><td>Name, Abbreviation</td><td>For example End-Term Exam, END. The abbreviation heads the exam's column on the report form.</td></tr>
+  <tr><td>Show on report form</td><td>Yes: the type gets its own column on the report form. Leave it off for exams kept for internal tracking only, such as weekly tests or KPSEA and KJSEA practice.</td></tr>
+  <tr><td>Allow several exams per term</td><td>Off (the usual case): a term can hold only one exam of this type, so each report-form column is clear. On: several in a term, such as weekly tests. Registering a second exam of a type that is off is refused, with a message saying which box to tick.</td></tr>
+  <tr><td>Rank</td><td>The order of the columns on the report form (opening, mid-term, end-term).</td></tr>
+</table>
+<p>Each term, the exams themselves are created under <span class="path">Academics &gt; Exams &gt; School Exams</span> (term, exam type and mark-entry deadline) and then registered for the subjects and classes under <span class="path">Register Exams</span>.</p>
+
+<h2 class="sub" id="aaca-curriculum">Curriculum Designs (CBE)</h2>
+<p>The KICD curriculum design of each subject and grade lives in ShuleNova. Teachers build schemes of work, lesson plans and assessments from it, so it must be loaded for every subject and grade the school teaches. A design is made up of:</p>
+<table>
+  <tr><th style="width:28%">Part</th><th>What it is</th></tr>
+  <tr><td>Themes</td><td>Optional groupings of strands, used by some lower-grade designs.</td></tr>
+  <tr><td>Strands and sub-strands</td><td>The topics and sub-topics, with their codes (1.0 Numbers, 1.1 Whole Numbers).</td></tr>
+  <tr><td>Specific learning outcomes</td><td>What the learner should be able to do by the end of a sub-strand. Learners are assessed against these.</td></tr>
+  <tr><td>General outcomes</td><td>The outcomes for an education level as a whole.</td></tr>
+  <tr><td>Broad/Subject outcomes</td><td>The subject's general learning outcomes for an education level.</td></tr>
+  <tr><td>Learning experiences, key inquiry questions</td><td>The suggested activities and questions for each sub-strand.</td></tr>
+  <tr><td>PCIs</td><td>Pertinent and contemporary issues linked to each sub-strand.</td></tr>
+  <tr><td>Lesson allocations</td><td>Lessons per week for each subject in each grade. Schemes of work use it.</td></tr>
+  <tr><td>Rubrics, appendix, other sections</td><td>The assessment rubrics, the suggested resources and assessment methods, and any other section of the design word for word.</td></tr>
+</table>
+<p>Each part has its own page under <span class="path">Settings &gt; Dropdowns &gt; CBE Settings</span> (Strands, Sub-Strands, Specific Outcomes and so on). These pages work alike: choose the year, curriculum, grade and subject, click <span class="ui">Search</span>, and use <span class="ui">Add &hellip;</span> or the edit and delete buttons. They are handy for one small correction. To load a whole design, use the Excel upload below.</p>
+<figure class="shot"><img src="assets/guide/aaca-strands.png" alt="The Strands page for Grade 4 Mathematics"><figcaption>CBE Assessments: Strands for Grade 4 Mathematics</figcaption></figure>
+
+<h3>Loading a design from Excel</h3>
+<p>Open <span class="path">Settings &gt; Dropdowns &gt; CBE Settings &gt; Curriculum Upload (Excel)</span>.</p>
+<ol class="steps">
+  <li>Under <span class="ui">1. Download the template</span>, choose the <span class="ui">Grade</span>, then the <span class="ui">Subject / learning area</span>, and click <span class="ui">Download template</span>. The workbook comes filled in with anything already saved for that subject and grade, so you can also use it to correct one.</li>
+  <li>Fill in the workbook from the KICD design. Its Instructions sheet explains every column: a row per sub-strand with its outcomes, experiences, questions, competencies, values, PCIs and links to other learning areas, plus sheets for the rubrics, the subject outcomes, the essence statement and time allocation, the appendix and the other sections.</li>
+  <li>Under <span class="ui">2. Upload the filled workbook</span>, choose the file. ShuleNova checks it first and shows what it found (how many strands, sub-strands, outcomes and so on). Nothing is saved yet.</li>
+  <li>Fix any problem listed in red in the workbook and choose the file again. Notes in yellow are saved anyway.</li>
+  <li>When there are no problems left, click <span class="ui">Save &hellip; curriculum</span>. Then use <span class="ui">Upload another</span> for the next subject.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/aaca-curriculum-upload.png" alt="The Curriculum Upload page with Grade 4 Mathematics chosen"><figcaption>CBE Settings: Curriculum Upload (Excel)</figcaption></figure>
+<div class="callout tip"><span class="lbl">Subject not in the list?</span> The upload offers only the subjects listed for the grade's education level under <a href="#aaca-subjects">Edu-Level Subjects</a>. Add it there first.</div>
+
+<h3>Editing a design's details</h3>
+<p><span class="path">Settings &gt; Dropdowns &gt; CBE Settings &gt; Curriculum Design Details</span> edits the parts of a design that are not simple lists. Choose the <span class="ui">Grade</span> and the <span class="ui">Subject / learning area</span>, then use the tabs:</p>
+<ul>
+  <li><span class="ui">Design</span>: the title, <span class="ui">Lessons per week</span> (this also becomes the subject's lesson allocation for the grade), the source and the essence statement.</li>
+  <li><span class="ui">Sub-strand details</span>: for each sub-strand, the core competencies, values and links to other learning areas, each tied to an item in the matching list, and the suggested resources, assessment methods and non-formal activities.</li>
+  <li><span class="ui">Rubrics</span>: per strand, the indicators and what Exceeds, Meets, Approaches and Below Expectations look like.</li>
+  <li><span class="ui">Appendix</span> and <span class="ui">Other sections</span>: the remaining lists and text of the design.</li>
+</ul>
+<p>Each tab has its own save button, and an <span class="ui">unsaved changes</span> tag shows until you save. <span class="ui">View the whole design</span> opens the read-only view that teachers see under <span class="path">Teaching Management &gt; Curriculum</span>.</p>
+<figure class="shot"><img src="assets/guide/aaca-curriculum-editor.png" alt="Curriculum Design Details, Sub-strand details tab"><figcaption>Curriculum Design Details: the competencies, values and links of a sub-strand</figcaption></figure>
+
+<h2 class="sub" id="aaca-allocation">Subject Allocation</h2>
+<p>Allocations say who teaches what and who learns what. They are kept per year, so they are part of every new year's set-up.</p>
+<h3>Teachers to subjects</h3>
+<ol class="steps">
+  <li>Open <span class="path">Staff &gt; Subject Allocation</span>.</li>
+  <li>Choose the <span class="ui">Academic Year</span> and the <span class="ui">Class</span>. Every subject of the class's education level is listed.</li>
+  <li>Pick the teacher for each subject under <span class="ui">Assigned Teacher</span>. Changed rows turn yellow and show <span class="ui">Modified</span>.</li>
+  <li>Click <span class="ui">Save All Changes</span>, then move on to the next class.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/aaca-staff-allocation.png" alt="Bulk Staff-Subject Allocation for Grade 4E"><figcaption>Bulk Staff-Subject Allocation for one class</figcaption></figure>
+<p>A row shown in red, "Not a subject of this class's level", is an old allocation for a subject no longer listed for the level. Choose <span class="ui">-- Remove allocation --</span> and save.</p>
+<p>The allocation decides which classes and subjects a teacher sees when entering marks and assessments and when preparing teaching documents. A teacher with no allocation sees nothing to work on.</p>
+<h3>Learners to subjects</h3>
+<p>Open <span class="path">Students &gt; Subject Allocation</span>, choose the curriculum, year, education level and class, and search. Each learner's allocated subjects are listed. Click <span class="ui">Add allocations</span> to give subjects to the class's learners, or tick learners and click <span class="ui">Delete selected</span> to remove theirs. Allocate every subject a learner takes. When <span class="ui">Totals &amp; Means Basis</span> is set to all allocated subjects, a missing allocation changes the learner's mean.</p>
+
+<h2 class="sub" id="aaca-global">Grading and Academic Settings</h2>
+<p>Open <span class="path">Settings &gt; Global Settings</span>. Click a section to open it, change values, then click <span class="ui">Save changes</span> at the top. The button counts your unsaved changes, and only the changed settings are saved.</p>
+<figure class="shot"><img src="assets/guide/aaca-global-grading.png" alt="Global Settings, Grading System Settings section"><figcaption>Global Settings: Grading System Settings</figcaption></figure>
+<table>
+  <tr><th style="width:32%">Setting</th><th>What it decides</th></tr>
+  <tr><td>Exam Results</td><td>4-Point or 8-Point grading for exam marks, the report form and the broadsheet.</td></tr>
+  <tr><td>Student Assessment, Value Scores, Co-Curricular Scores</td><td>The scale for CBE assessments, values ratings and co-curricular scores.</td></tr>
+  <tr><td>Ranking Method</td><td>Rank learners by <span class="ui">Mean Marks (Average %)</span> or <span class="ui">Mean Points (Score)</span> on the broadsheet and report form.</td></tr>
+  <tr><td>Class Performance Ranking Basis</td><td>Rank classes against others of the same education level type (all of Primary) or the same education level (Upper primary only).</td></tr>
+  <tr><td>Totals &amp; Means Basis</td><td>Divide a learner's total by the subjects with marks, or by all subjects allocated to them (a missing mark counts as zero).</td></tr>
+  <tr><td>Combined Broadsheet Columns</td><td>Marks, grade and points per subject, or marks and grade only.</td></tr>
+  <tr><td>Top Students Shown</td><td>How many tied top learners the Subject and Class Performance reports list before "+N more".</td></tr>
+  <tr><td>Exam Results / Ranking Method &ndash; <em>education level</em></td><td>One pair per education level. Leave them on <span class="ui">Use global default</span>, or choose a different scale or ranking for that level only (for example 8-Point for Junior School).</td></tr>
+</table>
+<p>Other sections hold related settings:</p>
+<ul>
+  <li><strong>General Dashboard Settings</strong>: <span class="ui">Current Exam Type for Dashboard</span> (the exam type the dashboard's Class Exam Performance card opens on, usually the latest one this term) and <span class="ui">Average Calculation Method</span> (whether class averages count only learners who sat the exam or every allocated learner, absent ones as 0).</li>
+  <li><strong>Teaching Management Settings</strong>: when schemes of work and lesson plans fall due. Only the tracker's "overdue" marking uses these.</li>
+  <li><strong>Report Form Settings</strong>: what the report form shows (marks, grades, points), which learner development sections print, the position, the title wording and the term dates.</li>
+</ul>
+<div class="callout important"><span class="lbl">Change grading between terms, not during one.</span> Grading and ranking are worked out when reports are produced, so a change affects every report printed afterwards, including those for earlier exams.</div>
+
+<h2 class="sub" id="aaca-access">Who Sees What: Academic Permissions</h2>
+<p>For assessments and teaching documents, teachers see only the classes and subjects allocated to them. Three things widen that, set by an administrator.</p>
+<h3>Student Assessments (Admin)</h3>
+<p>A role with this permission can enter and correct Student Assessment marks for any teacher, class and subject, and sees the whole school on the Assessment Tracker. Administrators have it already. Give it to the role used by, for example, the deputy head (academics) or the examinations officer.</p>
+<h3>Whole-school Access (Admin)</h3>
+<p>A role with this permission sees and opens every teacher's schemes of work, lesson plans and records of work, and checks them, as administrators do. It also gives the whole school on the Assessment Tracker.</p>
+<h3>Granting either permission</h3>
+<ol class="steps">
+  <li>Open <span class="path">Security &gt; Menu Permissions</span> and click the role on the left.</li>
+  <li>Under <strong>Academics &gt; Assessments</strong>, tick <span class="ui">Student Assessments (Admin)</span>; under <strong>Teaching Management</strong>, tick <span class="ui">Whole-school Access (Admin)</span>.</li>
+  <li>Click <span class="ui">Save</span>. Members of the role who are signed in get the new access when they refresh the page or sign in again.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/aaca-menu-permissions.png" alt="Menu Permissions for a role, with the Academics and Teaching Management groups open"><figcaption>Security &gt; Menu Permissions: the two "(Admin)" permissions</figcaption></figure>
+<p>These two entries are permissions, not pages: they never appear in the menu.</p>
+<h3>Heads of Department</h3>
+<p>A head of department sees and checks the teaching documents of every subject in their department, and their department's progress on the Assessment Tracker, with no extra permission. To set one, open <span class="path">Settings &gt; Dropdowns &gt; System Settings &gt; Departments</span>, edit the department and choose the staff member under <span class="ui">Head of Department</span>. A subject belongs to the department chosen on the subject (see <a href="#aaca-subjects">Subjects</a>).</p>
+<div class="callout"><span class="lbl">The HeadOfDepartment role.</span> The role of that name only decides which menus its members see. What a head of department oversees comes from the Departments list above, so set both.</div>
+</section>
+<!--/module:Academics-->
+
+<!--module:Finance-->
+<section class="chapter" id="finance-setup" data-module="Finance">
+<h1 class="ch">Finance Set-up</h1>
+<p>Before the bursar can raise an invoice or record an expense, ShuleNova needs the school's books set up: the chart of accounts, the fee and expense categories that point into it, the finance settings that say which accounts the automatic entries use, and the approval workflows. This chapter is for the administrator who does that, usually with the bursar beside them. Most of it is done once, when the school starts on ShuleNova; after that, the main yearly job is closing the accounting periods.</p>
+<div class="callout"><span class="lbl">Ask the accountant.</span> The chart of accounts is the school's accounting structure. Agree the account codes and names with the school's accountant or auditor before you enter them; changing them after a term's transactions have been posted is much harder.</div>
+
+<h2 class="sub" id="afin-order">Set-up Order for a New School</h2>
+<p>Each step relies on the one before it, so work down this list.</p>
+<table>
+  <tr><th style="width:5%">#</th><th style="width:35%">Step</th><th>Where</th></tr>
+  <tr><td>1</td><td>Chart of accounts: bank and cash, debtors, income, expense, liability and equity accounts</td><td><span class="path">Settings &gt; Dropdowns &gt; Finance &gt; Chart of Accounts</span></td></tr>
+  <tr><td>2</td><td>Fee categories, each pointing to an income account, ranked by priority</td><td><span class="path">Settings &gt; Dropdowns &gt; Finance &gt; Fee Categories</span></td></tr>
+  <tr><td>3</td><td>Expense categories, each pointing to an expense account</td><td><span class="path">Settings &gt; Dropdowns &gt; Finance &gt; Expense Categories</span></td></tr>
+  <tr><td>4</td><td>Finance settings: accounting period, apportioning, automatic journals and the default accounts</td><td><span class="path">Settings &gt; Global Settings &gt; Finance Settings</span></td></tr>
+  <tr><td>5</td><td>Approval workflows for Expense Request, Journal Entry, Credit / Debit Note and Budget Amendment, and the roles they use given to the right people</td><td><span class="path">Settings &gt; Approval Workflows</span> (see <a href="#aset-workflows">Approval Workflows</a>)</td></tr>
+  <tr><td>6</td><td>Departments, for budgets</td><td><span class="path">Settings &gt; Dropdowns &gt; System Settings</span></td></tr>
+  <tr><td>7</td><td>Opening balances: what is in the bank and cash, and what each learner owed when the school started on ShuleNova</td><td>The bursar: <span class="path">Finance &gt; Expenses &amp; Accounts &gt; Journal Entries</span></td></tr>
+  <tr><td>8</td><td>Fee structures, then the term's invoices</td><td>The bursar: <span class="path">Finance &gt; Fees</span> (see the User Guide, <em>Finance</em>)</td></tr>
+</table>
+<p>Give the bursar and accounts clerks a role that opens the Finance menu, and the approvers the roles named in the workflows (see <a href="#asec-users">Users</a>).</p>
+
+<h2 class="sub" id="afin-accounts">Chart of Accounts</h2>
+<p>Every amount ShuleNova posts lands in an account. Open <span class="path">Settings &gt; Dropdowns</span>, choose the <strong>Finance</strong> section on the left and click <span class="ui">Chart of Accounts</span>; the same list is also at <span class="path">/finance/accounts</span>, with filters for account type and status.</p>
+<figure class="shot"><img src="assets/guide/afin-accounts.png" alt="The chart of accounts"><figcaption>The chart of accounts</figcaption></figure>
+<p>Each account has a <span class="ui">Code</span>, a <span class="ui">Name</span>, a <span class="ui">Type</span>, an optional <span class="ui">Parent Account</span> (to group, for example, several bank accounts under one heading) and a <span class="ui">Description</span>. Untick <span class="ui">Active</span> to stop an account being offered on forms without losing its history.</p>
+<figure class="shot"><img src="assets/guide/afin-account-form.png" alt="New account form"><figcaption>Adding an account</figcaption></figure>
+<table>
+  <tr><th style="width:15%">Type</th><th style="width:15%">Usual codes</th><th>Examples a school needs</th></tr>
+  <tr><td>Asset</td><td>1000s</td><td>Cash on Hand, Bank - Main Account, Bank - M-Pesa, Accounts Receivable (Fees), Staff Loans &amp; Advances, furniture, buildings</td></tr>
+  <tr><td>Liability</td><td>2000s</td><td>Accounts Payable, Sponsor Advances<!--module:Payroll-->, PAYE, NSSF, SHIF, Housing Levy and other payroll deductions payable<!--/module:Payroll--></td></tr>
+  <tr><td>Equity</td><td>3000s</td><td>Retained Earnings</td></tr>
+  <tr><td>Income</td><td>4000s</td><td>Tuition, transport, meals, boarding and activity fee income, uniform sales</td></tr>
+  <tr><td>Expense</td><td>5000s</td><td>Teaching and non-teaching salaries, electricity, water, internet, stationery, cleaning, repairs, fuel, food</td></tr>
+</table>
+<div class="callout tip"><span class="lbl">One bank account per real account.</span> Make an asset account for every bank account, M-Pesa till or paybill and cash box the school takes money into. The bursar chooses one as the <em>Receiving Account</em> on each payment, so the trial balance shows each one's balance, ready to compare with the bank statement.</div>
+
+<h2 class="sub" id="afin-fee-categories">Fee Categories</h2>
+<p>A fee category is a kind of fee: Tuition, Transport, Meals, Boarding, Activity, Uniform, Exam. Fee structures and invoices are made of them. Open <span class="path">Settings &gt; Dropdowns &gt; Finance &gt; Fee Categories</span> (also at <span class="path">/finance/fee-categories</span>).</p>
+<figure class="shot"><img src="assets/guide/afin-dropdowns.png" alt="Fee categories under Dropdowns"><figcaption>Settings &gt; Dropdowns, Finance section: the fee categories</figcaption></figure>
+<ul>
+  <li><span class="ui">Name</span>: as parents will see it on invoices.</li>
+  <li><span class="ui">Income Account</span>: the income account its fees are posted to. Several categories may share one (an exam fee posted to tuition income, for example).</li>
+  <li><span class="ui">Rank</span>: the order in which a payment pays the fees off when the school uses automatic apportioning. Rank 1 is paid first. Put the fees the school most needs collected first at the top.</li>
+  <li><span class="ui">Active</span>: untick a category no longer charged.</li>
+</ul>
+<figure class="shot"><img src="assets/guide/afin-fee-categories.png" alt="Fee categories"><figcaption>Fee categories, their income accounts and ranks</figcaption></figure>
+<div class="callout important"><span class="lbl">Set the income account.</span> The income journal of an invoice leaves out any fee whose category has no income account, so that income never reaches the books. Check every category has one before the first invoices are raised.</div>
+
+<h2 class="sub" id="afin-expense-categories">Expense Categories</h2>
+<p>An expense category is what the bursar chooses on each line of an expense: Electricity, Stationery, Repairs, Food Supplies and so on. Each points to the expense account it is posted to. Open <span class="path">Settings &gt; Dropdowns &gt; Finance &gt; Expense Categories</span> (also at <span class="path">/finance/expense-categories</span>) and give each a <span class="ui">Name</span>, an <span class="ui">Expense Account</span>, a <span class="ui">Rank</span> (the order they are listed in) and a description.</p>
+<figure class="shot"><img src="assets/guide/afin-expense-categories.png" alt="Expense categories"><figcaption>Expense categories and their expense accounts</figcaption></figure>
+<p>Keep the list short and clear: an expense category that matches an account one to one makes the Expenses Report and the Profit &amp; Loss agree line for line.</p>
+
+<h2 class="sub" id="afin-settings">Finance Settings</h2>
+<p>Open <span class="path">Settings &gt; Global Settings</span> and click <span class="ui">Finance Settings</span>. Change what you need, then click <span class="ui">Save changes</span> at the top; the page counts the unsaved changes until you do.</p>
+<figure class="shot"><img src="assets/guide/afin-global-finance.png" alt="Finance settings"><figcaption>Settings &gt; Global Settings &gt; Finance Settings</figcaption></figure>
+<table>
+  <tr><th style="width:30%">Setting</th><th>What to choose</th></tr>
+  <tr><td>Accounting Period</td><td><strong>Termly</strong> closes the books at the end of each term, <strong>Yearly</strong> at the end of each academic year. A term runs from its first day to the day before the next term starts, so the holiday after it belongs to it.</td></tr>
+  <tr><td>Retained Earnings Account</td><td>The equity account each closed period's surplus is moved to. A period cannot be closed until this is set.</td></tr>
+  <tr><td>Payment Apportioning Mode</td><td><strong>Auto</strong> shares each payment across the invoice's fees by fee category rank. <strong>Manual</strong> makes the clerk type the amount for each fee.</td></tr>
+  <tr><td>Auto-Post Invoice Journal</td><td>On: each invoice posts Debit Debtors, Credit the fee's income account. Leave it on.</td></tr>
+  <tr><td>Auto-Post Payment Journal</td><td>On: each payment posts Debit the receiving bank or cash account, Credit Debtors. Leave it on.</td></tr>
+  <tr><td>Student Debtors Account</td><td>The asset account for what learners owe (for example 1200 Accounts Receivable (Fees)).</td></tr>
+  <tr><td>Default Cash/Bank Account</td><td>The asset account used when a payment's Receiving Account, or an expense's Paid From account, is left blank.</td></tr>
+  <tr><td>Sponsor Advances Account</td><td>The liability account that holds sponsor money not yet put onto learners' invoices.</td></tr>
+</table>
+<!--module:Payroll--><p>The same section holds the payroll accounts: the <span class="ui">Payroll Journal</span> mode (a draft journal for the bursar to check, posting automatically on approval, or off), the fallback salary expense account, the PAYE, NSSF, SHIF, Housing Levy and other deductions payable accounts, and the staff loans account. They are covered in the Payroll Set-up chapter.</p><!--/module:Payroll-->
+<div class="callout tip"><span class="lbl">Leave auto-posting on.</span> With both auto-post settings on, the trial balance, profit &amp; loss and balance sheet always match the fee records. Switch them off only if the accountant keeps the books elsewhere and posts journals by hand.</div>
+
+<h2 class="sub" id="afin-approvals">Approval Workflows for Finance</h2>
+<p>Expenses, journal entries, credit and debit notes and budget amendments are posted only when the last approver approves them. Each of these forms needs an active workflow under <span class="path">Settings &gt; Approval Workflows</span> (see <a href="#aset-workflows">Approval Workflows</a>): without one, the form shows "No active workflow configured" and nothing can be approved. A common choice is two steps, the bursar or accountant as Reviewer and the head teacher as Approver, with maker-checker on so that nobody approves their own expense.</p>
+<p>Approved records are locked. Only a SuperAdministrator can reverse an approval, which puts the record back to draft.</p>
+
+<h2 class="sub" id="afin-periods">Closing and Reopening Periods</h2>
+<p>The bursar closes each period under <span class="path">Finance &gt; Expenses &amp; Accounts &gt; Accounting Periods</span> once it has ended and everything in it is approved (see the User Guide). Closing moves the surplus to Retained Earnings and locks every date in the period: no payment, invoice, expense or journal dated in it can be added, changed or deleted.</p>
+<figure class="shot"><img src="assets/guide/afin-periods.png" alt="Accounting periods"><figcaption>Two closed terms and the current one</figcaption></figure>
+<p>When a mistake in a closed period must be corrected, an Administrator or SuperAdministrator can click <span class="ui">Reopen</span>. Only the latest closed period can be reopened; its closing entry is taken out, the correction can be made, and the period is then closed again. Reopen only with the accountant's agreement: reports already given to the board for that period will change.</p>
+<div class="callout important"><span class="lbl">Close in order.</span> A period cannot close while the one before it is still open, and a closed period can only be reopened after every later one has been reopened.</div>
+</section>
+<!--/module:Finance-->
+
+<!--module:Payroll-->
+<section class="chapter" id="payroll-setup" data-module="Payroll">
+<h1 class="ch">Payroll Set-up</h1>
+<p>Before the first payroll is run, ShuleNova needs the school's pay items and the statutory rules: what staff can earn, what can be deducted, the PAYE tax bands, the NSSF tiers, the tax reliefs, and the rates for SHIF and the Housing Levy. This is done once, and then changed only when the law or the school's policy changes. The monthly payroll itself is described in the user guide.</p>
+<div class="callout"><span class="lbl">Where it lives.</span> The statutory set-up is under <span class="path">Settings &gt; Dropdowns &gt; Payroll Settings</span>, because it changes by law. The school's own choices (the employer KRA PIN, net pay rounding, the payroll accounts) are under <span class="path">Settings &gt; Global Settings</span>.</div>
+
+<h2 class="sub" id="apay-order">Recommended Set-up Order</h2>
+<ol class="steps">
+  <li><strong>Global Settings &gt; Payroll Settings</strong>: the school's KRA PIN and how net pay is rounded.</li>
+  <li><strong>Global Settings &gt; Finance Settings</strong> and <strong>Staff Categories</strong>: the accounts the payroll journal uses (only if the school keeps its accounts in ShuleNova).</li>
+  <li><strong>Earning Types</strong> and <strong>Deduction Types</strong>: the pay items.</li>
+  <li><strong>Tax Bands</strong>, <strong>NSSF Bands</strong> and <strong>Reliefs</strong>: the PAYE and NSSF rules.</li>
+  <li><strong>Rates &amp; Limits</strong>: SHIF, the Housing Levy and the retirement relief limits.</li>
+  <li><strong>Settings &gt; Approval Workflows</strong>: who reviews and approves the payroll.</li>
+  <li><strong>Security &gt; Menu Permissions</strong>: give the payroll officers' role the Payroll pages.</li>
+  <li><strong>Staff records</strong>: each employee's KRA PIN, ID, NSSF and SHA numbers and bank details; then their salaries under <span class="path">Payroll &gt; Employee Salaries</span>.</li>
+</ol>
+<p>Open <span class="path">Settings &gt; Dropdowns</span> and click <span class="ui">Payroll Settings</span> on the left. Its six links, in this order, open the set-up pages. Each page has a <span class="ui">Back to Dropdowns</span> button.</p>
+<figure class="shot"><img src="assets/guide/apay-dropdowns.png" alt="The Payroll Settings section of Dropdowns"><figcaption>Payroll Settings under Settings &gt; Dropdowns</figcaption></figure>
+
+<h2 class="sub" id="apay-global">Payroll in Global Settings</h2>
+<p>Open <span class="path">Settings &gt; Global Settings</span> and click <span class="ui">Payroll Settings</span> to open the section. Change a value, then click <span class="ui">Save changes</span> at the top.</p>
+<figure class="shot"><img src="assets/guide/apay-global-payroll.png" alt="Payroll Settings in Global Settings"><figcaption>The school's payroll policy</figcaption></figure>
+<table>
+  <tr><th style="width:26%">Setting</th><th>What it does</th></tr>
+  <tr><td>School KRA PIN</td><td>The school's KRA PIN as employer, printed in the payslip header and on the P9 cards. Leave blank to leave it off.</td></tr>
+  <tr><td>Round Net Pay To</td><td>Whole shillings (the default), no rounding, or the nearest 5, 10, 50 or 100 shillings. The difference prints on the payslip as Rounding, so every slip still adds up.</td></tr>
+  <tr><td>Net Pay Rounding Method</td><td>To the nearest unit, always down (never pays more than earned) or always up (never pays less).</td></tr>
+</table>
+<p>Rounding changes take effect the next time a period is processed.</p>
+<h3>The payroll accounts</h3>
+<p>When a payroll is approved, ShuleNova builds its salary journal. The <span class="ui">Finance Settings</span> section of Global Settings says what happens and which accounts it uses:</p>
+<ul>
+  <li><span class="ui">Payroll Journal</span>: <span class="ui">Draft for review</span> (recommended) leaves a filled-in journal under Journal Entries for finance to check and approve; <span class="ui">Post automatically on approval</span> puts it straight into the ledger; <span class="ui">Off</span> creates nothing.</li>
+  <li><span class="ui">PAYE Payable</span>, <span class="ui">NSSF Payable</span>, <span class="ui">SHIF Payable</span> and <span class="ui">Housing Levy</span> accounts; <span class="ui">Payroll Deductions Payable</span> for other deductions without an account of their own; <span class="ui">Staff Loans &amp; Advances</span> for loan recoveries.</li>
+  <li>Salaries are charged to the expense account on each staff category (<span class="path">Settings &gt; Dropdowns &gt; Staff Categories</span>), so teaching and non-teaching pay stay apart. <span class="ui">Default Salary Expense Account</span> is used only for a category with no account; leave it blank to have approval stop and say so instead.</li>
+</ul>
+<p>If the accounts are not set up at all, payroll can still be approved; no journal is made.</p>
+
+<h2 class="sub" id="apay-earnings">Earning Types</h2>
+<p>Earning types are the things staff can be paid. <span class="ui">Basic Salary</span>, <span class="ui">House Allowance</span> and <span class="ui">Transport Allowance</span> are marked <span class="ui">System</span>: they come from the columns of the salary grid and cannot be applied from here. Add the others your school pays, such as overtime, leave, hardship, acting or responsibility allowances.</p>
+<figure class="shot"><img src="assets/guide/apay-earning-types.png" alt="The Earning Types list"><figcaption>Earning types</figcaption></figure>
+<ol class="steps">
+  <li>Click <span class="ui">Add earning type</span>.</li>
+  <li>Type the <span class="ui">Name</span> and a short <span class="ui">Code</span>. Tick <span class="ui">Taxable</span> unless the law exempts it: a non-taxable earning is still paid but left out of taxable pay.</li>
+  <li>Under <span class="ui">Calculation</span>, choose the <span class="ui">Method</span>: <span class="ui">Fixed amount</span> or <span class="ui">Percentage of basic salary</span>, and the amount or percentage.</li>
+  <li>Switch on <span class="ui">Applies to all staff</span> only for an earning everyone gets. It is then paid to everyone on the payroll without adding it to each employee; someone with their own line for it keeps their own amount. Otherwise it is added per employee on the salary.</li>
+  <li>Click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/apay-earning-form.png" alt="The Edit Earning Type window"><figcaption>An earning type</figcaption></figure>
+<p>Untick <span class="ui">Active</span> to retire an earning type rather than deleting one that has been used.</p>
+
+<h2 class="sub" id="apay-deductions">Deduction Types</h2>
+<p>Deduction types are what can be taken off pay. <span class="ui">PAYE</span>, <span class="ui">NSSF Employee</span>, <span class="ui">SHIF</span> and <span class="ui">Affordable Housing Levy</span> are <span class="ui">System</span>: payroll works them out from the statutory rules. Add the school's others: SACCO, union dues, welfare, HELB, a pension scheme, insurance premiums.</p>
+<figure class="shot"><img src="assets/guide/apay-deduction-types.png" alt="The Deduction Types list"><figcaption>Deduction types, with how each is applied and treated for tax</figcaption></figure>
+<p>Click <span class="ui">Add deduction type</span> (or the edit button) and fill in:</p>
+<figure class="shot"><img src="assets/guide/apay-deduction-form.png" alt="The Edit Deduction Type window"><figcaption>A voluntary pension, pooled with NSSF for tax relief</figcaption></figure>
+<table>
+  <tr><th style="width:28%">Field</th><th>What it does</th></tr>
+  <tr><td>Name, Code, Statutory, Active</td><td>What the deduction is called and whether it is a statutory one.</td></tr>
+  <tr><td>Method and Amount</td><td><span class="ui">Fixed amount</span>, or <span class="ui">Percentage of gross pay</span>.</td></tr>
+  <tr><td>Applies to all staff</td><td>Deducted from everyone on the payroll without adding it to each employee. An employee with their own line keeps their own amount.</td></tr>
+  <tr><td>Paid by the employer</td><td>Worked out the same way but never taken from pay: the school bears it (NITA, as the law intends). It is charged to salary expense and shows on the statutory returns. Leave off to deduct it from staff.</td></tr>
+  <tr><td>Retirement contribution</td><td>For a pension or provident fund. It is pooled with the employee's NSSF, and the pool comes off taxable income up to the limits under Rates &amp; Limits.</td></tr>
+  <tr><td>Tax deductible and Monthly cap</td><td>For another deduction the law lets come off income before PAYE (a post-retirement medical fund, for instance), up to the cap. Leave the cap blank for none.</td></tr>
+  <tr><td>Liability account</td><td>Where the money deducted is owed to (the pension scheme, the SACCO, the union). Leave on the general Payroll Deductions Payable account if you do not need to see each separately.</td></tr>
+</table>
+<div class="callout tip"><span class="lbl">Insurance relief.</span> A deduction that earns a tax relief, such as an insurance premium, is linked from the relief itself (see Reliefs), not here.</div>
+
+<h2 class="sub" id="apay-tax">Tax Bands</h2>
+<p>The PAYE bands, applied in turn from the lowest: tax on the pay between each band's <span class="ui">Lower Limit</span> and <span class="ui">Upper Limit</span> at its <span class="ui">Rate (%)</span>.</p>
+<figure class="shot"><img src="assets/guide/apay-tax-bands.png" alt="The Tax Bands list"><figcaption>The PAYE bands</figcaption></figure>
+<ol class="steps">
+  <li>Click <span class="ui">Add tax band</span>, type a <span class="ui">Description</span> (for example "Up to KES 24,000"), the <span class="ui">Lower Limit</span>, <span class="ui">Upper Limit</span> and <span class="ui">Rate (%)</span>, and an <span class="ui">Effective Date</span>.</li>
+  <li>Make each band's lower limit the previous band's upper limit, starting from 0. Give the top band a very large upper limit (for example 99,999,999).</li>
+</ol>
+<div class="callout important"><span class="lbl">Only active bands count.</span> Every active band is used, whatever its effective date. When the law changes the bands, change the figures, or add the new bands and untick <span class="ui">Active</span> on the old ones, so that only one set is active.</div>
+
+<h2 class="sub" id="apay-nssf">NSSF Bands</h2>
+<p>NSSF is charged in tiers: each tier charges its rate on the pay between its two limits. The tiers sharing an effective date form one set, and each payroll month uses the most recent set in force for that month. The page shows each set with its dates, its maximum contribution a month and whether it is <span class="ui">In use now</span>, <span class="ui">Not yet in force</span> or <span class="ui">Superseded</span>.</p>
+<figure class="shot"><img src="assets/guide/apay-nssf-bands.png" alt="The NSSF Bands page"><figcaption>NSSF tiers, one set for each year's limits</figcaption></figure>
+<ol class="steps">
+  <li>Click <span class="ui">Add band</span>. Type the <span class="ui">Name</span> (for example "NSSF Tier I"), the <span class="ui">Tier</span> number, the date it is <span class="ui">Effective from</span>, the <span class="ui">Lower limit</span>, <span class="ui">Upper limit</span> and <span class="ui">Rate (%)</span>, and save.</li>
+  <li>Add the next tier to the same set with the <span class="ui">+ Tier</span> button on the set's header. Tier II's lower limit is normally Tier I's upper limit.</li>
+</ol>
+<div class="callout tip"><span class="lbl">When the limits change.</span> NSSF limits change most Februaries. Do not edit the old figures: add a new set dated from the day the new limits take effect. Re-processing an older month then still uses that month's limits. Payroll cannot be processed for a month with no NSSF set in force.</div>
+
+<h2 class="sub" id="apay-reliefs">Reliefs</h2>
+<p>A relief comes off the tax itself, after the bands have been applied, such as personal relief and insurance relief. (A <em>tax deductible</em> deduction is different: it comes off income before the bands, and is set on the deduction type.)</p>
+<figure class="shot"><img src="assets/guide/apay-reliefs.png" alt="The Reliefs list"><figcaption>Personal and insurance relief</figcaption></figure>
+<ol class="steps">
+  <li>Click <span class="ui">Add relief</span> and type the <span class="ui">Name</span> and <span class="ui">Code</span>.</li>
+  <li>Choose the <span class="ui">Basis</span>:
+    <ul>
+      <li><span class="ui">Fixed amount</span>: a flat sum each month, such as personal relief. Switch on <span class="ui">Applies to all staff</span> to give it to everyone, or link it to a deduction under <span class="ui">Worked out from</span> to give it only to staff who pay that deduction.</li>
+      <li><span class="ui">Percentage of a deduction</span>: a percentage of what the employee paid towards the deduction chosen under <span class="ui">Worked out from</span>, such as insurance relief on insurance premiums.</li>
+    </ul></li>
+  <li>Set a <span class="ui">Monthly cap</span> if the law limits it (leave blank for none) and save.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/apay-relief-form.png" alt="The Edit Relief window"><figcaption>Insurance relief: 15% of the premiums, capped at 5,000 a month</figcaption></figure>
+<div class="callout important"><span class="lbl">Personal relief.</span> Without at least a personal relief, PAYE is charged on the full tax.</div>
+
+<h2 class="sub" id="apay-rates">Rates &amp; Limits</h2>
+<p>The remaining statutory figures are kept as settings, each with a <span class="ui">Key</span> payroll looks for, a <span class="ui">Name</span> and a <span class="ui">Value</span>. Filter by <span class="ui">Category</span>, and use the edit button to change a value.</p>
+<figure class="shot"><img src="assets/guide/apay-rates.png" alt="The Rates and Limits list"><figcaption>SHIF, Housing Levy and retirement relief figures</figcaption></figure>
+<table>
+  <tr><th style="width:30%">Key</th><th>What it is</th></tr>
+  <tr><td><code>ShifRate</code></td><td>SHIF, as a percentage of gross pay (2.75).</td></tr>
+  <tr><td><code>ShifMinimum</code></td><td>The smallest SHIF deduction a month.</td></tr>
+  <tr><td><code>ShifRoundingUnit</code></td><td>1 rounds SHIF to the nearest shilling; 0 keeps the cents.</td></tr>
+  <tr><td><code>AhlRate</code></td><td>The Housing Levy taken from the employee, as a percentage of gross pay (1.5).</td></tr>
+  <tr><td><code>AhlEmployerRate</code></td><td>The school's matching Housing Levy, as a percentage of gross pay. It is a cost to the school, never deducted from pay.</td></tr>
+  <tr><td><code>RetirementReliefPercent</code></td><td>NSSF and pension contributions come off taxable income up to this percentage of basic pay...</td></tr>
+  <tr><td><code>RetirementReliefCap</code></td><td>...and up to this amount a month, whichever is lower. A limit of 0 is not applied.</td></tr>
+</table>
+<div class="callout important"><span class="lbl">Keep the keys exactly.</span> Payroll reads these by their key, and only while they are active. Change the value, never the key; a setting with a mistyped key, or an inactive one, counts as 0.</div>
+
+<h2 class="sub" id="apay-access">Approval and Access</h2>
+<ul>
+  <li><strong>Approval.</strong> Under <span class="path">Settings &gt; Approval Workflows</span>, the <span class="ui">Payroll</span> workflow sets who reviews and who approves a processed payroll. While it is active with at least one step, payroll officers submit each month for approval and only the final approver's approval locks it. If it is switched off, a payroll officer approves with a single click on the Processing page.</li>
+  <li><strong>Payroll officers.</strong> Give the payroll officers' role the Payroll pages under <span class="path">Security &gt; Menu Permissions</span>. Anyone holding <span class="ui">Processing</span> can open every employee's payslips, including ones not yet approved; everyone else sees only their own, once approved.</li>
+  <li><strong>My Payslips.</strong> A member of staff sees their own payslips only when their user account is linked to their staff record.</li>
+</ul>
+</section>
+<!--/module:Payroll-->
+
+<!--module:Elections-->
+<section class="chapter" id="elections-setup" data-module="Elections">
+<h1 class="ch">Elections Set-up</h1>
+<p>Elections need little set-up: three defaults in Global Settings, and the right people given the right Elections pages. Running an election is described in the user guide.</p>
+
+<h2 class="sub" id="aele-settings">Elections Settings</h2>
+<p>Open <span class="path">Settings &gt; Global Settings</span> and click <span class="ui">Elections Settings</span>. Change a value, then click <span class="ui">Save changes</span> at the top.</p>
+<figure class="shot"><img src="assets/guide/aele-global-elections.png" alt="Elections Settings in Global Settings"><figcaption>The defaults for new elections</figcaption></figure>
+<table>
+  <tr><th style="width:28%">Setting</th><th>What it does</th></tr>
+  <tr><td>Voter register</td><td>The register type a new election starts with. <strong>Frozen (strict)</strong>: the register is a snapshot taken when nominations close, so a student who changes class afterwards votes where they were registered. <strong>Live (lenient)</strong>: who may vote follows each student's current class until they vote. Frozen is the default.</td></tr>
+  <tr><td>Results screen refresh (seconds)</td><td>How often a new election's live results screen refreshes. Default: 10.</td></tr>
+  <tr><td>Order of names on the ballot</td><td><strong>Alphabetical</strong>: every ballot lists the candidates in name order. <strong>Random</strong>: each ballot issued shows them in a fresh random order, so no candidate always appears first. Takes effect for the next ballot issued.</td></tr>
+</table>
+<p>The first two are only defaults: the elections officer can change the register type and the refresh time on each election (the register type only until the register is taken). The ballot order applies to every election.</p>
+
+<h2 class="sub" id="aele-roles">Who Does What</h2>
+<p>Access to elections follows the three Elections pages a role holds under <span class="path">Security &gt; Menu Permissions</span>.</p>
+<figure class="shot"><img src="assets/guide/aele-menu-permissions.png" alt="The Elections pages in Menu Permissions"><figcaption>The three Elections pages for a role</figcaption></figure>
+<table>
+  <tr><th style="width:22%">Page</th><th style="width:30%">Given at installation to</th><th>What it allows</th></tr>
+  <tr><td>Manage Elections</td><td>Administrator, HeadTeacher, DeputyHeadTeacher</td><td>Makes the user an <strong>elections officer</strong>: create and edit elections, set positions, nominate and approve candidates, set up polling stations, move the stages, see the live count, draw lots, declare the results and record the winners. Elections officers can also run any polling station.</td></tr>
+  <tr><td>Polling Station</td><td>Administrator, HeadTeacher, DeputyHeadTeacher, Teacher, HeadOfDepartment</td><td>Lets a <strong>returning officer</strong> open the stations they have been given and issue ballots there. Users without Manage Elections see only their own stations.</td></tr>
+  <tr><td>Results</td><td>Administrator, HeadTeacher, DeputyHeadTeacher</td><td>Opens the results page. The live count before the results are declared is shown only to elections officers; once declared, the results are open to anyone with this page.</td></tr>
+</table>
+<p>Users with the Administrator or SuperAdministrator role are always elections officers. The dashboard's Elections card is given to the roles that have Manage Elections.</p>
+
+<h3>Returning officers</h3>
+<p>A returning officer is chosen per polling station, not by role. Any user whose account is linked to a staff record can be picked. <span class="ui">A station per class</span> picks each class's class teacher (from the class leadership roles) automatically, when they have a login. So, before an election:</p>
+<ul>
+  <li>Make sure each class teacher has a user account linked to their staff record, and is set as the class teacher of their class.</li>
+  <li>Make sure the role they hold has the <span class="ui">Polling Station</span> page.</li>
+</ul>
+<div class="callout tip"><span class="lbl">Suggested arrangement.</span> Give Manage Elections only to the one or two staff who run the elections (for example the deputy head and the teacher in charge of student leadership), Polling Station to all teachers, and Results to the school's leadership. Student voters need no account: they vote on the returning officer's screen.</div>
+<div class="callout important"><span class="lbl">Adding a page to a role.</span> A role with no menu permissions at all sees the whole menu. Giving it a single Elections page would hide everything else, so add the Elections pages only to roles that already have their pages set.</div>
+</section>
+<!--/module:Elections-->
+
+<!--module:Communications-->
+<section class="chapter" id="communications-setup" data-module="Communications">
+<h1 class="ch">Communications Set-up</h1>
+<p>Before the school can send SMS and email, four things are set up: the SMS gateway and email account (a SuperAdministrator's job), the wording and channel of each standard message, where parents' contacts are taken from, and who may send. This chapter takes them in that order. Day-to-day sending, the queue and the SMS report are in the user guide's Communications chapter.</p>
+
+<h2 class="sub" id="acom-gateway">Gateway Settings</h2>
+<p><span class="path">Communications &gt; Gateway Settings</span> holds the SMS provider account (TextSMS) and the email (SMTP) account. Only a <strong>SuperAdministrator</strong> can open it; anyone else sees "Only a SuperAdministrator can view or change the gateway settings."</p>
+<figure class="shot"><img src="assets/guide/acom-gateway.png" alt="The Gateway Settings page"><figcaption>Gateway Settings, live, with SMS switched on</figcaption></figure>
+<p>The banner at the top says which state the school is in: <strong>Live</strong> (green), where messages go to their real recipients, or <strong>Test mode is on</strong> (yellow).</p>
+
+<h3>Setting up SMS</h3>
+<p>Get these details from your SMS provider's account first.</p>
+<ol class="steps">
+  <li><span class="ui">API URL</span>: leave the provider's address as it is unless they give you another. Left blank, ShuleNova uses the TextSMS default.</li>
+  <li><span class="ui">API key</span>: paste the key from the provider. Once saved it shows a green <span class="ui">stored</span> badge and is never shown again; leave the box blank to keep it, or paste a new one to replace it.</li>
+  <li><span class="ui">Partner ID</span>: from the provider.</li>
+  <li><span class="ui">Sender ID</span>: the name parents see as the sender, up to 11 characters. It must be the sender ID the provider registered for the school, spelled exactly the same.</li>
+  <li><span class="ui">Price per SMS part (KES)</span>: what the provider charges per part. It is used only to value the monthly SMS report.</li>
+  <li>Switch on <span class="ui">Enabled</span> in the blue bar and click <span class="ui">Save settings</span>.</li>
+</ol>
+<p>SMS cannot be switched on without the API key, partner ID and sender ID; saving says which is missing, for example "The SMS sender ID is not set. SMS cannot be switched on without it." <span class="ui">Check SMS balance</span> asks the provider how many SMS credits remain.</p>
+
+<h3>Setting up email</h3>
+<ol class="steps">
+  <li>Fill in <span class="ui">SMTP host</span>, <span class="ui">Port</span> and <span class="ui">SSL / TLS</span> from your email provider. Port 465 uses SSL from the start; 587 upgrades with STARTTLS.</li>
+  <li><span class="ui">Username</span> and <span class="ui">Password</span> of the mailbox. Like the API key, the saved password shows <span class="ui">stored</span>; leave it blank to keep it.</li>
+  <li><span class="ui">From email</span> and <span class="ui">From name</span> (usually the school's name) are what parents see; <span class="ui">Reply-to email</span> is where their replies go, if not to the From address.</li>
+  <li>Switch on <span class="ui">Enabled</span> in the email bar and click <span class="ui">Save settings</span>. Email cannot be switched on without the host, the port and the from email.</li>
+</ol>
+
+<h3>Test mode</h3>
+<p>Use test mode while you set up, train staff or check wording. With <span class="ui">Test mode</span> on:</p>
+<ul>
+  <li>no message reaches a real parent or staff member;</li>
+  <li>up to 3 messages of each send go to the <span class="ui">Test phone number</span> and <span class="ui">Test email</span> instead, so you can see how they arrive; the rest are only recorded;</li>
+  <li>with no test number or email, nothing leaves the system at all; messages are only marked as sent so the queue and wording can be checked;</li>
+  <li>test messages show a <span class="ui">Test</span> badge in the queue and are not counted in the SMS report.</li>
+</ul>
+<p>The test phone number must be a valid Kenyan mobile number. Test messages to the test number go out even while SMS is switched off, which is how you try the gateway before going live.</p>
+
+<h3>Trying the gateways</h3>
+<p>Under <span class="ui">Try the gateways</span>, type a phone number or email and click <span class="ui">Send test SMS</span> or <span class="ui">Send test email</span>. This sends one real message straight away, whatever test mode says, so save the settings first. The result appears at once (for example "The gateway refused the SMS: ..."), and the message is recorded in the queue as a test.</p>
+<div class="callout important"><span class="lbl">Going live.</span> 1. Enter the SMS (and email) details and save. 2. Send a test SMS to your own phone. 3. With test mode on, send a real notice to one class and read it on the test phone. 4. Switch test mode off and save. From then on every send reaches real parents.</div>
+
+<h2 class="sub" id="acom-templates">Message Types and Templates</h2>
+<p><span class="path">Communications &gt; Templates</span> sets the wording of everything the school sends. Only Administrators and SuperAdministrators can change it.</p>
+
+<h3>Standard message types</h3>
+<p>These are the messages sent by the "send to parents" buttons on the results and fee pages. They cannot be deleted.</p>
+<figure class="shot"><img src="assets/guide/acom-templates.png" alt="Standard message types"><figcaption>The standard message types</figcaption></figure>
+<table>
+  <tr><th style="width:30%">Message type</th><th>Sent from</th></tr>
+  <tr><td>Exam results</td><td>Releasing an exam or the send button on School Exams, and the Exam Results report.</td></tr>
+  <tr><td>New fee invoice</td><td>Student Invoices.</td></tr>
+  <tr><td>Fee balance reminder</td><td>Fee Reports, Outstanding and Balances by Class.</td></tr>
+  <tr><td>Fee payment received</td><td>Fee Payments, for a family's receipt. Switched off when the module is installed.</td></tr>
+  <tr><td>Fee payment by a sponsor</td><td>Fee Payments, for a sponsor's receipt: tells the parents the sponsor paid. Starts the same as Fee payment received.</td></tr>
+</table>
+<ul>
+  <li><span class="ui">Send by</span> chooses SMS, Email or SMS &amp; Email. The change is saved as soon as you pick it.</li>
+  <li>The <span class="ui">Active</span> switch turns the message type on or off, also saved at once. While it is off, its send buttons answer "The '...' message type is switched off. Turn it on under Communications &gt; Templates."</li>
+  <li>The edit button opens the wording.</li>
+</ul>
+
+<h3>Editing the wording</h3>
+<ol class="steps">
+  <li>Click the edit button on the message type or template.</li>
+  <li>Change the <span class="ui">SMS text</span>, and the <span class="ui">Email subject</span> and <span class="ui">Email body</span> when it is sent by email. The email body is plain text; line breaks are kept.</li>
+  <li>To add a recipient's details, click in the text where they go, then click a placeholder on the right. Each message type has its own: exam results offer {SubjectScores}, {MeanGrade} and {Position}; invoices {InvoiceNumber}, {DueDate} and {Balance}; payments {AmountPaid} and {ReceiptNumber}; and so on.</li>
+  <li>Click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/acom-template-edit.png" alt="Editing the Exam results message type"><figcaption>Editing a message type, sent by SMS and email, with its placeholders</figcaption></figure>
+<p>The count under the SMS text is <em>before</em> placeholders are filled in. Names, subject scores and amounts make the real message longer; the preview when sending shows the real number of parts. The exam results SMS often runs to two parts per parent. An active message type must have the text its channel needs: "Enter the SMS text, or send this message type by email only."</p>
+
+<h3>Saved templates for custom messages</h3>
+<p>These are ready wording for <span class="ui">Send Message</span>, such as a closing-day notice or a meeting reminder.</p>
+<ol class="steps">
+  <li>Click <span class="ui">New template</span>.</li>
+  <li>Give it a <span class="ui">Name</span> (required) and, if you like, a <span class="ui">Description</span>, choose <span class="ui">Send by</span>, and leave <span class="ui">Active</span> ticked.</li>
+  <li>Type the text, using the placeholders on the right, and click <span class="ui">Save</span>.</li>
+</ol>
+<p>Only active templates are offered on Send Message. The red bin deletes a template; messages already sent with it are kept.</p>
+
+<h2 class="sub" id="acom-contacts">Where Parents' Contacts Come From</h2>
+<p><span class="path">Settings &gt; Global Settings</span>, <span class="ui">Communications Settings</span> section, has one setting, <span class="ui">Parent Contact Source</span>: where the phone number and email for messages to parents are taken from.</p>
+<figure class="shot"><img src="assets/guide/acom-global-comms.png" alt="The Communications Settings section of Global Settings"><figcaption>Settings &gt; Global Settings &gt; Communications Settings</figcaption></figure>
+<table>
+  <tr><th style="width:34%">Choice</th><th>Contacts used</th></tr>
+  <tr><td>Parent record, else student record</td><td>The linked parents' phone and email; for a learner whose linked parents have none, the contact on the learner's own record. This is the default.</td></tr>
+  <tr><td>Parent record only</td><td>Only the linked parents. Learners with no reachable parent are skipped.</td></tr>
+  <tr><td>Student record only</td><td>Only the contact on the learner's record. Suits a school whose records came from an older system, with the guardian's phone kept on the learner.</td></tr>
+</table>
+<p>When a learner has several linked parents and some are marked <span class="ui">Notifiable?</span> on their parent record, only those get messages; otherwise all the learner's active parents do. Phone numbers must be Kenyan mobile numbers (07..., 01... or 254...); a learner or parent with none is listed as skipped in the preview. Keep parents' numbers up to date under <span class="path">Students &gt; Parents</span>: that is the surest way to cut failed messages.</p>
+<p>Change the setting, then click <span class="ui">Save changes</span> at the top of the page.</p>
+
+<h2 class="sub" id="acom-permissions">Who Can Send</h2>
+<p>Three checks decide what a user can do:</p>
+<ol>
+  <li><strong>The module.</strong> Without Communications in the school's licence, the menu and every send button are hidden.</li>
+  <li><strong>Page access</strong>, from the role's menu permissions (<span class="path">Security &gt; Menu Permissions</span>). Each Communications page shows in the menu of a role given that page. The "send to parents" buttons work for a role with access to Communications <em>or</em> to the page the button is on: School Exams, Exam Results, Student Invoices, Fee Payments, Fee Reports or Statements.</li>
+  <li><strong>The role.</strong> Some actions need a particular role on top of page access.</li>
+</ol>
+<table>
+  <tr><th style="width:42%">Action</th><th>Roles</th></tr>
+  <tr><td>Open the queue, the templates and the SMS report; preview a message</td><td>Anyone with page access</td></tr>
+  <tr><td>Send a message, or send to parents from another page; retry or cancel messages</td><td>Administrator, SuperAdministrator, HeadTeacher, Accounts</td></tr>
+  <tr><td>Change message types and templates</td><td>Administrator, SuperAdministrator</td></tr>
+  <tr><td>Gateway Settings: view, change, test, check the balance</td><td>SuperAdministrator</td></tr>
+</table>
+<p>A user who lacks the role gets "You are not allowed to send messages." A View-only account can preview but nothing it sends is queued.</p>
+<div class="callout tip"><span class="lbl">Example.</span> To let the bursar send invoices and reminders but not class notices, give their role access to the fee pages and not to <span class="path">Communications &gt; Send Message</span>. With the Accounts role, the send buttons on those pages work for them.</div>
+</section>
+<!--/module:Communications-->
+    <div class="doc-footer">ShuleNova &middot; Administrator Guide &middot; November 2026</div>
+  </div>
+</div>
+<script>
+  // The guide is shown in a frame inside the app: a contents link scrolls here
+  // rather than navigating the frame away.
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var el = document.getElementById(a.getAttribute('href').slice(1));
+    if (el) { e.preventDefault(); el.scrollIntoView({behavior: 'smooth', block: 'start'}); }
+  });
+</script>
+</body>
+</html>

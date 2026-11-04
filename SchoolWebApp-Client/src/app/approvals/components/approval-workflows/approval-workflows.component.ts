@@ -25,6 +25,7 @@ export class ApprovalWorkflowsComponent implements OnInit {
     editMode: boolean = false;
 
     formKeys = [
+        {value: 'Budget', label: 'Budget'},
         {value: 'BudgetAmendment', label: 'Budget Amendment'},
         {value: 'Expense', label: 'Expense Request'},
         {value: 'JournalEntry', label: 'Journal Entry'},

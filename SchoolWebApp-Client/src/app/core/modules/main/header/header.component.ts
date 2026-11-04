@@ -7,6 +7,7 @@ import {Store} from '@ngrx/store';
 import { AuthService } from '@/core/services/auth.service';
 import {AuditLogsService} from '@/security/services/audit-logs.service';
 import {Observable} from 'rxjs';
+import {HttpClient} from '@angular/common/http';
 import {LicenceService, LicenceStatus} from '@/core/services/licence.service';
 
 const BASE_CLASSES = 'main-header navbar navbar-expand';
@@ -27,12 +28,15 @@ export class HeaderComponent implements OnInit {
     licenceAlert: LicenceStatus | null = null;
     // A viewer is reminded that nothing they do is saved.
     isViewer = false;
+    // The user guide, and for administrators their guide - unless guides are switched off (the demo site).
+    guides = {user: false, admin: false};
 
     constructor(
         private authService: AuthService,
         private auditLogsSvc: AuditLogsService,
         private store: Store<AppState>,
-        private licence: LicenceService
+        private licence: LicenceService,
+        private http: HttpClient
     ) {}
 
     ngOnInit() {
@@ -46,6 +50,10 @@ export class HeaderComponent implements OnInit {
         this.isViewer = this.authService.isViewer;
         this.loadActiveUsers();
         this.loadLicenceAlert();
+        this.http.get<{user: boolean; admin: boolean}>('/userGuide').subscribe({
+            next: (g) => (this.guides = g),
+            error: () => {}
+        });
     }
 
     private loadLicenceAlert() {

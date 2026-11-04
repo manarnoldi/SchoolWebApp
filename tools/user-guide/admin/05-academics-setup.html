@@ -1,0 +1,200 @@
+<section class="chapter" id="academics-setup" data-module="Academics">
+<h1 class="ch">Academics Set-up</h1>
+<p>Before teachers can enter marks, plan lessons or print report forms, the school's academic structure has to be in place: the subjects and which grades take them, the grading bands, the exam types, the CBE curriculum designs, and who teaches what. This chapter is for the person who sets all that up, usually the deputy head (academics) or the director of studies. Most of it is done once and then checked at the start of each year or term.</p>
+<div class="callout"><span class="lbl">Two kinds of "grade".</span> In ShuleNova a <strong>grade</strong> (Grade 4, PP 1) is a <em>learning level</em>, a year of schooling. The <strong>grading system</strong> is the score bands (EE, ME, AE, BE) used to grade marks. This chapter uses "grade" for the first and "grading" for the second.</div>
+
+<h2 class="sub" id="aaca-order">Set-up Order for a New Year or Term</h2>
+<p>Each step relies on the one before it, so work down this list. Steps 1 to 3 are done once when the school starts on ShuleNova and only revisited when something changes.</p>
+<table>
+  <tr><th style="width:5%">#</th><th style="width:33%">Step</th><th>Where</th></tr>
+  <tr><td>1</td><td>Lookup lists: subject groups, exam types, competencies, values, activities</td><td><span class="path">Settings &gt; Dropdowns</span>, Academics and CBE Settings sections</td></tr>
+  <tr><td>2</td><td>Subjects and the grading system</td><td><span class="path">Settings &gt; Dropdowns &gt; Academics</span>: Subjects, Grading System</td></tr>
+  <tr><td>3</td><td>Curriculum designs: strands, sub-strands, outcomes and the rest</td><td><span class="path">Settings &gt; Dropdowns &gt; CBE Settings</span>: Curriculum Upload (Excel)</td></tr>
+  <tr><td>4</td><td>The academic year and its terms (sessions)</td><td><span class="path">School &gt; Academic Years</span>, <span class="path">School &gt; Sessions</span></td></tr>
+  <tr><td>5</td><td>The year's classes</td><td><span class="path">School &gt; Classes</span></td></tr>
+  <tr><td>6</td><td>Subjects for each education level in the new year (copy last year's)</td><td><span class="path">Settings &gt; Dropdowns &gt; Academics &gt; Edu-Level Subjects</span></td></tr>
+  <tr><td>7</td><td>Learners into their new classes</td><td><span class="path">Students &gt; Class Assignment</span></td></tr>
+  <tr><td>8</td><td>Teachers to subjects in each class</td><td><span class="path">Staff &gt; Subject Allocation</span></td></tr>
+  <tr><td>9</td><td>Learners to their subjects, above all the optional ones</td><td><span class="path">Students &gt; Subject Allocation</span></td></tr>
+  <tr><td>10</td><td>Each term's exams</td><td><span class="path">Academics &gt; Exams &gt; School Exams</span>, then <span class="path">Register Exams</span></td></tr>
+  <tr><td>11</td><td>Check the grading, ranking and report-form settings</td><td><span class="path">Settings &gt; Global Settings</span></td></tr>
+</table>
+<p>For a new <strong>term</strong> in the same year only step 10 is needed, plus any changes to allocations (step 8 or 9) when a teacher changes subjects or a learner drops one. The curriculum (strands and outcomes) is not tied to a year, so it carries over by itself.</p>
+
+<h2 class="sub" id="aaca-dropdowns">The Dropdowns Page</h2>
+<p>Most of the academic lists are kept on one page, <span class="path">Settings &gt; Dropdowns</span>. The left column has a section per area. Click a section's title to open it. Click a plain list name (such as <span class="ui">Exam Types</span>) to see its items on the right. The blue names with an arrow icon (such as <span class="ui">Subjects</span>) open a page of their own. Each of those pages has a <span class="ui">Back to Dropdowns</span> button that returns you to the same section.</p>
+<figure class="shot"><img src="assets/guide/aaca-dropdowns.png" alt="The Dropdowns page with the Academics section open and Exam Types selected"><figcaption>Settings &gt; Dropdowns, Academics section, with Exam Types selected</figcaption></figure>
+<h3>Adding or changing an item in a simple list</h3>
+<ol class="steps">
+  <li>Open the section and click the list name.</li>
+  <li>Click <span class="ui">Add &hellip;</span> at the top of the list (for example <span class="ui">Add Exam Types</span>), fill in the form and click <span class="ui">Save</span>.</li>
+  <li>To change an item, click its blue edit button; to remove one, the red delete button. Deleting cannot be undone, so change an item that is already in use rather than deleting it.</li>
+</ol>
+<p><span class="ui">Rank</span> sets the order an item appears in everywhere it is offered, lowest first. It is worth numbering ranks in tens (10, 20, 30) so you can slot a new item in later without renumbering.</p>
+<p>The <strong>Academics</strong> section holds Curricula, Subject Groups and Exam Types, plus links to Subjects, Edu-Level Subjects and the Grading System. The <strong>CBE Settings</strong> section holds the CBE lists and the curriculum design pages:</p>
+<figure class="shot"><img src="assets/guide/aaca-dropdowns-cbe.png" alt="The CBE Settings section of the Dropdowns page" style="max-width:300px"><figcaption>The CBE Settings section: simple lists first, then the pages they link to</figcaption></figure>
+
+<h3>The simple academic lists</h3>
+<table>
+  <tr><th style="width:24%">List</th><th style="width:40%">What it is for</th><th>Where it is used</th></tr>
+  <tr><td>Curricula</td><td>The curricula the school teaches (CBE). Each has a name and a code.</td><td>Education levels, the grading system, strands, exam registration.</td></tr>
+  <tr><td>Subject Groups</td><td>Groups of subjects, such as Languages, STEM or Social Sciences.</td><td>Every subject belongs to one.</td></tr>
+  <tr><td>Exam Types</td><td>The kinds of exam: opening, mid-term, end-term, weekly tests. See <a href="#aaca-exam-types">Exam Types</a>.</td><td>School exams, report forms, the dashboard.</td></tr>
+  <tr><td>Assessment Types</td><td>How a learner was assessed, for example observation, oral or written.</td><td>Chosen when entering Student Assessments.</td></tr>
+  <tr><td>Competencies</td><td>The seven CBE core competencies.</td><td>Linked to sub-strands in the curriculum design.</td></tr>
+  <tr><td>Values</td><td>The national values (Respect, Unity, Responsibility&hellip;).</td><td>The Values register for learners and the curriculum design.</td></tr>
+  <tr><td>Responsibilities &amp; Social Skills</td><td>The responsibilities and social skills learners are rated on. The <span class="ui">Category</span> must be typed exactly <strong>Responsibility</strong> or <strong>Social Skill</strong>.</td><td>Academics &gt; Learner Development &gt; Responsibilities, and the report form.</td></tr>
+  <tr><td>Co-curricular Activities</td><td>Clubs, sports and games (Football, Scouts, Music&hellip;).</td><td>Academics &gt; Learner Development &gt; Co-curricular.</td></tr>
+  <tr><td>Co-curricular Score Types</td><td>The headings a co-curricular activity is scored under, such as Participation or Skill.</td><td>One score column per type on the co-curricular scores page.</td></tr>
+  <tr><td>Community Service Activities</td><td>The community service learning activities.</td><td>Academics &gt; Learner Development &gt; Community Service.</td></tr>
+</table>
+<div class="callout tip"><span class="lbl">Learner development is ready to use.</span> Co-curricular, Values, Responsibilities and Community Service need only the lists above. Teachers then record each learner's activities and ratings under <span class="path">Academics &gt; Learner Development</span>. The ratings themselves (EE, ME, AE, BE) come with the system; whether they use the 4- or 8-point scale is set in <a href="#aaca-global">Global Settings</a>.</div>
+<p>The <strong>System Settings</strong> section also holds lists that academics depend on: <strong>Departments</strong> (with each department's <span class="ui">Head of Department</span>, see <a href="#aaca-access">Who Sees What</a>), <strong>Education Levels</strong> (Pre-primary, Lower primary&hellip;), <strong>Learning Levels</strong> (the grades themselves) and <strong>Streams</strong>. A learning level's <span class="ui">Requires Teaching Documents</span> switch takes a whole grade out of Teaching Management when it is off.</p>
+
+<h2 class="sub" id="aaca-subjects">Subjects</h2>
+<p>Open <span class="path">Settings &gt; Dropdowns &gt; Academics &gt; Subjects</span>. The list shows every subject (learning area) with its code, the number of lessons a week, whether it is optional, its group and department.</p>
+<figure class="shot"><img src="assets/guide/aaca-subjects.png" alt="The Subjects list"><figcaption>Academics: Subjects</figcaption></figure>
+<h3>Adding a subject</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add subject</span>.</li>
+  <li>Fill in the form (all fields marked * are required) and click <span class="ui">Save</span>, then confirm.</li>
+</ol>
+<table>
+  <tr><th style="width:30%">Field</th><th>What it means</th></tr>
+  <tr><td>Subject group, Department name</td><td>Where the subject belongs. The department decides which head of department oversees its teaching documents.</td></tr>
+  <tr><td>Subject name, code, abbreviation</td><td>The abbreviation is what appears in narrow columns, such as on the broadsheet.</td></tr>
+  <tr><td>Number of lessons/Week</td><td>The usual number of lessons. The curriculum design can set it per grade (see <a href="#aaca-curriculum">Curriculum Designs</a>).</td></tr>
+  <tr><td>Head of subject (HOS)</td><td>Optional: the member of staff who leads the subject.</td></tr>
+  <tr><td>Subject optional?</td><td>On for subjects only some learners take (French, a religious education). Optional subjects must be allocated to the learners who take them.</td></tr>
+  <tr><td>Examinable?</td><td>Off for a subject that is taught but not examined.</td></tr>
+  <tr><td>Requires teaching documents?</td><td>Schemes of work, lesson plans and record of work. Turn it off for a learning area with no curriculum design to plan from; it then stays out of Teaching Management. Such subjects show a <span class="ui">No teaching docs</span> tag in the list.</td></tr>
+</table>
+<p>The <span class="ui">Classes</span> button on a subject's row shows, for the chosen year, every class that takes the subject, its teacher, how many learners the class has and how many are taking the subject. Its <span class="ui">Manage allocations</span> button opens the staff allocation page.</p>
+
+<h3>Subjects for each education level and year</h3>
+<p>A subject is offered to a grade only once it is listed for that grade's <strong>education level</strong> in that <strong>academic year</strong>. Open <span class="path">Settings &gt; Dropdowns &gt; Academics &gt; Edu-Level Subjects</span>, choose the year and education level, and click <span class="ui">Search</span>.</p>
+<figure class="shot"><img src="assets/guide/aaca-edu-level-subjects.png" alt="The Edu-Level Subjects page"><figcaption>Academics: Edu-Level Subjects for Pre-primary in 2027</figcaption></figure>
+<ul>
+  <li><span class="ui">Add Edu-Level Subjects</span>: choose the academic year and education level, tick the subjects, and save.</li>
+  <li><span class="ui">Copy to Year</span>: copies the subjects listed on the screen to another academic year. At the start of a new year, open each education level for last year, click <span class="ui">Copy to Year</span>, pick the new year and click <span class="ui">Copy</span>.</li>
+</ul>
+<div class="callout important"><span class="lbl">Missing subject?</span> If a subject does not appear on the staff allocation page, in exam registration or in the curriculum upload for a grade, it is almost always missing here for that year and education level.</div>
+
+<h2 class="sub" id="aaca-grading">The Grading System</h2>
+<p>Open <span class="path">Settings &gt; Dropdowns &gt; Academics &gt; Grading System</span>. Each row is one grade band: a mark range and the grade, points and remarks it gives. The demonstration school has both the CBE scales:</p>
+<ul>
+  <li><strong>4-Point</strong>: EE, ME, AE, BE, worth 4 to 1 points.</li>
+  <li><strong>8-Point</strong>: EE 1, EE 2, ME 1, ME 2, AE 1, AE 2, BE 1, BE 2, worth 8 to 1 points.</li>
+</ul>
+<figure class="shot"><img src="assets/guide/aaca-grading.png" alt="The Grading System list"><figcaption>Academics: Grades, the 8-point and 4-point bands for CBE</figcaption></figure>
+<p>To add or change a band, click <span class="ui">Add grade</span> (or a row's edit button) and fill in the <span class="ui">Curriculum</span>, <span class="ui">Category</span> (4-Point or 8-Point), <span class="ui">Grade name</span>, <span class="ui">Abbreviation</span>, <span class="ui">Minimum score</span> and <span class="ui">Maximum score</span>, <span class="ui">Points</span>, <span class="ui">Rank</span> and the remarks in Swahili and English. The remarks print on report forms.</p>
+<div class="callout important"><span class="lbl">No gaps, no overlaps.</span> The bands of one category must cover every mark from 0 to 100 exactly once (for example 0&ndash;24, 25&ndash;49, 50&ndash;74, 75&ndash;100). A mark that falls in no band gets no grade.</div>
+<p>Which scale is used for exams, assessments, values and co-curricular scores is chosen in <a href="#aaca-global">Global Settings</a>.</p>
+
+<h2 class="sub" id="aaca-exam-types">Exam Types</h2>
+<p>Exam types are the kinds of exam the school sets. Every exam the school registers belongs to one. Manage them under <span class="path">Settings &gt; Dropdowns &gt; Academics &gt; Exam Types</span> (shown in <a href="#aaca-dropdowns">The Dropdowns Page</a>).</p>
+<figure class="shot"><img src="assets/guide/aaca-exam-type-form.png" alt="The Add Exam Types form" style="max-width:800px"><figcaption>Adding an exam type</figcaption></figure>
+<table>
+  <tr><th style="width:30%">Field</th><th>What it does</th></tr>
+  <tr><td>Name, Abbreviation</td><td>For example End-Term Exam, END. The abbreviation heads the exam's column on the report form.</td></tr>
+  <tr><td>Show on report form</td><td>Yes: the type gets its own column on the report form. Leave it off for exams kept for internal tracking only, such as weekly tests or KPSEA and KJSEA practice.</td></tr>
+  <tr><td>Allow several exams per term</td><td>Off (the usual case): a term can hold only one exam of this type, so each report-form column is clear. On: several in a term, such as weekly tests. Registering a second exam of a type that is off is refused, with a message saying which box to tick.</td></tr>
+  <tr><td>Rank</td><td>The order of the columns on the report form (opening, mid-term, end-term).</td></tr>
+</table>
+<p>Each term, the exams themselves are created under <span class="path">Academics &gt; Exams &gt; School Exams</span> (term, exam type and mark-entry deadline) and then registered for the subjects and classes under <span class="path">Register Exams</span>.</p>
+
+<h2 class="sub" id="aaca-curriculum">Curriculum Designs (CBE)</h2>
+<p>The KICD curriculum design of each subject and grade lives in ShuleNova. Teachers build schemes of work, lesson plans and assessments from it, so it must be loaded for every subject and grade the school teaches. A design is made up of:</p>
+<table>
+  <tr><th style="width:28%">Part</th><th>What it is</th></tr>
+  <tr><td>Themes</td><td>Optional groupings of strands, used by some lower-grade designs.</td></tr>
+  <tr><td>Strands and sub-strands</td><td>The topics and sub-topics, with their codes (1.0 Numbers, 1.1 Whole Numbers).</td></tr>
+  <tr><td>Specific learning outcomes</td><td>What the learner should be able to do by the end of a sub-strand. Learners are assessed against these.</td></tr>
+  <tr><td>General outcomes</td><td>The outcomes for an education level as a whole.</td></tr>
+  <tr><td>Broad/Subject outcomes</td><td>The subject's general learning outcomes for an education level.</td></tr>
+  <tr><td>Learning experiences, key inquiry questions</td><td>The suggested activities and questions for each sub-strand.</td></tr>
+  <tr><td>PCIs</td><td>Pertinent and contemporary issues linked to each sub-strand.</td></tr>
+  <tr><td>Lesson allocations</td><td>Lessons per week for each subject in each grade. Schemes of work use it.</td></tr>
+  <tr><td>Rubrics, appendix, other sections</td><td>The assessment rubrics, the suggested resources and assessment methods, and any other section of the design word for word.</td></tr>
+</table>
+<p>Each part has its own page under <span class="path">Settings &gt; Dropdowns &gt; CBE Settings</span> (Strands, Sub-Strands, Specific Outcomes and so on). These pages work alike: choose the year, curriculum, grade and subject, click <span class="ui">Search</span>, and use <span class="ui">Add &hellip;</span> or the edit and delete buttons. They are handy for one small correction. To load a whole design, use the Excel upload below.</p>
+<figure class="shot"><img src="assets/guide/aaca-strands.png" alt="The Strands page for Grade 4 Mathematics"><figcaption>CBE Assessments: Strands for Grade 4 Mathematics</figcaption></figure>
+
+<h3>Loading a design from Excel</h3>
+<p>Open <span class="path">Settings &gt; Dropdowns &gt; CBE Settings &gt; Curriculum Upload (Excel)</span>.</p>
+<ol class="steps">
+  <li>Under <span class="ui">1. Download the template</span>, choose the <span class="ui">Grade</span>, then the <span class="ui">Subject / learning area</span>, and click <span class="ui">Download template</span>. The workbook comes filled in with anything already saved for that subject and grade, so you can also use it to correct one.</li>
+  <li>Fill in the workbook from the KICD design. Its Instructions sheet explains every column: a row per sub-strand with its outcomes, experiences, questions, competencies, values, PCIs and links to other learning areas, plus sheets for the rubrics, the subject outcomes, the essence statement and time allocation, the appendix and the other sections.</li>
+  <li>Under <span class="ui">2. Upload the filled workbook</span>, choose the file. ShuleNova checks it first and shows what it found (how many strands, sub-strands, outcomes and so on). Nothing is saved yet.</li>
+  <li>Fix any problem listed in red in the workbook and choose the file again. Notes in yellow are saved anyway.</li>
+  <li>When there are no problems left, click <span class="ui">Save &hellip; curriculum</span>. Then use <span class="ui">Upload another</span> for the next subject.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/aaca-curriculum-upload.png" alt="The Curriculum Upload page with Grade 4 Mathematics chosen"><figcaption>CBE Settings: Curriculum Upload (Excel)</figcaption></figure>
+<div class="callout tip"><span class="lbl">Subject not in the list?</span> The upload offers only the subjects listed for the grade's education level under <a href="#aaca-subjects">Edu-Level Subjects</a>. Add it there first.</div>
+
+<h3>Editing a design's details</h3>
+<p><span class="path">Settings &gt; Dropdowns &gt; CBE Settings &gt; Curriculum Design Details</span> edits the parts of a design that are not simple lists. Choose the <span class="ui">Grade</span> and the <span class="ui">Subject / learning area</span>, then use the tabs:</p>
+<ul>
+  <li><span class="ui">Design</span>: the title, <span class="ui">Lessons per week</span> (this also becomes the subject's lesson allocation for the grade), the source and the essence statement.</li>
+  <li><span class="ui">Sub-strand details</span>: for each sub-strand, the core competencies, values and links to other learning areas, each tied to an item in the matching list, and the suggested resources, assessment methods and non-formal activities.</li>
+  <li><span class="ui">Rubrics</span>: per strand, the indicators and what Exceeds, Meets, Approaches and Below Expectations look like.</li>
+  <li><span class="ui">Appendix</span> and <span class="ui">Other sections</span>: the remaining lists and text of the design.</li>
+</ul>
+<p>Each tab has its own save button, and an <span class="ui">unsaved changes</span> tag shows until you save. <span class="ui">View the whole design</span> opens the read-only view that teachers see under <span class="path">Teaching Management &gt; Curriculum</span>.</p>
+<figure class="shot"><img src="assets/guide/aaca-curriculum-editor.png" alt="Curriculum Design Details, Sub-strand details tab"><figcaption>Curriculum Design Details: the competencies, values and links of a sub-strand</figcaption></figure>
+
+<h2 class="sub" id="aaca-allocation">Subject Allocation</h2>
+<p>Allocations say who teaches what and who learns what. They are kept per year, so they are part of every new year's set-up.</p>
+<h3>Teachers to subjects</h3>
+<ol class="steps">
+  <li>Open <span class="path">Staff &gt; Subject Allocation</span>.</li>
+  <li>Choose the <span class="ui">Academic Year</span> and the <span class="ui">Class</span>. Every subject of the class's education level is listed.</li>
+  <li>Pick the teacher for each subject under <span class="ui">Assigned Teacher</span>. Changed rows turn yellow and show <span class="ui">Modified</span>.</li>
+  <li>Click <span class="ui">Save All Changes</span>, then move on to the next class.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/aaca-staff-allocation.png" alt="Bulk Staff-Subject Allocation for Grade 4E"><figcaption>Bulk Staff-Subject Allocation for one class</figcaption></figure>
+<p>A row shown in red, "Not a subject of this class's level", is an old allocation for a subject no longer listed for the level. Choose <span class="ui">-- Remove allocation --</span> and save.</p>
+<p>The allocation decides which classes and subjects a teacher sees when entering marks and assessments and when preparing teaching documents. A teacher with no allocation sees nothing to work on.</p>
+<h3>Learners to subjects</h3>
+<p>Open <span class="path">Students &gt; Subject Allocation</span>, choose the curriculum, year, education level and class, and search. Each learner's allocated subjects are listed. Click <span class="ui">Add allocations</span> to give subjects to the class's learners, or tick learners and click <span class="ui">Delete selected</span> to remove theirs. Allocate every subject a learner takes. When <span class="ui">Totals &amp; Means Basis</span> is set to all allocated subjects, a missing allocation changes the learner's mean.</p>
+
+<h2 class="sub" id="aaca-global">Grading and Academic Settings</h2>
+<p>Open <span class="path">Settings &gt; Global Settings</span>. Click a section to open it, change values, then click <span class="ui">Save changes</span> at the top. The button counts your unsaved changes, and only the changed settings are saved.</p>
+<figure class="shot"><img src="assets/guide/aaca-global-grading.png" alt="Global Settings, Grading System Settings section"><figcaption>Global Settings: Grading System Settings</figcaption></figure>
+<table>
+  <tr><th style="width:32%">Setting</th><th>What it decides</th></tr>
+  <tr><td>Exam Results</td><td>4-Point or 8-Point grading for exam marks, the report form and the broadsheet.</td></tr>
+  <tr><td>Student Assessment, Value Scores, Co-Curricular Scores</td><td>The scale for CBE assessments, values ratings and co-curricular scores.</td></tr>
+  <tr><td>Ranking Method</td><td>Rank learners by <span class="ui">Mean Marks (Average %)</span> or <span class="ui">Mean Points (Score)</span> on the broadsheet and report form.</td></tr>
+  <tr><td>Class Performance Ranking Basis</td><td>Rank classes against others of the same education level type (all of Primary) or the same education level (Upper primary only).</td></tr>
+  <tr><td>Totals &amp; Means Basis</td><td>Divide a learner's total by the subjects with marks, or by all subjects allocated to them (a missing mark counts as zero).</td></tr>
+  <tr><td>Combined Broadsheet Columns</td><td>Marks, grade and points per subject, or marks and grade only.</td></tr>
+  <tr><td>Top Students Shown</td><td>How many tied top learners the Subject and Class Performance reports list before "+N more".</td></tr>
+  <tr><td>Exam Results / Ranking Method &ndash; <em>education level</em></td><td>One pair per education level. Leave them on <span class="ui">Use global default</span>, or choose a different scale or ranking for that level only (for example 8-Point for Junior School).</td></tr>
+</table>
+<p>Other sections hold related settings:</p>
+<ul>
+  <li><strong>General Dashboard Settings</strong>: <span class="ui">Current Exam Type for Dashboard</span> (the exam type the dashboard's Class Exam Performance card opens on, usually the latest one this term) and <span class="ui">Average Calculation Method</span> (whether class averages count only learners who sat the exam or every allocated learner, absent ones as 0).</li>
+  <li><strong>Teaching Management Settings</strong>: when schemes of work and lesson plans fall due. Only the tracker's "overdue" marking uses these.</li>
+  <li><strong>Report Form Settings</strong>: what the report form shows (marks, grades, points), which learner development sections print, the position, the title wording and the term dates.</li>
+</ul>
+<div class="callout important"><span class="lbl">Change grading between terms, not during one.</span> Grading and ranking are worked out when reports are produced, so a change affects every report printed afterwards, including those for earlier exams.</div>
+
+<h2 class="sub" id="aaca-access">Who Sees What: Academic Permissions</h2>
+<p>For assessments and teaching documents, teachers see only the classes and subjects allocated to them. Three things widen that, set by an administrator.</p>
+<h3>Student Assessments (Admin)</h3>
+<p>A role with this permission can enter and correct Student Assessment marks for any teacher, class and subject, and sees the whole school on the Assessment Tracker. Administrators have it already. Give it to the role used by, for example, the deputy head (academics) or the examinations officer.</p>
+<h3>Whole-school Access (Admin)</h3>
+<p>A role with this permission sees and opens every teacher's schemes of work, lesson plans and records of work, and checks them, as administrators do. It also gives the whole school on the Assessment Tracker.</p>
+<h3>Granting either permission</h3>
+<ol class="steps">
+  <li>Open <span class="path">Security &gt; Menu Permissions</span> and click the role on the left.</li>
+  <li>Under <strong>Academics &gt; Assessments</strong>, tick <span class="ui">Student Assessments (Admin)</span>; under <strong>Teaching Management</strong>, tick <span class="ui">Whole-school Access (Admin)</span>.</li>
+  <li>Click <span class="ui">Save</span>. Members of the role who are signed in get the new access when they refresh the page or sign in again.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/aaca-menu-permissions.png" alt="Menu Permissions for a role, with the Academics and Teaching Management groups open"><figcaption>Security &gt; Menu Permissions: the two "(Admin)" permissions</figcaption></figure>
+<p>These two entries are permissions, not pages: they never appear in the menu.</p>
+<h3>Heads of Department</h3>
+<p>A head of department sees and checks the teaching documents of every subject in their department, and their department's progress on the Assessment Tracker, with no extra permission. To set one, open <span class="path">Settings &gt; Dropdowns &gt; System Settings &gt; Departments</span>, edit the department and choose the staff member under <span class="ui">Head of Department</span>. A subject belongs to the department chosen on the subject (see <a href="#aaca-subjects">Subjects</a>).</p>
+<div class="callout"><span class="lbl">The HeadOfDepartment role.</span> The role of that name only decides which menus its members see. What a head of department oversees comes from the Departments list above, so set both.</div>
+</section>

@@ -1,0 +1,112 @@
+<section class="chapter" id="admin-users-security">
+<h1 class="ch">Users and Security</h1>
+<p>Everyone who uses ShuleNova signs in with their own account. This chapter covers creating those accounts, giving them roles, choosing what each role can open, and checking who has done what. The pages are under the <span class="path">Security</span> menu.</p>
+<div class="callout"><span class="lbl">Can't see the Security menu?</span> A SuperAdministrator always sees it. Anyone else sees it only if <span class="path">Security</span> pages are ticked for one of their roles in <a href="#asec-menus">Menu Permissions</a>. An Administrator can also open the pages directly by their address, for example <span class="path">/security/users</span>.</div>
+
+<h2 class="sub" id="asec-users">Users</h2>
+<p><span class="path">Security &gt; Users</span> lists every account: the username, email and name, the person it is linked to (a member of staff, a learner or a parent) and its roles. Type in <span class="ui">Search</span> to find an account by username, email, name or linked person.</p>
+<figure class="shot"><img src="assets/guide/asec-users.png" alt="The users list"><figcaption>The users list</figcaption></figure>
+<p>Each row has three buttons: edit (pencil), <span class="ui">Reset Password</span> (key) and delete (bin).</p>
+
+<h3>Creating an account</h3>
+<p>Add the person first (<span class="path">Staff &gt; Staff Details</span>, or the learner or parent), then:</p>
+<ol class="steps">
+  <li>Click <span class="ui">Add User</span>.</li>
+  <li>Under <span class="ui">Linked Person</span>, click <span class="ui">Staff</span>, <span class="ui">Student</span> or <span class="ui">Parent</span>, then type a name, UPI or email in <span class="ui">Person</span> and pick the person. ShuleNova fills in the first name, last name and email from their record; you can still change them.</li>
+  <li>Type a <span class="ui">Username</span> (short and easy to type, such as the first name) and check the <span class="ui">Email</span>. Both must be unique.</li>
+  <li>Type a starting <span class="ui">Password</span> of at least 6 characters. The eye button shows what you typed.</li>
+  <li>Under <span class="ui">Roles</span>, tick the roles the person needs (for a teacher, <em>Teacher</em>; for the bursar, <em>Accounts</em>; and so on).</li>
+  <li>Click <span class="ui">Save</span> and confirm.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/asec-user-form.png" alt="Editing a user"><figcaption>A user linked to a member of staff, with the Teacher and HeadOfDepartment roles</figcaption></figure>
+<p>Give the person their username and starting password. At their first sign-in ShuleNova makes them choose their own password before they continue.</p>
+<div class="callout important"><span class="lbl">Link staff accounts.</span> Linking is optional, but many pages depend on it. A teacher sees "my classes", "my subjects" and their own schemes of work only through the staff record their account is linked to, and a head of department sees their department the same way. A person can be linked to one account only.</div>
+
+<h3>Changing an account or its roles</h3>
+<ol class="steps">
+  <li>Click the pencil on the account.</li>
+  <li>Change the details, tick or untick roles, or link a different person (<span class="ui">Clear</span> removes the link).</li>
+  <li>Leave <span class="ui">Password</span> blank to keep the current one.</li>
+  <li>Click <span class="ui">Update</span>. The role changes are saved straight after the details.</li>
+</ol>
+<p>A user's new roles take effect the next time they sign in.</p>
+<div class="callout"><span class="lbl">The lock on SuperAdministrator.</span> If you are not a SuperAdministrator yourself, the SuperAdministrator box is greyed out with a padlock: only a SuperAdministrator can give that role or take it away.</div>
+
+<h3>Resetting a forgotten password</h3>
+<p>ShuleNova does not send password reset emails. When someone forgets their password:</p>
+<ol class="steps">
+  <li>Click the key button on their account.</li>
+  <li>Type a temporary password (at least 6 characters) and click <span class="ui">Reset Password</span>.</li>
+  <li>Give the temporary password to the person privately. At their next sign-in they must choose a new one.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/asec-reset-password.png" alt="Resetting a password"><figcaption>Resetting a user's password</figcaption></figure>
+
+<h3>Removing an account</h3>
+<p>When someone leaves, click the bin on their account and confirm. The account is deleted and can no longer sign in; the audit trail still shows what was done under their name.</p>
+
+<h2 class="sub" id="asec-roles">Roles</h2>
+<p><span class="path">Security &gt; Roles</span> lists the roles, with how many users hold each one.</p>
+<figure class="shot"><img src="assets/guide/asec-roles.png" alt="The roles list"><figcaption>The roles and the number of users in each</figcaption></figure>
+<ul>
+  <li>Click the eye button on a role to see who holds it: their name, username and email.</li>
+  <li>Click <span class="ui">Add Role</span> to make a new role (for example <em>Librarian</em>), then choose its menus in <a href="#asec-menus">Menu Permissions</a> and give it to users on the Users page.</li>
+  <li>The pencil renames a role; the bin deletes it.</li>
+</ul>
+<figure class="shot"><img src="assets/guide/asec-role-users.png" alt="The users holding a role"><figcaption>The users holding a role</figcaption></figure>
+<div class="callout important"><span class="lbl">Do not rename or delete the built-in roles.</span> ShuleNova looks for some roles by name: Administrator, SuperAdministrator, Teacher, HeadTeacher, HeadOfDepartment, Accounts and Viewer among them. Renaming or deleting one of these breaks the features that rely on it. Add new roles instead.</div>
+
+<h3 id="asec-viewer">The Viewer role</h3>
+<p><strong>Viewer</strong> makes an account view-only. Give it <em>on top of</em> another role: the user sees exactly what that other role sees, and can change nothing. Administrator + Viewer sees the whole school; Accounts + Viewer sees the finance pages. It suits:</p>
+<ul>
+  <li>a board member or the school's owner who wants to look but not touch;</li>
+  <li>an auditor checking the books;</li>
+  <li>a shared demonstration login.</li>
+</ul>
+<p>A viewer's pages look normal, buttons included, but every save, change or delete is refused with "This account is view-only. Changes are not saved.", and a yellow <span class="ui">View only</span> badge shows in their top bar. They can still sign in and out and print. A viewer cannot change their own password either, and is never asked to, so a shared login keeps working. In the Users form the Viewer box is marked <span class="ui">view only</span>.</p>
+
+<h2 class="sub" id="asec-menus">Menu Permissions</h2>
+<p><span class="path">Security &gt; Menu Permissions</span> decides which menus and pages each role can open. It is the main way to control access: a user sees in the side menu only the pages ticked for at least one of their roles, and the system refuses the rest even if they type the address.</p>
+<ol class="steps">
+  <li>Click a role in <span class="ui">Select Role</span> on the left. Its menus appear on the right, grouped as in the side menu (Dashboard, School, Staff, Students&hellip;), with a count such as <em>5/6</em> of what is ticked in each group.</li>
+  <li>Tick or untick pages. The box on a group's dark bar ticks or unticks the whole group; <span class="ui">All</span> and <span class="ui">None</span> do the whole list.</li>
+  <li>Click <span class="ui">Save</span>. ShuleNova says how many pages will be added and removed; confirm.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/asec-menu-permissions.png" alt="Menu permissions for a role"><figcaption>The HeadOfDepartment role: the teaching documents card and the Teaching Management pages</figcaption></figure>
+<p>Users see the change the next time they sign in or refresh the page.</p>
+<h3>What else is on the list</h3>
+<ul>
+  <li><strong>Dashboard cards</strong>: under Dashboard, each dashboard card (class exam performance, fees, CBE assessments, teaching documents, payroll, elections, messages) is a permission of its own, so the fees card can go to the bursar and not to teachers.</li>
+  <li><strong>Permission flags</strong>: some entries are not pages but extra rights.<!--module:Academics--> <span class="ui">Student Assessments (Admin)</span> lets a role enter assessment marks for any teacher, class and subject, not only the role holder's own allocations. <span class="ui">Whole-school Access (Admin)</span> under Teaching Management lets a role see and open every teacher's schemes of work, lesson plans and records of work (heads of department see their own departments without it).<!--/module:Academics--> Tick them only for the roles that need them.</li>
+  <li><strong>Settings and set-up pages</strong>: saving on a set-up page (school details, years, terms, dropdowns, global settings) is accepted only from a role that holds that page.</li>
+  <li>Only the modules your licence includes are listed.</li>
+</ul>
+<div class="callout"><span class="lbl">SuperAdministrator.</span> Super Administrators have full access whatever is ticked for them here. Every other role, Administrator included, follows its ticks, so make sure the Administrator role holds every page administrators need.</div>
+<div class="callout tip"><span class="lbl">Start small.</span> A role with nothing ticked sees only the dashboard. When adding a role, tick what the job needs, sign in as a test user with that role, and add more if something is missing.</div>
+
+<h2 class="sub" id="asec-active">Active Users</h2>
+<p><span class="path">Security &gt; Active Users</span> lists who is signed in now, with when they signed in and from which IP address. Click <span class="ui">Refresh</span> to update it. Use it, for example, before an update to see who is working.</p>
+<figure class="shot"><img src="assets/guide/asec-active-users.png" alt="Active users"><figcaption>Users signed in now</figcaption></figure>
+<p>The list comes from the audit trail: a user whose last sign-in within the last 10 hours was not followed by a sign-out. Someone who closed their browser without signing out stays listed until their session would have expired.</p>
+
+<h2 class="sub" id="asec-audit">Audit Logs</h2>
+<p><span class="path">Security &gt; Audit Logs</span> (the audit trail) records who did what and when: every record created, changed or deleted, every sign-in, failed sign-in and sign-out, and printed documents.</p>
+<ol class="steps">
+  <li>Set the <span class="ui">From</span> and <span class="ui">To</span> dates (the page opens on today).</li>
+  <li>Narrow it if you like: a <span class="ui">User</span>, an <span class="ui">Action</span> (Create, Update, Delete, Login, LoginFailed, Logout&hellip;), an <span class="ui">Entity</span> (the kind of record), or words in the search box.</li>
+  <li>Click <span class="ui">Search</span>. <span class="ui">Export CSV</span> saves every matching row to open in Excel.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/asec-audit-logs.png" alt="The audit trail"><figcaption>The audit trail</figcaption></figure>
+<p>Click the eye on a row to see the detail: who, when, from where, and for a change the <span class="ui">Old values</span> and <span class="ui">New values</span> side by side.</p>
+<figure class="shot"><img src="assets/guide/asec-audit-detail.png" alt="An audit row in detail"><figcaption>One audit row: here a role given to a user</figcaption></figure>
+<div class="callout tip"><span class="lbl">Several failed sign-ins?</span> Filter on the action <em>LoginFailed</em>. Many failures for one username can mean someone is guessing a password; reset it and tell the user.</div>
+
+<h2 class="sub" id="asec-errors">Error Logs</h2>
+<p><span class="path">Security &gt; Error Logs</span> lists errors the system has recorded, for Kodetek's support team and for you. Filter by date, <span class="ui">Level</span> (Error, Warn), <span class="ui">Status</span> (Open only, Resolved only, All) and search, then click <span class="ui">Search</span>.</p>
+<figure class="shot"><img src="assets/guide/asec-error-logs.png" alt="The error logs"><figcaption>Recorded errors</figcaption></figure>
+<ul>
+  <li><span class="ui">View</span> opens the full entry: the message, the page address and the technical detail.</li>
+  <li>A badge such as <em>&times;3</em> means the same message appears several times on the page, most likely one incident.</li>
+  <li>Once a problem is dealt with, open it, add a note on what was done if you like, and click <span class="ui">Mark resolved</span>. <span class="ui">Reopen</span> undoes it.</li>
+</ul>
+<p>When reporting a problem to Kodetek, give the time it happened and the page you were on; support can match it to the entry here.</p>
+</section>

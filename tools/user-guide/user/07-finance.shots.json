@@ -1,0 +1,576 @@
+[
+ {
+  "name": "fin-budget-register",
+  "path": "/finance/budget-register",
+  "waitFor": "table tbody tr"
+ },
+ {
+  "name": "fin-budgets",
+  "path": "/finance/budgets",
+  "waitFor": "table tbody tr"
+ },
+ {
+  "name": "fin-budget-actual",
+  "path": "/finance/budgets",
+  "waitFor": "table tbody tr",
+  "steps": [
+   {
+    "click": "button[title='View vs Actual']"
+   },
+   {
+    "waitFor": ".modal-content table tbody tr",
+    "wait": 800
+   }
+  ],
+  "element": ".modal-content"
+ },
+ {
+  "name": "fin-budget-new",
+  "path": "/finance/budgets",
+  "waitFor": "table tbody tr",
+  "steps": [
+   {
+    "click": "button:has-text('Add Budget')"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 600
+   },
+   {
+    "eval": "(()=>{const s=document.querySelectorAll('.modal-content select')[0]; s.selectedIndex=1; s.dispatchEvent(new Event('change'));})()",
+    "wait": 700
+   },
+   {
+    "eval": "(()=>{const s=document.querySelectorAll('.modal-content select')[2]; s.selectedIndex=1; s.dispatchEvent(new Event('change'));})()",
+    "wait": 700
+   }
+  ],
+  "element": ".modal-content",
+  "height": 600
+ },
+ {
+  "name": "fin-amendment-new",
+  "path": "/finance/budget-amendments",
+  "settle": 800,
+  "steps": [
+   {
+    "click": "button:has-text('New Amendment')"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 600
+   },
+   {
+    "eval": "(()=>{const s=document.querySelectorAll('.modal-content select')[0]; s.selectedIndex=1; s.dispatchEvent(new Event('change'));})()",
+    "wait": 700
+   },
+   {
+    "waitFor": ".modal-content table tbody tr",
+    "wait": 1000
+   },
+   {
+    "click": ".modal-content button:has-text('Add Expense Line')",
+    "wait": 500
+   },
+   {
+    "eval": "(()=>{const a=document.querySelectorAll('.modal-content table select'); const s=a[a.length-1]; s.selectedIndex=1; s.dispatchEvent(new Event('change'));})()",
+    "wait": 500
+   },
+   {
+    "eval": "(()=>{const a=[...document.querySelectorAll('.modal-content input[type=number]')]; const i=a[a.length-1]; i.value='640000'; i.dispatchEvent(new Event('input'));})()",
+    "wait": 500
+   },
+   {
+    "fill": [
+     ".modal-content input[placeholder^='Justification']",
+     "Second school bus route from January"
+    ]
+   },
+   {
+    "eval": "document.activeElement.blur()",
+    "wait": 300
+   }
+  ],
+  "height": 1140,
+  "element": ".modal-content"
+ },
+ {
+  "name": "fin-fee-structures",
+  "path": "/finance/fee-structures",
+  "waitFor": "table tbody tr",
+  "settle": 1200
+ },
+ {
+  "name": "fin-fee-structure-form",
+  "path": "/finance/fee-structures",
+  "waitFor": "table tbody tr",
+  "steps": [
+   {
+    "click": "button:has-text('Add Fee Structure')"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 600
+   },
+   {
+    "eval": "(()=>{const s=document.querySelectorAll('.modal-content select')[0]; s.selectedIndex=1; s.dispatchEvent(new Event('change'));})()",
+    "wait": 700
+   },
+   {
+    "eval": "(()=>{const s=document.querySelectorAll('.modal-content select')[1]; s.selectedIndex=1; s.dispatchEvent(new Event('change'));})()",
+    "wait": 700
+   },
+   {
+    "eval": "(()=>{const s=document.querySelectorAll('.modal-content select')[2]; s.selectedIndex=3; s.dispatchEvent(new Event('change'));})()",
+    "wait": 700
+   },
+   {
+    "eval": "(()=>{const s=document.querySelectorAll('.modal-content select')[3]; s.selectedIndex=1; s.dispatchEvent(new Event('change'));})()",
+    "wait": 700
+   },
+   {
+    "click": ".modal-content button:has-text('Add Item')",
+    "wait": 300
+   },
+   {
+    "eval": "(()=>{const a=document.querySelectorAll('.modal-content table select'); const s=a[a.length-1]; s.selectedIndex=1; s.dispatchEvent(new Event('change'));})()",
+    "wait": 500
+   },
+   {
+    "click": ".modal-content button:has-text('Add Item')",
+    "wait": 300
+   },
+   {
+    "eval": "(()=>{const a=document.querySelectorAll('.modal-content table select'); const s=a[a.length-1]; s.selectedIndex=2; s.dispatchEvent(new Event('change'));})()",
+    "wait": 500
+   },
+   {
+    "click": ".modal-content button:has-text('Add Item')",
+    "wait": 300
+   },
+   {
+    "eval": "(()=>{const a=document.querySelectorAll('.modal-content table select'); const s=a[a.length-1]; s.selectedIndex=3; s.dispatchEvent(new Event('change'));})()",
+    "wait": 500
+   },
+   {
+    "eval": "(()=>{const v=[\"6000\",\"4500\",\"3200\"]; const a=[...document.querySelectorAll('.modal-content table input[type=number]')]; a.forEach((x,i)=>{if(v[i]!=null){x.value=v[i]; x.dispatchEvent(new Event('input'));}});})()",
+    "wait": 500
+   },
+   {
+    "click": ".modal-content table tbody tr:nth-child(2) input[type=checkbox]",
+    "wait": 400
+   }
+  ],
+  "element": ".modal-content",
+  "height": 620
+ },
+ {
+  "name": "fin-invoices",
+  "path": "/finance/invoices",
+  "waitFor": "table tbody tr",
+  "settle": 1500
+ },
+ {
+  "name": "fin-invoice-bulk",
+  "path": "/finance/invoices",
+  "waitFor": "table tbody tr",
+  "steps": [
+   {
+    "click": "button:has-text('Bulk Generate')"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 800
+   }
+  ],
+  "element": ".modal-content"
+ },
+ {
+  "name": "fin-invoice-edit",
+  "path": "/finance/invoices",
+  "waitFor": "table tbody tr",
+  "steps": [
+   {
+    "click": "button[title='Edit items']"
+   },
+   {
+    "waitFor": ".modal-content table tbody tr",
+    "wait": 1200
+   }
+  ],
+  "element": ".modal-content",
+  "height": 620
+ },
+ {
+  "name": "fin-payments",
+  "path": "/finance/payments",
+  "waitFor": "table tbody tr",
+  "settle": 1500
+ },
+ {
+  "name": "fin-payment-new",
+  "path": "/finance/payments",
+  "waitFor": "table tbody tr",
+  "steps": [
+   {
+    "click": "button:has-text('New Payment')"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 600
+   },
+   {
+    "eval": "(()=>{const s=document.querySelectorAll('.modal-content select')[0]; s.selectedIndex=2; s.dispatchEvent(new Event('change'));})()",
+    "wait": 1200
+   },
+   {
+    "select": [
+     ".modal-content select >> nth=2",
+     "Day Care - E"
+    ],
+    "wait": 1500
+   },
+   {
+    "click": ".modal-content ng-select",
+    "wait": 500
+   },
+   {
+    "fill": [
+     ".modal-content ng-select input",
+     "FELIX"
+    ]
+   },
+   {
+    "wait": 800
+   },
+   {
+    "press": "Enter",
+    "wait": 1500
+   },
+   {
+    "eval": "(async()=>{for(let k=0;k<40;k++){const s=document.querySelectorAll('.modal-content select')[3]; if(s&&s.options.length>1){s.selectedIndex=1; s.dispatchEvent(new Event('change')); return;} await new Promise(r=>setTimeout(r,300));}})()",
+    "wait": 1500
+   },
+   {
+    "fill": [
+     ".modal-content input[type=number]",
+     "2000"
+    ]
+   },
+   {
+    "fill": [
+     ".modal-content input >> nth=-3",
+     "QK7T2M9XPL"
+    ]
+   },
+   {
+    "wait": 800
+   }
+  ],
+  "element": ".modal-content",
+  "height": 900
+ },
+ {
+  "name": "fin-payment-view",
+  "path": "/finance/payments",
+  "waitFor": "table tbody tr",
+  "steps": [
+   {
+    "click": "button[title='View']"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 1200
+   }
+  ],
+  "element": ".modal-content"
+ },
+ {
+  "name": "fin-credit-note",
+  "path": "/finance/payments",
+  "waitFor": "table tbody tr",
+  "steps": [
+   {
+    "click": "button[title='Credit Note']"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 1500
+   }
+  ],
+  "element": ".modal-content"
+ },
+ {
+  "name": "fin-fee-collection",
+  "path": "/finance/reports/fees",
+  "settle": 3000,
+  "height": 1000
+ },
+ {
+  "name": "fin-outstanding",
+  "path": "/finance/reports/fees?tab=outstanding",
+  "settle": 3000,
+  "height": 1000
+ },
+ {
+  "name": "fin-balances-class",
+  "path": "/finance/reports/fees?tab=feeBalancesByClass",
+  "settle": 3000,
+  "height": 1000
+ },
+ {
+  "name": "fin-discounts",
+  "path": "/finance/reports/fees?tab=discounts",
+  "settle": 3000,
+  "height": 1000
+ },
+ {
+  "name": "fin-statement",
+  "path": "/finance/reports/fees?tab=studentStatement",
+  "settle": 3500,
+  "height": 620
+ },
+ {
+  "name": "fin-sponsors",
+  "path": "/finance/sponsors",
+  "waitFor": "table tbody tr",
+  "settle": 1200
+ },
+ {
+  "name": "fin-sponsorships",
+  "path": "/finance/sponsorships",
+  "waitFor": "table tbody tr",
+  "settle": 1500
+ },
+ {
+  "name": "fin-sponsorship-form",
+  "path": "/finance/sponsorships",
+  "waitFor": "table tbody tr",
+  "steps": [
+   {
+    "click": "button:has-text('Add Sponsorship')"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 800
+   }
+  ],
+  "element": ".modal-content"
+ },
+ {
+  "name": "fin-sponsor-payments",
+  "path": "/finance/sponsor-payments",
+  "settle": 1500,
+  "steps": [
+   {
+    "fill": [
+     "input[type=date] >> nth=0",
+     "2026-01-01"
+    ]
+   },
+   {
+    "wait": 1500
+   },
+   {
+    "eval": "document.activeElement.blur()",
+    "wait": 300
+   }
+  ]
+ },
+ {
+  "name": "fin-sponsor-payment-new",
+  "path": "/finance/sponsor-payments",
+  "settle": 800,
+  "steps": [
+   {
+    "click": "button:has-text('Record Payment')"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 600
+   },
+   {
+    "eval": "(()=>{const s=document.querySelectorAll('.modal-content select')[0]; s.selectedIndex=1; s.dispatchEvent(new Event('change'));})()",
+    "wait": 700
+   },
+   {
+    "fill": [
+     ".modal-content input[type=number]",
+     "60000"
+    ]
+   },
+   {
+    "click": ".modal-content button:has-text('Next')",
+    "wait": 2000
+   }
+  ],
+  "height": 840,
+  "element": ".modal-content"
+ },
+ {
+  "name": "fin-expenses",
+  "path": "/finance/expenses",
+  "settle": 1500,
+  "steps": [
+   {
+    "fill": [
+     "input[type=date] >> nth=0",
+     "2026-10-01"
+    ]
+   },
+   {
+    "wait": 1500
+   },
+   {
+    "eval": "document.activeElement.blur()",
+    "wait": 300
+   }
+  ]
+ },
+ {
+  "name": "fin-expense-form",
+  "path": "/finance/expenses",
+  "waitFor": "table tbody tr",
+  "steps": [
+   {
+    "click": "button:has-text('Add Expense')"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 1200
+   },
+   {
+    "eval": "(()=>{const s=document.querySelectorAll('.modal-content select')[1]; s.selectedIndex=1; s.dispatchEvent(new Event('change'));})()",
+    "wait": 700
+   },
+   {
+    "click": ".modal-content button:has-text('Add Line')",
+    "wait": 400
+   },
+   {
+    "select": [
+     ".modal-content table select",
+     "Food Supplies"
+    ],
+    "wait": 400
+   },
+   {
+    "fill": [
+     ".modal-content input[placeholder='Vendor']",
+     "Mwangaza Wholesalers"
+    ]
+   },
+   {
+    "fill": [
+     ".modal-content input[type=number]",
+     "48500"
+    ]
+   },
+   {
+    "fill": [
+     ".modal-content table input:not([type=number]):not([placeholder]) >> nth=0",
+     "Rice and maize flour, November"
+    ]
+   }
+  ],
+  "element": ".modal-content",
+  "height": 700
+ },
+ {
+  "name": "fin-expense-view",
+  "path": "/finance/expenses",
+  "waitFor": "table tbody tr",
+  "steps": [
+   {
+    "click": "button[title='Quick View']"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 1200
+   }
+  ],
+  "element": ".modal-content"
+ },
+ {
+  "name": "fin-expense-approve",
+  "path": "/finance/expenses",
+  "settle": 1000,
+  "steps": [
+   {
+    "fill": [
+     "input[type=date] >> nth=0",
+     "2026-10-01"
+    ]
+   },
+   {
+    "wait": 1500
+   },
+   {
+    "click": "button[title='Review / Approve']"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 2000
+   }
+  ],
+  "height": 760,
+  "element": ".modal-content"
+ },
+ {
+  "name": "fin-journals",
+  "path": "/finance/journal-entries",
+  "waitFor": "table tbody tr",
+  "settle": 1500
+ },
+ {
+  "name": "fin-journal-view",
+  "path": "/finance/journal-entries",
+  "waitFor": "table tbody tr",
+  "steps": [
+   {
+    "click": "button[title='Quick View']"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 1200
+   }
+  ],
+  "element": ".modal-content"
+ },
+ {
+  "name": "fin-periods",
+  "path": "/finance/accounting-periods",
+  "waitFor": "table tbody tr",
+  "settle": 2000
+ },
+ {
+  "name": "fin-trial-balance",
+  "path": "/finance/reports/statements",
+  "settle": 3000,
+  "height": 1000
+ },
+ {
+  "name": "fin-income-statement",
+  "path": "/finance/reports/statements?tab=incomeStatement",
+  "settle": 3000,
+  "height": 1000
+ },
+ {
+  "name": "fin-balance-sheet",
+  "path": "/finance/reports/statements?tab=balanceSheet",
+  "settle": 3000,
+  "height": 1000
+ },
+ {
+  "name": "fin-budget-report",
+  "path": "/finance/reports/statements?tab=consolidatedBudget",
+  "settle": 3000,
+  "height": 1000
+ },
+ {
+  "name": "fin-expense-report",
+  "path": "/finance/reports/expenses",
+  "settle": 3000,
+  "height": 1000
+ }
+]

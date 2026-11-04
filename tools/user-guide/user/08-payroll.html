@@ -1,0 +1,132 @@
+<section class="chapter" id="payroll" data-module="Payroll">
+<h1 class="ch">Payroll</h1>
+<p>ShuleNova pays your staff every month: it works out each person's gross pay, PAYE, NSSF, SHIF, the Housing Levy, other deductions and loan instalments, prints the payslips and produces the returns and bank schedule. The monthly work is done in this order:</p>
+<ol class="steps">
+  <li><strong>Employee Salaries</strong>: who is paid, and how much.</li>
+  <li><strong>Loans &amp; Advances</strong>: any loan or advance to recover from pay.</li>
+  <li><strong>Processing</strong>: create the month, process it, check the payslips, and send it for approval.</li>
+  <li><strong>Reports</strong>: once it is approved, print the payslips, muster roll, statutory returns, bank schedule and P9 cards.</li>
+</ol>
+<p>All four are under <span class="path">Payroll</span> in the menu. The rates and rules behind the calculation (tax bands, NSSF bands, reliefs and so on) are set up once by an administrator; see the administrator guide.</p>
+<div class="callout"><span class="lbl">Who sees payroll.</span> Payroll pages are for the people your school has made payroll officers. Every other member of staff sees only their own payslips, under <a href="#pay-my-payslips">My Payslips</a>.</div>
+
+<h2 class="sub" id="pay-salaries">Employee Salaries</h2>
+<p><span class="path">Payroll &gt; Employee Salaries</span> lists every active member of staff, one row each, with their basic salary, house, transport and other allowances, gross pay, the date the salary takes effect and whether it is active. The badges at the top count the staff with a salary, without one, and those excluded from payroll.</p>
+<figure class="shot"><img src="assets/guide/pay-salaries.png" alt="The Employee Salaries grid"><figcaption>Employee Salaries: one row per active member of staff</figcaption></figure>
+
+<h3>Setting or changing salaries</h3>
+<ol class="steps">
+  <li>Type the amounts straight into the row: <span class="ui">Basic Salary</span>, <span class="ui">House Allow.</span>, <span class="ui">Transport Allow.</span> and <span class="ui">Other Allow.</span> The <span class="ui">Gross</span> column adds them up as you type, and a changed row turns yellow.</li>
+  <li>Give each changed row an <span class="ui">Effective Date</span>. To use the same date for everyone listed, pick it in the <span class="ui">Effective Date</span> box at the top and click <span class="ui">Apply to all</span>.</li>
+  <li>Click <span class="ui">Save All</span>. The number on the button shows how many rows will be saved. <span class="ui">Discard</span> throws away the changes you have not saved.</li>
+</ol>
+<p>Use the <span class="ui">Staff Member</span> and <span class="ui">Show</span> filters (all, with salary, without salary, excluded from payroll) to narrow the list. A member of staff marked <span class="ui">Not set</span> has no salary yet and will not be paid until they have one.</p>
+
+<h3>Additional earnings and voluntary deductions</h3>
+<p>Some staff get more than the four standard amounts (overtime, a responsibility allowance) or have something taken off besides the statutory deductions (welfare, SACCO, union dues, an insurance premium). These are kept per employee:</p>
+<ol class="steps">
+  <li>Click the list button (<span class="ui">&#9776;</span>) at the end of the row. The <strong>Edit Employee Salary</strong> window opens.</li>
+  <li>Under <span class="ui">Additional Earnings</span> click <span class="ui">Add Earning</span>, choose the <span class="ui">Earning Type</span> and type the amount. Do the same under <span class="ui">Voluntary Deductions</span> with <span class="ui">Add Deduction</span>.</li>
+  <li>Check the <span class="ui">Gross Total</span>, <span class="ui">Total Deductions</span> and <span class="ui">Net Salary</span> at the bottom, then click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/pay-salary-details.png" alt="The Edit Employee Salary window"><figcaption>One employee's salary, extra earnings and voluntary deductions</figcaption></figure>
+<p>The net salary shown here leaves out PAYE, NSSF, SHIF and the Housing Levy; those are worked out when the payroll is processed. The number badge beside a name in the grid shows how many extra lines that person has.</p>
+<div class="callout tip"><span class="lbl">A new employee.</span> For someone with no salary yet, the window shows only the salary details. Save them first; the window then reopens with the earnings and deductions sections.</div>
+
+<h3>Statutory numbers and staff not on the payroll</h3>
+<p>A yellow warning above the grid counts the staff missing a KRA PIN, ID, NSSF or SHA number. Fix these before you process the payroll, or those lines print blank on the payslips and returns. Click the card button at the start of the row's actions (it shows a warning sign while something is missing) to open <strong>Payroll Details</strong>:</p>
+<figure class="shot"><img src="assets/guide/pay-payroll-details.png" alt="The Payroll Details window"><figcaption>Payroll Details: statutory numbers, and Exclude from payroll</figcaption></figure>
+<ul>
+  <li>Fill in the <span class="ui">KRA Pin</span>, <span class="ui">ID Number</span>, <span class="ui">NSSF No</span> and <span class="ui">SHA No</span> and click <span class="ui">Save</span>. They are saved on the staff record.</li>
+  <li>Switch on <span class="ui">Exclude from payroll</span> for people on the staff list who are not paid through payroll, such as suppliers or contractors. They stay on the staff list but are skipped when the payroll is processed and get no payslip.</li>
+</ul>
+<p>Names, staff category and employment details are changed on the staff record (<span class="path">Staff &gt; Staff Details</span>), not here.</p>
+<div class="callout important"><span class="lbl">Who gets paid.</span> Processing pays every active member of staff who has an active salary and is not excluded. Someone whose employment date is after the end of the month is not paid for that month. The trash button deletes a salary record; the person stays on the list but will not be paid.</div>
+
+<h2 class="sub" id="pay-loans">Loans &amp; Advances</h2>
+<p><span class="path">Payroll &gt; Loans &amp; Advances</span> lists the loans and salary advances being recovered from pay, with the principal, the monthly deduction, the balance still owed and the status (Active, Fully Paid or Cancelled).</p>
+<figure class="shot"><img src="assets/guide/pay-loans.png" alt="The Loans and Advances list"><figcaption>Loans and advances, with what is still owed</figcaption></figure>
+
+<h3>Recording a loan or advance</h3>
+<ol class="steps">
+  <li>Click <span class="ui">Add Loan / Advance</span>.</li>
+  <li>Choose the <span class="ui">Staff Member</span> and the <span class="ui">Issue Date</span>, and leave the <span class="ui">Status</span> at <span class="ui">Active</span>.</li>
+  <li>Type the <span class="ui">Principal Amount</span> and the <span class="ui">Monthly Deduction</span> (both must be more than 0) and the <span class="ui">Balance</span> still to recover, which for a new loan is normally the principal.</li>
+  <li>Add a <span class="ui">Description</span> (for example "Salary advance") and any <span class="ui">Notes</span>, then click <span class="ui">Save</span>.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/pay-loan-form.png" alt="The New Loan / Advance window"><figcaption>A new loan or advance</figcaption></figure>
+<p>Each time the payroll is processed, every active loan takes its monthly deduction (or the balance, if that is smaller) from the employee's pay, and the balance goes down. When the balance reaches zero the loan becomes <span class="ui">Fully Paid</span> by itself. If a month is processed again, its instalments are put back first, so nothing is taken twice.</p>
+<div class="callout tip"><span class="lbl">Stopping a loan.</span> To stop recovering a loan, edit it and set the status to <span class="ui">Cancelled</span>. Use the filters at the top to see one person's loans, or only active ones.</div>
+
+<h2 class="sub" id="pay-processing">Processing</h2>
+<p><span class="path">Payroll &gt; Processing</span> lists the payroll months (periods) with their status, the number of payslips and the totals of gross pay, net pay and PAYE. Click any row to see its payslips.</p>
+<figure class="shot"><img src="assets/guide/pay-periods.png" alt="The Payroll Periods list"><figcaption>Payroll periods, newest first</figcaption></figure>
+<table>
+  <tr><th style="width:30%">Status</th><th>What it means</th></tr>
+  <tr><td>Draft</td><td>The month exists but has not been processed. It can be processed or deleted.</td></tr>
+  <tr><td>Processed (Not Approved)</td><td>Payslips have been worked out. Nothing is final yet: the month can be processed again after a correction.</td></tr>
+  <tr><td>Awaiting review / Awaiting final approval</td><td>Sent for approval and with the approvers. It cannot be processed again until an approver returns it.</td></tr>
+  <tr><td>Returned for changes / Rejected</td><td>The approvers sent it back. Make the correction, process it again, and resubmit.</td></tr>
+  <tr><td>Approved</td><td>Locked. Its payslips and reports can be printed, staff can see their payslips, and its journal goes to the accounts.</td></tr>
+</table>
+
+<h3>Creating the month</h3>
+<ol class="steps">
+  <li>Click <span class="ui">New Period</span>.</li>
+  <li>Choose the <span class="ui">Month</span>, check the <span class="ui">Year</span>, and click <span class="ui">Save</span>. The period is named after the month (for example "November 2026"). There can be only one period for each month.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/pay-new-period.png" alt="The New Payroll Period window"><figcaption>A new payroll month</figcaption></figure>
+
+<h3>Processing the payroll</h3>
+<ol class="steps">
+  <li>Make sure this month's salary changes, extra earnings and deductions, and loans are all entered.</li>
+  <li>On the Draft period's row, click the cog button (<span class="ui">Process</span>) and confirm.</li>
+  <li>ShuleNova works out every payslip and the period becomes <span class="ui">Processed (Not Approved)</span>.</li>
+</ol>
+<p>Found a mistake? Fix the salary or loan, then click the re-process button (<span class="ui">&#8635;</span>) on the period. Re-processing throws the period's payslips away and builds them again from the current salaries.</p>
+<div class="callout important"><span class="lbl">NSSF bands.</span> If processing stops with "No NSSF bands are in force", the NSSF rates for that month have not been set up. Ask your administrator.</div>
+
+<h3>Checking the payslips</h3>
+<p>Before sending the payroll for approval, check it. Click the period (or its eye button) to open its payslips: each employee's gross pay, NSSF, SHIF, Housing Levy, PAYE, total deductions and net pay, with the totals at the bottom. A yellow <span class="ui">Missing ...</span> badge beside a name shows which statutory numbers that person lacks.</p>
+<figure class="shot"><img src="assets/guide/pay-payslips-check.png" alt="Checking a period's payslips"><figcaption>A period's payslips, for checking</figcaption></figure>
+<p>Click the eye button on a row to see that payslip exactly as it will print, and use <span class="ui">Previous</span> and <span class="ui">Next</span> to go through them one by one. <span class="ui">Back to the list</span> returns to the table.</p>
+<figure class="shot"><img src="assets/guide/pay-payslip-view.png" alt="One payslip as it will print"><figcaption>One payslip, as it will print</figcaption></figure>
+
+<h3>Approval</h3>
+<p>Most schools have the payroll checked by a reviewer and approved by a final approver. Click the approval button (<span class="ui">person with a tick</span>) on a processed period:</p>
+<ol class="steps">
+  <li>The window shows the payslip count, gross pay, PAYE and net pay.</li>
+  <li>Pick the approver for each step and click <span class="ui">Submit for Approval</span>. The period now reads <span class="ui">Awaiting review</span>.</li>
+  <li>Each approver finds it under the bell (and as <span class="ui">Your turn</span> on the period). They open the approval window, type a comment and click <span class="ui">Approve</span>, <span class="ui">Return</span> (send back for changes) or <span class="ui">Reject</span>. A comment is required to return or reject.</li>
+  <li>When the final approver approves, the period becomes <span class="ui">Approved</span> and is locked.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/pay-approval.png" alt="The payroll approval window"><figcaption>An approved payroll, with who checked and approved it</figcaption></figure>
+<p>If your school has switched the payroll approval off, a single <span class="ui">Approve</span> button (<span class="ui">&#10003;</span>) appears on the processed period instead.</p>
+<div class="callout"><span class="lbl">After approval.</span> An approved payroll cannot be processed again or deleted. Approving also creates the salary journal in the accounts, dated the last day of the month. Only a Draft period can be deleted.</div>
+
+<h2 class="sub" id="pay-reports">Reports</h2>
+<p><span class="path">Payroll &gt; Reports</span> covers <strong>approved</strong> payrolls only; a payroll still being checked does not appear. Choose the <span class="ui">Payroll Period</span> (the latest approved month opens first) and a tab. Each tab has its own <span class="ui">Print</span> button.</p>
+<table>
+  <tr><th style="width:24%">Tab</th><th>What it shows</th></tr>
+  <tr><td>Muster Roll</td><td>Every employee's pay and deductions in one table, with totals.</td></tr>
+  <tr><td>Statutory Returns</td><td>The PAYE, NSSF (employee and employer), SHIF and Housing Levy (employee and employer) to remit, and any levy the school pays itself (such as NITA).</td></tr>
+  <tr><td>Bank Schedule</td><td>Each employee's bank, branch, account number and net pay, for the bank transfer.</td></tr>
+  <tr><td>Payslips</td><td>The payslips: print one, or <span class="ui">Print All</span>, two to an A4 sheet. Staff excluded from payroll are skipped.</td></tr>
+  <tr><td>P9 Tax Cards</td><td>The KRA P9A card for a year: pick the year and the employee, then <span class="ui">Print</span> one card or <span class="ui">Print all</span>.</td></tr>
+</table>
+<figure class="shot"><img src="assets/guide/pay-reports-muster.png" alt="The Muster Roll"><figcaption>The muster roll for a month</figcaption></figure>
+<figure class="shot"><img src="assets/guide/pay-reports-statutory.png" alt="Statutory Returns"><figcaption>What to remit for the month</figcaption></figure>
+<figure class="shot"><img src="assets/guide/pay-reports-bank.png" alt="The Bank Schedule"><figcaption>The bank schedule</figcaption></figure>
+<figure class="shot"><img src="assets/guide/pay-reports-p9.png" alt="A P9A tax deduction card"><figcaption>An employee's P9A card for the year</figcaption></figure>
+<div class="callout tip"><span class="lbl">Printing payslips straight after approval.</span> In the payslips window on the Processing page, an approved period shows a <span class="ui">Print payslips</span> link that opens this page on the Payslips tab for that month.</div>
+
+<h2 class="sub" id="pay-my-payslips">My Payslips</h2>
+<p>Every member of staff paid through ShuleNova can see and print their own payslips. Click your name in the account menu to open <strong>My Profile</strong>, then click <span class="ui">My payslips</span>.</p>
+<figure class="shot"><img src="assets/guide/pay-my-payslips.png" alt="My Payslips"><figcaption>Your own payslips and P9 cards</figcaption></figure>
+<ul>
+  <li>Each month's gross pay, deductions and net pay is listed, newest first. Click <span class="ui">Payslip</span> to print that month's slip.</li>
+  <li>A payslip appears once that month's payroll is approved.</li>
+  <li>Your P9 tax card for a year appears under <span class="ui">P9 tax cards</span> once the year has ended and all its payroll is approved. Print it for your tax return.</li>
+</ul>
+<p>If the page says your sign-in is not linked to a staff record, ask your administrator to link your user account to your staff record.</p>
+</section>

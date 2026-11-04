@@ -1,0 +1,109 @@
+<section class="chapter" id="admin-system-settings">
+<h1 class="ch">System Settings</h1>
+<p>Three pages under <span class="path">Settings</span> change how ShuleNova behaves for the whole school: <strong>Global Settings</strong> (choices such as how averages are worked out and when idle users are signed out), <strong>Approval Workflows</strong> (who approves what) and <strong>Licence</strong>.</p>
+
+<h2 class="sub" id="aset-global">Global Settings</h2>
+<p><span class="path">Settings &gt; Global Settings</span> groups the settings into sections. Click a section's bar to open it (one opens at a time). Each setting has a short description beside it.</p>
+<figure class="shot"><img src="assets/guide/aset-global.png" alt="Global Settings with the general section open"><figcaption>Global Settings, with the General Dashboard Settings open</figcaption></figure>
+<h3>Changing settings</h3>
+<ol class="steps">
+  <li>Open a section and change the values you need. A changed setting is highlighted, its section shows "<em>n</em> changed", and the bar at the top counts the unsaved changes.</li>
+  <li>You can change settings in several sections before saving.</li>
+  <li>Click <span class="ui">Save changes</span> at the top and confirm. Only the settings you changed are saved.</li>
+</ol>
+<p>If you leave the page without saving, the changes are lost. The bar says <em>All settings are saved</em> when nothing is waiting.</p>
+<h3>The sections</h3>
+<p>Only the sections for the modules your licence includes are shown.</p>
+<table>
+  <tr><th style="width:28%">Section</th><th>What it sets</th></tr>
+  <tr><td>General Dashboard Settings</td><td>How many to-do items and upcoming events the dashboard shows; whether it names the top student; the exam type the dashboard's class performance card shows; how class averages are worked out (only learners who sat the exam, or every learner allocated, absentees counting as 0); whether a reason is required for every absence in student and staff attendance; the prefixes for department codes and budget plan codes; and the <span class="ui">Approval Edit Lock Policy</span> (below).</td></tr>
+  <!--module:Finance--><tr><td>Finance Settings</td><td>The accounting period (termly or yearly), how payments are spread over invoice items, automatic journal posting, the payroll journal, and the default accounts (debtors, cash, PAYE and the rest). See the Finance chapter.</td></tr><!--/module:Finance-->
+  <!--module:Payroll--><tr><td>Payroll Settings</td><td>The school's KRA PIN for payslips, and how net pay is rounded. See the Payroll chapter.</td></tr><!--/module:Payroll-->
+  <!--module:Communications--><tr><td>Communications Settings</td><td>Where parents' phone numbers and emails for messages come from: the parent record, the learner record, or the parent and then the learner. See the Communications chapter.</td></tr><!--/module:Communications-->
+  <!--module:Academics--><tr><td>Teaching Management Settings</td><td>When schemes of work and lesson plans fall due, for the tracker's "overdue" marking.</td></tr>
+  <tr><td>Grading System Settings</td><td>The 4-point or 8-point grading for exams, assessments, values and co-curricular scores; ranking; how totals and means are worked out; broadsheet columns; and per-level overrides. See the Academics Set-up chapter.</td></tr>
+  <tr><td>Report Form Settings</td><td>What the report form shows: marks or grades, the values, co-curricular, responsibilities and community service sections, position, term dates and the title wording.</td></tr><!--/module:Academics-->
+  <!--module:Elections--><tr><td>Elections Settings</td><td>The defaults for new elections: the voter register (frozen or live), how often the results screen refreshes, and the order of names on the ballot.</td></tr><!--/module:Elections-->
+  <tr><td>Security Settings</td><td>Idle sign-out, the warning before it, and whether the user guides are shown (below).</td></tr>
+</table>
+<h3>Approval Edit Lock Policy</h3>
+<p>Under General Dashboard Settings, this decides when a record sent for approval (an expense, a budget, a scheme of work&hellip;) stops being editable:</p>
+<ul>
+  <li><strong>Strict</strong>: locked as soon as it is submitted.</li>
+  <li><strong>Lenient</strong>: still editable until the first approval step is approved.</li>
+</ul>
+<p>An approved record is always locked.</p>
+<h3>Security settings</h3>
+<figure class="shot"><img src="assets/guide/aset-global-security.png" alt="The Security Settings section"><figcaption>Security Settings</figcaption></figure>
+<table>
+  <tr><th style="width:30%">Setting</th><th>What it does</th></tr>
+  <tr><td>Idle timeout (minutes)</td><td>A user who does nothing for this long is signed out. Default 30. Use a shorter time where computers are shared, such as the staff room or the bursar's office.</td></tr>
+  <tr><td>Logout warning countdown (seconds)</td><td>Before signing someone out, ShuleNova shows an "Idle mode detected" warning that counts down for this many seconds; they can click <span class="ui">Resume</span> to carry on. Default 60.</td></tr>
+  <tr><td>Show user guides</td><td>Shows the two guide icons at the top of every page: the User Guide for everyone, the Administrator Guide for administrators. Switch it off on a demonstration site.</td></tr>
+</table>
+<p>New idle timings apply to each user from their next sign-in or page refresh.</p>
+
+<h2 class="sub" id="aset-workflows">Approval Workflows</h2>
+<p>Some records need approving before they count: an expense before it is paid, a scheme of work before it is used. An <strong>approval workflow</strong> sets the steps a kind of record goes through and the role that approves each step. <span class="path">Settings &gt; Approval Workflows</span> has the form on the left and the workflows already set up on the right.</p>
+<figure class="shot"><img src="assets/guide/aset-workflows.png" alt="Approval workflows"><figcaption>The approval workflows</figcaption></figure>
+<h3>How approval works</h3>
+<ol>
+  <li>The workflow says, for each step, which <strong>role</strong> approves it (for example step 1 <em>Reviewer: Accounts</em>, step 2 <em>Approver: HeadTeacher</em>).</li>
+  <li>When someone submits a record, they choose a person for each step from the users holding that step's role. If only one user holds the role, that person is picked for them.</li>
+  <li>Each approver finds the request under the bell at the top of the page, and approves it, rejects it or returns it with a comment. When the last step (marked <span class="ui">Final</span>) approves, the record is approved and locked.</li>
+</ol>
+<p>So for approval to work, the step's role must be given to the right people on the <a href="#asec-users">Users</a> page.</p>
+<h3>The forms that can have a workflow</h3>
+<table>
+  <tr><th style="width:30%">Form</th><th>What is approved</th></tr>
+  <!--module:Finance--><tr><td>Budget, Budget Amendment</td><td>A budget plan, and later changes to it.</td></tr>
+  <tr><td>Expense Request</td><td>An expense, before it is paid.</td></tr>
+  <tr><td>Journal Entry, Credit / Debit Note</td><td>Manual journal entries, and credit and debit notes.</td></tr><!--/module:Finance-->
+  <!--module:Payroll--><tr><td>Payroll</td><td>A processed payroll, before it is locked and posted.</td></tr><!--/module:Payroll-->
+  <!--module:Academics--><tr><td>Scheme of Work</td><td>A teacher's scheme of work for a subject and class, once a term.</td></tr>
+  <tr><td>Lesson Plans (weekly)</td><td>A week's lesson plans for one subject and class.</td></tr><!--/module:Academics-->
+</table>
+<p>A form can have only one <span class="ui">Active</span> workflow at a time.</p>
+<h3>Changing a workflow</h3>
+<ol class="steps">
+  <li>Click the pencil on the workflow in the list. Its details open in the form on the left (<span class="ui">Edit Workflow</span>).</li>
+  <li>Change the <span class="ui">Name</span> or <span class="ui">Description</span> if needed.</li>
+  <li>For each step, set the <span class="ui">Step Name</span> (Reviewer, Approver, Head of Department&hellip;) and the <span class="ui">Role</span> that approves it. Use <span class="ui">Add Step</span> for another step, the arrows to change the order and the bin to remove one. The last step is always the <span class="ui">Final</span> one.</li>
+  <li>Tick who is told at each step: <span class="ui">Notify next</span> (the next approver), <span class="ui">Notify previous</span> (the approver before) and <span class="ui">Notify applicant</span> (the person who submitted it).</li>
+  <li>Leave <span class="ui">Maker-checker (prevent self approval)</span> ticked so that nobody can name themselves as an approver of their own request.</li>
+  <li>Click <span class="ui">Update</span>. <span class="ui">Cancel Edit</span> leaves without saving.</li>
+</ol>
+<figure class="shot"><img src="assets/guide/aset-workflow-edit.png" alt="Editing a workflow"><figcaption>Editing the expense workflow: two steps, both approved by an Administrator</figcaption></figure>
+<p>To create a workflow for a form that has none, fill in the same form without clicking a pencil first, choose the <span class="ui">Form</span>, and click <span class="ui">Create</span>.</p>
+<div class="callout important"><span class="lbl">Changes apply to new requests.</span> Requests already submitted keep the approvers chosen when they were sent. A request that has been approved can be reversed only by a SuperAdministrator.</div>
+
+<h2 class="sub" id="aset-licence">The Licence</h2>
+<p><span class="path">Settings &gt; Licence</span> shows the school's licence on the left and the place to install a new key on the right.</p>
+<figure class="shot"><img src="assets/guide/aset-licence.png" alt="The Licence page"><figcaption>The licence and the box for a new key</figcaption></figure>
+<h3>Reading the licence</h3>
+<ul>
+  <li><strong>Licensed to</strong>, <strong>Licence</strong> (its number), <strong>Site</strong> (the web address it is for, or <em>Any</em>), <strong>Issued</strong> and <strong>Valid until</strong>, with the days left.</li>
+  <li><strong>Modules</strong>: Core is always included. Each paid module shows <em>On</em>, <em>Not licensed</em>, or <em>Licence not valid</em> (it is in the licence, but the licence is not valid on this site or has run out).</li>
+  <li>The badge at the top right gives the licence's state:</li>
+</ul>
+<table>
+  <tr><th style="width:26%">State</th><th>Meaning</th></tr>
+  <tr><td>Active</td><td>All is well.</td></tr>
+  <tr><td>Expiring soon</td><td>Fewer than 30 days left. Contact Kodetek to renew.</td></tr>
+  <tr><td>Expired - grace period</td><td>The licence has run out, but the modules keep working for 14 more days. The page says the date they stop.</td></tr>
+  <tr><td>Expired</td><td>The grace period is over. Only the core features work until a new key is installed. No data is lost.</td></tr>
+  <tr><td>Invalid key</td><td>The key is damaged, usually not copied in full.</td></tr>
+  <tr><td>For another site</td><td>The key was issued for a different web address.</td></tr>
+  <tr><td>Not installed</td><td>No key yet: only the core features are available.</td></tr>
+</table>
+<p>When the state is anything but Active, a key icon with a short warning (such as <em>Licence expiring</em>) shows in every administrator's top bar; click it to open this page.</p>
+<h3>Installing a new key</h3>
+<p>To renew, or to add a module, contact Kodetek. They send a licence key: a long piece of text starting with <em>SNL1.</em></p>
+<ol class="steps">
+  <li>Copy the whole key from Kodetek's message.</li>
+  <li>Paste it into the <span class="ui">Install a licence key</span> box.</li>
+  <li>Click <span class="ui">Install</span>.</li>
+</ol>
+<p>The key is checked before it replaces the current one: a key that is damaged, for another site or already expired is refused with the reason, and the old licence stays. A good key takes effect at once; the page reloads and the menus show the modules it includes. Only Administrators and SuperAdministrators can install a key.</p>
+<div class="callout tip"><span class="lbl">Keep the key private.</span> Treat the key like a password: do not post it in group chats or share it with other schools. Kodetek can always send it again.</div>
+</section>

@@ -1,0 +1,190 @@
+[
+ {
+  "name": "pay-salaries",
+  "path": "/payroll/employee-salaries",
+  "waitFor": "table tbody tr td strong",
+  "settle": 1200
+ },
+ {
+  "name": "pay-salary-details",
+  "path": "/payroll/employee-salaries",
+  "waitFor": "table tbody tr td strong",
+  "steps": [
+   {
+    "click": "tbody tr:has(.badge.bg-info) button[title='Earnings, deductions and notes for this employee']"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 1200
+   },
+   {
+    "eval": "document.querySelectorAll('.modal-dialog-scrollable').forEach(e=>e.classList.remove('modal-dialog-scrollable'))",
+    "wait": 300
+   }
+  ],
+  "height": 1000,
+  "element": ".modal-content"
+ },
+ {
+  "name": "pay-payroll-details",
+  "path": "/payroll/employee-salaries",
+  "waitFor": "table tbody tr td strong",
+  "steps": [
+   {
+    "click": "tbody tr:nth-child(2) td.text-nowrap button.btn-outline-secondary"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 800
+   },
+   {
+    "eval": "document.querySelectorAll('.modal-dialog-scrollable').forEach(e=>e.classList.remove('modal-dialog-scrollable'))",
+    "wait": 300
+   }
+  ],
+  "element": ".modal-content"
+ },
+ {
+  "name": "pay-loans",
+  "path": "/payroll/loan-advances",
+  "waitFor": "table tbody tr td strong",
+  "settle": 1000
+ },
+ {
+  "name": "pay-loan-form",
+  "path": "/payroll/loan-advances",
+  "waitFor": "table tbody tr td strong",
+  "steps": [
+   {
+    "click": "button:has-text('Add Loan / Advance')"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 600
+   }
+  ],
+  "element": ".modal-content"
+ },
+ {
+  "name": "pay-periods",
+  "path": "/payroll/periods",
+  "waitFor": "table tbody tr td strong",
+  "settle": 1500
+ },
+ {
+  "name": "pay-new-period",
+  "path": "/payroll/periods",
+  "waitFor": "table tbody tr td strong",
+  "steps": [
+   {
+    "click": "button:has-text('New Period')"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 600
+   },
+   {
+    "eval": "document.querySelectorAll('.modal-dialog-scrollable').forEach(e=>e.classList.remove('modal-dialog-scrollable'))",
+    "wait": 300
+   }
+  ],
+  "element": ".modal-content"
+ },
+ {
+  "name": "pay-payslips-check",
+  "path": "/payroll/periods",
+  "waitFor": "table tbody tr td strong",
+  "steps": [
+   {
+    "click": "button[title='Payslips']"
+   },
+   {
+    "waitFor": "app-payroll-payslips table tbody tr td strong",
+    "wait": 1200
+   },
+   {
+    "eval": "document.querySelectorAll('.modal-dialog-scrollable').forEach(e=>e.classList.remove('modal-dialog-scrollable'))",
+    "wait": 300
+   }
+  ],
+  "height": 1000,
+  "element": ".modal-content"
+ },
+ {
+  "name": "pay-payslip-view",
+  "path": "/payroll/periods",
+  "waitFor": "table tbody tr td strong",
+  "steps": [
+   {
+    "click": "button[title='Payslips']"
+   },
+   {
+    "waitFor": "app-payroll-payslips table tbody tr td strong",
+    "wait": 800
+   },
+   {
+    "eval": "/* the slip preview is an iframe, which never lets the page go network-idle: draw it in a plain box instead */ (()=>{const o=document.createElement.bind(document);document.createElement=function(t,...r){if(String(t).toLowerCase()==='iframe'){const d=o('div');const sh=d.attachShadow({mode:'open'});Object.defineProperty(d,'srcdoc',{set(v){sh.innerHTML=String(v&&v.changingThisBreaksApplicationSecurity||v);d.style.height='auto';d.style.padding='8px';},get(){return ''}});return d;}return o(t,...r);};})()"
+   },
+   {
+    "click": "button[title='View this payslip']",
+    "wait": 1500
+   },
+   {
+    "eval": "document.querySelectorAll('.modal-dialog-scrollable').forEach(e=>e.classList.remove('modal-dialog-scrollable'))",
+    "wait": 300
+   }
+  ],
+  "height": 1300,
+  "element": ".modal-content"
+ },
+ {
+  "name": "pay-approval",
+  "path": "/payroll/periods",
+  "waitFor": "table tbody tr td strong",
+  "steps": [
+   {
+    "click": "button[title='Approval']"
+   },
+   {
+    "waitFor": ".modal-content",
+    "wait": 2000
+   },
+   {
+    "eval": "document.querySelectorAll('.modal-dialog-scrollable').forEach(e=>e.classList.remove('modal-dialog-scrollable'))",
+    "wait": 300
+   }
+  ],
+  "height": 1000,
+  "element": ".modal-content"
+ },
+ {
+  "name": "pay-reports-muster",
+  "path": "/payroll/reports?tab=muster",
+  "waitFor": "table tbody tr td strong",
+  "settle": 1500
+ },
+ {
+  "name": "pay-reports-statutory",
+  "path": "/payroll/reports?tab=statutory",
+  "waitFor": "table tbody tr td strong",
+  "settle": 1500
+ },
+ {
+  "name": "pay-reports-bank",
+  "path": "/payroll/reports?tab=bank",
+  "waitFor": "table tbody tr td strong",
+  "settle": 1500
+ },
+ {
+  "name": "pay-reports-p9",
+  "path": "/payroll/reports?tab=p9",
+  "waitFor": ".card-body table.table-bordered tbody tr",
+  "settle": 2000
+ },
+ {
+  "name": "pay-my-payslips",
+  "path": "/staff/my-payslips",
+  "waitFor": "app-staff-pay",
+  "settle": 2500
+ }
+]

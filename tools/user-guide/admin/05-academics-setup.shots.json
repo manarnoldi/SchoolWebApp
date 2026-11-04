@@ -1,0 +1,177 @@
+[
+ {
+  "name": "aaca-dropdowns",
+  "path": "/settings/dropdowns?category=Academics",
+  "waitFor": "text=Exam Types",
+  "steps": [
+   {
+    "click": ".list-group-item >> text=Exam Types",
+    "wait": 1200
+   }
+  ]
+ },
+ {
+  "name": "aaca-dropdowns-cbe",
+  "path": "/settings/dropdowns?category=CBE%20Settings",
+  "waitFor": "text=Competencies",
+  "steps": [
+   {
+    "click": ".list-group-item >> text=Competencies",
+    "wait": 1200
+   }
+  ],
+  "element": "section.content .col-md-3"
+ },
+ {
+  "name": "aaca-exam-type-form",
+  "path": "/settings/dropdowns?category=Academics",
+  "waitFor": "text=Exam Types",
+  "steps": [
+   {
+    "click": ".list-group-item >> text=Exam Types",
+    "wait": 1000
+   },
+   {
+    "click": "text=Add Exam Types",
+    "wait": 800
+   },
+   {
+    "waitFor": "#dropdownItemModal.show .modal-content"
+   }
+  ],
+  "element": "#dropdownItemModal .modal-content"
+ },
+ {
+  "name": "aaca-subjects",
+  "path": "/academics/subjects",
+  "waitFor": "table tbody tr",
+  "settle": 1500
+ },
+ {
+  "name": "aaca-edu-level-subjects",
+  "path": "/academics/educationLevelSubjects",
+  "settle": 2500
+ },
+ {
+  "name": "aaca-grading",
+  "path": "/academics/grades",
+  "waitFor": "table tbody tr",
+  "settle": 1500
+ },
+ {
+  "name": "aaca-curriculum-upload",
+  "path": "/cbe/assessments/curriculum-upload",
+  "settle": 1000,
+  "steps": [
+   {
+    "select": [
+     "section.content select >> nth=0",
+     {
+      "label": "Grade 4"
+     }
+    ],
+    "wait": 1500
+   },
+   {
+    "select": [
+     "section.content select >> nth=1",
+     {
+      "label": "Mathematics"
+     }
+    ],
+    "wait": 500
+   }
+  ],
+  "element": "section.content"
+ },
+ {
+  "name": "aaca-curriculum-editor",
+  "path": "/cbe/assessments/curriculum-editor?subjectId=11&learningLevelId=6",
+  "waitFor": ".nav-tabs",
+  "steps": [
+   {
+    "click": ".nav-tabs >> text=Sub-strand details",
+    "wait": 1000
+   }
+  ],
+  "height": 1100
+ },
+ {
+  "name": "aaca-strands",
+  "path": "/cbe/assessments/strands",
+  "settle": 1500,
+  "steps": [
+   {
+    "select": [
+     "app-school-soft-filter-form select[formControlName=\"learningLevelId\"]",
+     {
+      "label": "Grade 4"
+     }
+    ],
+    "wait": 1500
+   },
+   {
+    "select": [
+     "app-school-soft-filter-form select[formControlName=\"subjectId\"]",
+     {
+      "label": "Mathematics"
+     }
+    ],
+    "wait": 300
+   },
+   {
+    "click": "app-school-soft-filter-form >> text=Search",
+    "wait": 1500
+   }
+  ]
+ },
+ {
+  "name": "aaca-global-grading",
+  "path": "/settings/global-settings",
+  "waitFor": "text=Grading System Settings",
+  "height": 1800,
+  "steps": [
+   {
+    "click": "text=Grading System Settings",
+    "wait": 1200
+   },
+   {
+    "eval": "document.querySelector(\".settings-section.open .section-body\").style.maxHeight=\"none\"",
+    "wait": 300
+   }
+  ],
+  "element": ".settings-section.open"
+ },
+ {
+  "name": "aaca-menu-permissions",
+  "path": "/security/menu-permissions",
+  "waitFor": "text=DeputyHeadTeacher",
+  "steps": [
+   {
+    "click": ".list-group-item >> text=DeputyHeadTeacher",
+    "wait": 1500
+   },
+   {
+    "eval": "document.querySelectorAll(\".col-md-10 strong.flex-grow-1\").forEach(s=>{if(![\"Academics\",\"Teaching Management\"].includes(s.textContent.trim()))s.parentElement.click();})",
+    "wait": 600
+   }
+  ],
+  "height": 1150
+ },
+ {
+  "name": "aaca-staff-allocation",
+  "path": "/school/bulk-staff-subjects",
+  "settle": 1500,
+  "steps": [
+   {
+    "select": [
+     "section.content select >> nth=1",
+     {
+      "label": "Grade 4E 2026"
+     }
+    ],
+    "wait": 2000
+   }
+  ]
+ }
+]
