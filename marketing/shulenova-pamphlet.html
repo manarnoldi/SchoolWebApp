@@ -398,6 +398,23 @@
     }
     .back-cover .price .amt { font-size: 17px; font-weight: 800; }
     .back-cover .price .per { font-size: 9px; }
+    .back-cover .setup-fee {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        margin-top: 8px;
+        padding: 6px 10px;
+        border: 1px solid var(--accent);
+        border-left: 4px solid var(--accent);
+        border-radius: 8px;
+        background: rgba(245,166,35,0.12);
+        font-size: 9.5px;
+        text-align: left;
+        line-height: 1.3;
+    }
+    .back-cover .setup-fee .amt { font-size: 15px; font-weight: 800; white-space: nowrap; }
     .back-cover .price-note { font-size: 9.5px; color: rgba(255,255,255,0.85); margin-top: 6px; }
 
     @media print {
@@ -495,7 +512,11 @@
                 <span class="per">per month - every module</span>
             </div>
         </div>
-        <p class="price-note">The core (school, learners, staff, users &amp; security) is always included.</p>
+        <div class="setup-fee">
+            <span><b>One-off setup fee</b><br>Installation, setup &amp; staff training</span>
+            <span class="amt">KSh 50,000</span>
+        </div>
+        <p class="price-note">Monthly fees cover hosting, maintenance &amp; support. The core (school, learners, staff, users &amp; security) is always included.</p>
 
         <div class="contact-box">
             <p><b>Kodetek Investment Limited</b> - since 2018</p>
