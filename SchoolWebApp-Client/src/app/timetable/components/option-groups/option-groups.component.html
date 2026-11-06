@@ -1,0 +1,49 @@
+<div class="card card-outline card-primary mb-2">
+    <div class="card-header py-2 d-flex align-items-center flex-wrap gap-2">
+        <h3 class="card-title mb-0">Option groups</h3>
+        <div class="ms-auto">
+            <button class="btn btn-sm btn-outline-primary me-1" *ngIf="!hasReligionGroup" (click)="add(true)"><i class="fas fa-praying-hands me-1"></i>Add CRE / IRE / HRE</button>
+            <button class="btn btn-sm btn-primary me-1" (click)="add()"><i class="fas fa-plus me-1"></i>New group</button>
+            <button class="btn btn-sm btn-success" (click)="save()" [disabled]="saving || !dirty">
+                <i class="fas me-1" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>Save
+            </button>
+        </div>
+    </div>
+    <div class="card-body p-2">
+        <p class="small text-muted mb-2">
+            Subjects in a group are taught <b>at the same time</b>: learners split between them, each subject with its own
+            teacher - e.g. CRE, IRE and HRE, or a Senior School elective block. The group meets as often as its busiest subject.
+            If two subjects in a group have the same teacher for a class, they are timetabled one after the other instead.
+        </p>
+        <div *ngIf="loading" class="text-muted"><i class="fas fa-spinner fa-spin me-1"></i>Loading…</div>
+        <div *ngIf="!loading && !groups.length" class="text-muted small">No option groups. Every subject is taught to the whole class.</div>
+
+        <div class="border rounded p-2 mb-2" *ngFor="let g of groups; let i = index">
+            <div class="row g-2 align-items-end mb-1">
+                <div class="col-md-4">
+                    <label class="form-label mb-0 small">Name</label>
+                    <input class="form-control form-control-sm" [(ngModel)]="g.name" (ngModelChange)="dirty = true" placeholder="e.g. Religious Education">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label mb-0 small">Grades</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="g.learningLevelId" (ngModelChange)="dirty = true">
+                        <option [ngValue]="null">Every grade that takes them</option>
+                        <option *ngFor="let l of lookups.levels" [ngValue]="l.id">{{ l.name }} only</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label mb-0 small">Add a subject</label>
+                    <input class="form-control form-control-sm" [(ngModel)]="search[i]" placeholder="Type part of its name">
+                </div>
+                <div class="col-md-2 text-end">
+                    <button class="btn btn-sm btn-outline-danger" (click)="remove(g)"><i class="fas fa-trash me-1"></i>Remove</button>
+                </div>
+            </div>
+            <div>
+                <span *ngFor="let s of subjectsFor(i, g)" class="tt-chip" [class.tt-chip-on]="g.subjectIds.includes(s.id)"
+                      [title]="s.name" (click)="toggle(g, s.id)">{{ s.name }}</span>
+            </div>
+            <small class="text-danger" *ngIf="g.subjectIds.length < 2">Pick at least two subjects.</small>
+        </div>
+    </div>
+</div>

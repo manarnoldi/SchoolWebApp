@@ -1,0 +1,22 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+        <ul class="nav nav-tabs mb-2">
+            <li class="nav-item" *ngFor="let t of tabs">
+                <a class="nav-link" href="javascript:void(0)" [class.active]="tab === t.key" (click)="open(t.key)">
+                    <i class="fas me-1" [ngClass]="t.icon"></i>{{ t.label }}
+                </a>
+            </li>
+        </ul>
+
+        <div *ngIf="!lookups" class="text-muted p-3"><i class="fas fa-spinner fa-spin me-1"></i>Loading…</div>
+        <ng-container *ngIf="lookups">
+            <app-tt-bell-schedules *ngIf="tab === 'schedules'" [lookups]="lookups"></app-tt-bell-schedules>
+            <app-tt-subject-rules *ngIf="tab === 'subjects'" [lookups]="lookups"></app-tt-subject-rules>
+            <app-tt-option-groups *ngIf="tab === 'groups'" [lookups]="lookups"></app-tt-option-groups>
+            <app-tt-teacher-rules *ngIf="tab === 'teachers'" [lookups]="lookups"></app-tt-teacher-rules>
+            <app-tt-readiness *ngIf="tab === 'readiness'" [lookups]="lookups"></app-tt-readiness>
+        </ng-container>
+    </div>
+</section>

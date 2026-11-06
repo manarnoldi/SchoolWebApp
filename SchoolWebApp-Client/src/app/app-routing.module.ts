@@ -176,6 +176,8 @@ import { LessonPlansComponent } from './teaching/components/lesson-plans/lesson-
 import { RecordOfWorkComponent } from './teaching/components/record-of-work/record-of-work.component';
 import { TrackerComponent } from './teaching/components/tracker/tracker.component';
 import { CurriculumViewComponent } from './teaching/components/curriculum-view/curriculum-view.component';
+import { TimetableComponent } from './timetable/timetable.component';
+import { TimetableSetupComponent } from './timetable/components/setup/timetable-setup.component';
 import { ElectionsComponent } from './elections/elections.component';
 import { ElectionListComponent } from './elections/components/election-list/election-list.component';
 import { ElectionDetailComponent } from './elections/components/election-detail/election-detail.component';
@@ -505,6 +507,16 @@ const routes: Routes = [
             {path: 'curriculum', component: CurriculumViewComponent},
             // Permission flag only (whole-school access), not a page.
             {path: 'admin', redirectTo: 'tracker', pathMatch: 'full'}
+        ]
+    },
+    {
+        path: 'timetable',
+        component: TimetableComponent,
+        canActivate: [AuthGuard, moduleGuard],
+        data: {module: 'Academics'},
+        canActivateChild: [AuthGuard],
+        children: [
+            {path: 'setup', component: TimetableSetupComponent}
         ]
     },
     {

@@ -92,12 +92,13 @@ namespace SchoolWebApp.API.Services.Timetable
                     };
                     units.Add(need);
                     if (need.Excluded) continue;
-                    if (need.StaffDetailsId == null)
-                        input.Problems.Add($"{c.Name}: {need.SubjectName} has no teacher allocated.");
                     if (classTeachers.Select(t => t.StaffDetailsId).Distinct().Count() > 1)
                         input.Warnings.Add($"{c.Name}: {need.SubjectName} has {classTeachers.Count} teachers allocated; the timetable uses {need.TeacherName}.");
                 }
                 tc.Subjects = units.OrderBy(u => subjects.GetValueOrDefault(u.SubjectId)?.Rank ?? 0).ThenBy(u => u.SubjectName).ToList();
+                var untaught = tc.Subjects.Where(s => !s.Excluded && s.StaffDetailsId == null).Select(s => s.SubjectName).ToList();
+                if (untaught.Count > 0)
+                    input.Problems.Add($"{c.Name}: no teacher allocated for {string.Join(", ", untaught)}.");
 
                 // Subjects taught to the class with no lessons per week for its grade.
                 var noLessons = teachers.Where(t => t.SchoolClassId == c.Id).Select(t => t.SubjectId).Distinct()
@@ -127,6 +128,14 @@ namespace SchoolWebApp.API.Services.Timetable
                     }
                     foreach (var m in members) { used.Add(m.SubjectId); m.OptionGroupName = g.Name; m.OptionGroupId = g.Id; }
                 }
+            }
+
+            // A year whose teachers are not allocated yet: one line, not one per class.
+            var bare = input.Classes.Count(c => c.Subjects.Any(s => !s.Excluded) && c.Subjects.All(s => s.Excluded || s.StaffDetailsId == null));
+            if (input.Classes.Count > 0 && bare * 4 >= input.Classes.Count * 3)
+            {
+                input.Problems.RemoveAll(p => p.Contains(": no teacher allocated for "));
+                input.Problems.Insert(0, $"{bare} of the {input.Classes.Count} classes have no teachers allocated yet - allocate subject teachers for this year first.");
             }
             return input;
         }

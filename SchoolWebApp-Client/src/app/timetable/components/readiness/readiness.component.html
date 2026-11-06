@@ -1,0 +1,84 @@
+<div class="card card-outline card-primary mb-2">
+    <div class="card-header py-2 d-flex align-items-center flex-wrap gap-2">
+        <h3 class="card-title mb-0">Readiness check</h3>
+        <div class="ms-auto d-flex gap-1">
+            <select class="form-select form-select-sm" style="max-width: 200px;" [(ngModel)]="sessionId" (ngModelChange)="check()">
+                <option *ngFor="let s of lookups.sessions" [ngValue]="s.id">{{ s.name }}</option>
+            </select>
+            <button class="btn btn-sm btn-primary text-nowrap" (click)="check()" [disabled]="loading">
+                <i class="fas me-1" [ngClass]="loading ? 'fa-spinner fa-spin' : 'fa-sync'"></i>Check again
+            </button>
+        </div>
+    </div>
+    <div class="card-body p-2" *ngIf="result">
+        <div class="alert py-2 mb-2" [ngClass]="result.ready ? 'alert-success' : 'alert-danger'">
+            <i class="fas me-1" [ngClass]="result.ready ? 'fa-check-circle' : 'fa-times-circle'"></i>
+            <b *ngIf="result.ready">Ready to generate.</b>
+            <b *ngIf="!result.ready">{{ result.problems.length }} problem(s) to fix before generating.</b>
+            <span class="ms-1">{{ result.classes.length }} class(es) and {{ result.teachers.length }} teacher(s) on the timetable.</span>
+        </div>
+
+        <div class="row g-2">
+            <div class="col-xl-6" *ngIf="result.problems.length">
+                <h6 class="text-danger"><i class="fas fa-times-circle me-1"></i>Problems</h6>
+                <ul class="small ps-3 mb-2"><li *ngFor="let p of result.problems">{{ p }}</li></ul>
+            </div>
+            <div class="col-xl-6" *ngIf="result.warnings.length">
+                <h6 class="text-warning"><i class="fas fa-exclamation-triangle me-1"></i>Worth a look</h6>
+                <ul class="small ps-3 mb-2"><li *ngFor="let w of result.warnings">{{ w }}</li></ul>
+            </div>
+        </div>
+
+        <div class="row g-2">
+            <div class="col-xl-7">
+                <h6>Classes <small class="text-muted">lessons needed a week against free lesson slots - click for subjects</small></h6>
+                <table class="table table-sm table-bordered mb-2">
+                    <thead class="table-light"><tr><th>Class</th><th>Bell schedule</th><th style="width: 30%;">Week</th><th class="text-end">Needed / free</th></tr></thead>
+                    <tbody>
+                    <ng-container *ngFor="let c of result.classes">
+                        <tr (click)="openClass = openClass === c.schoolClassId ? null : c.schoolClassId" style="cursor: pointer;">
+                            <td>
+                                <i class="fas fa-fw small text-muted" [ngClass]="openClass === c.schoolClassId ? 'fa-caret-down' : 'fa-caret-right'"></i>
+                                {{ c.className }}
+                                <span class="badge bg-danger ms-1" *ngIf="c.subjectsWithoutTeacher.length" [title]="c.subjectsWithoutTeacher.join(', ')">{{ c.subjectsWithoutTeacher.length }} without a teacher</span>
+                            </td>
+                            <td class="small">{{ c.bellScheduleName }}</td>
+                            <td><div class="tt-bar"><div [ngClass]="barClass(c.lessonsNeeded, c.slotsAvailable)" [style.width.%]="pct(c.lessonsNeeded, c.slotsAvailable)"></div></div></td>
+                            <td class="text-end" [class.text-danger]="c.lessonsNeeded > c.slotsAvailable">{{ c.lessonsNeeded }} / {{ c.slotsAvailable }}</td>
+                        </tr>
+                        <tr *ngIf="openClass === c.schoolClassId">
+                            <td colspan="4" class="bg-light">
+                                <table class="table table-sm mb-0 small">
+                                    <tr *ngFor="let s of c.subjects" [class.text-muted]="s.excluded">
+                                        <td>{{ s.subjectName }}</td>
+                                        <td class="text-end" style="width: 70px;">{{ s.lessonsPerWeek }}/wk</td>
+                                        <td style="width: 45%;">
+                                            <span *ngIf="s.excluded" class="fst-italic">left out</span>
+                                            <span *ngIf="!s.excluded && s.teacherName">{{ s.teacherName }}</span>
+                                            <span *ngIf="!s.excluded && !s.teacherName" class="text-danger">no teacher</span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </ng-container>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-xl-5">
+                <h6>Teachers <small class="text-muted">lessons a week against slots they can teach in</small></h6>
+                <table class="table table-sm table-bordered mb-2">
+                    <thead class="table-light"><tr><th>Teacher</th><th class="text-center">Classes</th><th style="width: 30%;">Load</th><th class="text-end">Lessons / slots</th></tr></thead>
+                    <tbody>
+                    <tr *ngFor="let t of result.teachers">
+                        <td>{{ t.name }}</td>
+                        <td class="text-center">{{ t.classes }}</td>
+                        <td><div class="tt-bar"><div [ngClass]="barClass(t.lessonsAssigned, t.slotsAvailable)" [style.width.%]="pct(t.lessonsAssigned, t.slotsAvailable)"></div></div></td>
+                        <td class="text-end" [class.text-danger]="t.lessonsAssigned > t.slotsAvailable">{{ t.lessonsAssigned }} / {{ t.slotsAvailable }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

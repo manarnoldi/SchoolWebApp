@@ -1,0 +1,71 @@
+<div class="card card-outline card-primary mb-2">
+    <div class="card-header py-2 d-flex align-items-center flex-wrap gap-2">
+        <h3 class="card-title mb-0">Subject rules</h3>
+        <input class="form-control form-control-sm ms-auto" style="max-width: 220px;" [(ngModel)]="filter" placeholder="Search subjects">
+        <button class="btn btn-sm btn-success" (click)="save()" [disabled]="saving || !dirty">
+            <i class="fas me-1" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>Save
+        </button>
+    </div>
+    <div class="card-body p-2">
+        <p class="small text-muted mb-2">
+            Subjects without a rule go anywhere in the day as single lessons, at most one a day.
+            Lessons per week come from <b>Lesson Allocation</b>, and teachers from subject allocations.
+            A rule for one grade wins over the subject's rule for all grades.
+        </p>
+
+        <div class="row g-2 align-items-end mb-2">
+            <div class="col-md-4">
+                <label class="form-label mb-0 small">Subject</label>
+                <select class="form-select form-select-sm" [(ngModel)]="newSubjectId">
+                    <option [ngValue]="null">Pick a subject…</option>
+                    <option *ngFor="let s of lookups.subjects" [ngValue]="s.id">{{ s.name }}</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label mb-0 small">Grade</label>
+                <select class="form-select form-select-sm" [(ngModel)]="newLevelId">
+                    <option [ngValue]="null">All grades</option>
+                    <option *ngFor="let l of lookups.levels" [ngValue]="l.id">{{ l.name }}</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-sm btn-primary" (click)="add()"><i class="fas fa-plus me-1"></i>Add rule</button>
+            </div>
+        </div>
+
+        <div *ngIf="loading" class="text-muted"><i class="fas fa-spinner fa-spin me-1"></i>Loading…</div>
+        <div class="table-responsive" *ngIf="!loading">
+            <table class="table table-sm table-bordered tt-slot-table mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th>Subject</th>
+                    <th style="width: 130px;">Grade</th>
+                    <th style="width: 90px;" class="text-center" title="Not timetabled">Leave out</th>
+                    <th style="width: 170px;">When</th>
+                    <th style="width: 100px;" title="How many of the week's lessons are back-to-back doubles">Doubles a week</th>
+                    <th style="width: 90px;" title="Most times a day (a double counts once)">Most a day</th>
+                    <th style="width: 100px;" class="text-center">Not last lesson</th>
+                    <th style="width: 44px;"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let r of shown" [class.text-muted]="r.excluded">
+                    <td>{{ subjectName(r.subjectId) }}</td>
+                    <td>{{ levelName(r.learningLevelId) }}</td>
+                    <td class="text-center"><input type="checkbox" class="form-check-input" [(ngModel)]="r.excluded" (ngModelChange)="dirty = true"></td>
+                    <td>
+                        <select class="form-select form-select-sm" [(ngModel)]="r.placement" (ngModelChange)="dirty = true" [disabled]="r.excluded">
+                            <option *ngFor="let p of placements" [ngValue]="p.value">{{ p.label }}</option>
+                        </select>
+                    </td>
+                    <td><input type="number" min="0" max="5" class="form-control form-control-sm" [(ngModel)]="r.doubleLessons" (ngModelChange)="dirty = true" [disabled]="r.excluded"></td>
+                    <td><input type="number" min="1" max="4" class="form-control form-control-sm" [(ngModel)]="r.maxPerDay" (ngModelChange)="dirty = true" [disabled]="r.excluded"></td>
+                    <td class="text-center"><input type="checkbox" class="form-check-input" [(ngModel)]="r.avoidLastLesson" (ngModelChange)="dirty = true" [disabled]="r.excluded"></td>
+                    <td><button class="btn btn-sm btn-outline-danger" (click)="remove(r)" title="Remove the rule"><i class="fas fa-times"></i></button></td>
+                </tr>
+                <tr *ngIf="!shown.length"><td colspan="8" class="text-muted small">No subject rules{{ filter ? ' match' : ' yet - every subject uses the defaults' }}.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

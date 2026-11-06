@@ -1,0 +1,186 @@
+<div class="row g-2">
+    <!-- Schedules -->
+    <div class="col-lg-3">
+        <div class="card card-outline card-primary mb-2">
+            <div class="card-header py-2 d-flex align-items-center">
+                <h3 class="card-title mb-0">Bell schedules</h3>
+                <button class="btn btn-sm btn-primary ms-auto" (click)="newSchedule()"><i class="fas fa-plus me-1"></i>New</button>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="javascript:void(0)" *ngFor="let s of schedules" class="list-group-item list-group-item-action"
+                   [class.active]="edit?.id === s.id" (click)="select(s)">
+                    <div class="fw-bold">{{ s.name }}</div>
+                    <small>
+                        {{ s.slots.length ? s.slots[0].startTime + ' – ' + s.slots[s.slots.length - 1].endTime : '' }}
+                        · {{ s.learningLevelIds.length }} grade(s)
+                    </small>
+                </a>
+                <div *ngIf="!schedules.length" class="list-group-item text-muted small">
+                    No bell schedules yet. Create one for each group of grades that shares the same day -
+                    e.g. <i>Lower School</i> (35-minute lessons) and <i>Junior School</i> (40-minute lessons).
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Editor -->
+    <div class="col-lg-9" *ngIf="edit">
+        <div class="card card-outline card-primary mb-2">
+            <div class="card-header py-2 d-flex align-items-center">
+                <h3 class="card-title mb-0">{{ edit.id ? edit.name : 'New bell schedule' }}</h3>
+                <div class="ms-auto">
+                    <button class="btn btn-sm btn-outline-danger me-1" (click)="delete()"><i class="fas fa-trash me-1"></i>{{ edit.id ? 'Delete' : 'Cancel' }}</button>
+                    <button class="btn btn-sm btn-success" (click)="save()" [disabled]="saving">
+                        <i class="fas me-1" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>Save
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-2">
+                <div class="row g-2 mb-2">
+                    <div class="col-md-4">
+                        <label class="form-label mb-0 small">Name</label>
+                        <input class="form-control form-control-sm" [(ngModel)]="edit.name" placeholder="e.g. Junior School">
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label mb-0 small">Teaching days</label>
+                        <div>
+                            <span *ngFor="let d of days" class="tt-chip" [class.tt-chip-on]="edit.days.includes(d.value)" (click)="toggleDay(d.value)">{{ d.short }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <label class="form-label mb-0 small">Grades on this schedule</label>
+                <div class="mb-2">
+                    <div *ngFor="let g of levelGroups" class="d-flex flex-wrap align-items-center">
+                        <small class="text-muted me-2" style="min-width: 110px;">{{ g.name }}</small>
+                        <span *ngFor="let l of g.levels" class="tt-chip"
+                              [class.tt-chip-on]="edit.learningLevelIds.includes(l.id)"
+                              [class.tt-chip-disabled]="takenBy(l.id)"
+                              [title]="takenBy(l.id) ? 'Follows ' + takenBy(l.id) : ''"
+                              (click)="toggleLevel(l.id)">{{ l.name }}</span>
+                    </div>
+                </div>
+
+                <!-- Quick fill -->
+                <details class="mb-2" [open]="!edit.id">
+                    <summary class="small text-primary">Build the day from a pattern</summary>
+                    <div class="row g-2 align-items-end mt-1">
+                        <div class="col-6 col-md-2"><label class="form-label mb-0 small">Day starts</label>
+                            <input type="time" class="form-control form-control-sm" [(ngModel)]="build.start"></div>
+                        <div class="col-6 col-md-2"><label class="form-label mb-0 small">Lesson (min)</label>
+                            <input type="number" min="10" class="form-control form-control-sm" [(ngModel)]="build.lessonMinutes"></div>
+                        <div class="col-6 col-md-2"><label class="form-label mb-0 small">Lessons a day</label>
+                            <input type="number" min="1" max="14" class="form-control form-control-sm" [(ngModel)]="build.lessons"></div>
+                        <div class="col-6 col-md-2"><label class="form-label mb-0 small">Short break after / min</label>
+                            <div class="input-group input-group-sm"><input type="number" class="form-control" [(ngModel)]="build.shortAfter"><input type="number" class="form-control" [(ngModel)]="build.shortMinutes"></div></div>
+                        <div class="col-6 col-md-2"><label class="form-label mb-0 small">Tea break after / min</label>
+                            <div class="input-group input-group-sm"><input type="number" class="form-control" [(ngModel)]="build.teaAfter"><input type="number" class="form-control" [(ngModel)]="build.teaMinutes"></div></div>
+                        <div class="col-6 col-md-2"><label class="form-label mb-0 small">Lunch after / min</label>
+                            <div class="input-group input-group-sm"><input type="number" class="form-control" [(ngModel)]="build.lunchAfter"><input type="number" class="form-control" [(ngModel)]="build.lunchMinutes"></div></div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary mt-2" (click)="buildDay()"><i class="fas fa-magic me-1"></i>Build the day</button>
+                    <small class="text-muted ms-2">Replaces the slots below. Set a break's lesson to 0 to leave it out.</small>
+                </details>
+
+                <div class="row g-2">
+                    <!-- Slots -->
+                    <div class="col-xl-6">
+                        <div class="d-flex align-items-center mb-1">
+                            <strong class="small">The day</strong>
+                            <small class="text-muted ms-2">{{ lessonsPerDay }} lessons a day · {{ lessonsPerDay * edit.days.length }} a week</small>
+                            <div class="ms-auto d-flex align-items-center">
+                                <small class="me-1">Starts</small>
+                                <input type="time" class="form-control form-control-sm" style="width: 110px;" [(ngModel)]="edit.dayStart">
+                            </div>
+                        </div>
+                        <table class="table table-sm table-bordered tt-slot-table mb-2">
+                            <thead class="table-light">
+                            <tr><th style="width: 105px;">Time</th><th style="width: 80px;">Minutes</th><th style="width: 110px;">Kind</th><th>Label</th><th style="width: 92px;"></th></tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let s of edit.slots; let i = index" [class.tt-break]="s.kind !== Kind.Lesson">
+                                <td class="small text-nowrap">
+                                    {{ start(i) }}–{{ end(i) }}
+                                    <span class="badge ms-1" [ngClass]="part(i) === 0 ? 'bg-info' : 'bg-secondary'" [title]="part(i) === 0 ? 'Morning' : 'Afternoon'">{{ part(i) === 0 ? 'AM' : 'PM' }}</span>
+                                </td>
+                                <td><input type="number" min="5" class="form-control form-control-sm" [(ngModel)]="s.minutes"></td>
+                                <td>
+                                    <select class="form-select form-select-sm" [(ngModel)]="s.kind">
+                                        <option *ngFor="let k of kinds" [ngValue]="k.value">{{ k.label }}</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <span *ngIf="s.kind === Kind.Lesson" class="small text-muted">Lesson {{ lessonNo(i) }}</span>
+                                    <input *ngIf="s.kind !== Kind.Lesson" class="form-control form-control-sm" [(ngModel)]="s.label" placeholder="e.g. Tea break">
+                                </td>
+                                <td class="text-nowrap">
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" title="Insert after"><i class="fas fa-plus"></i></button>
+                                        <ul class="dropdown-menu">
+                                            <li *ngFor="let k of kinds"><a class="dropdown-item" href="javascript:void(0)" (click)="insertAfter(i, k.value)">{{ k.label }} after this</a></li>
+                                        </ul>
+                                        <button class="btn btn-outline-danger" (click)="remove(i)" title="Remove"><i class="fas fa-times"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr *ngIf="!edit.slots.length"><td colspan="5" class="text-muted small">No slots. Build the day from a pattern above.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Fixed slots -->
+                    <div class="col-xl-6">
+                        <strong class="small">Fixed slots</strong>
+                        <small class="text-muted ms-1">Click a lesson to block it for an activity (e.g. games) or give it to a subject (e.g. PPI).</small>
+                        <table class="table table-sm table-bordered tt-week mt-1 mb-2" *ngIf="edit.slots.length && edit.days.length">
+                            <thead class="table-light">
+                            <tr><th class="tt-time">Time</th><th *ngFor="let d of scheduleDays">{{ d.short }}</th></tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let s of edit.slots; let i = index">
+                                <th class="tt-time small fw-normal">{{ start(i) }}</th>
+                                <ng-container *ngIf="s.kind === Kind.Lesson; else breakRow">
+                                    <td *ngFor="let d of scheduleDays" class="tt-cell" [ngClass]="cellClass(d.value, i)"
+                                        [class.tt-selected]="cell?.day === d.value && cell?.slotIndex === i"
+                                        (click)="pick(d.value, i)">{{ cellText(d.value, i) }}</td>
+                                </ng-container>
+                                <ng-template #breakRow>
+                                    <td class="tt-break" [attr.colspan]="scheduleDays.length">{{ s.label }}</td>
+                                </ng-template>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <div *ngIf="cell" class="border rounded p-2 bg-light">
+                            <div class="d-flex align-items-center mb-1">
+                                <strong class="small">{{ dayName(cell.day) }}, lesson {{ lessonNo(cell.slotIndex) }} ({{ start(cell.slotIndex) }})</strong>
+                                <button class="btn btn-sm btn-link ms-auto p-0" (click)="cell = null">Done</button>
+                            </div>
+                            <div *ngFor="let f of cellFixed" class="row g-1 align-items-center mb-1">
+                                <div class="col-5" *ngIf="!f.subjectId">
+                                    <input class="form-control form-control-sm" [(ngModel)]="f.label" placeholder="Activity, e.g. Games">
+                                </div>
+                                <div class="col-5" *ngIf="f.subjectId">
+                                    <select class="form-select form-select-sm" [(ngModel)]="f.subjectId">
+                                        <option *ngFor="let s of lookups.subjects" [ngValue]="s.id">{{ s.name }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-5">
+                                    <select class="form-select form-select-sm" [(ngModel)]="f.learningLevelId">
+                                        <option [ngValue]="null">All grades on this schedule</option>
+                                        <option *ngFor="let l of scheduleLevels" [ngValue]="l.id">{{ l.name }} only</option>
+                                    </select>
+                                </div>
+                                <div class="col-2 text-end">
+                                    <button class="btn btn-sm btn-outline-danger" (click)="removeFixed(f)"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                            <button class="btn btn-sm btn-outline-warning me-1" (click)="addFixed('activity')"><i class="fas fa-running me-1"></i>Block for an activity</button>
+                            <button class="btn btn-sm btn-outline-success" (click)="addFixed('subject')"><i class="fas fa-book me-1"></i>Give to a subject</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -228,6 +228,15 @@ export const MENU = [
         ]
     },
     {
+        name: 'Timetable',
+        iconClasses: 'fas fa-calendar-alt',
+        // Sold as part of Academics.
+        module: 'Academics',
+        children: [
+            {name: 'Setup', iconClasses: 'fas fa-sliders-h text-info', path: ['/timetable/setup']}
+        ]
+    },
+    {
         name: 'Finance',
         iconClasses: 'fas fa-coins',
         module: 'Finance',

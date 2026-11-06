@@ -1,0 +1,40 @@
+// Shared by the timetable pages.
+.tt-slot-table {
+    td, th { vertical-align: middle; }
+    .form-control-sm, .form-select-sm { min-width: 0; }
+    tr.tt-break td { background: #f6f7f9; }
+}
+
+// The week grid of a bell schedule: days across, slots down.
+.tt-week {
+    table-layout: fixed;
+    th, td { text-align: center; vertical-align: middle; font-size: .8rem; padding: .25rem; }
+    th.tt-time { width: 92px; text-align: left; white-space: nowrap; }
+    td.tt-break { background: #f6f7f9; color: #6c757d; font-style: italic; }
+    td.tt-cell { cursor: pointer; height: 34px; }
+    td.tt-cell:hover { background: #eef4ff; }
+    td.tt-cell.tt-selected { outline: 2px solid #0d6efd; outline-offset: -2px; }
+    td.tt-fixed-activity { background: #fff3cd; }
+    td.tt-fixed-subject { background: #d1e7dd; }
+}
+
+.tt-chip {
+    display: inline-block;
+    border: 1px solid #ced4da;
+    border-radius: 1rem;
+    padding: .1rem .6rem;
+    margin: 0 .25rem .25rem 0;
+    font-size: .8rem;
+    cursor: pointer;
+    user-select: none;
+    &.tt-chip-on { background: #0d6efd; border-color: #0d6efd; color: #fff; }
+    &.tt-chip-disabled { opacity: .45; cursor: not-allowed; }
+}
+
+.tt-bar {
+    height: .5rem;
+    background: #e9ecef;
+    border-radius: .25rem;
+    overflow: hidden;
+    > div { height: 100%; }
+}

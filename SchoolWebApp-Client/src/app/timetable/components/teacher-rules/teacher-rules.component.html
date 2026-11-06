@@ -1,0 +1,64 @@
+<div class="card card-outline card-primary mb-2">
+    <div class="card-header py-2 d-flex align-items-center flex-wrap gap-2">
+        <h3 class="card-title mb-0">Teachers' limits and times off</h3>
+        <div class="ms-auto d-flex gap-1">
+            <select class="form-select form-select-sm" style="max-width: 260px;" [(ngModel)]="newStaffId">
+                <option [ngValue]="null">Add a teacher…</option>
+                <option *ngFor="let t of available" [ngValue]="t.id">{{ t.name }}</option>
+            </select>
+            <button class="btn btn-sm btn-primary" (click)="add()" [disabled]="!newStaffId"><i class="fas fa-plus"></i></button>
+        </div>
+    </div>
+    <div class="card-body p-2">
+        <p class="small text-muted mb-2">
+            Only teachers with a limit or a time off need to be here - e.g. a part-timer who only comes in the mornings,
+            or a deputy with a weekly meeting. Times are clock times, so they hold whichever grades the teacher teaches.
+        </p>
+        <div *ngIf="loading" class="text-muted"><i class="fas fa-spinner fa-spin me-1"></i>Loading…</div>
+        <div *ngIf="!loading && !rules.length" class="text-muted small">No teacher has limits or times off.</div>
+
+        <div class="border rounded p-2 mb-2" *ngFor="let r of rules">
+            <div class="d-flex align-items-center mb-2">
+                <strong>{{ r.staffName }}</strong>
+                <span class="badge bg-warning text-dark ms-2" *ngIf="dirty.has(r.staffDetailsId)">Not saved</span>
+                <div class="ms-auto">
+                    <button class="btn btn-sm btn-outline-danger me-1" (click)="clear(r)" title="Remove all limits and times off"><i class="fas fa-trash"></i></button>
+                    <button class="btn btn-sm btn-success" (click)="save(r)" [disabled]="saving.has(r.staffDetailsId) || !dirty.has(r.staffDetailsId)">
+                        <i class="fas me-1" [ngClass]="saving.has(r.staffDetailsId) ? 'fa-spinner fa-spin' : 'fa-save'"></i>Save
+                    </button>
+                </div>
+            </div>
+            <div class="row g-2 mb-2">
+                <div class="col-6 col-md-2">
+                    <label class="form-label mb-0 small">Most lessons a day</label>
+                    <input type="number" min="1" class="form-control form-control-sm" [(ngModel)]="r.maxLessonsPerDay" (ngModelChange)="touch(r)" placeholder="No limit">
+                </div>
+                <div class="col-6 col-md-2">
+                    <label class="form-label mb-0 small">Most in a row</label>
+                    <input type="number" min="1" class="form-control form-control-sm" [(ngModel)]="r.maxConsecutiveLessons" (ngModelChange)="touch(r)" placeholder="No limit">
+                </div>
+                <div class="col-md-8">
+                    <label class="form-label mb-0 small">Notes</label>
+                    <input class="form-control form-control-sm" [(ngModel)]="r.notes" (ngModelChange)="touch(r)">
+                </div>
+            </div>
+            <table class="table table-sm table-bordered tt-slot-table mb-1" *ngIf="r.unavailable.length">
+                <thead class="table-light"><tr><th style="width: 140px;">Day</th><th style="width: 120px;">From</th><th style="width: 120px;">To</th><th>Reason</th><th style="width: 44px;"></th></tr></thead>
+                <tbody>
+                <tr *ngFor="let u of r.unavailable; let i = index">
+                    <td>
+                        <select class="form-select form-select-sm" [(ngModel)]="u.day" (ngModelChange)="touch(r)">
+                            <option *ngFor="let d of days" [ngValue]="d.value">{{ d.name }}</option>
+                        </select>
+                    </td>
+                    <td><input type="time" class="form-control form-control-sm" [(ngModel)]="u.startTime" (ngModelChange)="touch(r)"></td>
+                    <td><input type="time" class="form-control form-control-sm" [(ngModel)]="u.endTime" (ngModelChange)="touch(r)"></td>
+                    <td><input class="form-control form-control-sm" [(ngModel)]="u.reason" (ngModelChange)="touch(r)" placeholder="e.g. Part-time, staff meeting"></td>
+                    <td><button class="btn btn-sm btn-outline-danger" (click)="removeTime(r, i)"><i class="fas fa-times"></i></button></td>
+                </tr>
+                </tbody>
+            </table>
+            <button class="btn btn-sm btn-outline-secondary" (click)="addTime(r)"><i class="fas fa-user-clock me-1"></i>Add a time they cannot teach</button>
+        </div>
+    </div>
+</div>
