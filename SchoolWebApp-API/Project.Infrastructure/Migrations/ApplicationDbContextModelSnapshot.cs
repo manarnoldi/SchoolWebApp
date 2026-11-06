@@ -661,65 +661,65 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             CreatedBy = "admin",
                             Description = "Default budget amendment approval workflow",
                             FormKey = "BudgetAmendment",
                             IsActive = true,
                             IsMakerChecker = true,
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             ModifiedBy = "admin",
                             Name = "Budget Amendment Approval"
                         },
                         new
                         {
                             Id = 2,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             CreatedBy = "admin",
                             Description = "Default expense approval workflow",
                             FormKey = "Expense",
                             IsActive = true,
                             IsMakerChecker = true,
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             ModifiedBy = "admin",
                             Name = "Expense Approval"
                         },
                         new
                         {
                             Id = 3,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             CreatedBy = "admin",
                             Description = "Default journal entry approval workflow",
                             FormKey = "JournalEntry",
                             IsActive = true,
                             IsMakerChecker = true,
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             ModifiedBy = "admin",
                             Name = "Journal Entry Approval"
                         },
                         new
                         {
                             Id = 4,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             CreatedBy = "admin",
                             Description = "Default credit/debit note approval workflow",
                             FormKey = "CreditDebitNote",
                             IsActive = true,
                             IsMakerChecker = true,
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             ModifiedBy = "admin",
                             Name = "Credit/Debit Note Approval"
                         },
                         new
                         {
                             Id = 5,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             CreatedBy = "admin",
                             Description = "Default budget approval workflow",
                             FormKey = "Budget",
                             IsActive = true,
                             IsMakerChecker = true,
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             ModifiedBy = "admin",
                             Name = "Budget Approval"
                         });
@@ -784,10 +784,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 1,
                             ApprovalWorkflowId = 1,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             CreatedBy = "admin",
                             IsFinal = false,
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             ModifiedBy = "admin",
                             Name = "Reviewer",
                             NotifyApplicant = true,
@@ -800,10 +800,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 2,
                             ApprovalWorkflowId = 1,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             CreatedBy = "admin",
                             IsFinal = true,
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             ModifiedBy = "admin",
                             Name = "Approver",
                             NotifyApplicant = true,
@@ -816,10 +816,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 3,
                             ApprovalWorkflowId = 2,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             CreatedBy = "admin",
                             IsFinal = false,
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             ModifiedBy = "admin",
                             Name = "Reviewer",
                             NotifyApplicant = true,
@@ -832,10 +832,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 4,
                             ApprovalWorkflowId = 2,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             CreatedBy = "admin",
                             IsFinal = true,
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             ModifiedBy = "admin",
                             Name = "Approver",
                             NotifyApplicant = true,
@@ -848,10 +848,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 5,
                             ApprovalWorkflowId = 3,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             CreatedBy = "admin",
                             IsFinal = false,
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             ModifiedBy = "admin",
                             Name = "Reviewer",
                             NotifyApplicant = true,
@@ -864,10 +864,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 6,
                             ApprovalWorkflowId = 3,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             CreatedBy = "admin",
                             IsFinal = true,
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             ModifiedBy = "admin",
                             Name = "Approver",
                             NotifyApplicant = true,
@@ -880,10 +880,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 7,
                             ApprovalWorkflowId = 4,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             CreatedBy = "admin",
                             IsFinal = false,
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             ModifiedBy = "admin",
                             Name = "Reviewer",
                             NotifyApplicant = true,
@@ -896,10 +896,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 8,
                             ApprovalWorkflowId = 4,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             CreatedBy = "admin",
                             IsFinal = true,
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             ModifiedBy = "admin",
                             Name = "Approver",
                             NotifyApplicant = true,
@@ -912,10 +912,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 9,
                             ApprovalWorkflowId = 5,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             CreatedBy = "admin",
                             IsFinal = false,
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             ModifiedBy = "admin",
                             Name = "Reviewer",
                             NotifyApplicant = true,
@@ -928,10 +928,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 10,
                             ApprovalWorkflowId = 5,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             CreatedBy = "admin",
                             IsFinal = true,
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 40, 35, DateTimeKind.Local).AddTicks(93),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 700, DateTimeKind.Local).AddTicks(2321),
                             ModifiedBy = "admin",
                             Name = "Approver",
                             NotifyApplicant = true,
@@ -4752,9 +4752,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(3677),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(1555),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(3691),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(1589),
                             ModifiedBy = "admin",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
@@ -4762,9 +4762,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 2,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4406),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(1756),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4410),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(1760),
                             ModifiedBy = "admin",
                             Name = "HeadTeacher",
                             NormalizedName = "HEADTEACHER"
@@ -4772,9 +4772,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 3,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4441),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(1870),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4442),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(1874),
                             ModifiedBy = "admin",
                             Name = "Teacher",
                             NormalizedName = "TEACHER"
@@ -4782,9 +4782,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 4,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4467),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(1978),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4468),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(1982),
                             ModifiedBy = "admin",
                             Name = "Student",
                             NormalizedName = "STUDENT"
@@ -4792,9 +4792,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 5,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4493),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(2087),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4494),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(2091),
                             ModifiedBy = "admin",
                             Name = "Parent",
                             NormalizedName = "PARENT"
@@ -4802,9 +4802,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 6,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4518),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(2194),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4519),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(2198),
                             ModifiedBy = "admin",
                             Name = "Accounts",
                             NormalizedName = "ACCOUNTS"
@@ -4812,9 +4812,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 7,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4542),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(2333),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4543),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(2337),
                             ModifiedBy = "admin",
                             Name = "Others",
                             NormalizedName = "OTHERS"
@@ -4822,9 +4822,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 8,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4565),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(2437),
                             CreatedBy = "admin",
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4566),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(2441),
                             ModifiedBy = "admin",
                             Name = "SuperAdministrator",
                             NormalizedName = "SUPERADMINISTRATOR"
@@ -4930,20 +4930,20 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "9be7269a-c68d-48be-a635-bd501cf228e8",
-                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(5147),
+                            ConcurrencyStamp = "1e4834f9-e7b0-47c9-b842-0d7eb93a3943",
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(3961),
                             CreatedBy = "admin",
                             Email = "admin@kodetek.co.ke",
                             EmailConfirmed = true,
                             FirstName = "SchoolSoft",
                             LastName = "Administrator",
                             LockoutEnabled = false,
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(5149),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(3967),
                             ModifiedBy = "admin",
                             MustChangePassword = false,
                             NormalizedEmail = "ADMIN@KODETEK.CO.KE",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEE146A45wbYOlsNrCpgXpYZpZojpcWYlUt7OkyqTFgvbbB0QOMsZ/IQ7C5T8bEmBng==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEK9K9b6ZDKr3FP+RX5wzH6krW1cYohbDQxMPxfAHi80z3goQfO6ayAEYET9A9OoFDg==",
                             PhoneNumber = "+254724920000",
                             PhoneNumberConfirmed = true,
                             TwoFactorEnabled = false,
@@ -6292,10 +6292,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4675),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(2788),
                             CreatedBy = "admin",
                             Description = "",
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4676),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(2792),
                             ModifiedBy = "admin",
                             Name = "Supplier",
                             Rank = 1
@@ -6342,10 +6342,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4701),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(2885),
                             CreatedBy = "admin",
                             Description = "",
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4702),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(2889),
                             ModifiedBy = "admin",
                             Name = "Contract",
                             Rank = 1
@@ -6392,10 +6392,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4846),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(3378),
                             CreatedBy = "admin",
                             Description = "",
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4847),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(3383),
                             ModifiedBy = "admin",
                             Name = "Male",
                             Rank = 1
@@ -6486,10 +6486,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4727),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(3154),
                             CreatedBy = "admin",
                             Description = "",
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4728),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(3162),
                             ModifiedBy = "admin",
                             Name = "Kenyan",
                             Rank = 1
@@ -6687,10 +6687,10 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4816),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(3276),
                             CreatedBy = "admin",
                             Description = "",
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4817),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(3281),
                             ModifiedBy = "admin",
                             Name = "Christian",
                             Rank = 1
@@ -6787,11 +6787,11 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 1,
                             Code = "SC001",
-                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4637),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(2672),
                             CreatedBy = "admin",
                             Description = "",
                             ForTeaching = false,
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4639),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(2678),
                             ModifiedBy = "admin",
                             Name = "Non-teaching",
                             Rank = 1
@@ -7861,6 +7861,513 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.ToTable("SchemeOfWorkLessons");
                 });
 
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.BellSchedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Days")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BellSchedules");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.BellScheduleLevel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("BellScheduleId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("LearningLevelId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BellScheduleId");
+
+                    b.HasIndex("LearningLevelId")
+                        .IsUnique();
+
+                    b.ToTable("BellScheduleLevels");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.BellSlot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("BellScheduleId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time(6)");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Label")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Part")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BellScheduleId");
+
+                    b.ToTable("BellSlots");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.SchoolTimetable", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("EffectiveFrom")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("GeneratedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("GenerationReport")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("PublishedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("SessionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SessionId");
+
+                    b.ToTable("SchoolTimetables");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.TeacherTimetableRule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("MaxConsecutiveLessons")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MaxLessonsPerDay")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int>("StaffDetailsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StaffDetailsId")
+                        .IsUnique();
+
+                    b.ToTable("TeacherTimetableRules");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.TeacherUnavailability", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Day")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time(6)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("StaffDetailsId")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StaffDetailsId");
+
+                    b.ToTable("TeacherUnavailabilities");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.TimetableFixedSlot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("BellScheduleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BellSlotId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Day")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Label")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int?>("LearningLevelId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BellScheduleId");
+
+                    b.HasIndex("BellSlotId");
+
+                    b.HasIndex("LearningLevelId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.ToTable("TimetableFixedSlots");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.TimetableLesson", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BellSlotId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("Day")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsLocked")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsManual")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("Length")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("LinkNo")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("SchoolClassId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SchoolTimetableId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StaffDetailsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BellSlotId");
+
+                    b.HasIndex("SchoolClassId");
+
+                    b.HasIndex("StaffDetailsId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.HasIndex("SchoolTimetableId", "SchoolClassId");
+
+                    b.HasIndex("SchoolTimetableId", "StaffDetailsId");
+
+                    b.ToTable("TimetableLessons");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.TimetableOptionGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("LearningLevelId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LearningLevelId");
+
+                    b.ToTable("TimetableOptionGroups");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.TimetableOptionGroupSubject", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TimetableOptionGroupId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubjectId");
+
+                    b.HasIndex("TimetableOptionGroupId", "SubjectId")
+                        .IsUnique();
+
+                    b.ToTable("TimetableOptionGroupSubjects");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.TimetableSubjectRule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<bool>("AvoidLastLesson")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("DoubleLessons")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Excluded")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int?>("LearningLevelId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaxPerDay")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Placement")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LearningLevelId");
+
+                    b.HasIndex("SubjectId", "LearningLevelId")
+                        .IsUnique();
+
+                    b.ToTable("TimetableSubjectRules");
+                });
+
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Staff.StaffDiscipline", b =>
                 {
                     b.HasBaseType("SchoolWebApp.Core.Entities.Shared.Discipline");
@@ -7952,13 +8459,13 @@ namespace SchoolWebApp.Infrastructure.Migrations
                         {
                             Id = 1,
                             Address = "Admin",
-                            Created = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4913),
+                            Created = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(3590),
                             CreatedBy = "admin",
-                            DateOfBirth = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4909),
+                            DateOfBirth = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(3584),
                             Email = "admin@kodetek.co.ke",
                             FullName = "Admin",
                             GenderId = 1,
-                            Modified = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4914),
+                            Modified = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(3592),
                             ModifiedBy = "admin",
                             NationalityId = 1,
                             OtherDetails = "Admin",
@@ -7968,9 +8475,9 @@ namespace SchoolWebApp.Infrastructure.Migrations
                             UPI = "Admin",
                             CurrentlyEmployed = true,
                             DesignationId = 1,
-                            EmploymentDate = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4900),
+                            EmploymentDate = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(3560),
                             EmploymentTypeId = 1,
-                            EndofEmploymentDate = new DateTime(2026, 10, 31, 6, 56, 39, 982, DateTimeKind.Local).AddTicks(4901),
+                            EndofEmploymentDate = new DateTime(2026, 11, 6, 6, 38, 40, 570, DateTimeKind.Local).AddTicks(3566),
                             ExcludeFromPayroll = false,
                             IdNumber = "Admin",
                             KraPinNo = "Admin",
@@ -9983,6 +10490,190 @@ namespace SchoolWebApp.Infrastructure.Migrations
                     b.Navigation("SubStrand");
                 });
 
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.BellScheduleLevel", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Timetable.BellSchedule", "BellSchedule")
+                        .WithMany("Levels")
+                        .HasForeignKey("BellScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Class.LearningLevel", "LearningLevel")
+                        .WithMany()
+                        .HasForeignKey("LearningLevelId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BellSchedule");
+
+                    b.Navigation("LearningLevel");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.BellSlot", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Timetable.BellSchedule", "BellSchedule")
+                        .WithMany("Slots")
+                        .HasForeignKey("BellScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BellSchedule");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.SchoolTimetable", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Class.Session", "Session")
+                        .WithMany()
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Session");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.TeacherTimetableRule", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Staff.StaffDetails", "StaffDetails")
+                        .WithMany()
+                        .HasForeignKey("StaffDetailsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("StaffDetails");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.TeacherUnavailability", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Staff.StaffDetails", "StaffDetails")
+                        .WithMany()
+                        .HasForeignKey("StaffDetailsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("StaffDetails");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.TimetableFixedSlot", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Timetable.BellSchedule", "BellSchedule")
+                        .WithMany("FixedSlots")
+                        .HasForeignKey("BellScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Timetable.BellSlot", "BellSlot")
+                        .WithMany()
+                        .HasForeignKey("BellSlotId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Class.LearningLevel", "LearningLevel")
+                        .WithMany()
+                        .HasForeignKey("LearningLevelId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Academics.Subject", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("BellSchedule");
+
+                    b.Navigation("BellSlot");
+
+                    b.Navigation("LearningLevel");
+
+                    b.Navigation("Subject");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.TimetableLesson", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Timetable.BellSlot", "BellSlot")
+                        .WithMany()
+                        .HasForeignKey("BellSlotId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Class.SchoolClass", "SchoolClass")
+                        .WithMany()
+                        .HasForeignKey("SchoolClassId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Timetable.SchoolTimetable", "SchoolTimetable")
+                        .WithMany("Lessons")
+                        .HasForeignKey("SchoolTimetableId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Staff.StaffDetails", "StaffDetails")
+                        .WithMany()
+                        .HasForeignKey("StaffDetailsId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Academics.Subject", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BellSlot");
+
+                    b.Navigation("SchoolClass");
+
+                    b.Navigation("SchoolTimetable");
+
+                    b.Navigation("StaffDetails");
+
+                    b.Navigation("Subject");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.TimetableOptionGroup", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Class.LearningLevel", "LearningLevel")
+                        .WithMany()
+                        .HasForeignKey("LearningLevelId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("LearningLevel");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.TimetableOptionGroupSubject", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Academics.Subject", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Timetable.TimetableOptionGroup", "TimetableOptionGroup")
+                        .WithMany("Subjects")
+                        .HasForeignKey("TimetableOptionGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subject");
+
+                    b.Navigation("TimetableOptionGroup");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.TimetableSubjectRule", b =>
+                {
+                    b.HasOne("SchoolWebApp.Core.Entities.Class.LearningLevel", "LearningLevel")
+                        .WithMany()
+                        .HasForeignKey("LearningLevelId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("SchoolWebApp.Core.Entities.Academics.Subject", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LearningLevel");
+
+                    b.Navigation("Subject");
+                });
+
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Staff.StaffDiscipline", b =>
                 {
                     b.HasOne("SchoolWebApp.Core.Entities.Staff.StaffDetails", "StaffDetails")
@@ -10485,6 +11176,25 @@ namespace SchoolWebApp.Infrastructure.Migrations
             modelBuilder.Entity("SchoolWebApp.Core.Entities.TeachingDocuments.SchemeOfWorkLesson", b =>
                 {
                     b.Navigation("RecordOfWorkEntry");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.BellSchedule", b =>
+                {
+                    b.Navigation("FixedSlots");
+
+                    b.Navigation("Levels");
+
+                    b.Navigation("Slots");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.SchoolTimetable", b =>
+                {
+                    b.Navigation("Lessons");
+                });
+
+            modelBuilder.Entity("SchoolWebApp.Core.Entities.Timetable.TimetableOptionGroup", b =>
+                {
+                    b.Navigation("Subjects");
                 });
 
             modelBuilder.Entity("SchoolWebApp.Core.Entities.Staff.StaffDetails", b =>

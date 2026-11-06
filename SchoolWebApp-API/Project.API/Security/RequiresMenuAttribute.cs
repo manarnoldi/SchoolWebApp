@@ -18,7 +18,8 @@ namespace SchoolWebApp.API.Security
         Staff,
         SchoolSetup,
         Academics,
-        Elections
+        Elections,
+        Timetable
     }
 
     public static class MenuGroups
@@ -74,7 +75,8 @@ namespace SchoolWebApp.API.Security
                 "/cbe/community-service/student-assignments", "/cbe/values/student-assignments", "/cbe/exams/exam-results",
                 "/reports/academics/exam-results", "/reports/academics/subject-performance", "/reports/academics/class-performance"
             },
-            [MenuGroup.Elections] = new[] { "/elections/manage", "/elections/polling", "/elections/results" }
+            [MenuGroup.Elections] = new[] { "/elections/manage", "/elections/polling", "/elections/results" },
+            [MenuGroup.Timetable] = new[] { "/timetable/timetables", "/timetable/setup" }
         };
     }
 

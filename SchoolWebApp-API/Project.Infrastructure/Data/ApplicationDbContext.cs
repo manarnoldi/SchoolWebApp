@@ -24,6 +24,7 @@ using SchoolWebApp.Core.Entities.Security;
 using SchoolWebApp.Core.Entities.Communications;
 using SchoolWebApp.Core.Entities.TeachingDocuments;
 using SchoolWebApp.Core.Entities.Elections;
+using SchoolWebApp.Core.Entities.Timetable;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json;
 using System.Security.Claims;
@@ -222,6 +223,20 @@ namespace Project.Infrastructure.Data
         public DbSet<ElectionStationClass> ElectionStationClasses { get; set; }
         public DbSet<ElectionVoteCast> ElectionVoteCasts { get; set; }
         public DbSet<ElectionBallotChoice> ElectionBallotChoices { get; set; }
+        #endregion
+
+        #region Timetable
+        public DbSet<BellSchedule> BellSchedules { get; set; }
+        public DbSet<BellSlot> BellSlots { get; set; }
+        public DbSet<BellScheduleLevel> BellScheduleLevels { get; set; }
+        public DbSet<TimetableFixedSlot> TimetableFixedSlots { get; set; }
+        public DbSet<TimetableSubjectRule> TimetableSubjectRules { get; set; }
+        public DbSet<TimetableOptionGroup> TimetableOptionGroups { get; set; }
+        public DbSet<TimetableOptionGroupSubject> TimetableOptionGroupSubjects { get; set; }
+        public DbSet<TeacherTimetableRule> TeacherTimetableRules { get; set; }
+        public DbSet<TeacherUnavailability> TeacherUnavailabilities { get; set; }
+        public DbSet<SchoolTimetable> SchoolTimetables { get; set; }
+        public DbSet<TimetableLesson> TimetableLessons { get; set; }
         #endregion
 
         #region Approvals

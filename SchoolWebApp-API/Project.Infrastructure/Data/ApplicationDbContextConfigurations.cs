@@ -20,6 +20,7 @@ using SchoolWebApp.Core.Entities.Payroll;
 using SchoolWebApp.Core.Entities.Communications;
 using SchoolWebApp.Core.Entities.TeachingDocuments;
 using SchoolWebApp.Core.Entities.Elections;
+using SchoolWebApp.Core.Entities.Timetable;
 
 namespace Project.Infrastructure.Data
 {
@@ -351,6 +352,59 @@ namespace Project.Infrastructure.Data
                 .HasForeignKey(c => c.ElectionCandidateId).OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ElectionBallotChoice>().HasIndex(c => c.ElectionId);
             modelBuilder.Entity<ElectionBallotChoice>().HasIndex(c => c.BallotId);
+
+            // Timetable. A bell schedule owns its slots, grade list and fixed slots;
+            // a timetable owns its lessons. School records they point at (grades,
+            // subjects, classes, staff, terms) cannot be deleted while in use.
+            modelBuilder.Entity<BellSlot>().HasOne(s => s.BellSchedule).WithMany(b => b.Slots)
+                .HasForeignKey(s => s.BellScheduleId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<BellScheduleLevel>().HasOne(l => l.BellSchedule).WithMany(b => b.Levels)
+                .HasForeignKey(l => l.BellScheduleId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<BellScheduleLevel>().HasOne(l => l.LearningLevel).WithMany()
+                .HasForeignKey(l => l.LearningLevelId).OnDelete(DeleteBehavior.Restrict);
+            // A grade follows one schedule.
+            modelBuilder.Entity<BellScheduleLevel>().HasIndex(l => l.LearningLevelId).IsUnique();
+            modelBuilder.Entity<TimetableFixedSlot>().HasOne(f => f.BellSchedule).WithMany(b => b.FixedSlots)
+                .HasForeignKey(f => f.BellScheduleId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<TimetableFixedSlot>().HasOne(f => f.BellSlot).WithMany()
+                .HasForeignKey(f => f.BellSlotId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<TimetableFixedSlot>().HasOne(f => f.LearningLevel).WithMany()
+                .HasForeignKey(f => f.LearningLevelId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<TimetableFixedSlot>().HasOne(f => f.Subject).WithMany()
+                .HasForeignKey(f => f.SubjectId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<TimetableSubjectRule>().HasOne(r => r.Subject).WithMany()
+                .HasForeignKey(r => r.SubjectId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<TimetableSubjectRule>().HasOne(r => r.LearningLevel).WithMany()
+                .HasForeignKey(r => r.LearningLevelId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<TimetableSubjectRule>()
+                .HasIndex(r => new { r.SubjectId, r.LearningLevelId }).IsUnique();
+            modelBuilder.Entity<TimetableOptionGroup>().HasOne(g => g.LearningLevel).WithMany()
+                .HasForeignKey(g => g.LearningLevelId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<TimetableOptionGroupSubject>().HasOne(s => s.TimetableOptionGroup).WithMany(g => g.Subjects)
+                .HasForeignKey(s => s.TimetableOptionGroupId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<TimetableOptionGroupSubject>().HasOne(s => s.Subject).WithMany()
+                .HasForeignKey(s => s.SubjectId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<TimetableOptionGroupSubject>()
+                .HasIndex(s => new { s.TimetableOptionGroupId, s.SubjectId }).IsUnique();
+            modelBuilder.Entity<TeacherTimetableRule>().HasOne(r => r.StaffDetails).WithMany()
+                .HasForeignKey(r => r.StaffDetailsId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<TeacherTimetableRule>().HasIndex(r => r.StaffDetailsId).IsUnique();
+            modelBuilder.Entity<TeacherUnavailability>().HasOne(u => u.StaffDetails).WithMany()
+                .HasForeignKey(u => u.StaffDetailsId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<SchoolTimetable>().HasOne(t => t.Session).WithMany()
+                .HasForeignKey(t => t.SessionId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<TimetableLesson>().HasOne(l => l.SchoolTimetable).WithMany(t => t.Lessons)
+                .HasForeignKey(l => l.SchoolTimetableId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<TimetableLesson>().HasOne(l => l.SchoolClass).WithMany()
+                .HasForeignKey(l => l.SchoolClassId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<TimetableLesson>().HasOne(l => l.Subject).WithMany()
+                .HasForeignKey(l => l.SubjectId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<TimetableLesson>().HasOne(l => l.StaffDetails).WithMany()
+                .HasForeignKey(l => l.StaffDetailsId).OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<TimetableLesson>().HasOne(l => l.BellSlot).WithMany()
+                .HasForeignKey(l => l.BellSlotId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<TimetableLesson>().HasIndex(l => new { l.SchoolTimetableId, l.SchoolClassId });
+            modelBuilder.Entity<TimetableLesson>().HasIndex(l => new { l.SchoolTimetableId, l.StaffDetailsId });
 
             // Curriculum design: what the KICD design says beyond strands and outcomes.
             // Everything hangs off its strand / sub-strand / design and goes with it;
