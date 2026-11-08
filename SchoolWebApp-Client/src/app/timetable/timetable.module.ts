@@ -9,6 +9,10 @@ import {SubjectRulesComponent} from './components/subject-rules/subject-rules.co
 import {OptionGroupsComponent} from './components/option-groups/option-groups.component';
 import {TeacherRulesComponent} from './components/teacher-rules/teacher-rules.component';
 import {ReadinessComponent} from './components/readiness/readiness.component';
+import {TimetableViewerComponent} from './components/viewer/timetable-viewer.component';
+import {TimetablesComponent} from './components/timetables/timetables.component';
+import {TimetableDetailComponent} from './components/timetable-detail/timetable-detail.component';
+import {PublishedTimetableComponent} from './components/published/published-timetable.component';
 
 @NgModule({
     declarations: [
@@ -18,7 +22,11 @@ import {ReadinessComponent} from './components/readiness/readiness.component';
         SubjectRulesComponent,
         OptionGroupsComponent,
         TeacherRulesComponent,
-        ReadinessComponent
+        ReadinessComponent,
+        TimetableViewerComponent,
+        TimetablesComponent,
+        TimetableDetailComponent,
+        PublishedTimetableComponent
     ],
     imports: [CommonModule, RouterModule, SharedModule]
 })

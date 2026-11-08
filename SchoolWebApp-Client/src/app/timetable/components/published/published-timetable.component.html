@@ -1,0 +1,28 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+        <div class="card card-outline card-primary">
+            <div class="card-body p-2">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2" *ngIf="sessions.length > 1 || timetable">
+                    <select class="form-select form-select-sm" style="max-width: 200px;" *ngIf="sessions.length > 1" [(ngModel)]="sessionId" (ngModelChange)="load()">
+                        <option *ngFor="let s of sessions" [ngValue]="s.id">{{ s.name }}</option>
+                    </select>
+                    <small class="text-muted" *ngIf="timetable">
+                        {{ timetable.name }}<span *ngIf="timetable.effectiveFrom"> · in use from {{ timetable.effectiveFrom | date:'d MMM y' }}</span>
+                    </small>
+                </div>
+
+                <div *ngIf="loading" class="text-muted p-2"><i class="fas fa-spinner fa-spin me-1"></i>Loading…</div>
+                <ng-container *ngIf="!loading">
+                    <div *ngIf="!timetable" class="text-muted p-2">No timetable has been published yet.</div>
+                    <ng-container *ngIf="timetable">
+                        <div *ngIf="mine && !staffId" class="text-muted p-2">Your user account is not linked to a staff record, so there is no timetable to show.</div>
+                        <div *ngIf="mine && staffId && !myLessons" class="text-muted p-2">You have no lessons on this timetable.</div>
+                        <app-tt-viewer *ngIf="!mine || (staffId && myLessons)" [timetable]="timetable" [onlyTeacherId]="mine ? staffId : null"></app-tt-viewer>
+                    </ng-container>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</section>

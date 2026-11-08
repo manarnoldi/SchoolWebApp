@@ -134,3 +134,79 @@ export interface Readiness {
     }[];
     teachers: {staffDetailsId: number; name: string; lessonsAssigned: number; slotsAvailable: number; classes: number}[];
 }
+
+// ---------------------------------------------------------------- timetables
+
+export enum TimetableStatus {
+    Draft = 0,
+    Published = 1,
+    Archived = 2
+}
+
+export const STATUS_LABELS: {[k: number]: string} = {0: 'Draft', 1: 'Published', 2: 'Archived'};
+export const STATUS_BADGES: {[k: number]: string} = {0: 'bg-secondary', 1: 'bg-success', 2: 'bg-light text-dark border'};
+
+export interface TimetableSummary {
+    id: number;
+    name: string;
+    sessionId: number;
+    sessionName: string;
+    status: TimetableStatus;
+    effectiveFrom: string | null;
+    generatedAt: string | null;
+    publishedAt: string | null;
+    notes: string | null;
+    lessons: number;
+    unplaced: number;
+    modified: string | null;
+}
+
+export interface TimetableSlot {
+    id: number;
+    rank: number;
+    startTime: string;
+    endTime: string;
+    kind: BellSlotKind;
+    part: DayPart;
+    label: string | null;
+}
+
+export interface TimetableSchedule {
+    id: number;
+    name: string;
+    days: number[];
+    slots: TimetableSlot[];
+    fixed: {day: number; bellSlotId: number; learningLevelId: number | null; subjectId: number | null; label: string | null}[];
+}
+
+export interface TimetableCard {
+    id: number;
+    schoolClassId: number;
+    subjectId: number;
+    staffDetailsId: number | null;
+    day: number | null;
+    bellSlotId: number | null;
+    length: number;
+    linkNo: number | null;
+    isLocked: boolean;
+}
+
+export interface TimetableReport {
+    placed: number;
+    total: number;
+    attempts: number;
+    seconds: number;
+    score: number;
+    unplaced: {className: string; subjects: string; teachers: string; length: number; reason: string}[];
+    warnings: string[];
+    leftOut: string[];
+}
+
+export interface TimetableDetail extends TimetableSummary {
+    report: TimetableReport | null;
+    schedules: TimetableSchedule[];
+    classes: {id: number; name: string; learningLevelId: number; scheduleId: number}[];
+    teachers: {id: number; name: string; initials: string}[];
+    subjects: {id: number; name: string; abbr: string}[];
+    cards: TimetableCard[];
+}

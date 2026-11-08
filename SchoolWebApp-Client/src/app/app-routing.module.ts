@@ -178,6 +178,9 @@ import { TrackerComponent } from './teaching/components/tracker/tracker.componen
 import { CurriculumViewComponent } from './teaching/components/curriculum-view/curriculum-view.component';
 import { TimetableComponent } from './timetable/timetable.component';
 import { TimetableSetupComponent } from './timetable/components/setup/timetable-setup.component';
+import { TimetablesComponent } from './timetable/components/timetables/timetables.component';
+import { TimetableDetailComponent } from './timetable/components/timetable-detail/timetable-detail.component';
+import { PublishedTimetableComponent } from './timetable/components/published/published-timetable.component';
 import { ElectionsComponent } from './elections/elections.component';
 import { ElectionListComponent } from './elections/components/election-list/election-list.component';
 import { ElectionDetailComponent } from './elections/components/election-detail/election-detail.component';
@@ -516,7 +519,11 @@ const routes: Routes = [
         data: {module: 'Academics'},
         canActivateChild: [AuthGuard],
         children: [
-            {path: 'setup', component: TimetableSetupComponent}
+            {path: 'timetables', component: TimetablesComponent},
+            {path: 'timetables/:id', component: TimetableDetailComponent},
+            {path: 'setup', component: TimetableSetupComponent},
+            {path: 'view', component: PublishedTimetableComponent},
+            {path: 'my', component: PublishedTimetableComponent, data: {mine: true}}
         ]
     },
     {

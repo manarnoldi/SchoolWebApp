@@ -233,6 +233,9 @@ export const MENU = [
         // Sold as part of Academics.
         module: 'Academics',
         children: [
+            {name: 'My Timetable', iconClasses: 'fas fa-user-clock text-success', path: ['/timetable/my']},
+            {name: 'View Timetables', iconClasses: 'fas fa-eye text-primary', path: ['/timetable/view']},
+            {name: 'Timetables', iconClasses: 'fas fa-calendar-check text-warning', path: ['/timetable/timetables']},
             {name: 'Setup', iconClasses: 'fas fa-sliders-h text-info', path: ['/timetable/setup']}
         ]
     },

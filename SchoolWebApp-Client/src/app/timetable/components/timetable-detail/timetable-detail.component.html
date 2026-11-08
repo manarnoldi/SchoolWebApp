@@ -1,0 +1,74 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1" *ngIf="t">
+        <div class="card card-outline card-primary mb-2">
+            <div class="card-body p-2 d-flex flex-wrap align-items-center gap-2">
+                <div>
+                    <span class="fw-bold fs-6">{{ t.name }}</span>
+                    <a href="javascript:void(0)" class="ms-1 small" (click)="rename()" title="Rename"><i class="fas fa-pen"></i></a>
+                    <span class="badge ms-2" [ngClass]="statusBadges[t.status]">{{ statusLabels[t.status] }}</span>
+                    <div class="small text-muted">
+                        {{ t.sessionName }}
+                        <span *ngIf="t.effectiveFrom"> · in use from {{ t.effectiveFrom | date:'d MMM y' }}</span>
+                        <span *ngIf="t.generatedAt"> · generated {{ t.generatedAt | date:'d MMM y, HH:mm' }}</span>
+                    </div>
+                </div>
+                <div class="ms-auto d-flex flex-wrap gap-1">
+                    <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/timetable/timetables']" [queryParams]="{term: t.sessionId}"><i class="fas fa-arrow-left me-1"></i>Timetables</a>
+                    <button class="btn btn-sm btn-primary" *ngIf="t.status === Status.Draft" (click)="generate()" [disabled]="generating">
+                        <i class="fas me-1" [ngClass]="generating ? 'fa-spinner fa-spin' : 'fa-magic'"></i>{{ hasCards ? 'Generate again' : 'Generate' }}
+                    </button>
+                    <button class="btn btn-sm btn-success" *ngIf="t.status === Status.Draft && placed" (click)="publish()" [disabled]="generating">
+                        <i class="fas fa-bullhorn me-1"></i>Publish
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" (click)="copy()" title="A draft copy to change"><i class="fas fa-copy me-1"></i>Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="generating" class="alert alert-info py-2">
+            <i class="fas fa-spinner fa-spin me-1"></i>Generating the timetable - this takes up to 20 seconds…
+        </div>
+
+        <!-- The generator's report -->
+        <div class="card card-outline mb-2" *ngIf="t.report as r" [ngClass]="r.unplaced.length ? 'card-warning' : 'card-success'">
+            <div class="card-body p-2">
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <span *ngIf="!r.unplaced.length" class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i>Every lesson is placed ({{ r.placed }}).</span>
+                    <span *ngIf="r.unplaced.length" class="text-warning fw-bold"><i class="fas fa-exclamation-triangle me-1"></i>{{ r.placed }} of {{ r.total }} lessons placed - {{ r.unplaced.length }} could not be.</span>
+                    <small class="text-muted">{{ r.attempts }} tries in {{ r.seconds }}s</small>
+                    <a href="javascript:void(0)" class="small ms-auto" *ngIf="r.warnings.length" (click)="showWarnings = !showWarnings">
+                        {{ showWarnings ? 'Hide' : 'Show' }} {{ r.warnings.length }} note(s) from the setup
+                    </a>
+                </div>
+                <table class="table table-sm mb-0 mt-2" *ngIf="r.unplaced.length">
+                    <thead class="table-light"><tr><th>Class</th><th>Subject</th><th>Teacher</th><th>Why it could not be placed</th></tr></thead>
+                    <tbody>
+                    <tr *ngFor="let u of r.unplaced">
+                        <td>{{ u.className }}</td>
+                        <td>{{ u.subjects }}<span *ngIf="u.length === 2" class="badge bg-info ms-1">double</span></td>
+                        <td>{{ u.teachers || '—' }}</td>
+                        <td class="small">{{ u.reason }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <ul class="small mb-0 mt-2" *ngIf="showWarnings">
+                    <li *ngFor="let w of r.warnings">{{ w }}</li>
+                    <li *ngIf="r.leftOut.length">Not on any bell schedule: {{ r.leftOut.join(', ') }}.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card card-outline card-primary" *ngIf="hasCards">
+            <div class="card-body p-2">
+                <app-tt-viewer [timetable]="t"></app-tt-viewer>
+            </div>
+        </div>
+        <div class="card card-outline card-primary" *ngIf="!hasCards && !generating">
+            <div class="card-body text-muted">
+                This timetable is empty. Check the <a [routerLink]="['/timetable/setup']" [queryParams]="{tab: 'readiness'}">readiness</a>, then press <b>Generate</b>.
+            </div>
+        </div>
+    </div>
+</section>

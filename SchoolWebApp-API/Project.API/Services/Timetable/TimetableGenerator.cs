@@ -240,6 +240,9 @@ namespace SchoolWebApp.API.Services.Timetable
                 if (u.Placement == SubjectPlacement.PreferAfternoon && !cell.Afternoon) cost += 3;
             }
             if (u.AvoidLast && g.Cells[dayPos, index + u.Length - 1].LastOfDay) cost += 4;
+            // Earlier is a little better: a class with spare slots (Pre-Primary)
+            // gets its lessons at the start of the day, not scattered with gaps.
+            cost += index * 0.08;
 
             // Spread over the week: the same subject on the day before or after, or already today.
             for (var d = Math.Max(0, dayPos - 1); d <= Math.Min(g.Days.Count - 1, dayPos + 1); d++)

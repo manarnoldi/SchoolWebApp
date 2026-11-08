@@ -1,0 +1,63 @@
+<app-dashboard-header [title]="dashboardTitle" [breadcrumbs]="breadcrumbs"></app-dashboard-header>
+<hr class="mb-1">
+<section class="content">
+    <div class="container-fluid px-1">
+        <div class="card card-outline card-primary mb-2">
+            <div class="card-body p-2">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label mb-0 small">Term</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="sessionId" (ngModelChange)="newName = ''; load()">
+                            <option *ngFor="let s of lookups?.sessions || []" [ngValue]="s.id">{{ s.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label mb-0 small">New timetable</label>
+                        <div class="input-group input-group-sm">
+                            <input class="form-control" [(ngModel)]="newName" placeholder="Name, e.g. Term 1 2027">
+                            <button class="btn btn-primary" (click)="create()" [disabled]="creating || !newName.trim()">
+                                <i class="fas me-1" [ngClass]="creating ? 'fa-spinner fa-spin' : 'fa-plus'"></i>Create
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/timetable/setup']"><i class="fas fa-sliders-h me-1"></i>Setup</a>
+                        <a class="btn btn-sm btn-outline-secondary ms-1" [routerLink]="['/timetable/setup']" [queryParams]="{tab: 'readiness'}"><i class="fas fa-clipboard-check me-1"></i>Readiness check</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-outline card-primary">
+            <div class="card-body p-0">
+                <div *ngIf="loading" class="text-muted p-3"><i class="fas fa-spinner fa-spin me-1"></i>Loading…</div>
+                <table class="table table-sm table-hover mb-0" *ngIf="!loading">
+                    <thead class="table-light">
+                    <tr><th>Name</th><th>Status</th><th>In use from</th><th class="text-end">Lessons</th><th class="text-end">Not placed</th><th>Generated</th><th style="width: 190px;"></th></tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let t of rows">
+                        <td><a [routerLink]="['/timetable/timetables', t.id]" class="fw-bold">{{ t.name }}</a>
+                            <div class="small text-muted" *ngIf="t.notes">{{ t.notes }}</div></td>
+                        <td><span class="badge" [ngClass]="statusBadges[t.status]">{{ statusLabels[t.status] }}</span></td>
+                        <td>{{ t.effectiveFrom ? (t.effectiveFrom | date:'d MMM y') : '' }}</td>
+                        <td class="text-end">{{ t.lessons }}</td>
+                        <td class="text-end" [class.text-danger]="t.unplaced">{{ t.unplaced || '' }}</td>
+                        <td class="small">{{ t.generatedAt ? (t.generatedAt | date:'d MMM y, HH:mm') : 'Not yet' }}</td>
+                        <td class="text-end text-nowrap">
+                            <a class="btn btn-sm btn-outline-primary" [routerLink]="['/timetable/timetables', t.id]"><i class="fas fa-folder-open me-1"></i>Open</a>
+                            <button class="btn btn-sm btn-outline-secondary ms-1" (click)="copy(t)" title="A draft copy to change"><i class="fas fa-copy"></i></button>
+                            <button class="btn btn-sm btn-outline-danger ms-1" (click)="delete(t)" [disabled]="t.status === 1" title="Delete"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="!rows.length">
+                        <td colspan="7" class="text-muted small p-3">
+                            No timetables for {{ sessionName }} yet. Check the <a [routerLink]="['/timetable/setup']">setup</a>, then create one above and generate it.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>

@@ -38,3 +38,38 @@
     overflow: hidden;
     > div { height: 100%; }
 }
+
+// A class's or a teacher's week.
+.tt-grid {
+    table-layout: fixed;
+    th, td { text-align: center; vertical-align: middle; padding: .2rem; }
+    th.tt-time { width: 120px; text-align: left; white-space: nowrap; font-weight: normal; font-size: .8rem; }
+    td.tt-break { background: #f6f7f9; color: #6c757d; font-style: italic; font-size: .8rem; padding: .1rem; }
+    td.tt-fixed-activity { background: #fff3cd; }
+}
+
+.tt-card {
+    border-radius: .3rem;
+    padding: .15rem .3rem;
+    margin: 1px 0;
+    font-size: .85rem;
+    line-height: 1.15;
+    &.tt-card-cont { opacity: .75; border-top: 1px dashed #999; }
+}
+
+// The master timetable: compact, days separated by a heavier line.
+.tt-master {
+    table-layout: auto;
+    font-size: .72rem;
+    th, td { text-align: center; vertical-align: middle; padding: .1rem; min-width: 38px; }
+    .tt-master-class { text-align: left; white-space: nowrap; min-width: 120px; position: sticky; left: 0; background: #fff; z-index: 1; }
+    .tt-day-start { border-left: 2px solid #6c757d !important; }
+    td.tt-fixed-activity { background: #fff3cd; }
+}
+
+.tt-master-card {
+    border-radius: .2rem;
+    padding: 0 .1rem;
+    line-height: 1.1;
+    &.tt-card-cont { opacity: .7; }
+}
