@@ -220,6 +220,7 @@ namespace Project.API.Extensions
             services.AddScoped<TeachingDocumentService>();
             services.AddScoped<SchoolWebApp.API.Services.Elections.ElectionService>();
             services.AddScoped<SchoolWebApp.API.Services.Timetable.TimetableInputService>();
+            services.AddScoped<SchoolWebApp.API.Services.Timetable.TimetableService>();
             services.AddSingleton<SchoolWebApp.API.Services.Elections.ElectionPhotoStore>();
             services.AddScoped<SchoolWebApp.API.Services.Elections.ElectionResultsService>();
             // The school's licence: which paid modules are switched on.
