@@ -1,3 +1,4 @@
+using SchoolWebApp.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -38,9 +39,7 @@ namespace SchoolWebApp.API.Controllers.TeachingDocuments
             if (me == null) return Unauthorized();
             var sessions = await _db.Sessions.AsNoTracking().Include(s => s.AcademicYear)
                 .OrderByDescending(s => s.StartDate).ToListAsync();
-            var current = sessions.FirstOrDefault(TeachingDocumentService.IsCurrent)
-                ?? sessions.Where(s => s.StartDate.Date <= DateTime.Today).OrderByDescending(s => s.StartDate).FirstOrDefault()
-                ?? sessions.LastOrDefault();
+            var current = CurrentTerm.Pick(sessions);
             string? staffName = me.StaffDetailsId == null ? null
                 : await _db.StaffDetails.Where(s => s.Id == me.StaffDetailsId).Select(s => s.FullName).FirstOrDefaultAsync();
             return Ok(new TeachingContextDto

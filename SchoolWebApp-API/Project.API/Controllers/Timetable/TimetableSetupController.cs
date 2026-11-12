@@ -1,3 +1,4 @@
+using SchoolWebApp.API.Services;
 using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -48,10 +49,7 @@ namespace SchoolWebApp.API.Controllers.Timetable
                 .OrderByDescending(s => s.StartDate)
                 .Select(s => new { s.Id, Name = s.AcademicYear!.Name + " " + s.SessionName, s.StartDate, s.EndDate })
                 .ToListAsync();
-            var today = DateTime.Today;
-            var current = sessions.FirstOrDefault(s => s.StartDate.Date <= today && today <= s.EndDate.Date)
-                ?? sessions.FirstOrDefault(s => s.StartDate.Date > today)
-                ?? sessions.FirstOrDefault();
+            var current = await CurrentTerm.GetAsync(_db);
             return Ok(new { levels, subjects, teachers, sessions, currentSessionId = current?.Id });
         }
 

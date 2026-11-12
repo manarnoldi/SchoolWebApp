@@ -1,3 +1,4 @@
+using SchoolWebApp.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -187,9 +188,10 @@ namespace SchoolWebApp.API.Controllers.Timetable
             var published = _db.SchoolTimetables.AsNoTracking().Where(t => t.Status == TimetableStatus.Published);
             if (sessionId != null)
                 return await published.Where(t => t.SessionId == sessionId).Select(t => (int?)t.Id).FirstOrDefaultAsync();
-            // The term running today, else the latest one that has started, else the next.
+            // The current term's (see CurrentTerm), else the latest one that has started, else the first.
             var today = DateTime.Today;
-            return await published.Where(t => t.Session!.StartDate <= today && today <= t.Session.EndDate).Select(t => (int?)t.Id).FirstOrDefaultAsync()
+            var currentId = (await CurrentTerm.GetAsync(_db))?.Id ?? -1;
+            return await published.Where(t => t.SessionId == currentId).Select(t => (int?)t.Id).FirstOrDefaultAsync()
                 ?? await published.Where(t => t.Session!.StartDate <= today).OrderByDescending(t => t.Session!.StartDate).Select(t => (int?)t.Id).FirstOrDefaultAsync()
                 ?? await published.OrderBy(t => t.Session!.StartDate).Select(t => (int?)t.Id).FirstOrDefaultAsync();
         }

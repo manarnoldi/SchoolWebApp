@@ -193,14 +193,9 @@ namespace SchoolWebApp.API.Controllers.Dashboard
         public async Task<IActionResult> Assessments()
         {
             if (!await _access.CanAnyAsync(AssessmentsMenus)) return Forbid();
-            var today = DateTime.Today;
-            // The current term; before its first grades, the last term that has some.
+            // The current term (see CurrentTerm), even before its first grades.
             var outcomeGrades = _db.StudentAssessments.AsNoTracking().Where(a => a.SpecificOutcomeId != null);
-            var session = await CurrentSessionAsync(today);
-            if (session == null || !await outcomeGrades.AnyAsync(a => a.SessionId == session.Id))
-                session = await _db.Sessions.AsNoTracking().Include(s => s.AcademicYear)
-                    .Where(s => s.StartDate <= today && outcomeGrades.Any(a => a.SessionId == s.Id))
-                    .OrderByDescending(s => s.StartDate).FirstOrDefaultAsync() ?? session;
+            var session = await CurrentTerm.GetAsync(_db);
             if (session == null) return Ok(new { Term = (string?)null });
 
             // Grades are bucketed by their level (EE, ME, AE, BE), so a 4- or 8-point scale reads the same.
@@ -289,10 +284,6 @@ namespace SchoolWebApp.API.Controllers.Dashboard
 
         private static readonly string[] CbeLevels = { "EE", "ME", "AE", "BE" };
 
-        private async Task<SchoolWebApp.Core.Entities.Class.Session?> CurrentSessionAsync(DateTime today) =>
-            await _db.Sessions.AsNoTracking().Include(s => s.AcademicYear)
-                .Where(s => s.StartDate <= today && s.EndDate >= today).OrderByDescending(s => s.StartDate).FirstOrDefaultAsync()
-            ?? await _db.Sessions.AsNoTracking().Include(s => s.AcademicYear)
-                .Where(s => s.StartDate <= today).OrderByDescending(s => s.StartDate).FirstOrDefaultAsync();
+        private Task<SchoolWebApp.Core.Entities.Class.Session?> CurrentSessionAsync(DateTime today) => CurrentTerm.GetAsync(_db);
     }
 }
